@@ -1,0 +1,51 @@
+# macOS
+.DS_Store
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+# Xcode build output
+build/
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager local state
+.build/
+.swiftpm/
+Package.resolved
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+Secrets.plist
+secrets.plist
+*.secrets.json
+*.local.json
+
+# Apple signing material
+*.p8
+*.p12
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+
+# Service credentials
+GoogleService-Info.plist
+firebase-debug.log
+
+# Local/private product notes
+checkpoint.md
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
