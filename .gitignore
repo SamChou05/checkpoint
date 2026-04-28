@@ -6,6 +6,7 @@ xcuserdata/
 *.xcuserstate
 *.xcscmblueprint
 *.xccheckout
+*.xcodeproj/project.xcworkspace/
 
 # Xcode build output
 build/
