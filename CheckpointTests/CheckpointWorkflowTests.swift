@@ -359,10 +359,9 @@ final class AIProviderPolicyTests: XCTestCase {
 
 final class UnlockPolicyTests: XCTestCase {
     func testCorrectAnswerUnlockOptionsAreLongEnoughToMatter() {
-        XCTAssertEqual(UnlockPolicy.default.unlockMinutes, 15)
-        XCTAssertEqual(UnlockPolicy.correctAnswerUnlockMinuteOptions, [5, 10, 15, 30, 45, 60])
-        XCTAssertFalse(UnlockPolicy.correctAnswerUnlockMinuteOptions.contains(1))
-        XCTAssertFalse(UnlockPolicy.correctAnswerUnlockMinuteOptions.contains(3))
+        XCTAssertEqual(UnlockPolicy.default.unlockMinutes, 30)
+        XCTAssertEqual(UnlockPolicy.correctAnswerUnlockMinuteOptions, [15, 30, 45, 60])
+        XCTAssertTrue(UnlockPolicy.correctAnswerUnlockMinuteOptions.allSatisfy { $0 >= 15 })
         XCTAssertTrue(UnlockPolicy.correctAnswerUnlockMinuteOptions.contains(30))
     }
 
@@ -382,7 +381,28 @@ final class UnlockPolicyTests: XCTestCase {
 
         let policy = try JSONDecoder().decode(UnlockPolicy.self, from: data)
 
-        XCTAssertEqual(policy.unlockMinutes, 5)
+        XCTAssertEqual(policy.unlockMinutes, 15)
+        XCTAssertEqual(policy.partialUnlockMinutes, 15)
+        XCTAssertEqual(policy.emergencyUnlockMinutes, 15)
+    }
+
+    @MainActor
+    func testEmergencyPassReturnsUnlockDurationAndCreatesSession() {
+        let suiteName = "UnlockPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+            resetSharedAppGroupState()
+        }
+        resetSharedAppGroupState()
+        let store = CheckpointStore(defaults: defaults)
+
+        let unlockMinutes = store.useEmergencyPass()
+
+        XCTAssertEqual(unlockMinutes, UnlockPolicy.default.emergencyUnlockMinutes)
+        XCTAssertEqual(store.emergencyPassesRemaining, 0)
+        XCTAssertEqual(store.activeUnlockMinutesRemaining, UnlockPolicy.default.emergencyUnlockMinutes)
+        XCTAssertNotNil(store.unlockSession)
     }
 }
 
@@ -478,6 +498,7 @@ private func resetSharedAppGroupState() {
         SharedAppGroup.shieldPromptPreviewKey,
         SharedAppGroup.shieldAttemptCountKey,
         SharedAppGroup.lastUnlockExpirationKey,
-        SharedAppGroup.desiredShieldActiveKey
+        SharedAppGroup.desiredShieldActiveKey,
+        SharedAppGroup.screenTimeSelectionKey
     ].forEach { defaults.removeObject(forKey: $0) }
 }

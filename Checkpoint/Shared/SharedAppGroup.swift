@@ -1,5 +1,9 @@
 import Foundation
 
+#if os(iOS) && canImport(DeviceActivity)
+@preconcurrency import DeviceActivity
+#endif
+
 enum SharedAppGroup {
     static let identifier = "group.com.samchou.checkpoint"
 
@@ -9,6 +13,7 @@ enum SharedAppGroup {
     static let shieldAttemptCountKey = "shieldAttemptCount"
     static let lastUnlockExpirationKey = "lastUnlockExpiration"
     static let desiredShieldActiveKey = "desiredShieldActive"
+    static let screenTimeSelectionKey = "checkpoint.screenTime.selection.v1"
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: identifier) ?? .standard
@@ -54,3 +59,11 @@ enum SharedAppGroup {
         defaults.object(forKey: lastUnlockExpirationKey) as? Date
     }
 }
+
+#if os(iOS) && canImport(DeviceActivity)
+extension DeviceActivityName {
+    static var checkpointUnlockWindow: Self {
+        Self("checkpoint.unlockWindow")
+    }
+}
+#endif

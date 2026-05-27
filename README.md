@@ -12,6 +12,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
 - Configurable minimum question level so advanced users can skip remedial prompts.
+- Correct-answer unlock windows use 15, 30, 45, or 60 minutes, with 30 minutes as the default.
 - Stored checkpoint attempts with correctness and unlock state.
 - Missed questions from a failed unlock attempt become due immediately so the next checkpoint retests them first.
 - XCTest coverage for the core checkpoint, scheduler, unlock, sanitizer, and provider-cost workflows.
@@ -20,6 +21,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Screen Time service placeholder ready for the FamilyControls technical spike.
 - Shield Configuration extension target for branded Screen Time shield UI.
 - Shield Action extension target that records a pending checkpoint and asks iOS to open Checkpoint when the shield primary button is tapped.
+- Device Activity Monitor extension target that re-applies shields when a temporary unlock expires.
 - Shared App Group state for passing the current goal/prompt and pending shield attempts between app and extensions.
 
 ## AI Question Generation
@@ -39,7 +41,7 @@ See `docs/APP_STORE_READINESS.md` for entitlement steps, physical-device testing
 
 ## Testing
 
-Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-cost local generation, provider fallback policy, and provider payload sanitization.
+Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, and provider payload sanitization.
 
 ## Open
 
@@ -62,7 +64,7 @@ For real Screen Time testing:
 4. Run the app, open Settings -> `Request setup`, then `Choose restricted apps`.
 5. Select apps/categories and tap `Apply shield` from Home.
 
-The current code includes the FamilyControls picker, selection persistence, ManagedSettings shielding, temporary unshielding after a successful checkpoint, automatic re-shielding after the unlock timer, shield configuration/action extensions, and App Group state sharing.
+The current code includes the FamilyControls picker, selection persistence, ManagedSettings shielding, temporary unshielding after a successful checkpoint, automatic re-shielding after the unlock timer, a Device Activity monitor extension for background re-locking, shield configuration/action extensions, and App Group state sharing.
 
 ## Real-Device Loop To Verify
 
@@ -80,11 +82,12 @@ The current code includes the FamilyControls picker, selection persistence, Mana
 
 ## Required Apple Setup
 
-- Add Family Controls capability to the main app and both extensions.
-- Add App Groups to the main app and both extensions.
+- Add Family Controls capability to the main app and Screen Time extensions.
+- Add App Groups to the main app and Screen Time extensions.
 - Use the same group ID: `group.com.samchou.checkpoint`.
 - Configure the main app bundle ID: `com.samchou.checkpoint`.
 - Configure extension bundle IDs:
   - `com.samchou.checkpoint.ShieldConfigurationExtension`
   - `com.samchou.checkpoint.ShieldActionExtension`
+  - `com.samchou.checkpoint.DeviceActivityMonitorExtension`
 - Family Controls distribution requires Apple approval before App Store submission.

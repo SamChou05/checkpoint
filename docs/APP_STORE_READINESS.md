@@ -8,8 +8,9 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - Default unlock policy asks 5 questions and requires 4 correct answers.
 - Failed checkpoint sets make missed questions due immediately so the next attempt retests them first.
 - AI generation defaults to no-cost paths before backend generation.
-- Main app and both Screen Time extensions include Family Controls and App Group entitlement files.
-- Main app and both Screen Time extensions include privacy manifests for `UserDefaults` access.
+- Main app and Screen Time extensions include Family Controls and App Group entitlement files.
+- Main app and Screen Time extensions include privacy manifests for `UserDefaults` access.
+- Successful checkpoints temporarily unshield selected apps, then schedule a Device Activity monitor extension to re-apply shields after the unlock window.
 - Simulator XCTest coverage passes for the core workflow.
 
 ## External Gates
@@ -21,7 +22,8 @@ These cannot be completed from the repo alone:
    - `com.samchou.checkpoint`
    - `com.samchou.checkpoint.ShieldConfigurationExtension`
    - `com.samchou.checkpoint.ShieldActionExtension`
-3. Enable App Groups for all three bundle IDs with `group.com.samchou.checkpoint`.
+   - `com.samchou.checkpoint.DeviceActivityMonitorExtension`
+3. Enable App Groups for all four bundle IDs with `group.com.samchou.checkpoint`.
 4. Request Family Controls distribution access from Apple for the app and Screen Time extension bundle IDs.
 5. Create development and distribution provisioning profiles after Apple grants the entitlement.
 6. Run the real shield loop on a physical iPhone before TestFlight.
@@ -51,7 +53,7 @@ Use this as a starting point in App Store Connect review notes:
 
 Checkpoint helps users reduce distracting app use by combining Apple's Screen Time APIs with goal-based learning checkpoints. Users choose a learning goal and select apps or categories they want to restrict. When a restricted app is opened, the Screen Time shield prompts the user to return to Checkpoint and complete a short multiple-choice checkpoint. Passing the checkpoint temporarily unblocks the selected apps; failing keeps them restricted and prioritizes missed questions on the next attempt.
 
-The app uses Family Controls, Managed Settings, Managed Settings UI, App Groups, and Screen Time shield extensions. The App Group is used only to pass shield context, pending checkpoint state, unlock expiration, and selected Screen Time state between the app and extensions.
+The app uses Family Controls, Managed Settings, Managed Settings UI, Device Activity, App Groups, and Screen Time extensions. The App Group is used only to pass shield context, pending checkpoint state, unlock expiration, desired shield state, and selected Screen Time state between the app and extensions.
 
 AI question generation is batch-based and cached. By default, Checkpoint prefers on-device Apple Foundation Models when available, then local templates. Backend generation is internal service wiring rather than a normal user-facing setting; it is not called on every blocked-app attempt.
 
@@ -59,6 +61,7 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 
 - The app stores goal, question, answer-history, competency, shield-state, and unlock-window data locally.
 - The app and extensions use App Group `UserDefaults` to coordinate shield state.
+- Unlock windows are 15 minutes or longer because Apple's Device Activity monitor requires at least a 15-minute interval.
 - Backend generation, when explicitly configured, sends goal context, competency progress, existing prompts, and reported prompts to the configured endpoint.
 - The app does not use tracking domains.
 - The current privacy manifests declare `UserDefaults` required-reason API access:

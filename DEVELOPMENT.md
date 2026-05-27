@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: April 27, 2026
+Last updated: May 27, 2026
 
 ## Current Product Direction
 
@@ -81,7 +81,7 @@ Important platform constraint:
 
 ### Unlock Policy
 
-- Correct-answer unlock duration is configurable with 5, 10, 15, 30, 45, and 60 minute options.
+- Correct-answer unlock duration is configurable with 15, 30, 45, and 60 minute options. The default is 30 minutes.
 - Correct-answer count per unlock is configurable.
 - Multiple-choice misses stay locked.
 - Incorrect and unclear answers do not unlock.
@@ -95,25 +95,29 @@ Important platform constraint:
 - Selection persistence through shared App Group defaults.
 - ManagedSettingsStore shielding.
 - Temporary unshield after successful checkpoint.
-- Re-lock timer.
+- App-level fallback re-lock timer.
+- Device Activity monitor scheduling so Screen Time can re-apply shields when the unlock window expires.
 - Re-lock reconciliation when the app becomes active.
 - Family Controls and App Group entitlements.
-- Privacy manifests for the app and both Screen Time extensions.
+- Privacy manifests for the app and Screen Time extensions.
 
 ### Screen Time Extensions
 
 - Shield Configuration extension target.
 - Shield Action extension target.
+- Device Activity Monitor extension target.
 - Shield configuration shows Checkpoint-branded shield copy.
 - Shield action records a pending checkpoint attempt in shared App Group state and asks iOS to open Checkpoint.
+- Device Activity monitor re-applies selected app/category/web shields after a temporary unlock expires.
 - Main app consumes pending shield attempts on launch or foreground activation and opens the checkpoint answer flow.
 
 ## Current Technical Limits
 
 - Simulator XCTest verification passes locally through XcodeBuildMCP.
 - Real Screen Time behavior must be verified on a physical iPhone.
-- Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and both extensions.
+- Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and Screen Time extensions.
 - Family Controls distribution requires Apple approval before App Store submission.
+- Device Activity monitoring has a 15-minute minimum interval, so production unlock options should remain 15 minutes or longer.
 - App Store readiness steps are tracked in `docs/APP_STORE_READINESS.md`.
 - The AI layer now has a provider interface with local templates, backend batch generation, and guarded Apple Foundation Models support.
 - Storage is still prototype-level UserDefaults/App Group defaults, not SwiftData or SQLite.
@@ -153,6 +157,7 @@ The MVP is complete when:
 - Confirm Shield Configuration extension is invoked for app tokens and category tokens.
 - Confirm Shield Action extension writes pending attempts.
 - Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
+- Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.
 - Replace prototype persistence with SwiftData or SQLite.
 - Verify backend generation against a real endpoint.
 - Verify Apple Foundation Models generation with the iOS SDK and supported hardware.

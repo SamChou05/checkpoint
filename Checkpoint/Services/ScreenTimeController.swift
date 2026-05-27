@@ -5,6 +5,10 @@ import Observation
 import FamilyControls
 #endif
 
+#if os(iOS) && canImport(DeviceActivity)
+@preconcurrency import DeviceActivity
+#endif
+
 #if os(iOS) && canImport(ManagedSettings)
 import ManagedSettings
 #endif
@@ -44,8 +48,11 @@ final class ScreenTimeController {
     #endif
 
     @ObservationIgnored private let defaults: UserDefaults
-    @ObservationIgnored private let selectionKey = "checkpoint.screenTime.selection.v1"
     @ObservationIgnored private var relockTask: Task<Void, Never>?
+
+    #if os(iOS) && canImport(DeviceActivity)
+    @ObservationIgnored private let activityCenter = DeviceActivityCenter()
+    #endif
 
     init(defaults: UserDefaults = SharedAppGroup.defaults) {
         self.defaults = defaults
@@ -74,6 +81,7 @@ final class ScreenTimeController {
     func applyShield() {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         relockTask?.cancel()
+        stopUnlockRelockMonitor()
         managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
         managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
 
@@ -95,15 +103,17 @@ final class ScreenTimeController {
     }
 
     func clearShield() {
-        #if os(iOS) && canImport(ManagedSettings)
         relockTask?.cancel()
-        managedStore.clearAllSettings()
-        #endif
-
         isShieldingEnabled = false
         setupState = .authorized
         SharedAppGroup.publishDesiredShieldActive(false)
         SharedAppGroup.publishUnlockExpiration(nil)
+
+        #if os(iOS) && canImport(ManagedSettings)
+        stopUnlockRelockMonitor()
+        managedStore.clearAllSettings()
+        #endif
+
         updateSummary()
     }
 
@@ -111,19 +121,18 @@ final class ScreenTimeController {
         guard minutes > 0 else { return }
 
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        let now = Date()
+        let expiration = Calendar.current.date(byAdding: .minute, value: minutes, to: now) ?? now
+
         managedStore.clearAllSettings()
         isShieldingEnabled = false
         setupState = .temporarilyUnlocked
+        lastErrorMessage = nil
         SharedAppGroup.publishDesiredShieldActive(true)
-        SharedAppGroup.publishUnlockExpiration(Calendar.current.date(byAdding: .minute, value: minutes, to: Date()))
+        SharedAppGroup.publishUnlockExpiration(expiration)
 
-        relockTask?.cancel()
-        relockTask = Task { [weak self] in
-            let seconds = UInt64(minutes * 60)
-            try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)
-            guard !Task.isCancelled else { return }
-            self?.applyShield()
-        }
+        scheduleForegroundRelock(until: expiration)
+        scheduleUnlockRelockMonitor(from: now, until: expiration)
         #else
         setupState = .unavailable
         #endif
@@ -134,6 +143,8 @@ final class ScreenTimeController {
 
         if let unlockExpiration = SharedAppGroup.unlockExpiration, unlockExpiration > Date() {
             setupState = .temporarilyUnlocked
+            isShieldingEnabled = false
+            scheduleForegroundRelock(until: unlockExpiration)
             return
         }
 
@@ -173,18 +184,59 @@ final class ScreenTimeController {
     private func persistSelection() {
         #if os(iOS) && canImport(FamilyControls)
         guard let data = try? JSONEncoder().encode(selection) else { return }
-        defaults.set(data, forKey: selectionKey)
+        defaults.set(data, forKey: SharedAppGroup.screenTimeSelectionKey)
         #endif
     }
 
     private func restoreSelection() {
         #if os(iOS) && canImport(FamilyControls)
         guard
-            let data = defaults.data(forKey: selectionKey),
+            let data = defaults.data(forKey: SharedAppGroup.screenTimeSelectionKey),
             let restoredSelection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
         else { return }
 
         selection = restoredSelection
         #endif
+    }
+
+    private func scheduleForegroundRelock(until expiration: Date) {
+        relockTask?.cancel()
+
+        let remainingSeconds = max(1, expiration.timeIntervalSinceNow)
+        relockTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(remainingSeconds * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            self?.applyShield()
+        }
+    }
+
+    private func scheduleUnlockRelockMonitor(from start: Date, until expiration: Date) {
+        #if os(iOS) && canImport(DeviceActivity)
+        let calendar = Calendar.current
+        let schedule = DeviceActivitySchedule(
+            intervalStart: Self.dateComponents(for: start, calendar: calendar),
+            intervalEnd: Self.dateComponents(for: expiration, calendar: calendar),
+            repeats: false
+        )
+
+        do {
+            try activityCenter.startMonitoring(.checkpointUnlockWindow, during: schedule)
+        } catch {
+            lastErrorMessage = "System re-lock timer could not start: \(error.localizedDescription). Checkpoint will re-lock when the app is active."
+        }
+        #endif
+    }
+
+    private func stopUnlockRelockMonitor() {
+        #if os(iOS) && canImport(DeviceActivity)
+        activityCenter.stopMonitoring([.checkpointUnlockWindow])
+        #endif
+    }
+
+    private static func dateComponents(for date: Date, calendar: Calendar) -> DateComponents {
+        var components = calendar.dateComponents([.era, .year, .month, .day, .hour, .minute, .second], from: date)
+        components.calendar = calendar
+        components.timeZone = calendar.timeZone
+        return components
     }
 }

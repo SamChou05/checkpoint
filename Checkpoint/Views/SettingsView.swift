@@ -131,7 +131,8 @@ struct SettingsView: View {
                                 Spacer()
 
                                 Button {
-                                    store.useEmergencyPass()
+                                    let unlockMinutes = store.useEmergencyPass()
+                                    screenTime.temporarilyUnshield(minutes: unlockMinutes)
                                 } label: {
                                     Image(systemName: "cross.case")
                                         .font(.system(size: 18, weight: .bold))

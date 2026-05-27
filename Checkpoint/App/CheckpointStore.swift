@@ -237,16 +237,19 @@ final class CheckpointStore {
         return unlockMinutes
     }
 
-    func useEmergencyPass() {
-        guard emergencyPassesRemaining > 0 else { return }
+    @discardableResult
+    func useEmergencyPass() -> Int {
+        guard emergencyPassesRemaining > 0 else { return 0 }
         emergencyPassesRemaining -= 1
         let now = Date()
+        let unlockMinutes = unlockPolicy.emergencyUnlockMinutes
         unlockSession = UnlockSession(
             startedAt: now,
-            expiresAt: Calendar.current.date(byAdding: .minute, value: unlockPolicy.emergencyUnlockMinutes, to: now) ?? now
+            expiresAt: Calendar.current.date(byAdding: .minute, value: unlockMinutes, to: now) ?? now
         )
         SharedAppGroup.publishUnlockExpiration(unlockSession?.expiresAt)
         save()
+        return unlockMinutes
     }
 
     func resetDemoData() {

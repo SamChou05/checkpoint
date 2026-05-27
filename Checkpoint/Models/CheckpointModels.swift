@@ -205,7 +205,7 @@ struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {
 }
 
 struct UnlockPolicy: Codable, Equatable, Sendable {
-    static let correctAnswerUnlockMinuteOptions = [5, 10, 15, 30, 45, 60]
+    static let correctAnswerUnlockMinuteOptions = [15, 30, 45, 60]
 
     var unlockMinutes: Int
     var partialUnlockMinutes: Int
@@ -225,8 +225,8 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
         minimumQuestionDifficulty: Int
     ) {
         self.unlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(unlockMinutes)
-        self.partialUnlockMinutes = partialUnlockMinutes
-        self.emergencyUnlockMinutes = emergencyUnlockMinutes
+        self.partialUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(partialUnlockMinutes)
+        self.emergencyUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(emergencyUnlockMinutes)
         self.unlockOnPartial = unlockOnPartial
         self.questionsPerSession = min(10, max(1, questionsPerSession))
         self.requiredCorrectAnswers = min(self.questionsPerSession, max(1, requiredCorrectAnswers))
@@ -234,9 +234,9 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
     }
 
     static let `default` = UnlockPolicy(
-        unlockMinutes: 15,
-        partialUnlockMinutes: 2,
-        emergencyUnlockMinutes: 3,
+        unlockMinutes: 30,
+        partialUnlockMinutes: 15,
+        emergencyUnlockMinutes: 15,
         unlockOnPartial: true,
         questionsPerSession: 5,
         requiredCorrectAnswers: 4,
@@ -257,8 +257,12 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let decodedUnlockMinutes = try container.decodeIfPresent(Int.self, forKey: .unlockMinutes) ?? Self.default.unlockMinutes
         unlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(decodedUnlockMinutes)
-        partialUnlockMinutes = try container.decodeIfPresent(Int.self, forKey: .partialUnlockMinutes) ?? Self.default.partialUnlockMinutes
-        emergencyUnlockMinutes = try container.decodeIfPresent(Int.self, forKey: .emergencyUnlockMinutes) ?? Self.default.emergencyUnlockMinutes
+        partialUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(
+            try container.decodeIfPresent(Int.self, forKey: .partialUnlockMinutes) ?? Self.default.partialUnlockMinutes
+        )
+        emergencyUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(
+            try container.decodeIfPresent(Int.self, forKey: .emergencyUnlockMinutes) ?? Self.default.emergencyUnlockMinutes
+        )
         unlockOnPartial = try container.decodeIfPresent(Bool.self, forKey: .unlockOnPartial) ?? Self.default.unlockOnPartial
 
         let decodedQuestionsPerSession = try container.decodeIfPresent(Int.self, forKey: .questionsPerSession)
