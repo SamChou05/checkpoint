@@ -16,7 +16,9 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Stored checkpoint attempts with correctness and unlock state.
 - Missed questions from a failed unlock attempt become due immediately so the next checkpoint retests them first.
 - XCTest coverage for the core checkpoint, scheduler, unlock, sanitizer, and provider-cost workflows.
+- Recovery states for blocked-app launches when no checkpoint questions are available.
 - Academic paper-inspired UI for Home, Checkpoint, History, and Settings.
+- Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
 - Privacy manifests for the app and Screen Time extensions.
 - Screen Time service placeholder ready for the FamilyControls technical spike.
 - Shield Configuration extension target for branded Screen Time shield UI.
@@ -41,7 +43,7 @@ See `docs/APP_STORE_READINESS.md` for entitlement steps, physical-device testing
 
 ## Testing
 
-Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, and provider payload sanitization.
+Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, and provider payload sanitization.
 
 ## Open
 

@@ -220,6 +220,37 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testPendingShieldAttemptWithoutQuestionsShowsRecoveryNotice() {
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = makeGoal()
+
+        SharedAppGroup.markPendingShieldAttempt()
+
+        XCTAssertNil(store.takePendingShieldSession())
+        XCTAssertEqual(store.checkpointNotice, "Checkpoint opened from a blocked app, but no questions are ready yet.")
+        XCTAssertNil(store.takePendingShieldSession())
+    }
+
+    @MainActor
+    func testManualCheckpointWithoutGoalShowsRecoveryNotice() {
+        let store = CheckpointStore(defaults: defaults)
+
+        XCTAssertNil(store.startManualCheckpointSession())
+        XCTAssertEqual(store.checkpointNotice, "Create a goal before starting a checkpoint.")
+
+        store.clearCheckpointNotice()
+        XCTAssertNil(store.checkpointNotice)
+    }
+
+    @MainActor
+    func testScreenTimeSelectionStartsEmpty() {
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        XCTAssertFalse(screenTime.hasSelection)
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "No restricted apps selected")
+    }
+
+    @MainActor
     private func makeSeededStore(questionCount: Int) -> CheckpointStore {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)

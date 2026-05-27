@@ -32,6 +32,7 @@ Important platform constraint:
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
 - Home, History, Skill, and Settings tabs.
+- Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
 - Goal onboarding flow.
 - Simulated blocked-app attempt flow for previewing the checkpoint experience before real device testing.
 
@@ -49,6 +50,7 @@ Important platform constraint:
 - Missed questions from a failed checkpoint set become due immediately and are prioritized in the next set.
 - Settings can enforce a minimum question difficulty so users can skip material below their level.
 - Revealing the expected answer before submission keeps the current attempt locked.
+- Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Settings includes a manual question batch refresh action.
 - Users can report bad questions with a reason and optional note.
@@ -92,8 +94,10 @@ Important platform constraint:
 
 - Family Controls authorization request.
 - FamilyActivityPicker-based restricted app/category/web selection.
+- New installs start with an empty restricted selection.
 - Selection persistence through shared App Group defaults.
 - ManagedSettingsStore shielding.
+- Applying a shield without a restricted selection surfaces an error instead of toggling an empty shield.
 - Temporary unshield after successful checkpoint.
 - App-level fallback re-lock timer.
 - Device Activity monitor scheduling so Screen Time can re-apply shields when the unlock window expires.

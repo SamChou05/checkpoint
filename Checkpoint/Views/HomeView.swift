@@ -13,6 +13,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
+                    checkpointNoticePanel
 
                     if let goal = store.goal {
                         goalHero(goal)
@@ -96,7 +97,44 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 PrimaryActionButton(title: "Simulate blocked app attempt", systemImage: "lock.open") {
-                    activeSession = store.nextCheckpointSession()
+                    activeSession = store.startManualCheckpointSession()
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var checkpointNoticePanel: some View {
+        if let notice = store.checkpointNotice {
+            SectionPanel {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(CheckpointTheme.amber)
+
+                        Text(notice)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Spacer(minLength: 0)
+                    }
+
+                    HStack(spacing: 10) {
+                        SecondaryActionButton(title: "Dismiss", systemImage: "xmark") {
+                            store.clearCheckpointNotice()
+                        }
+
+                        if store.goal != nil {
+                            SecondaryActionButton(title: "Refresh", systemImage: "arrow.clockwise") {
+                                Task {
+                                    await store.refreshQuestionBatch()
+                                    store.clearCheckpointNotice()
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -55,6 +55,11 @@ enum QuestionBatchState: String, Codable, Sendable {
     case failed
 }
 
+enum CheckpointSessionSource: Sendable {
+    case manual
+    case blockedApp
+}
+
 enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
     case automatic = "Automatic"
     case appleFoundation = "Apple Foundation"

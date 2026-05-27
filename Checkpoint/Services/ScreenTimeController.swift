@@ -31,8 +31,14 @@ final class ScreenTimeController {
     var lastErrorMessage: String?
     var isShieldingEnabled = false
 
+    var isReadyForShielding: Bool {
+        setupState == .authorized ||
+        setupState == .shieldActive ||
+        setupState == .temporarilyUnlocked
+    }
+
     #if os(iOS) && canImport(FamilyControls)
-    var selection = FamilyActivitySelection(includeEntireCategory: true) {
+    var selection = FamilyActivitySelection() {
         didSet {
             persistSelection()
             updateSummary()
@@ -58,6 +64,7 @@ final class ScreenTimeController {
         self.defaults = defaults
         restoreSelection()
         updateSummary()
+        refreshAuthorizationStatus()
         reconcileShieldState()
     }
 
@@ -65,8 +72,7 @@ final class ScreenTimeController {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         do {
             try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
-            setupState = .authorized
-            lastErrorMessage = nil
+            refreshAuthorizationStatus()
             updateSummary()
         } catch {
             setupState = .failed
@@ -78,10 +84,48 @@ final class ScreenTimeController {
         #endif
     }
 
+    func refreshAuthorizationStatus() {
+        #if os(iOS) && canImport(FamilyControls)
+        switch AuthorizationCenter.shared.authorizationStatus {
+        case .notDetermined:
+            setupState = .notStarted
+            lastErrorMessage = nil
+        case .denied:
+            setupState = .failed
+            lastErrorMessage = "Screen Time access is denied. Enable Family Controls permission before applying shields."
+        case .approved:
+            if setupState != .shieldActive && setupState != .temporarilyUnlocked {
+                setupState = .authorized
+            }
+            lastErrorMessage = nil
+        default:
+            if setupState != .shieldActive && setupState != .temporarilyUnlocked {
+                setupState = .authorized
+            }
+            lastErrorMessage = nil
+        }
+        #else
+        setupState = .unavailable
+        restrictedAppsSummary = "FamilyControls requires an iOS app target with Screen Time entitlements."
+        #endif
+    }
+
     func applyShield() {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         relockTask?.cancel()
         stopUnlockRelockMonitor()
+
+        guard hasSelection else {
+            managedStore.clearAllSettings()
+            isShieldingEnabled = false
+            setupState = .authorized
+            lastErrorMessage = "Choose at least one restricted app, category, or website before applying the shield."
+            SharedAppGroup.publishDesiredShieldActive(false)
+            SharedAppGroup.publishUnlockExpiration(nil)
+            updateSummary()
+            return
+        }
+
         managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
         managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
 
@@ -93,6 +137,7 @@ final class ScreenTimeController {
 
         isShieldingEnabled = hasSelection
         setupState = hasSelection ? .shieldActive : .authorized
+        lastErrorMessage = nil
         SharedAppGroup.publishDesiredShieldActive(isShieldingEnabled)
         SharedAppGroup.publishUnlockExpiration(nil)
         updateSummary()
@@ -106,6 +151,7 @@ final class ScreenTimeController {
         relockTask?.cancel()
         isShieldingEnabled = false
         setupState = .authorized
+        lastErrorMessage = nil
         SharedAppGroup.publishDesiredShieldActive(false)
         SharedAppGroup.publishUnlockExpiration(nil)
 

@@ -11,6 +11,8 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - Main app and Screen Time extensions include Family Controls and App Group entitlement files.
 - Main app and Screen Time extensions include privacy manifests for `UserDefaults` access.
 - Successful checkpoints temporarily unshield selected apps, then schedule a Device Activity monitor extension to re-apply shields after the unlock window.
+- New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
+- Blocked-app launches with no available checkpoint questions surface a recovery notice.
 - Simulator XCTest coverage passes for the core workflow.
 
 ## External Gates

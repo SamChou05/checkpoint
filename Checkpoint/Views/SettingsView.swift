@@ -73,6 +73,40 @@ struct SettingsView: View {
                         }
                     }
 
+                    SectionPanel("Launch readiness") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            readinessRow(
+                                title: "Goal",
+                                detail: store.goal?.title ?? "Missing",
+                                isReady: store.goal != nil
+                            )
+
+                            readinessRow(
+                                title: "Questions",
+                                detail: "\(store.questions.count) stored",
+                                isReady: store.questions.count >= store.unlockPolicy.questionsPerSession
+                            )
+
+                            readinessRow(
+                                title: "Screen Time",
+                                detail: screenTime.setupState.rawValue,
+                                isReady: screenTime.isReadyForShielding
+                            )
+
+                            readinessRow(
+                                title: "Restricted apps",
+                                detail: screenTime.restrictedAppsSummary,
+                                isReady: screenTime.hasSelection
+                            )
+
+                            readinessRow(
+                                title: "Unlock window",
+                                detail: "\(store.unlockPolicy.unlockMinutes)m default",
+                                isReady: store.unlockPolicy.unlockMinutes >= 15
+                            )
+                        }
+                    }
+
                     SectionPanel("Strictness") {
                         VStack(alignment: .leading, spacing: 16) {
                             VStack(alignment: .leading, spacing: 8) {
@@ -219,4 +253,25 @@ struct SettingsView: View {
         )
     }
 
+    private func readinessRow(title: String, detail: String, isReady: Bool) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: isReady ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(isReady ? CheckpointTheme.teal : CheckpointTheme.amber)
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text(detail)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+        }
+    }
 }

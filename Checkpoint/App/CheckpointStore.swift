@@ -15,6 +15,7 @@ final class CheckpointStore {
     var lastQuestionProvider: AIProviderKind = .localTemplates
     var backendEndpoint = ""
     var lastAIErrorMessage: String?
+    var checkpointNotice: String?
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining = 1
     var isOnboardingPresented = false
@@ -98,6 +99,7 @@ final class CheckpointStore {
         questionReports = []
         questionBatchState = .ready
         attempts = []
+        checkpointNotice = nil
         unlockSession = nil
         isOnboardingPresented = false
         save()
@@ -264,6 +266,7 @@ final class CheckpointStore {
         lastQuestionProvider = .localTemplates
         backendEndpoint = ""
         lastAIErrorMessage = nil
+        checkpointNotice = nil
         unlockSession = nil
         emergencyPassesRemaining = 1
         isOnboardingPresented = true
@@ -273,7 +276,15 @@ final class CheckpointStore {
 
     func takePendingShieldSession() -> CheckpointSession? {
         guard SharedAppGroup.consumePendingShieldAttempt() != nil else { return nil }
-        return nextCheckpointSession()
+        return checkpointSession(source: .blockedApp)
+    }
+
+    func startManualCheckpointSession() -> CheckpointSession? {
+        checkpointSession(source: .manual)
+    }
+
+    func clearCheckpointNotice() {
+        checkpointNotice = nil
     }
 
     func reportQuestion(_ question: CheckpointQuestion, reason: QuestionReportReason, note: String) {
@@ -477,6 +488,32 @@ final class CheckpointStore {
             goalTitle: goal?.title,
             promptPreview: nextQuestion()?.prompt
         )
+    }
+
+    private func checkpointSession(source: CheckpointSessionSource) -> CheckpointSession? {
+        if let session = nextCheckpointSession() {
+            checkpointNotice = nil
+            return session
+        }
+
+        checkpointNotice = checkpointSessionUnavailableMessage(source: source)
+        return nil
+    }
+
+    private func checkpointSessionUnavailableMessage(source: CheckpointSessionSource) -> String {
+        if goal == nil {
+            return source == .blockedApp
+                ? "Checkpoint opened from a blocked app, but no goal is set yet."
+                : "Create a goal before starting a checkpoint."
+        }
+
+        if questions.isEmpty {
+            return source == .blockedApp
+                ? "Checkpoint opened from a blocked app, but no questions are ready yet."
+                : "No questions are ready yet."
+        }
+
+        return "No usable checkpoint questions are available. Refresh the question batch or lower the minimum level."
     }
 
     private func load() {
