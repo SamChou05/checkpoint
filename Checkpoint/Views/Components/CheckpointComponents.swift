@@ -1,20 +1,23 @@
 import SwiftUI
 
 enum CheckpointTheme {
-    static let ink = Color(red: 0.05, green: 0.06, blue: 0.08)
-    static let panel = Color(red: 0.10, green: 0.12, blue: 0.15)
-    static let panelRaised = Color(red: 0.14, green: 0.16, blue: 0.20)
-    static let text = Color(red: 0.95, green: 0.96, blue: 0.94)
-    static let muted = Color(red: 0.63, green: 0.67, blue: 0.70)
-    static let teal = Color(red: 0.20, green: 0.78, blue: 0.68)
-    static let amber = Color(red: 0.95, green: 0.68, blue: 0.30)
-    static let coral = Color(red: 0.92, green: 0.35, blue: 0.32)
+    static let ink = Color(red: 0.06, green: 0.14, blue: 0.12)
+    static let paper = Color(red: 0.96, green: 0.96, blue: 0.92)
+    static let panel = Color(red: 1.00, green: 0.99, blue: 0.96)
+    static let panelRaised = Color(red: 0.92, green: 0.91, blue: 0.86)
+    static let hairline = Color(red: 0.72, green: 0.70, blue: 0.63).opacity(0.42)
+    static let text = ink
+    static let muted = Color(red: 0.37, green: 0.42, blue: 0.40)
+    static let teal = Color(red: 0.14, green: 0.36, blue: 0.32)
+    static let blue = Color(red: 0.15, green: 0.36, blue: 0.58)
+    static let amber = Color(red: 0.54, green: 0.35, blue: 0.09)
+    static let coral = Color(red: 0.66, green: 0.31, blue: 0.26)
 
     static let background = LinearGradient(
         colors: [
-            Color(red: 0.04, green: 0.05, blue: 0.07),
-            Color(red: 0.08, green: 0.09, blue: 0.11),
-            Color(red: 0.05, green: 0.08, blue: 0.08)
+            Color(red: 0.96, green: 0.96, blue: 0.92),
+            Color(red: 0.92, green: 0.95, blue: 0.90),
+            Color(red: 0.95, green: 0.93, blue: 0.87)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -30,7 +33,7 @@ struct PrimaryActionButton: View {
         Button(action: action) {
             Label(title, systemImage: systemImage)
                 .font(.headline)
-                .foregroundStyle(.black)
+                .foregroundStyle(CheckpointTheme.paper)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 15)
                 .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -81,8 +84,9 @@ struct SectionPanel<Content: View>: View {
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(CheckpointTheme.panel.opacity(0.96))
-                .stroke(.white.opacity(0.08), lineWidth: 1)
+                .stroke(CheckpointTheme.hairline, lineWidth: 1)
         )
+        .shadow(color: CheckpointTheme.ink.opacity(0.04), radius: 8, x: 0, y: 3)
     }
 }
 
@@ -114,7 +118,7 @@ struct MetricTile: View {
         .background(CheckpointTheme.panel, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(.white.opacity(0.08), lineWidth: 1)
+                .stroke(CheckpointTheme.hairline, lineWidth: 1)
         )
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-enum GoalCategory: String, Codable, CaseIterable, Identifiable {
+enum GoalCategory: String, Codable, CaseIterable, Identifiable, Sendable {
     case codingInterview = "Coding Interview"
     case examPrep = "Exam Prep"
     case languageLearning = "Language Learning"
@@ -11,7 +11,7 @@ enum GoalCategory: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-enum QuestionFormat: String, Codable, CaseIterable, Identifiable {
+enum QuestionFormat: String, Codable, CaseIterable, Identifiable, Sendable {
     case shortAnswer = "Short Answer"
     case multipleChoice = "Multiple Choice"
     case codeTrace = "Code Trace"
@@ -20,7 +20,7 @@ enum QuestionFormat: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-enum QuestionStatus: String, Codable {
+enum QuestionStatus: String, Codable, Sendable {
     case new
     case correct
     case incorrect
@@ -29,7 +29,7 @@ enum QuestionStatus: String, Codable {
     case retired
 }
 
-enum AnswerResult: String, Codable, CaseIterable, Identifiable {
+enum AnswerResult: String, Codable, CaseIterable, Identifiable, Sendable {
     case correct = "Correct"
     case partial = "Partial"
     case incorrect = "Incorrect"
@@ -38,7 +38,7 @@ enum AnswerResult: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-enum QuestionReportReason: String, Codable, CaseIterable, Identifiable {
+enum QuestionReportReason: String, Codable, CaseIterable, Identifiable, Sendable {
     case tooEasy = "Too Easy"
     case tooHard = "Too Hard"
     case confusing = "Confusing"
@@ -48,14 +48,14 @@ enum QuestionReportReason: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-enum QuestionBatchState: String, Codable {
+enum QuestionBatchState: String, Codable, Sendable {
     case idle
     case generating
     case ready
     case failed
 }
 
-enum AIProviderKind: String, Codable, CaseIterable, Identifiable {
+enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
     case automatic = "Automatic"
     case appleFoundation = "Apple Foundation"
     case backend = "Backend"
@@ -64,7 +64,7 @@ enum AIProviderKind: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-struct Goal: Identifiable, Codable, Equatable {
+struct Goal: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var title: String
     var deadline: Date
@@ -75,7 +75,7 @@ struct Goal: Identifiable, Codable, Equatable {
     var createdAt = Date()
 }
 
-struct CheckpointQuestion: Identifiable, Codable, Equatable {
+struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var goalID: Goal.ID
     var prompt: String
@@ -164,7 +164,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable {
     }
 }
 
-struct CheckpointAttempt: Identifiable, Codable, Equatable {
+struct CheckpointAttempt: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var questionID: CheckpointQuestion.ID
     var goalID: Goal.ID
@@ -175,7 +175,26 @@ struct CheckpointAttempt: Identifiable, Codable, Equatable {
     var createdAt = Date()
 }
 
-struct QuestionQualityReport: Identifiable, Codable, Equatable {
+struct CheckpointSession: Identifiable, Equatable, Sendable {
+    var id = UUID()
+    var questions: [CheckpointQuestion]
+    var requiredCorrectAnswers: Int
+
+    var unlockThreshold: Int {
+        min(questions.count, max(1, requiredCorrectAnswers))
+    }
+
+    func hasMetUnlockThreshold(correctAnswerCount: Int) -> Bool {
+        correctAnswerCount >= unlockThreshold
+    }
+
+    func canStillMeetUnlockThreshold(correctAnswerCount: Int, answeredQuestionCount: Int) -> Bool {
+        let remainingQuestions = max(0, questions.count - answeredQuestionCount)
+        return correctAnswerCount + remainingQuestions >= unlockThreshold
+    }
+}
+
+struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var questionID: CheckpointQuestion.ID
     var goalID: Goal.ID
@@ -185,21 +204,102 @@ struct QuestionQualityReport: Identifiable, Codable, Equatable {
     var createdAt = Date()
 }
 
-struct UnlockPolicy: Codable, Equatable {
+struct UnlockPolicy: Codable, Equatable, Sendable {
+    static let correctAnswerUnlockMinuteOptions = [5, 10, 15, 30, 45, 60]
+
     var unlockMinutes: Int
     var partialUnlockMinutes: Int
     var emergencyUnlockMinutes: Int
     var unlockOnPartial: Bool
+    var questionsPerSession: Int
+    var requiredCorrectAnswers: Int
+    var minimumQuestionDifficulty: Int
+
+    init(
+        unlockMinutes: Int,
+        partialUnlockMinutes: Int,
+        emergencyUnlockMinutes: Int,
+        unlockOnPartial: Bool,
+        questionsPerSession: Int,
+        requiredCorrectAnswers: Int,
+        minimumQuestionDifficulty: Int
+    ) {
+        self.unlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(unlockMinutes)
+        self.partialUnlockMinutes = partialUnlockMinutes
+        self.emergencyUnlockMinutes = emergencyUnlockMinutes
+        self.unlockOnPartial = unlockOnPartial
+        self.questionsPerSession = min(10, max(1, questionsPerSession))
+        self.requiredCorrectAnswers = min(self.questionsPerSession, max(1, requiredCorrectAnswers))
+        self.minimumQuestionDifficulty = Self.normalizedQuestionDifficulty(minimumQuestionDifficulty)
+    }
 
     static let `default` = UnlockPolicy(
-        unlockMinutes: 5,
+        unlockMinutes: 15,
         partialUnlockMinutes: 2,
         emergencyUnlockMinutes: 3,
-        unlockOnPartial: true
+        unlockOnPartial: true,
+        questionsPerSession: 5,
+        requiredCorrectAnswers: 4,
+        minimumQuestionDifficulty: 1
     )
+
+    enum CodingKeys: String, CodingKey {
+        case unlockMinutes
+        case partialUnlockMinutes
+        case emergencyUnlockMinutes
+        case unlockOnPartial
+        case questionsPerSession
+        case requiredCorrectAnswers
+        case minimumQuestionDifficulty
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedUnlockMinutes = try container.decodeIfPresent(Int.self, forKey: .unlockMinutes) ?? Self.default.unlockMinutes
+        unlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(decodedUnlockMinutes)
+        partialUnlockMinutes = try container.decodeIfPresent(Int.self, forKey: .partialUnlockMinutes) ?? Self.default.partialUnlockMinutes
+        emergencyUnlockMinutes = try container.decodeIfPresent(Int.self, forKey: .emergencyUnlockMinutes) ?? Self.default.emergencyUnlockMinutes
+        unlockOnPartial = try container.decodeIfPresent(Bool.self, forKey: .unlockOnPartial) ?? Self.default.unlockOnPartial
+
+        let decodedQuestionsPerSession = try container.decodeIfPresent(Int.self, forKey: .questionsPerSession)
+        let decodedRequiredCorrectAnswers = try container.decodeIfPresent(Int.self, forKey: .requiredCorrectAnswers)
+        questionsPerSession = min(
+            10,
+            max(1, decodedQuestionsPerSession ?? decodedRequiredCorrectAnswers ?? Self.default.questionsPerSession)
+        )
+
+        if decodedQuestionsPerSession == nil {
+            requiredCorrectAnswers = min(questionsPerSession, Self.default.requiredCorrectAnswers)
+        } else {
+            requiredCorrectAnswers = min(
+                questionsPerSession,
+                max(1, decodedRequiredCorrectAnswers ?? Self.default.requiredCorrectAnswers)
+            )
+        }
+
+        minimumQuestionDifficulty = Self.normalizedQuestionDifficulty(
+            try container.decodeIfPresent(Int.self, forKey: .minimumQuestionDifficulty) ?? Self.default.minimumQuestionDifficulty
+        )
+    }
+
+    static func normalizedCorrectAnswerUnlockMinutes(_ minutes: Int) -> Int {
+        if correctAnswerUnlockMinuteOptions.contains(minutes) {
+            return minutes
+        }
+
+        if let nextOption = correctAnswerUnlockMinuteOptions.first(where: { $0 >= minutes }) {
+            return nextOption
+        }
+
+        return correctAnswerUnlockMinuteOptions.last ?? minutes
+    }
+
+    static func normalizedQuestionDifficulty(_ difficulty: Int) -> Int {
+        min(5, max(1, difficulty))
+    }
 }
 
-struct TopicCompetency: Identifiable, Codable, Equatable {
+struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
     var topic: String
     var estimatedLevel: Double
     var attempts: Int
@@ -237,7 +337,7 @@ struct TopicCompetency: Identifiable, Codable, Equatable {
     }
 }
 
-struct UnlockSession: Codable, Equatable {
+struct UnlockSession: Codable, Equatable, Sendable {
     var startedAt: Date
     var expiresAt: Date
 
@@ -246,7 +346,7 @@ struct UnlockSession: Codable, Equatable {
     }
 }
 
-struct AppSnapshot: Codable {
+struct AppSnapshot: Codable, Sendable {
     var goal: Goal?
     var questions: [CheckpointQuestion]
     var attempts: [CheckpointAttempt]
@@ -261,7 +361,7 @@ struct AppSnapshot: Codable {
     var emergencyPassesRemaining: Int
 }
 
-struct AnswerEvaluation: Equatable {
+struct AnswerEvaluation: Equatable, Sendable {
     var result: AnswerResult
     var feedback: String
 }

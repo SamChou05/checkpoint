@@ -44,7 +44,7 @@ struct OnboardingView: View {
                         }
                     }
 
-                    SectionPanel("AI context") {
+                    SectionPanel("Study context") {
                         TextField("Current level", text: $currentLevel, axis: .vertical)
                             .lineLimit(3, reservesSpace: true)
                             .textFieldStyle(.plain)
@@ -69,7 +69,7 @@ struct OnboardingView: View {
 
                     PrimaryActionButton(
                         title: isCreating ? "Generating questions" : "Generate question bank",
-                        systemImage: "sparkles"
+                        systemImage: "book.closed"
                     ) {
                         Task {
                             isCreating = true
@@ -102,6 +102,6 @@ struct OnboardingView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }

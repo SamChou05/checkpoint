@@ -1,8 +1,8 @@
 # AI Backend Contract
 
-Checkpoint can generate multiple-choice questions through a backend endpoint when Apple Foundation Models is unavailable or when higher-quality generation is needed.
+Checkpoint can generate multiple-choice questions through a backend endpoint when higher-quality generation is explicitly needed beyond Apple Foundation Models and Local Templates.
 
-The iOS app sends a `POST` request to the endpoint configured in Settings.
+The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection.
 
 ## Request
 
@@ -33,7 +33,8 @@ The iOS app sends a `POST` request to the endpoint configured in Settings.
   "reportedPrompts": [
     "What is an array?"
   ],
-  "targetCount": 40
+  "targetCount": 40,
+  "minimumDifficulty": 3
 }
 ```
 
@@ -59,6 +60,7 @@ The iOS app sends a `POST` request to the endpoint configured in Settings.
 
 - Return only valid JSON.
 - `difficulty` must be 1 through 5.
+- `difficulty` should be greater than or equal to `minimumDifficulty` from the request.
 - `format` must be `Multiple Choice`.
 - `choices` should include 4 options.
 - `expectedAnswer` must exactly match one item in `choices`.
@@ -66,8 +68,9 @@ The iOS app sends a `POST` request to the endpoint configured in Settings.
 - Prefer objective questions for MVP.
 - Every question should be answerable in 30 seconds to 3 minutes.
 - Questions should target weak topics and stay near the user's estimated level.
+- If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
 
-The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, missing topics, missing answers or explanations, missing choices, answers that do not match a choice, and oversized prompt text.
+The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
 
 ## Cost Rules
 
@@ -76,5 +79,5 @@ The iOS app also validates batches before storage. It drops blank questions, dup
 - Use backend generation only when:
   - the bank is low
   - the user refreshes
-  - Apple Foundation Models is unavailable
+  - the user explicitly selects Backend generation
   - the app needs better quality than templates

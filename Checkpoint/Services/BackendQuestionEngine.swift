@@ -39,6 +39,7 @@ private struct BackendQuestionRequest: Encodable {
     var existingPrompts: [String]
     var reportedPrompts: [String]
     var targetCount: Int
+    var minimumDifficulty: Int
 
     init(request: QuestionGenerationRequest) {
         goal = GoalPayload(goal: request.goal)
@@ -46,6 +47,7 @@ private struct BackendQuestionRequest: Encodable {
         existingPrompts = request.existingQuestions.map(\.prompt)
         reportedPrompts = request.reportedQuestions.map(\.prompt)
         targetCount = request.targetCount
+        minimumDifficulty = request.minimumDifficulty
     }
 }
 

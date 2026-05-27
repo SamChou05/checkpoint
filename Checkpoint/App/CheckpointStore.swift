@@ -135,23 +135,56 @@ final class CheckpointStore {
     }
 
     func nextQuestion() -> CheckpointQuestion? {
+        nextQuestion(excluding: [])
+    }
+
+    func nextCheckpointSession() -> CheckpointSession? {
+        let selectedQuestions = nextQuestions(limit: unlockPolicy.questionsPerSession)
+        guard !selectedQuestions.isEmpty else { return nil }
+        return CheckpointSession(
+            questions: selectedQuestions,
+            requiredCorrectAnswers: min(unlockPolicy.requiredCorrectAnswers, selectedQuestions.count)
+        )
+    }
+
+    func nextQuestions(limit: Int) -> [CheckpointQuestion] {
+        let targetCount = min(10, max(1, limit))
+        var selectedQuestions: [CheckpointQuestion] = []
+        var excludedQuestionIDs = Set<CheckpointQuestion.ID>()
+
+        while selectedQuestions.count < targetCount,
+              let question = nextQuestion(excluding: excludedQuestionIDs) {
+            selectedQuestions.append(question)
+            excludedQuestionIDs.insert(question.id)
+        }
+
+        return selectedQuestions
+    }
+
+    private func nextQuestion(excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>) -> CheckpointQuestion? {
+        let availableQuestions = questions.filter { !excludedQuestionIDs.contains($0.id) }
+        let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
+        return prioritizedQuestion(from: preferredQuestions) ?? prioritizedQuestion(from: availableQuestions)
+    }
+
+    private func prioritizedQuestion(from availableQuestions: [CheckpointQuestion]) -> CheckpointQuestion? {
         let now = Date()
 
-        if let missed = questions
+        if let missed = availableQuestions
             .filter({ $0.status == .incorrect && ($0.nextReviewAt ?? .distantPast) <= now })
             .sorted(by: sortByReviewPriority)
             .first {
             return missed
         }
 
-        if let due = questions
+        if let due = availableQuestions
             .filter({ ($0.nextReviewAt ?? .distantFuture) <= now && $0.status != .retired })
             .sorted(by: sortByReviewPriority)
             .first {
             return due
         }
 
-        let weakAreaQuestion = questions
+        let weakAreaQuestion = availableQuestions
             .filter { $0.status == .new }
             .sorted(by: sortByAdaptivePriority)
             .first
@@ -160,17 +193,23 @@ final class CheckpointStore {
             return weakAreaQuestion
         }
 
-        return questions
+        return availableQuestions
             .filter { $0.status == .new }
             .sorted(by: sortByAdaptivePriority)
-            .first ?? questions.filter { $0.status != .retired }.randomElement()
+            .first ?? availableQuestions.filter { $0.status != .retired }.randomElement()
     }
 
     @discardableResult
-    func submitAnswer(question: CheckpointQuestion, answer: String, result: AnswerResult) -> Int {
+    func submitAnswer(
+        question: CheckpointQuestion,
+        answer: String,
+        result: AnswerResult,
+        grantsUnlock: Bool = true,
+        unlockMinutesOverride: Int? = nil
+    ) -> Int {
         guard let goal else { return 0 }
 
-        let unlockMinutes = unlockMinutes(for: result)
+        let unlockMinutes = unlockMinutesOverride ?? (grantsUnlock ? unlockMinutes(for: result) : 0)
         let attempt = CheckpointAttempt(
             questionID: question.id,
             goalID: goal.id,
@@ -229,9 +268,9 @@ final class CheckpointStore {
         publishShieldContext()
     }
 
-    func takePendingShieldQuestion() -> CheckpointQuestion? {
+    func takePendingShieldSession() -> CheckpointSession? {
         guard SharedAppGroup.consumePendingShieldAttempt() != nil else { return nil }
-        return nextQuestion()
+        return nextCheckpointSession()
     }
 
     func reportQuestion(_ question: CheckpointQuestion, reason: QuestionReportReason, note: String) {
@@ -255,14 +294,50 @@ final class CheckpointStore {
         publishShieldContext()
     }
 
+    func makeMissedQuestionsDueNow(_ questionIDs: Set<CheckpointQuestion.ID>) {
+        guard !questionIDs.isEmpty else { return }
+        let now = Date()
+
+        for index in questions.indices where questionIDs.contains(questions[index].id) {
+            guard questions[index].status != .retired else { continue }
+            questions[index].status = .incorrect
+            questions[index].nextReviewAt = now
+        }
+
+        save()
+        publishShieldContext()
+    }
+
     func updateUnlockMinutes(_ minutes: Int) {
-        unlockPolicy.unlockMinutes = minutes
+        unlockPolicy.unlockMinutes = UnlockPolicy.normalizedCorrectAnswerUnlockMinutes(minutes)
         save()
     }
 
     func updatePartialUnlockEnabled(_ isEnabled: Bool) {
         unlockPolicy.unlockOnPartial = isEnabled
         save()
+    }
+
+    func updateQuestionsPerSession(_ count: Int) {
+        unlockPolicy.questionsPerSession = min(10, max(1, count))
+        unlockPolicy.requiredCorrectAnswers = min(
+            unlockPolicy.questionsPerSession,
+            unlockPolicy.requiredCorrectAnswers
+        )
+        save()
+        publishShieldContext()
+    }
+
+    func updateRequiredCorrectAnswers(_ count: Int) {
+        unlockPolicy.requiredCorrectAnswers = min(unlockPolicy.questionsPerSession, max(1, count))
+        save()
+        publishShieldContext()
+    }
+
+    func updateMinimumQuestionDifficulty(_ difficulty: Int) {
+        unlockPolicy.minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(difficulty)
+        save()
+        publishShieldContext()
     }
 
     func updateAIProviderPreference(_ provider: AIProviderKind) {
@@ -360,6 +435,10 @@ final class CheckpointStore {
         }
 
         return lhs.difficulty < rhs.difficulty
+    }
+
+    private func meetsDifficultyFloor(_ question: CheckpointQuestion) -> Bool {
+        question.status != .retired && question.difficulty >= unlockPolicy.minimumQuestionDifficulty
     }
 
     private func competency(for topic: String) -> TopicCompetency {
@@ -508,6 +587,7 @@ final class CheckpointStore {
             competencies: competencies,
             reportedQuestions: reportedQuestions,
             targetCount: 40,
+            minimumDifficulty: unlockPolicy.minimumQuestionDifficulty,
             backendEndpoint: URL(string: backendEndpoint.trimmingCharacters(in: .whitespacesAndNewlines))
         )
     }

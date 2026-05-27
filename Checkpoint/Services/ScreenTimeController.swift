@@ -122,7 +122,7 @@ final class ScreenTimeController {
             let seconds = UInt64(minutes * 60)
             try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)
             guard !Task.isCancelled else { return }
-            await self?.applyShield()
+            self?.applyShield()
         }
         #else
         setupState = .unavailable

@@ -4,7 +4,8 @@ struct HomeView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
 
-    @State private var activeQuestion: CheckpointQuestion?
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var activeSession: CheckpointSession?
     @State private var isRestrictedAppsPresented = false
 
     var body: some View {
@@ -27,14 +28,19 @@ struct HomeView: View {
             .checkpointScreenBackground()
             .navigationTitle("Checkpoint")
             .toolbarTitleDisplayMode(.inline)
-            .sheet(item: $activeQuestion) { question in
-                CheckpointAttemptView(store: store, screenTime: screenTime, question: question)
+            .sheet(item: $activeSession) { session in
+                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
             }
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
             }
             .onAppear {
-                activeQuestion = store.takePendingShieldQuestion()
+                presentPendingShieldSession()
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    presentPendingShieldSession()
+                }
             }
         }
     }
@@ -46,7 +52,7 @@ struct HomeView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.teal)
 
-                Text("Clear a checkpoint before you scroll.")
+                Text("Clear a checkpoint set before you scroll.")
                     .font(.largeTitle.bold())
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
@@ -56,9 +62,9 @@ struct HomeView: View {
 
             Image(systemName: "shield.lefthalf.filled")
                 .font(.system(size: 28, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.amber)
+                .foregroundStyle(CheckpointTheme.blue)
                 .frame(width: 48, height: 48)
-                .background(CheckpointTheme.amber.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                .background(CheckpointTheme.blue.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
         }
         .padding(.top, 8)
     }
@@ -84,8 +90,13 @@ struct HomeView: View {
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
 
+                Text("A blocked app asks \(store.unlockPolicy.questionsPerSession) questions. \(store.unlockPolicy.requiredCorrectAnswers) correct starts the unlock timer.")
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+
                 PrimaryActionButton(title: "Simulate blocked app attempt", systemImage: "lock.open") {
-                    activeQuestion = store.nextQuestion()
+                    activeSession = store.nextCheckpointSession()
                 }
             }
         }
@@ -94,7 +105,7 @@ struct HomeView: View {
     private var metricsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             MetricTile(
-                title: "Checkpoints today",
+                title: "Answers today",
                 value: "\(store.completedTodayCount)",
                 tint: CheckpointTheme.teal,
                 systemImage: "checkmark.seal"
@@ -110,7 +121,7 @@ struct HomeView: View {
             MetricTile(
                 title: "Average mastery",
                 value: store.averageMasteryText,
-                tint: .blue,
+                tint: CheckpointTheme.blue,
                 systemImage: "chart.line.uptrend.xyaxis"
             )
 
@@ -140,7 +151,7 @@ struct HomeView: View {
                         .foregroundStyle(CheckpointTheme.text)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    Text("Missed and due questions are prioritized before new AI-generated questions.")
+                    Text("A full checkpoint set pulls missed and due questions first, then fills with new goal-aligned questions.")
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
                 }
@@ -198,5 +209,10 @@ struct HomeView: View {
                 }
             }
         }
+    }
+
+    private func presentPendingShieldSession() {
+        guard activeSession == nil else { return }
+        activeSession = store.takePendingShieldSession()
     }
 }

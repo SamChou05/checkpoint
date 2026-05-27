@@ -12,7 +12,7 @@ struct HistoryView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Every completed checkpoint is stored so missed questions can return later.")
+                        Text("Every checkpoint answer is stored so missed questions can return later.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                     }
@@ -98,4 +98,3 @@ private struct AttemptRow: View {
         }
     }
 }
-

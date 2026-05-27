@@ -1,6 +1,6 @@
 import Foundation
 
-enum QuestionGenerationError: LocalizedError {
+enum QuestionGenerationError: LocalizedError, Sendable {
     case providerUnavailable
     case backendNotConfigured
     case badResponse
@@ -20,30 +20,41 @@ enum QuestionGenerationError: LocalizedError {
     }
 }
 
-struct QuestionGenerationRequest {
+struct QuestionGenerationRequest: Sendable {
     var goal: Goal
     var existingQuestions: [CheckpointQuestion]
     var competencies: [TopicCompetency]
     var reportedQuestions: [QuestionQualityReport]
     var targetCount: Int
+    var minimumDifficulty: Int
     var backendEndpoint: URL?
 }
 
-struct QuestionBatch {
+struct QuestionBatch: Sendable {
     var questions: [CheckpointQuestion]
     var provider: AIProviderKind
     var usedFallback: Bool
 }
 
-protocol QuestionGenerating {
+protocol QuestionGenerating: Sendable {
     var provider: AIProviderKind { get }
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion]
 }
 
-struct HybridQuestionEngine {
-    private let localEngine = LocalDraftQuestionEngine()
-    private let backendEngine = BackendQuestionEngine()
-    private let appleFoundationEngine = AppleFoundationQuestionEngine()
+struct HybridQuestionEngine: Sendable {
+    private let localEngine: any QuestionGenerating
+    private let backendEngine: any QuestionGenerating
+    private let appleFoundationEngine: any QuestionGenerating
+
+    init(
+        localEngine: any QuestionGenerating = LocalDraftQuestionEngine(),
+        backendEngine: any QuestionGenerating = BackendQuestionEngine(),
+        appleFoundationEngine: any QuestionGenerating = AppleFoundationQuestionEngine()
+    ) {
+        self.localEngine = localEngine
+        self.backendEngine = backendEngine
+        self.appleFoundationEngine = appleFoundationEngine
+    }
 
     func generateQuestionBatch(
         for request: QuestionGenerationRequest,
@@ -84,7 +95,7 @@ struct HybridQuestionEngine {
     private func providerOrder(for preference: AIProviderKind) -> [any QuestionGenerating] {
         switch preference {
         case .automatic:
-            return [appleFoundationEngine, backendEngine, localEngine]
+            return [appleFoundationEngine, localEngine, backendEngine]
         case .appleFoundation:
             return [appleFoundationEngine, localEngine]
         case .backend:
@@ -119,7 +130,9 @@ enum QuestionBatchSanitizer {
 
             let promptKey = canonicalPrompt(sanitizedQuestion.prompt)
 
-            guard isUsable(sanitizedQuestion), !seenPrompts.contains(promptKey) else {
+            guard sanitizedQuestion.difficulty >= request.minimumDifficulty,
+                  isUsable(sanitizedQuestion),
+                  !seenPrompts.contains(promptKey) else {
                 continue
             }
 
@@ -201,7 +214,10 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
 
         return focusTopics.prefix(8).enumerated().flatMap { index, topic in
             let competency = request.competencies.first(where: { $0.topic == topic })
-            let targetDifficulty = targetDifficulty(for: competency, fallback: index + 1)
+            let targetDifficulty = max(
+                request.minimumDifficulty,
+                targetDifficulty(for: competency, fallback: index + 1)
+            )
             return questions(for: goal, topic: topic, difficulty: targetDifficulty)
         }
     }

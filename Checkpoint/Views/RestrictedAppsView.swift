@@ -24,7 +24,7 @@ struct RestrictedAppsView: View {
                     }
                 }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 
     @ViewBuilder
@@ -95,4 +95,3 @@ private struct FamilyPickerContent: View {
     }
 }
 #endif
-

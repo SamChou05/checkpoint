@@ -28,7 +28,7 @@ struct RootView: View {
                 }
         }
         .tint(CheckpointTheme.teal)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
         .sheet(
             isPresented: Binding(
                 get: { store.isOnboardingPresented },

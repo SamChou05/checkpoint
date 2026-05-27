@@ -9,28 +9,41 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Native SwiftUI app shell.
 - One active goal onboarding flow.
 - Provider-based multiple-choice question generation seeded from typed goal context.
-- AI provider settings for Automatic, Apple Foundation Models, Backend, and Local Templates.
+- Automatic question generation with provider details abstracted away from the user-facing app.
+- Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
+- Configurable minimum question level so advanced users can skip remedial prompts.
 - Stored checkpoint attempts with correctness and unlock state.
-- Modern dark UI for Home, Checkpoint, History, and Settings.
+- Missed questions from a failed unlock attempt become due immediately so the next checkpoint retests them first.
+- XCTest coverage for the core checkpoint, scheduler, unlock, sanitizer, and provider-cost workflows.
+- Academic paper-inspired UI for Home, Checkpoint, History, and Settings.
+- Privacy manifests for the app and Screen Time extensions.
 - Screen Time service placeholder ready for the FamilyControls technical spike.
 - Shield Configuration extension target for branded Screen Time shield UI.
-- Shield Action extension target that records a pending checkpoint when the shield primary button is tapped.
+- Shield Action extension target that records a pending checkpoint and asks iOS to open Checkpoint when the shield primary button is tapped.
 - Shared App Group state for passing the current goal/prompt and pending shield attempts between app and extensions.
 
 ## AI Question Generation
 
 The MVP uses a hybrid provider approach:
 
-- Automatic tries Apple Foundation Models when available, then a configured backend endpoint, then local templates.
+- Automatic tries Apple Foundation Models when available, then Local Templates, keeping backend generation explicit and opt-in.
 - Apple Foundation Models can provide on-device generation on Apple Intelligence-compatible devices.
-- Backend generation is batch-based and configured in Settings with an endpoint URL.
+- Backend generation is batch-based and reserved for internal app configuration or future service wiring.
 - Local Templates keep the app usable without network, backend, or supported on-device models.
 
-The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`. The app intentionally generates and caches question batches instead of calling AI on every blocked-app attempt.
+The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
+
+## App Store Readiness
+
+See `docs/APP_STORE_READINESS.md` for entitlement steps, physical-device testing, App Review notes, and remaining launch blockers.
+
+## Testing
+
+Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-cost local generation, provider fallback policy, and provider payload sanitization.
 
 ## Open
 
-Open `Checkpoint.xcodeproj` in Xcode and run the `Checkpoint` target on an iPhone simulator or device. Full `xcodebuild` verification was not run in this environment because the active developer directory is Command Line Tools, not Xcode.
+Open `Checkpoint.xcodeproj` in Xcode and run the `Checkpoint` target on an iPhone simulator or device. Simulator XCTest verification is passing locally; real Screen Time behavior still needs device testing.
 
 ## Preview While Building
 
@@ -60,8 +73,8 @@ The current code includes the FamilyControls picker, selection persistence, Mana
 5. Open a selected restricted app.
 6. Confirm the Checkpoint shield appears with current goal/prompt copy.
 7. Tap `Open Checkpoint` on the shield.
-8. Open Checkpoint and confirm the checkpoint answer sheet appears.
-9. Mark the answer correct/partial.
+8. Confirm Checkpoint opens and shows the checkpoint answer sheet.
+9. Answer the checkpoint set correctly.
 10. Confirm the selected app is temporarily unshielded.
 11. Confirm the app re-locks after the unlock expires or after Checkpoint returns active.
 

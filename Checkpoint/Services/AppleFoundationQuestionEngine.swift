@@ -39,6 +39,7 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         Each question must have 4 choices.
         expectedAnswer must exactly match one choice.
         Difficulty must be an integer from 1 to 5.
+        Do not return questions below the requested minimum difficulty.
         Format must be Multiple Choice.
         Avoid repeating existing or reported prompts.
         """
@@ -50,6 +51,7 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         Focus areas: \(request.goal.focusAreas)
         Preferred style: Multiple Choice
         Target count: \(request.targetCount)
+        Minimum difficulty: \(request.minimumDifficulty)
         Competencies: \(competencySummary(request.competencies))
         Existing prompts: \(request.existingQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
         Reported prompts to avoid: \(request.reportedQuestions.map(\.prompt).prefix(10).joined(separator: " | "))

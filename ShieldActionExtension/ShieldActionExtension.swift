@@ -35,13 +35,22 @@ final class ShieldActionExtension: ShieldActionDelegate {
         switch action {
         case .primaryButtonPressed:
             SharedAppGroup.markPendingShieldAttempt()
-            completionHandler(.close)
-        case .secondaryButtonPressed:
+            completionHandler(.openCheckpoint)
+        case .secondaryButtonPressed,
+             .firstSecondarySubmenuItemPressed,
+             .secondSecondarySubmenuItemPressed,
+             .thirdSecondarySubmenuItemPressed:
             completionHandler(.close)
         @unknown default:
             completionHandler(.close)
         }
     }
 }
-#endif
 
+private extension ShieldActionResponse {
+    static var openCheckpoint: ShieldActionResponse {
+        // Apple documents .openParentalControlsApp, but this SDK does not expose the Swift case yet.
+        ShieldActionResponse(rawValue: 3) ?? .close
+    }
+}
+#endif

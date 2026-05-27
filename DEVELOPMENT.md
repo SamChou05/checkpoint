@@ -15,14 +15,14 @@ The App Store-safe workflow is:
 5. Checkpoint shields those apps.
 6. User opens a restricted app.
 7. iOS shows a Checkpoint shield.
-8. User opens Checkpoint and answers a checkpoint question.
-9. Correct multiple-choice answers grant a short unlock.
+8. User opens Checkpoint and answers a short checkpoint set.
+9. Correct multiple-choice answers across the full set grant a short unlock.
 10. Checkpoint re-locks after the unlock window.
 
 Important platform constraint:
 
 - Apple's shield UI cannot host a full custom SwiftUI quiz.
-- Apple's shield action extension cannot officially open the main app directly.
+- Apple's newer Managed Settings docs include a shield response for opening the parental-controls app, but this must be verified on a real device and OS version.
 - The product should therefore treat the shield as the trigger and Checkpoint as the place where the actual question is answered.
 
 ## Built So Far
@@ -30,7 +30,7 @@ Important platform constraint:
 ### App Shell
 
 - SwiftUI iOS app project.
-- Dark, modern visual system.
+- Academic paper-inspired visual system.
 - Home, History, Skill, and Settings tabs.
 - Goal onboarding flow.
 - Simulated blocked-app attempt flow for previewing the checkpoint experience before real device testing.
@@ -44,7 +44,10 @@ Important platform constraint:
 - AI generation should happen in batches and be cached locally, not live on every app-open attempt.
 - Questions store prompt, expected answer, answer choices, explanation, topic, difficulty, format, status, ask count, correctness count, and next review date.
 - Answer attempts are stored in history.
-- Multiple-choice checkpoint answers are locally graded for the MVP before unlock.
+- Multiple-choice checkpoint answers are locally graded for the MVP before the final unlock.
+- Multi-question checkpoint sessions ask 5 questions and require 4 correct answers by default before unlocking.
+- Missed questions from a failed checkpoint set become due immediately and are prioritized in the next set.
+- Settings can enforce a minimum question difficulty so users can skip material below their level.
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Settings includes a manual question batch refresh action.
@@ -54,10 +57,11 @@ Important platform constraint:
   - Apple Foundation Models
   - Backend
   - Local Templates
-- Automatic tries Apple Foundation Models first, then backend, then local templates.
-- Backend generation is configured through a Settings endpoint URL.
-- The app stores the last provider used and shows fallback messages when the preferred provider is unavailable.
+- Automatic tries Apple Foundation Models first, then Local Templates, keeping Backend explicit and opt-in for higher-quality generation.
+- Provider routing is internal so users do not need to choose a question source.
+- The app stores the last provider used for diagnostics.
 - Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, and oversized questions.
+- XCTest coverage verifies question-bank generation, session selection, unlock gating, shield-triggered sessions, provider policy, and sanitizer behavior.
 
 ### Adaptive Competency
 
@@ -71,12 +75,14 @@ Important platform constraint:
   - due review questions
   - new questions in weaker topics
   - questions near the user's estimated difficulty
+- The scheduler respects the manually configured difficulty floor when enough questions are available.
 - Initial topic levels are inferred from the user's typed current-level context, then adjusted by answer history.
 - Skill tab shows average mastery and per-topic progress.
 
 ### Unlock Policy
 
-- Correct-answer unlock duration is configurable.
+- Correct-answer unlock duration is configurable with 5, 10, 15, 30, 45, and 60 minute options.
+- Correct-answer count per unlock is configurable.
 - Multiple-choice misses stay locked.
 - Incorrect and unclear answers do not unlock.
 - Revealed expected answers force the attempt to stay locked.
@@ -92,21 +98,23 @@ Important platform constraint:
 - Re-lock timer.
 - Re-lock reconciliation when the app becomes active.
 - Family Controls and App Group entitlements.
+- Privacy manifests for the app and both Screen Time extensions.
 
 ### Screen Time Extensions
 
 - Shield Configuration extension target.
 - Shield Action extension target.
 - Shield configuration shows Checkpoint-branded shield copy.
-- Shield action records a pending checkpoint attempt in shared App Group state.
-- Main app consumes pending shield attempts and opens the checkpoint answer flow.
+- Shield action records a pending checkpoint attempt in shared App Group state and asks iOS to open Checkpoint.
+- Main app consumes pending shield attempts on launch or foreground activation and opens the checkpoint answer flow.
 
 ## Current Technical Limits
 
-- Full simulator/device build has not been run in this environment because full Xcode/simctl is not active.
+- Simulator XCTest verification passes locally through XcodeBuildMCP.
 - Real Screen Time behavior must be verified on a physical iPhone.
 - Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and both extensions.
 - Family Controls distribution requires Apple approval before App Store submission.
+- App Store readiness steps are tracked in `docs/APP_STORE_READINESS.md`.
 - The AI layer now has a provider interface with local templates, backend batch generation, and guarded Apple Foundation Models support.
 - Storage is still prototype-level UserDefaults/App Group defaults, not SwiftData or SQLite.
 
@@ -128,10 +136,10 @@ The MVP is complete when:
 - The user can pick restricted apps inside Checkpoint.
 - Those apps become shielded.
 - Opening a restricted app shows Checkpoint's shield.
-- The user can move from the shield to Checkpoint and answer a question.
-- Correct answers temporarily unlock access.
+- The user can move from the shield to Checkpoint and answer a checkpoint set.
+- Completing the checkpoint set temporarily unlocks access.
 - Incorrect or unclear answers keep access blocked.
-- Missed questions return later.
+- Missed questions return later, and failed checkpoint sets retest missed questions first on the next attempt.
 - The Skill tab reflects topic-level competency.
 - The app re-locks reliably after unlock expiration.
 
@@ -144,7 +152,7 @@ The MVP is complete when:
 - Test the shield loop on a real iPhone.
 - Confirm Shield Configuration extension is invoked for app tokens and category tokens.
 - Confirm Shield Action extension writes pending attempts.
-- Confirm Checkpoint picks up pending attempts when opened.
+- Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
 - Replace prototype persistence with SwiftData or SQLite.
 - Verify backend generation against a real endpoint.
 - Verify Apple Foundation Models generation with the iOS SDK and supported hardware.
@@ -230,7 +238,7 @@ Cost options:
 
 Current recommendation:
 
-- MVP: template/local tracking plus backend batch generation.
+- MVP: template/local tracking plus optional backend batch generation.
 - Add Apple Foundation Models as an on-device option for supported devices.
 - Consider self-hosting only after usage data shows API spend is a real problem.
 
@@ -243,7 +251,7 @@ Apple Foundation Models device implication:
 - Best MVP architecture remains provider-based:
   - Use Apple Foundation Models on supported devices.
   - Use cached local templates when offline or unsupported.
-  - Use backend batch generation as the universal fallback.
+  - Use backend batch generation as an explicit quality upgrade, not the default scale path.
 
 Implementation status:
 
@@ -252,6 +260,8 @@ Implementation status:
 - Backend provider contract is implemented as a POST endpoint that returns question JSON.
 - Apple Foundation Models provider is guarded behind iOS/FoundationModels availability and falls back automatically when unavailable.
 - Provider output validation is implemented before questions enter the bank.
+- Automatic provider routing prefers no-cost providers before backend generation.
+- Core workflow and provider policy are covered by the `CheckpointTests` XCTest target.
 - Typed current-level context now seeds initial competency estimates.
-- Settings exposes provider preference, backend endpoint, batch state, last provider, and quality report count.
+- Settings exposes strictness controls, minimum question level, question refresh, batch state, and quality report count.
 - Backend request/response contract is documented in `docs/AI_BACKEND_CONTRACT.md`.

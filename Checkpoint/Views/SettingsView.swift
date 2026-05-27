@@ -76,16 +76,45 @@ struct SettingsView: View {
                     SectionPanel("Strictness") {
                         VStack(alignment: .leading, spacing: 16) {
                             VStack(alignment: .leading, spacing: 8) {
+                                Text("Checkpoint threshold")
+                                    .font(.headline)
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct to unlock")
+                                    .font(.subheadline)
+                                    .foregroundStyle(CheckpointTheme.muted)
+
+                                Stepper("Questions in set: \(store.unlockPolicy.questionsPerSession)", value: questionsPerSessionBinding, in: 1...10)
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Stepper("Correct needed: \(store.unlockPolicy.requiredCorrectAnswers)", value: requiredCorrectAnswersBinding, in: 1...store.unlockPolicy.questionsPerSession)
+                                    .foregroundStyle(CheckpointTheme.text)
+                            }
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Question level")
+                                    .font(.headline)
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text("Start at Level \(store.unlockPolicy.minimumQuestionDifficulty) or higher")
+                                    .font(.subheadline)
+                                    .foregroundStyle(CheckpointTheme.muted)
+
+                                Stepper("Minimum level: \(store.unlockPolicy.minimumQuestionDifficulty)", value: minimumQuestionDifficultyBinding, in: 1...5)
+                                    .foregroundStyle(CheckpointTheme.text)
+                            }
+
+                            VStack(alignment: .leading, spacing: 8) {
                                 Text("Correct-answer unlock")
                                     .font(.headline)
                                     .foregroundStyle(CheckpointTheme.text)
 
                                 Picker("Unlock minutes", selection: unlockMinutesBinding) {
-                                    ForEach([1, 3, 5, 10, 15], id: \.self) { minutes in
+                                    ForEach(UnlockPolicy.correctAnswerUnlockMinuteOptions, id: \.self) { minutes in
                                         Text("\(minutes)m").tag(minutes)
                                     }
                                 }
-                                .pickerStyle(.segmented)
+                                .pickerStyle(.menu)
                             }
 
                             HStack {
@@ -106,7 +135,7 @@ struct SettingsView: View {
                                 } label: {
                                     Image(systemName: "cross.case")
                                         .font(.system(size: 18, weight: .bold))
-                                        .foregroundStyle(.black)
+                                        .foregroundStyle(CheckpointTheme.paper)
                                         .frame(width: 42, height: 42)
                                         .background(CheckpointTheme.amber, in: RoundedRectangle(cornerRadius: 8))
                                 }
@@ -116,23 +145,10 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Question bank") {
+                    SectionPanel("Questions") {
                         VStack(alignment: .leading, spacing: 12) {
-                            Picker("AI provider", selection: aiProviderBinding) {
-                                ForEach(AIProviderKind.allCases) { provider in
-                                    Text(provider.rawValue).tag(provider)
-                                }
-                            }
-                            .pickerStyle(.menu)
-
-                            TextField("Backend endpoint URL", text: backendEndpointBinding)
-                                .textFieldStyle(.plain)
-                                .foregroundStyle(CheckpointTheme.text)
-                                .padding(12)
-                                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-
                             HStack {
-                                Text("Batch state")
+                                Text("Status")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
                                 Text(store.questionBatchState.rawValue.capitalized)
@@ -141,16 +157,7 @@ struct SettingsView: View {
                             }
 
                             HStack {
-                                Text("Last provider")
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                Spacer()
-                                Text(store.lastQuestionProvider.rawValue)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            HStack {
-                                Text("Quality reports")
+                                Text("Reports")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
                                 Text("\(store.reportedQuestionCount)")
@@ -158,14 +165,7 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.text)
                             }
 
-                            if let message = store.lastAIErrorMessage {
-                                Text(message)
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.amber)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-
-                            SecondaryActionButton(title: "Refresh question batch", systemImage: "sparkles") {
+                            SecondaryActionButton(title: "Refresh question batch", systemImage: "arrow.clockwise") {
                                 Task {
                                     await store.refreshQuestionBatch()
                                 }
@@ -197,17 +197,25 @@ struct SettingsView: View {
         )
     }
 
-    private var aiProviderBinding: Binding<AIProviderKind> {
+    private var questionsPerSessionBinding: Binding<Int> {
         Binding(
-            get: { store.aiProviderPreference },
-            set: { store.updateAIProviderPreference($0) }
+            get: { store.unlockPolicy.questionsPerSession },
+            set: { store.updateQuestionsPerSession($0) }
         )
     }
 
-    private var backendEndpointBinding: Binding<String> {
+    private var requiredCorrectAnswersBinding: Binding<Int> {
         Binding(
-            get: { store.backendEndpoint },
-            set: { store.updateBackendEndpoint($0) }
+            get: { store.unlockPolicy.requiredCorrectAnswers },
+            set: { store.updateRequiredCorrectAnswers($0) }
         )
     }
+
+    private var minimumQuestionDifficultyBinding: Binding<Int> {
+        Binding(
+            get: { store.unlockPolicy.minimumQuestionDifficulty },
+            set: { store.updateMinimumQuestionDifficulty($0) }
+        )
+    }
+
 }

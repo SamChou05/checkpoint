@@ -3,9 +3,12 @@ import SwiftUI
 struct CheckpointAttemptView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
-    let question: CheckpointQuestion
+    let session: CheckpointSession
 
     @Environment(\.dismiss) private var dismiss
+    @State private var currentQuestionIndex = 0
+    @State private var correctAnswerCount = 0
+    @State private var missedQuestionIDs: Set<CheckpointQuestion.ID> = []
     @State private var answer = ""
     @State private var result: AnswerResult = .correct
     @State private var isExplanationVisible = false
@@ -21,13 +24,34 @@ struct CheckpointAttemptView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         StatusBadge(text: "Restricted app attempt", tint: CheckpointTheme.amber)
 
-                        Text("Clear one checkpoint")
+                        Text("Clear \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")")
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Answer this before the \(store.unlockPolicy.unlockMinutes)-minute unlock. Missed questions come back later.")
+                        Text("Get \(session.unlockThreshold) of \(session.questions.count) correct before the \(store.unlockPolicy.unlockMinutes)-minute unlock.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Question \(currentQuestionIndex + 1) of \(session.questions.count)")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Spacer()
+
+                                Text("\(correctAnswerCount)/\(session.unlockThreshold) correct")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.muted)
+                            }
+
+                            ProgressView(
+                                value: Double(currentQuestionIndex),
+                                total: Double(max(session.questions.count, 1))
+                            )
+                            .tint(CheckpointTheme.teal)
+                        }
+                        .padding(.top, 6)
                     }
 
                     SectionPanel {
@@ -104,7 +128,7 @@ struct CheckpointAttemptView: View {
                         .buttonStyle(.plain)
 
                         if didRevealAnswer {
-                            Text("Revealed answers keep this attempt locked.")
+                            Text("Revealed answers do not count toward unlock.")
                                 .font(.footnote)
                                 .foregroundStyle(CheckpointTheme.amber)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -155,9 +179,7 @@ struct CheckpointAttemptView: View {
                         title: submitButtonTitle,
                         systemImage: submitButtonIcon
                     ) {
-                        let unlockMinutes = store.submitAnswer(question: question, answer: answer, result: submissionResult)
-                        screenTime.temporarilyUnshield(minutes: unlockMinutes)
-                        dismiss()
+                        submitCurrentAnswer()
                     }
                     .disabled(answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
@@ -175,7 +197,15 @@ struct CheckpointAttemptView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
+    }
+
+    private var question: CheckpointQuestion {
+        session.questions[currentQuestionIndex]
+    }
+
+    private var isFinalQuestion: Bool {
+        currentQuestionIndex >= session.questions.count - 1
     }
 
     private var usesAutomaticEvaluation: Bool {
@@ -188,7 +218,7 @@ struct CheckpointAttemptView: View {
 
     private var automaticGateStatus: String {
         if didRevealAnswer {
-            return "Locked"
+            return "No credit"
         }
 
         return answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Choose" : "Ready"
@@ -207,31 +237,95 @@ struct CheckpointAttemptView: View {
     }
 
     private var submitButtonTitle: String {
-        if usesAutomaticEvaluation {
-            return didRevealAnswer ? "Save and stay locked" : "Submit checkpoint"
+        if didRevealAnswer {
+            return projectedSessionCanStillPass ? "Submit answer" : "Submit and stay locked"
         }
 
-        switch submissionResult {
-        case .correct:
-            return "Save and unlock \(store.unlockPolicy.unlockMinutes) minutes"
-        case .partial:
-            if store.unlockPolicy.unlockOnPartial {
-                return "Save and unlock \(store.unlockPolicy.partialUnlockMinutes) minutes"
-            }
-            return "Save and stay locked"
-        case .incorrect, .unclear:
-            return "Save and stay locked"
+        if projectedSessionShouldFinish {
+            return projectedSessionWillUnlock ? "Submit and unlock \(store.unlockPolicy.unlockMinutes) minutes" : "Submit and stay locked"
         }
+
+        return "Submit answer"
     }
 
     private var submitButtonIcon: String {
-        if usesAutomaticEvaluation {
-            return didRevealAnswer ? "lock" : "checkmark.seal"
+        if projectedSessionShouldFinish {
+            return projectedSessionWillUnlock ? "lock.open" : "lock"
         }
 
-        return submissionResult == .incorrect || submissionResult == .unclear ? "lock" : "lock.open"
+        return "checkmark.seal"
     }
 
+    private func submitCurrentAnswer() {
+        let result = submissionResult
+        let updatedCorrectCount = correctAnswerCount + (result == .correct ? 1 : 0)
+        var updatedMissedQuestionIDs = missedQuestionIDs
+        if result != .correct {
+            updatedMissedQuestionIDs.insert(question.id)
+        }
+
+        let answeredQuestionCount = currentQuestionIndex + 1
+        let shouldFinish = isFinalQuestion || !session.canStillMeetUnlockThreshold(
+            correctAnswerCount: updatedCorrectCount,
+            answeredQuestionCount: answeredQuestionCount
+        )
+        let shouldUnlock = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
+        let unlockMinutes = store.submitAnswer(
+            question: question,
+            answer: answer,
+            result: result,
+            grantsUnlock: false,
+            unlockMinutesOverride: shouldUnlock ? store.unlockPolicy.unlockMinutes : nil
+        )
+        correctAnswerCount = updatedCorrectCount
+        missedQuestionIDs = updatedMissedQuestionIDs
+
+        guard !shouldFinish else {
+            if shouldUnlock {
+                screenTime.temporarilyUnshield(minutes: unlockMinutes)
+            } else {
+                store.makeMissedQuestionsDueNow(updatedMissedQuestionIDs)
+            }
+            dismiss()
+            return
+        }
+
+        advanceToNextQuestion()
+    }
+
+    private func advanceToNextQuestion() {
+        currentQuestionIndex += 1
+        answer = ""
+        result = .correct
+        isExplanationVisible = false
+        didRevealAnswer = false
+        reportReason = .confusing
+        reportNote = ""
+        didReportQuestion = false
+    }
+
+    private var projectedCorrectAnswerCount: Int {
+        correctAnswerCount + (submissionResult == .correct ? 1 : 0)
+    }
+
+    private var projectedAnsweredQuestionCount: Int {
+        currentQuestionIndex + (answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0 : 1)
+    }
+
+    private var projectedSessionCanStillPass: Bool {
+        session.canStillMeetUnlockThreshold(
+            correctAnswerCount: projectedCorrectAnswerCount,
+            answeredQuestionCount: projectedAnsweredQuestionCount
+        )
+    }
+
+    private var projectedSessionShouldFinish: Bool {
+        isFinalQuestion || !projectedSessionCanStillPass
+    }
+
+    private var projectedSessionWillUnlock: Bool {
+        projectedSessionShouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: projectedCorrectAnswerCount)
+    }
 }
 
 private struct ChoiceButton: View {
@@ -262,7 +356,7 @@ private struct ChoiceButton: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(isSelected ? CheckpointTheme.teal.opacity(0.75) : .white.opacity(0.06), lineWidth: 1)
+                    .stroke(isSelected ? CheckpointTheme.teal.opacity(0.75) : CheckpointTheme.hairline, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

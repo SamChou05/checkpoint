@@ -14,6 +14,9 @@
 		B10000000000000000000005 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
 		B10000000000000000000006 /* ShieldConfigurationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B20000000000000000000008 /* ShieldConfigurationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B10000000000000000000007 /* ShieldActionExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B20000000000000000000009 /* ShieldActionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* PrivacyInfo.xcprivacy */; };
+		D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* PrivacyInfo.xcprivacy */; };
+		D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* PrivacyInfo.xcprivacy */; };
 		A10000000000000000000001 /* CheckpointApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* CheckpointApp.swift */; };
 		A10000000000000000000002 /* CheckpointStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* CheckpointStore.swift */; };
 		A10000000000000000000003 /* CheckpointModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* CheckpointModels.swift */; };
@@ -30,6 +33,7 @@
 		A1000000000000000000000C /* CheckpointComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* CheckpointComponents.swift */; };
 		A1000000000000000000000E /* RestrictedAppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* RestrictedAppsView.swift */; };
 		A10000000000000000000010 /* CompetencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* CompetencyView.swift */; };
+		C10000000000000000000001 /* CheckpointWorkflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000001 /* CheckpointWorkflowTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +46,9 @@
 		B20000000000000000000007 /* ShieldActionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShieldActionExtension.entitlements; sourceTree = "<group>"; };
 		B20000000000000000000008 /* ShieldConfigurationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldConfigurationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000000000000000000009 /* ShieldActionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldActionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D20000000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A20000000000000000000001 /* CheckpointApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* CheckpointStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointStore.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* CheckpointModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointModels.swift; sourceTree = "<group>"; };
@@ -60,6 +67,8 @@
 		A2000000000000000000000E /* RestrictedAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestrictedAppsView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000F /* Checkpoint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Checkpoint.entitlements; sourceTree = "<group>"; };
 		A20000000000000000000010 /* CompetencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetencyView.swift; sourceTree = "<group>"; };
+		C20000000000000000000001 /* CheckpointWorkflowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointWorkflowTests.swift; sourceTree = "<group>"; };
+		C20000000000000000000002 /* CheckpointTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CheckpointTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +85,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = B50000000000000000000002;
 			remoteInfo = ShieldActionExtension;
+		};
+		C30000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A60000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000000000000000000001;
+			remoteInfo = Checkpoint;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -101,6 +117,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C30000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -108,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				A40000000000000000000002 /* Checkpoint */,
+				C40000000000000000000001 /* CheckpointTests */,
 				B40000000000000000000003 /* ShieldConfigurationExtension */,
 				B40000000000000000000004 /* ShieldActionExtension */,
 				A40000000000000000000008 /* Products */,
@@ -119,6 +143,7 @@
 			children = (
 				A20000000000000000000001 /* CheckpointApp.swift */,
 				A2000000000000000000000F /* Checkpoint.entitlements */,
+				D20000000000000000000001 /* PrivacyInfo.xcprivacy */,
 				A40000000000000000000003 /* App */,
 				A40000000000000000000004 /* Models */,
 				A40000000000000000000005 /* Services */,
@@ -185,8 +210,17 @@
 				A2000000000000000000000D /* Checkpoint.app */,
 				B20000000000000000000008 /* ShieldConfigurationExtension.appex */,
 				B20000000000000000000009 /* ShieldActionExtension.appex */,
+				C20000000000000000000002 /* CheckpointTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C40000000000000000000001 /* CheckpointTests */ = {
+			isa = PBXGroup;
+			children = (
+				C20000000000000000000001 /* CheckpointWorkflowTests.swift */,
+			);
+			path = CheckpointTests;
 			sourceTree = "<group>";
 		};
 		B40000000000000000000001 /* Shared */ = {
@@ -203,6 +237,7 @@
 				B20000000000000000000002 /* ShieldConfigurationExtension.swift */,
 				B20000000000000000000003 /* Info.plist */,
 				B20000000000000000000004 /* ShieldConfigurationExtension.entitlements */,
+				D20000000000000000000002 /* PrivacyInfo.xcprivacy */,
 			);
 			path = ShieldConfigurationExtension;
 			sourceTree = "<group>";
@@ -213,6 +248,7 @@
 				B20000000000000000000005 /* ShieldActionExtension.swift */,
 				B20000000000000000000006 /* Info.plist */,
 				B20000000000000000000007 /* ShieldActionExtension.entitlements */,
+				D20000000000000000000003 /* PrivacyInfo.xcprivacy */,
 			);
 			path = ShieldActionExtension;
 			sourceTree = "<group>";
@@ -274,6 +310,24 @@
 			productReference = B20000000000000000000009 /* ShieldActionExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		C50000000000000000000001 /* CheckpointTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C90000000000000000000001 /* Build configuration list for PBXNativeTarget "CheckpointTests" */;
+			buildPhases = (
+				C70000000000000000000001 /* Sources */,
+				C30000000000000000000002 /* Frameworks */,
+				C70000000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C60000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = CheckpointTests;
+			productName = CheckpointTests;
+			productReference = C20000000000000000000002 /* CheckpointTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -286,6 +340,10 @@
 				TargetAttributes = {
 					A50000000000000000000001 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					C50000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = A50000000000000000000001;
 					};
 				};
 			};
@@ -305,6 +363,7 @@
 				A50000000000000000000001 /* Checkpoint */,
 				B50000000000000000000001 /* ShieldConfigurationExtension */,
 				B50000000000000000000002 /* ShieldActionExtension */,
+				C50000000000000000000001 /* CheckpointTests */,
 			);
 		};
 /* End PBXProject section */
@@ -329,6 +388,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,10 +396,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B70000000000000000000004 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C70000000000000000000002 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -391,6 +460,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C10000000000000000000001 /* CheckpointWorkflowTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -403,6 +480,11 @@
 			isa = PBXTargetDependency;
 			target = B50000000000000000000002 /* ShieldActionExtension */;
 			targetProxy = B30000000000000000000002 /* PBXContainerItemProxy */;
+		};
+		C60000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000000000000000000001 /* Checkpoint */;
+			targetProxy = C30000000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -670,6 +752,57 @@
 			};
 			name = Release;
 		};
+		C80000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.samchou.checkpointTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Checkpoint.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Checkpoint";
+			};
+			name = Debug;
+		};
+		C80000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.samchou.checkpointTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Checkpoint.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Checkpoint";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -705,6 +838,15 @@
 			buildConfigurations = (
 				B80000000000000000000003 /* Debug */,
 				B80000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C90000000000000000000001 /* Build configuration list for PBXNativeTarget "CheckpointTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C80000000000000000000001 /* Debug */,
+				C80000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
