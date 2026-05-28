@@ -1,114 +1,5 @@
 import Foundation
 import Observation
-import StoreKit
-
-@MainActor
-@Observable
-final class PurchaseController {
-    var products: [Product] = []
-    var purchasedProductIDs: Set<String> = []
-    var isLoadingProducts = false
-    var purchaseMessage: String?
-
-    @ObservationIgnored private var updatesTask: Task<Void, Never>?
-
-    var isProUnlocked: Bool {
-        purchasedProductIDs.contains { ProProductID.all.contains($0) }
-    }
-
-    func startListeningForTransactions() {
-        guard updatesTask == nil else { return }
-
-        updatesTask = Task { [weak self] in
-            for await result in Transaction.updates {
-                await self?.handle(transactionResult: result)
-            }
-        }
-    }
-
-    func loadProducts() async {
-        isLoadingProducts = true
-        defer { isLoadingProducts = false }
-
-        do {
-            products = try await Product.products(for: ProProductID.all)
-                .sorted { $0.price < $1.price }
-            purchaseMessage = nil
-        } catch {
-            purchaseMessage = "Could not load App Store products yet."
-        }
-    }
-
-    @discardableResult
-    func refreshEntitlements() async -> Bool {
-        var activeProductIDs: Set<String> = []
-
-        for await result in Transaction.currentEntitlements {
-            guard case .verified(let transaction) = result,
-                  ProProductID.all.contains(transaction.productID) else {
-                continue
-            }
-
-            activeProductIDs.insert(transaction.productID)
-        }
-
-        purchasedProductIDs = activeProductIDs
-        return isProUnlocked
-    }
-
-    @discardableResult
-    func purchase(_ product: Product) async -> Bool {
-        do {
-            let result = try await product.purchase()
-
-            switch result {
-            case .success(let verification):
-                guard case .verified(let transaction) = verification else {
-                    purchaseMessage = "The App Store could not verify this purchase."
-                    return false
-                }
-
-                await transaction.finish()
-                purchaseMessage = nil
-                return await refreshEntitlements()
-            case .pending:
-                purchaseMessage = "Purchase is pending approval."
-                return false
-            case .userCancelled:
-                purchaseMessage = nil
-                return false
-            @unknown default:
-                purchaseMessage = "The App Store returned an unknown purchase state."
-                return false
-            }
-        } catch {
-            purchaseMessage = "Purchase failed. Try again from the App Store sheet."
-            return false
-        }
-    }
-
-    @discardableResult
-    func restorePurchases() async -> Bool {
-        do {
-            try await AppStore.sync()
-            purchaseMessage = nil
-            return await refreshEntitlements()
-        } catch {
-            purchaseMessage = "Could not restore purchases yet."
-            return false
-        }
-    }
-
-    private func handle(transactionResult: VerificationResult<Transaction>) async {
-        guard case .verified(let transaction) = transactionResult,
-              ProProductID.all.contains(transaction.productID) else {
-            return
-        }
-
-        await transaction.finish()
-        _ = await refreshEntitlements()
-    }
-}
 
 private enum QuestionRefreshReason {
     case manual
@@ -135,6 +26,8 @@ private enum QuestionRefreshReason {
 @MainActor
 @Observable
 final class CheckpointStore {
+    // MARK: - Stored state
+
     var goal: Goal? {
         didSet {
             if let goal {
@@ -167,6 +60,8 @@ final class CheckpointStore {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let snapshotKey = "checkpoint.snapshot.v1"
 
+    // MARK: - Lifecycle
+
     init(
         questionEngine: HybridQuestionEngine = HybridQuestionEngine(),
         defaults: UserDefaults = .standard
@@ -177,6 +72,8 @@ final class CheckpointStore {
         isOnboardingPresented = goal == nil
         publishShieldContext()
     }
+
+    // MARK: - Derived state
 
     var activeUnlockMinutesRemaining: Int {
         guard let unlockSession, unlockSession.isActive else { return 0 }
@@ -249,14 +146,6 @@ final class CheckpointStore {
         subscriptionTier == .pro
     }
 
-    var remainingFreeQuestionRefreshes: Int {
-        max(0, FreemiumLimits.freeQuestionRefreshLimit - questionRefreshesUsed)
-    }
-
-    var questionRefreshStatusText: String {
-        isPro ? "Unlimited" : "\(remainingFreeQuestionRefreshes) free refreshes left"
-    }
-
     var questionBankTargetCount: Int {
         isPro ? FreemiumLimits.proQuestionBankTargetCount : FreemiumLimits.freeQuestionBankTargetCount
     }
@@ -267,20 +156,6 @@ final class CheckpointStore {
 
     var usableQuestionCount: Int {
         activeQuestions.filter(meetsDifficultyFloor).count
-    }
-
-    var questionBankHealthText: String {
-        guard goal != nil else { return "No active goal yet" }
-
-        if usableQuestionCount < unlockPolicy.questionsPerSession {
-            return "Needs refill"
-        }
-
-        if usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
-            return "Getting low"
-        }
-
-        return "Ready"
     }
 
     var proAssistSummary: String {
@@ -319,6 +194,8 @@ final class CheckpointStore {
         return "Focus next on \(competency.topic); it is your lowest mastery area at \(competency.masteryPercent)%."
     }
 
+    // MARK: - Pro access
+
     func canUse(_ feature: ProFeature) -> Bool {
         switch feature {
         case .advancedStrictness,
@@ -339,6 +216,8 @@ final class CheckpointStore {
     func dismissPaywall() {
         pendingPaywallFeature = nil
     }
+
+    // MARK: - Goal profiles
 
     func presentGoalProfileCreator() {
         guard goal == nil || canUse(.multipleGoals) else {
@@ -377,6 +256,8 @@ final class CheckpointStore {
         save()
         publishShieldContext()
     }
+
+    // MARK: - Goal creation and refresh
 
     func createGoal(
         title: String,
@@ -507,6 +388,8 @@ final class CheckpointStore {
         return true
     }
 
+    // MARK: - Question selection
+
     func nextQuestion() -> CheckpointQuestion? {
         nextQuestion(excluding: [])
     }
@@ -571,6 +454,8 @@ final class CheckpointStore {
             .sorted(by: sortByAdaptivePriority)
             .first ?? availableQuestions.filter { $0.status != .retired }.randomElement()
     }
+
+    // MARK: - Attempts and unlocks
 
     @discardableResult
     func submitAnswer(
@@ -656,6 +541,8 @@ final class CheckpointStore {
         publishShieldContext()
     }
 
+    // MARK: - Checkpoint sessions
+
     func takePendingShieldSession() -> CheckpointSession? {
         guard SharedAppGroup.consumePendingShieldAttempt() != nil else { return nil }
         return checkpointSession(source: .blockedApp)
@@ -729,6 +616,8 @@ final class CheckpointStore {
         checkpointNotice = nil
     }
 
+    // MARK: - Question reporting
+
     func reportQuestion(_ question: CheckpointQuestion, reason: QuestionReportReason, note: String) {
         guard let goal else { return }
 
@@ -763,6 +652,8 @@ final class CheckpointStore {
         save()
         publishShieldContext()
     }
+
+    // MARK: - Settings updates
 
     func updateUnlockMinutes(_ minutes: Int) {
         unlockPolicy.unlockMinutes = UnlockPolicy.normalizedCorrectAnswerUnlockMinutes(minutes)
@@ -821,6 +712,8 @@ final class CheckpointStore {
         backendEndpoint = endpoint
         save()
     }
+
+    // MARK: - Adaptive scheduler
 
     private func updateQuestion(_ question: CheckpointQuestion, result: AnswerResult) {
         guard let index = questions.firstIndex(where: { $0.id == question.id }) else { return }
@@ -927,6 +820,8 @@ final class CheckpointStore {
         min(5.0, max(1.0, competency.estimatedLevel + 0.5))
     }
 
+    // MARK: - Profile helpers
+
     private func upsertGoalProfile(_ profile: Goal) {
         if let index = goalProfiles.firstIndex(where: { $0.id == profile.id }) {
             goalProfiles[index] = profile
@@ -955,6 +850,8 @@ final class CheckpointStore {
             competencies[index].goalID = goalID
         }
     }
+
+    // MARK: - Persistence and app group state
 
     private func save() {
         let snapshot = AppSnapshot(
@@ -1129,6 +1026,8 @@ final class CheckpointStore {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
     }
+
+    // MARK: - Question generation requests
 
     private func generationRequest(
         goal: Goal,

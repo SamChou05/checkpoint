@@ -33,6 +33,7 @@ Important platform constraint:
 - Academic paper-inspired visual system.
 - Home, Skill, and Settings tabs.
 - Settings keeps user-facing controls focused on Plan, Goal profiles, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
+- Settings support views, the paywall, and StoreKit purchase handling are split into focused files so screen code is easier to navigate.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
