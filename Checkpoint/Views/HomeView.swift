@@ -130,7 +130,7 @@ struct HomeView: View {
                             SecondaryActionButton(title: "Refresh", systemImage: "arrow.clockwise") {
                                 Task {
                                     await store.refreshQuestionBatch()
-                                    store.clearCheckpointNotice()
+                                    activeSession = store.startManualCheckpointSession()
                                 }
                             }
                         }

@@ -34,6 +34,7 @@ Important platform constraint:
 - Home, History, Skill, and Settings tabs.
 - Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
 - Goal onboarding flow.
+- Onboarding starts blank and rejects empty goal titles.
 - Simulated blocked-app attempt flow for previewing the checkpoint experience before real device testing.
 
 ### Question System
@@ -98,6 +99,7 @@ Important platform constraint:
 - Selection persistence through shared App Group defaults.
 - ManagedSettingsStore shielding.
 - Applying a shield without a restricted selection surfaces an error instead of toggling an empty shield.
+- Applying a shield before Screen Time approval surfaces an error.
 - Temporary unshield after successful checkpoint.
 - App-level fallback re-lock timer.
 - Device Activity monitor scheduling so Screen Time can re-apply shields when the unlock window expires.
@@ -181,6 +183,7 @@ The MVP is complete when:
 - Integrations with Anki, Quizlet, LeetCode, Notion, or Google Sheets.
 - Server-side analytics and TestFlight instrumentation.
 - Subscription/paywall experiments after retention is validated.
+- StoreKit planning is documented, but payment should wait until the physical Screen Time loop is validated.
 
 ## Product Decisions
 

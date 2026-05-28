@@ -1,6 +1,6 @@
 # Checkpoint
 
-Checkpoint is a SwiftUI iOS prototype for goal-gated screen time. The app turns an attempted distraction into an AI-assisted multiple-choice checkpoint question, stores the answer history, and uses missed/due questions before generating new ones.
+Checkpoint is a SwiftUI iOS app for goal-gated screen time. The app turns an attempted distraction into an AI-assisted multiple-choice checkpoint question, stores the answer history, and uses missed/due questions before generating new ones.
 
 See `DEVELOPMENT.md` for the current build status, platform constraints, product decisions, and MVP roadmap.
 
@@ -20,7 +20,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Academic paper-inspired UI for Home, Checkpoint, History, and Settings.
 - Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
 - Privacy manifests for the app and Screen Time extensions.
-- Screen Time service placeholder ready for the FamilyControls technical spike.
+- Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.
 - Shield Configuration extension target for branded Screen Time shield UI.
 - Shield Action extension target that records a pending checkpoint and asks iOS to open Checkpoint when the shield primary button is tapped.
 - Device Activity Monitor extension target that re-applies shields when a temporary unlock expires.
@@ -40,6 +40,8 @@ The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md
 ## App Store Readiness
 
 See `docs/APP_STORE_READINESS.md` for entitlement steps, physical-device testing, App Review notes, and remaining launch blockers.
+
+See `docs/MONETIZATION.md` for the recommended free/Pro split, product IDs, and StoreKit setup order.
 
 ## Testing
 

@@ -77,3 +77,4 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 - App Store privacy labels and a hosted privacy policy are finalized.
 - Screenshots, description, support URL, age rating, and review notes are created in App Store Connect.
 - Persistence is accepted as MVP-local storage or replaced with a production store.
+- Monetization scope is finalized. See `docs/MONETIZATION.md`; do not gate blocked-app recovery behind payment.

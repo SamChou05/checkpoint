@@ -77,12 +77,23 @@ final class CheckpointStore {
         focusAreas: String,
         preferredQuestionStyle: QuestionFormat
     ) async {
+        let normalizedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedCurrentLevel = currentLevel.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedFocusAreas = focusAreas.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !normalizedTitle.isEmpty else {
+            questionBatchState = .failed
+            lastAIErrorMessage = "Enter a goal before generating questions."
+            save()
+            return
+        }
+
         let newGoal = Goal(
-            title: title,
-            deadline: deadline,
+            title: normalizedTitle,
+            deadline: max(deadline, Date()),
             category: category,
-            currentLevel: currentLevel,
-            focusAreas: focusAreas,
+            currentLevel: normalizedCurrentLevel,
+            focusAreas: normalizedFocusAreas,
             preferredQuestionStyle: preferredQuestionStyle
         )
 

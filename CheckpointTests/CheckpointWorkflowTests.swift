@@ -47,6 +47,24 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testCreateGoalRejectsBlankTitle() async {
+        let store = CheckpointStore(defaults: defaults)
+
+        await store.createGoal(
+            title: "   ",
+            deadline: Date().addingTimeInterval(-60),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "arrays",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        XCTAssertNil(store.goal)
+        XCTAssertEqual(store.questionBatchState, .failed)
+        XCTAssertEqual(store.lastAIErrorMessage, "Enter a goal before generating questions.")
+    }
+
+    @MainActor
     func testCheckpointSessionUsesFiveDistinctQuestionsByDefault() throws {
         let store = makeSeededStore(questionCount: 7)
 
@@ -248,6 +266,20 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertFalse(screenTime.hasSelection)
         XCTAssertEqual(screenTime.restrictedAppsSummary, "No restricted apps selected")
+    }
+
+    @MainActor
+    func testApplyShieldWithoutSelectionShowsError() {
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        screenTime.applyShield()
+
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertEqual(
+            screenTime.lastErrorMessage,
+            "Choose at least one restricted app, category, or website before applying the shield."
+        )
+        XCTAssertFalse(SharedAppGroup.desiredShieldActive)
     }
 
     @MainActor

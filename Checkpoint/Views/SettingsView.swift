@@ -160,6 +160,12 @@ struct SettingsView: View {
                                     Text("\(store.emergencyPassesRemaining) remaining this week")
                                         .font(.subheadline)
                                         .foregroundStyle(CheckpointTheme.muted)
+
+                                    if !screenTime.isShieldingEnabled {
+                                        Text("Available while shields are active")
+                                            .font(.footnote)
+                                            .foregroundStyle(CheckpointTheme.muted)
+                                    }
                                 }
 
                                 Spacer()
@@ -175,7 +181,7 @@ struct SettingsView: View {
                                         .background(CheckpointTheme.amber, in: RoundedRectangle(cornerRadius: 8))
                                 }
                                 .buttonStyle(.plain)
-                                .disabled(store.emergencyPassesRemaining == 0)
+                                .disabled(store.emergencyPassesRemaining == 0 || !screenTime.isShieldingEnabled)
                             }
                         }
                     }
@@ -210,6 +216,7 @@ struct SettingsView: View {
 
                     SectionPanel("Developer") {
                         SecondaryActionButton(title: "Reset local prototype data", systemImage: "arrow.counterclockwise") {
+                            screenTime.clearShield()
                             store.resetDemoData()
                         }
                     }

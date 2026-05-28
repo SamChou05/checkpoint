@@ -4,11 +4,11 @@ struct OnboardingView: View {
     let store: CheckpointStore
 
     @Environment(\.dismiss) private var dismiss
-    @State private var title = "Pass a coding interview in 8 weeks"
+    @State private var title = ""
     @State private var deadline = Calendar.current.date(byAdding: .month, value: 2, to: Date()) ?? Date()
     @State private var category: GoalCategory = .codingInterview
-    @State private var currentLevel = "Basic Python. Comfortable with loops, shaky on recursion."
-    @State private var focusAreas = "arrays, recursion, Big-O, hash maps"
+    @State private var currentLevel = ""
+    @State private var focusAreas = ""
     @State private var isCreating = false
 
     var body: some View {
@@ -34,7 +34,7 @@ struct OnboardingView: View {
                             .padding(12)
                             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
 
-                        DatePicker("Deadline", selection: $deadline, displayedComponents: .date)
+                        DatePicker("Deadline", selection: $deadline, in: Date()..., displayedComponents: .date)
                             .foregroundStyle(CheckpointTheme.text)
 
                         Picker("Category", selection: $category) {
@@ -72,6 +72,7 @@ struct OnboardingView: View {
                         systemImage: "book.closed"
                     ) {
                         Task {
+                            guard !isCreating else { return }
                             isCreating = true
                             await store.createGoal(
                                 title: title,
@@ -85,7 +86,7 @@ struct OnboardingView: View {
                             dismiss()
                         }
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(isCreating || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .padding(20)
             }

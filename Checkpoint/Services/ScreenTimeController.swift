@@ -126,6 +126,16 @@ final class ScreenTimeController {
             return
         }
 
+        guard isScreenTimeAuthorized else {
+            isShieldingEnabled = false
+            setupState = .failed
+            lastErrorMessage = "Screen Time access is not approved yet. Request setup before applying the shield."
+            SharedAppGroup.publishDesiredShieldActive(false)
+            SharedAppGroup.publishUnlockExpiration(nil)
+            updateSummary()
+            return
+        }
+
         managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
         managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
 
@@ -167,6 +177,11 @@ final class ScreenTimeController {
         guard minutes > 0 else { return }
 
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        guard hasSelection else {
+            lastErrorMessage = "No restricted apps are selected, so there is nothing to unlock."
+            return
+        }
+
         let now = Date()
         let expiration = Calendar.current.date(byAdding: .minute, value: minutes, to: now) ?? now
 
@@ -242,6 +257,19 @@ final class ScreenTimeController {
         else { return }
 
         selection = restoredSelection
+        #endif
+    }
+
+    private var isScreenTimeAuthorized: Bool {
+        #if os(iOS) && canImport(FamilyControls)
+        switch AuthorizationCenter.shared.authorizationStatus {
+        case .notDetermined, .denied:
+            return false
+        default:
+            return true
+        }
+        #else
+        return false
         #endif
     }
 
