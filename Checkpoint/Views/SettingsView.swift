@@ -91,9 +91,11 @@ struct SettingsView: View {
                                 .foregroundStyle(CheckpointTheme.muted)
                                 .fixedSize(horizontal: false, vertical: true)
 
-                            SecondaryActionButton(title: "Allow Screen Time", systemImage: "shield") {
-                                Task {
-                                    await screenTime.requestAuthorization()
+                            if shouldShowScreenTimeAuthorizationButton {
+                                SecondaryActionButton(title: "Allow Screen Time", systemImage: "shield") {
+                                    Task {
+                                        await screenTime.requestAuthorization()
+                                    }
                                 }
                             }
 
@@ -291,6 +293,10 @@ struct SettingsView: View {
 
     private var canStopBlocking: Bool {
         screenTime.isShieldingEnabled || screenTime.setupState == .temporarilyUnlocked
+    }
+
+    private var shouldShowScreenTimeAuthorizationButton: Bool {
+        screenTime.setupState == .notStarted || screenTime.setupState == .failed
     }
 
     private var planSubtitle: String {

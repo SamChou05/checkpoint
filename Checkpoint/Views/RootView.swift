@@ -51,6 +51,9 @@ struct RootView: View {
         }
         .task {
             handlePendingShieldActivation()
+            Task {
+                await screenTime.requestInitialAuthorizationIfNeeded()
+            }
             purchaseController.startListeningForTransactions()
             await purchaseController.loadProducts()
             let isProUnlocked = await purchaseController.refreshEntitlements()

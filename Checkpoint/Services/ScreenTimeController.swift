@@ -71,6 +71,7 @@ final class ScreenTimeController {
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var relockTask: Task<Void, Never>?
+    @ObservationIgnored private let initialAuthorizationRequestKey = "checkpoint.screenTime.initialAuthorizationRequested"
 
     #if os(iOS) && canImport(DeviceActivity)
     @ObservationIgnored private let activityCenter = DeviceActivityCenter()
@@ -87,6 +88,7 @@ final class ScreenTimeController {
     func requestAuthorization() async {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         do {
+            defaults.set(true, forKey: initialAuthorizationRequestKey)
             try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
             refreshAuthorizationStatus()
             updateSummary()
@@ -98,6 +100,12 @@ final class ScreenTimeController {
         setupState = .unavailable
         restrictedAppsSummary = "Screen Time access needs an iPhone build."
         #endif
+    }
+
+    func requestInitialAuthorizationIfNeeded() async {
+        guard setupState == .notStarted else { return }
+        guard !defaults.bool(forKey: initialAuthorizationRequestKey) else { return }
+        await requestAuthorization()
     }
 
     func refreshAuthorizationStatus() {

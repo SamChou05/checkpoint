@@ -224,12 +224,6 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.text)
 
-                SecondaryActionButton(title: "Allow Screen Time", systemImage: "app.badge") {
-                    Task {
-                        await screenTime.requestAuthorization()
-                    }
-                }
-
                 HStack(spacing: 10) {
                     SecondaryActionButton(title: "Choose blocked apps", systemImage: "checklist") {
                         isRestrictedAppsPresented = true

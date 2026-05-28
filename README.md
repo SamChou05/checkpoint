@@ -69,7 +69,7 @@ For real Screen Time testing:
 1. Use a real iPhone when possible.
 2. In Xcode, add the Family Controls capability for the app target.
 3. Confirm the bundle ID is available in your Apple Developer account.
-4. Run the app, open Settings -> `Allow Screen Time`, then `Choose blocked apps`.
+4. Run the app and accept the first-run Screen Time prompt. If it was dismissed, open Settings -> `Allow Screen Time`.
 5. Select apps/categories and tap `Start blocking` from Home.
 
 The current code includes the FamilyControls picker, selection persistence, ManagedSettings shielding, temporary unshielding after a successful checkpoint, automatic re-shielding after the unlock timer, a Device Activity monitor extension for background re-locking, shield configuration/action extensions, and App Group state sharing.
@@ -77,7 +77,7 @@ The current code includes the FamilyControls picker, selection persistence, Mana
 ## Real-Device Loop To Verify
 
 1. Launch Checkpoint and create a goal.
-2. Settings -> `Allow Screen Time`.
+2. Accept the first-run Screen Time prompt, or use Settings -> `Allow Screen Time` if needed.
 3. Settings -> `Choose blocked apps`.
 4. Home -> `Start blocking`.
 5. Open a selected blocked app.
