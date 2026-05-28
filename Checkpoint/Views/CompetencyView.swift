@@ -39,7 +39,7 @@ struct CompetencyView: View {
     private var summary: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             MetricTile(
-                title: "Average mastery",
+                title: "Skill progress",
                 value: store.averageMasteryText,
                 tint: CheckpointTheme.teal,
                 systemImage: "chart.line.uptrend.xyaxis"
