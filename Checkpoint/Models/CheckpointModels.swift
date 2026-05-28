@@ -110,7 +110,7 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         case .largerQuestionBanks:
             return "More question variety"
         case .deeperAnalytics:
-            return "Deeper analytics"
+            return "Adaptive study guidance"
         case .multipleGoals:
             return "Multiple goals"
         case .importsAndSync:
@@ -129,7 +129,7 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         case .largerQuestionBanks:
             return "Keep more ready questions on deck so repeated attempts stay fresh."
         case .deeperAnalytics:
-            return "See richer topic trends, weak spots, and long-term study progress."
+            return "Get quiet next-topic guidance based on misses, difficulty, and mastery."
         case .multipleGoals:
             return "Keep separate study goals and route blocked apps to the right checkpoint."
         case .importsAndSync:
@@ -140,9 +140,8 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
     static var launchFeatures: [ProFeature] {
         [
             .advancedStrictness,
-            .automaticBankRefill,
-            .unlimitedQuestionRefreshes,
-            .largerQuestionBanks
+            .largerQuestionBanks,
+            .deeperAnalytics
         ]
     }
 }

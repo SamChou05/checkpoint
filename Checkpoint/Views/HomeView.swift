@@ -7,6 +7,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var activeSession: CheckpointSession?
     @State private var isRestrictedAppsPresented = false
+    @State private var isPreparingCheckpoint = false
 
     var body: some View {
         NavigationStack {
@@ -97,36 +98,25 @@ struct HomeView: View {
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
 
-                PrimaryActionButton(title: "Start a checkpoint", systemImage: "play.fill") {
-                    activeSession = store.startManualCheckpointSession()
+                PrimaryActionButton(title: isPreparingCheckpoint ? "Preparing checkpoint" : "Start a checkpoint", systemImage: "play.fill") {
+                    startCheckpoint()
                 }
+                .disabled(isPreparingCheckpoint)
             }
         }
     }
 
     @ViewBuilder
     private var proAssistPanel: some View {
-        if store.isPro {
+        if store.isPro, let focus = store.proFocusRecommendation {
             SectionPanel("Study Assist") {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        StatusBadge(text: store.questionBankHealthText, tint: CheckpointTheme.teal)
-                        Spacer()
-                        Text("\(store.usableQuestionCount) usable")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(CheckpointTheme.muted)
-                    }
+                VStack(alignment: .leading, spacing: 10) {
+                    StatusBadge(text: "Adaptive focus", tint: CheckpointTheme.teal)
 
-                    Text(store.proAssistSummary)
+                    Text(focus)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(CheckpointTheme.text)
                         .fixedSize(horizontal: false, vertical: true)
-
-                    if store.usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
-                        Text("Fresh questions are added automatically when Checkpoint is active.")
-                            .font(.footnote)
-                            .foregroundStyle(CheckpointTheme.muted)
-                    }
                 }
             }
         }
@@ -156,12 +146,10 @@ struct HomeView: View {
                         }
 
                         if store.goal != nil {
-                            SecondaryActionButton(title: "Refresh", systemImage: "arrow.clockwise") {
-                                Task {
-                                    await store.refreshQuestionBatch()
-                                    activeSession = store.startManualCheckpointSession()
-                                }
+                            SecondaryActionButton(title: "Try checkpoint", systemImage: "play.fill") {
+                                startCheckpoint()
                             }
+                            .disabled(isPreparingCheckpoint)
                         }
                     }
                 }
@@ -249,7 +237,7 @@ struct HomeView: View {
 
                     SecondaryActionButton(title: screenTime.isShieldingEnabled ? "Unlock with checkpoint" : "Start blocking", systemImage: screenTime.isShieldingEnabled ? "lock.open" : "shield") {
                         if screenTime.isShieldingEnabled {
-                            activeSession = store.startManualCheckpointSession()
+                            startCheckpoint()
                         } else {
                             screenTime.applyShield()
                         }
@@ -286,8 +274,18 @@ struct HomeView: View {
             if didRefresh,
                activeSession == nil,
                store.checkpointNotice != nil {
-                activeSession = store.startManualCheckpointSession()
+                activeSession = await store.prepareManualCheckpointSession()
             }
+        }
+    }
+
+    private func startCheckpoint() {
+        guard !isPreparingCheckpoint else { return }
+        isPreparingCheckpoint = true
+
+        Task {
+            activeSession = await store.prepareManualCheckpointSession()
+            isPreparingCheckpoint = false
         }
     }
 }

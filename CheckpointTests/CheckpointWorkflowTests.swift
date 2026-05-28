@@ -160,8 +160,30 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNil(store.startStopBlockingSession())
         XCTAssertEqual(
             store.checkpointNotice,
-            "Stopping blocking needs 10 ready questions. Refresh questions or lower the minimum level."
+            "Checkpoint is preparing enough questions for the stop challenge. Try again in a moment or lower the minimum level."
         )
+    }
+
+    @MainActor
+    func testStopBlockingPreparationRefillsBeforeChallenge() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.goal = goal
+        store.questions = (2...10).map { makeQuestion(goal: goal, index: $0) }
+
+        let preparedSession = await store.prepareStopBlockingSession()
+        let session = try XCTUnwrap(preparedSession)
+
+        XCTAssertEqual(session.questions.count, StopBlockingPolicy.questionsPerSession)
+        XCTAssertEqual(session.unlockThreshold, StopBlockingPolicy.requiredCorrectAnswers)
+        XCTAssertNotNil(localEngine.receivedRequest)
+        XCTAssertNil(store.checkpointNotice)
     }
 
     @MainActor
@@ -510,7 +532,7 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testFreeTierDoesNotAutoRefreshLowQuestionBank() async {
+    func testFreeTierDoesNotProactivelyRefreshReadyQuestionBank() async {
         let goal = makeGoal()
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
@@ -521,14 +543,39 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.localTemplates)
         store.goal = goal
-        store.questions = [makeQuestion(goal: goal, index: 1)]
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map { makeQuestion(goal: goal, index: $0) }
 
         let didRefresh = await store.refreshQuestionBatchIfNeeded()
 
         XCTAssertFalse(didRefresh)
         XCTAssertNil(localEngine.receivedRequest)
-        XCTAssertEqual(store.questions.count, 1)
-        XCTAssertEqual(store.questionBankHealthText, "Needs refill")
+        XCTAssertEqual(store.questions.count, store.unlockPolicy.questionsPerSession)
+    }
+
+    @MainActor
+    func testFreeTierQuietlyRefillsWhenQuestionsAreUsedUp() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.backend)
+        store.goal = goal
+        store.questions = [makeQuestion(goal: goal, index: 99, status: .retired)]
+        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+
+        let preparedSession = await store.prepareManualCheckpointSession()
+        let session = try XCTUnwrap(preparedSession)
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.targetCount, FreemiumLimits.freeQuestionBankTargetCount)
+        XCTAssertEqual(session.questions.count, 1)
+        XCTAssertEqual(store.questionRefreshesUsed, FreemiumLimits.freeQuestionRefreshLimit)
+        XCTAssertNil(store.pendingPaywallFeature)
+        XCTAssertNil(store.checkpointNotice)
     }
 
     @MainActor

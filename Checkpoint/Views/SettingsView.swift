@@ -11,6 +11,7 @@ struct SettingsView: View {
     @State private var advancedAction: AdvancedSettingsAction?
     @State private var stopBlockingSession: CheckpointSession?
     @State private var stopBlockingMessage: String?
+    @State private var isPreparingStopChallenge = false
 
     var body: some View {
         NavigationStack {
@@ -50,7 +51,7 @@ struct SettingsView: View {
 
                             if !store.isPro {
                                 SecondaryActionButton(title: "View Pro", systemImage: "sparkles") {
-                                    store.requestUpgrade(for: .unlimitedQuestionRefreshes)
+                                    store.requestUpgrade(for: .largerQuestionBanks)
                                 }
                             }
                         }
@@ -199,66 +200,6 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Practice set") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("Readiness")
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                Spacer()
-                                Text(store.questionBatchState.rawValue.capitalized)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            HStack {
-                                Text("Reported")
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                Spacer()
-                                Text("\(store.reportedQuestionCount)")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            HStack {
-                                Text("Refreshes left")
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                Spacer()
-                                Text(store.questionRefreshStatusText)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            HStack {
-                                Text("Question supply")
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                Spacer()
-                                Text(store.questionBankHealthText)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            if store.isPro {
-                                Text(store.proAssistSummary)
-                                    .font(.footnote.weight(.medium))
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-
-                            SecondaryActionButton(
-                                title: store.canRefreshQuestionBatch ? "Refresh questions" : "Upgrade for more refreshes",
-                                systemImage: store.canRefreshQuestionBatch ? "arrow.clockwise" : "lock"
-                            ) {
-                                if store.canRefreshQuestionBatch {
-                                    Task {
-                                        await store.refreshQuestionBatch()
-                                    }
-                                } else {
-                                    store.requestUpgrade(for: .unlimitedQuestionRefreshes)
-                                }
-                            }
-                        }
-                    }
-
                     SectionPanel("Advanced") {
                         DisclosureGroup(isExpanded: $isAdvancedExpanded) {
                             VStack(alignment: .leading, spacing: 14) {
@@ -278,15 +219,21 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
 
-                                SecondaryActionButton(title: "Stop blocking", systemImage: "hand.raised") {
-                                    if let session = store.startStopBlockingSession() {
-                                        stopBlockingMessage = nil
-                                        stopBlockingSession = session
-                                    } else {
-                                        stopBlockingMessage = store.checkpointNotice
+                                SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing stop challenge" : "Stop blocking", systemImage: "hand.raised") {
+                                    guard !isPreparingStopChallenge else { return }
+                                    isPreparingStopChallenge = true
+
+                                    Task {
+                                        if let session = await store.prepareStopBlockingSession() {
+                                            stopBlockingMessage = nil
+                                            stopBlockingSession = session
+                                        } else {
+                                            stopBlockingMessage = store.checkpointNotice
+                                        }
+                                        isPreparingStopChallenge = false
                                     }
                                 }
-                                .disabled(!canStopBlocking)
+                                .disabled(!canStopBlocking || isPreparingStopChallenge)
                                 .opacity(canStopBlocking ? 1 : 0.48)
 
                                 if let stopBlockingMessage {
@@ -348,10 +295,10 @@ struct SettingsView: View {
 
     private var planSubtitle: String {
         if store.isPro {
-            return "Automatic refresh, extra question variety, unlimited refreshes, and custom checkpoint rules are active."
+            return "Extra question variety, adaptive guidance, and custom checkpoint rules are active."
         }
 
-        return "Free keeps the blocker loop usable with one goal, a ready practice set, and \(FreemiumLimits.freeQuestionRefreshLimit) refreshes per goal."
+        return "Free keeps the blocker loop usable with one goal and automatic checkpoint preparation."
     }
 
     private var unlockMinutesBinding: Binding<Int> {

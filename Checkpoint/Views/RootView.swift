@@ -6,6 +6,7 @@ struct RootView: View {
     @State private var purchaseController = PurchaseController()
     @State private var selectedTab: AppTab = .home
     @State private var activeShieldSession: CheckpointSession?
+    @State private var isPreparingShieldSession = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -68,10 +69,16 @@ struct RootView: View {
 
     private func handlePendingShieldActivation() {
         guard activeShieldSession == nil else { return }
+        guard !isPreparingShieldSession else { return }
         guard SharedAppGroup.pendingShieldAttemptDate != nil else { return }
 
         selectedTab = .home
-        activeShieldSession = store.takePendingShieldSession()
+        isPreparingShieldSession = true
+
+        Task {
+            activeShieldSession = await store.preparePendingShieldSession()
+            isPreparingShieldSession = false
+        }
     }
 }
 

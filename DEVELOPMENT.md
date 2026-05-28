@@ -32,10 +32,11 @@ Important platform constraint:
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
 - Home, History, Skill, and Settings tabs.
-- Settings keeps user-facing controls focused on Plan, Goal, App blocking, Checkpoint rules, and Practice set; shield diagnostics and reset now live in a collapsed Advanced area.
+- Settings keeps user-facing controls focused on Plan, Goal, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
 - Stopping blocking is intentionally harder than starting it: Home routes active blockers to checkpoint unlocks, while full stop requires a 9-of-10 stop challenge in Advanced.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
-- Study Assist adds passive question-supply status, automatic refresh with a cooldown, and next-topic guidance without adding a setup step.
+- Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
+- Study Assist adds next-topic guidance without exposing question-bank status.
 - Goal onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
 - Existing goals reopen prefilled; switching the active goal rebuilds questions, resets attempts/reports/unlock state, and refreshes the Skill Map around the new topics.
@@ -58,7 +59,7 @@ Important platform constraint:
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Settings includes a manual question refresh action.
-- Free question refreshes are limited per goal before opening the Pro paywall; Pro allows more question variety, unlimited refreshes, and automatic refresh.
+- Manual question refreshes remain internally limited for Free, but the core blocker loop silently refills from local templates when the current set runs out; Pro focuses on more variety, custom rules, and adaptive guidance.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic
@@ -211,7 +212,7 @@ The cheapest scalable architecture is hybrid:
 2. Cache generated questions locally.
 3. Track progress locally without AI.
 4. Use deterministic scheduling for missed, due, and weak-area questions.
-5. Use AI only when a goal is created, a question bank runs low, or the user explicitly asks for a refresh.
+5. Use AI only when a goal is created or the current set can no longer fill the next checkpoint.
 
 Avoid:
 

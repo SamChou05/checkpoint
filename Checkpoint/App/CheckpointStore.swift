@@ -110,6 +110,28 @@ final class PurchaseController {
     }
 }
 
+private enum QuestionRefreshReason {
+    case manual
+    case automaticCoreRefill
+    case automaticProactiveRefill
+
+    var canBypassFreeLimit: Bool {
+        self == .automaticCoreRefill
+    }
+
+    func countsAsRefresh(isPro: Bool) -> Bool {
+        self == .manual || self == .automaticProactiveRefill || (self == .automaticCoreRefill && isPro)
+    }
+
+    func providerPreference(defaultPreference: AIProviderKind, isPro: Bool) -> AIProviderKind {
+        if self == .automaticCoreRefill && !isPro {
+            return .localTemplates
+        }
+
+        return defaultPreference
+    }
+}
+
 @MainActor
 @Observable
 final class CheckpointStore {
@@ -337,9 +359,13 @@ final class CheckpointStore {
     }
 
     func refreshQuestionBatch() async {
+        await refreshQuestionBatch(reason: .manual)
+    }
+
+    private func refreshQuestionBatch(reason: QuestionRefreshReason) async {
         guard let goal else { return }
 
-        guard canRefreshQuestionBatch else {
+        guard reason.canBypassFreeLimit || canRefreshQuestionBatch else {
             lastAIErrorMessage = "Free includes \(FreemiumLimits.freeQuestionRefreshLimit) question refreshes per goal. Pro keeps refreshes unlimited."
             requestUpgrade(for: .unlimitedQuestionRefreshes)
             save()
@@ -347,7 +373,9 @@ final class CheckpointStore {
         }
 
         questionBatchState = .generating
-        questionRefreshesUsed += 1
+        if reason.countsAsRefresh(isPro: isPro) {
+            questionRefreshesUsed += 1
+        }
 
         let batch = await questionEngine.generateQuestionBatch(
             for: generationRequest(
@@ -356,7 +384,7 @@ final class CheckpointStore {
                 competencies: competencies,
                 reportedQuestions: questionReports
             ),
-            preference: aiProviderPreference
+            preference: reason.providerPreference(defaultPreference: aiProviderPreference, isPro: isPro)
         )
         let generatedQuestions = batch.questions
         let existingKeys = Set(questions.map { questionKey($0) })
@@ -375,17 +403,22 @@ final class CheckpointStore {
     }
 
     @discardableResult
-    func refreshQuestionBatchIfNeeded() async -> Bool {
-        guard isPro,
-              goal != nil,
-              questionBatchState != .generating,
-              usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold,
-              canRefreshAfterCooldown else {
+    func refreshQuestionBatchIfNeeded(minimumUsableQuestionCount: Int? = nil) async -> Bool {
+        guard goal != nil,
+              questionBatchState != .generating else {
             return false
         }
 
+        let refillMinimum = minimumUsableQuestionCount ?? unlockPolicy.questionsPerSession
+        let needsCoreRefill = usableQuestionCount < refillMinimum && canRefreshAfterCooldown
+        let shouldRefreshProactively = isPro
+            && usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold
+            && canRefreshAfterCooldown
+
+        guard needsCoreRefill || shouldRefreshProactively else { return false }
+
         lastAutomaticQuestionRefreshAt = Date()
-        await refreshQuestionBatch()
+        await refreshQuestionBatch(reason: needsCoreRefill ? .automaticCoreRefill : .automaticProactiveRefill)
         return true
     }
 
@@ -545,6 +578,46 @@ final class CheckpointStore {
         checkpointSession(source: .manual)
     }
 
+    func preparePendingShieldSession() async -> CheckpointSession? {
+        guard SharedAppGroup.pendingShieldAttemptDate != nil else { return nil }
+
+        if goal != nil && usableQuestionCount < unlockPolicy.questionsPerSession {
+            _ = await refreshQuestionBatchIfNeeded()
+        }
+
+        if let session = takePendingShieldSession() {
+            return session
+        }
+
+        guard await refreshQuestionBatchIfNeeded() else { return nil }
+        return checkpointSession(source: .blockedApp)
+    }
+
+    func prepareManualCheckpointSession() async -> CheckpointSession? {
+        if goal != nil && usableQuestionCount < unlockPolicy.questionsPerSession {
+            _ = await refreshQuestionBatchIfNeeded()
+        }
+
+        if let session = startManualCheckpointSession() {
+            return session
+        }
+
+        guard await refreshQuestionBatchIfNeeded() else { return nil }
+        return checkpointSession(source: .manual)
+    }
+
+    func prepareStopBlockingSession() async -> CheckpointSession? {
+        if let session = startStopBlockingSession() {
+            return session
+        }
+
+        guard await refreshQuestionBatchIfNeeded(minimumUsableQuestionCount: StopBlockingPolicy.questionsPerSession) else {
+            return nil
+        }
+
+        return startStopBlockingSession()
+    }
+
     func startStopBlockingSession() -> CheckpointSession? {
         guard goal != nil else {
             checkpointNotice = "Create a goal before stopping blocking."
@@ -553,7 +626,7 @@ final class CheckpointStore {
 
         let selectedQuestions = nextQuestions(limit: StopBlockingPolicy.questionsPerSession)
         guard selectedQuestions.count >= StopBlockingPolicy.questionsPerSession else {
-            checkpointNotice = "Stopping blocking needs 10 ready questions. Refresh questions or lower the minimum level."
+            checkpointNotice = "Checkpoint is preparing enough questions for the stop challenge. Try again in a moment or lower the minimum level."
             return nil
         }
 
@@ -808,7 +881,7 @@ final class CheckpointStore {
                 : "No questions are ready yet."
         }
 
-        return "No usable checkpoint questions are available. Refresh the question batch or lower the minimum level."
+        return "Checkpoint is preparing more questions. Try again in a moment or lower the minimum level."
     }
 
     private func load() {
