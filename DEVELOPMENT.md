@@ -116,7 +116,9 @@ Important platform constraint:
 - Shield Action extension target.
 - Device Activity Monitor extension target.
 - Shield configuration shows Checkpoint-branded shield copy.
+- Shield configuration writes render diagnostics to the shared App Group so Settings can confirm whether iOS loaded the custom shield page or fell back to the system Restricted page.
 - Shield action records a pending checkpoint attempt in shared App Group state and asks iOS to open Checkpoint.
+- Pending shield attempts are consumed at the app root, so the checkpoint sheet can appear even if Checkpoint opens on Settings, Skill, or History.
 - Device Activity monitor re-applies selected app/category/web shields after a temporary unlock expires.
 - Main app consumes pending shield attempts on launch or foreground activation and opens the checkpoint answer flow.
 
@@ -164,6 +166,7 @@ The MVP is complete when:
 - Enable Family Controls and App Groups for all targets.
 - Test the shield loop on a real iPhone.
 - Confirm Shield Configuration extension is invoked for app tokens and category tokens.
+- If the default Restricted page appears, check Settings > Screen Time > Shield page. A zero render count means the signed build did not load the Shield Configuration extension, usually due to extension provisioning, bundle ID, Family Controls, or App Group setup.
 - Confirm Shield Action extension writes pending attempts.
 - Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.

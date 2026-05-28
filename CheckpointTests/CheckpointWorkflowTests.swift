@@ -246,9 +246,22 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         SharedAppGroup.markPendingShieldAttempt()
 
+        XCTAssertNotNil(SharedAppGroup.pendingShieldAttemptDate)
         let session = try XCTUnwrap(store.takePendingShieldSession())
         XCTAssertEqual(session.questions.count, 5)
+        XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
         XCTAssertNil(store.takePendingShieldSession())
+    }
+
+    @MainActor
+    func testShieldConfigurationDiagnosticsAreRecorded() {
+        XCTAssertEqual(SharedAppGroup.shieldConfigurationRenderCount, 0)
+        XCTAssertNil(SharedAppGroup.shieldConfigurationRenderDate)
+
+        SharedAppGroup.markShieldConfigurationRendered()
+
+        XCTAssertEqual(SharedAppGroup.shieldConfigurationRenderCount, 1)
+        XCTAssertNotNil(SharedAppGroup.shieldConfigurationRenderDate)
     }
 
     @MainActor
@@ -820,6 +833,8 @@ private func resetSharedAppGroupState() {
         SharedAppGroup.shieldGoalTitleKey,
         SharedAppGroup.shieldPromptPreviewKey,
         SharedAppGroup.shieldAttemptCountKey,
+        SharedAppGroup.shieldConfigurationRenderDateKey,
+        SharedAppGroup.shieldConfigurationRenderCountKey,
         SharedAppGroup.lastUnlockExpirationKey,
         SharedAppGroup.desiredShieldActiveKey,
         SharedAppGroup.screenTimeSelectionKey

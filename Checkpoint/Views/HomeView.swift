@@ -37,11 +37,11 @@ struct HomeView: View {
                 RestrictedAppsView(screenTime: screenTime)
             }
             .onAppear {
-                handleActivation()
+                handleQuestionRefreshOnActivation()
             }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
-                    handleActivation()
+                    handleQuestionRefreshOnActivation()
                 }
             }
         }
@@ -278,13 +278,8 @@ struct HomeView: View {
         }
     }
 
-    private func handleActivation() {
+    private func handleQuestionRefreshOnActivation() {
         guard activeSession == nil else { return }
-
-        if let session = store.takePendingShieldSession() {
-            activeSession = session
-            return
-        }
 
         Task {
             let didRefresh = await store.refreshQuestionBatchIfNeeded()

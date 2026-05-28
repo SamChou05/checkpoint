@@ -11,6 +11,8 @@ enum SharedAppGroup {
     static let shieldGoalTitleKey = "shieldGoalTitle"
     static let shieldPromptPreviewKey = "shieldPromptPreview"
     static let shieldAttemptCountKey = "shieldAttemptCount"
+    static let shieldConfigurationRenderDateKey = "shieldConfigurationRenderDate"
+    static let shieldConfigurationRenderCountKey = "shieldConfigurationRenderCount"
     static let lastUnlockExpirationKey = "lastUnlockExpiration"
     static let desiredShieldActiveKey = "desiredShieldActive"
     static let screenTimeSelectionKey = "checkpoint.screenTime.selection.v1"
@@ -23,6 +25,12 @@ enum SharedAppGroup {
         let defaults = defaults
         defaults.set(Date(), forKey: pendingShieldAttemptDateKey)
         defaults.set(defaults.integer(forKey: shieldAttemptCountKey) + 1, forKey: shieldAttemptCountKey)
+    }
+
+    static func markShieldConfigurationRendered() {
+        let defaults = defaults
+        defaults.set(Date(), forKey: shieldConfigurationRenderDateKey)
+        defaults.set(defaults.integer(forKey: shieldConfigurationRenderCountKey) + 1, forKey: shieldConfigurationRenderCountKey)
     }
 
     static func consumePendingShieldAttempt() -> Date? {
@@ -55,8 +63,24 @@ enum SharedAppGroup {
         defaults.bool(forKey: desiredShieldActiveKey)
     }
 
+    static var pendingShieldAttemptDate: Date? {
+        defaults.object(forKey: pendingShieldAttemptDateKey) as? Date
+    }
+
     static var unlockExpiration: Date? {
         defaults.object(forKey: lastUnlockExpirationKey) as? Date
+    }
+
+    static var shieldConfigurationRenderDate: Date? {
+        defaults.object(forKey: shieldConfigurationRenderDateKey) as? Date
+    }
+
+    static var shieldConfigurationRenderCount: Int {
+        defaults.integer(forKey: shieldConfigurationRenderCountKey)
+    }
+
+    static var shieldAttemptCount: Int {
+        defaults.integer(forKey: shieldAttemptCountKey)
     }
 }
 

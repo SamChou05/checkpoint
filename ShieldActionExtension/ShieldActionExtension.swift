@@ -49,8 +49,10 @@ final class ShieldActionExtension: ShieldActionDelegate {
 
 private extension ShieldActionResponse {
     static var openCheckpoint: ShieldActionResponse {
-        // Apple documents .openParentalControlsApp, but this SDK does not expose the Swift case yet.
-        ShieldActionResponse(rawValue: 3) ?? .close
+        // Newer SDKs document .openParentalControlsApp. Until the Swift case is
+        // exposed locally, .defer keeps the shield alive after recording the
+        // pending attempt so Checkpoint can present it when opened.
+        ShieldActionResponse(rawValue: 3) ?? .defer
     }
 }
 #endif

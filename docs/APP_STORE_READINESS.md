@@ -11,6 +11,7 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - Main app and Screen Time extensions include Family Controls and App Group entitlement files.
 - Main app and Screen Time extensions include privacy manifests for `UserDefaults` access.
 - Successful checkpoints temporarily unshield selected apps, then schedule a Device Activity monitor extension to re-apply shields after the unlock window.
+- Settings includes shield-extension diagnostics to confirm whether the custom Checkpoint shield rendered or iOS fell back to the default Restricted page.
 - New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
 - Blocked-app launches with no available checkpoint questions surface a recovery notice.
 - Simulator XCTest coverage passes for the core workflow.
@@ -41,14 +42,15 @@ Run this before TestFlight and again before App Store submission:
 4. Choose at least one restricted app and one category.
 5. Apply the shield from Home.
 6. Open a restricted app and confirm the Checkpoint shield appears.
-7. Tap the primary shield button and confirm Checkpoint opens.
-8. Confirm the checkpoint sheet appears from the pending shield attempt.
-9. Fail at least two questions and confirm the app stays locked.
-10. Try again and confirm the missed questions appear first.
-11. Pass with 4 of 5 correct and confirm the app temporarily unshields.
-12. Wait for the unlock window to expire and confirm the app re-locks.
-13. Force quit and relaunch Checkpoint during an unlock window and after expiration to verify reconciliation.
-14. Restart the phone and verify the selected app remains shielded when it should be.
+7. If the system default Restricted page appears, open Settings > Screen Time > Shield page and confirm whether the custom shield render count is still zero before debugging UI copy.
+8. Tap the primary shield button and confirm Checkpoint opens.
+9. Confirm the checkpoint sheet appears from the pending shield attempt, including when Checkpoint was last left on Settings, Skill, or History.
+10. Fail at least two questions and confirm the app stays locked.
+11. Try again and confirm the missed questions appear first.
+12. Pass with 4 of 5 correct and confirm the app temporarily unshields.
+13. Wait for the unlock window to expire and confirm the app re-locks.
+14. Force quit and relaunch Checkpoint during an unlock window and after expiration to verify reconciliation.
+15. Restart the phone and verify the selected app remains shielded when it should be.
 
 ## App Review Notes Draft
 

@@ -4,32 +4,41 @@ struct RootView: View {
     @State private var store = CheckpointStore()
     @State private var screenTime = ScreenTimeController()
     @State private var purchaseController = PurchaseController()
+    @State private var selectedTab: AppTab = .home
+    @State private var activeShieldSession: CheckpointSession?
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             HomeView(store: store, screenTime: screenTime)
                 .tabItem {
                     Label("Home", systemImage: "target")
                 }
+                .tag(AppTab.home)
 
             HistoryView(store: store)
                 .tabItem {
                     Label("History", systemImage: "clock.arrow.circlepath")
                 }
+                .tag(AppTab.history)
 
             CompetencyView(store: store)
                 .tabItem {
                     Label("Skill", systemImage: "chart.line.uptrend.xyaxis")
                 }
+                .tag(AppTab.skill)
 
             SettingsView(store: store, screenTime: screenTime, purchaseController: purchaseController)
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
+                .tag(AppTab.settings)
         }
         .tint(CheckpointTheme.teal)
         .preferredColorScheme(.light)
+        .sheet(item: $activeShieldSession) { session in
+            CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
+        }
         .sheet(
             isPresented: Binding(
                 get: { store.isOnboardingPresented },
@@ -40,6 +49,7 @@ struct RootView: View {
                 .interactiveDismissDisabled(store.goal == nil)
         }
         .task {
+            handlePendingShieldActivation()
             purchaseController.startListeningForTransactions()
             await purchaseController.loadProducts()
             let isProUnlocked = await purchaseController.refreshEntitlements()
@@ -48,10 +58,26 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             screenTime.reconcileShieldState()
+            handlePendingShieldActivation()
             Task {
                 let isProUnlocked = await purchaseController.refreshEntitlements()
                 store.updateSubscriptionTier(isProUnlocked ? .pro : .free)
             }
         }
     }
+
+    private func handlePendingShieldActivation() {
+        guard activeShieldSession == nil else { return }
+        guard SharedAppGroup.pendingShieldAttemptDate != nil else { return }
+
+        selectedTab = .home
+        activeShieldSession = store.takePendingShieldSession()
+    }
+}
+
+private enum AppTab: Hashable {
+    case home
+    case history
+    case skill
+    case settings
 }

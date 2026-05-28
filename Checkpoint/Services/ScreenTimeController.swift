@@ -37,6 +37,22 @@ final class ScreenTimeController {
         setupState == .temporarilyUnlocked
     }
 
+    var shieldExtensionDiagnosticsText: String {
+        let renderCount = SharedAppGroup.shieldConfigurationRenderCount
+        let actionCount = SharedAppGroup.shieldAttemptCount
+
+        guard renderCount > 0 else {
+            if actionCount > 0 {
+                return "Open Checkpoint has been tapped \(actionCount)x, but the custom shield page has not reported yet. Reinstall the signed app and verify the Shield Configuration extension entitlements if the default Restricted page appears."
+            }
+
+            return "Custom shield has not reported yet. Open a restricted app after applying shields; if the default Restricted page appears, verify the Shield Configuration extension provisioning."
+        }
+
+        let lastRendered = SharedAppGroup.shieldConfigurationRenderDate?.formatted(date: .abbreviated, time: .shortened) ?? "recently"
+        return "Custom shield rendered \(renderCount)x, last \(lastRendered). Open Checkpoint tapped \(actionCount)x."
+    }
+
     #if os(iOS) && canImport(FamilyControls)
     var selection = FamilyActivitySelection() {
         didSet {

@@ -23,6 +23,8 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
     }
 
     private func configuration() -> ShieldConfiguration {
+        SharedAppGroup.markShieldConfigurationRendered()
+
         let defaults = SharedAppGroup.defaults
         let goalTitle = defaults.string(forKey: SharedAppGroup.shieldGoalTitleKey) ?? "Checkpoint"
         let prompt = defaults.string(forKey: SharedAppGroup.shieldPromptPreviewKey) ?? "Open Checkpoint and clear one checkpoint before you scroll."
@@ -52,4 +54,3 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
     }
 }
 #endif
-

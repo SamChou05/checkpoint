@@ -86,6 +86,19 @@ struct SettingsView: View {
                                 .foregroundStyle(CheckpointTheme.muted)
                                 .fixedSize(horizontal: false, vertical: true)
 
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Shield page")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text(screenTime.shieldExtensionDiagnosticsText)
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .padding(12)
+                            .background(CheckpointTheme.panelRaised.opacity(0.58), in: RoundedRectangle(cornerRadius: 8))
+
                             SecondaryActionButton(title: "Request setup", systemImage: "shield") {
                                 Task {
                                     await screenTime.requestAuthorization()
