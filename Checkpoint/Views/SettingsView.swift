@@ -258,6 +258,22 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.text)
                             }
 
+                            HStack {
+                                Text("Bank health")
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                Spacer()
+                                Text(store.questionBankHealthText)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+                            }
+
+                            if store.isPro {
+                                Text(store.proAssistSummary)
+                                    .font(.footnote.weight(.medium))
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
                             SecondaryActionButton(
                                 title: store.canRefreshQuestionBatch ? "Refresh question batch" : "Upgrade for more refreshes",
                                 systemImage: store.canRefreshQuestionBatch ? "arrow.clockwise" : "lock"
@@ -309,7 +325,7 @@ struct SettingsView: View {
 
     private var planSubtitle: String {
         if store.isPro {
-            return "Unlimited refreshes, larger question banks, and advanced strictness are active."
+            return "Automatic refill, larger question banks, unlimited refreshes, and advanced strictness are active."
         }
 
         return "Free keeps the blocker loop usable with one goal, local questions, and \(FreemiumLimits.freeQuestionRefreshLimit) refreshes per goal."

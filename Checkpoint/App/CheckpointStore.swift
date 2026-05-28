@@ -131,6 +131,7 @@ final class CheckpointStore {
     var subscriptionTier: SubscriptionTier = .free
     var questionRefreshesUsed = 0
     var pendingPaywallFeature: ProFeature?
+    var lastAutomaticQuestionRefreshAt: Date?
 
     @ObservationIgnored private let questionEngine: HybridQuestionEngine
     @ObservationIgnored private let defaults: UserDefaults
@@ -201,9 +202,64 @@ final class CheckpointStore {
         isPro || questionRefreshesUsed < FreemiumLimits.freeQuestionRefreshLimit
     }
 
+    var usableQuestionCount: Int {
+        questions.filter(meetsDifficultyFloor).count
+    }
+
+    var questionBankHealthText: String {
+        guard goal != nil else { return "No active goal yet" }
+
+        if usableQuestionCount < unlockPolicy.questionsPerSession {
+            return "Needs refill"
+        }
+
+        if usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
+            return "Getting low"
+        }
+
+        return "Ready"
+    }
+
+    var proAssistSummary: String {
+        guard isPro else {
+            return "Pro can quietly refill low question banks and point you toward the next useful topic."
+        }
+
+        if let focus = proFocusRecommendation {
+            return focus
+        }
+
+        if usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
+            return "Question bank is getting low. Pro Assist will refresh it in the background when possible."
+        }
+
+        return "Question bank is healthy. Keep answering checkpoints and missed topics will surface automatically."
+    }
+
+    var proFocusRecommendation: String? {
+        guard isPro, goal != nil else { return nil }
+
+        if let missedTopic = questions
+            .filter({ $0.status == .incorrect })
+            .sorted(by: sortByReviewPriority)
+            .first?
+            .topic {
+            return "Focus next on \(missedTopic); recent misses are ready for review."
+        }
+
+        guard let competency = sortedCompetencies.first else { return nil }
+
+        if competency.attempts == 0 {
+            return "Start with \(competency.topic); it has the least evidence so far."
+        }
+
+        return "Focus next on \(competency.topic); it is your lowest mastery area at \(competency.masteryPercent)%."
+    }
+
     func canUse(_ feature: ProFeature) -> Bool {
         switch feature {
         case .advancedStrictness,
+             .automaticBankRefill,
              .unlimitedQuestionRefreshes,
              .largerQuestionBanks,
              .deeperAnalytics,
@@ -315,6 +371,21 @@ final class CheckpointStore {
         questionBatchState = .ready
         save()
         publishShieldContext()
+    }
+
+    @discardableResult
+    func refreshQuestionBatchIfNeeded() async -> Bool {
+        guard isPro,
+              goal != nil,
+              questionBatchState != .generating,
+              usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold,
+              canRefreshAfterCooldown else {
+            return false
+        }
+
+        lastAutomaticQuestionRefreshAt = Date()
+        await refreshQuestionBatch()
+        return true
     }
 
     func nextQuestion() -> CheckpointQuestion? {
@@ -452,6 +523,7 @@ final class CheckpointStore {
         emergencyPassesRemaining = 1
         questionRefreshesUsed = 0
         pendingPaywallFeature = nil
+        lastAutomaticQuestionRefreshAt = nil
         isOnboardingPresented = true
         save()
         publishShieldContext()
@@ -671,7 +743,8 @@ final class CheckpointStore {
             unlockSession: unlockSession,
             emergencyPassesRemaining: emergencyPassesRemaining,
             subscriptionTier: subscriptionTier,
-            questionRefreshesUsed: questionRefreshesUsed
+            questionRefreshesUsed: questionRefreshesUsed,
+            lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt
         )
 
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
@@ -731,6 +804,7 @@ final class CheckpointStore {
         emergencyPassesRemaining = snapshot.emergencyPassesRemaining
         subscriptionTier = snapshot.subscriptionTier ?? .free
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
+        lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
 
         if subscriptionTier == .free {
             normalizeFreeTierLimits()
@@ -836,5 +910,10 @@ final class CheckpointStore {
     private func normalizeFreeTierLimits() {
         unlockPolicy.questionsPerSession = UnlockPolicy.default.questionsPerSession
         unlockPolicy.requiredCorrectAnswers = UnlockPolicy.default.requiredCorrectAnswers
+    }
+
+    private var canRefreshAfterCooldown: Bool {
+        guard let lastAutomaticQuestionRefreshAt else { return true }
+        return Date().timeIntervalSince(lastAutomaticQuestionRefreshAt) >= FreemiumLimits.proAutoRefreshCooldown
     }
 }

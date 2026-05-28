@@ -85,6 +85,7 @@ enum SubscriptionTier: String, Codable, Sendable {
 
 enum ProFeature: String, CaseIterable, Identifiable, Sendable {
     case advancedStrictness
+    case automaticBankRefill
     case unlimitedQuestionRefreshes
     case largerQuestionBanks
     case deeperAnalytics
@@ -97,6 +98,8 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .advancedStrictness:
             return "Advanced strictness"
+        case .automaticBankRefill:
+            return "Automatic bank refill"
         case .unlimitedQuestionRefreshes:
             return "Unlimited question refreshes"
         case .largerQuestionBanks:
@@ -114,6 +117,8 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .advancedStrictness:
             return "Tune question count and pass threshold beyond the default 4-of-5 checkpoint."
+        case .automaticBankRefill:
+            return "Quietly refresh low question banks so checkpoints keep feeling fresh."
         case .unlimitedQuestionRefreshes:
             return "Refresh goal-aligned question banks whenever you run low or change study focus."
         case .largerQuestionBanks:
@@ -138,6 +143,8 @@ enum FreemiumLimits {
     static let freeQuestionRefreshLimit = 2
     static let freeQuestionBankTargetCount = 40
     static let proQuestionBankTargetCount = 80
+    static let proAutoRefreshThreshold = 10
+    static let proAutoRefreshCooldown: TimeInterval = 6 * 60 * 60
 }
 
 struct Goal: Identifiable, Codable, Equatable, Sendable {
@@ -441,6 +448,7 @@ struct AppSnapshot: Codable, Sendable {
     var emergencyPassesRemaining: Int
     var subscriptionTier: SubscriptionTier?
     var questionRefreshesUsed: Int?
+    var lastAutomaticQuestionRefreshAt: Date?
 }
 
 struct AnswerEvaluation: Equatable, Sendable {

@@ -364,6 +364,78 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testFreeTierDoesNotAutoRefreshLowQuestionBank() async {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.goal = goal
+        store.questions = [makeQuestion(goal: goal, index: 1)]
+
+        let didRefresh = await store.refreshQuestionBatchIfNeeded()
+
+        XCTAssertFalse(didRefresh)
+        XCTAssertNil(localEngine.receivedRequest)
+        XCTAssertEqual(store.questions.count, 1)
+        XCTAssertEqual(store.questionBankHealthText, "Needs refill")
+    }
+
+    @MainActor
+    func testProAssistAutoRefreshesLowBankAndRespectsCooldown() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateSubscriptionTier(.pro)
+        store.goal = goal
+        store.questions = [makeQuestion(goal: goal, index: 99)]
+
+        let didRefresh = await store.refreshQuestionBatchIfNeeded()
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertTrue(didRefresh)
+        XCTAssertEqual(request.targetCount, FreemiumLimits.proQuestionBankTargetCount)
+        XCTAssertEqual(store.questions.count, 2)
+        XCTAssertEqual(store.questionRefreshesUsed, 1)
+        XCTAssertNotNil(store.lastAutomaticQuestionRefreshAt)
+
+        let didRefreshAgain = await store.refreshQuestionBatchIfNeeded()
+
+        XCTAssertFalse(didRefreshAgain)
+        XCTAssertEqual(store.questions.count, 2)
+        XCTAssertEqual(store.questionRefreshesUsed, 1)
+    }
+
+    @MainActor
+    func testProAssistRecommendationUsesWeakestTopic() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.updateSubscriptionTier(.pro)
+        store.goal = goal
+        var arrays = TopicCompetency.initial(topic: "arrays", estimatedLevel: 1.4)
+        arrays.attempts = 4
+        arrays.correct = 1
+        arrays.incorrect = 3
+        var recursion = TopicCompetency.initial(topic: "recursion", estimatedLevel: 2.8)
+        recursion.attempts = 4
+        recursion.correct = 4
+        store.competencies = [recursion, arrays]
+
+        XCTAssertTrue(store.proAssistSummary.contains("arrays"))
+        XCTAssertTrue(store.proAssistSummary.contains("25%"))
+    }
+
+    @MainActor
     private func makeSeededStore(questionCount: Int) -> CheckpointStore {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)

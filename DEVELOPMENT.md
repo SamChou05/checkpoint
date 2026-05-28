@@ -34,6 +34,7 @@ Important platform constraint:
 - Home, History, Skill, and Settings tabs.
 - Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
+- Pro Assist adds passive bank-health status, automatic low-bank refill with a cooldown, and next-topic guidance without adding a setup step.
 - Goal onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
 - Simulated blocked-app attempt flow for previewing the checkpoint experience before real device testing.
@@ -55,7 +56,7 @@ Important platform constraint:
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Settings includes a manual question batch refresh action.
-- Free question refreshes are limited per goal before opening the Pro paywall; Pro allows larger target batches and unlimited refreshes.
+- Free question refreshes are limited per goal before opening the Pro paywall; Pro allows larger target batches, unlimited refreshes, and automatic low-bank refill.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic

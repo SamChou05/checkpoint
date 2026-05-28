@@ -18,6 +18,7 @@ struct HomeView: View {
                     if let goal = store.goal {
                         goalHero(goal)
                         metricsGrid
+                        proAssistPanel
                         nextCheckpointPanel
                         screenTimePanel
                     } else {
@@ -36,11 +37,11 @@ struct HomeView: View {
                 RestrictedAppsView(screenTime: screenTime)
             }
             .onAppear {
-                presentPendingShieldSession()
+                handleActivation()
             }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
-                    presentPendingShieldSession()
+                    handleActivation()
                 }
             }
         }
@@ -98,6 +99,34 @@ struct HomeView: View {
 
                 PrimaryActionButton(title: "Simulate blocked app attempt", systemImage: "lock.open") {
                     activeSession = store.startManualCheckpointSession()
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var proAssistPanel: some View {
+        if store.isPro {
+            SectionPanel("Pro Assist") {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        StatusBadge(text: store.questionBankHealthText, tint: CheckpointTheme.teal)
+                        Spacer()
+                        Text("\(store.usableQuestionCount) usable")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(CheckpointTheme.muted)
+                    }
+
+                    Text(store.proAssistSummary)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if store.usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
+                        Text("Low banks refill automatically when Checkpoint is active.")
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
+                    }
                 }
             }
         }
@@ -249,8 +278,21 @@ struct HomeView: View {
         }
     }
 
-    private func presentPendingShieldSession() {
+    private func handleActivation() {
         guard activeSession == nil else { return }
-        activeSession = store.takePendingShieldSession()
+
+        if let session = store.takePendingShieldSession() {
+            activeSession = session
+            return
+        }
+
+        Task {
+            let didRefresh = await store.refreshQuestionBatchIfNeeded()
+            if didRefresh,
+               activeSession == nil,
+               store.checkpointNotice != nil {
+                activeSession = store.startManualCheckpointSession()
+            }
+        }
     }
 }

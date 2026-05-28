@@ -18,7 +18,7 @@ The current app has a StoreKit-ready freemium shell:
 
 - Free keeps the core blocker loop usable: one active goal, local questions, the default 5-question session, 4 correct answers required, app blocking, and temporary unlock.
 - Free gets 2 question-bank refreshes per goal.
-- Pro unlocks advanced strictness tuning, unlimited refreshes, and larger provider target batches.
+- Pro unlocks automatic low-bank refill, advanced strictness tuning, unlimited refreshes, larger provider target batches, and next-topic guidance.
 - The paywall uses StoreKit product IDs and restore hooks, but App Store Connect products and a local StoreKit configuration file still need to be created before real purchases can complete.
 - The blocker recovery path is not paywalled.
 
@@ -29,7 +29,7 @@ The freemium gates do not create meaningful new infrastructure cost by themselve
 - StoreKit has no fixed monthly fee, but Apple takes its App Store commission on paid subscriptions.
 - Local/offline question generation has no per-user AI cost.
 - Apple Foundation Models generation has no server bill, but only works on supported devices.
-- Backend AI generation can create variable cost. Keep it batch-based, quota-limited, and preferably tied to Pro refresh limits before using it broadly.
+- Backend AI generation can create variable cost. Keep it batch-based, quota-limited, cooldown-protected, and preferably tied to Pro refresh limits before using it broadly.
 - The free refresh limit exists partly to control backend spend if backend generation becomes active.
 
 ## Product IDs
