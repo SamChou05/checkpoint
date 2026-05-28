@@ -126,15 +126,16 @@ struct SettingsView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Question level")
+                                Text("Question difficulty")
                                     .font(.headline)
                                     .foregroundStyle(CheckpointTheme.text)
 
-                                Text("Start at Level \(store.unlockPolicy.minimumQuestionDifficulty) or higher")
+                                Text("Levels run 1 to 5. Start at \(difficultyLabel(for: store.unlockPolicy.minimumQuestionDifficulty)) or higher.")
                                     .font(.subheadline)
                                     .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
 
-                                Stepper("Minimum level: \(store.unlockPolicy.minimumQuestionDifficulty)", value: minimumQuestionDifficultyBinding, in: 1...5)
+                                Stepper("Minimum: \(difficultyLabel(for: store.unlockPolicy.minimumQuestionDifficulty))", value: minimumQuestionDifficultyBinding, in: 1...5)
                                     .foregroundStyle(CheckpointTheme.text)
                             }
 
@@ -279,6 +280,21 @@ struct SettingsView: View {
             }
 
             Spacer(minLength: 0)
+        }
+    }
+
+    private func difficultyLabel(for level: Int) -> String {
+        switch level {
+        case 1:
+            return "Level 1 of 5 (Basics)"
+        case 2:
+            return "Level 2 of 5 (Easy)"
+        case 3:
+            return "Level 3 of 5 (Medium)"
+        case 4:
+            return "Level 4 of 5 (Hard)"
+        default:
+            return "Level 5 of 5 (Expert)"
         }
     }
 }

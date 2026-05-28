@@ -179,7 +179,7 @@ struct HomeView: View {
                     HStack {
                         StatusBadge(text: question.topic, tint: CheckpointTheme.amber)
                         Spacer()
-                        Text("Level \(question.difficulty)")
+                        Text("Level \(question.difficulty) of 5")
                             .font(.caption.weight(.bold))
                             .foregroundStyle(CheckpointTheme.muted)
                     }

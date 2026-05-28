@@ -49,7 +49,7 @@ Important platform constraint:
 - Multiple-choice checkpoint answers are locally graded for the MVP before the final unlock.
 - Multi-question checkpoint sessions ask 5 questions and require 4 correct answers by default before unlocking.
 - Missed questions from a failed checkpoint set become due immediately and are prioritized in the next set.
-- Settings can enforce a minimum question difficulty so users can skip material below their level.
+- Settings can enforce a 1-to-5 minimum question difficulty so users can skip material below their level.
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
@@ -275,5 +275,5 @@ Implementation status:
 - Automatic provider routing prefers no-cost providers before backend generation.
 - Core workflow and provider policy are covered by the `CheckpointTests` XCTest target.
 - Typed current-level context now seeds initial competency estimates.
-- Settings exposes strictness controls, minimum question level, question refresh, batch state, and quality report count.
+- Settings exposes strictness controls, 1-to-5 minimum question difficulty, question refresh, batch state, and quality report count.
 - Backend request/response contract is documented in `docs/AI_BACKEND_CONTRACT.md`.

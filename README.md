@@ -11,7 +11,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Provider-based multiple-choice question generation seeded from typed goal context.
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
-- Configurable minimum question level so advanced users can skip remedial prompts.
+- Configurable 1-to-5 question difficulty floor so advanced users can skip remedial prompts.
 - Correct-answer unlock windows use 15, 30, 45, or 60 minutes, with 30 minutes as the default.
 - Stored checkpoint attempts with correctness and unlock state.
 - Missed questions from a failed unlock attempt become due immediately so the next checkpoint retests them first.

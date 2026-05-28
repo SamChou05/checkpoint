@@ -86,7 +86,7 @@ private struct CompetencyRow: View {
                             .font(.headline)
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Level \(competency.displayLevel) - \(competency.attempts) attempts")
+                        Text("Level \(competency.displayLevel) of 5 - \(competency.attempts) attempts")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.muted)
                     }
@@ -123,4 +123,3 @@ private struct CompetencyRow: View {
         }
     }
 }
-
