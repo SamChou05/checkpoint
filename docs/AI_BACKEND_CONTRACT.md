@@ -18,7 +18,7 @@ The iOS app sends a `POST` request to the endpoint configured by the app or back
   },
   "competencies": [
     {
-      "topic": "arrays",
+      "topic": "recursion",
       "estimatedLevel": 2.1,
       "masteryPercent": 50,
       "attempts": 4,
@@ -44,12 +44,17 @@ The iOS app sends a `POST` request to the endpoint configured by the app or back
 {
   "questions": [
     {
-      "prompt": "What is the time complexity of scanning an array once to find a maximum value?",
-      "expectedAnswer": "O(n)",
-      "choices": ["O(1)", "O(log n)", "O(n)", "O(n^2)"],
-      "explanation": "You inspect each element once, so runtime grows linearly with input size.",
-      "topic": "arrays",
-      "difficulty": 1,
+      "prompt": "For an intermediate interview candidate, which tradeoff matters most when choosing between recursion and iteration for a tree traversal?",
+      "expectedAnswer": "Recursion is concise, but iteration can avoid call-stack depth limits.",
+      "choices": [
+        "Recursion is concise, but iteration can avoid call-stack depth limits.",
+        "Iteration always uses O(1) memory for every tree traversal.",
+        "Recursion always changes the traversal from O(n) to O(log n).",
+        "The choice only affects variable naming, not behavior."
+      ],
+      "explanation": "Both approaches can visit each node once, but stack depth and implementation clarity are the practical tradeoffs.",
+      "topic": "recursion",
+      "difficulty": 3,
       "format": "Multiple Choice"
     }
   ]
@@ -69,6 +74,7 @@ The iOS app sends a `POST` request to the endpoint configured by the app or back
 - Every question should be answerable in 30 seconds to 3 minutes.
 - Questions should target weak topics and stay near the user's estimated level.
 - If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
+- Use the goal title, current-level text, focus areas, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
 
 The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
 

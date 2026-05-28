@@ -28,6 +28,29 @@ struct QuestionGenerationRequest: Sendable {
     var targetCount: Int
     var minimumDifficulty: Int
     var backendEndpoint: URL?
+
+    func sourcePrompt(provider: AIProviderKind) -> String {
+        """
+        Provider: \(provider.rawValue)
+        Goal: \(goal.title)
+        Category: \(goal.category.rawValue)
+        Current level: \(goal.currentLevel.isEmpty ? "Not specified" : goal.currentLevel)
+        Focus areas: \(goal.focusAreas.isEmpty ? "Not specified" : goal.focusAreas)
+        Preferred style: Multiple Choice
+        Target count: \(targetCount)
+        Minimum difficulty: \(minimumDifficulty) of 5
+        Competencies: \(competencySummary)
+        Avoid existing prompts: \(existingQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
+        Avoid reported prompts: \(reportedQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
+        """
+    }
+
+    var competencySummary: String {
+        guard !competencies.isEmpty else { return "None yet" }
+        return competencies
+            .map { "\($0.topic): level \($0.displayLevel) of 5, mastery \($0.masteryPercent)%" }
+            .joined(separator: "; ")
+    }
 }
 
 struct QuestionBatch: Sendable {
@@ -205,6 +228,7 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         let goal = request.goal
+        let sourcePrompt = request.sourcePrompt(provider: provider)
         let topics = goal.focusAreas
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -218,7 +242,7 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                 request.minimumDifficulty,
                 targetDifficulty(for: competency, fallback: index + 1)
             )
-            return questions(for: goal, topic: topic, difficulty: targetDifficulty)
+            return questions(for: goal, topic: topic, difficulty: targetDifficulty, sourcePrompt: sourcePrompt)
         }
     }
 
@@ -247,7 +271,7 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
         return min(5, max(1, Int((competency.estimatedLevel + 0.5).rounded())))
     }
 
-    private func questions(for goal: Goal, topic: String, difficulty: Int) -> [CheckpointQuestion] {
+    private func questions(for goal: Goal, topic: String, difficulty: Int, sourcePrompt: String) -> [CheckpointQuestion] {
         switch goal.category {
         case .codingInterview:
             return [
@@ -263,7 +287,8 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                     ],
                     explanation: "A useful coding checkpoint should identify the constraint that changes the solution strategy.",
                     topic: topic,
-                    difficulty: difficulty
+                    difficulty: difficulty,
+                    sourcePrompt: sourcePrompt
                 ),
                 multipleChoiceQuestion(
                     goal: goal,
@@ -277,7 +302,8 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                     ],
                     explanation: "The best checkpoint action has a small finish line and produces evidence of practice.",
                     topic: topic,
-                    difficulty: difficulty
+                    difficulty: difficulty,
+                    sourcePrompt: sourcePrompt
                 )
             ]
         default:
@@ -294,7 +320,8 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                     ],
                     explanation: "Checkpoint should push the user toward an action that can be completed or checked.",
                     topic: topic,
-                    difficulty: difficulty
+                    difficulty: difficulty,
+                    sourcePrompt: sourcePrompt
                 ),
                 multipleChoiceQuestion(
                     goal: goal,
@@ -308,7 +335,8 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                     ],
                     explanation: "Visible progress makes the goal trackable and easier to resume.",
                     topic: topic,
-                    difficulty: difficulty
+                    difficulty: difficulty,
+                    sourcePrompt: sourcePrompt
                 )
             ]
         }
@@ -321,7 +349,8 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
         choices: [String],
         explanation: String,
         topic: String,
-        difficulty: Int
+        difficulty: Int,
+        sourcePrompt: String
     ) -> CheckpointQuestion {
         CheckpointQuestion(
             goalID: goal.id,
@@ -332,18 +361,7 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
             topic: topic,
             difficulty: difficulty,
             format: .multipleChoice,
-            sourcePrompt: sourcePrompt(for: goal)
+            sourcePrompt: sourcePrompt
         )
-    }
-
-    private func sourcePrompt(for goal: Goal) -> String {
-        """
-        Provider: local templates
-        Goal: \(goal.title)
-        Category: \(goal.category.rawValue)
-        Level: \(goal.currentLevel)
-        Focus areas: \(goal.focusAreas)
-        Deadline: \(goal.deadline.formatted(date: .abbreviated, time: .omitted))
-        """
     }
 }

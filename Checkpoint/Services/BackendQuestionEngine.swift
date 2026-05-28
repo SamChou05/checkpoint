@@ -23,7 +23,9 @@ struct BackendQuestionEngine: QuestionGenerating {
         }
 
         let payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
-        let questions = payload.questions.map { $0.makeQuestion(goalID: request.goal.id, sourcePrompt: "backend") }
+        let questions = payload.questions.map {
+            $0.makeQuestion(goalID: request.goal.id, sourcePrompt: request.sourcePrompt(provider: provider))
+        }
 
         guard !questions.isEmpty else {
             throw QuestionGenerationError.noQuestionsGenerated
@@ -33,13 +35,13 @@ struct BackendQuestionEngine: QuestionGenerating {
     }
 }
 
-private struct BackendQuestionRequest: Encodable {
-    var goal: GoalPayload
-    var competencies: [CompetencyPayload]
-    var existingPrompts: [String]
-    var reportedPrompts: [String]
-    var targetCount: Int
-    var minimumDifficulty: Int
+struct BackendQuestionRequest: Encodable {
+    private var goal: GoalPayload
+    private var competencies: [CompetencyPayload]
+    private var existingPrompts: [String]
+    private var reportedPrompts: [String]
+    private var targetCount: Int
+    private var minimumDifficulty: Int
 
     init(request: QuestionGenerationRequest) {
         goal = GoalPayload(goal: request.goal)

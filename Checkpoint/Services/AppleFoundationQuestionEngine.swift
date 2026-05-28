@@ -44,18 +44,7 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         Avoid repeating existing or reported prompts.
         """
 
-        let prompt = """
-        Goal: \(request.goal.title)
-        Category: \(request.goal.category.rawValue)
-        Current level: \(request.goal.currentLevel)
-        Focus areas: \(request.goal.focusAreas)
-        Preferred style: Multiple Choice
-        Target count: \(request.targetCount)
-        Minimum difficulty: \(request.minimumDifficulty)
-        Competencies: \(competencySummary(request.competencies))
-        Existing prompts: \(request.existingQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
-        Reported prompts to avoid: \(request.reportedQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
-        """
+        let prompt = request.sourcePrompt(provider: provider)
 
         let session = LanguageModelSession(instructions: instructions)
         let options = GenerationOptions(temperature: 0.4, maximumResponseTokens: 1800)
@@ -63,7 +52,7 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         let data = try extractJSONData(from: response.content)
         let payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
         let questions = payload.questions.map {
-            $0.makeQuestion(goalID: request.goal.id, sourcePrompt: "apple foundation models")
+            $0.makeQuestion(goalID: request.goal.id, sourcePrompt: request.sourcePrompt(provider: provider))
         }
 
         guard !questions.isEmpty else {
@@ -71,12 +60,6 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         }
 
         return questions
-    }
-
-    private func competencySummary(_ competencies: [TopicCompetency]) -> String {
-        competencies
-            .map { "\($0.topic): level \($0.displayLevel), mastery \($0.masteryPercent)%" }
-            .joined(separator: "; ")
     }
 
     private func extractJSONData(from text: String) throws -> Data {

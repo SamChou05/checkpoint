@@ -418,6 +418,91 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertFalse(questions.isEmpty)
         XCTAssertTrue(questions.allSatisfy { $0.difficulty >= 4 })
     }
+
+    @MainActor
+    func testStorePassesGoalContextAndDifficultyToQuestionEngine() async throws {
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let suiteName = "AIProviderPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMinimumQuestionDifficulty(4)
+
+        await store.createGoal(
+            title: "  Pass calculus final  ",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 14),
+            category: .examPrep,
+            currentLevel: "Advanced at derivatives, weak on integrals",
+            focusAreas: "integrals, limits",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.goal.title, "Pass calculus final")
+        XCTAssertEqual(request.goal.currentLevel, "Advanced at derivatives, weak on integrals")
+        XCTAssertEqual(request.goal.focusAreas, "integrals, limits")
+        XCTAssertEqual(request.minimumDifficulty, 4)
+        XCTAssertEqual(request.targetCount, 40)
+
+        let sourcePrompt = try XCTUnwrap(store.questions.first?.sourcePrompt)
+        XCTAssertTrue(sourcePrompt.contains("Goal: Pass calculus final"))
+        XCTAssertTrue(sourcePrompt.contains("Current level: Advanced at derivatives, weak on integrals"))
+        XCTAssertTrue(sourcePrompt.contains("Focus areas: integrals, limits"))
+        XCTAssertTrue(sourcePrompt.contains("Minimum difficulty: 4 of 5"))
+    }
+
+    func testBackendRequestEncodesGoalContextCompetenciesAndDifficulty() throws {
+        let goal = makeGoal()
+        let existingQuestion = makeQuestion(goal: goal, index: 1, prompt: "Existing prompt")
+        let report = QuestionQualityReport(
+            questionID: UUID(),
+            goalID: goal.id,
+            prompt: "Reported prompt",
+            reason: .tooEasy,
+            note: "Too basic"
+        )
+        let request = QuestionGenerationRequest(
+            goal: goal,
+            existingQuestions: [existingQuestion],
+            competencies: [.initial(topic: "recursion", estimatedLevel: 2.4)],
+            reportedQuestions: [report],
+            targetCount: 12,
+            minimumDifficulty: 3,
+            backendEndpoint: URL(string: "https://example.com/ai")
+        )
+
+        let data = try JSONEncoder().encode(BackendQuestionRequest(request: request))
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let goalPayload = try XCTUnwrap(payload["goal"] as? [String: Any])
+        let competencies = try XCTUnwrap(payload["competencies"] as? [[String: Any]])
+        let existingPrompts = try XCTUnwrap(payload["existingPrompts"] as? [String])
+        let reportedPrompts = try XCTUnwrap(payload["reportedPrompts"] as? [String])
+
+        XCTAssertEqual(goalPayload["title"] as? String, goal.title)
+        XCTAssertEqual(goalPayload["category"] as? String, goal.category.rawValue)
+        XCTAssertEqual(goalPayload["currentLevel"] as? String, goal.currentLevel)
+        XCTAssertEqual(goalPayload["focusAreas"] as? String, goal.focusAreas)
+        XCTAssertEqual(payload["targetCount"] as? Int, 12)
+        XCTAssertEqual(payload["minimumDifficulty"] as? Int, 3)
+        XCTAssertEqual(competencies.first?["topic"] as? String, "recursion")
+        XCTAssertEqual(existingPrompts, ["Existing prompt"])
+        XCTAssertEqual(reportedPrompts, ["Reported prompt"])
+
+        let sourcePrompt = request.sourcePrompt(provider: .backend)
+        XCTAssertTrue(sourcePrompt.contains("Goal: \(goal.title)"))
+        XCTAssertTrue(sourcePrompt.contains("Current level: \(goal.currentLevel)"))
+        XCTAssertTrue(sourcePrompt.contains("Focus areas: \(goal.focusAreas)"))
+        XCTAssertTrue(sourcePrompt.contains("Minimum difficulty: 3 of 5"))
+        XCTAssertTrue(sourcePrompt.contains("Competencies: recursion"))
+        XCTAssertTrue(sourcePrompt.contains("Avoid existing prompts: Existing prompt"))
+        XCTAssertTrue(sourcePrompt.contains("Avoid reported prompts: Reported prompt"))
+    }
 }
 
 final class UnlockPolicyTests: XCTestCase {
@@ -487,6 +572,28 @@ private struct ThrowingQuestionEngine: QuestionGenerating {
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         throw TestQuestionGenerationError.unavailable
+    }
+}
+
+private final class CapturingQuestionEngine: QuestionGenerating, @unchecked Sendable {
+    let provider: AIProviderKind
+    private(set) var receivedRequest: QuestionGenerationRequest?
+
+    init(provider: AIProviderKind) {
+        self.provider = provider
+    }
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        receivedRequest = request
+        return [
+            makeQuestion(
+                goal: request.goal,
+                index: 1,
+                topic: "integrals",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        ]
     }
 }
 
