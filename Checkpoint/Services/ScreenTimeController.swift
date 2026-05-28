@@ -54,7 +54,7 @@ final class ScreenTimeController {
     }
 
     #if os(iOS) && canImport(FamilyControls)
-    var selection = FamilyActivitySelection() {
+    var selection = FamilyActivitySelection(includeEntireCategory: true) {
         didSet {
             persistSelection()
             updateSummary()
@@ -236,7 +236,7 @@ final class ScreenTimeController {
     }
 
     func updateSelection(_ newSelection: FamilyActivitySelection) {
-        selection = newSelection
+        selection = SharedAppGroup.categoryInclusiveSelection(newSelection)
     }
     #else
     var hasSelection: Bool { false }
@@ -272,7 +272,7 @@ final class ScreenTimeController {
             let restoredSelection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
         else { return }
 
-        selection = restoredSelection
+        selection = SharedAppGroup.categoryInclusiveSelection(restoredSelection)
         #endif
     }
 

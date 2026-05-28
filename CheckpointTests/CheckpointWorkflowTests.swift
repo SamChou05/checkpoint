@@ -1,6 +1,10 @@
 import XCTest
 @testable import Checkpoint
 
+#if os(iOS) && canImport(FamilyControls)
+import FamilyControls
+#endif
+
 final class CheckpointWorkflowTests: XCTestCase {
     private var defaults: UserDefaults!
     private var defaultsSuiteName: String!
@@ -293,6 +297,28 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertFalse(screenTime.hasSelection)
         XCTAssertEqual(screenTime.restrictedAppsSummary, "No restricted apps selected")
+    }
+
+    @MainActor
+    func testScreenTimeSelectionDefaultsToWholeCategoryMode() {
+        #if os(iOS) && canImport(FamilyControls)
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        XCTAssertTrue(screenTime.selection.includeEntireCategory)
+        #endif
+    }
+
+    @MainActor
+    func testRestoredScreenTimeSelectionMigratesToWholeCategoryMode() {
+        #if os(iOS) && canImport(FamilyControls)
+        let legacySelection = FamilyActivitySelection()
+        let data = try? JSONEncoder().encode(legacySelection)
+        defaults.set(data, forKey: SharedAppGroup.screenTimeSelectionKey)
+
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        XCTAssertTrue(screenTime.selection.includeEntireCategory)
+        #endif
     }
 
     @MainActor

@@ -44,10 +44,10 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     private var restoredSelection: FamilyActivitySelection? {
         guard
             let data = SharedAppGroup.defaults.data(forKey: SharedAppGroup.screenTimeSelectionKey),
-            let selection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
+            let decodedSelection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
         else { return nil }
 
-        return selection
+        return SharedAppGroup.categoryInclusiveSelection(decodedSelection)
     }
 
     private func hasRestrictedItems(in selection: FamilyActivitySelection) -> Bool {

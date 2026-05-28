@@ -4,6 +4,10 @@ import Foundation
 @preconcurrency import DeviceActivity
 #endif
 
+#if os(iOS) && canImport(FamilyControls)
+import FamilyControls
+#endif
+
 enum SharedAppGroup {
     static let identifier = "group.com.samchou.checkpoint"
 
@@ -82,6 +86,18 @@ enum SharedAppGroup {
     static var shieldAttemptCount: Int {
         defaults.integer(forKey: shieldAttemptCountKey)
     }
+
+    #if os(iOS) && canImport(FamilyControls)
+    static func categoryInclusiveSelection(_ selection: FamilyActivitySelection) -> FamilyActivitySelection {
+        guard !selection.includeEntireCategory else { return selection }
+
+        var inclusiveSelection = FamilyActivitySelection(includeEntireCategory: true)
+        inclusiveSelection.applicationTokens = selection.applicationTokens
+        inclusiveSelection.categoryTokens = selection.categoryTokens
+        inclusiveSelection.webDomainTokens = selection.webDomainTokens
+        return inclusiveSelection
+    }
+    #endif
 }
 
 #if os(iOS) && canImport(DeviceActivity)
