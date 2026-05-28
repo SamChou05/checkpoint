@@ -69,6 +69,77 @@ enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 }
 
+enum SubscriptionTier: String, Codable, Sendable {
+    case free
+    case pro
+
+    var displayName: String {
+        switch self {
+        case .free:
+            return "Free"
+        case .pro:
+            return "Pro"
+        }
+    }
+}
+
+enum ProFeature: String, CaseIterable, Identifiable, Sendable {
+    case advancedStrictness
+    case unlimitedQuestionRefreshes
+    case largerQuestionBanks
+    case deeperAnalytics
+    case multipleGoals
+    case importsAndSync
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .advancedStrictness:
+            return "Advanced strictness"
+        case .unlimitedQuestionRefreshes:
+            return "Unlimited question refreshes"
+        case .largerQuestionBanks:
+            return "Larger question banks"
+        case .deeperAnalytics:
+            return "Deeper analytics"
+        case .multipleGoals:
+            return "Multiple goals"
+        case .importsAndSync:
+            return "Imports and sync"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .advancedStrictness:
+            return "Tune question count and pass threshold beyond the default 4-of-5 checkpoint."
+        case .unlimitedQuestionRefreshes:
+            return "Refresh goal-aligned question banks whenever you run low or change study focus."
+        case .largerQuestionBanks:
+            return "Ask providers for larger batches so repeated attempts stay fresh."
+        case .deeperAnalytics:
+            return "See richer topic trends, weak spots, and long-term study progress."
+        case .multipleGoals:
+            return "Keep separate study goals and route blocked apps to the right checkpoint."
+        case .importsAndSync:
+            return "Bring in notes, decks, PDFs, and cross-device study state later."
+        }
+    }
+}
+
+enum ProProductID {
+    static let monthly = "checkpoint.pro.monthly"
+    static let yearly = "checkpoint.pro.yearly"
+    static let all = [monthly, yearly]
+}
+
+enum FreemiumLimits {
+    static let freeQuestionRefreshLimit = 2
+    static let freeQuestionBankTargetCount = 40
+    static let proQuestionBankTargetCount = 80
+}
+
 struct Goal: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var title: String
@@ -368,6 +439,8 @@ struct AppSnapshot: Codable, Sendable {
     var backendEndpoint: String?
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining: Int
+    var subscriptionTier: SubscriptionTier?
+    var questionRefreshesUsed: Int?
 }
 
 struct AnswerEvaluation: Equatable, Sendable {

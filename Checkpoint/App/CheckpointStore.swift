@@ -1,5 +1,114 @@
 import Foundation
 import Observation
+import StoreKit
+
+@MainActor
+@Observable
+final class PurchaseController {
+    var products: [Product] = []
+    var purchasedProductIDs: Set<String> = []
+    var isLoadingProducts = false
+    var purchaseMessage: String?
+
+    @ObservationIgnored private var updatesTask: Task<Void, Never>?
+
+    var isProUnlocked: Bool {
+        purchasedProductIDs.contains { ProProductID.all.contains($0) }
+    }
+
+    func startListeningForTransactions() {
+        guard updatesTask == nil else { return }
+
+        updatesTask = Task { [weak self] in
+            for await result in Transaction.updates {
+                await self?.handle(transactionResult: result)
+            }
+        }
+    }
+
+    func loadProducts() async {
+        isLoadingProducts = true
+        defer { isLoadingProducts = false }
+
+        do {
+            products = try await Product.products(for: ProProductID.all)
+                .sorted { $0.price < $1.price }
+            purchaseMessage = products.isEmpty ? "App Store products are not configured yet." : nil
+        } catch {
+            purchaseMessage = "Could not load App Store products yet."
+        }
+    }
+
+    @discardableResult
+    func refreshEntitlements() async -> Bool {
+        var activeProductIDs: Set<String> = []
+
+        for await result in Transaction.currentEntitlements {
+            guard case .verified(let transaction) = result,
+                  ProProductID.all.contains(transaction.productID) else {
+                continue
+            }
+
+            activeProductIDs.insert(transaction.productID)
+        }
+
+        purchasedProductIDs = activeProductIDs
+        return isProUnlocked
+    }
+
+    @discardableResult
+    func purchase(_ product: Product) async -> Bool {
+        do {
+            let result = try await product.purchase()
+
+            switch result {
+            case .success(let verification):
+                guard case .verified(let transaction) = verification else {
+                    purchaseMessage = "The App Store could not verify this purchase."
+                    return false
+                }
+
+                await transaction.finish()
+                purchaseMessage = nil
+                return await refreshEntitlements()
+            case .pending:
+                purchaseMessage = "Purchase is pending approval."
+                return false
+            case .userCancelled:
+                purchaseMessage = nil
+                return false
+            @unknown default:
+                purchaseMessage = "The App Store returned an unknown purchase state."
+                return false
+            }
+        } catch {
+            purchaseMessage = "Purchase failed. Try again from the App Store sheet."
+            return false
+        }
+    }
+
+    @discardableResult
+    func restorePurchases() async -> Bool {
+        do {
+            try await AppStore.sync()
+            purchaseMessage = nil
+            return await refreshEntitlements()
+        } catch {
+            purchaseMessage = "Could not restore purchases yet."
+            return false
+        }
+    }
+
+    private func handle(transactionResult: VerificationResult<Transaction>) async {
+        guard case .verified(let transaction) = transactionResult,
+              ProProductID.all.contains(transaction.productID) else {
+            return
+        }
+
+        await transaction.finish()
+        _ = await refreshEntitlements()
+    }
+}
 
 @MainActor
 @Observable
@@ -19,6 +128,9 @@ final class CheckpointStore {
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining = 1
     var isOnboardingPresented = false
+    var subscriptionTier: SubscriptionTier = .free
+    var questionRefreshesUsed = 0
+    var pendingPaywallFeature: ProFeature?
 
     @ObservationIgnored private let questionEngine: HybridQuestionEngine
     @ObservationIgnored private let defaults: UserDefaults
@@ -69,6 +181,55 @@ final class CheckpointStore {
         questionReports.count
     }
 
+    var isPro: Bool {
+        subscriptionTier == .pro
+    }
+
+    var remainingFreeQuestionRefreshes: Int {
+        max(0, FreemiumLimits.freeQuestionRefreshLimit - questionRefreshesUsed)
+    }
+
+    var questionRefreshStatusText: String {
+        isPro ? "Unlimited Pro refreshes" : "\(remainingFreeQuestionRefreshes) free refreshes left"
+    }
+
+    var questionBankTargetCount: Int {
+        isPro ? FreemiumLimits.proQuestionBankTargetCount : FreemiumLimits.freeQuestionBankTargetCount
+    }
+
+    var canRefreshQuestionBatch: Bool {
+        isPro || questionRefreshesUsed < FreemiumLimits.freeQuestionRefreshLimit
+    }
+
+    func canUse(_ feature: ProFeature) -> Bool {
+        switch feature {
+        case .advancedStrictness,
+             .unlimitedQuestionRefreshes,
+             .largerQuestionBanks,
+             .deeperAnalytics,
+             .multipleGoals,
+             .importsAndSync:
+            return isPro
+        }
+    }
+
+    func requestUpgrade(for feature: ProFeature) {
+        pendingPaywallFeature = feature
+    }
+
+    func dismissPaywall() {
+        pendingPaywallFeature = nil
+    }
+
+    func updateSubscriptionTier(_ tier: SubscriptionTier) {
+        subscriptionTier = tier
+        if tier == .free {
+            normalizeFreeTierLimits()
+        }
+        save()
+        publishShieldContext()
+    }
+
     func createGoal(
         title: String,
         deadline: Date,
@@ -98,6 +259,7 @@ final class CheckpointStore {
         )
 
         goal = newGoal
+        questionRefreshesUsed = 0
         let batch = await questionEngine.generateQuestionBatch(
             for: generationRequest(goal: newGoal, existingQuestions: [], competencies: [], reportedQuestions: []),
             preference: aiProviderPreference
@@ -120,7 +282,15 @@ final class CheckpointStore {
     func refreshQuestionBatch() async {
         guard let goal else { return }
 
+        guard canRefreshQuestionBatch else {
+            lastAIErrorMessage = "Free includes \(FreemiumLimits.freeQuestionRefreshLimit) question refreshes per goal. Pro keeps refreshes unlimited."
+            requestUpgrade(for: .unlimitedQuestionRefreshes)
+            save()
+            return
+        }
+
         questionBatchState = .generating
+        questionRefreshesUsed += 1
 
         let batch = await questionEngine.generateQuestionBatch(
             for: generationRequest(
@@ -280,6 +450,8 @@ final class CheckpointStore {
         checkpointNotice = nil
         unlockSession = nil
         emergencyPassesRemaining = 1
+        questionRefreshesUsed = 0
+        pendingPaywallFeature = nil
         isOnboardingPresented = true
         save()
         publishShieldContext()
@@ -344,6 +516,11 @@ final class CheckpointStore {
     }
 
     func updateQuestionsPerSession(_ count: Int) {
+        guard canUse(.advancedStrictness) else {
+            requestUpgrade(for: .advancedStrictness)
+            return
+        }
+
         unlockPolicy.questionsPerSession = min(10, max(1, count))
         unlockPolicy.requiredCorrectAnswers = min(
             unlockPolicy.questionsPerSession,
@@ -354,6 +531,11 @@ final class CheckpointStore {
     }
 
     func updateRequiredCorrectAnswers(_ count: Int) {
+        guard canUse(.advancedStrictness) else {
+            requestUpgrade(for: .advancedStrictness)
+            return
+        }
+
         unlockPolicy.requiredCorrectAnswers = min(unlockPolicy.questionsPerSession, max(1, count))
         save()
         publishShieldContext()
@@ -487,7 +669,9 @@ final class CheckpointStore {
             lastQuestionProvider: lastQuestionProvider,
             backendEndpoint: backendEndpoint,
             unlockSession: unlockSession,
-            emergencyPassesRemaining: emergencyPassesRemaining
+            emergencyPassesRemaining: emergencyPassesRemaining,
+            subscriptionTier: subscriptionTier,
+            questionRefreshesUsed: questionRefreshesUsed
         )
 
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
@@ -545,6 +729,12 @@ final class CheckpointStore {
         backendEndpoint = snapshot.backendEndpoint ?? ""
         unlockSession = snapshot.unlockSession
         emergencyPassesRemaining = snapshot.emergencyPassesRemaining
+        subscriptionTier = snapshot.subscriptionTier ?? .free
+        questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
+
+        if subscriptionTier == .free {
+            normalizeFreeTierLimits()
+        }
     }
 
     private func initialCompetencies(for goal: Goal, questions: [CheckpointQuestion]) -> [TopicCompetency] {
@@ -637,9 +827,14 @@ final class CheckpointStore {
             existingQuestions: existingQuestions,
             competencies: competencies,
             reportedQuestions: reportedQuestions,
-            targetCount: 40,
+            targetCount: questionBankTargetCount,
             minimumDifficulty: unlockPolicy.minimumQuestionDifficulty,
             backendEndpoint: URL(string: backendEndpoint.trimmingCharacters(in: .whitespacesAndNewlines))
         )
+    }
+
+    private func normalizeFreeTierLimits() {
+        unlockPolicy.questionsPerSession = UnlockPolicy.default.questionsPerSession
+        unlockPolicy.requiredCorrectAnswers = UnlockPolicy.default.requiredCorrectAnswers
     }
 }

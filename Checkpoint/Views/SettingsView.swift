@@ -1,8 +1,10 @@
+import StoreKit
 import SwiftUI
 
 struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
+    let purchaseController: PurchaseController
 
     @State private var isRestrictedAppsPresented = false
 
@@ -18,6 +20,36 @@ struct SettingsView: View {
                         Text("Keep the MVP strict, simple, and easy to test.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
+                    }
+
+                    SectionPanel("Plan") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(store.isPro ? "Checkpoint Pro" : "Checkpoint Free")
+                                        .font(.headline)
+                                        .foregroundStyle(CheckpointTheme.text)
+
+                                    Text(planSubtitle)
+                                        .font(.subheadline)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+
+                                Spacer()
+
+                                StatusBadge(
+                                    text: store.subscriptionTier.displayName,
+                                    tint: store.isPro ? CheckpointTheme.amber : CheckpointTheme.teal
+                                )
+                            }
+
+                            if !store.isPro {
+                                SecondaryActionButton(title: "View Pro", systemImage: "sparkles") {
+                                    store.requestUpgrade(for: .unlimitedQuestionRefreshes)
+                                }
+                            }
+                        }
                     }
 
                     SectionPanel("Goal") {
@@ -109,6 +141,12 @@ struct SettingsView: View {
 
                     SectionPanel("Strictness") {
                         VStack(alignment: .leading, spacing: 16) {
+                            if !store.canUse(.advancedStrictness) {
+                                ProLockedFeatureRow(feature: .advancedStrictness) {
+                                    store.requestUpgrade(for: .advancedStrictness)
+                                }
+                            }
+
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Checkpoint threshold")
                                     .font(.headline)
@@ -120,9 +158,13 @@ struct SettingsView: View {
 
                                 Stepper("Questions in set: \(store.unlockPolicy.questionsPerSession)", value: questionsPerSessionBinding, in: 1...10)
                                     .foregroundStyle(CheckpointTheme.text)
+                                    .disabled(!store.canUse(.advancedStrictness))
+                                    .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
 
                                 Stepper("Correct needed: \(store.unlockPolicy.requiredCorrectAnswers)", value: requiredCorrectAnswersBinding, in: 1...store.unlockPolicy.questionsPerSession)
                                     .foregroundStyle(CheckpointTheme.text)
+                                    .disabled(!store.canUse(.advancedStrictness))
+                                    .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
@@ -207,9 +249,25 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.text)
                             }
 
-                            SecondaryActionButton(title: "Refresh question batch", systemImage: "arrow.clockwise") {
-                                Task {
-                                    await store.refreshQuestionBatch()
+                            HStack {
+                                Text("Refreshes")
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                Spacer()
+                                Text(store.questionRefreshStatusText)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+                            }
+
+                            SecondaryActionButton(
+                                title: store.canRefreshQuestionBatch ? "Refresh question batch" : "Upgrade for more refreshes",
+                                systemImage: store.canRefreshQuestionBatch ? "arrow.clockwise" : "lock"
+                            ) {
+                                if store.canRefreshQuestionBatch {
+                                    Task {
+                                        await store.refreshQuestionBatch()
+                                    }
+                                } else {
+                                    store.requestUpgrade(for: .unlimitedQuestionRefreshes)
                                 }
                             }
                         }
@@ -230,7 +288,31 @@ struct SettingsView: View {
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
             }
+            .sheet(
+                item: Binding(
+                    get: { store.pendingPaywallFeature },
+                    set: { feature in
+                        if feature == nil {
+                            store.dismissPaywall()
+                        }
+                    }
+                )
+            ) { feature in
+                PaywallView(
+                    feature: feature,
+                    store: store,
+                    purchaseController: purchaseController
+                )
+            }
         }
+    }
+
+    private var planSubtitle: String {
+        if store.isPro {
+            return "Unlimited refreshes, larger question banks, and advanced strictness are active."
+        }
+
+        return "Free keeps the blocker loop usable with one goal, local questions, and \(FreemiumLimits.freeQuestionRefreshLimit) refreshes per goal."
     }
 
     private var unlockMinutesBinding: Binding<Int> {
@@ -296,5 +378,249 @@ struct SettingsView: View {
         default:
             return "Level 5 of 5 (Expert)"
         }
+    }
+}
+
+private struct ProLockedFeatureRow: View {
+    var feature: ProFeature
+    var action: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "lock.fill")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(CheckpointTheme.amber)
+                .frame(width: 26, height: 26)
+                .background(CheckpointTheme.amber.opacity(0.14), in: RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(feature.title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text("Free uses the default 4-of-5 checkpoint. Pro lets you tune the checkpoint length and pass threshold.")
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+
+            Button("Pro") {
+                action()
+            }
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.paper)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+            .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8))
+        }
+        .padding(12)
+        .background(CheckpointTheme.panelRaised.opacity(0.72), in: RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct PaywallView: View {
+    let feature: ProFeature
+    let store: CheckpointStore
+    let purchaseController: PurchaseController
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var purchasingProductID: String?
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        StatusBadge(text: feature.title, tint: CheckpointTheme.amber)
+
+                        Text("Checkpoint Pro")
+                            .font(.largeTitle.bold())
+                            .foregroundStyle(CheckpointTheme.text)
+
+                        Text("Keep the core blocker free. Pay for deeper study controls when Checkpoint becomes part of your routine.")
+                            .font(.subheadline)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    SectionPanel("Why Pro") {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ProBenefitRow(title: feature.title, detail: feature.detail, isHighlighted: true)
+
+                            ForEach(ProFeature.allCases.filter { $0.id != feature.id }) { includedFeature in
+                                ProBenefitRow(title: includedFeature.title, detail: includedFeature.detail)
+                            }
+                        }
+                    }
+
+                    SectionPanel("Price") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            if purchaseController.isLoadingProducts {
+                                HStack(spacing: 10) {
+                                    ProgressView()
+                                    Text("Loading App Store prices")
+                                        .font(.subheadline)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                }
+                            } else if purchaseController.products.isEmpty {
+                                FallbackPriceRow(title: "Monthly", price: "$4.99/mo")
+                                FallbackPriceRow(title: "Annual", price: "$29.99/yr")
+
+                                Text("These are the planned launch prices. Purchases will activate after the App Store Connect products are configured.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            } else {
+                                ForEach(purchaseController.products, id: \.id) { product in
+                                    Button {
+                                        purchase(product)
+                                    } label: {
+                                        HStack {
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(product.displayName)
+                                                    .font(.headline)
+                                                    .foregroundStyle(CheckpointTheme.text)
+
+                                                Text(product.description)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(CheckpointTheme.muted)
+                                                    .lineLimit(2)
+                                            }
+
+                                            Spacer()
+
+                                            if purchasingProductID == product.id {
+                                                ProgressView()
+                                            } else {
+                                                Text(product.displayPrice)
+                                                    .font(.subheadline.weight(.bold))
+                                                    .foregroundStyle(CheckpointTheme.paper)
+                                                    .padding(.horizontal, 12)
+                                                    .padding(.vertical, 8)
+                                                    .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8))
+                                            }
+                                        }
+                                        .padding(12)
+                                        .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 8))
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(purchasingProductID != nil)
+                                }
+                            }
+
+                            if let message = purchaseController.purchaseMessage {
+                                Text(message)
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.coral)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
+                            HStack(spacing: 10) {
+                                SecondaryActionButton(title: "Restore", systemImage: "arrow.clockwise.circle") {
+                                    Task {
+                                        let unlocked = await purchaseController.restorePurchases()
+                                        if unlocked {
+                                            store.updateSubscriptionTier(.pro)
+                                            close()
+                                        }
+                                    }
+                                }
+
+                                SecondaryActionButton(title: "Keep Free", systemImage: "xmark") {
+                                    close()
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(20)
+            }
+            .checkpointScreenBackground()
+            .navigationTitle("Checkpoint Pro")
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        close()
+                    }
+                    .foregroundStyle(CheckpointTheme.teal)
+                }
+            }
+            .task {
+                await purchaseController.loadProducts()
+                let unlocked = await purchaseController.refreshEntitlements()
+                if unlocked {
+                    store.updateSubscriptionTier(.pro)
+                }
+            }
+        }
+    }
+
+    private func purchase(_ product: Product) {
+        purchasingProductID = product.id
+
+        Task {
+            let unlocked = await purchaseController.purchase(product)
+            purchasingProductID = nil
+
+            if unlocked {
+                store.updateSubscriptionTier(.pro)
+                close()
+            }
+        }
+    }
+
+    private func close() {
+        store.dismissPaywall()
+        dismiss()
+    }
+}
+
+private struct ProBenefitRow: View {
+    var title: String
+    var detail: String
+    var isHighlighted = false
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: isHighlighted ? "star.fill" : "checkmark.circle.fill")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(isHighlighted ? CheckpointTheme.amber : CheckpointTheme.teal)
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text(detail)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+}
+
+private struct FallbackPriceRow: View {
+    var title: String
+    var price: String
+
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+
+            Spacer()
+
+            Text(price)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+        }
+        .padding(12)
+        .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 8))
     }
 }

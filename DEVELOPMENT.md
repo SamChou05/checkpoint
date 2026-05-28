@@ -33,6 +33,7 @@ Important platform constraint:
 - Academic paper-inspired visual system.
 - Home, History, Skill, and Settings tabs.
 - Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
+- Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
 - Goal onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
 - Simulated blocked-app attempt flow for previewing the checkpoint experience before real device testing.
@@ -54,6 +55,7 @@ Important platform constraint:
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Settings includes a manual question batch refresh action.
+- Free question refreshes are limited per goal before opening the Pro paywall; Pro allows larger target batches and unlimited refreshes.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic
@@ -85,7 +87,7 @@ Important platform constraint:
 ### Unlock Policy
 
 - Correct-answer unlock duration is configurable with 15, 30, 45, and 60 minute options. The default is 30 minutes.
-- Correct-answer count per unlock is configurable.
+- Correct-answer count per unlock is configurable for Pro users; Free uses the default 4-of-5 gate.
 - Multiple-choice misses stay locked.
 - Incorrect and unclear answers do not unlock.
 - Revealed expected answers force the attempt to stay locked.
@@ -183,11 +185,12 @@ The MVP is complete when:
 - Integrations with Anki, Quizlet, LeetCode, Notion, or Google Sheets.
 - Server-side analytics and TestFlight instrumentation.
 - Subscription/paywall experiments after retention is validated.
-- StoreKit planning is documented, but payment should wait until the physical Screen Time loop is validated.
+- StoreKit UI, product IDs, restore hooks, and entitlement refresh are scaffolded, but real purchases still need App Store Connect products, local StoreKit configuration, and TestFlight verification.
 
 ## Product Decisions
 
 - Keep one active goal for the MVP.
+- Keep the core blocked-app recovery flow free; do not trap users behind payment.
 - Keep AI generation batched and cached, not live on every app-open attempt.
 - Do not ship API keys in the iOS app.
 - Use the shield as the trigger, not as the full quiz surface.

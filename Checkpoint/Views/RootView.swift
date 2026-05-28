@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     @State private var store = CheckpointStore()
     @State private var screenTime = ScreenTimeController()
+    @State private var purchaseController = PurchaseController()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -22,7 +23,7 @@ struct RootView: View {
                     Label("Skill", systemImage: "chart.line.uptrend.xyaxis")
                 }
 
-            SettingsView(store: store, screenTime: screenTime)
+            SettingsView(store: store, screenTime: screenTime, purchaseController: purchaseController)
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
@@ -38,9 +39,19 @@ struct RootView: View {
             OnboardingView(store: store)
                 .interactiveDismissDisabled(store.goal == nil)
         }
+        .task {
+            purchaseController.startListeningForTransactions()
+            await purchaseController.loadProducts()
+            let isProUnlocked = await purchaseController.refreshEntitlements()
+            store.updateSubscriptionTier(isProUnlocked ? .pro : .free)
+        }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             screenTime.reconcileShieldState()
+            Task {
+                let isProUnlocked = await purchaseController.refreshEntitlements()
+                store.updateSubscriptionTier(isProUnlocked ? .pro : .free)
+            }
         }
     }
 }

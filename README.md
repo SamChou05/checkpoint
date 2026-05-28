@@ -19,6 +19,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Recovery states for blocked-app launches when no checkpoint questions are available.
 - Academic paper-inspired UI for Home, Checkpoint, History, and Settings.
 - Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
+- StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for advanced strictness and question refresh capacity.
 - Privacy manifests for the app and Screen Time extensions.
 - Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.
 - Shield Configuration extension target for branded Screen Time shield UI.
@@ -45,7 +46,7 @@ See `docs/MONETIZATION.md` for the recommended free/Pro split, product IDs, and 
 
 ## Testing
 
-Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, and provider payload sanitization.
+Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, Free/Pro gating, and provider payload sanitization.
 
 ## Open
 

@@ -14,6 +14,7 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
 - Blocked-app launches with no available checkpoint questions surface a recovery notice.
 - Simulator XCTest coverage passes for the core workflow.
+- StoreKit-ready Free/Pro gating is scaffolded. The core blocked-app recovery loop remains free; Pro gates advanced strictness and refresh capacity.
 
 ## External Gates
 
@@ -77,4 +78,4 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 - App Store privacy labels and a hosted privacy policy are finalized.
 - Screenshots, description, support URL, age rating, and review notes are created in App Store Connect.
 - Persistence is accepted as MVP-local storage or replaced with a production store.
-- Monetization scope is finalized. See `docs/MONETIZATION.md`; do not gate blocked-app recovery behind payment.
+- Monetization scope is finalized, App Store Connect subscription products are configured, StoreKit sandbox/TestFlight purchases are verified, and blocked-app recovery remains available without payment.

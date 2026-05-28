@@ -76,10 +76,23 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testFreeTierKeepsCoreCheckpointAvailable() throws {
+        let store = makeSeededStore(questionCount: 6)
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(store.subscriptionTier, .free)
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.unlockThreshold, 4)
+        XCTAssertTrue(store.canRefreshQuestionBatch)
+    }
+
+    @MainActor
     func testCheckpointSessionPrioritizesMissedAndDueQuestionsBeforeNewQuestions() throws {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
+        store.updateSubscriptionTier(.pro)
         store.updateQuestionsPerSession(3)
 
         let missed = makeQuestion(
@@ -109,6 +122,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
+        store.updateSubscriptionTier(.pro)
         store.updateQuestionsPerSession(2)
         store.updateMinimumQuestionDifficulty(3)
 
@@ -280,6 +294,73 @@ final class CheckpointWorkflowTests: XCTestCase {
             "Choose at least one restricted app, category, or website before applying the shield."
         )
         XCTAssertFalse(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
+    func testFreeTierBlocksAdvancedStrictnessChanges() {
+        let store = CheckpointStore(defaults: defaults)
+
+        store.updateQuestionsPerSession(8)
+
+        XCTAssertEqual(store.unlockPolicy.questionsPerSession, 5)
+        XCTAssertEqual(store.unlockPolicy.requiredCorrectAnswers, 4)
+        XCTAssertEqual(store.pendingPaywallFeature, .advancedStrictness)
+
+        store.dismissPaywall()
+        store.updateSubscriptionTier(.pro)
+        store.updateQuestionsPerSession(8)
+        store.updateRequiredCorrectAnswers(7)
+
+        XCTAssertEqual(store.unlockPolicy.questionsPerSession, 8)
+        XCTAssertEqual(store.unlockPolicy.requiredCorrectAnswers, 7)
+        XCTAssertNil(store.pendingPaywallFeature)
+    }
+
+    @MainActor
+    func testFreeTierStopsQuestionRefreshBeforeProviderCall() async {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.goal = goal
+        store.questions = [makeQuestion(goal: goal, index: 1)]
+        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+
+        await store.refreshQuestionBatch()
+
+        XCTAssertNil(localEngine.receivedRequest)
+        XCTAssertEqual(store.pendingPaywallFeature, .unlimitedQuestionRefreshes)
+        XCTAssertEqual(store.questions.count, 1)
+    }
+
+    @MainActor
+    func testProTierRefreshUsesLargerQuestionBankTarget() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateSubscriptionTier(.pro)
+        store.goal = goal
+        store.questions = [makeQuestion(goal: goal, index: 99)]
+        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+
+        await store.refreshQuestionBatch()
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.targetCount, FreemiumLimits.proQuestionBankTargetCount)
+        XCTAssertEqual(store.questionRefreshesUsed, FreemiumLimits.freeQuestionRefreshLimit + 1)
+        XCTAssertEqual(store.questions.count, 2)
+        XCTAssertNil(store.pendingPaywallFeature)
     }
 
     @MainActor
