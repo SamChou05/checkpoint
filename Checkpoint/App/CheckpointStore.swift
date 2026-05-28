@@ -507,6 +507,12 @@ final class CheckpointStore {
         return unlockMinutes
     }
 
+    func clearUnlockSession() {
+        unlockSession = nil
+        SharedAppGroup.publishUnlockExpiration(nil)
+        save()
+    }
+
     func resetDemoData() {
         goal = nil
         questions = []
@@ -537,6 +543,26 @@ final class CheckpointStore {
 
     func startManualCheckpointSession() -> CheckpointSession? {
         checkpointSession(source: .manual)
+    }
+
+    func startStopBlockingSession() -> CheckpointSession? {
+        guard goal != nil else {
+            checkpointNotice = "Create a goal before stopping blocking."
+            return nil
+        }
+
+        let selectedQuestions = nextQuestions(limit: StopBlockingPolicy.questionsPerSession)
+        guard selectedQuestions.count >= StopBlockingPolicy.questionsPerSession else {
+            checkpointNotice = "Stopping blocking needs 10 ready questions. Refresh questions or lower the minimum level."
+            return nil
+        }
+
+        checkpointNotice = nil
+        return CheckpointSession(
+            questions: selectedQuestions,
+            requiredCorrectAnswers: StopBlockingPolicy.requiredCorrectAnswers,
+            purpose: .stopBlocking
+        )
     }
 
     func clearCheckpointNotice() {

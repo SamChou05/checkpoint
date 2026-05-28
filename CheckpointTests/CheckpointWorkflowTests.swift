@@ -135,7 +135,33 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertEqual(session.questions.count, 5)
         XCTAssertEqual(session.unlockThreshold, 4)
+        XCTAssertEqual(session.purpose, .temporaryUnlock)
         XCTAssertEqual(Set(session.questions.map(\.id)).count, 5)
+    }
+
+    @MainActor
+    func testStopBlockingSessionRequiresNineOfTenQuestions() throws {
+        let store = makeSeededStore(questionCount: 12)
+
+        let session = try XCTUnwrap(store.startStopBlockingSession())
+
+        XCTAssertEqual(session.questions.count, StopBlockingPolicy.questionsPerSession)
+        XCTAssertEqual(session.unlockThreshold, StopBlockingPolicy.requiredCorrectAnswers)
+        XCTAssertEqual(session.purpose, .stopBlocking)
+        XCTAssertFalse(session.hasMetUnlockThreshold(correctAnswerCount: 8))
+        XCTAssertTrue(session.hasMetUnlockThreshold(correctAnswerCount: 9))
+        XCTAssertEqual(Set(session.questions.map(\.id)).count, StopBlockingPolicy.questionsPerSession)
+    }
+
+    @MainActor
+    func testStopBlockingSessionNeedsTenReadyQuestions() {
+        let store = makeSeededStore(questionCount: 9)
+
+        XCTAssertNil(store.startStopBlockingSession())
+        XCTAssertEqual(
+            store.checkpointNotice,
+            "Stopping blocking needs 10 ready questions. Refresh questions or lower the minimum level."
+        )
     }
 
     @MainActor
@@ -271,6 +297,28 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(updatedQuestion.status, .incorrect)
         XCTAssertGreaterThan(updatedQuestion.nextReviewAt ?? .distantPast, Date())
         XCTAssertEqual(updatedCompetency.incorrect, 1)
+    }
+
+    @MainActor
+    func testClearingUnlockSessionRemovesStoredTimer() throws {
+        let store = makeSeededStore(questionCount: 5)
+        let question = try XCTUnwrap(store.questions.first)
+
+        store.submitAnswer(
+            question: question,
+            answer: question.expectedAnswer,
+            result: .correct,
+            grantsUnlock: true
+        )
+
+        XCTAssertNotNil(store.unlockSession)
+        XCTAssertNotNil(SharedAppGroup.unlockExpiration)
+
+        store.clearUnlockSession()
+
+        XCTAssertNil(store.unlockSession)
+        XCTAssertEqual(store.activeUnlockMinutesRemaining, 0)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
     }
 
     @MainActor

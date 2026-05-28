@@ -18,7 +18,8 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - XCTest coverage for the core checkpoint, scheduler, unlock, sanitizer, and provider-cost workflows.
 - Recovery states for blocked-app launches when no checkpoint questions are available.
 - Academic paper-inspired UI for Home, Checkpoint, History, and Settings.
-- Settings now keeps product controls up front: Plan, Goal, App blocking, Checkpoint rules, Practice set, and a collapsed Advanced troubleshooting area.
+- Settings now keeps product controls up front: Plan, Goal, App blocking, Checkpoint rules, Practice set, and a collapsed Advanced troubleshooting area for diagnostics and reset.
+- Home no longer offers a one-tap pause while blocking is active; short breaks go through checkpoints or emergency passes, while fully stopping blocking requires a 9-of-10 stop challenge in Advanced.
 - Users can change the active goal; Checkpoint prepares a fresh practice set and Skill Map for the new goal.
 - StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for custom checkpoint rules, automatic question refresh, next-topic guidance, and question refresh capacity.
 - Privacy manifests for the app and Screen Time extensions.

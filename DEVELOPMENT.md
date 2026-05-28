@@ -32,7 +32,8 @@ Important platform constraint:
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
 - Home, History, Skill, and Settings tabs.
-- Settings keeps user-facing controls focused on Plan, Goal, App blocking, Checkpoint rules, and Practice set; readiness and shield diagnostics now live in a collapsed Advanced area.
+- Settings keeps user-facing controls focused on Plan, Goal, App blocking, Checkpoint rules, and Practice set; shield diagnostics and reset now live in a collapsed Advanced area.
+- Stopping blocking is intentionally harder than starting it: Home routes active blockers to checkpoint unlocks, while full stop requires a 9-of-10 stop challenge in Advanced.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
 - Study Assist adds passive question-supply status, automatic refresh with a cooldown, and next-topic guidance without adding a setup step.
 - Goal onboarding flow.

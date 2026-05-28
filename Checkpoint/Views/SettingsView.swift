@@ -8,6 +8,9 @@ struct SettingsView: View {
 
     @State private var isRestrictedAppsPresented = false
     @State private var isAdvancedExpanded = false
+    @State private var advancedAction: AdvancedSettingsAction?
+    @State private var stopBlockingSession: CheckpointSession?
+    @State private var stopBlockingMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -270,41 +273,31 @@ struct SettingsView: View {
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
 
-                                VStack(alignment: .leading, spacing: 12) {
-                                    readinessRow(
-                                        title: "Goal",
-                                        detail: store.goal?.title ?? "Missing",
-                                        isReady: store.goal != nil
-                                    )
+                                Text("Stopping blocking is intentionally tucked away so app-open moments still point back to a checkpoint. To turn it off, clear a 10-question challenge with at least 9 correct.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
 
-                                    readinessRow(
-                                        title: "Questions",
-                                        detail: "\(store.questions.count) saved",
-                                        isReady: store.questions.count >= store.unlockPolicy.questionsPerSession
-                                    )
+                                SecondaryActionButton(title: "Stop blocking", systemImage: "hand.raised") {
+                                    if let session = store.startStopBlockingSession() {
+                                        stopBlockingMessage = nil
+                                        stopBlockingSession = session
+                                    } else {
+                                        stopBlockingMessage = store.checkpointNotice
+                                    }
+                                }
+                                .disabled(!canStopBlocking)
+                                .opacity(canStopBlocking ? 1 : 0.48)
 
-                                    readinessRow(
-                                        title: "Screen Time",
-                                        detail: screenTime.setupState.rawValue,
-                                        isReady: screenTime.isReadyForShielding
-                                    )
-
-                                    readinessRow(
-                                        title: "Blocked apps",
-                                        detail: screenTime.restrictedAppsSummary,
-                                        isReady: screenTime.hasSelection
-                                    )
-
-                                    readinessRow(
-                                        title: "Unlock time",
-                                        detail: "\(store.unlockPolicy.unlockMinutes)m default",
-                                        isReady: store.unlockPolicy.unlockMinutes >= 15
-                                    )
+                                if let stopBlockingMessage {
+                                    Text(stopBlockingMessage)
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.amber)
+                                        .fixedSize(horizontal: false, vertical: true)
                                 }
 
                                 SecondaryActionButton(title: "Reset app data", systemImage: "arrow.counterclockwise") {
-                                    screenTime.clearShield()
-                                    store.resetDemoData()
+                                    advancedAction = .resetData
                                 }
                             }
                             .padding(.top, 10)
@@ -324,6 +317,12 @@ struct SettingsView: View {
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
             }
+            .sheet(item: $advancedAction) { action in
+                AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
+            }
+            .sheet(item: $stopBlockingSession) { session in
+                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
+            }
             .sheet(
                 item: Binding(
                     get: { store.pendingPaywallFeature },
@@ -341,6 +340,10 @@ struct SettingsView: View {
                 )
             }
         }
+    }
+
+    private var canStopBlocking: Bool {
+        screenTime.isShieldingEnabled || screenTime.setupState == .temporarilyUnlocked
     }
 
     private var planSubtitle: String {
@@ -379,28 +382,6 @@ struct SettingsView: View {
         )
     }
 
-    private func readinessRow(title: String, detail: String, isReady: Bool) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: isReady ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(isReady ? CheckpointTheme.teal : CheckpointTheme.amber)
-                .frame(width: 22)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
-
-                Text(detail)
-                    .font(.footnote)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer(minLength: 0)
-        }
-    }
-
     private func difficultyLabel(for level: Int) -> String {
         switch level {
         case 1:
@@ -413,6 +394,126 @@ struct SettingsView: View {
             return "Level 4 of 5 (Hard)"
         default:
             return "Level 5 of 5 (Expert)"
+        }
+    }
+}
+
+private enum AdvancedSettingsAction: String, Identifiable {
+    case resetData
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .resetData:
+            return "Reset Checkpoint?"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .resetData:
+            return "This clears your goal, questions, skill map, history, reports, and blocking state on this device."
+        }
+    }
+
+    var confirmationPhrase: String {
+        switch self {
+        case .resetData:
+            return "RESET"
+        }
+    }
+
+    var buttonTitle: String {
+        switch self {
+        case .resetData:
+            return "Reset app data"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .resetData:
+            return "arrow.counterclockwise"
+        }
+    }
+}
+
+private struct AdvancedConfirmationView: View {
+    let action: AdvancedSettingsAction
+    let store: CheckpointStore
+    let screenTime: ScreenTimeController
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var confirmationText = ""
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(action.title)
+                            .font(.largeTitle.bold())
+                            .foregroundStyle(CheckpointTheme.text)
+
+                        Text(action.detail)
+                            .font(.subheadline)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    SectionPanel("Confirm") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Type \(action.confirmationPhrase) to continue.")
+                                .font(.subheadline)
+                                .foregroundStyle(CheckpointTheme.muted)
+
+                            TextField(action.confirmationPhrase, text: $confirmationText)
+                                .textFieldStyle(.plain)
+                                .font(.headline)
+                                .foregroundStyle(CheckpointTheme.text)
+                                .textInputAutocapitalization(.characters)
+                                .autocorrectionDisabled()
+                                .padding(12)
+                                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+
+                            PrimaryActionButton(title: action.buttonTitle, systemImage: action.systemImage) {
+                                performAction()
+                                dismiss()
+                            }
+                            .disabled(!isConfirmed)
+
+                            SecondaryActionButton(title: "Cancel", systemImage: "xmark") {
+                                dismiss()
+                            }
+                        }
+                    }
+                }
+                .padding(20)
+            }
+            .checkpointScreenBackground()
+            .navigationTitle(action.buttonTitle)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundStyle(CheckpointTheme.teal)
+                }
+            }
+        }
+    }
+
+    private var isConfirmed: Bool {
+        confirmationText.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == action.confirmationPhrase
+    }
+
+    private func performAction() {
+        switch action {
+        case .resetData:
+            screenTime.clearShield()
+            store.resetDemoData()
         }
     }
 }

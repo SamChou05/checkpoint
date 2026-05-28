@@ -60,6 +60,11 @@ enum CheckpointSessionSource: Sendable {
     case blockedApp
 }
 
+enum CheckpointSessionPurpose: String, Sendable {
+    case temporaryUnlock
+    case stopBlocking
+}
+
 enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
     case automatic = "Automatic"
     case appleFoundation = "Apple Foundation"
@@ -271,6 +276,7 @@ struct CheckpointSession: Identifiable, Equatable, Sendable {
     var id = UUID()
     var questions: [CheckpointQuestion]
     var requiredCorrectAnswers: Int
+    var purpose: CheckpointSessionPurpose = .temporaryUnlock
 
     var unlockThreshold: Int {
         min(questions.count, max(1, requiredCorrectAnswers))
@@ -284,6 +290,11 @@ struct CheckpointSession: Identifiable, Equatable, Sendable {
         let remainingQuestions = max(0, questions.count - answeredQuestionCount)
         return correctAnswerCount + remainingQuestions >= unlockThreshold
     }
+}
+
+enum StopBlockingPolicy {
+    static let questionsPerSession = 10
+    static let requiredCorrectAnswers = 9
 }
 
 struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {

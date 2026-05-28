@@ -22,13 +22,13 @@ struct CheckpointAttemptView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 8) {
-                        StatusBadge(text: "Blocked app attempt", tint: CheckpointTheme.amber)
+                        StatusBadge(text: sessionBadgeText, tint: CheckpointTheme.amber)
 
-                        Text("Clear \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")")
+                        Text(sessionTitle)
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Get \(session.unlockThreshold) of \(session.questions.count) correct before the \(store.unlockPolicy.unlockMinutes)-minute unlock.")
+                        Text(sessionSubtitle)
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
 
@@ -236,24 +236,69 @@ struct CheckpointAttemptView: View {
         return usesAutomaticEvaluation ? evaluation.result : result
     }
 
+    private var sessionBadgeText: String {
+        switch session.purpose {
+        case .temporaryUnlock:
+            return "Blocked app attempt"
+        case .stopBlocking:
+            return "Stop blocking challenge"
+        }
+    }
+
+    private var sessionTitle: String {
+        switch session.purpose {
+        case .temporaryUnlock:
+            return "Clear \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")"
+        case .stopBlocking:
+            return "Clear the stop challenge"
+        }
+    }
+
+    private var sessionSubtitle: String {
+        switch session.purpose {
+        case .temporaryUnlock:
+            return "Get \(session.unlockThreshold) of \(session.questions.count) correct before the \(store.unlockPolicy.unlockMinutes)-minute unlock."
+        case .stopBlocking:
+            return "Get \(session.unlockThreshold) of \(session.questions.count) correct to turn app blocking off."
+        }
+    }
+
     private var submitButtonTitle: String {
         if didRevealAnswer {
             return projectedSessionCanStillPass ? "Submit answer" : "Submit and stay locked"
         }
 
         if projectedSessionShouldFinish {
-            return projectedSessionWillUnlock ? "Submit and unlock \(store.unlockPolicy.unlockMinutes) minutes" : "Submit and stay locked"
+            return projectedSessionWillPass ? passingSubmitButtonTitle : "Submit and stay locked"
         }
 
         return "Submit answer"
     }
 
+    private var passingSubmitButtonTitle: String {
+        switch session.purpose {
+        case .temporaryUnlock:
+            return "Submit and unlock \(store.unlockPolicy.unlockMinutes) minutes"
+        case .stopBlocking:
+            return "Submit and stop blocking"
+        }
+    }
+
     private var submitButtonIcon: String {
         if projectedSessionShouldFinish {
-            return projectedSessionWillUnlock ? "lock.open" : "lock"
+            return projectedSessionWillPass ? passingSubmitButtonIcon : "lock"
         }
 
         return "checkmark.seal"
+    }
+
+    private var passingSubmitButtonIcon: String {
+        switch session.purpose {
+        case .temporaryUnlock:
+            return "lock.open"
+        case .stopBlocking:
+            return "hand.raised"
+        }
     }
 
     private func submitCurrentAnswer() {
@@ -269,20 +314,26 @@ struct CheckpointAttemptView: View {
             correctAnswerCount: updatedCorrectCount,
             answeredQuestionCount: answeredQuestionCount
         )
-        let shouldUnlock = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
+        let shouldPass = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
         let unlockMinutes = store.submitAnswer(
             question: question,
             answer: answer,
             result: result,
             grantsUnlock: false,
-            unlockMinutesOverride: shouldUnlock ? store.unlockPolicy.unlockMinutes : nil
+            unlockMinutesOverride: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : nil
         )
         correctAnswerCount = updatedCorrectCount
         missedQuestionIDs = updatedMissedQuestionIDs
 
         guard !shouldFinish else {
-            if shouldUnlock {
-                screenTime.temporarilyUnshield(minutes: unlockMinutes)
+            if shouldPass {
+                switch session.purpose {
+                case .temporaryUnlock:
+                    screenTime.temporarilyUnshield(minutes: unlockMinutes)
+                case .stopBlocking:
+                    store.clearUnlockSession()
+                    screenTime.clearShield()
+                }
             } else {
                 store.makeMissedQuestionsDueNow(updatedMissedQuestionIDs)
             }
@@ -323,7 +374,7 @@ struct CheckpointAttemptView: View {
         isFinalQuestion || !projectedSessionCanStillPass
     }
 
-    private var projectedSessionWillUnlock: Bool {
+    private var projectedSessionWillPass: Bool {
         projectedSessionShouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: projectedCorrectAnswerCount)
     }
 }

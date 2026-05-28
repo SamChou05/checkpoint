@@ -247,9 +247,9 @@ struct HomeView: View {
                         isRestrictedAppsPresented = true
                     }
 
-                    SecondaryActionButton(title: screenTime.isShieldingEnabled ? "Pause blocking" : "Start blocking", systemImage: screenTime.isShieldingEnabled ? "pause" : "shield") {
+                    SecondaryActionButton(title: screenTime.isShieldingEnabled ? "Unlock with checkpoint" : "Start blocking", systemImage: screenTime.isShieldingEnabled ? "lock.open" : "shield") {
                         if screenTime.isShieldingEnabled {
-                            screenTime.clearShield()
+                            activeSession = store.startManualCheckpointSession()
                         } else {
                             screenTime.applyShield()
                         }
