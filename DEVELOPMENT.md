@@ -34,6 +34,7 @@ Important platform constraint:
 - Home, Skill, and Settings tabs.
 - Settings keeps user-facing controls focused on Plan, Goal, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
+- Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
 - Stopping blocking is intentionally harder than starting it: Home routes active blockers to checkpoint unlocks, while full stop requires a 9-of-10 stop challenge in Advanced.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.

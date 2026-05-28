@@ -13,9 +13,6 @@ struct CheckpointAttemptView: View {
     @State private var result: AnswerResult = .correct
     @State private var isExplanationVisible = false
     @State private var didRevealAnswer = false
-    @State private var reportReason: QuestionReportReason = .confusing
-    @State private var reportNote = ""
-    @State private var didReportQuestion = false
 
     var body: some View {
         NavigationStack {
@@ -146,32 +143,6 @@ struct CheckpointAttemptView: View {
                             }
                             .padding(12)
                             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-                        }
-                    }
-
-                    SectionPanel("Question quality") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Picker("Problem", selection: $reportReason) {
-                                ForEach(QuestionReportReason.allCases) { reason in
-                                    Text(reason.rawValue).tag(reason)
-                                }
-                            }
-
-                            TextField("Optional note", text: $reportNote, axis: .vertical)
-                                .lineLimit(3, reservesSpace: true)
-                                .textFieldStyle(.plain)
-                                .foregroundStyle(CheckpointTheme.text)
-                                .padding(12)
-                                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-
-                            SecondaryActionButton(
-                                title: didReportQuestion ? "Reported" : "Report bad question",
-                                systemImage: didReportQuestion ? "checkmark" : "exclamationmark.bubble"
-                            ) {
-                                store.reportQuestion(question, reason: reportReason, note: reportNote)
-                                didReportQuestion = true
-                            }
-                            .disabled(didReportQuestion)
                         }
                     }
 
@@ -350,9 +321,6 @@ struct CheckpointAttemptView: View {
         result = .correct
         isExplanationVisible = false
         didRevealAnswer = false
-        reportReason = .confusing
-        reportNote = ""
-        didReportQuestion = false
     }
 
     private var projectedCorrectAnswerCount: Int {

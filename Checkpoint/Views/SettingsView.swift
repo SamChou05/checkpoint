@@ -8,6 +8,7 @@ struct SettingsView: View {
 
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
+    @State private var isQuestionReportsPresented = false
     @State private var isAdvancedExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
     @State private var stopBlockingSession: CheckpointSession?
@@ -77,13 +78,26 @@ struct SettingsView: View {
                     }
 
                     SectionPanel("Activity") {
-                        SettingsNavigationRow(
-                            title: "Checkpoint history",
-                            detail: historyDetailText,
-                            systemImage: "clock.arrow.circlepath",
-                            trailingText: "\(store.attempts.count)"
-                        ) {
-                            isHistoryPresented = true
+                        VStack(spacing: 14) {
+                            SettingsNavigationRow(
+                                title: "Checkpoint history",
+                                detail: historyDetailText,
+                                systemImage: "clock.arrow.circlepath",
+                                trailingText: "\(store.attempts.count)"
+                            ) {
+                                isHistoryPresented = true
+                            }
+
+                            Divider()
+
+                            SettingsNavigationRow(
+                                title: "Question reports",
+                                detail: questionReportsDetailText,
+                                systemImage: "exclamationmark.bubble",
+                                trailingText: "\(store.reportedQuestionCount)"
+                            ) {
+                                isQuestionReportsPresented = true
+                            }
                         }
                     }
 
@@ -281,6 +295,9 @@ struct SettingsView: View {
             .sheet(isPresented: $isHistoryPresented) {
                 HistoryView(store: store)
             }
+            .sheet(isPresented: $isQuestionReportsPresented) {
+                QuestionReportsView(store: store)
+            }
             .sheet(item: $advancedAction) { action in
                 AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
             }
@@ -328,6 +345,14 @@ struct SettingsView: View {
         }
 
         return "\(store.completedTodayCount) answered today"
+    }
+
+    private var questionReportsDetailText: String {
+        if store.reportedQuestionCount == 0 {
+            return "Flag confusing or incorrect questions"
+        }
+
+        return "\(store.reportedQuestionCount) submitted"
     }
 
     private var unlockMinutesBinding: Binding<Int> {
