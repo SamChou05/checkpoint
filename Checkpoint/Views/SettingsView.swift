@@ -7,6 +7,7 @@ struct SettingsView: View {
     let purchaseController: PurchaseController
 
     @State private var isRestrictedAppsPresented = false
+    @State private var isHistoryPresented = false
     @State private var isAdvancedExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
     @State private var stopBlockingSession: CheckpointSession?
@@ -72,6 +73,17 @@ struct SettingsView: View {
 
                         SecondaryActionButton(title: "Change active goal", systemImage: "pencil") {
                             store.isOnboardingPresented = true
+                        }
+                    }
+
+                    SectionPanel("Activity") {
+                        SettingsNavigationRow(
+                            title: "Checkpoint history",
+                            detail: historyDetailText,
+                            systemImage: "clock.arrow.circlepath",
+                            trailingText: "\(store.attempts.count)"
+                        ) {
+                            isHistoryPresented = true
                         }
                     }
 
@@ -266,6 +278,9 @@ struct SettingsView: View {
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
             }
+            .sheet(isPresented: $isHistoryPresented) {
+                HistoryView(store: store)
+            }
             .sheet(item: $advancedAction) { action in
                 AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
             }
@@ -305,6 +320,14 @@ struct SettingsView: View {
         }
 
         return "Free keeps the blocker loop usable with one goal and automatic checkpoint preparation."
+    }
+
+    private var historyDetailText: String {
+        if store.attempts.isEmpty {
+            return "No checkpoint answers yet"
+        }
+
+        return "\(store.completedTodayCount) answered today"
     }
 
     private var unlockMinutesBinding: Binding<Int> {
@@ -468,6 +491,48 @@ private struct AdvancedConfirmationView: View {
             screenTime.clearShield()
             store.resetDemoData()
         }
+    }
+}
+
+private struct SettingsNavigationRow: View {
+    var title: String
+    var detail: String
+    var systemImage: String
+    var trailingText: String
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 34, height: 34)
+                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    Text(detail)
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                }
+
+                Spacer(minLength: 0)
+
+                Text(trailingText)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 

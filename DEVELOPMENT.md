@@ -31,8 +31,9 @@ Important platform constraint:
 
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
-- Home, History, Skill, and Settings tabs.
+- Home, Skill, and Settings tabs.
 - Settings keeps user-facing controls focused on Plan, Goal, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
+- Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
 - Stopping blocking is intentionally harder than starting it: Home routes active blockers to checkpoint unlocks, while full stop requires a 9-of-10 stop challenge in Advanced.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
@@ -123,7 +124,7 @@ Important platform constraint:
 - Shield configuration shows Checkpoint-branded shield copy.
 - Shield configuration writes render diagnostics to the shared App Group so Settings can confirm whether iOS loaded the custom shield page or fell back to the system Restricted page.
 - Shield action records a pending checkpoint attempt in shared App Group state and asks iOS to open Checkpoint.
-- Pending shield attempts are consumed at the app root, so the checkpoint sheet can appear even if Checkpoint opens on Settings, Skill, or History.
+- Pending shield attempts are consumed at the app root, so the checkpoint sheet can appear even if Checkpoint opens on Settings or Skill.
 - Device Activity monitor re-applies selected app/category/web shields after a temporary unlock expires.
 - Main app consumes pending shield attempts on launch or foreground activation and opens the checkpoint answer flow.
 

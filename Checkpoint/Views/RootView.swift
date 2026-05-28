@@ -17,12 +17,6 @@ struct RootView: View {
                 }
                 .tag(AppTab.home)
 
-            HistoryView(store: store)
-                .tabItem {
-                    Label("History", systemImage: "clock.arrow.circlepath")
-                }
-                .tag(AppTab.history)
-
             CompetencyView(store: store)
                 .tabItem {
                     Label("Skill", systemImage: "chart.line.uptrend.xyaxis")
@@ -87,7 +81,6 @@ struct RootView: View {
 
 private enum AppTab: Hashable {
     case home
-    case history
     case skill
     case settings
 }

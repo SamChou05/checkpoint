@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HistoryView: View {
     let store: CheckpointStore
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
@@ -30,6 +31,14 @@ struct HistoryView: View {
             .checkpointScreenBackground()
             .navigationTitle("History")
             .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                    .foregroundStyle(CheckpointTheme.teal)
+                }
+            }
         }
     }
 

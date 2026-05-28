@@ -17,7 +17,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Missed questions from a failed unlock attempt become due immediately so the next checkpoint retests them first.
 - XCTest coverage for the core checkpoint, scheduler, unlock, sanitizer, and provider-cost workflows.
 - Recovery states for blocked-app launches when no checkpoint questions are available.
-- Academic paper-inspired UI for Home, Checkpoint, History, and Settings.
+- Academic paper-inspired UI for Home, Checkpoint, Skill, and Settings, with history available from Settings.
 - Settings now keeps product controls up front: Plan, Goal, App blocking, Checkpoint rules, and a collapsed Advanced troubleshooting area for diagnostics and reset.
 - Home no longer offers a one-tap pause while blocking is active; short breaks go through checkpoints or emergency passes, while fully stopping blocking requires a 9-of-10 stop challenge in Advanced.
 - Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
