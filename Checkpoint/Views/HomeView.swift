@@ -146,15 +146,15 @@ struct HomeView: View {
     private var metricsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             MetricTile(
-                title: "Questions today",
-                value: "\(store.completedTodayCount)",
+                title: "Questions answered",
+                value: "\(store.questionsAnsweredThisWeekCount)",
                 tint: CheckpointTheme.teal,
                 systemImage: "checkmark.seal"
             )
 
             MetricTile(
-                title: "Checkpoint pass rate",
-                value: store.conversionRateText,
+                title: "Question accuracy",
+                value: store.questionAccuracyThisWeekText,
                 tint: CheckpointTheme.amber,
                 systemImage: "arrow.triangle.2.circlepath"
             )

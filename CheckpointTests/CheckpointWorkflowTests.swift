@@ -85,6 +85,32 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testWeeklyMetricsOnlyUseCurrentGoalAttemptsFromThisWeek() {
+        let store = CheckpointStore(defaults: defaults)
+        let goal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let lastWeek = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date.distantPast
+
+        store.goal = goal
+        store.attempts = [
+            makeAttempt(goal: goal, result: .correct, createdAt: Date()),
+            makeAttempt(goal: goal, result: .incorrect, createdAt: Date()),
+            makeAttempt(goal: goal, result: .correct, createdAt: lastWeek),
+            makeAttempt(goal: otherGoal, result: .correct, createdAt: Date())
+        ]
+
+        XCTAssertEqual(store.questionsAnsweredThisWeekCount, 2)
+        XCTAssertEqual(store.questionAccuracyThisWeekText, "50%")
+    }
+
+    @MainActor
     func testSwitchingActiveGoalRebuildsPracticeSetAndSkillMap() async throws {
         let engine = GoalAwareQuestionEngine(provider: .localTemplates)
         let store = CheckpointStore(
@@ -1155,6 +1181,23 @@ private func makeQuestion(
         nextReviewAt: nextReviewAt,
         sourcePrompt: sourcePrompt
     )
+}
+
+private func makeAttempt(
+    goal: Goal,
+    result: AnswerResult,
+    createdAt: Date
+) -> CheckpointAttempt {
+    var attempt = CheckpointAttempt(
+        questionID: UUID(),
+        goalID: goal.id,
+        prompt: "Metric question",
+        answer: "Metric answer",
+        result: result,
+        unlockMinutes: 0
+    )
+    attempt.createdAt = createdAt
+    return attempt
 }
 
 private func makeRequest(

@@ -381,7 +381,7 @@ struct SettingsView: View {
             return "No checkpoint answers yet"
         }
 
-        return "\(store.completedTodayCount) answered today"
+        return "\(store.questionsAnsweredThisWeekCount) answered this week"
     }
 
     private var questionReportsDetailText: String {

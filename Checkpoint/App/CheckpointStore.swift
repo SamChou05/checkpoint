@@ -80,14 +80,14 @@ final class CheckpointStore {
         return max(0, Int(ceil(unlockSession.expiresAt.timeIntervalSinceNow / 60)))
     }
 
-    var completedTodayCount: Int {
-        activeAttempts.filter { Calendar.current.isDateInToday($0.createdAt) }.count
+    var questionsAnsweredThisWeekCount: Int {
+        activeAttemptsThisWeek.count
     }
 
-    var conversionRateText: String {
-        guard !activeAttempts.isEmpty else { return "0%" }
-        let successful = activeAttempts.filter { $0.result == .correct || $0.result == .partial }.count
-        return "\(Int((Double(successful) / Double(activeAttempts.count)) * 100))%"
+    var questionAccuracyThisWeekText: String {
+        guard !activeAttemptsThisWeek.isEmpty else { return "0%" }
+        let correct = activeAttemptsThisWeek.filter { $0.result == .correct }.count
+        return "\(Int((Double(correct) / Double(activeAttemptsThisWeek.count)) * 100))%"
     }
 
     var averageMasteryText: String {
@@ -121,6 +121,11 @@ final class CheckpointStore {
     var activeAttempts: [CheckpointAttempt] {
         guard let goalID = goal?.id else { return [] }
         return attempts.filter { $0.goalID == goalID }
+    }
+
+    private var activeAttemptsThisWeek: [CheckpointAttempt] {
+        guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
+        return activeAttempts.filter { week.contains($0.createdAt) }
     }
 
     var activeCompetencies: [TopicCompetency] {
