@@ -11,16 +11,28 @@ struct OnboardingView: View {
     @State private var focusAreas = ""
     @State private var isCreating = false
 
+    init(store: CheckpointStore) {
+        self.store = store
+
+        if let goal = store.goal {
+            _title = State(initialValue: goal.title)
+            _deadline = State(initialValue: max(goal.deadline, Date()))
+            _category = State(initialValue: goal.category)
+            _currentLevel = State(initialValue: goal.currentLevel)
+            _focusAreas = State(initialValue: goal.focusAreas)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Build your checkpoint loop")
+                        Text(store.goal == nil ? "Build your checkpoint loop" : "Change your active goal")
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Type the goal clearly. Checkpoint turns it into questions that come back when you miss them.")
+                        Text(headerSubtitle)
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -68,7 +80,7 @@ struct OnboardingView: View {
                     }
 
                     PrimaryActionButton(
-                        title: isCreating ? "Preparing questions" : "Prepare questions",
+                        title: primaryButtonTitle,
                         systemImage: "book.closed"
                     ) {
                         Task {
@@ -104,5 +116,21 @@ struct OnboardingView: View {
             }
         }
         .preferredColorScheme(.light)
+    }
+
+    private var headerSubtitle: String {
+        if store.goal == nil {
+            return "Type the goal clearly. Checkpoint turns it into questions that come back when you miss them."
+        }
+
+        return "Changing the active goal prepares a fresh practice set and skill map."
+    }
+
+    private var primaryButtonTitle: String {
+        if isCreating {
+            return "Preparing questions"
+        }
+
+        return store.goal == nil ? "Prepare questions" : "Switch active goal"
     }
 }

@@ -19,6 +19,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Recovery states for blocked-app launches when no checkpoint questions are available.
 - Academic paper-inspired UI for Home, Checkpoint, History, and Settings.
 - Settings now keeps product controls up front: Plan, Goal, App blocking, Checkpoint rules, Practice set, and a collapsed Advanced troubleshooting area.
+- Users can change the active goal; Checkpoint prepares a fresh practice set and Skill Map for the new goal.
 - StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for custom checkpoint rules, automatic question refresh, next-topic guidance, and question refresh capacity.
 - Privacy manifests for the app and Screen Time extensions.
 - Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.

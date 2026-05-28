@@ -66,7 +66,7 @@ struct SettingsView: View {
                             }
                         }
 
-                        SecondaryActionButton(title: "Edit goal setup", systemImage: "pencil") {
+                        SecondaryActionButton(title: "Change active goal", systemImage: "pencil") {
                             store.isOnboardingPresented = true
                         }
                     }

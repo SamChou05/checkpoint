@@ -69,6 +69,65 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testSwitchingActiveGoalRebuildsPracticeSetAndSkillMap() async throws {
+        let engine = GoalAwareQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: engine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.localTemplates)
+
+        await store.createGoal(
+            title: "Pass technical interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "arrays, recursion",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let firstGoal = try XCTUnwrap(store.goal)
+        let firstQuestion = try XCTUnwrap(store.questions.first)
+        XCTAssertEqual(Set(store.competencies.map(\.topic)), ["arrays", "recursion"])
+
+        _ = store.submitAnswer(question: firstQuestion, answer: firstQuestion.expectedAnswer, result: .correct)
+        store.reportQuestion(firstQuestion, reason: .confusing, note: "stale")
+
+        XCTAssertFalse(store.attempts.isEmpty)
+        XCTAssertFalse(store.questionReports.isEmpty)
+        XCTAssertNotNil(store.unlockSession)
+        XCTAssertNotNil(SharedAppGroup.unlockExpiration)
+
+        await store.createGoal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Comfortable with derivatives, weak on integrals",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let secondGoal = try XCTUnwrap(store.goal)
+        XCTAssertNotEqual(secondGoal.id, firstGoal.id)
+        XCTAssertEqual(secondGoal.title, "Prepare for calculus final")
+        XCTAssertTrue(store.questions.allSatisfy { $0.goalID == secondGoal.id })
+        XCTAssertEqual(Set(store.questions.map(\.topic)), ["derivatives", "integrals"])
+        XCTAssertEqual(Set(store.competencies.map(\.topic)), ["derivatives", "integrals"])
+        XCTAssertTrue(store.attempts.isEmpty)
+        XCTAssertTrue(store.questionReports.isEmpty)
+        XCTAssertNil(store.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+        XCTAssertTrue(session.questions.allSatisfy { $0.goalID == secondGoal.id })
+        XCTAssertTrue(session.questions.allSatisfy { ["derivatives", "integrals"].contains($0.topic) })
+    }
+
+    @MainActor
     func testCheckpointSessionUsesFiveDistinctQuestionsByDefault() throws {
         let store = makeSeededStore(questionCount: 7)
 
@@ -756,6 +815,30 @@ private struct StaticQuestionEngine: QuestionGenerating {
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         questions
+    }
+}
+
+private struct GoalAwareQuestionEngine: QuestionGenerating {
+    let provider: AIProviderKind
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        let topics = request.goal.focusAreas
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        let resolvedTopics = topics.isEmpty ? [request.goal.category.rawValue] : topics
+
+        return (1...6).map { index in
+            makeQuestion(
+                goal: request.goal,
+                index: index,
+                topic: resolvedTopics[(index - 1) % resolvedTopics.count],
+                prompt: "\(request.goal.title) question \(index): Which choice best supports the active goal?",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
     }
 }
 

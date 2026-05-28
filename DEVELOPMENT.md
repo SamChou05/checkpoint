@@ -37,6 +37,7 @@ Important platform constraint:
 - Study Assist adds passive question-supply status, automatic refresh with a cooldown, and next-topic guidance without adding a setup step.
 - Goal onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
+- Existing goals reopen prefilled; switching the active goal rebuilds questions, resets attempts/reports/unlock state, and refreshes the Skill Map around the new topics.
 - Home includes a user-facing `Start a checkpoint` flow for previewing the checkpoint experience before real device testing.
 
 ### Question System

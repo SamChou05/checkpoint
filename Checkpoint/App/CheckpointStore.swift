@@ -331,6 +331,7 @@ final class CheckpointStore {
         checkpointNotice = nil
         unlockSession = nil
         isOnboardingPresented = false
+        SharedAppGroup.publishUnlockExpiration(nil)
         save()
         publishShieldContext()
     }
