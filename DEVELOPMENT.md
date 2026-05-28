@@ -37,6 +37,7 @@ Important platform constraint:
 - Stopping blocking is intentionally harder than starting it: Home routes active blockers to checkpoint unlocks, while full stop requires a 9-of-10 stop challenge in Advanced.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
 - Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
+- Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
 - Goal onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.

@@ -20,7 +20,6 @@ struct HomeView: View {
                         goalHero(goal)
                         metricsGrid
                         proAssistPanel
-                        nextCheckpointPanel
                         screenTimePanel
                     } else {
                         emptyState
@@ -186,34 +185,6 @@ struct HomeView: View {
                 tint: CheckpointTheme.coral,
                 systemImage: "timer"
             )
-        }
-    }
-
-    private var nextCheckpointPanel: some View {
-        SectionPanel("Next checkpoint") {
-            if let question = store.nextQuestion() {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        StatusBadge(text: question.topic, tint: CheckpointTheme.amber)
-                        Spacer()
-                        Text("Level \(question.difficulty) of 5")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(CheckpointTheme.muted)
-                    }
-
-                    Text(question.prompt)
-                        .font(.headline)
-                        .foregroundStyle(CheckpointTheme.text)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Text("A full checkpoint set pulls missed and due questions first, then fills with new goal-aligned questions.")
-                        .font(.footnote)
-                        .foregroundStyle(CheckpointTheme.muted)
-                }
-            } else {
-                Text("Create a goal to prepare your first practice set.")
-                    .foregroundStyle(CheckpointTheme.muted)
-            }
         }
     }
 
