@@ -15,7 +15,7 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
 - Blocked-app launches with no available checkpoint questions surface a recovery notice.
 - Simulator XCTest coverage passes for the core workflow.
-- StoreKit-ready Free/Pro gating is scaffolded. The core blocked-app recovery loop remains free; Pro gates custom checkpoint rules, automatic question refresh, next-topic guidance, and refresh capacity.
+- StoreKit-ready Free/Pro gating is scaffolded. The core blocked-app recovery loop remains free; Pro gates goal profiles, custom checkpoint rules, automatic question refresh, next-topic guidance, and refresh capacity.
 
 ## External Gates
 

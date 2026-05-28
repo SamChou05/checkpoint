@@ -128,6 +128,125 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testProGoalProfilesPreserveSeparateQuestionPoolsSkillMapsAndDifficulty() async throws {
+        let engine = GoalAwareQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: engine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateSubscriptionTier(.pro)
+        store.updateAIProviderPreference(.localTemplates)
+
+        await store.createGoal(
+            title: "Pass technical interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Advanced on arrays, weak at recursion",
+            focusAreas: "arrays, recursion",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 4
+        )
+
+        let firstGoal = try XCTUnwrap(store.goal)
+        let firstQuestion = try XCTUnwrap(store.activeQuestions.first)
+        _ = store.submitAnswer(question: firstQuestion, answer: firstQuestion.expectedAnswer, result: .correct)
+        store.reportQuestion(firstQuestion, reason: .confusing, note: "too vague")
+
+        await store.createGoal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Comfortable with derivatives, weak on integrals",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+
+        let secondGoal = try XCTUnwrap(store.goal)
+        XCTAssertNotEqual(secondGoal.id, firstGoal.id)
+        XCTAssertEqual(store.availableGoalProfiles.count, 2)
+        XCTAssertEqual(store.activeQuestionDifficulty, 2)
+        XCTAssertTrue(store.activeQuestions.allSatisfy { $0.goalID == secondGoal.id })
+        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["derivatives", "integrals"])
+        XCTAssertTrue(store.activeAttempts.isEmpty)
+        XCTAssertTrue(store.activeQuestionReports.isEmpty)
+
+        let firstSourcePrompt = try XCTUnwrap(store.questions.first { $0.goalID == firstGoal.id }?.sourcePrompt)
+        let secondSourcePrompt = try XCTUnwrap(store.questions.first { $0.goalID == secondGoal.id }?.sourcePrompt)
+        XCTAssertTrue(firstSourcePrompt.contains("Minimum difficulty: 4 of 5"))
+        XCTAssertTrue(secondSourcePrompt.contains("Minimum difficulty: 2 of 5"))
+
+        store.switchActiveGoal(to: firstGoal.id)
+
+        XCTAssertEqual(store.goal?.id, firstGoal.id)
+        XCTAssertEqual(store.activeQuestionDifficulty, 4)
+        XCTAssertTrue(store.activeQuestions.allSatisfy { $0.goalID == firstGoal.id })
+        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["arrays", "recursion"])
+        XCTAssertEqual(store.activeAttempts.count, 1)
+        XCTAssertEqual(store.activeQuestionReports.count, 1)
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+        XCTAssertTrue(session.questions.allSatisfy { $0.goalID == firstGoal.id })
+        XCTAssertTrue(session.questions.allSatisfy { $0.difficulty >= 4 })
+    }
+
+    @MainActor
+    func testGoalProfilesPersistAcrossStoreReloads() async throws {
+        let engine = GoalAwareQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: engine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateSubscriptionTier(.pro)
+
+        await store.createGoal(
+            title: "Pass technical interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Advanced on arrays",
+            focusAreas: "arrays, recursion",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 4
+        )
+        let firstGoal = try XCTUnwrap(store.goal)
+
+        await store.createGoal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        let secondGoal = try XCTUnwrap(store.goal)
+        store.switchActiveGoal(to: firstGoal.id)
+
+        let restoredStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: engine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+
+        XCTAssertEqual(restoredStore.goal?.id, firstGoal.id)
+        XCTAssertEqual(Set(restoredStore.availableGoalProfiles.map(\.id)), Set([firstGoal.id, secondGoal.id]))
+        XCTAssertEqual(restoredStore.activeQuestionDifficulty, 4)
+        XCTAssertTrue(restoredStore.activeQuestions.allSatisfy { $0.goalID == firstGoal.id })
+        XCTAssertEqual(Set(restoredStore.sortedCompetencies.map(\.topic)), ["arrays", "recursion"])
+    }
+
+    @MainActor
     func testCheckpointSessionUsesFiveDistinctQuestionsByDefault() throws {
         let store = makeSeededStore(questionCount: 7)
 

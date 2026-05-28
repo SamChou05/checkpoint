@@ -47,7 +47,7 @@ struct CompetencyView: View {
 
             MetricTile(
                 title: "Tracked topics",
-                value: "\(store.competencies.count)",
+                value: "\(store.activeCompetencies.count)",
                 tint: CheckpointTheme.amber,
                 systemImage: "scope"
             )

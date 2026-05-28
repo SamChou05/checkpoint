@@ -40,7 +40,7 @@ struct QuestionReportsView: View {
                     }
 
                     SectionPanel("Submitted") {
-                        if store.questionReports.isEmpty {
+                        if store.activeQuestionReports.isEmpty {
                             EmptyReportsState(
                                 systemImage: "tray",
                                 title: "No reports yet",
@@ -48,7 +48,7 @@ struct QuestionReportsView: View {
                             )
                         } else {
                             VStack(spacing: 12) {
-                                ForEach(store.questionReports) { report in
+                                ForEach(store.activeQuestionReports) { report in
                                     SubmittedQuestionReportRow(report: report)
                                 }
                             }
@@ -75,15 +75,15 @@ struct QuestionReportsView: View {
     }
 
     private var reportableQuestions: [CheckpointQuestion] {
-        let reportedQuestionIDs = Set(store.questionReports.map(\.questionID))
-        let activeQuestions = store.questions.filter { question in
+        let reportedQuestionIDs = Set(store.activeQuestionReports.map(\.questionID))
+        let activeQuestions = store.activeQuestions.filter { question in
             question.status != .retired && !reportedQuestionIDs.contains(question.id)
         }
         let questionsByID = Dictionary(uniqueKeysWithValues: activeQuestions.map { ($0.id, $0) })
         var orderedQuestions: [CheckpointQuestion] = []
         var seenQuestionIDs = Set<CheckpointQuestion.ID>()
 
-        for attempt in store.attempts {
+        for attempt in store.activeAttempts {
             guard let question = questionsByID[attempt.questionID],
                   !seenQuestionIDs.contains(question.id) else {
                 continue

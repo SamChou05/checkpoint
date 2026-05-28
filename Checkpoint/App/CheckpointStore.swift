@@ -135,7 +135,14 @@ private enum QuestionRefreshReason {
 @MainActor
 @Observable
 final class CheckpointStore {
-    var goal: Goal?
+    var goal: Goal? {
+        didSet {
+            if let goal {
+                upsertGoalProfile(goal)
+            }
+        }
+    }
+    var goalProfiles: [Goal] = []
     var questions: [CheckpointQuestion] = []
     var attempts: [CheckpointAttempt] = []
     var competencies: [TopicCompetency] = []
@@ -150,6 +157,7 @@ final class CheckpointStore {
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining = 1
     var isOnboardingPresented = false
+    var isCreatingGoalProfile = false
     var subscriptionTier: SubscriptionTier = .free
     var questionRefreshesUsed = 0
     var pendingPaywallFeature: ProFeature?
@@ -176,23 +184,23 @@ final class CheckpointStore {
     }
 
     var completedTodayCount: Int {
-        attempts.filter { Calendar.current.isDateInToday($0.createdAt) }.count
+        activeAttempts.filter { Calendar.current.isDateInToday($0.createdAt) }.count
     }
 
     var conversionRateText: String {
-        guard !attempts.isEmpty else { return "0%" }
-        let successful = attempts.filter { $0.result == .correct || $0.result == .partial }.count
-        return "\(Int((Double(successful) / Double(attempts.count)) * 100))%"
+        guard !activeAttempts.isEmpty else { return "0%" }
+        let successful = activeAttempts.filter { $0.result == .correct || $0.result == .partial }.count
+        return "\(Int((Double(successful) / Double(activeAttempts.count)) * 100))%"
     }
 
     var averageMasteryText: String {
-        guard !competencies.isEmpty else { return "0%" }
-        let total = competencies.reduce(0) { $0 + $1.masteryPercent }
-        return "\(total / competencies.count)%"
+        guard !activeCompetencies.isEmpty else { return "0%" }
+        let total = activeCompetencies.reduce(0) { $0 + $1.masteryPercent }
+        return "\(total / activeCompetencies.count)%"
     }
 
     var sortedCompetencies: [TopicCompetency] {
-        competencies.sorted {
+        activeCompetencies.sorted {
             if $0.masteryPercent == $1.masteryPercent {
                 return $0.topic < $1.topic
             }
@@ -201,7 +209,40 @@ final class CheckpointStore {
     }
 
     var reportedQuestionCount: Int {
-        questionReports.count
+        activeQuestionReports.count
+    }
+
+    var activeQuestionDifficulty: Int {
+        goal?.minimumQuestionDifficulty ?? unlockPolicy.minimumQuestionDifficulty
+    }
+
+    var activeQuestions: [CheckpointQuestion] {
+        guard let goalID = goal?.id else { return [] }
+        return questions.filter { $0.goalID == goalID }
+    }
+
+    var activeAttempts: [CheckpointAttempt] {
+        guard let goalID = goal?.id else { return [] }
+        return attempts.filter { $0.goalID == goalID }
+    }
+
+    var activeCompetencies: [TopicCompetency] {
+        guard let goalID = goal?.id else { return [] }
+        return competencies.filter { $0.goalID == goalID || $0.goalID == nil }
+    }
+
+    var activeQuestionReports: [QuestionQualityReport] {
+        guard let goalID = goal?.id else { return [] }
+        return questionReports.filter { $0.goalID == goalID }
+    }
+
+    var availableGoalProfiles: [Goal] {
+        let profiles = goalProfiles.isEmpty ? goal.map { [$0] } ?? [] : goalProfiles
+        return profiles.sorted {
+            if $0.id == goal?.id { return true }
+            if $1.id == goal?.id { return false }
+            return $0.createdAt > $1.createdAt
+        }
     }
 
     var isPro: Bool {
@@ -225,7 +266,7 @@ final class CheckpointStore {
     }
 
     var usableQuestionCount: Int {
-        questions.filter(meetsDifficultyFloor).count
+        activeQuestions.filter(meetsDifficultyFloor).count
     }
 
     var questionBankHealthText: String {
@@ -261,7 +302,7 @@ final class CheckpointStore {
     var proFocusRecommendation: String? {
         guard isPro, goal != nil else { return nil }
 
-        if let missedTopic = questions
+        if let missedTopic = activeQuestions
             .filter({ $0.status == .incorrect })
             .sorted(by: sortByReviewPriority)
             .first?
@@ -299,6 +340,35 @@ final class CheckpointStore {
         pendingPaywallFeature = nil
     }
 
+    func presentGoalProfileCreator() {
+        guard goal == nil || canUse(.multipleGoals) else {
+            requestUpgrade(for: .multipleGoals)
+            return
+        }
+
+        isCreatingGoalProfile = true
+        isOnboardingPresented = true
+    }
+
+    func presentActiveGoalEditor() {
+        isCreatingGoalProfile = false
+        isOnboardingPresented = true
+    }
+
+    func switchActiveGoal(to goalID: Goal.ID) {
+        guard goalID == goal?.id || canUse(.multipleGoals) else {
+            requestUpgrade(for: .multipleGoals)
+            return
+        }
+
+        guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return }
+        goal = selectedGoal
+        questionBatchState = activeQuestions.isEmpty ? .idle : .ready
+        checkpointNotice = nil
+        save()
+        publishShieldContext()
+    }
+
     func updateSubscriptionTier(_ tier: SubscriptionTier) {
         subscriptionTier = tier
         if tier == .free {
@@ -314,7 +384,9 @@ final class CheckpointStore {
         category: GoalCategory,
         currentLevel: String,
         focusAreas: String,
-        preferredQuestionStyle: QuestionFormat
+        preferredQuestionStyle: QuestionFormat,
+        minimumQuestionDifficulty: Int? = nil,
+        createsNewProfile: Bool? = nil
     ) async {
         let normalizedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedCurrentLevel = currentLevel.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -333,26 +405,39 @@ final class CheckpointStore {
             category: category,
             currentLevel: normalizedCurrentLevel,
             focusAreas: normalizedFocusAreas,
-            preferredQuestionStyle: preferredQuestionStyle
+            preferredQuestionStyle: preferredQuestionStyle,
+            minimumQuestionDifficulty: minimumQuestionDifficulty ?? activeQuestionDifficulty
         )
 
-        goal = newGoal
+        let previousGoalID = goal?.id
+        let shouldCreateNewProfile = createsNewProfile ?? (isPro && previousGoalID != nil)
+        let shouldReplaceActiveProfile = !shouldCreateNewProfile && previousGoalID != nil
         questionRefreshesUsed = 0
+        questionBatchState = .generating
         let batch = await questionEngine.generateQuestionBatch(
             for: generationRequest(goal: newGoal, existingQuestions: [], competencies: [], reportedQuestions: []),
             preference: aiProviderPreference
         )
 
-        questions = batch.questions
+        goal = newGoal
+        if shouldReplaceActiveProfile, let previousGoalID {
+            removeGoalData(for: previousGoalID)
+            goalProfiles.removeAll { $0.id == previousGoalID }
+            upsertGoalProfile(newGoal)
+            if !isPro {
+                goalProfiles = [newGoal]
+            }
+        }
+
+        questions.append(contentsOf: batch.questions)
         lastQuestionProvider = batch.provider
         lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
-        competencies = initialCompetencies(for: newGoal, questions: questions)
-        questionReports = []
+        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: batch.questions))
         questionBatchState = .ready
-        attempts = []
         checkpointNotice = nil
         unlockSession = nil
         isOnboardingPresented = false
+        isCreatingGoalProfile = false
         SharedAppGroup.publishUnlockExpiration(nil)
         save()
         publishShieldContext()
@@ -380,17 +465,17 @@ final class CheckpointStore {
         let batch = await questionEngine.generateQuestionBatch(
             for: generationRequest(
                 goal: goal,
-                existingQuestions: questions,
-                competencies: competencies,
-                reportedQuestions: questionReports
+                existingQuestions: activeQuestions,
+                competencies: activeCompetencies,
+                reportedQuestions: activeQuestionReports
             ),
             preference: reason.providerPreference(defaultPreference: aiProviderPreference, isPro: isPro)
         )
         let generatedQuestions = batch.questions
-        let existingKeys = Set(questions.map { questionKey($0) })
+        let existingKeys = Set(activeQuestions.map { questionKey($0) })
         let newQuestions = generatedQuestions.filter { !existingKeys.contains(questionKey($0)) }
         questions.append(contentsOf: newQuestions)
-        competencies = mergeCompetencies(existing: competencies, goal: goal, questions: questions)
+        replaceActiveCompetencies(with: mergeCompetencies(existing: activeCompetencies, goal: goal, questions: activeQuestions))
         lastQuestionProvider = batch.provider
         if newQuestions.isEmpty {
             lastAIErrorMessage = "No new usable questions were added. Try refining the goal or refreshing later."
@@ -450,7 +535,7 @@ final class CheckpointStore {
     }
 
     private func nextQuestion(excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>) -> CheckpointQuestion? {
-        let availableQuestions = questions.filter { !excludedQuestionIDs.contains($0.id) }
+        let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
         return prioritizedQuestion(from: preferredQuestions) ?? prioritizedQuestion(from: availableQuestions)
     }
@@ -548,6 +633,7 @@ final class CheckpointStore {
 
     func resetDemoData() {
         goal = nil
+        goalProfiles = []
         questions = []
         attempts = []
         competencies = []
@@ -564,6 +650,7 @@ final class CheckpointStore {
         questionRefreshesUsed = 0
         pendingPaywallFeature = nil
         lastAutomaticQuestionRefreshAt = nil
+        isCreatingGoalProfile = false
         isOnboardingPresented = true
         save()
         publishShieldContext()
@@ -714,7 +801,13 @@ final class CheckpointStore {
     }
 
     func updateMinimumQuestionDifficulty(_ difficulty: Int) {
-        unlockPolicy.minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(difficulty)
+        let normalizedDifficulty = UnlockPolicy.normalizedQuestionDifficulty(difficulty)
+        if var activeGoal = goal {
+            activeGoal.minimumQuestionDifficulty = normalizedDifficulty
+            goal = activeGoal
+        } else {
+            unlockPolicy.minimumQuestionDifficulty = normalizedDifficulty
+        }
         save()
         publishShieldContext()
     }
@@ -761,11 +854,17 @@ final class CheckpointStore {
     }
 
     private func updateCompetency(for question: CheckpointQuestion, result: AnswerResult) {
-        if !competencies.contains(where: { $0.topic == question.topic }) {
-            competencies.append(.initial(topic: question.topic))
+        let matchesQuestionGoal: (TopicCompetency) -> Bool = { competency in
+            competency.topic == question.topic
+                && (competency.goalID == question.goalID || (competency.goalID == nil && self.goal?.id == question.goalID))
         }
 
-        guard let index = competencies.firstIndex(where: { $0.topic == question.topic }) else { return }
+        if !competencies.contains(where: matchesQuestionGoal) {
+            competencies.append(.initial(topic: question.topic, goalID: question.goalID))
+        }
+
+        guard let index = competencies.firstIndex(where: matchesQuestionGoal) else { return }
+        competencies[index].goalID = question.goalID
 
         competencies[index].attempts += 1
         competencies[index].lastResult = result
@@ -817,20 +916,50 @@ final class CheckpointStore {
     }
 
     private func meetsDifficultyFloor(_ question: CheckpointQuestion) -> Bool {
-        question.status != .retired && question.difficulty >= unlockPolicy.minimumQuestionDifficulty
+        question.status != .retired && question.difficulty >= activeQuestionDifficulty
     }
 
     private func competency(for topic: String) -> TopicCompetency {
-        competencies.first(where: { $0.topic == topic }) ?? .initial(topic: topic)
+        activeCompetencies.first(where: { $0.topic == topic }) ?? .initial(topic: topic, goalID: goal?.id)
     }
 
     private func targetDifficulty(for competency: TopicCompetency) -> Double {
         min(5.0, max(1.0, competency.estimatedLevel + 0.5))
     }
 
+    private func upsertGoalProfile(_ profile: Goal) {
+        if let index = goalProfiles.firstIndex(where: { $0.id == profile.id }) {
+            goalProfiles[index] = profile
+        } else {
+            goalProfiles.append(profile)
+        }
+    }
+
+    private func removeGoalData(for goalID: Goal.ID) {
+        questions.removeAll { $0.goalID == goalID }
+        attempts.removeAll { $0.goalID == goalID }
+        competencies.removeAll { $0.goalID == goalID || $0.goalID == nil }
+        questionReports.removeAll { $0.goalID == goalID }
+    }
+
+    private func replaceActiveCompetencies(with updatedCompetencies: [TopicCompetency]) {
+        guard let goalID = goal?.id else { return }
+        competencies.removeAll { ($0.goalID ?? goalID) == goalID }
+        competencies.append(contentsOf: updatedCompetencies)
+    }
+
+    private func migrateLegacyCompetenciesToActiveGoal() {
+        guard let goalID = goal?.id else { return }
+
+        for index in competencies.indices where competencies[index].goalID == nil {
+            competencies[index].goalID = goalID
+        }
+    }
+
     private func save() {
         let snapshot = AppSnapshot(
             goal: goal,
+            goalProfiles: availableGoalProfiles,
             questions: questions,
             attempts: attempts,
             competencies: competencies,
@@ -875,7 +1004,7 @@ final class CheckpointStore {
                 : "Create a goal before starting a checkpoint."
         }
 
-        if questions.isEmpty {
+        if activeQuestions.isEmpty {
             return source == .blockedApp
                 ? "Checkpoint opened from a blocked app, but no questions are ready yet."
                 : "No questions are ready yet."
@@ -890,7 +1019,6 @@ final class CheckpointStore {
             let snapshot = try? JSONDecoder().decode(AppSnapshot.self, from: data)
         else { return }
 
-        goal = snapshot.goal
         questions = snapshot.questions
         attempts = snapshot.attempts
         competencies = snapshot.competencies
@@ -905,6 +1033,18 @@ final class CheckpointStore {
         subscriptionTier = snapshot.subscriptionTier ?? .free
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
         lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
+        goalProfiles = snapshot.goalProfiles ?? snapshot.goal.map { [$0] } ?? []
+        goal = snapshot.goal
+
+        if snapshot.goalProfiles == nil,
+           var legacyGoal = goal,
+           snapshot.unlockPolicy != nil {
+            legacyGoal.minimumQuestionDifficulty = unlockPolicy.minimumQuestionDifficulty
+            goal = legacyGoal
+            goalProfiles = [legacyGoal]
+        }
+
+        migrateLegacyCompetenciesToActiveGoal()
 
         if subscriptionTier == .free {
             normalizeFreeTierLimits()
@@ -921,7 +1061,7 @@ final class CheckpointStore {
         let topics = Array(Set(focusTopics + questionTopics)).sorted()
 
         return topics.map { topic in
-            .initial(topic: topic, estimatedLevel: estimatedStartingLevel(for: topic, goal: goal))
+            .initial(topic: topic, estimatedLevel: estimatedStartingLevel(for: topic, goal: goal), goalID: goal.id)
         }
     }
 
@@ -1002,7 +1142,7 @@ final class CheckpointStore {
             competencies: competencies,
             reportedQuestions: reportedQuestions,
             targetCount: questionBankTargetCount,
-            minimumDifficulty: unlockPolicy.minimumQuestionDifficulty,
+            minimumDifficulty: goal.minimumQuestionDifficulty,
             backendEndpoint: URL(string: backendEndpoint.trimmingCharacters(in: .whitespacesAndNewlines))
         )
     }

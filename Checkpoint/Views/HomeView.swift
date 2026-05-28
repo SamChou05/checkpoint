@@ -77,6 +77,7 @@ struct HomeView: View {
                 HStack {
                     StatusBadge(text: goal.category.rawValue, tint: CheckpointTheme.teal)
                     Spacer()
+                    goalSwitcher
                     Text(goal.deadline, style: .date)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(CheckpointTheme.muted)
@@ -91,6 +92,8 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
+
+                StatusBadge(text: goal.difficultyLabel, tint: CheckpointTheme.amber)
 
                 Text("A blocked app asks \(store.unlockPolicy.questionsPerSession) questions. \(store.unlockPolicy.requiredCorrectAnswers) correct starts the unlock timer.")
                     .font(.footnote)
@@ -225,9 +228,42 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 PrimaryActionButton(title: "Create goal", systemImage: "plus") {
-                    store.isOnboardingPresented = true
+                    store.presentGoalProfileCreator()
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var goalSwitcher: some View {
+        if store.isPro, store.availableGoalProfiles.count > 1 {
+            Menu {
+                ForEach(store.availableGoalProfiles) { profile in
+                    Button {
+                        store.switchActiveGoal(to: profile.id)
+                    } label: {
+                        Label(
+                            profile.title,
+                            systemImage: profile.id == store.goal?.id ? "checkmark.circle.fill" : "circle"
+                        )
+                    }
+                }
+
+                Divider()
+
+                Button {
+                    store.presentGoalProfileCreator()
+                } label: {
+                    Label("New profile", systemImage: "plus")
+                }
+            } label: {
+                Image(systemName: "rectangle.stack")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 32, height: 32)
+                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+            }
+            .buttonStyle(.plain)
         }
     }
 

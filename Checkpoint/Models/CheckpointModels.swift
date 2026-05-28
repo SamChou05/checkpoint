@@ -112,7 +112,7 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         case .deeperAnalytics:
             return "Adaptive study guidance"
         case .multipleGoals:
-            return "Multiple goals"
+            return "Goal profiles"
         case .importsAndSync:
             return "Imports and sync"
         }
@@ -131,7 +131,7 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         case .deeperAnalytics:
             return "Get quiet next-topic guidance based on misses, difficulty, and mastery."
         case .multipleGoals:
-            return "Keep separate study goals and route blocked apps to the right checkpoint."
+            return "Keep separate study goals with their own context, question level, questions, and skill map."
         case .importsAndSync:
             return "Bring in notes, decks, PDFs, and cross-device study state later."
         }
@@ -140,6 +140,7 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
     static var launchFeatures: [ProFeature] {
         [
             .advancedStrictness,
+            .multipleGoals,
             .largerQuestionBanks,
             .deeperAnalytics
         ]
@@ -168,7 +169,77 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
     var currentLevel: String
     var focusAreas: String
     var preferredQuestionStyle: QuestionFormat
+    var minimumQuestionDifficulty: Int
     var createdAt = Date()
+
+    init(
+        id: UUID = UUID(),
+        title: String,
+        deadline: Date,
+        category: GoalCategory,
+        currentLevel: String,
+        focusAreas: String,
+        preferredQuestionStyle: QuestionFormat,
+        minimumQuestionDifficulty: Int = UnlockPolicy.default.minimumQuestionDifficulty,
+        createdAt: Date = Date()
+    ) {
+        self.id = id
+        self.title = title
+        self.deadline = deadline
+        self.category = category
+        self.currentLevel = currentLevel
+        self.focusAreas = focusAreas
+        self.preferredQuestionStyle = preferredQuestionStyle
+        self.minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(minimumQuestionDifficulty)
+        self.createdAt = createdAt
+    }
+
+    var difficultyLabel: String {
+        Self.difficultyLabel(for: minimumQuestionDifficulty)
+    }
+
+    static func difficultyLabel(for level: Int) -> String {
+        switch UnlockPolicy.normalizedQuestionDifficulty(level) {
+        case 1:
+            return "Level 1 of 5 (Basics)"
+        case 2:
+            return "Level 2 of 5 (Easy)"
+        case 3:
+            return "Level 3 of 5 (Medium)"
+        case 4:
+            return "Level 4 of 5 (Hard)"
+        default:
+            return "Level 5 of 5 (Expert)"
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case deadline
+        case category
+        case currentLevel
+        case focusAreas
+        case preferredQuestionStyle
+        case minimumQuestionDifficulty
+        case createdAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        title = try container.decode(String.self, forKey: .title)
+        deadline = try container.decode(Date.self, forKey: .deadline)
+        category = try container.decode(GoalCategory.self, forKey: .category)
+        currentLevel = try container.decode(String.self, forKey: .currentLevel)
+        focusAreas = try container.decode(String.self, forKey: .focusAreas)
+        preferredQuestionStyle = try container.decode(QuestionFormat.self, forKey: .preferredQuestionStyle)
+        minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(
+            try container.decodeIfPresent(Int.self, forKey: .minimumQuestionDifficulty)
+                ?? UnlockPolicy.default.minimumQuestionDifficulty
+        )
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+    }
 }
 
 struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
@@ -406,6 +477,7 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
 }
 
 struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
+    var goalID: Goal.ID?
     var topic: String
     var estimatedLevel: Double
     var attempts: Int
@@ -416,7 +488,9 @@ struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
     var lastResult: AnswerResult?
     var lastPracticedAt: Date?
 
-    var id: String { topic }
+    var id: String {
+        "\(goalID?.uuidString ?? "legacy")::\(topic)"
+    }
 
     var masteryPercent: Int {
         guard attempts > 0 else { return 0 }
@@ -428,8 +502,13 @@ struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
         String(format: "%.1f", estimatedLevel)
     }
 
-    static func initial(topic: String, estimatedLevel: Double = 1.5) -> TopicCompetency {
+    static func initial(
+        topic: String,
+        estimatedLevel: Double = 1.5,
+        goalID: Goal.ID? = nil
+    ) -> TopicCompetency {
         TopicCompetency(
+            goalID: goalID,
             topic: topic,
             estimatedLevel: min(5.0, max(1.0, estimatedLevel)),
             attempts: 0,
@@ -454,6 +533,7 @@ struct UnlockSession: Codable, Equatable, Sendable {
 
 struct AppSnapshot: Codable, Sendable {
     var goal: Goal?
+    var goalProfiles: [Goal]?
     var questions: [CheckpointQuestion]
     var attempts: [CheckpointAttempt]
     var competencies: [TopicCompetency]

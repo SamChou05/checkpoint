@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: May 27, 2026
+Last updated: May 28, 2026
 
 ## Current Product Direction
 
@@ -8,8 +8,8 @@ Checkpoint is an iOS app that lets a user pick restricted apps, set a goal, and 
 
 The App Store-safe workflow is:
 
-1. User creates a goal in Checkpoint.
-2. Checkpoint generates and stores a local multiple-choice question bank for that goal.
+1. User creates a goal profile in Checkpoint.
+2. Checkpoint generates and stores a local multiple-choice question bank for that active profile.
 3. User grants Family Controls permission.
 4. User picks restricted apps inside Checkpoint.
 5. Checkpoint shields those apps.
@@ -32,7 +32,7 @@ Important platform constraint:
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
 - Home, Skill, and Settings tabs.
-- Settings keeps user-facing controls focused on Plan, Goal, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
+- Settings keeps user-facing controls focused on Plan, Goal profiles, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
@@ -41,14 +41,15 @@ Important platform constraint:
 - Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
-- Goal onboarding flow.
+- Goal profile onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
-- Existing goals reopen prefilled; switching the active goal rebuilds questions, resets attempts/reports/unlock state, and refreshes the Skill Map around the new topics.
+- Existing profiles reopen prefilled for edits; Free keeps one active profile, while Pro can create multiple profiles.
+- Home lets Pro users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
 - Home includes a user-facing `Start a checkpoint` flow for previewing the checkpoint experience before real device testing.
 
 ### Question System
 
-- Goal intake captures title, deadline, category, current level, and focus areas.
+- Goal intake captures title, deadline, category, current level, focus areas, and the profile-specific minimum question level.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.
@@ -58,7 +59,7 @@ Important platform constraint:
 - Multiple-choice checkpoint answers are locally graded for the MVP before the final unlock.
 - Multi-question checkpoint sessions ask 5 questions and require 4 correct answers by default before unlocking.
 - Missed questions from a failed checkpoint set become due immediately and are prioritized in the next set.
-- Settings can enforce a 1-to-5 minimum question difficulty so users can skip material below their level.
+- Each goal profile stores a 1-to-5 minimum question difficulty so users can skip material below their level for that subject.
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
@@ -88,7 +89,7 @@ Important platform constraint:
   - due review questions
   - new questions in weaker topics
   - questions near the user's estimated difficulty
-- The scheduler respects the manually configured difficulty floor when enough questions are available.
+- The scheduler respects the active profile's manually configured difficulty floor when enough questions are available.
 - Initial topic levels are inferred from the user's typed current-level context, then adjusted by answer history.
 - Skill tab shows average mastery and per-topic progress.
 
@@ -191,7 +192,7 @@ The MVP is complete when:
 
 ### P2
 
-- Multiple goals with per-app routing.
+- Per-app routing to a chosen goal profile.
 - User-provided materials such as notes, PDFs, links, or flashcards.
 - Integrations with Anki, Quizlet, LeetCode, Notion, or Google Sheets.
 - Server-side analytics and TestFlight instrumentation.
@@ -200,7 +201,7 @@ The MVP is complete when:
 
 ## Product Decisions
 
-- Keep one active goal for the MVP.
+- Keep the core Free plan to one active goal profile; Pro can add and switch separate profiles.
 - Keep the core blocked-app recovery flow free; do not trap users behind payment.
 - Keep AI generation batched and cached, not live on every app-open attempt.
 - Do not ship API keys in the iOS app.
@@ -289,5 +290,5 @@ Implementation status:
 - Automatic provider routing prefers no-cost providers before backend generation.
 - Core workflow and provider policy are covered by the `CheckpointTests` XCTest target.
 - Typed current-level context now seeds initial competency estimates.
-- Settings exposes strictness controls, 1-to-5 minimum question difficulty, question refresh, batch state, and quality report count.
+- Settings exposes strictness controls, global unlock rules, and off-flow history/report access; minimum question difficulty now lives on each goal profile.
 - Backend request/response contract is documented in `docs/AI_BACKEND_CONTRACT.md`.

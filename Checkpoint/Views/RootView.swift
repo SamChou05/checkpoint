@@ -37,7 +37,12 @@ struct RootView: View {
         .sheet(
             isPresented: Binding(
                 get: { store.isOnboardingPresented },
-                set: { store.isOnboardingPresented = $0 }
+                set: { isPresented in
+                    store.isOnboardingPresented = isPresented
+                    if !isPresented {
+                        store.isCreatingGoalProfile = false
+                    }
+                }
             )
         ) {
             OnboardingView(store: store)

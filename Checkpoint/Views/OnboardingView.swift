@@ -9,17 +9,19 @@ struct OnboardingView: View {
     @State private var category: GoalCategory = .codingInterview
     @State private var currentLevel = ""
     @State private var focusAreas = ""
+    @State private var minimumQuestionDifficulty = UnlockPolicy.default.minimumQuestionDifficulty
     @State private var isCreating = false
 
     init(store: CheckpointStore) {
         self.store = store
 
-        if let goal = store.goal {
+        if let goal = store.goal, !store.isCreatingGoalProfile {
             _title = State(initialValue: goal.title)
             _deadline = State(initialValue: max(goal.deadline, Date()))
             _category = State(initialValue: goal.category)
             _currentLevel = State(initialValue: goal.currentLevel)
             _focusAreas = State(initialValue: goal.focusAreas)
+            _minimumQuestionDifficulty = State(initialValue: goal.minimumQuestionDifficulty)
         }
     }
 
@@ -28,7 +30,7 @@ struct OnboardingView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(store.goal == nil ? "Build your checkpoint loop" : "Change your active goal")
+                        Text(isNewProfile ? "Create a goal profile" : "Update goal profile")
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
@@ -79,6 +81,22 @@ struct OnboardingView: View {
                         }
                     }
 
+                    SectionPanel("Question level") {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Start checkpoints at \(Goal.difficultyLabel(for: minimumQuestionDifficulty)) or higher.")
+                                .font(.subheadline)
+                                .foregroundStyle(CheckpointTheme.muted)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                            Stepper(
+                                "Minimum: \(Goal.difficultyLabel(for: minimumQuestionDifficulty))",
+                                value: $minimumQuestionDifficulty,
+                                in: 1...5
+                            )
+                            .foregroundStyle(CheckpointTheme.text)
+                        }
+                    }
+
                     PrimaryActionButton(
                         title: primaryButtonTitle,
                         systemImage: "book.closed"
@@ -92,7 +110,9 @@ struct OnboardingView: View {
                                 category: category,
                                 currentLevel: currentLevel,
                                 focusAreas: focusAreas,
-                                preferredQuestionStyle: .multipleChoice
+                                preferredQuestionStyle: .multipleChoice,
+                                minimumQuestionDifficulty: minimumQuestionDifficulty,
+                                createsNewProfile: isNewProfile
                             )
                             isCreating = false
                             dismiss()
@@ -107,6 +127,7 @@ struct OnboardingView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     if store.goal != nil {
                         Button("Done") {
+                            store.isCreatingGoalProfile = false
                             store.isOnboardingPresented = false
                             dismiss()
                         }
@@ -116,14 +137,19 @@ struct OnboardingView: View {
             }
         }
         .preferredColorScheme(.light)
+        .onDisappear {
+            if !store.isOnboardingPresented {
+                store.isCreatingGoalProfile = false
+            }
+        }
     }
 
     private var headerSubtitle: String {
-        if store.goal == nil {
-            return "Type the goal clearly. Checkpoint turns it into questions that come back when you miss them."
+        if isNewProfile {
+            return "Set the goal, context, and level once. Checkpoint keeps its questions and skill map separate from your other profiles."
         }
 
-        return "Changing the active goal prepares a fresh practice set and skill map."
+        return "Adjust the active profile so future questions match your current preparation level."
     }
 
     private var primaryButtonTitle: String {
@@ -131,6 +157,10 @@ struct OnboardingView: View {
             return "Preparing questions"
         }
 
-        return store.goal == nil ? "Prepare questions" : "Switch active goal"
+        return isNewProfile ? "Create profile" : "Update profile"
+    }
+
+    private var isNewProfile: Bool {
+        store.goal == nil || store.isCreatingGoalProfile
     }
 }

@@ -6,8 +6,8 @@ Checkpoint should start thinking about payment now, but should not block the cor
 
 Launch with a free core and one Pro subscription group.
 
-- Free: one active goal, local/offline question generation, basic checkpoint history, default strictness, restricted app blocking.
-- Pro: custom checkpoint rules, more question variety, unlimited refreshes, richer competency analytics, multiple goals, and future import/sync features.
+- Free: one active goal profile, local/offline question generation, basic checkpoint history, default strictness, restricted app blocking.
+- Pro: goal profiles with separate context/difficulty, custom checkpoint rules, more question variety, unlimited refreshes, richer competency analytics, and future import/sync features.
 - Initial price test: $4.99/month and $29.99/year.
 
 This keeps the first release reviewable and useful while leaving room to monetize users who want deeper academic tracking.
@@ -16,9 +16,9 @@ This keeps the first release reviewable and useful while leaving room to monetiz
 
 The current app has a StoreKit-ready freemium shell:
 
-- Free keeps the core blocker loop usable: one active goal, local questions, the default 5-question session, 4 correct answers required, app blocking, and temporary unlock.
+- Free keeps the core blocker loop usable: one active goal profile, local questions, the default 5-question session, 4 correct answers required, app blocking, and temporary unlock.
 - Free gets 2 question-bank refreshes per goal.
-- Pro unlocks automatic low-bank refill, advanced strictness tuning, unlimited refreshes, larger provider target batches, and next-topic guidance.
+- Pro unlocks multiple goal profiles, automatic low-bank refill, advanced strictness tuning, unlimited refreshes, larger provider target batches, and next-topic guidance.
 - The paywall uses StoreKit product IDs and restore hooks, but App Store Connect products and a local StoreKit configuration file still need to be created before real purchases can complete.
 - The blocker recovery path is not paywalled.
 

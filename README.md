@@ -7,23 +7,23 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 ## Current Build
 
 - Native SwiftUI app shell.
-- One active goal onboarding flow.
+- Goal profile onboarding flow, with one active Free goal and Pro support for multiple saved profiles.
 - Provider-based multiple-choice question generation seeded from typed goal context.
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
-- Configurable 1-to-5 question difficulty floor so advanced users can skip remedial prompts.
+- Per-profile 1-to-5 question difficulty floor so users can skip remedial prompts for goals they already know well.
 - Correct-answer unlock windows use 15, 30, 45, or 60 minutes, with 30 minutes as the default.
 - Stored checkpoint attempts with correctness and unlock state.
 - Missed questions from a failed unlock attempt become due immediately so the next checkpoint retests them first.
 - XCTest coverage for the core checkpoint, scheduler, unlock, sanitizer, and provider-cost workflows.
 - Recovery states for blocked-app launches when no checkpoint questions are available.
 - Academic paper-inspired UI for Home, Checkpoint, Skill, and Settings, with history available from Settings.
-- Settings now keeps product controls up front: Plan, Goal, App blocking, Checkpoint rules, and a collapsed Advanced troubleshooting area for diagnostics and reset.
+- Settings now keeps product controls up front: Plan, Goal profiles, App blocking, Checkpoint rules, and a collapsed Advanced troubleshooting area for diagnostics and reset.
 - Question quality reporting lives in Settings instead of interrupting the checkpoint quiz.
 - Home no longer offers a one-tap pause while blocking is active; short breaks go through checkpoints or emergency passes, while fully stopping blocking requires a 9-of-10 stop challenge in Advanced.
 - Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
-- Users can change the active goal; Checkpoint prepares a fresh practice set and Skill Map for the new goal.
-- StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for custom checkpoint rules, extra question variety, and adaptive guidance.
+- Pro users can switch goal profiles from Home; each profile keeps its own goal context, question difficulty, practice set, history, reports, and Skill Map.
+- StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for goal profiles, custom checkpoint rules, extra question variety, and adaptive guidance.
 - Privacy manifests for the app and Screen Time extensions.
 - Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.
 - Shield Configuration extension target for branded Screen Time shield UI.
@@ -50,7 +50,7 @@ See `docs/MONETIZATION.md` for the recommended free/Pro split, product IDs, and 
 
 ## Testing
 
-Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, Free/Pro gating, Pro Assist, and provider payload sanitization.
+Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, Free/Pro gating, Pro goal profile isolation, Pro Assist, and provider payload sanitization.
 
 ## Open
 

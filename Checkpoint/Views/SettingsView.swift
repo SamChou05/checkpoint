@@ -59,21 +59,49 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Goal") {
+                    SectionPanel("Goal profiles") {
                         if let goal = store.goal {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text(goal.title)
-                                    .font(.headline)
-                                    .foregroundStyle(CheckpointTheme.text)
+                                HStack(alignment: .top) {
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        Text(goal.title)
+                                            .font(.headline)
+                                            .foregroundStyle(CheckpointTheme.text)
 
-                                Text("\(goal.category.rawValue) - \(goal.focusAreas)")
-                                    .font(.subheadline)
+                                        Text("\(goal.category.rawValue) - \(goal.focusAreas.isEmpty ? "next meaningful rep" : goal.focusAreas)")
+                                            .font(.subheadline)
+                                            .foregroundStyle(CheckpointTheme.muted)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+
+                                    Spacer()
+
+                                    StatusBadge(text: profileCountText, tint: CheckpointTheme.teal)
+                                }
+
+                                Text("Question level: \(goal.difficultyLabel)")
+                                    .font(.footnote.weight(.semibold))
                                     .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                         }
 
-                        SecondaryActionButton(title: "Change active goal", systemImage: "pencil") {
-                            store.isOnboardingPresented = true
+                        HStack(spacing: 10) {
+                            SecondaryActionButton(title: "Edit profile", systemImage: "pencil") {
+                                store.presentActiveGoalEditor()
+                            }
+
+                            if store.canUse(.multipleGoals) {
+                                SecondaryActionButton(title: "New profile", systemImage: "plus") {
+                                    store.presentGoalProfileCreator()
+                                }
+                            }
+                        }
+
+                        if !store.canUse(.multipleGoals) {
+                            ProLockedFeatureRow(feature: .multipleGoals) {
+                                store.requestUpgrade(for: .multipleGoals)
+                            }
                         }
                     }
 
@@ -83,7 +111,7 @@ struct SettingsView: View {
                                 title: "Checkpoint history",
                                 detail: historyDetailText,
                                 systemImage: "clock.arrow.circlepath",
-                                trailingText: "\(store.attempts.count)"
+                                trailingText: "\(store.activeAttempts.count)"
                             ) {
                                 isHistoryPresented = true
                             }
@@ -164,20 +192,6 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.text)
                                     .disabled(!store.canUse(.advancedStrictness))
                                     .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
-                            }
-
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Question difficulty")
-                                    .font(.headline)
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Text("Levels run 1 to 5. Start at \(difficultyLabel(for: store.unlockPolicy.minimumQuestionDifficulty)) or higher.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                Stepper("Minimum: \(difficultyLabel(for: store.unlockPolicy.minimumQuestionDifficulty))", value: minimumQuestionDifficultyBinding, in: 1...5)
-                                    .foregroundStyle(CheckpointTheme.text)
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
@@ -339,8 +353,13 @@ struct SettingsView: View {
         return "Free keeps the blocker loop usable with one goal and automatic checkpoint preparation."
     }
 
+    private var profileCountText: String {
+        let count = store.availableGoalProfiles.count
+        return count == 1 ? "1 profile" : "\(count) profiles"
+    }
+
     private var historyDetailText: String {
-        if store.attempts.isEmpty {
+        if store.activeAttempts.isEmpty {
             return "No checkpoint answers yet"
         }
 
@@ -376,27 +395,6 @@ struct SettingsView: View {
         )
     }
 
-    private var minimumQuestionDifficultyBinding: Binding<Int> {
-        Binding(
-            get: { store.unlockPolicy.minimumQuestionDifficulty },
-            set: { store.updateMinimumQuestionDifficulty($0) }
-        )
-    }
-
-    private func difficultyLabel(for level: Int) -> String {
-        switch level {
-        case 1:
-            return "Level 1 of 5 (Basics)"
-        case 2:
-            return "Level 2 of 5 (Easy)"
-        case 3:
-            return "Level 3 of 5 (Medium)"
-        case 4:
-            return "Level 4 of 5 (Hard)"
-        default:
-            return "Level 5 of 5 (Expert)"
-        }
-    }
 }
 
 private enum AdvancedSettingsAction: String, Identifiable {
@@ -578,7 +576,7 @@ private struct ProLockedFeatureRow: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Free uses the default 4-of-5 checkpoint. Pro lets you tune the checkpoint length and passing score.")
+                Text(feature.detail)
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)

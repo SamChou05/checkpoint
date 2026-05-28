@@ -18,10 +18,10 @@ struct HistoryView: View {
                             .foregroundStyle(CheckpointTheme.muted)
                     }
 
-                    if store.attempts.isEmpty {
+                    if store.activeAttempts.isEmpty {
                         emptyState
                     } else {
-                        ForEach(store.attempts) { attempt in
+                        ForEach(store.activeAttempts) { attempt in
                             AttemptRow(attempt: attempt)
                         }
                     }
