@@ -219,8 +219,8 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         let firstSourcePrompt = try XCTUnwrap(store.questions.first { $0.goalID == firstGoal.id }?.sourcePrompt)
         let secondSourcePrompt = try XCTUnwrap(store.questions.first { $0.goalID == secondGoal.id }?.sourcePrompt)
-        XCTAssertTrue(firstSourcePrompt.contains("Minimum difficulty: 4 of 5"))
-        XCTAssertTrue(secondSourcePrompt.contains("Minimum difficulty: 2 of 5"))
+        XCTAssertTrue(firstSourcePrompt.contains("level 4 of 5 difficulty multiple-choice questions"))
+        XCTAssertTrue(secondSourcePrompt.contains("level 2 of 5 difficulty multiple-choice questions"))
 
         store.switchActiveGoal(to: firstGoal.id)
 
@@ -816,7 +816,7 @@ final class CheckpointWorkflowTests: XCTestCase {
 }
 
 final class AIProviderPolicyTests: XCTestCase {
-    func testAutomaticProviderPrefersNoCostLocalBeforeConfiguredBackend() async {
+    func testAutomaticProviderUsesConfiguredBackendBeforeLocalFallback() async {
         let goal = makeGoal()
         let engine = HybridQuestionEngine(
             localEngine: StaticQuestionEngine(
@@ -832,6 +832,26 @@ final class AIProviderPolicyTests: XCTestCase {
 
         let batch = await engine.generateQuestionBatch(
             for: makeRequest(goal: goal, backendEndpoint: URL(string: "https://example.com/ai")),
+            preference: .automatic
+        )
+
+        XCTAssertEqual(batch.provider, .backend)
+        XCTAssertEqual(batch.questions.first?.sourcePrompt, "backend")
+    }
+
+    func testAutomaticProviderFallsBackToLocalWhenLLMsUnavailable() async {
+        let goal = makeGoal()
+        let engine = HybridQuestionEngine(
+            localEngine: StaticQuestionEngine(
+                provider: .localTemplates,
+                questions: [makeQuestion(goal: goal, index: 1, sourcePrompt: "local")]
+            ),
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+
+        let batch = await engine.generateQuestionBatch(
+            for: makeRequest(goal: goal),
             preference: .automatic
         )
 
@@ -935,10 +955,11 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(request.questionContext.contentTopics, ["Logical Reasoning", "Reading Comprehension"])
 
         let sourcePrompt = request.sourcePrompt(provider: .backend)
-        XCTAssertTrue(sourcePrompt.contains("Goal: Study for the LSAT"))
-        XCTAssertTrue(sourcePrompt.contains("Learning target: LSAT"))
-        XCTAssertTrue(sourcePrompt.contains("Content topics: Logical Reasoning, Reading Comprehension"))
-        XCTAssertTrue(sourcePrompt.contains("Do not ask about study plans"))
+        XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: Study for the LSAT"))
+        XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: LSAT"))
+        XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: Logical Reasoning, Reading Comprehension"))
+        XCTAssertTrue(sourcePrompt.contains("Generate 5 level 1 of 5 difficulty multiple-choice questions about LSAT"))
+        XCTAssertTrue(sourcePrompt.contains("Ask about LSAT itself, not study plans"))
     }
 
     func testQuestionContextDoesNotMatchExamAcronymsInsideLongerWords() {
@@ -1034,12 +1055,11 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(request.targetCount, 40)
 
         let sourcePrompt = try XCTUnwrap(store.questions.first?.sourcePrompt)
-        XCTAssertTrue(sourcePrompt.contains("Goal: Pass calculus final"))
-        XCTAssertTrue(sourcePrompt.contains("Learning target: calculus final"))
-        XCTAssertTrue(sourcePrompt.contains("Current level: Advanced at derivatives, weak on integrals"))
-        XCTAssertTrue(sourcePrompt.contains("Focus areas: integrals, limits"))
-        XCTAssertTrue(sourcePrompt.contains("Content topics: integrals, limits"))
-        XCTAssertTrue(sourcePrompt.contains("Minimum difficulty: 4 of 5"))
+        XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: Pass calculus final"))
+        XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: calculus final"))
+        XCTAssertTrue(sourcePrompt.contains("The user's current level/context is: Advanced at derivatives, weak on integrals"))
+        XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: integrals, limits"))
+        XCTAssertTrue(sourcePrompt.contains("Generate 40 level 4 of 5 difficulty multiple-choice questions about calculus final"))
     }
 
     func testBackendRequestEncodesGoalContextCompetenciesAndDifficulty() throws {
@@ -1083,15 +1103,14 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(reportedPrompts, ["Reported prompt"])
 
         let sourcePrompt = request.sourcePrompt(provider: .backend)
-        XCTAssertTrue(sourcePrompt.contains("Goal: \(goal.title)"))
-        XCTAssertTrue(sourcePrompt.contains("Learning target: technical interviews"))
-        XCTAssertTrue(sourcePrompt.contains("Current level: \(goal.currentLevel)"))
-        XCTAssertTrue(sourcePrompt.contains("Focus areas: \(goal.focusAreas)"))
-        XCTAssertTrue(sourcePrompt.contains("Content topics: arrays, recursion, hash maps"))
-        XCTAssertTrue(sourcePrompt.contains("Minimum difficulty: 3 of 5"))
-        XCTAssertTrue(sourcePrompt.contains("Competencies: recursion"))
-        XCTAssertTrue(sourcePrompt.contains("Avoid existing prompts: Existing prompt"))
-        XCTAssertTrue(sourcePrompt.contains("Avoid reported prompts: Reported prompt"))
+        XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: \(goal.title)"))
+        XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: technical interviews"))
+        XCTAssertTrue(sourcePrompt.contains("The user's current level/context is: \(goal.currentLevel)"))
+        XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: arrays, recursion, hash maps"))
+        XCTAssertTrue(sourcePrompt.contains("Generate 12 level 3 of 5 difficulty multiple-choice questions about technical interviews"))
+        XCTAssertTrue(sourcePrompt.contains("Use these competency notes to target weak areas: recursion"))
+        XCTAssertTrue(sourcePrompt.contains("Avoid these existing prompts: Existing prompt"))
+        XCTAssertTrue(sourcePrompt.contains("Avoid these reported prompts: Reported prompt"))
     }
 }
 

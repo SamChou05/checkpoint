@@ -60,7 +60,7 @@ Checkpoint helps users reduce distracting app use by combining Apple's Screen Ti
 
 The app uses Family Controls, Managed Settings, Managed Settings UI, Device Activity, App Groups, and Screen Time extensions. The App Group is used only to pass shield context, pending checkpoint state, unlock expiration, desired shield state, and selected Screen Time state between the app and extensions.
 
-AI question generation is batch-based and cached. By default, Checkpoint prefers on-device Apple Foundation Models when available, then local templates. Backend generation is internal service wiring rather than a normal user-facing setting; it is not called on every blocked-app attempt.
+AI question generation is batch-based and cached. By default, Checkpoint prefers on-device Apple Foundation Models when available, then a configured backend LLM, then local templates. Backend generation is internal service wiring rather than a normal user-facing setting; it is not called on every blocked-app attempt.
 
 ## Privacy Notes
 

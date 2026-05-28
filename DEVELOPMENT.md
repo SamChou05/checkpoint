@@ -54,6 +54,7 @@ Important platform constraint:
 
 - Goal intake captures title, deadline, current level, focus areas, and the profile-specific minimum question level; internal category inference keeps fallback question generation useful.
 - The generation request derives a learning target, content topics, and a question directive before calling local, backend, or Apple Foundation providers.
+- Provider prompts intentionally stay simple: user goal, derived learning target, context, topics, requested count, difficulty, and multiple-choice requirements.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.
@@ -75,7 +76,7 @@ Important platform constraint:
   - Apple Foundation Models
   - Backend
   - Local Templates
-- Automatic tries Apple Foundation Models first, then Local Templates, keeping Backend explicit and opt-in for higher-quality generation.
+- Automatic tries Apple Foundation Models first, then a configured backend LLM, then Local Templates as the no-cost/offline fallback.
 - Provider routing is internal so users do not need to choose a question source.
 - The app stores the last provider used for diagnostics.
 - Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, oversized, and off-target study-strategy questions.
@@ -291,7 +292,7 @@ Implementation status:
 - Backend provider contract is implemented as a POST endpoint that returns question JSON.
 - Apple Foundation Models provider is guarded behind iOS/FoundationModels availability and falls back automatically when unavailable.
 - Provider output validation is implemented before questions enter the bank.
-- Automatic provider routing prefers no-cost providers before backend generation.
+- Automatic provider routing prefers LLM generation when on-device support or an internal backend endpoint is available, then falls back to local templates.
 - Core workflow and provider policy are covered by the `CheckpointTests` XCTest target.
 - Typed current-level context now seeds initial competency estimates.
 - Settings exposes strictness controls, global unlock rules, and off-flow history/report access; minimum question difficulty now lives on each goal profile.

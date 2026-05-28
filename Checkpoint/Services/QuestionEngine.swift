@@ -37,22 +37,22 @@ struct QuestionGenerationRequest: Sendable {
         let context = questionContext
 
         return """
-        Provider: \(provider.rawValue)
-        Goal: \(goal.title)
-        Learning target: \(context.learningTarget)
-        Category: \(goal.category.rawValue)
-        Current level: \(goal.currentLevel.isEmpty ? "Not specified" : goal.currentLevel)
-        Focus areas: \(goal.focusAreas.isEmpty ? "Not specified" : goal.focusAreas)
-        Content topics: \(context.contentTopics.joined(separator: ", "))
-        Preferred style: Multiple Choice
-        Target count: \(targetCount)
-        Minimum difficulty: \(minimumDifficulty) of 5
-        Competencies: \(competencySummary)
-        Avoid existing prompts: \(existingQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
-        Avoid reported prompts: \(reportedQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
-        Question directive: \(context.questionDirective)
-        Do not ask about study plans, productivity, motivation, app blocking, or what the learner should do next unless the learning target is explicitly study skills.
-        Every question must test the learning target itself, using the content topics as the subject matter.
+        Here is the user's goal: \(goal.title)
+        The actual learning target to test is: \(context.learningTarget)
+        The user's current level/context is: \(goal.currentLevel.isEmpty ? "Not specified" : goal.currentLevel)
+        The user's focus topics are: \(context.contentTopics.joined(separator: ", "))
+
+        Generate \(targetCount) level \(minimumDifficulty) of 5 difficulty multiple-choice questions about \(context.learningTarget).
+        Question style guidance: \(context.questionDirective)
+
+        Use these competency notes to target weak areas: \(competencySummary)
+        Avoid these existing prompts: \(existingQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
+        Avoid these reported prompts: \(reportedQuestions.map(\.prompt).prefix(10).joined(separator: " | "))
+
+        Requirements:
+        - Ask about \(context.learningTarget) itself, not study plans, productivity, motivation, app blocking, or what the learner should do next unless the learning target is explicitly study skills.
+        - Make every question answerable as a short multiple-choice knowledge check.
+        - Each question must include 4 choices, one exact expected answer, a short explanation, a topic, and a 1-to-5 difficulty.
         """
     }
 
@@ -341,7 +341,7 @@ struct HybridQuestionEngine: Sendable {
     private func providerOrder(for preference: AIProviderKind) -> [any QuestionGenerating] {
         switch preference {
         case .automatic:
-            return [appleFoundationEngine, localEngine, backendEngine]
+            return [appleFoundationEngine, backendEngine, localEngine]
         case .appleFoundation:
             return [appleFoundationEngine, localEngine]
         case .backend:

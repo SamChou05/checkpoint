@@ -37,9 +37,9 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 
 The MVP uses a hybrid provider approach:
 
-- Automatic tries Apple Foundation Models when available, then Local Templates, keeping backend generation explicit and opt-in.
+- Automatic tries Apple Foundation Models when available, then a configured backend LLM, then Local Templates as the no-cost/offline fallback.
 - Apple Foundation Models can provide on-device generation on Apple Intelligence-compatible devices.
-- Backend generation is batch-based and reserved for internal app configuration or future service wiring.
+- Backend LLM generation is batch-based and reserved for internal app configuration or future service wiring.
 - Local Templates keep the app usable without network, backend, or supported on-device models.
 - Provider prompts and payloads include a derived learning target, content topics, and a directive to test the subject matter instead of asking about study plans or app usage.
 

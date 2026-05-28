@@ -90,5 +90,6 @@ The iOS app also validates batches before storage. It drops blank questions, dup
 - Use backend generation only when:
   - the bank is low
   - the user refreshes
-  - the user explicitly selects Backend generation
+  - Automatic provider routing has an internally configured backend endpoint and no on-device Apple Foundation model is available
+  - the app explicitly selects Backend generation internally
   - the app needs better quality than templates
