@@ -67,7 +67,7 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 - The app stores goal, question, answer-history, competency, shield-state, and unlock-window data locally.
 - The app and extensions use App Group `UserDefaults` to coordinate shield state.
 - Unlock windows are 15 minutes or longer because Apple's Device Activity monitor requires at least a 15-minute interval.
-- Backend generation, when explicitly configured, sends goal context, competency progress, existing prompts, and reported prompts to the configured endpoint.
+- Backend generation, when explicitly configured, sends goal context, derived learning target/topics, competency progress, existing prompts, and reported prompts to the configured endpoint.
 - The app does not use tracking domains.
 - The current privacy manifests declare `UserDefaults` required-reason API access:
   - `CA92.1` for app-only defaults in the main app.

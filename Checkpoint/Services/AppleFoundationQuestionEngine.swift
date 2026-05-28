@@ -35,6 +35,11 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         Generate multiple-choice checkpoint questions for a focus app.
         Return only valid JSON with this exact shape:
         {"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","difficulty":1,"format":"Multiple Choice"}]}
+        The user goal may include verbs such as study, prepare, pass, or learn; treat those as intent, not as the tested subject.
+        Use the Learning target and Content topics from the prompt as the actual subject matter.
+        Ask exam-style, knowledge-check, or skill-check questions about the subject itself.
+        Do not ask about study plans, productivity, motivation, app blocking, or next steps unless the learning target is explicitly study skills.
+        For LSAT, use original Logical Reasoning or Reading Comprehension style questions.
         Keep every question answerable in 30 seconds to 3 minutes.
         Each question must have 4 choices.
         expectedAnswer must exactly match one choice.

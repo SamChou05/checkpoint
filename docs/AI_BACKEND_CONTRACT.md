@@ -14,6 +14,9 @@ The iOS app sends a `POST` request to the endpoint configured by the app or back
     "category": "Coding Interview",
     "currentLevel": "Basic Python. Shaky on recursion.",
     "focusAreas": "arrays, recursion, Big-O",
+    "learningTarget": "coding interview in 8 weeks",
+    "contentTopics": ["arrays", "recursion", "Big-O"],
+    "questionDirective": "Generate concrete coding-interview knowledge checks about arrays, recursion, Big-O: data-structure choice, algorithm behavior, complexity, edge cases, or debugging.",
     "preferredQuestionStyle": "Multiple Choice"
   },
   "competencies": [
@@ -74,9 +77,11 @@ The iOS app sends a `POST` request to the endpoint configured by the app or back
 - Every question should be answerable in 30 seconds to 3 minutes.
 - Questions should target weak topics and stay near the user's estimated level.
 - If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
-- Use the goal title, current-level text, focus areas, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
+- Use `learningTarget`, `contentTopics`, `questionDirective`, current-level text, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
+- Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as user intent, not as the tested subject. For example, `Study for the LSAT` should produce LSAT Logical Reasoning or Reading Comprehension questions, not questions about how to study.
+- Do not ask about study plans, productivity, motivation, app blocking, or next steps unless the learning target is explicitly study skills.
 
-The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
+The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, off-target study-strategy prompts, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
 
 ## Cost Rules
 

@@ -44,7 +44,7 @@ struct BackendQuestionRequest: Encodable {
     private var minimumDifficulty: Int
 
     init(request: QuestionGenerationRequest) {
-        goal = GoalPayload(goal: request.goal)
+        goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
         competencies = request.competencies.map(CompetencyPayload.init)
         existingPrompts = request.existingQuestions.map(\.prompt)
         reportedPrompts = request.reportedQuestions.map(\.prompt)
@@ -59,14 +59,20 @@ private struct GoalPayload: Encodable {
     var category: String
     var currentLevel: String
     var focusAreas: String
+    var learningTarget: String
+    var contentTopics: [String]
+    var questionDirective: String
     var preferredQuestionStyle: String
 
-    init(goal: Goal) {
+    init(goal: Goal, questionContext: GoalQuestionContext) {
         title = goal.title
         deadline = goal.deadline
         category = goal.category.rawValue
         currentLevel = goal.currentLevel
         focusAreas = goal.focusAreas
+        learningTarget = questionContext.learningTarget
+        contentTopics = questionContext.contentTopics
+        questionDirective = questionContext.questionDirective
         preferredQuestionStyle = QuestionFormat.multipleChoice.rawValue
     }
 }

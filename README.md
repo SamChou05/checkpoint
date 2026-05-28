@@ -9,7 +9,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Native SwiftUI app shell.
 - Natural-language goal profile onboarding flow, with one active Free goal and Pro support for multiple saved profiles.
 - Goal category is inferred internally from the typed goal/context instead of shown as user-facing setup.
-- Provider-based multiple-choice question generation seeded from typed goal context.
+- Provider-based multiple-choice question generation extracts a learning target from typed goals, so phrases like `Study for the LSAT` produce LSAT questions rather than study-habit prompts.
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
 - Per-profile 1-to-5 question difficulty floor so users can skip remedial prompts for goals they already know well.
@@ -41,6 +41,7 @@ The MVP uses a hybrid provider approach:
 - Apple Foundation Models can provide on-device generation on Apple Intelligence-compatible devices.
 - Backend generation is batch-based and reserved for internal app configuration or future service wiring.
 - Local Templates keep the app usable without network, backend, or supported on-device models.
+- Provider prompts and payloads include a derived learning target, content topics, and a directive to test the subject matter instead of asking about study plans or app usage.
 
 The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
 

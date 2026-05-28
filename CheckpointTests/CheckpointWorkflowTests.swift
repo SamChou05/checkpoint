@@ -927,6 +927,71 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(sanitized.map(\.id), [highQuestion.id])
     }
 
+    func testQuestionContextExtractsLearningTargetFromNaturalLanguageGoal() {
+        let goal = makeLSATGoal()
+        let request = makeRequest(goal: goal)
+
+        XCTAssertEqual(request.questionContext.learningTarget, "LSAT")
+        XCTAssertEqual(request.questionContext.contentTopics, ["Logical Reasoning", "Reading Comprehension"])
+
+        let sourcePrompt = request.sourcePrompt(provider: .backend)
+        XCTAssertTrue(sourcePrompt.contains("Goal: Study for the LSAT"))
+        XCTAssertTrue(sourcePrompt.contains("Learning target: LSAT"))
+        XCTAssertTrue(sourcePrompt.contains("Content topics: Logical Reasoning, Reading Comprehension"))
+        XCTAssertTrue(sourcePrompt.contains("Do not ask about study plans"))
+    }
+
+    func testQuestionContextDoesNotMatchExamAcronymsInsideLongerWords() {
+        let goal = Goal(
+            title: "Practice recursion",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "recursion",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        XCTAssertEqual(GoalQuestionContext(goal: goal).learningTarget, "recursion")
+    }
+
+    func testSanitizerRejectsStudyStrategyQuestionsForAcademicTargets() {
+        let goal = makeLSATGoal()
+        let request = makeRequest(goal: goal)
+        let studyStrategyQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which 10-minute study rep would create the clearest progress on LSAT logical reasoning?",
+            difficulty: 3
+        )
+        let contentQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            prompt: "LSAT Logical Reasoning: Which answer identifies the flaw in the argument?",
+            difficulty: 3
+        )
+
+        let sanitized = QuestionBatchSanitizer.sanitize(
+            [studyStrategyQuestion, contentQuestion],
+            for: request
+        )
+
+        XCTAssertEqual(sanitized.map(\.prompt), [contentQuestion.prompt])
+    }
+
+    func testLocalLSATTemplatesAskExamStyleQuestionsInsteadOfStudyAdvice() async throws {
+        let goal = makeLSATGoal()
+        let request = makeRequest(goal: goal, targetCount: 8, minimumDifficulty: 2)
+
+        let questions = try await LocalDraftQuestionEngine().generateQuestions(for: request)
+        let promptText = questions.map(\.prompt).joined(separator: " ")
+
+        XCTAssertGreaterThanOrEqual(questions.count, 4)
+        XCTAssertTrue(promptText.contains("LSAT Logical Reasoning"))
+        XCTAssertTrue(promptText.contains("LSAT Reading Comprehension"))
+        XCTAssertFalse(promptText.localizedCaseInsensitiveContains("study rep"))
+        XCTAssertFalse(promptText.localizedCaseInsensitiveContains("next step"))
+    }
+
     func testLocalTemplatesRespectMinimumDifficulty() async throws {
         let goal = makeGoal()
         let request = makeRequest(goal: goal, minimumDifficulty: 4)
@@ -970,8 +1035,10 @@ final class AIProviderPolicyTests: XCTestCase {
 
         let sourcePrompt = try XCTUnwrap(store.questions.first?.sourcePrompt)
         XCTAssertTrue(sourcePrompt.contains("Goal: Pass calculus final"))
+        XCTAssertTrue(sourcePrompt.contains("Learning target: calculus final"))
         XCTAssertTrue(sourcePrompt.contains("Current level: Advanced at derivatives, weak on integrals"))
         XCTAssertTrue(sourcePrompt.contains("Focus areas: integrals, limits"))
+        XCTAssertTrue(sourcePrompt.contains("Content topics: integrals, limits"))
         XCTAssertTrue(sourcePrompt.contains("Minimum difficulty: 4 of 5"))
     }
 
@@ -1006,6 +1073,9 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(goalPayload["category"] as? String, goal.category.rawValue)
         XCTAssertEqual(goalPayload["currentLevel"] as? String, goal.currentLevel)
         XCTAssertEqual(goalPayload["focusAreas"] as? String, goal.focusAreas)
+        XCTAssertEqual(goalPayload["learningTarget"] as? String, "technical interviews")
+        XCTAssertEqual(goalPayload["contentTopics"] as? [String], ["arrays", "recursion", "hash maps"])
+        XCTAssertNotNil(goalPayload["questionDirective"] as? String)
         XCTAssertEqual(payload["targetCount"] as? Int, 12)
         XCTAssertEqual(payload["minimumDifficulty"] as? Int, 3)
         XCTAssertEqual(competencies.first?["topic"] as? String, "recursion")
@@ -1014,8 +1084,10 @@ final class AIProviderPolicyTests: XCTestCase {
 
         let sourcePrompt = request.sourcePrompt(provider: .backend)
         XCTAssertTrue(sourcePrompt.contains("Goal: \(goal.title)"))
+        XCTAssertTrue(sourcePrompt.contains("Learning target: technical interviews"))
         XCTAssertTrue(sourcePrompt.contains("Current level: \(goal.currentLevel)"))
         XCTAssertTrue(sourcePrompt.contains("Focus areas: \(goal.focusAreas)"))
+        XCTAssertTrue(sourcePrompt.contains("Content topics: arrays, recursion, hash maps"))
         XCTAssertTrue(sourcePrompt.contains("Minimum difficulty: 3 of 5"))
         XCTAssertTrue(sourcePrompt.contains("Competencies: recursion"))
         XCTAssertTrue(sourcePrompt.contains("Avoid existing prompts: Existing prompt"))
@@ -1146,6 +1218,17 @@ private func makeGoal() -> Goal {
         category: .codingInterview,
         currentLevel: "Intermediate, but shaky on recursion",
         focusAreas: "arrays, recursion, hash maps",
+        preferredQuestionStyle: .multipleChoice
+    )
+}
+
+private func makeLSATGoal() -> Goal {
+    Goal(
+        title: "Study for the LSAT",
+        deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+        category: .examPrep,
+        currentLevel: "Strong on logical reasoning, weak on timed reading sections",
+        focusAreas: "logical reasoning, reading comprehension",
         preferredQuestionStyle: .multipleChoice
     )
 }

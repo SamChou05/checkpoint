@@ -45,6 +45,7 @@ Important platform constraint:
 - Natural-language goal profile onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
 - Goal category is inferred internally from the typed goal/context instead of shown as a setup choice.
+- Question generation extracts an internal learning target from natural-language goals, so `Study for the LSAT` becomes LSAT content rather than questions about studying.
 - Existing profiles reopen prefilled for edits; Free keeps one active profile, while Pro can create multiple profiles.
 - Home lets Pro users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
 - Home focuses on the active profile and blocking state; the manual checkpoint preview is tucked into Advanced for testing and does not unlock apps.
@@ -52,8 +53,9 @@ Important platform constraint:
 ### Question System
 
 - Goal intake captures title, deadline, current level, focus areas, and the profile-specific minimum question level; internal category inference keeps fallback question generation useful.
+- The generation request derives a learning target, content topics, and a question directive before calling local, backend, or Apple Foundation providers.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
-- Local templates generate stored multiple-choice seed questions when AI providers are unavailable.
+- Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.
 - AI generation should happen in batches and be cached locally, not live on every app-open attempt.
 - Questions store prompt, expected answer, answer choices, explanation, topic, difficulty, format, status, ask count, correctness count, and next review date.
@@ -76,7 +78,7 @@ Important platform constraint:
 - Automatic tries Apple Foundation Models first, then Local Templates, keeping Backend explicit and opt-in for higher-quality generation.
 - Provider routing is internal so users do not need to choose a question source.
 - The app stores the last provider used for diagnostics.
-- Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, and oversized questions.
+- Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, oversized, and off-target study-strategy questions.
 - XCTest coverage verifies question-bank generation, session selection, unlock gating, shield-triggered sessions, provider policy, and sanitizer behavior.
 
 ### Adaptive Competency
