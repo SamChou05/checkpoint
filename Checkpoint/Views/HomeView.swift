@@ -70,12 +70,13 @@ struct HomeView: View {
         SectionPanel {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    StatusBadge(text: "Active profile", tint: CheckpointTheme.teal)
+                    StatusBadge(text: "Current goal", tint: CheckpointTheme.teal)
                     Spacer()
                     goalSwitcher
-                    Text(goal.deadline, style: .date)
+                    Text("Deadline \(goal.deadline, style: .date)")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(CheckpointTheme.muted)
+                        .lineLimit(1)
                 }
 
                 Text(goal.title)
