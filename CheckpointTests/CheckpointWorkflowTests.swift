@@ -1006,7 +1006,7 @@ final class AIProviderPolicyTests: XCTestCase {
         let questions = try await LocalDraftQuestionEngine().generateQuestions(for: request)
         let promptText = questions.map(\.prompt).joined(separator: " ")
 
-        XCTAssertGreaterThanOrEqual(questions.count, 4)
+        XCTAssertGreaterThanOrEqual(questions.count, 6)
         XCTAssertTrue(promptText.contains("LSAT Logical Reasoning"))
         XCTAssertTrue(promptText.contains("LSAT Reading Comprehension"))
         XCTAssertFalse(promptText.localizedCaseInsensitiveContains("study rep"))

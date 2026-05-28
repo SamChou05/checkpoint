@@ -578,6 +578,21 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                     topic: "Reading Comprehension",
                     difficulty: difficulty,
                     sourcePrompt: sourcePrompt
+                ),
+                multipleChoiceQuestion(
+                    goal: goal,
+                    prompt: "LSAT Reading Comprehension: A passage says a scientific model is useful for predicting broad trends but unreliable for individual cases. Which inference is best supported?",
+                    expectedAnswer: "The model may be valuable even though it should not be used for every specific prediction.",
+                    choices: [
+                        "The model may be valuable even though it should not be used for every specific prediction.",
+                        "The model has no scientific value unless it predicts every individual case.",
+                        "The model is more reliable for individuals than for broad trends.",
+                        "The passage rejects all uses of prediction in science."
+                    ],
+                    explanation: "The passage limits the model's use without dismissing its broader value.",
+                    topic: "Reading Comprehension",
+                    difficulty: difficulty,
+                    sourcePrompt: sourcePrompt
                 )
             ]
         }
@@ -609,6 +624,21 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                     "Rejected applicants may apply again later."
                 ],
                 explanation: "The conclusion needs the binary split between complete and incomplete forms.",
+                topic: "Logical Reasoning",
+                difficulty: difficulty,
+                sourcePrompt: sourcePrompt
+            ),
+            multipleChoiceQuestion(
+                goal: goal,
+                prompt: "LSAT Logical Reasoning: A survey found that people who read more legal news scored higher on a civics quiz. The author concludes reading legal news improves civics knowledge. Which answer most strengthens the argument?",
+                expectedAnswer: "The survey tracked the same people before and after they began reading legal news regularly.",
+                choices: [
+                    "The survey tracked the same people before and after they began reading legal news regularly.",
+                    "Some people who read legal news also read sports news.",
+                    "The civics quiz included questions about many topics.",
+                    "People who dislike legal news were allowed to skip the survey."
+                ],
+                explanation: "Before-and-after evidence helps connect reading legal news to improvement rather than mere correlation.",
                 topic: "Logical Reasoning",
                 difficulty: difficulty,
                 sourcePrompt: sourcePrompt
