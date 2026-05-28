@@ -7,7 +7,8 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 ## Current Build
 
 - Native SwiftUI app shell.
-- Goal profile onboarding flow, with one active Free goal and Pro support for multiple saved profiles.
+- Natural-language goal profile onboarding flow, with one active Free goal and Pro support for multiple saved profiles.
+- Goal category is inferred internally from the typed goal/context instead of shown as user-facing setup.
 - Provider-based multiple-choice question generation seeded from typed goal context.
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
@@ -20,7 +21,8 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Academic paper-inspired UI for Home, Checkpoint, Skill, and Settings, with history available from Settings.
 - Settings now keeps product controls up front: Plan, Goal profiles, App blocking, Checkpoint rules, and a collapsed Advanced troubleshooting area for diagnostics and reset.
 - Question quality reporting lives in Settings instead of interrupting the checkpoint quiz.
-- Home no longer offers a one-tap pause while blocking is active; short breaks go through checkpoints or emergency passes, while fully stopping blocking requires a 9-of-10 stop challenge in Advanced.
+- Home no longer offers one-tap pause or manual checkpoint entry while blocking is active; short breaks start from blocked-app attempts or emergency passes, while fully stopping blocking requires a 9-of-10 stop challenge in Advanced.
+- Manual checkpoint preview lives in Advanced for testing and does not unlock apps.
 - Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
 - Pro users can switch goal profiles from Home; each profile keeps its own goal context, question difficulty, practice set, history, reports, and Skill Map.
 - StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for goal profiles, custom checkpoint rules, extra question variety, and adaptive guidance.
@@ -63,7 +65,7 @@ Fastest options:
 1. Open `Checkpoint.xcodeproj` in Xcode.
 2. Select the `Checkpoint` scheme.
 3. Run on an iPhone simulator to preview the whole app.
-4. Use Home -> `Start a checkpoint` to preview the checkpoint flow before real app blocking is fully wired.
+4. Use Settings -> Advanced -> `Preview checkpoint` only when you need to test the checkpoint flow manually.
 
 For real Screen Time testing:
 

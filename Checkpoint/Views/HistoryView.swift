@@ -53,7 +53,7 @@ struct HistoryView: View {
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Start a checkpoint from Home to complete the first rep.")
+                Text("Blocked-app checkpoints appear here after the first rep.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
             }

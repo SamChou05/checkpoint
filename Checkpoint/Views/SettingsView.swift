@@ -10,6 +10,9 @@ struct SettingsView: View {
     @State private var isQuestionReportsPresented = false
     @State private var isAdvancedExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
+    @State private var previewCheckpointSession: CheckpointSession?
+    @State private var previewCheckpointMessage: String?
+    @State private var isPreparingPreviewCheckpoint = false
     @State private var stopBlockingSession: CheckpointSession?
     @State private var stopBlockingMessage: String?
     @State private var isPreparingStopChallenge = false
@@ -67,7 +70,7 @@ struct SettingsView: View {
                                             .font(.headline)
                                             .foregroundStyle(CheckpointTheme.text)
 
-                                        Text("\(goal.category.rawValue) - \(goal.focusAreas.isEmpty ? "next meaningful rep" : goal.focusAreas)")
+                                        Text("Focus: \(goal.focusAreas.isEmpty ? "next meaningful rep" : goal.focusAreas)")
                                             .font(.subheadline)
                                             .foregroundStyle(CheckpointTheme.muted)
                                             .fixedSize(horizontal: false, vertical: true)
@@ -260,6 +263,19 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
 
+                                SecondaryActionButton(title: isPreparingPreviewCheckpoint ? "Preparing preview" : "Preview checkpoint", systemImage: "play.fill") {
+                                    prepareCheckpointPreview()
+                                }
+                                .disabled(store.goal == nil || isPreparingPreviewCheckpoint)
+                                .opacity(store.goal == nil ? 0.48 : 1)
+
+                                if let previewCheckpointMessage {
+                                    Text(previewCheckpointMessage)
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.amber)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+
                                 SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing stop challenge" : "Stop blocking", systemImage: "hand.raised") {
                                     guard !isPreparingStopChallenge else { return }
                                     isPreparingStopChallenge = true
@@ -313,6 +329,9 @@ struct SettingsView: View {
             }
             .sheet(item: $advancedAction) { action in
                 AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
+            }
+            .sheet(item: $previewCheckpointSession) { session in
+                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
             }
             .sheet(item: $stopBlockingSession) { session in
                 CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
@@ -392,5 +411,20 @@ struct SettingsView: View {
             get: { store.unlockPolicy.requiredCorrectAnswers },
             set: { store.updateRequiredCorrectAnswers($0) }
         )
+    }
+
+    private func prepareCheckpointPreview() {
+        guard !isPreparingPreviewCheckpoint else { return }
+        isPreparingPreviewCheckpoint = true
+
+        Task {
+            if let session = await store.preparePreviewCheckpointSession() {
+                previewCheckpointMessage = nil
+                previewCheckpointSession = session
+            } else {
+                previewCheckpointMessage = store.checkpointNotice
+            }
+            isPreparingPreviewCheckpoint = false
+        }
     }
 }

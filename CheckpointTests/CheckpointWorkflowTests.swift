@@ -69,6 +69,22 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testCreateGoalInfersCategoryFromNaturalLanguageContext() async throws {
+        let store = CheckpointStore(defaults: defaults)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            currentLevel: "Strong on logic games, weak on timed reading sections",
+            focusAreas: "logical reasoning, reading comprehension",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let goal = try XCTUnwrap(store.goal)
+        XCTAssertEqual(goal.category, .examPrep)
+    }
+
+    @MainActor
     func testSwitchingActiveGoalRebuildsPracticeSetAndSkillMap() async throws {
         let engine = GoalAwareQuestionEngine(provider: .localTemplates)
         let store = CheckpointStore(
@@ -256,6 +272,17 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(session.unlockThreshold, 4)
         XCTAssertEqual(session.purpose, .temporaryUnlock)
         XCTAssertEqual(Set(session.questions.map(\.id)).count, 5)
+    }
+
+    @MainActor
+    func testPreviewCheckpointSessionDoesNotUseUnlockPurpose() throws {
+        let store = makeSeededStore(questionCount: 7)
+
+        let session = try XCTUnwrap(store.startPreviewCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.unlockThreshold, 4)
+        XCTAssertEqual(session.purpose, .preview)
     }
 
     @MainActor

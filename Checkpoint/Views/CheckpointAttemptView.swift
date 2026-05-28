@@ -211,6 +211,8 @@ struct CheckpointAttemptView: View {
         switch session.purpose {
         case .temporaryUnlock:
             return "Blocked app attempt"
+        case .preview:
+            return "Preview"
         case .stopBlocking:
             return "Stop blocking challenge"
         }
@@ -220,6 +222,8 @@ struct CheckpointAttemptView: View {
         switch session.purpose {
         case .temporaryUnlock:
             return "Clear \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")"
+        case .preview:
+            return "Preview checkpoint"
         case .stopBlocking:
             return "Clear the stop challenge"
         }
@@ -229,6 +233,8 @@ struct CheckpointAttemptView: View {
         switch session.purpose {
         case .temporaryUnlock:
             return "Get \(session.unlockThreshold) of \(session.questions.count) correct before the \(store.unlockPolicy.unlockMinutes)-minute unlock."
+        case .preview:
+            return "Try the checkpoint flow without changing blocking state."
         case .stopBlocking:
             return "Get \(session.unlockThreshold) of \(session.questions.count) correct to turn app blocking off."
         }
@@ -250,6 +256,8 @@ struct CheckpointAttemptView: View {
         switch session.purpose {
         case .temporaryUnlock:
             return "Submit and unlock \(store.unlockPolicy.unlockMinutes) minutes"
+        case .preview:
+            return "Submit and finish"
         case .stopBlocking:
             return "Submit and stop blocking"
         }
@@ -267,6 +275,8 @@ struct CheckpointAttemptView: View {
         switch session.purpose {
         case .temporaryUnlock:
             return "lock.open"
+        case .preview:
+            return "checkmark.seal"
         case .stopBlocking:
             return "hand.raised"
         }
@@ -286,6 +296,19 @@ struct CheckpointAttemptView: View {
             answeredQuestionCount: answeredQuestionCount
         )
         let shouldPass = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
+        if session.purpose == .preview {
+            correctAnswerCount = updatedCorrectCount
+            missedQuestionIDs = updatedMissedQuestionIDs
+
+            guard !shouldFinish else {
+                dismiss()
+                return
+            }
+
+            advanceToNextQuestion()
+            return
+        }
+
         let unlockMinutes = store.submitAnswer(
             question: question,
             answer: answer,
@@ -301,6 +324,8 @@ struct CheckpointAttemptView: View {
                 switch session.purpose {
                 case .temporaryUnlock:
                     screenTime.temporarilyUnshield(minutes: unlockMinutes)
+                case .preview:
+                    break
                 case .stopBlocking:
                     store.clearUnlockSession()
                     screenTime.clearShield()

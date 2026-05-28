@@ -62,6 +62,7 @@ enum CheckpointSessionSource: Sendable {
 
 enum CheckpointSessionPurpose: String, Sendable {
     case temporaryUnlock
+    case preview
     case stopBlocking
 }
 

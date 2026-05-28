@@ -5,9 +5,7 @@ struct HomeView: View {
     let screenTime: ScreenTimeController
 
     @Environment(\.scenePhase) private var scenePhase
-    @State private var activeSession: CheckpointSession?
     @State private var isRestrictedAppsPresented = false
-    @State private var isPreparingCheckpoint = false
 
     var body: some View {
         NavigationStack {
@@ -30,9 +28,6 @@ struct HomeView: View {
             .checkpointScreenBackground()
             .navigationTitle("Checkpoint")
             .toolbarTitleDisplayMode(.inline)
-            .sheet(item: $activeSession) { session in
-                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
-            }
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
             }
@@ -75,7 +70,7 @@ struct HomeView: View {
         SectionPanel {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    StatusBadge(text: goal.category.rawValue, tint: CheckpointTheme.teal)
+                    StatusBadge(text: "Active profile", tint: CheckpointTheme.teal)
                     Spacer()
                     goalSwitcher
                     Text(goal.deadline, style: .date)
@@ -99,11 +94,6 @@ struct HomeView: View {
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
-
-                PrimaryActionButton(title: isPreparingCheckpoint ? "Preparing checkpoint" : "Start a checkpoint", systemImage: "play.fill") {
-                    startCheckpoint()
-                }
-                .disabled(isPreparingCheckpoint)
             }
         }
     }
@@ -145,13 +135,6 @@ struct HomeView: View {
                     HStack(spacing: 10) {
                         SecondaryActionButton(title: "Dismiss", systemImage: "xmark") {
                             store.clearCheckpointNotice()
-                        }
-
-                        if store.goal != nil {
-                            SecondaryActionButton(title: "Try checkpoint", systemImage: "play.fill") {
-                                startCheckpoint()
-                            }
-                            .disabled(isPreparingCheckpoint)
                         }
                     }
                 }
@@ -203,10 +186,15 @@ struct HomeView: View {
                         isRestrictedAppsPresented = true
                     }
 
-                    SecondaryActionButton(title: screenTime.isShieldingEnabled ? "Unlock with checkpoint" : "Start blocking", systemImage: screenTime.isShieldingEnabled ? "lock.open" : "shield") {
-                        if screenTime.isShieldingEnabled {
-                            startCheckpoint()
-                        } else {
+                    if screenTime.isShieldingEnabled {
+                        HStack {
+                            Spacer(minLength: 0)
+                            StatusBadge(text: "Blocking active", tint: CheckpointTheme.teal)
+                            Spacer(minLength: 0)
+                        }
+                        .frame(maxWidth: .infinity)
+                    } else {
+                        SecondaryActionButton(title: "Start blocking", systemImage: "shield") {
                             screenTime.applyShield()
                         }
                     }
@@ -268,25 +256,8 @@ struct HomeView: View {
     }
 
     private func handleQuestionRefreshOnActivation() {
-        guard activeSession == nil else { return }
-
         Task {
-            let didRefresh = await store.refreshQuestionBatchIfNeeded()
-            if didRefresh,
-               activeSession == nil,
-               store.checkpointNotice != nil {
-                activeSession = await store.prepareManualCheckpointSession()
-            }
-        }
-    }
-
-    private func startCheckpoint() {
-        guard !isPreparingCheckpoint else { return }
-        isPreparingCheckpoint = true
-
-        Task {
-            activeSession = await store.prepareManualCheckpointSession()
-            isPreparingCheckpoint = false
+            _ = await store.refreshQuestionBatchIfNeeded()
         }
     }
 }

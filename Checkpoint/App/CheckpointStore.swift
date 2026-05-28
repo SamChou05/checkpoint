@@ -262,7 +262,7 @@ final class CheckpointStore {
     func createGoal(
         title: String,
         deadline: Date,
-        category: GoalCategory,
+        category: GoalCategory? = nil,
         currentLevel: String,
         focusAreas: String,
         preferredQuestionStyle: QuestionFormat,
@@ -283,7 +283,11 @@ final class CheckpointStore {
         let newGoal = Goal(
             title: normalizedTitle,
             deadline: max(deadline, Date()),
-            category: category,
+            category: category ?? inferredGoalCategory(
+                title: normalizedTitle,
+                currentLevel: normalizedCurrentLevel,
+                focusAreas: normalizedFocusAreas
+            ),
             currentLevel: normalizedCurrentLevel,
             focusAreas: normalizedFocusAreas,
             preferredQuestionStyle: preferredQuestionStyle,
@@ -552,6 +556,10 @@ final class CheckpointStore {
         checkpointSession(source: .manual)
     }
 
+    func startPreviewCheckpointSession() -> CheckpointSession? {
+        checkpointSession(source: .manual, purpose: .preview)
+    }
+
     func preparePendingShieldSession() async -> CheckpointSession? {
         guard SharedAppGroup.pendingShieldAttemptDate != nil else { return nil }
 
@@ -578,6 +586,19 @@ final class CheckpointStore {
 
         guard await refreshQuestionBatchIfNeeded() else { return nil }
         return checkpointSession(source: .manual)
+    }
+
+    func preparePreviewCheckpointSession() async -> CheckpointSession? {
+        if goal != nil && usableQuestionCount < unlockPolicy.questionsPerSession {
+            _ = await refreshQuestionBatchIfNeeded()
+        }
+
+        if let session = startPreviewCheckpointSession() {
+            return session
+        }
+
+        guard await refreshQuestionBatchIfNeeded() else { return nil }
+        return checkpointSession(source: .manual, purpose: .preview)
     }
 
     func prepareStopBlockingSession() async -> CheckpointSession? {
@@ -820,6 +841,36 @@ final class CheckpointStore {
         min(5.0, max(1.0, competency.estimatedLevel + 0.5))
     }
 
+    private func inferredGoalCategory(
+        title: String,
+        currentLevel: String,
+        focusAreas: String
+    ) -> GoalCategory {
+        let signal = [title, currentLevel, focusAreas].joined(separator: " ").lowercased()
+
+        if containsAny(["coding interview", "leetcode", "algorithm", "data structure", "system design", "programming interview"], in: signal) {
+            return .codingInterview
+        }
+
+        if containsAny(["exam", "test", "final", "midterm", "quiz", "lsat", "sat", "act", "mcat", "gre", "calculus"], in: signal) {
+            return .examPrep
+        }
+
+        if containsAny(["language", "spanish", "french", "japanese", "korean", "mandarin", "grammar", "vocabulary"], in: signal) {
+            return .languageLearning
+        }
+
+        if containsAny(["fitness", "workout", "running", "marathon", "strength", "gym"], in: signal) {
+            return .fitness
+        }
+
+        if containsAny(["writing", "essay", "blog", "book", "draft", "publish"], in: signal) {
+            return .writing
+        }
+
+        return .custom
+    }
+
     // MARK: - Profile helpers
 
     private func upsertGoalProfile(_ profile: Goal) {
@@ -884,10 +935,17 @@ final class CheckpointStore {
         )
     }
 
-    private func checkpointSession(source: CheckpointSessionSource) -> CheckpointSession? {
+    private func checkpointSession(
+        source: CheckpointSessionSource,
+        purpose: CheckpointSessionPurpose = .temporaryUnlock
+    ) -> CheckpointSession? {
         if let session = nextCheckpointSession() {
             checkpointNotice = nil
-            return session
+            return CheckpointSession(
+                questions: session.questions,
+                requiredCorrectAnswers: session.requiredCorrectAnswers,
+                purpose: purpose
+            )
         }
 
         checkpointNotice = checkpointSessionUnavailableMessage(source: source)

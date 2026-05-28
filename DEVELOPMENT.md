@@ -37,20 +37,21 @@ Important platform constraint:
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
-- Stopping blocking is intentionally harder than starting it: Home routes active blockers to checkpoint unlocks, while full stop requires a 9-of-10 stop challenge in Advanced.
+- Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires a 9-of-10 stop challenge in Advanced.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
 - Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
-- Goal profile onboarding flow.
+- Natural-language goal profile onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
+- Goal category is inferred internally from the typed goal/context instead of shown as a setup choice.
 - Existing profiles reopen prefilled for edits; Free keeps one active profile, while Pro can create multiple profiles.
 - Home lets Pro users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
-- Home includes a user-facing `Start a checkpoint` flow for previewing the checkpoint experience before real device testing.
+- Home focuses on the active profile and blocking state; the manual checkpoint preview is tucked into Advanced for testing and does not unlock apps.
 
 ### Question System
 
-- Goal intake captures title, deadline, category, current level, focus areas, and the profile-specific minimum question level.
+- Goal intake captures title, deadline, current level, focus areas, and the profile-specific minimum question level; internal category inference keeps fallback question generation useful.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.

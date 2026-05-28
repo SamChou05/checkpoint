@@ -6,7 +6,6 @@ struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var deadline = Calendar.current.date(byAdding: .month, value: 2, to: Date()) ?? Date()
-    @State private var category: GoalCategory = .codingInterview
     @State private var currentLevel = ""
     @State private var focusAreas = ""
     @State private var minimumQuestionDifficulty = UnlockPolicy.default.minimumQuestionDifficulty
@@ -18,7 +17,6 @@ struct OnboardingView: View {
         if let goal = store.goal, !store.isCreatingGoalProfile {
             _title = State(initialValue: goal.title)
             _deadline = State(initialValue: max(goal.deadline, Date()))
-            _category = State(initialValue: goal.category)
             _currentLevel = State(initialValue: goal.currentLevel)
             _focusAreas = State(initialValue: goal.focusAreas)
             _minimumQuestionDifficulty = State(initialValue: goal.minimumQuestionDifficulty)
@@ -50,12 +48,6 @@ struct OnboardingView: View {
 
                         DatePicker("Deadline", selection: $deadline, in: Date()..., displayedComponents: .date)
                             .foregroundStyle(CheckpointTheme.text)
-
-                        Picker("Category", selection: $category) {
-                            ForEach(GoalCategory.allCases) { category in
-                                Text(category.rawValue).tag(category)
-                            }
-                        }
                     }
 
                     SectionPanel("Study context") {
@@ -107,7 +99,6 @@ struct OnboardingView: View {
                             await store.createGoal(
                                 title: title,
                                 deadline: deadline,
-                                category: category,
                                 currentLevel: currentLevel,
                                 focusAreas: focusAreas,
                                 preferredQuestionStyle: .multipleChoice,
