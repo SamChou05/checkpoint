@@ -58,6 +58,7 @@ Important platform constraint:
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.
+- A first AWS Bedrock Lambda backend is scaffolded in `backend/bedrock-question-service`; it matches the app contract, validates model output, and keeps provider credentials off-device.
 - AI generation should happen in batches and be cached locally, not live on every app-open attempt.
 - Questions store prompt, expected answer, answer choices, explanation, topic, difficulty, format, status, ask count, correctness count, and next review date.
 - Answer attempts are stored in history.
@@ -184,7 +185,7 @@ The MVP is complete when:
 - Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.
 - Replace prototype persistence with SwiftData or SQLite.
-- Verify backend generation against a real endpoint.
+- Deploy and verify the Bedrock backend against a real endpoint/model.
 - Verify Apple Foundation Models generation with the iOS SDK and supported hardware.
 
 ### P1
@@ -234,7 +235,7 @@ Recommended MVP path:
 
 - Start with local templates and deterministic tracking.
 - Add a backend endpoint for batch question generation.
-- Generate 30 to 100 questions per goal or topic batch.
+- Generate 20 to 40 questions per goal or topic batch while costs are being validated.
 - Store expected answer, explanation, topic, difficulty, and quality flags.
 - Use multiple choice for the MVP so grading is deterministic and cheap.
 - Revisit open-ended prompts only after the core blocker loop is reliable.
@@ -290,6 +291,7 @@ Implementation status:
 - Provider enum and routing are implemented.
 - Local template provider is implemented.
 - Backend provider contract is implemented as a POST endpoint that returns question JSON.
+- AWS Bedrock Lambda reference service is implemented under `backend/bedrock-question-service`.
 - Apple Foundation Models provider is guarded behind iOS/FoundationModels availability and falls back automatically when unavailable.
 - Provider output validation is implemented before questions enter the bank.
 - Automatic provider routing prefers LLM generation when on-device support or an internal backend endpoint is available, then falls back to local templates.

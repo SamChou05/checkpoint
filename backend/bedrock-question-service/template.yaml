@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Checkpoint Bedrock question-generation backend
+
+Parameters:
+  BedrockModelId:
+    Type: String
+    Default: amazon.nova-micro-v1:0
+  MaxQuestionsPerBatch:
+    Type: Number
+    Default: 20
+    MinValue: 1
+    MaxValue: 40
+  BackendToken:
+    Type: String
+    Default: ""
+    NoEcho: true
+
+Resources:
+  CheckpointQuestionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      CodeUri: .
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
+          CHECKPOINT_BACKEND_TOKEN: !Ref BackendToken
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - "*"
+          AllowHeaders:
+            - authorization
+            - content-type
+          AllowMethods:
+            - POST
+            - OPTIONS
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+              Resource: "*"
+
+Outputs:
+  QuestionEndpoint:
+    Description: Function URL to use as Checkpoint's AI backend endpoint.
+    Value: !GetAtt CheckpointQuestionFunctionUrl.FunctionUrl

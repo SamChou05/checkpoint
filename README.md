@@ -39,9 +39,10 @@ The MVP uses a hybrid provider approach:
 
 - Automatic tries Apple Foundation Models when available, then a configured backend LLM, then Local Templates as the no-cost/offline fallback.
 - Apple Foundation Models can provide on-device generation on Apple Intelligence-compatible devices.
-- Backend LLM generation is batch-based and reserved for internal app configuration or future service wiring.
+- Backend LLM generation is batch-based and reserved for internal app configuration; the first AWS Bedrock Lambda service lives in `backend/bedrock-question-service`.
 - Local Templates keep the app usable without network, backend, or supported on-device models.
 - Provider prompts and payloads include a derived learning target, content topics, and a directive to test the subject matter instead of asking about study plans or app usage.
+- Configure production backend URLs through internal build configuration, not user-facing Settings and never with AWS credentials in the app.
 
 The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
 

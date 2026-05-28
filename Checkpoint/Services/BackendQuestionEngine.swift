@@ -11,6 +11,10 @@ struct BackendQuestionEngine: QuestionGenerating {
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let token = request.backendAuthorizationToken?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !token.isEmpty {
+            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         urlRequest.timeoutInterval = 20
         urlRequest.httpBody = try JSONEncoder().encode(BackendQuestionRequest(request: request))
 

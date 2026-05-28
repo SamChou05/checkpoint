@@ -28,6 +28,7 @@ struct QuestionGenerationRequest: Sendable {
     var targetCount: Int
     var minimumDifficulty: Int
     var backendEndpoint: URL?
+    var backendAuthorizationToken: String? = nil
 
     var questionContext: GoalQuestionContext {
         GoalQuestionContext(goal: goal)

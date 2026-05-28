@@ -1112,6 +1112,42 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("Avoid these existing prompts: Existing prompt"))
         XCTAssertTrue(sourcePrompt.contains("Avoid these reported prompts: Reported prompt"))
     }
+
+    @MainActor
+    func testStoreUsesInternalBackendEnvironmentConfiguration() async throws {
+        setenv("CHECKPOINT_AI_BACKEND_ENDPOINT", "https://example.com/questions", 1)
+        setenv("CHECKPOINT_AI_BACKEND_TOKEN", "dev-token", 1)
+        defer {
+            unsetenv("CHECKPOINT_AI_BACKEND_ENDPOINT")
+            unsetenv("CHECKPOINT_AI_BACKEND_TOKEN")
+        }
+
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let suiteName = "AIProviderPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 14),
+            category: .examPrep,
+            currentLevel: "Intermediate logical reasoning",
+            focusAreas: "logical reasoning",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.backendEndpoint?.absoluteString, "https://example.com/questions")
+        XCTAssertEqual(request.backendAuthorizationToken, "dev-token")
+    }
 }
 
 final class UnlockPolicyTests: XCTestCase {

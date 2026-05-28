@@ -712,6 +712,8 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CheckpointAIBackendEndpoint = "$(CHECKPOINT_AI_BACKEND_ENDPOINT)";
+				INFOPLIST_KEY_CheckpointAIBackendToken = "$(CHECKPOINT_AI_BACKEND_TOKEN)";
 				INFOPLIST_KEY_CFBundleDisplayName = Checkpoint;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -742,6 +744,8 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CheckpointAIBackendEndpoint = "$(CHECKPOINT_AI_BACKEND_ENDPOINT)";
+				INFOPLIST_KEY_CheckpointAIBackendToken = "$(CHECKPOINT_AI_BACKEND_TOKEN)";
 				INFOPLIST_KEY_CFBundleDisplayName = Checkpoint;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

@@ -1,8 +1,8 @@
 # AI Backend Contract
 
-Checkpoint can generate multiple-choice questions through a backend endpoint when higher-quality generation is explicitly needed beyond Apple Foundation Models and Local Templates.
+Checkpoint can generate multiple-choice questions through a backend endpoint when higher-quality generation is explicitly needed beyond Apple Foundation Models and Local Templates. A first AWS Bedrock Lambda implementation lives in `backend/bedrock-question-service`.
 
-The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection.
+The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from the `CheckpointAIBackendEndpoint` Info.plist key or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. If an early testing endpoint uses a bearer token, configure `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN`; never place AWS credentials in the app.
 
 ## Request
 
@@ -87,6 +87,8 @@ The iOS app also validates batches before storage. It drops blank questions, dup
 
 - Generate in batches, not per blocked-app attempt.
 - Cache generated questions in the app.
+- Keep cloud calls behind the backend service; the iOS app must never contain Bedrock, AWS, or other model-provider secrets.
+- Cap batch size in the backend. The Bedrock Lambda defaults to 20 questions per call even if the app requests a larger bank.
 - Use backend generation only when:
   - the bank is low
   - the user refreshes

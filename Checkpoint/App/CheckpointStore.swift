@@ -1105,8 +1105,47 @@ final class CheckpointStore {
             reportedQuestions: reportedQuestions,
             targetCount: questionBankTargetCount,
             minimumDifficulty: goal.minimumQuestionDifficulty,
-            backendEndpoint: URL(string: backendEndpoint.trimmingCharacters(in: .whitespacesAndNewlines))
+            backendEndpoint: resolvedBackendEndpoint,
+            backendAuthorizationToken: resolvedBackendAuthorizationToken
         )
+    }
+
+    private var resolvedBackendEndpoint: URL? {
+        guard let endpoint = firstConfiguredBackendValue(
+            storedValue: backendEndpoint,
+            infoKey: "CheckpointAIBackendEndpoint",
+            environmentKey: "CHECKPOINT_AI_BACKEND_ENDPOINT"
+        ) else {
+            return nil
+        }
+
+        return URL(string: endpoint)
+    }
+
+    private var resolvedBackendAuthorizationToken: String? {
+        firstConfiguredBackendValue(
+            storedValue: nil,
+            infoKey: "CheckpointAIBackendToken",
+            environmentKey: "CHECKPOINT_AI_BACKEND_TOKEN"
+        )
+    }
+
+    private func firstConfiguredBackendValue(
+        storedValue: String?,
+        infoKey: String,
+        environmentKey: String
+    ) -> String? {
+        let candidates = [
+            storedValue,
+            Bundle.main.object(forInfoDictionaryKey: infoKey) as? String,
+            ProcessInfo.processInfo.environment[environmentKey]
+        ]
+
+        return candidates
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { value in
+                !value.isEmpty && !value.contains("$(")
+            }
     }
 
     private func normalizeFreeTierLimits() {
