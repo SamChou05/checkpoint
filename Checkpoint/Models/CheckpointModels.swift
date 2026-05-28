@@ -97,13 +97,13 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .advancedStrictness:
-            return "Advanced strictness"
+            return "Custom checkpoint rules"
         case .automaticBankRefill:
-            return "Automatic bank refill"
+            return "Automatic question refresh"
         case .unlimitedQuestionRefreshes:
-            return "Unlimited question refreshes"
+            return "Unlimited refreshes"
         case .largerQuestionBanks:
-            return "Larger question banks"
+            return "More question variety"
         case .deeperAnalytics:
             return "Deeper analytics"
         case .multipleGoals:
@@ -116,13 +116,13 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
     var detail: String {
         switch self {
         case .advancedStrictness:
-            return "Tune question count and pass threshold beyond the default 4-of-5 checkpoint."
+            return "Tune question count and passing score beyond the default 4-of-5 checkpoint."
         case .automaticBankRefill:
-            return "Quietly refresh low question banks so checkpoints keep feeling fresh."
+            return "Quietly add new questions when your practice set gets low."
         case .unlimitedQuestionRefreshes:
-            return "Refresh goal-aligned question banks whenever you run low or change study focus."
+            return "Refresh goal-aligned questions whenever you run low or change study focus."
         case .largerQuestionBanks:
-            return "Ask providers for larger batches so repeated attempts stay fresh."
+            return "Keep more ready questions on deck so repeated attempts stay fresh."
         case .deeperAnalytics:
             return "See richer topic trends, weak spots, and long-term study progress."
         case .multipleGoals:
@@ -130,6 +130,15 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         case .importsAndSync:
             return "Bring in notes, decks, PDFs, and cross-device study state later."
         }
+    }
+
+    static var launchFeatures: [ProFeature] {
+        [
+            .advancedStrictness,
+            .automaticBankRefill,
+            .unlimitedQuestionRefreshes,
+            .largerQuestionBanks
+        ]
     }
 }
 

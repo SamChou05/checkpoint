@@ -296,7 +296,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let screenTime = ScreenTimeController(defaults: defaults)
 
         XCTAssertFalse(screenTime.hasSelection)
-        XCTAssertEqual(screenTime.restrictedAppsSummary, "No restricted apps selected")
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "No blocked apps selected")
     }
 
     @MainActor
@@ -330,7 +330,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertFalse(screenTime.isShieldingEnabled)
         XCTAssertEqual(
             screenTime.lastErrorMessage,
-            "Choose at least one restricted app, category, or website before applying the shield."
+            "Choose at least one blocked app, category, or website before starting app blocking."
         )
         XCTAssertFalse(SharedAppGroup.desiredShieldActive)
     }

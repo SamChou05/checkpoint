@@ -32,12 +32,12 @@ Important platform constraint:
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
 - Home, History, Skill, and Settings tabs.
-- Settings includes a launch-readiness panel for goal, question, Screen Time, restricted-selection, and unlock-window status.
+- Settings keeps user-facing controls focused on Plan, Goal, App blocking, Checkpoint rules, and Practice set; readiness and shield diagnostics now live in a collapsed Advanced area.
 - Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
-- Pro Assist adds passive bank-health status, automatic low-bank refill with a cooldown, and next-topic guidance without adding a setup step.
+- Study Assist adds passive question-supply status, automatic refresh with a cooldown, and next-topic guidance without adding a setup step.
 - Goal onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
-- Simulated blocked-app attempt flow for previewing the checkpoint experience before real device testing.
+- Home includes a user-facing `Start a checkpoint` flow for previewing the checkpoint experience before real device testing.
 
 ### Question System
 
@@ -55,8 +55,8 @@ Important platform constraint:
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
-- Settings includes a manual question batch refresh action.
-- Free question refreshes are limited per goal before opening the Pro paywall; Pro allows larger target batches, unlimited refreshes, and automatic low-bank refill.
+- Settings includes a manual question refresh action.
+- Free question refreshes are limited per goal before opening the Pro paywall; Pro allows more question variety, unlimited refreshes, and automatic refresh.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic
@@ -97,11 +97,11 @@ Important platform constraint:
 ### Screen Time / Blocking
 
 - Family Controls authorization request.
-- FamilyActivityPicker-based restricted app/category/web selection.
-- New installs start with an empty restricted selection.
+- FamilyActivityPicker-based blocked app/category/web selection.
+- New installs start with an empty blocked-app selection.
 - Selection persistence through shared App Group defaults.
 - ManagedSettingsStore shielding.
-- Applying a shield without a restricted selection surfaces an error instead of toggling an empty shield.
+- Starting blocking without a blocked-app selection surfaces an error instead of toggling an empty shield.
 - Applying a shield before Screen Time approval surfaces an error.
 - Temporary unshield after successful checkpoint.
 - App-level fallback re-lock timer.
@@ -166,7 +166,7 @@ The MVP is complete when:
 - Enable Family Controls and App Groups for all targets.
 - Test the shield loop on a real iPhone.
 - Confirm Shield Configuration extension is invoked for app tokens and category tokens.
-- If the default Restricted page appears, check Settings > Screen Time > Shield page. A zero render count means the signed build did not load the Shield Configuration extension, usually due to extension provisioning, bundle ID, Family Controls, or App Group setup.
+- If the default Restricted page appears, check Settings > Advanced > Troubleshooting and reset. A zero custom shield render count means the signed build did not load the Shield Configuration extension, usually due to extension provisioning, bundle ID, Family Controls, or App Group setup.
 - Confirm Shield Action extension writes pending attempts.
 - Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.

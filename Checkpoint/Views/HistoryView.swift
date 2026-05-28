@@ -44,7 +44,7 @@ struct HistoryView: View {
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Simulate a blocked app attempt from Home to complete the first rep.")
+                Text("Start a checkpoint from Home to complete the first rep.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
             }

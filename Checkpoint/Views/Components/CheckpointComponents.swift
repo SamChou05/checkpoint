@@ -2,22 +2,22 @@ import SwiftUI
 
 enum CheckpointTheme {
     static let ink = Color(red: 0.06, green: 0.14, blue: 0.12)
-    static let paper = Color(red: 0.96, green: 0.96, blue: 0.92)
-    static let panel = Color(red: 1.00, green: 0.99, blue: 0.96)
-    static let panelRaised = Color(red: 0.92, green: 0.91, blue: 0.86)
-    static let hairline = Color(red: 0.72, green: 0.70, blue: 0.63).opacity(0.42)
+    static let paper = Color(red: 0.95, green: 0.96, blue: 0.93)
+    static let panel = Color(red: 0.99, green: 0.98, blue: 0.95)
+    static let panelRaised = Color(red: 0.90, green: 0.92, blue: 0.88)
+    static let hairline = Color(red: 0.60, green: 0.65, blue: 0.59).opacity(0.38)
     static let text = ink
-    static let muted = Color(red: 0.37, green: 0.42, blue: 0.40)
-    static let teal = Color(red: 0.14, green: 0.36, blue: 0.32)
-    static let blue = Color(red: 0.15, green: 0.36, blue: 0.58)
-    static let amber = Color(red: 0.54, green: 0.35, blue: 0.09)
-    static let coral = Color(red: 0.66, green: 0.31, blue: 0.26)
+    static let muted = Color(red: 0.35, green: 0.41, blue: 0.38)
+    static let teal = Color(red: 0.11, green: 0.31, blue: 0.28)
+    static let blue = Color(red: 0.16, green: 0.31, blue: 0.47)
+    static let amber = Color(red: 0.55, green: 0.40, blue: 0.15)
+    static let coral = Color(red: 0.61, green: 0.29, blue: 0.24)
 
     static let background = LinearGradient(
         colors: [
-            Color(red: 0.96, green: 0.96, blue: 0.92),
-            Color(red: 0.92, green: 0.95, blue: 0.90),
-            Color(red: 0.95, green: 0.93, blue: 0.87)
+            Color(red: 0.95, green: 0.96, blue: 0.93),
+            Color(red: 0.90, green: 0.94, blue: 0.91),
+            Color(red: 0.94, green: 0.92, blue: 0.86)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -34,6 +34,9 @@ struct PrimaryActionButton: View {
             Label(title, systemImage: systemImage)
                 .font(.headline)
                 .foregroundStyle(CheckpointTheme.paper)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 15)
                 .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -52,6 +55,9 @@ struct SecondaryActionButton: View {
             Label(title, systemImage: systemImage)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 13)
                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -132,6 +138,8 @@ struct StatusBadge: View {
             .font(.caption.weight(.bold))
             .textCase(.uppercase)
             .foregroundStyle(tint)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(tint.opacity(0.14), in: Capsule())

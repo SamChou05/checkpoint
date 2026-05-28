@@ -50,11 +50,11 @@ struct HomeView: View {
     private var header: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Progress before distraction")
+                Text("Study before distraction")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.teal)
 
-                Text("Clear a checkpoint set before you scroll.")
+                Text("Clear a checkpoint before you scroll.")
                     .font(.largeTitle.bold())
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
@@ -97,7 +97,7 @@ struct HomeView: View {
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
 
-                PrimaryActionButton(title: "Simulate blocked app attempt", systemImage: "lock.open") {
+                PrimaryActionButton(title: "Start a checkpoint", systemImage: "play.fill") {
                     activeSession = store.startManualCheckpointSession()
                 }
             }
@@ -107,7 +107,7 @@ struct HomeView: View {
     @ViewBuilder
     private var proAssistPanel: some View {
         if store.isPro {
-            SectionPanel("Pro Assist") {
+            SectionPanel("Study Assist") {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         StatusBadge(text: store.questionBankHealthText, tint: CheckpointTheme.teal)
@@ -123,7 +123,7 @@ struct HomeView: View {
                         .fixedSize(horizontal: false, vertical: true)
 
                     if store.usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
-                        Text("Low banks refill automatically when Checkpoint is active.")
+                        Text("Fresh questions are added automatically when Checkpoint is active.")
                             .font(.footnote)
                             .foregroundStyle(CheckpointTheme.muted)
                     }
@@ -223,31 +223,31 @@ struct HomeView: View {
                         .foregroundStyle(CheckpointTheme.muted)
                 }
             } else {
-                Text("Create a goal to generate your first question bank.")
+                Text("Create a goal to prepare your first practice set.")
                     .foregroundStyle(CheckpointTheme.muted)
             }
         }
     }
 
     private var screenTimePanel: some View {
-        SectionPanel("Restricted apps") {
+        SectionPanel("Blocked apps") {
             VStack(alignment: .leading, spacing: 12) {
                 Text(screenTime.restrictedAppsSummary)
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.text)
 
-                SecondaryActionButton(title: "Prepare Screen Time setup", systemImage: "app.badge") {
+                SecondaryActionButton(title: "Allow Screen Time", systemImage: "app.badge") {
                     Task {
                         await screenTime.requestAuthorization()
                     }
                 }
 
                 HStack(spacing: 10) {
-                    SecondaryActionButton(title: "Choose apps", systemImage: "checklist") {
+                    SecondaryActionButton(title: "Choose blocked apps", systemImage: "checklist") {
                         isRestrictedAppsPresented = true
                     }
 
-                    SecondaryActionButton(title: screenTime.isShieldingEnabled ? "Pause shield" : "Apply shield", systemImage: screenTime.isShieldingEnabled ? "pause" : "shield") {
+                    SecondaryActionButton(title: screenTime.isShieldingEnabled ? "Pause blocking" : "Start blocking", systemImage: screenTime.isShieldingEnabled ? "pause" : "shield") {
                         if screenTime.isShieldingEnabled {
                             screenTime.clearShield()
                         } else {
@@ -266,7 +266,7 @@ struct HomeView: View {
                     .font(.title2.bold())
                     .foregroundStyle(CheckpointTheme.text)
 
-                    Text("Checkpoint will use it to generate a multiple-choice question bank, then ask the right question when a restricted app is opened.")
+                    Text("Checkpoint will prepare multiple-choice questions, then ask the right ones when a blocked app is opened.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)

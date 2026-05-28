@@ -33,7 +33,7 @@ final class PurchaseController {
         do {
             products = try await Product.products(for: ProProductID.all)
                 .sorted { $0.price < $1.price }
-            purchaseMessage = products.isEmpty ? "App Store products are not configured yet." : nil
+            purchaseMessage = nil
         } catch {
             purchaseMessage = "Could not load App Store products yet."
         }
@@ -191,7 +191,7 @@ final class CheckpointStore {
     }
 
     var questionRefreshStatusText: String {
-        isPro ? "Unlimited Pro refreshes" : "\(remainingFreeQuestionRefreshes) free refreshes left"
+        isPro ? "Unlimited" : "\(remainingFreeQuestionRefreshes) free refreshes left"
     }
 
     var questionBankTargetCount: Int {
@@ -222,7 +222,7 @@ final class CheckpointStore {
 
     var proAssistSummary: String {
         guard isPro else {
-            return "Pro can quietly refill low question banks and point you toward the next useful topic."
+            return "Pro can quietly add fresh questions and point you toward the next useful topic."
         }
 
         if let focus = proFocusRecommendation {
@@ -230,10 +230,10 @@ final class CheckpointStore {
         }
 
         if usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
-            return "Question bank is getting low. Pro Assist will refresh it in the background when possible."
+            return "Your practice set is getting low. Checkpoint will add fresh questions when possible."
         }
 
-        return "Question bank is healthy. Keep answering checkpoints and missed topics will surface automatically."
+        return "Your practice set is healthy. Keep answering checkpoints and missed topics will surface automatically."
     }
 
     var proFocusRecommendation: String? {
@@ -323,7 +323,7 @@ final class CheckpointStore {
 
         questions = batch.questions
         lastQuestionProvider = batch.provider
-        lastAIErrorMessage = batch.usedFallback ? "Used \(batch.provider.rawValue) because the preferred provider was unavailable." : nil
+        lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         competencies = initialCompetencies(for: newGoal, questions: questions)
         questionReports = []
         questionBatchState = .ready
@@ -364,9 +364,9 @@ final class CheckpointStore {
         competencies = mergeCompetencies(existing: competencies, goal: goal, questions: questions)
         lastQuestionProvider = batch.provider
         if newQuestions.isEmpty {
-            lastAIErrorMessage = "No new usable questions were added. Try refining the goal or changing providers."
+            lastAIErrorMessage = "No new usable questions were added. Try refining the goal or refreshing later."
         } else {
-            lastAIErrorMessage = batch.usedFallback ? "Used \(batch.provider.rawValue) because the preferred provider was unavailable." : nil
+            lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         }
         questionBatchState = .ready
         save()

@@ -15,7 +15,7 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
 - Blocked-app launches with no available checkpoint questions surface a recovery notice.
 - Simulator XCTest coverage passes for the core workflow.
-- StoreKit-ready Free/Pro gating is scaffolded. The core blocked-app recovery loop remains free; Pro gates advanced strictness, automatic low-bank refill, next-topic guidance, and refresh capacity.
+- StoreKit-ready Free/Pro gating is scaffolded. The core blocked-app recovery loop remains free; Pro gates custom checkpoint rules, automatic question refresh, next-topic guidance, and refresh capacity.
 
 ## External Gates
 
@@ -42,7 +42,7 @@ Run this before TestFlight and again before App Store submission:
 4. Choose at least one restricted app and one category.
 5. Apply the shield from Home.
 6. Open a restricted app and confirm the Checkpoint shield appears.
-7. If the system default Restricted page appears, open Settings > Screen Time > Shield page and confirm whether the custom shield render count is still zero before debugging UI copy.
+7. If the system default Restricted page appears, open Settings > Advanced > Troubleshooting and reset and confirm whether the custom shield render count is still zero before debugging UI copy.
 8. Tap the primary shield button and confirm Checkpoint opens.
 9. Confirm the checkpoint sheet appears from the pending shield attempt, including when Checkpoint was last left on Settings, Skill, or History.
 10. Fail at least two questions and confirm the app stays locked.

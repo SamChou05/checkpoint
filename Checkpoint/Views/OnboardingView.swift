@@ -20,7 +20,7 @@ struct OnboardingView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Type the goal clearly. The app turns it into stored questions that can come back when you miss them.")
+                        Text("Type the goal clearly. Checkpoint turns it into questions that come back when you miss them.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -60,7 +60,7 @@ struct OnboardingView: View {
                             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
 
                         HStack {
-                            Text("Question style")
+                            Text("Format")
                                 .foregroundStyle(CheckpointTheme.muted)
                             Spacer()
                             StatusBadge(text: QuestionFormat.multipleChoice.rawValue, tint: CheckpointTheme.teal)
@@ -68,7 +68,7 @@ struct OnboardingView: View {
                     }
 
                     PrimaryActionButton(
-                        title: isCreating ? "Generating questions" : "Generate question bank",
+                        title: isCreating ? "Preparing questions" : "Prepare questions",
                         systemImage: "book.closed"
                     ) {
                         Task {

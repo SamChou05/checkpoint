@@ -17,17 +17,17 @@ import ManagedSettings
 @Observable
 final class ScreenTimeController {
     enum SetupState: String {
-        case notStarted = "Not connected"
+        case notStarted = "Not set up"
         case authorized = "Authorized"
-        case shieldActive = "Shield active"
-        case temporarilyUnlocked = "Temporarily unlocked"
-        case failed = "Setup failed"
-        case readyForSpike = "Ready for Screen Time spike"
+        case shieldActive = "Blocking active"
+        case temporarilyUnlocked = "Temporarily open"
+        case failed = "Needs attention"
+        case readyForSpike = "Ready"
         case unavailable = "Unavailable in this build"
     }
 
     var setupState: SetupState = .notStarted
-    var restrictedAppsSummary = "No restricted apps selected"
+    var restrictedAppsSummary = "No blocked apps selected"
     var lastErrorMessage: String?
     var isShieldingEnabled = false
 
@@ -46,7 +46,7 @@ final class ScreenTimeController {
                 return "Open Checkpoint has been tapped \(actionCount)x, but the custom shield page has not reported yet. Reinstall the signed app and verify the Shield Configuration extension entitlements if the default Restricted page appears."
             }
 
-            return "Custom shield has not reported yet. Open a restricted app after applying shields; if the default Restricted page appears, verify the Shield Configuration extension provisioning."
+            return "Custom shield has not reported yet. Open a blocked app after starting blocking; if the default Restricted page appears, verify the Shield Configuration extension provisioning."
         }
 
         let lastRendered = SharedAppGroup.shieldConfigurationRenderDate?.formatted(date: .abbreviated, time: .shortened) ?? "recently"
@@ -96,7 +96,7 @@ final class ScreenTimeController {
         }
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "FamilyControls requires an iOS app target with Screen Time entitlements."
+        restrictedAppsSummary = "Screen Time access needs an iPhone build."
         #endif
     }
 
@@ -108,7 +108,7 @@ final class ScreenTimeController {
             lastErrorMessage = nil
         case .denied:
             setupState = .failed
-            lastErrorMessage = "Screen Time access is denied. Enable Family Controls permission before applying shields."
+            lastErrorMessage = "Screen Time access is denied. Allow Screen Time access before starting app blocking."
         case .approved:
             if setupState != .shieldActive && setupState != .temporarilyUnlocked {
                 setupState = .authorized
@@ -122,7 +122,7 @@ final class ScreenTimeController {
         }
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "FamilyControls requires an iOS app target with Screen Time entitlements."
+        restrictedAppsSummary = "Screen Time access needs an iPhone build."
         #endif
     }
 
@@ -135,7 +135,7 @@ final class ScreenTimeController {
             managedStore.clearAllSettings()
             isShieldingEnabled = false
             setupState = .authorized
-            lastErrorMessage = "Choose at least one restricted app, category, or website before applying the shield."
+            lastErrorMessage = "Choose at least one blocked app, category, or website before starting app blocking."
             SharedAppGroup.publishDesiredShieldActive(false)
             SharedAppGroup.publishUnlockExpiration(nil)
             updateSummary()
@@ -145,7 +145,7 @@ final class ScreenTimeController {
         guard isScreenTimeAuthorized else {
             isShieldingEnabled = false
             setupState = .failed
-            lastErrorMessage = "Screen Time access is not approved yet. Request setup before applying the shield."
+            lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app blocking."
             SharedAppGroup.publishDesiredShieldActive(false)
             SharedAppGroup.publishUnlockExpiration(nil)
             updateSummary()
@@ -169,7 +169,7 @@ final class ScreenTimeController {
         updateSummary()
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "Shielding requires FamilyControls and ManagedSettings on iOS."
+        restrictedAppsSummary = "App blocking needs an iPhone build with Screen Time access."
         #endif
     }
 
@@ -194,7 +194,7 @@ final class ScreenTimeController {
 
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         guard hasSelection else {
-            lastErrorMessage = "No restricted apps are selected, so there is nothing to unlock."
+            lastErrorMessage = "No blocked apps are selected, so there is nothing to unlock."
             return
         }
 
@@ -249,12 +249,12 @@ final class ScreenTimeController {
         let webCount = selection.webDomainTokens.count
 
         if appCount + categoryCount + webCount == 0 {
-            restrictedAppsSummary = "No restricted apps selected"
+            restrictedAppsSummary = "No blocked apps selected"
         } else {
             restrictedAppsSummary = "\(appCount) apps, \(categoryCount) categories, \(webCount) websites selected"
         }
         #else
-        restrictedAppsSummary = "Screen Time APIs are unavailable in this build."
+        restrictedAppsSummary = "App blocking is unavailable in this build."
         #endif
     }
 

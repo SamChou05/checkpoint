@@ -7,6 +7,7 @@ struct SettingsView: View {
     let purchaseController: PurchaseController
 
     @State private var isRestrictedAppsPresented = false
+    @State private var isAdvancedExpanded = false
 
     var body: some View {
         NavigationStack {
@@ -17,7 +18,7 @@ struct SettingsView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Keep the MVP strict, simple, and easy to test.")
+                        Text("Tune the blocker, your study goal, and the checkpoint rules.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                     }
@@ -70,10 +71,10 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Screen Time") {
+                    SectionPanel("App blocking") {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
-                                Text("Status")
+                                Text("Connection")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
                                 Text(screenTime.setupState.rawValue)
@@ -86,26 +87,13 @@ struct SettingsView: View {
                                 .foregroundStyle(CheckpointTheme.muted)
                                 .fixedSize(horizontal: false, vertical: true)
 
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Shield page")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Text(screenTime.shieldExtensionDiagnosticsText)
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(12)
-                            .background(CheckpointTheme.panelRaised.opacity(0.58), in: RoundedRectangle(cornerRadius: 8))
-
-                            SecondaryActionButton(title: "Request setup", systemImage: "shield") {
+                            SecondaryActionButton(title: "Allow Screen Time", systemImage: "shield") {
                                 Task {
                                     await screenTime.requestAuthorization()
                                 }
                             }
 
-                            SecondaryActionButton(title: "Choose restricted apps", systemImage: "checklist") {
+                            SecondaryActionButton(title: "Choose blocked apps", systemImage: "checklist") {
                                 isRestrictedAppsPresented = true
                             }
 
@@ -118,41 +106,7 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Launch readiness") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            readinessRow(
-                                title: "Goal",
-                                detail: store.goal?.title ?? "Missing",
-                                isReady: store.goal != nil
-                            )
-
-                            readinessRow(
-                                title: "Questions",
-                                detail: "\(store.questions.count) stored",
-                                isReady: store.questions.count >= store.unlockPolicy.questionsPerSession
-                            )
-
-                            readinessRow(
-                                title: "Screen Time",
-                                detail: screenTime.setupState.rawValue,
-                                isReady: screenTime.isReadyForShielding
-                            )
-
-                            readinessRow(
-                                title: "Restricted apps",
-                                detail: screenTime.restrictedAppsSummary,
-                                isReady: screenTime.hasSelection
-                            )
-
-                            readinessRow(
-                                title: "Unlock window",
-                                detail: "\(store.unlockPolicy.unlockMinutes)m default",
-                                isReady: store.unlockPolicy.unlockMinutes >= 15
-                            )
-                        }
-                    }
-
-                    SectionPanel("Strictness") {
+                    SectionPanel("Checkpoint rules") {
                         VStack(alignment: .leading, spacing: 16) {
                             if !store.canUse(.advancedStrictness) {
                                 ProLockedFeatureRow(feature: .advancedStrictness) {
@@ -161,7 +115,7 @@ struct SettingsView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Checkpoint threshold")
+                                Text("Passing score")
                                     .font(.headline)
                                     .foregroundStyle(CheckpointTheme.text)
 
@@ -169,12 +123,12 @@ struct SettingsView: View {
                                     .font(.subheadline)
                                     .foregroundStyle(CheckpointTheme.muted)
 
-                                Stepper("Questions in set: \(store.unlockPolicy.questionsPerSession)", value: questionsPerSessionBinding, in: 1...10)
+                                Stepper("Questions per checkpoint: \(store.unlockPolicy.questionsPerSession)", value: questionsPerSessionBinding, in: 1...10)
                                     .foregroundStyle(CheckpointTheme.text)
                                     .disabled(!store.canUse(.advancedStrictness))
                                     .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
 
-                                Stepper("Correct needed: \(store.unlockPolicy.requiredCorrectAnswers)", value: requiredCorrectAnswersBinding, in: 1...store.unlockPolicy.questionsPerSession)
+                                Stepper("Correct answers needed: \(store.unlockPolicy.requiredCorrectAnswers)", value: requiredCorrectAnswersBinding, in: 1...store.unlockPolicy.questionsPerSession)
                                     .foregroundStyle(CheckpointTheme.text)
                                     .disabled(!store.canUse(.advancedStrictness))
                                     .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
@@ -195,7 +149,7 @@ struct SettingsView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Correct-answer unlock")
+                                Text("Unlock time after passing")
                                     .font(.headline)
                                     .foregroundStyle(CheckpointTheme.text)
 
@@ -209,7 +163,7 @@ struct SettingsView: View {
 
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("Emergency Pass")
+                                    Text("Emergency pass")
                                         .font(.headline)
                                         .foregroundStyle(CheckpointTheme.text)
 
@@ -218,7 +172,7 @@ struct SettingsView: View {
                                         .foregroundStyle(CheckpointTheme.muted)
 
                                     if !screenTime.isShieldingEnabled {
-                                        Text("Available while shields are active")
+                                        Text("Available while blocking is active")
                                             .font(.footnote)
                                             .foregroundStyle(CheckpointTheme.muted)
                                     }
@@ -242,10 +196,10 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Questions") {
+                    SectionPanel("Practice set") {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
-                                Text("Status")
+                                Text("Readiness")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
                                 Text(store.questionBatchState.rawValue.capitalized)
@@ -254,7 +208,7 @@ struct SettingsView: View {
                             }
 
                             HStack {
-                                Text("Reports")
+                                Text("Reported")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
                                 Text("\(store.reportedQuestionCount)")
@@ -263,7 +217,7 @@ struct SettingsView: View {
                             }
 
                             HStack {
-                                Text("Refreshes")
+                                Text("Refreshes left")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
                                 Text(store.questionRefreshStatusText)
@@ -272,7 +226,7 @@ struct SettingsView: View {
                             }
 
                             HStack {
-                                Text("Bank health")
+                                Text("Question supply")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
                                 Text(store.questionBankHealthText)
@@ -288,7 +242,7 @@ struct SettingsView: View {
                             }
 
                             SecondaryActionButton(
-                                title: store.canRefreshQuestionBatch ? "Refresh question batch" : "Upgrade for more refreshes",
+                                title: store.canRefreshQuestionBatch ? "Refresh questions" : "Upgrade for more refreshes",
                                 systemImage: store.canRefreshQuestionBatch ? "arrow.clockwise" : "lock"
                             ) {
                                 if store.canRefreshQuestionBatch {
@@ -302,11 +256,64 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Developer") {
-                        SecondaryActionButton(title: "Reset local prototype data", systemImage: "arrow.counterclockwise") {
-                            screenTime.clearShield()
-                            store.resetDemoData()
+                    SectionPanel("Advanced") {
+                        DisclosureGroup(isExpanded: $isAdvancedExpanded) {
+                            VStack(alignment: .leading, spacing: 14) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Blocking diagnostics")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.text)
+
+                                    Text(screenTime.shieldExtensionDiagnosticsText)
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+
+                                VStack(alignment: .leading, spacing: 12) {
+                                    readinessRow(
+                                        title: "Goal",
+                                        detail: store.goal?.title ?? "Missing",
+                                        isReady: store.goal != nil
+                                    )
+
+                                    readinessRow(
+                                        title: "Questions",
+                                        detail: "\(store.questions.count) saved",
+                                        isReady: store.questions.count >= store.unlockPolicy.questionsPerSession
+                                    )
+
+                                    readinessRow(
+                                        title: "Screen Time",
+                                        detail: screenTime.setupState.rawValue,
+                                        isReady: screenTime.isReadyForShielding
+                                    )
+
+                                    readinessRow(
+                                        title: "Blocked apps",
+                                        detail: screenTime.restrictedAppsSummary,
+                                        isReady: screenTime.hasSelection
+                                    )
+
+                                    readinessRow(
+                                        title: "Unlock time",
+                                        detail: "\(store.unlockPolicy.unlockMinutes)m default",
+                                        isReady: store.unlockPolicy.unlockMinutes >= 15
+                                    )
+                                }
+
+                                SecondaryActionButton(title: "Reset app data", systemImage: "arrow.counterclockwise") {
+                                    screenTime.clearShield()
+                                    store.resetDemoData()
+                                }
+                            }
+                            .padding(.top, 10)
+                        } label: {
+                            Text("Troubleshooting and reset")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.text)
                         }
+                        .tint(CheckpointTheme.teal)
                     }
                 }
                 .padding(20)
@@ -338,10 +345,10 @@ struct SettingsView: View {
 
     private var planSubtitle: String {
         if store.isPro {
-            return "Automatic refill, larger question banks, unlimited refreshes, and advanced strictness are active."
+            return "Automatic refresh, extra question variety, unlimited refreshes, and custom checkpoint rules are active."
         }
 
-        return "Free keeps the blocker loop usable with one goal, local questions, and \(FreemiumLimits.freeQuestionRefreshLimit) refreshes per goal."
+        return "Free keeps the blocker loop usable with one goal, a ready practice set, and \(FreemiumLimits.freeQuestionRefreshLimit) refreshes per goal."
     }
 
     private var unlockMinutesBinding: Binding<Int> {
@@ -427,7 +434,7 @@ private struct ProLockedFeatureRow: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Free uses the default 4-of-5 checkpoint. Pro lets you tune the checkpoint length and pass threshold.")
+                Text("Free uses the default 4-of-5 checkpoint. Pro lets you tune the checkpoint length and passing score.")
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -468,17 +475,17 @@ private struct PaywallView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Keep the core blocker free. Pay for deeper study controls when Checkpoint becomes part of your routine.")
+                        Text("Keep the core blocker free. Upgrade when you want more control and less maintenance.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    SectionPanel("Why Pro") {
+                    SectionPanel("Included") {
                         VStack(alignment: .leading, spacing: 10) {
                             ProBenefitRow(title: feature.title, detail: feature.detail, isHighlighted: true)
 
-                            ForEach(ProFeature.allCases.filter { $0.id != feature.id }) { includedFeature in
+                            ForEach(ProFeature.launchFeatures.filter { $0.id != feature.id }) { includedFeature in
                                 ProBenefitRow(title: includedFeature.title, detail: includedFeature.detail)
                             }
                         }
@@ -497,7 +504,7 @@ private struct PaywallView: View {
                                 FallbackPriceRow(title: "Monthly", price: "$4.99/mo")
                                 FallbackPriceRow(title: "Annual", price: "$29.99/yr")
 
-                                Text("These are the planned launch prices. Purchases will activate after the App Store Connect products are configured.")
+                                Text("App Store pricing appears here before purchase.")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)

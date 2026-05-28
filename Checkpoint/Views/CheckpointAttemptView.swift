@@ -22,7 +22,7 @@ struct CheckpointAttemptView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 8) {
-                        StatusBadge(text: "Restricted app attempt", tint: CheckpointTheme.amber)
+                        StatusBadge(text: "Blocked app attempt", tint: CheckpointTheme.amber)
 
                         Text("Clear \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")")
                             .font(.largeTitle.bold())
