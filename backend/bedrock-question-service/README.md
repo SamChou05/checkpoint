@@ -14,7 +14,7 @@ This keeps AWS credentials out of the iOS app.
 
 | Name | Default | Purpose |
 | --- | --- | --- |
-| `BEDROCK_MODEL_ID` | `amazon.nova-micro-v1:0` | Bedrock model ID to call through the Converse API. |
+| `BEDROCK_MODEL_ID` | `google.gemma-3-4b-it` | Bedrock model ID to call through the Converse API. |
 | `MAX_QUESTIONS_PER_BATCH` | `20` | Caps per-call output cost even if the app requests a larger bank. |
 | `BEDROCK_MAX_TOKENS` | `6000` | Maximum Bedrock response tokens. |
 | `BEDROCK_TEMPERATURE` | `0.35` | Lower temperature keeps answers more stable. |
@@ -32,7 +32,7 @@ sam deploy --guided
 Suggested guided values:
 
 - Region: same region where the selected Bedrock model is enabled.
-- `BedrockModelId`: start with a cheap model you have enabled, such as `amazon.nova-micro-v1:0`, then compare quality.
+- `BedrockModelId`: start with `google.gemma-3-4b-it` for the cheapest output-heavy text generation path, then compare quality against larger models.
 - `MaxQuestionsPerBatch`: `20` for early cost control.
 - `BackendToken`: optional for internal TestFlight testing.
 

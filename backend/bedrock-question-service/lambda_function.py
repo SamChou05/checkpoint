@@ -9,7 +9,7 @@ from typing import Any
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(os.getenv("LOG_LEVEL", "INFO"))
 
-DEFAULT_MODEL_ID = "amazon.nova-micro-v1:0"
+DEFAULT_MODEL_ID = "google.gemma-3-4b-it"
 DEFAULT_MAX_QUESTIONS = 20
 DEFAULT_MAX_TOKENS = 6000
 DEFAULT_TEMPERATURE = 0.35

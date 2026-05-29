@@ -68,7 +68,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertEqual(len(body["questions"]), 1)
         self.assertEqual(body["questions"][0]["format"], "Multiple Choice")
         self.assertEqual(body["questions"][0]["difficulty"], 3)
-        self.assertEqual(client.calls[0]["modelId"], "amazon.nova-micro-v1:0")
+        self.assertEqual(client.calls[0]["modelId"], "google.gemma-3-4b-it")
         self.assertIn("Study for the LSAT", client.calls[0]["messages"][0]["content"][0]["text"])
 
     def test_extracts_json_from_markdown_and_repairs_answer_choice(self):
