@@ -38,9 +38,10 @@ Last checked: June 2, 2026 PDT.
 
 - Local entitlement files are present for the main app and all Screen Time extensions.
 - A paired wired iPhone named `Shampoo` was visible to `xcrun devicectl`.
-- Device details reported `developerModeStatus: disabled`, which blocks install/run validation.
-- Device build probes stalled in Xcode destination resolution after `IDERunDestination: Supported platforms for the buildables in the current scheme is empty.`
-- Next action: enable Developer Mode on the iPhone, reconnect it, then rerun the physical-device test plan below.
+- Device details now report `developerModeStatus: enabled`.
+- Device build reached signing and failed because the main app and all three extensions have no development team configured.
+- Local signing check reported `0 valid identities found`, and no local provisioning profile directory exists yet.
+- Next action: add an Apple Developer account/team in Xcode, create/install Apple Development signing assets and provisioning profiles for the app plus extensions, then rerun the physical-device test plan below.
 
 ## Physical Device Test Plan
 
