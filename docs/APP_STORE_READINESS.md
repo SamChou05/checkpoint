@@ -39,9 +39,9 @@ Last checked: June 2, 2026 PDT.
 - Local entitlement files are present for the main app and all Screen Time extensions.
 - A paired wired iPhone named `Shampoo` was visible to `xcrun devicectl`.
 - Device details now report `developerModeStatus: enabled`.
-- Device build reached signing and failed because the main app and all three extensions have no development team configured.
-- Local signing check reported `0 valid identities found`, and no local provisioning profile directory exists yet.
-- Next action: add an Apple Developer account/team in Xcode, create/install Apple Development signing assets and provisioning profiles for the app plus extensions, then rerun the physical-device test plan below.
+- Local signing/provisioning now finds the paid team `RF8739P5MC` (`Cicada Labs LLC`) and generated development profiles.
+- Device build with `DEVELOPMENT_TEAM=RF8739P5MC` reached signing and failed because the generated profiles for `com.samchou.checkpoint`, `com.samchou.checkpoint.ShieldActionExtension`, and `com.samchou.checkpoint.DeviceActivityMonitorExtension` do not match the entitlements file's `com.apple.security.application-groups` value.
+- Next action: enable `group.com.samchou.checkpoint` under App Groups for the main app, Shield Action extension, and Device Activity Monitor extension bundle IDs in Certificates, Identifiers & Profiles, then refresh/regenerate development profiles and rerun the physical-device test plan below.
 
 ## Physical Device Test Plan
 
