@@ -1113,6 +1113,23 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("Avoid these reported prompts: Reported prompt"))
     }
 
+    func testBackendClientIdentityPersistsAnonymousInstallID() throws {
+        let suiteName = "BackendClientIdentityTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let firstID = BackendClientIdentity.installID(defaults: defaults)
+        let secondID = BackendClientIdentity.installID(defaults: defaults)
+
+        XCTAssertEqual(firstID, secondID)
+        XCTAssertNotNil(UUID(uuidString: firstID))
+
+        defaults.set("not-a-valid-uuid", forKey: "checkpoint.backend.install.id.v1")
+        let repairedID = BackendClientIdentity.installID(defaults: defaults)
+        XCTAssertNotEqual(repairedID, "not-a-valid-uuid")
+        XCTAssertNotNil(UUID(uuidString: repairedID))
+    }
+
     @MainActor
     func testStoreUsesInternalBackendEnvironmentConfiguration() async throws {
         setenv("CHECKPOINT_AI_BACKEND_ENDPOINT", "https://example.com/questions", 1)

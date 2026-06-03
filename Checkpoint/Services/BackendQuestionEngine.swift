@@ -11,6 +11,7 @@ struct BackendQuestionEngine: QuestionGenerating {
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue(BackendClientIdentity.installID, forHTTPHeaderField: "X-Checkpoint-Install-ID")
         if let token = request.backendAuthorizationToken?.trimmingCharacters(in: .whitespacesAndNewlines),
            !token.isEmpty {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -36,6 +37,25 @@ struct BackendQuestionEngine: QuestionGenerating {
         }
 
         return questions
+    }
+}
+
+enum BackendClientIdentity {
+    private static let installIDKey = "checkpoint.backend.install.id.v1"
+
+    static var installID: String {
+        installID(defaults: .standard)
+    }
+
+    static func installID(defaults: UserDefaults) -> String {
+        if let existingID = defaults.string(forKey: installIDKey),
+           UUID(uuidString: existingID) != nil {
+            return existingID
+        }
+
+        let newID = UUID().uuidString
+        defaults.set(newID, forKey: installIDKey)
+        return newID
     }
 }
 

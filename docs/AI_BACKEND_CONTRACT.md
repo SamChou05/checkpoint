@@ -6,6 +6,8 @@ The iOS app sends a `POST` request to the endpoint configured by the app or back
 
 For local/TestFlight builds, copy `Checkpoint/Config/Secrets.example.xcconfig` to `Checkpoint/Config/Secrets.xcconfig`. Use the escaped URL style shown in the example (`https:/$()/...`) so Xcode does not treat `//` as an xcconfig comment.
 
+The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls. The Bedrock Lambda can use that header, plus source IP, for daily quota counters. The install ID is a random UUID generated on-device and is not a user account identifier.
+
 ## Request
 
 ```json
@@ -91,6 +93,8 @@ The iOS app also validates batches before storage. It drops blank questions, dup
 - Cache generated questions in the app.
 - Keep cloud calls behind the backend service; the iOS app must never contain Bedrock, AWS, or other model-provider secrets.
 - Cap batch size in the backend. The Bedrock Lambda defaults to 20 questions per call even if the app requests a larger bank.
+- Rate-limit backend calls by anonymous app install ID and source IP before calling Bedrock.
+- Retry malformed model output in the backend and use a configured fallback model before returning a generation error.
 - Use backend generation only when:
   - the bank is low
   - the user refreshes

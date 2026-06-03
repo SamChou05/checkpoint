@@ -3,6 +3,8 @@ import json
 import logging
 import os
 import re
+import time
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -10,13 +12,14 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(os.getenv("LOG_LEVEL", "INFO"))
 
 DEFAULT_MODEL_ID = "google.gemma-3-4b-it"
+DEFAULT_FALLBACK_MODEL_ID = "amazon.nova-micro-v1:0"
 DEFAULT_MAX_QUESTIONS = 20
 DEFAULT_MAX_TOKENS = 6000
 DEFAULT_TEMPERATURE = 0.35
 
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": os.getenv("CORS_ALLOW_ORIGIN", "*"),
-    "Access-Control-Allow-Headers": "authorization,content-type",
+    "Access-Control-Allow-Headers": "authorization,content-type,x-checkpoint-install-id",
     "Access-Control-Allow-Methods": "OPTIONS,POST",
 }
 
@@ -29,6 +32,10 @@ class ProviderError(RuntimeError):
     pass
 
 
+class RateLimitExceededError(RuntimeError):
+    pass
+
+
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     return handle_http_request(event)
 
@@ -36,6 +43,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
 def handle_http_request(
     event: dict[str, Any],
     bedrock_client: Any | None = None,
+    dynamodb_client: Any | None = None,
 ) -> dict[str, Any]:
     method = _http_method(event)
     if method == "OPTIONS":
@@ -48,10 +56,10 @@ def handle_http_request(
         return _error(401, "Unauthorized")
 
     try:
+        _check_rate_limits(event, dynamodb_client)
         payload = _decode_body(event)
         normalized = _normalize_request(payload)
-        raw_text = _generate_with_bedrock(normalized, bedrock_client)
-        provider_payload = _extract_json_object(raw_text)
+        provider_payload = _generate_provider_payload(normalized, bedrock_client)
         questions = _sanitize_questions(provider_payload.get("questions", []), normalized)
 
         if not questions:
@@ -60,6 +68,8 @@ def handle_http_request(
         return _response(200, {"questions": questions})
     except BadRequestError as error:
         return _error(400, str(error))
+    except RateLimitExceededError:
+        return _error(429, "Daily AI generation limit reached. Try again later.")
     except Exception:
         LOGGER.exception("Question generation failed")
         return _error(502, "Question generation failed")
@@ -81,6 +91,80 @@ def _is_authorized(event: dict[str, Any]) -> bool:
     headers = {str(key).lower(): value for key, value in (event.get("headers") or {}).items()}
     auth_header = str(headers.get("authorization", "")).strip()
     return auth_header == f"Bearer {expected_token}"
+
+
+def _check_rate_limits(event: dict[str, Any], dynamodb_client: Any | None) -> None:
+    table_name = os.getenv("RATE_LIMIT_TABLE_NAME", "").strip()
+    if not table_name:
+        return
+
+    client = dynamodb_client or _dynamodb_client()
+    headers = {str(key).lower(): value for key, value in (event.get("headers") or {}).items()}
+    install_id = _rate_limit_component(headers.get("x-checkpoint-install-id"), fallback="missing-install")
+    source_ip = _rate_limit_component(_source_ip(event), fallback="missing-ip")
+    day = datetime.now(timezone.utc).strftime("%Y%m%d")
+    expires_at = int(time.time()) + _int_env(
+        "RATE_LIMIT_TTL_SECONDS",
+        60 * 60 * 48,
+        maximum=60 * 60 * 24 * 14,
+    )
+
+    limits = [
+        (f"install#{install_id}#{day}", _int_env("MAX_REQUESTS_PER_INSTALL_PER_DAY", 40)),
+        (f"ip#{source_ip}#{day}", _int_env("MAX_REQUESTS_PER_IP_PER_DAY", 400)),
+    ]
+
+    for key, limit in limits:
+        _increment_rate_limit(client, table_name, key, limit, expires_at)
+
+
+def _increment_rate_limit(
+    client: Any,
+    table_name: str,
+    key: str,
+    limit: int,
+    expires_at: int,
+) -> None:
+    try:
+        client.update_item(
+            TableName=table_name,
+            Key={"rateKey": {"S": key}},
+            UpdateExpression="SET expiresAt = :expiresAt ADD #count :one",
+            ConditionExpression="attribute_not_exists(#count) OR #count < :limit",
+            ExpressionAttributeNames={"#count": "count"},
+            ExpressionAttributeValues={
+                ":one": {"N": "1"},
+                ":limit": {"N": str(limit)},
+                ":expiresAt": {"N": str(expires_at)},
+            },
+        )
+    except Exception as error:
+        if _is_conditional_check_failure(error):
+            raise RateLimitExceededError from error
+        raise
+
+
+def _is_conditional_check_failure(error: Exception) -> bool:
+    return (
+        getattr(error, "response", {})
+        .get("Error", {})
+        .get("Code") == "ConditionalCheckFailedException"
+    )
+
+
+def _source_ip(event: dict[str, Any]) -> str:
+    return (
+        event.get("requestContext", {}).get("http", {}).get("sourceIp")
+        or event.get("requestContext", {}).get("identity", {}).get("sourceIp")
+        or ""
+    )
+
+
+def _rate_limit_component(value: Any, fallback: str) -> str:
+    cleaned = _clean_text(value)
+    if not cleaned:
+        return fallback
+    return re.sub(r"[^A-Za-z0-9_.:-]", "-", cleaned)[:96]
 
 
 def _decode_body(event: dict[str, Any]) -> dict[str, Any]:
@@ -140,9 +224,40 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _generate_with_bedrock(request: dict[str, Any], bedrock_client: Any | None) -> str:
+def _generate_provider_payload(request: dict[str, Any], bedrock_client: Any | None) -> dict[str, Any]:
+    errors: list[ProviderError] = []
+    for model_id in _model_attempts():
+        raw_text = _generate_with_bedrock(
+            normalized_request=request,
+            bedrock_client=bedrock_client,
+            model_id=model_id,
+        )
+        try:
+            return _extract_json_object(raw_text)
+        except ProviderError as first_error:
+            errors.append(first_error)
+
+        retry_text = _generate_with_bedrock(
+            normalized_request=request,
+            bedrock_client=bedrock_client,
+            model_id=model_id,
+            user_prompt=_json_retry_prompt(request, raw_text),
+        )
+        try:
+            return _extract_json_object(retry_text)
+        except ProviderError as second_error:
+            errors.append(second_error)
+
+    raise errors[-1] if errors else ProviderError("Provider response was not valid JSON.")
+
+
+def _generate_with_bedrock(
+    normalized_request: dict[str, Any],
+    bedrock_client: Any | None,
+    model_id: str,
+    user_prompt: str | None = None,
+) -> str:
     client = bedrock_client or _bedrock_client()
-    model_id = os.getenv("BEDROCK_MODEL_ID", DEFAULT_MODEL_ID)
 
     response = client.converse(
         modelId=model_id,
@@ -150,7 +265,7 @@ def _generate_with_bedrock(request: dict[str, Any], bedrock_client: Any | None) 
         messages=[
             {
                 "role": "user",
-                "content": [{"text": _user_prompt(request)}],
+                "content": [{"text": user_prompt or _user_prompt(normalized_request)}],
             }
         ],
         inferenceConfig={
@@ -172,11 +287,27 @@ def _generate_with_bedrock(request: dict[str, Any], bedrock_client: Any | None) 
     return text
 
 
+def _model_attempts() -> list[str]:
+    primary = os.getenv("BEDROCK_MODEL_ID", DEFAULT_MODEL_ID).strip() or DEFAULT_MODEL_ID
+    fallback = os.getenv("BEDROCK_FALLBACK_MODEL_ID", DEFAULT_FALLBACK_MODEL_ID).strip()
+    models = [primary]
+    if fallback and fallback not in models:
+        models.append(fallback)
+    return models
+
+
 def _bedrock_client() -> Any:
     import boto3
 
     region = os.getenv("BEDROCK_REGION") or os.getenv("AWS_REGION")
     return boto3.client("bedrock-runtime", region_name=region)
+
+
+def _dynamodb_client() -> Any:
+    import boto3
+
+    region = os.getenv("AWS_REGION") or os.getenv("BEDROCK_REGION")
+    return boto3.client("dynamodb", region_name=region)
 
 
 def _system_prompt() -> str:
@@ -213,6 +344,24 @@ Return only the JSON object. Do not wrap it in Markdown.
 """.strip()
 
 
+def _json_retry_prompt(request: dict[str, Any], malformed_text: str) -> str:
+    compact_request = json.dumps(request, separators=(",", ":"), ensure_ascii=False)
+    excerpt = _clip(malformed_text, 1200)
+    return f"""
+Your previous response was not valid JSON for this request:
+{compact_request}
+
+Previous malformed response excerpt:
+{excerpt}
+
+Generate {request["targetCount"]} multiple-choice questions now.
+Return only one compact JSON object with this exact shape:
+{{"questions":[{{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","difficulty":{request["minimumDifficulty"]},"format":"Multiple Choice"}}]}}
+
+No prose, headings, Markdown, comments, or numbering outside the JSON object.
+""".strip()
+
+
 def _extract_json_object(text: str) -> dict[str, Any]:
     trimmed = text.strip()
     if trimmed.startswith("```"):
@@ -226,15 +375,33 @@ def _extract_json_object(text: str) -> dict[str, Any]:
         candidates.append(trimmed[start : end + 1])
 
     for candidate in candidates:
-        try:
-            parsed = json.loads(candidate)
-        except json.JSONDecodeError:
-            continue
+        parsed = _parse_provider_json(candidate)
+        if parsed is not None:
+            return parsed
 
-        if isinstance(parsed, dict):
+    array_start = trimmed.find("[")
+    array_end = trimmed.rfind("]")
+    if array_start != -1 and array_end != -1 and array_end > array_start:
+        parsed = _parse_provider_json(trimmed[array_start : array_end + 1])
+        if parsed is not None:
             return parsed
 
     raise ProviderError("Provider response was not valid JSON.")
+
+
+def _parse_provider_json(candidate: str) -> dict[str, Any] | None:
+    try:
+        parsed = json.loads(candidate)
+    except json.JSONDecodeError:
+        return None
+
+    if isinstance(parsed, dict):
+        return parsed
+
+    if isinstance(parsed, list):
+        return {"questions": parsed}
+
+    return None
 
 
 def _sanitize_questions(raw_questions: Any, request: dict[str, Any]) -> list[dict[str, Any]]:
@@ -385,8 +552,8 @@ def _max_questions() -> int:
     return _clamped_int(raw_value, minimum=1, maximum=40)
 
 
-def _int_env(key: str, default: int) -> int:
-    return _clamped_int(os.getenv(key), minimum=1, maximum=20000) if os.getenv(key) else default
+def _int_env(key: str, default: int, maximum: int = 20000) -> int:
+    return _clamped_int(os.getenv(key), minimum=1, maximum=maximum) if os.getenv(key) else default
 
 
 def _float_env(key: str, default: float) -> float:

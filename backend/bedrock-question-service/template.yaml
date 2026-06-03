@@ -6,17 +6,42 @@ Parameters:
   BedrockModelId:
     Type: String
     Default: google.gemma-3-4b-it
+  BedrockFallbackModelId:
+    Type: String
+    Default: amazon.nova-micro-v1:0
   MaxQuestionsPerBatch:
     Type: Number
     Default: 20
     MinValue: 1
     MaxValue: 40
+  MaxRequestsPerInstallPerDay:
+    Type: Number
+    Default: 40
+    MinValue: 1
+  MaxRequestsPerIPPerDay:
+    Type: Number
+    Default: 400
+    MinValue: 1
   BackendToken:
     Type: String
     Default: ""
     NoEcho: true
 
 Resources:
+  QuestionRateLimitTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: rateKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: rateKey
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
   CheckpointQuestionFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -28,8 +53,12 @@ Resources:
       Environment:
         Variables:
           BEDROCK_MODEL_ID: !Ref BedrockModelId
+          BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelId
           MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
           CHECKPOINT_BACKEND_TOKEN: !Ref BackendToken
+          RATE_LIMIT_TABLE_NAME: !Ref QuestionRateLimitTable
+          MAX_REQUESTS_PER_INSTALL_PER_DAY: !Ref MaxRequestsPerInstallPerDay
+          MAX_REQUESTS_PER_IP_PER_DAY: !Ref MaxRequestsPerIPPerDay
       FunctionUrlConfig:
         AuthType: NONE
         Cors:
@@ -38,6 +67,7 @@ Resources:
           AllowHeaders:
             - authorization
             - content-type
+            - x-checkpoint-install-id
           AllowMethods:
             - POST
             - OPTIONS
@@ -48,6 +78,10 @@ Resources:
                 - bedrock:InvokeModel
                 - bedrock:InvokeModelWithResponseStream
               Resource: "*"
+            - Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
+              Resource: !GetAtt QuestionRateLimitTable.Arn
 
 Outputs:
   QuestionEndpoint:

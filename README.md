@@ -43,6 +43,8 @@ The MVP uses a hybrid provider approach:
 - Local Templates keep the app usable without network, backend, or supported on-device models.
 - Provider prompts and payloads include a derived learning target, content topics, and a directive to test the subject matter instead of asking about study plans or app usage.
 - Configure production backend URLs through `Checkpoint/Config/Secrets.xcconfig` or another internal build configuration, not user-facing Settings and never with AWS credentials in the app.
+- Backend calls include an anonymous install ID and the Bedrock service can enforce DynamoDB-backed install/IP daily quotas before model invocation.
+- The Bedrock service retries malformed model output and can fall back to Nova Micro if the cheapest primary model does not return valid JSON.
 
 The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
 
