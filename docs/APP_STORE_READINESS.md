@@ -32,6 +32,16 @@ These cannot be completed from the repo alone:
 5. Create development and distribution provisioning profiles after Apple grants the entitlement.
 6. Run the real shield loop on a physical iPhone before TestFlight.
 
+## Latest Real-Device Validation Attempt
+
+Last checked: June 2, 2026 PDT.
+
+- Local entitlement files are present for the main app and all Screen Time extensions.
+- A paired wired iPhone named `Shampoo` was visible to `xcrun devicectl`.
+- Device details reported `developerModeStatus: disabled`, which blocks install/run validation.
+- Device build probes stalled in Xcode destination resolution after `IDERunDestination: Supported platforms for the buildables in the current scheme is empty.`
+- Next action: enable Developer Mode on the iPhone, reconnect it, then rerun the physical-device test plan below.
+
 ## Physical Device Test Plan
 
 Run this before TestFlight and again before App Store submission:
