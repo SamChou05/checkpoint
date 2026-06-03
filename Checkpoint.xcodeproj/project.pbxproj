@@ -63,6 +63,7 @@
 		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A20000000000000000000001 /* CheckpointApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A20000000000000000000002 /* CheckpointStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointStore.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* CheckpointModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointModels.swift; sourceTree = "<group>"; };
 		A20000000000000000000004 /* QuestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionEngine.swift; sourceTree = "<group>"; };
@@ -84,6 +85,8 @@
 		A20000000000000000000013 /* QuestionReportsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionReportsView.swift; sourceTree = "<group>"; };
 		A20000000000000000000014 /* SettingsSupportViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSupportViews.swift; sourceTree = "<group>"; };
 		A20000000000000000000015 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		A20000000000000000000017 /* Backend.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Backend.xcconfig; sourceTree = "<group>"; };
+		A20000000000000000000018 /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 		C20000000000000000000001 /* CheckpointWorkflowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointWorkflowTests.swift; sourceTree = "<group>"; };
 		C20000000000000000000002 /* CheckpointTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CheckpointTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -174,8 +177,10 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000001 /* CheckpointApp.swift */,
+				A20000000000000000000019 /* Info.plist */,
 				A2000000000000000000000F /* Checkpoint.entitlements */,
 				D20000000000000000000001 /* PrivacyInfo.xcprivacy */,
+				A40000000000000000000009 /* Config */,
 				A40000000000000000000003 /* App */,
 				A40000000000000000000004 /* Models */,
 				A40000000000000000000005 /* Services */,
@@ -183,6 +188,15 @@
 				A40000000000000000000006 /* Views */,
 			);
 			path = Checkpoint;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000009 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000017 /* Backend.xcconfig */,
+				A20000000000000000000018 /* Secrets.example.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		A40000000000000000000003 /* App */ = {
@@ -704,6 +718,7 @@
 		};
 		A80000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A20000000000000000000017 /* Backend.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Checkpoint/Checkpoint.entitlements;
@@ -711,15 +726,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CheckpointAIBackendEndpoint = "$(CHECKPOINT_AI_BACKEND_ENDPOINT)";
-				INFOPLIST_KEY_CheckpointAIBackendToken = "$(CHECKPOINT_AI_BACKEND_TOKEN)";
-				INFOPLIST_KEY_CFBundleDisplayName = Checkpoint;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Checkpoint/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.samchou.checkpoint;
@@ -736,6 +744,7 @@
 		};
 		A80000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A20000000000000000000017 /* Backend.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Checkpoint/Checkpoint.entitlements;
@@ -743,15 +752,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CheckpointAIBackendEndpoint = "$(CHECKPOINT_AI_BACKEND_ENDPOINT)";
-				INFOPLIST_KEY_CheckpointAIBackendToken = "$(CHECKPOINT_AI_BACKEND_TOKEN)";
-				INFOPLIST_KEY_CFBundleDisplayName = Checkpoint;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Checkpoint/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.samchou.checkpoint;

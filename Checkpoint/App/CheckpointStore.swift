@@ -1137,8 +1137,8 @@ final class CheckpointStore {
     ) -> String? {
         let candidates = [
             storedValue,
-            Bundle.main.object(forInfoDictionaryKey: infoKey) as? String,
-            ProcessInfo.processInfo.environment[environmentKey]
+            ProcessInfo.processInfo.environment[environmentKey],
+            Bundle.main.object(forInfoDictionaryKey: infoKey) as? String
         ]
 
         return candidates

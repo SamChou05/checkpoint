@@ -2,7 +2,9 @@
 
 Checkpoint can generate multiple-choice questions through a backend endpoint when higher-quality generation is explicitly needed beyond Apple Foundation Models and Local Templates. A first AWS Bedrock Lambda implementation lives in `backend/bedrock-question-service`.
 
-The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from the `CheckpointAIBackendEndpoint` Info.plist key or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. If an early testing endpoint uses a bearer token, configure `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN`; never place AWS credentials in the app.
+The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from `Checkpoint/Config/Secrets.xcconfig`, the `CheckpointAIBackendEndpoint` Info.plist key, or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. If an early testing endpoint uses a bearer token, configure `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN`; never place AWS credentials in the app.
+
+For local/TestFlight builds, copy `Checkpoint/Config/Secrets.example.xcconfig` to `Checkpoint/Config/Secrets.xcconfig`. Use the escaped URL style shown in the example (`https:/$()/...`) so Xcode does not treat `//` as an xcconfig comment.
 
 ## Request
 

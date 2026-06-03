@@ -28,6 +28,7 @@ Package.resolved
 !.env.example
 Secrets.plist
 secrets.plist
+Checkpoint/Config/Secrets.xcconfig
 *.secrets.json
 *.local.json
 

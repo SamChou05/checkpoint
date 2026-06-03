@@ -1,0 +1,7 @@
+// Public defaults for Checkpoint's internal AI backend build settings.
+// Local and release secrets live in Secrets.xcconfig, which is ignored by git.
+
+CHECKPOINT_AI_BACKEND_ENDPOINT =
+CHECKPOINT_AI_BACKEND_TOKEN =
+
+#include? "Secrets.xcconfig"
