@@ -34,14 +34,15 @@ These cannot be completed from the repo alone:
 
 ## Latest Real-Device Validation Attempt
 
-Last checked: June 2, 2026 PDT.
+Last checked: June 3, 2026 PDT.
 
 - Local entitlement files are present for the main app and all Screen Time extensions.
 - A paired wired iPhone named `Shampoo` was visible to `xcrun devicectl`.
 - Device details now report `developerModeStatus: enabled`.
 - Local signing/provisioning now finds the paid team `RF8739P5MC` (`Cicada Labs LLC`) and generated development profiles.
-- Device build with `DEVELOPMENT_TEAM=RF8739P5MC` reached signing and failed because the generated profiles for `com.samchou.checkpoint`, `com.samchou.checkpoint.ShieldActionExtension`, and `com.samchou.checkpoint.DeviceActivityMonitorExtension` do not match the entitlements file's `com.apple.security.application-groups` value.
-- Next action: enable `group.com.samchou.checkpoint` under App Groups for the main app, Shield Action extension, and Device Activity Monitor extension bundle IDs in Certificates, Identifiers & Profiles, then refresh/regenerate development profiles and rerun the physical-device test plan below.
+- Physical-device Debug build now succeeds using the project signing settings.
+- Checkpoint installs and launches on `Shampoo` with bundle ID `com.samchou.checkpoint`.
+- Next action: complete the real shield/unshield/re-lock test plan below on the iPhone before TestFlight.
 
 ## Physical Device Test Plan
 
