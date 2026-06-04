@@ -19,7 +19,8 @@ This keeps AWS credentials out of the iOS app.
 | `MAX_QUESTIONS_PER_BATCH` | `20` | Caps per-call output cost even if the app requests a larger bank. |
 | `BEDROCK_MAX_TOKENS` | `6000` | Maximum Bedrock response tokens. |
 | `BEDROCK_TEMPERATURE` | `0.35` | Lower temperature keeps answers more stable. |
-| `CHECKPOINT_BACKEND_TOKEN` | empty | Optional bearer token gate for early testing. Leave empty if using API Gateway/Lambda throttling only. |
+| `CHECKPOINT_BACKEND_TOKEN` | empty | Bearer token gate for Function URL testing and TestFlight. If empty, requests are rejected unless `ALLOW_UNAUTHENTICATED_BACKEND=true`. |
+| `ALLOW_UNAUTHENTICATED_BACKEND` | `false` | Explicit local/private opt-in for running without a bearer token. Keep `false` for exposed Function URLs. |
 | `CORS_ALLOW_ORIGIN` | `*` | Function URL CORS origin. |
 | `RATE_LIMIT_TABLE_NAME` | empty | Optional DynamoDB table used for daily install/IP quotas. |
 | `MAX_REQUESTS_PER_INSTALL_PER_DAY` | `40` | Daily backend generation calls per anonymous app install ID. |
@@ -42,7 +43,8 @@ Suggested guided values:
 - `MaxQuestionsPerBatch`: `20` for early cost control.
 - `MaxRequestsPerInstallPerDay`: `40` is generous because the app generates cached batches, not one request per unlock.
 - `MaxRequestsPerIPPerDay`: `400` covers shared networks while limiting obvious scraping.
-- `BackendToken`: optional for internal TestFlight testing.
+- `BackendToken`: set a long random value for internal TestFlight testing.
+- `AllowUnauthenticatedBackend`: keep `false` for exposed Function URLs.
 
 The deployed stack outputs `QuestionEndpoint`. Configure the iOS app to use that URL as its internal AI backend endpoint.
 
@@ -56,7 +58,7 @@ The deployed stack outputs `QuestionEndpoint`. Configure the iOS app to use that
 - This service caps the requested batch size with `MAX_QUESTIONS_PER_BATCH`.
 - When `RATE_LIMIT_TABLE_NAME` is configured, the service also applies daily limits using `X-Checkpoint-Install-ID` and source IP counters.
 - API Gateway or Lambda Function URL throttling should be enabled before broader TestFlight.
-- Keep the optional `CHECKPOINT_BACKEND_TOKEN` for early testing if you expose a Function URL directly.
+- Keep `CHECKPOINT_BACKEND_TOKEN` set for early testing if you expose a Function URL directly. Empty tokens fail closed unless `ALLOW_UNAUTHENTICATED_BACKEND=true` is explicitly configured.
 
 ## Local Tests
 

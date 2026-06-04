@@ -67,6 +67,8 @@ struct MembershipView: View {
                             Divider()
 
                             priceContent
+
+                            PlanFootnote(subscriptionDisclosureText)
                         } else {
                             DisabledPlanButton(title: "Current plan", systemImage: "checkmark")
                         }
@@ -189,6 +191,10 @@ struct MembershipView: View {
         return "per month"
     }
 
+    private var subscriptionDisclosureText: String {
+        "Billing is handled by Apple. Subscriptions renew automatically until canceled in App Store account settings."
+    }
+
     private func loadEntitlements() async {
         await purchaseController.loadProducts()
         let unlocked = await purchaseController.refreshEntitlements()
@@ -276,7 +282,11 @@ private struct ProductPurchaseRow: View {
     }
 
     private var detail: String {
-        product.id == MembershipProductID.yearly ? "Best value for consistent practice." : "Flexible monthly access. Cancel anytime in the App Store."
+        if product.id == MembershipProductID.yearly {
+            return "Lower yearly price for steady practice. Cancel anytime in the App Store."
+        }
+
+        return "Flexible monthly access. Cancel anytime in the App Store."
     }
 }
 

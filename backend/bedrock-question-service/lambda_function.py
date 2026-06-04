@@ -86,7 +86,7 @@ def _http_method(event: dict[str, Any]) -> str:
 def _is_authorized(event: dict[str, Any]) -> bool:
     expected_token = os.getenv("CHECKPOINT_BACKEND_TOKEN", "").strip()
     if not expected_token:
-        return True
+        return _bool_env("ALLOW_UNAUTHENTICATED_BACKEND", False)
 
     headers = {str(key).lower(): value for key, value in (event.get("headers") or {}).items()}
     auth_header = str(headers.get("authorization", "")).strip()
@@ -676,6 +676,14 @@ def _float_env(key: str, default: float) -> float:
         return float(os.getenv(key, ""))
     except ValueError:
         return default
+
+
+def _bool_env(key: str, default: bool) -> bool:
+    raw_value = os.getenv(key)
+    if raw_value is None:
+        return default
+
+    return raw_value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
 def _response(status_code: int, body: Any) -> dict[str, Any]:

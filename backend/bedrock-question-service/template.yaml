@@ -26,6 +26,12 @@ Parameters:
     Type: String
     Default: ""
     NoEcho: true
+  AllowUnauthenticatedBackend:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
 
 Resources:
   QuestionRateLimitTable:
@@ -56,6 +62,7 @@ Resources:
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelId
           MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
           CHECKPOINT_BACKEND_TOKEN: !Ref BackendToken
+          ALLOW_UNAUTHENTICATED_BACKEND: !Ref AllowUnauthenticatedBackend
           RATE_LIMIT_TABLE_NAME: !Ref QuestionRateLimitTable
           MAX_REQUESTS_PER_INSTALL_PER_DAY: !Ref MaxRequestsPerInstallPerDay
           MAX_REQUESTS_PER_IP_PER_DAY: !Ref MaxRequestsPerIPPerDay

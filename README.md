@@ -57,6 +57,8 @@ See `docs/MONETIZATION.md` for the starter-membership monetization direction and
 
 See `docs/STOREKIT_LAUNCH.md` for local StoreKit testing and App Store Connect subscription setup.
 
+See `docs/FINAL_LAUNCH_TEST_LOG.md` for the final manual validation log, and `docs/APP_STORE_COPY.md` plus `docs/PRIVACY_POLICY_DRAFT.md` for App Store submission drafts.
+
 ## Testing
 
 Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, starter membership gates, member goal profile isolation, Skill Map topic fallback, adaptive level-up, Study Assist, and provider payload sanitization.

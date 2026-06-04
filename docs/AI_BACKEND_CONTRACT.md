@@ -2,7 +2,7 @@
 
 Checkpoint can generate multiple-choice questions through a backend endpoint when higher-quality generation is explicitly needed beyond Apple Foundation Models and Local Templates. A first AWS Bedrock Lambda implementation lives in `backend/bedrock-question-service`.
 
-The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from `Checkpoint/Config/Secrets.xcconfig`, the `CheckpointAIBackendEndpoint` Info.plist key, or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. If an early testing endpoint uses a bearer token, configure `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN`; never place AWS credentials in the app.
+The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from `Checkpoint/Config/Secrets.xcconfig`, the `CheckpointAIBackendEndpoint` Info.plist key, or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. For an exposed Function URL, configure `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN` and set the same value as `CHECKPOINT_BACKEND_TOKEN` in Lambda; never place AWS credentials in the app.
 
 For local/TestFlight builds, copy `Checkpoint/Config/Secrets.example.xcconfig` to `Checkpoint/Config/Secrets.xcconfig`. Use the escaped URL style shown in the example (`https:/$()/...`) so Xcode does not treat `//` as an xcconfig comment.
 
@@ -101,6 +101,7 @@ The iOS app also validates batches before storage. It drops blank questions, dup
 - When the cached bank runs low, request more AI questions before the user runs out of usable checkpoints.
 - If an AI backend is configured, the app should not silently substitute local template questions for short or failed AI batches.
 - Keep cloud calls behind the backend service; the iOS app must never contain Bedrock, AWS, or other model-provider secrets.
+- Exposed backend URLs should fail closed without `CHECKPOINT_BACKEND_TOKEN`; only set `ALLOW_UNAUTHENTICATED_BACKEND=true` for controlled local/private testing.
 - Cap batch size in the backend. The Bedrock Lambda defaults to 20 questions per call even if the app requests a larger bank.
 - Rate-limit backend calls by anonymous app install ID and source IP before calling Bedrock.
 - Retry malformed model output in the backend and use a configured fallback model before returning a generation error.

@@ -1,25 +1,30 @@
 # Production QA
 
-Use this checklist before TestFlight and again before App Store submission. Mark items with the date, device/build, result, and any follow-up commit.
+Use this checklist before TestFlight and again before App Store submission. Mark items with the date, device/build, result, and any follow-up commit. The dated final validation log lives in `docs/FINAL_LAUNCH_TEST_LOG.md`.
 
 ## Current QA Run
 
 Started: June 4, 2026 PDT.
 
-- [x] Debug simulator tests passed: 96 passed, 0 failed.
-- [x] Bedrock question service unit tests passed: 13 passed, 0 failed.
+- [x] Debug simulator tests passed: 101 passed, 0 failed.
+- [x] Bedrock question service unit tests passed: 15 passed, 0 failed.
 - [x] Release simulator build succeeded.
 - [x] `Checkpoint/Config/Secrets.xcconfig` is ignored and not tracked.
 - [x] Backend endpoint is configured locally and returned valid `questions` JSON for an authenticated LSAT request.
 - [x] Backend endpoint returned 401 for the same request without the bearer token.
 - [x] Release physical-device build succeeded on connected iPhone.
+- [x] Debug physical-device build, install, and launch succeeded on connected iPhone after StoreKit membership flow changes.
+- [x] Debug physical-device build and reinstall succeeded after launch-readiness changes.
+- [ ] Latest physical-device launch after reinstall is retested while the iPhone is unlocked.
+- [x] StoreKit local config contract tests verify product IDs, launch prices, and renewal periods.
 - [ ] Real shield loop retested on physical iPhone.
+- [ ] Local StoreKit purchase/expiration tested from the shared Xcode scheme.
 - [ ] StoreKit sandbox/TestFlight purchase checked.
 
 Findings:
 
 - Release entitlement refresh now runs when the app returns to foreground, so expired or canceled Pro access can return to Free without requiring a full app restart.
-- The backend still uses a static bearer token for local/TestFlight configuration. Keep rate limits enabled and rotate the token before broader testing; consider App Attest or a stronger backend gate before a public scale-up.
+- The backend now fails closed when no bearer token is configured unless `ALLOW_UNAUTHENTICATED_BACKEND=true` is explicitly set. Keep rate limits enabled, rotate the token before broader testing, and consider App Attest or a stronger backend gate before a public scale-up.
 
 ## Automated Baseline
 
@@ -51,6 +56,7 @@ Findings:
 - [ ] App build has a configured backend endpoint for TestFlight, or intentionally falls back to Apple/local generation.
 - [ ] Backend endpoint returns the documented JSON response, not placeholder Lambda text.
 - [ ] Backend enforces bearer auth or an equivalent production gate.
+- [ ] `ALLOW_UNAUTHENTICATED_BACKEND` is not enabled on exposed Function URLs.
 - [ ] Backend rate limits by install ID and source IP before calling Bedrock.
 - [ ] Backend caps requested batch size.
 - [ ] Backend rejects malformed, duplicate, off-target, and below-difficulty questions.

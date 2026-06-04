@@ -92,6 +92,7 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 - Family Controls distribution access is approved for all shipping bundle IDs.
 - A real iPhone passes the shield/unshield/re-lock test plan.
 - App Store privacy labels and a hosted privacy policy are finalized.
-- Screenshots, description, support URL, age rating, and review notes are created in App Store Connect.
+- Screenshots, description, support URL, age rating, and review notes are created in App Store Connect. Draft copy is tracked in `docs/APP_STORE_COPY.md`.
+- A hosted privacy policy is published from the draft in `docs/PRIVACY_POLICY_DRAFT.md`.
 - Persistence is accepted as MVP-local storage or replaced with a production store.
 - Monetization scope is finalized, the Paid Apps Agreement is active, App Store Connect subscription products are configured, and starter/member launch assumptions are reviewed against backend AI cost.

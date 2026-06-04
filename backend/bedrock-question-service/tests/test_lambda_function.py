@@ -44,11 +44,15 @@ class FakeDynamoClient:
 
 
 class BedrockQuestionServiceTests(unittest.TestCase):
+    def setUp(self):
+        os.environ["ALLOW_UNAUTHENTICATED_BACKEND"] = "true"
+
     def tearDown(self):
         for key in [
             "BEDROCK_MODEL_ID",
             "BEDROCK_FALLBACK_MODEL_ID",
             "CHECKPOINT_BACKEND_TOKEN",
+            "ALLOW_UNAUTHENTICATED_BACKEND",
             "MAX_QUESTIONS_PER_BATCH",
             "RATE_LIMIT_TABLE_NAME",
             "MAX_REQUESTS_PER_INSTALL_PER_DAY",
@@ -340,12 +344,35 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertEqual(response["statusCode"], 400)
         self.assertIn("Missing goal", response["body"])
 
-    def test_optional_backend_token(self):
+    def test_backend_token_rejects_missing_header_and_accepts_match(self):
         os.environ["CHECKPOINT_BACKEND_TOKEN"] = "test-token"
+        client = FakeBedrockClient(json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]}))
 
         response = lambda_function.handle_http_request(_event(_request_payload()))
 
         self.assertEqual(response["statusCode"], 401)
+
+        authorized_response = lambda_function.handle_http_request(
+            _event(
+                _request_payload(target_count=1),
+                headers={"Authorization": "Bearer test-token"},
+            ),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(authorized_response["statusCode"], 200)
+
+    def test_backend_auth_fails_closed_without_token_or_explicit_opt_in(self):
+        os.environ.pop("ALLOW_UNAUTHENTICATED_BACKEND", None)
+        bedrock_client = FakeBedrockClient(json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]}))
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=1)),
+            bedrock_client=bedrock_client,
+        )
+
+        self.assertEqual(response["statusCode"], 401)
+        self.assertEqual(len(bedrock_client.calls), 0)
 
     def test_honors_model_and_batch_limit_environment(self):
         os.environ["BEDROCK_MODEL_ID"] = "amazon.custom-cheap-model-v1:0"
