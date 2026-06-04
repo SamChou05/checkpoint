@@ -71,6 +71,7 @@ final class ScreenTimeController {
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var relockTask: Task<Void, Never>?
+    @ObservationIgnored private var shieldRefreshTask: Task<Void, Never>?
     @ObservationIgnored private let initialAuthorizationRequestKey = "checkpoint.screenTime.initialAuthorizationRequested"
 
     #if os(iOS) && canImport(DeviceActivity)
@@ -135,7 +136,15 @@ final class ScreenTimeController {
     }
 
     func applyShield() {
+        applyShield(cancelPendingRefresh: true)
+    }
+
+    private func applyShield(cancelPendingRefresh: Bool) {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        if cancelPendingRefresh {
+            shieldRefreshTask?.cancel()
+            shieldRefreshTask = nil
+        }
         relockTask?.cancel()
         stopUnlockRelockMonitor()
 
@@ -185,11 +194,19 @@ final class ScreenTimeController {
     func refreshActiveShieldConfiguration() {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         guard isShieldingEnabled else { return }
-        applyShield()
+        shieldRefreshTask?.cancel()
+        clearManagedShieldRestrictions()
+        shieldRefreshTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            guard !Task.isCancelled else { return }
+            self?.finishActiveShieldConfigurationRefresh()
+        }
         #endif
     }
 
     func clearShield() {
+        shieldRefreshTask?.cancel()
+        shieldRefreshTask = nil
         relockTask?.cancel()
         isShieldingEnabled = false
         setupState = .authorized
@@ -209,6 +226,9 @@ final class ScreenTimeController {
         guard minutes > 0 else { return }
 
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        shieldRefreshTask?.cancel()
+        shieldRefreshTask = nil
+
         guard hasSelection else {
             lastErrorMessage = "No protected apps are selected, so there is nothing to open."
             return
@@ -310,6 +330,12 @@ final class ScreenTimeController {
         managedStore.shield.applications = nil
         managedStore.shield.applicationCategories = nil
         managedStore.shield.webDomains = nil
+    }
+
+    private func finishActiveShieldConfigurationRefresh() {
+        guard isShieldingEnabled else { return }
+        applyShield(cancelPendingRefresh: false)
+        shieldRefreshTask = nil
     }
     #endif
 
