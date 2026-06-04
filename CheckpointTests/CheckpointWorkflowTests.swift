@@ -1945,6 +1945,29 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sanitized.isEmpty)
     }
 
+    func testSanitizerRejectsNearDuplicateMultipleChoiceAnswers() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Operating Systems: What does the MMU do during address translation?",
+            expectedAnswer: "It translates virtual memory addresses to physical memory addresses.",
+            choices: [
+                "It translates virtual memory addresses to physical memory addresses.",
+                "It maps virtual memory addresses to physical memory addresses.",
+                "It encrypts process memory before each context switch.",
+                "It schedules interrupts for blocked I/O devices."
+            ],
+            explanation: "The MMU translates virtual addresses into physical addresses.",
+            difficulty: 2
+        )
+
+        let sanitized = QuestionBatchSanitizer.sanitize([question], for: request)
+
+        XCTAssertTrue(sanitized.isEmpty)
+    }
+
     func testSanitizerRejectsQuestionsWithFewerThanFourUniqueAnswers() {
         let goal = makeGoal()
         let request = makeRequest(goal: goal)
@@ -2063,6 +2086,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("Difficulty guidance for this batch: Foundations"))
         XCTAssertTrue(sourcePrompt.contains("Generate 5 level 1 of 5 difficulty multiple-choice questions about LSAT"))
         XCTAssertTrue(sourcePrompt.contains("Ask about LSAT itself, not study plans"))
+        XCTAssertTrue(sourcePrompt.contains("All 4 choices must be meaningfully distinct"))
     }
 
     func testQuestionContextDoesNotMatchExamAcronymsInsideLongerWords() {

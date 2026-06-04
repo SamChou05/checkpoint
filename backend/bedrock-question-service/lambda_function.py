@@ -335,6 +335,8 @@ Rules:
 - Treat words like study, prepare, pass, learn, and ace as user intent, not as the tested subject.
 - Do not ask about study plans, productivity, motivation, app blocking, screen time, or next steps unless the learning target is explicitly study skills.
 - Each question must have exactly 4 choices.
+- All 4 choices must be meaningfully distinct in wording and substance. Do not include near-synonyms or paraphrases of the same answer, such as "maps virtual addresses to physical addresses" and "translates virtual addresses to physical addresses".
+- Distractors should test different misconceptions, not restate the same mechanism with synonyms.
 - expectedAnswer must exactly match one choice.
 - difficulty must be an integer from 1 to 5 and not below the requested minimum.
 - Match the requested difficulty guidance; do not relabel an easy question as hard.
@@ -358,6 +360,7 @@ The actual learning target to test is: {request["goal"]["learningTarget"]}
 Content topics: {", ".join(request["goal"]["contentTopics"])}
 Question style guidance: {request["goal"]["questionDirective"] or "Ask objective knowledge-check questions."}
 Skill map mode: {"infer a new 4-to-6 topic skill map and use those skill names as question topics" if request["goal"]["needsSkillMap"] else "use the provided content topics as the skill map"}
+Choice quality: make all four choices meaningfully distinct; do not use paraphrased duplicates or near-synonyms as separate options.
 
 Return only the JSON object. Do not wrap it in Markdown.
 """.strip()
@@ -375,6 +378,7 @@ Previous malformed response excerpt:
 
 Generate {request["targetCount"]} multiple-choice questions now.
 Difficulty guidance: {request["difficultyGuidance"]}
+Make all four choices meaningfully distinct; do not use paraphrased duplicates or near-synonyms as separate options.
 Return only one compact JSON object with this exact shape:
 {{"questions":[{{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","difficulty":{request["minimumDifficulty"]},"format":"Multiple Choice"}}]}}
 
@@ -494,7 +498,7 @@ def _normalized_choices(raw_choices: Any, expected_answer: str) -> list[str]:
     unique_choices: list[str] = []
     seen = set()
     for choice in [expected_answer] + choices:
-        key = _canonical(choice)
+        key = _choice_uniqueness_key(choice)
         if key and key not in seen:
             seen.add(key)
             unique_choices.append(choice)
@@ -502,8 +506,8 @@ def _normalized_choices(raw_choices: Any, expected_answer: str) -> list[str]:
     if len(unique_choices) < 4:
         return []
 
-    expected_key = _canonical(expected_answer)
-    distractors = [choice for choice in unique_choices if _canonical(choice) != expected_key]
+    expected_key = _choice_uniqueness_key(expected_answer)
+    distractors = [choice for choice in unique_choices if _choice_uniqueness_key(choice) != expected_key]
     return [expected_answer] + distractors[:3]
 
 
@@ -549,6 +553,99 @@ def _clean_text(value: Any) -> str:
 
 def _canonical(value: str) -> str:
     return "".join(character.lower() for character in value if character.isalnum())
+
+
+def _choice_uniqueness_key(value: str) -> str:
+    semantic_key = _semantic_choice_key(value)
+    return semantic_key or _canonical(value)
+
+
+def _semantic_choice_key(value: str) -> str:
+    normalized = _strip_answer_prefix(_clean_text(value).lower())
+    normalized = _strip_choice_label(normalized)
+    tokens = re.findall(r"[a-z0-9]+", normalized)
+    return "".join(token for token in (_semantic_choice_token(token) for token in tokens) if token)
+
+
+def _semantic_choice_token(token: str) -> str | None:
+    corrections = {
+        "adress": "address",
+        "adresses": "address",
+        "addresses": "address",
+        "phusical": "physical",
+        "physcal": "physical",
+        "phsyical": "physical",
+    }
+    lemmas = {
+        "map": "translate",
+        "maps": "translate",
+        "mapped": "translate",
+        "mapping": "translate",
+        "remap": "translate",
+        "remaps": "translate",
+        "remapped": "translate",
+        "remapping": "translate",
+        "translate": "translate",
+        "translates": "translate",
+        "translated": "translate",
+        "translation": "translate",
+        "convert": "translate",
+        "converts": "translate",
+        "converted": "translate",
+        "conversion": "translate",
+        "resolve": "translate",
+        "resolves": "translate",
+        "resolved": "translate",
+        "resolution": "translate",
+    }
+    stop_words = {
+        "a",
+        "an",
+        "as",
+        "by",
+        "choice",
+        "for",
+        "it",
+        "of",
+        "option",
+        "that",
+        "the",
+        "this",
+        "those",
+        "to",
+        "which",
+        "with",
+    }
+
+    normalized = corrections.get(token, token)
+    normalized = lemmas.get(normalized, _singularized_token(normalized))
+    normalized = lemmas.get(normalized, normalized)
+    if normalized in stop_words:
+        return None
+    return normalized
+
+
+def _singularized_token(token: str) -> str:
+    if len(token) <= 4:
+        return token
+    if token.endswith("ies"):
+        return f"{token[:-3]}y"
+    if token.endswith("s") and not token.endswith("ss"):
+        return token[:-1]
+    return token
+
+
+def _strip_answer_prefix(value: str) -> str:
+    for prefix in ["correct answer", "correct choice", "correct option", "answer", "choice", "option"]:
+        if value.startswith(prefix):
+            remainder = value[len(prefix) :].strip(" \t\n:-.")
+            if remainder:
+                return remainder
+    return value
+
+
+def _strip_choice_label(value: str) -> str:
+    return re.sub(r"^\s*(?:[\[(]?[abcd1234][\]).:]|\b[abcd1234][\).:])\s*", "", value, count=1)
 
 
 def _clip(value: str, limit: int) -> str:

@@ -97,6 +97,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertIn("Difficulty guidance: Medium application", prompt)
         self.assertIn("do not merely set the difficulty number", prompt)
         self.assertIn("Skill map mode: use the provided content topics", prompt)
+        self.assertIn("Choice quality: make all four choices meaningfully distinct", prompt)
+        system_prompt = client.calls[0]["system"][0]["text"]
+        self.assertIn("Do not include near-synonyms or paraphrases", system_prompt)
 
     def test_skill_map_mode_is_prompted_when_requested(self):
         payload = _request_payload(target_count=3, minimum_difficulty=3)
@@ -295,6 +298,41 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         questions = json.loads(response["body"])["questions"]
         self.assertEqual(len(questions), 1)
         self.assertIn("causation", questions[0]["prompt"])
+
+    def test_rejects_near_duplicate_answer_choices(self):
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        {
+                            "prompt": "Operating Systems: What does the MMU do during address translation?",
+                            "expectedAnswer": "It translates virtual memory addresses to physical memory addresses.",
+                            "choices": [
+                                "It translates virtual memory addresses to physical memory addresses.",
+                                "It maps virtual memory addresses to physical memory addresses.",
+                                "It encrypts process memory before each context switch.",
+                                "It schedules interrupts for blocked I/O devices.",
+                            ],
+                            "explanation": "The MMU translates virtual addresses into physical addresses.",
+                            "topic": "Virtual Memory",
+                            "difficulty": 3,
+                            "format": "Multiple Choice",
+                        },
+                        _raw_question("LSAT Logical Reasoning: Which answer identifies the required assumption?"),
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=2, minimum_difficulty=3)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        questions = json.loads(response["body"])["questions"]
+        self.assertEqual(len(questions), 1)
+        self.assertNotIn("MMU", questions[0]["prompt"])
 
     def test_rejects_missing_goal(self):
         response = lambda_function.handle_http_request(_event({"targetCount": 3}))

@@ -42,7 +42,8 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         For LSAT, use original Logical Reasoning or Reading Comprehension style questions.
         Keep every question answerable in 30 seconds to 3 minutes.
         Each question must have exactly 4 choices.
-        All 4 choices must be unique in wording and meaning.
+        All 4 choices must be meaningfully distinct in wording and substance; do not include paraphrases of the same answer.
+        Distractors should test different misconceptions, not restate the same mechanism with synonyms.
         expectedAnswer must exactly match one visible choice.
         Difficulty must be an integer from 1 to 5.
         Do not return questions below the requested minimum difficulty.

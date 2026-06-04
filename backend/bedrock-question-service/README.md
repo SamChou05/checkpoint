@@ -74,6 +74,6 @@ The request and response match `docs/AI_BACKEND_CONTRACT.md`. The service additi
 - drops duplicate or reported prompts
 - drops study-strategy prompts for non-study-skill goals
 - repairs answer choices by inserting `expectedAnswer` when needed
-- enforces four choices
+- enforces four meaningfully distinct choices
 - clamps difficulty to the requested minimum through 5
 - returns `502` if Bedrock output has no usable questions, allowing the iOS app to fall back locally

@@ -78,6 +78,8 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - `format` must be `Multiple Choice`.
 - `choices` should include 4 options.
 - `expectedAnswer` must exactly match one item in `choices`.
+- All 4 choices must be meaningfully distinct in wording and substance. Do not include near-synonyms or paraphrases of the same answer, such as `maps virtual addresses to physical addresses` and `translates virtual addresses to physical addresses`.
+- Distractors should test different misconceptions, not restate the same mechanism with synonyms.
 - Avoid prompts listed in `existingPrompts` and `reportedPrompts`.
 - Prefer objective questions for MVP.
 - Every question should be answerable in 30 seconds to 3 minutes.
@@ -89,7 +91,7 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as user intent, not as the tested subject. For example, `Study for the LSAT` should produce LSAT Logical Reasoning or Reading Comprehension questions, not questions about how to study.
 - Do not ask about study plans, productivity, motivation, app blocking, or next steps unless the learning target is explicitly study skills.
 
-The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, off-target study-strategy prompts, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
+The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, duplicate or near-duplicate answer choices, off-target study-strategy prompts, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
 
 ## Cost Rules
 

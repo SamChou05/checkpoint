@@ -61,7 +61,8 @@ struct QuestionGenerationRequest: Sendable {
         - Ask about \(context.learningTarget) itself, not study plans, productivity, motivation, app blocking, or what the learner should do next unless the learning target is explicitly study skills.
         - Make every question answerable as a short multiple-choice knowledge check.
         - Each question must include exactly 4 answer choices.
-        - All 4 choices must be unique in meaning and wording; do not repeat or lightly rephrase the same answer.
+        - All 4 choices must be meaningfully distinct in wording and substance; do not include paraphrases such as "maps virtual addresses to physical addresses" and "translates virtual addresses to physical addresses".
+        - Distractors should test different misconceptions, not restate the same mechanism with synonyms.
         - The expected answer must exactly match one visible choice, with a short explanation, a topic, and a 1-to-5 difficulty.
         - Reject remedial/basic questions when the requested difficulty is 3 or higher.
         """
@@ -661,7 +662,100 @@ enum QuestionBatchSanitizer {
     }
 
     private static func choiceUniquenessKey(_ text: String) -> String {
-        answerKey(text)
+        let semanticKey = semanticChoiceKey(text)
+        return semanticKey.isEmpty ? answerKey(text) : semanticKey
+    }
+
+    private static func semanticChoiceKey(_ text: String) -> String {
+        var normalized = text
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        normalized = strippedAnswerPrefix(from: normalized)
+        normalized = strippedChoiceLabel(from: normalized)
+
+        let tokens = normalized
+            .split { !$0.isLetter && !$0.isNumber }
+            .compactMap { semanticChoiceToken(String($0)) }
+
+        return tokens.joined(separator: "")
+    }
+
+    private static func semanticChoiceToken(_ token: String) -> String? {
+        var normalized = token
+
+        let corrections = [
+            "adress": "address",
+            "adresses": "address",
+            "addresses": "address",
+            "phusical": "physical",
+            "physcal": "physical",
+            "phsyical": "physical"
+        ]
+        normalized = corrections[normalized] ?? normalized
+
+        let lemmas = [
+            "map": "translate",
+            "maps": "translate",
+            "mapped": "translate",
+            "mapping": "translate",
+            "remap": "translate",
+            "remaps": "translate",
+            "remapped": "translate",
+            "remapping": "translate",
+            "translate": "translate",
+            "translates": "translate",
+            "translated": "translate",
+            "translation": "translate",
+            "convert": "translate",
+            "converts": "translate",
+            "converted": "translate",
+            "conversion": "translate",
+            "resolve": "translate",
+            "resolves": "translate",
+            "resolved": "translate",
+            "resolution": "translate"
+        ]
+
+        normalized = lemmas[normalized] ?? singularizedSemanticToken(normalized)
+        normalized = lemmas[normalized] ?? normalized
+
+        let stopWords: Set<String> = [
+            "a",
+            "an",
+            "as",
+            "by",
+            "choice",
+            "for",
+            "it",
+            "of",
+            "option",
+            "that",
+            "the",
+            "this",
+            "those",
+            "to",
+            "which",
+            "with"
+        ]
+
+        guard !stopWords.contains(normalized) else { return nil }
+        return normalized
+    }
+
+    private static func singularizedSemanticToken(_ token: String) -> String {
+        guard token.count > 4 else { return token }
+
+        if token.hasSuffix("ies") {
+            return String(token.dropLast(3)) + "y"
+        }
+
+        if token.hasSuffix("s"), !token.hasSuffix("ss") {
+            return String(token.dropLast())
+        }
+
+        return token
     }
 
     private static func strippedAnswerPrefix(from text: String) -> String {
