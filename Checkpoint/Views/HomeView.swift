@@ -84,7 +84,7 @@ struct HomeView: View {
                     Spacer()
 
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("Deadline \(goal.deadline, style: .date)")
+                        Text("Deadline: \(goal.deadline.formatted(.dateTime.month(.twoDigits).day(.twoDigits).year(.twoDigits)))")
                         Text(Goal.deadlineDistanceText(until: goal.deadline))
                     }
                     .font(.caption.weight(.semibold))
