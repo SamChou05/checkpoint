@@ -75,8 +75,73 @@ enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 }
 
+enum MembershipTier: String, Codable, Sendable {
+    case starter
+    case member
+
+    var displayName: String {
+        switch self {
+        case .starter:
+            return "Starter"
+        case .member:
+            return "Member"
+        }
+    }
+}
+
+enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
+    case goalProfiles
+    case freshQuestionGeneration
+    case largerQuestionBank
+    case adaptiveStudyAssist
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .goalProfiles:
+            return "Goal profiles"
+        case .freshQuestionGeneration:
+            return "Fresh checkpoints"
+        case .largerQuestionBank:
+            return "More question variety"
+        case .adaptiveStudyAssist:
+            return "Study Assist"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .goalProfiles:
+            return "Create and switch between separate goals, each with its own focus areas, question level, history, and Skill Map."
+        case .freshQuestionGeneration:
+            return "Keep new goal-aligned questions ready after your starter set has done its job."
+        case .largerQuestionBank:
+            return "Build a larger cached question bank so checkpoints feel less repetitive over time."
+        case .adaptiveStudyAssist:
+            return "Use missed topics, mastery, and recent accuracy to guide what Checkpoint prepares next."
+        }
+    }
+
+    static var launchFeatures: [MembershipFeature] {
+        [
+            .freshQuestionGeneration,
+            .goalProfiles,
+            .largerQuestionBank,
+            .adaptiveStudyAssist
+        ]
+    }
+}
+
+enum MembershipProductID {
+    static let monthly = "checkpoint.membership.monthly"
+    static let yearly = "checkpoint.membership.yearly"
+    static let all = [monthly, yearly]
+}
+
 enum ProductLimits {
-    static let questionBankTargetCount = 80
+    static let starterQuestionBankTargetCount = 40
+    static let memberQuestionBankTargetCount = 80
     static let autoRefreshThreshold = 10
     static let autoRefreshCooldown: TimeInterval = 6 * 60 * 60
 }
@@ -551,6 +616,7 @@ struct AppSnapshot: Codable, Sendable {
     var backendEndpoint: String?
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining: Int
+    var membershipTier: MembershipTier?
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?
 }

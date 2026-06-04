@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     @State private var store = CheckpointStore()
     @State private var screenTime = ScreenTimeController()
+    @State private var purchaseController = PurchaseController()
     @State private var selectedTab: AppTab = .home
     @State private var activeShieldSession: CheckpointSession?
     @State private var isPreparingShieldSession = false
@@ -33,6 +34,9 @@ struct RootView: View {
         .sheet(item: $activeShieldSession) { session in
             CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
         }
+        .sheet(item: membershipFeatureBinding) { feature in
+            MembershipView(feature: feature, store: store, purchaseController: purchaseController)
+        }
         .sheet(
             isPresented: Binding(
                 get: { store.isOnboardingPresented },
@@ -48,6 +52,12 @@ struct RootView: View {
                 .interactiveDismissDisabled(store.goal == nil)
         }
         .task {
+            purchaseController.startListeningForTransactions()
+            Task {
+                let unlocked = await purchaseController.refreshEntitlements()
+                store.updateMembershipTier(unlocked ? .member : .starter)
+                await purchaseController.loadProducts()
+            }
             handlePendingShieldActivation()
             Task {
                 await screenTime.requestInitialAuthorizationIfNeeded()
@@ -72,6 +82,19 @@ struct RootView: View {
             activeShieldSession = await store.preparePendingShieldSession()
             isPreparingShieldSession = false
         }
+    }
+
+    private var membershipFeatureBinding: Binding<MembershipFeature?> {
+        Binding(
+            get: { store.pendingMembershipFeature },
+            set: { feature in
+                if let feature {
+                    store.pendingMembershipFeature = feature
+                } else {
+                    store.dismissMembershipPrompt()
+                }
+            }
+        )
     }
 }
 

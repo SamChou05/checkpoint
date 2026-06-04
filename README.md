@@ -7,7 +7,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 ## Current Build
 
 - Native SwiftUI app shell.
-- Natural-language goal profile onboarding flow with multiple saved goal profiles included in the main paid app.
+- Natural-language goal onboarding flow with the first goal included and membership unlocking goal switching plus fresh ongoing question generation.
 - Goal category is inferred internally from the typed goal and optional focus areas instead of shown as user-facing setup.
 - Provider-based multiple-choice question generation extracts a learning target from typed goals, so phrases like `Study for the LSAT` produce LSAT questions rather than study-habit prompts.
 - Goals without focus areas ask the configured provider to infer an initial Skill Map from the learning target, then the background bank refill uses those generated skill topics.
@@ -26,7 +26,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Manual checkpoint preview lives in Advanced for testing and does not unlock apps.
 - Checkpoint quietly prepares fresh questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
 - Users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
-- Paid/full-access product behavior: goal profiles, custom checkpoint rules, larger question banks, automatic refresh, and adaptive guidance are all included.
+- Starter/membership product behavior: the first goal, app blocking, and checkpoint unlock loop are usable before payment; membership keeps fresh checkpoints ready, unlocks goal profiles, larger question banks, and adaptive Study Assist.
 - Privacy manifests for the app and Screen Time extensions.
 - Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.
 - Shield Configuration extension target for branded Screen Time shield UI.
@@ -53,11 +53,11 @@ The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md
 
 See `docs/APP_STORE_READINESS.md` for entitlement steps, physical-device testing, App Review notes, and remaining launch blockers.
 
-See `docs/MONETIZATION.md` for the paid-app monetization direction and launch pricing notes.
+See `docs/MONETIZATION.md` for the starter-membership monetization direction and launch pricing notes.
 
 ## Testing
 
-Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, full-access goal profile isolation, Skill Map topic fallback, adaptive level-up, Study Assist, and provider payload sanitization.
+Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, starter membership gates, member goal profile isolation, Skill Map topic fallback, adaptive level-up, Study Assist, and provider payload sanitization.
 
 ## Open
 

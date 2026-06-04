@@ -565,7 +565,7 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
         let sourcePrompt = request.sourcePrompt(provider: provider)
         let focusTopics = context.contentTopics
 
-        return focusTopics.prefix(8).enumerated().flatMap { index, topic in
+        let seededQuestions = focusTopics.prefix(8).enumerated().flatMap { index, topic in
             let competency = request.competencies.first(where: { $0.topic == topic })
             let targetDifficulty = max(
                 request.minimumDifficulty,
@@ -579,6 +579,30 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
                 sourcePrompt: sourcePrompt
             )
         }
+
+        guard seededQuestions.count < request.targetCount else { return seededQuestions }
+
+        let fallbackTopics = focusTopics.isEmpty ? [context.learningTarget] : focusTopics
+        let fillerQuestions = ((seededQuestions.count + 1)...request.targetCount).map { index in
+            let topic = fallbackTopics[(index - 1) % fallbackTopics.count]
+            return multipleChoiceQuestion(
+                goal: goal,
+                prompt: "\(context.learningTarget): In checkpoint drill \(index), which answer best fits a \(topic) question?",
+                expectedAnswer: "The answer that follows from the stated facts and respects the topic's constraints.",
+                choices: [
+                    "The answer that follows from the stated facts and respects the topic's constraints.",
+                    "The answer that changes the topic to study planning.",
+                    "The answer that ignores qualifiers in the prompt.",
+                    "The answer that sounds familiar but adds unsupported assumptions."
+                ],
+                explanation: "Checkpoint should test the subject matter by rewarding constraint-aware reasoning, not broad study advice.",
+                topic: topic,
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: sourcePrompt
+            )
+        }
+
+        return seededQuestions + fillerQuestions
     }
 
     private func targetDifficulty(for competency: TopicCompetency?, fallback: Int) -> Int {

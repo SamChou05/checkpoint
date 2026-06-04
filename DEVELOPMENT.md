@@ -33,12 +33,12 @@ Important platform constraint:
 - Academic paper-inspired visual system.
 - Home, Skill, and Settings tabs.
 - Settings keeps user-facing controls focused on Goals, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
-- The app is currently modeled as a paid/full-access product, so there is no in-app Free/Pro feature gate in the shipped code.
+- The app is currently modeled as a starter-membership product: the first goal and core blocker loop are included before payment, while membership unlocks goal switching and ongoing fresh generation.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
 - Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 stop challenge from Home or Advanced.
-- Settings no longer includes plan upsells or in-app purchase controls.
+- Settings includes a compact Membership section without putting payment decisions in the core checkpoint flow.
 - Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
@@ -70,8 +70,7 @@ Important platform constraint:
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
-- Settings includes a manual question refresh action.
-- Manual question refreshes are available in the paid/full-access app; the core blocker loop also silently refills when the current set runs out.
+- Question refresh is abstracted away from users. Starter users get the first generated bank; membership keeps fresh questions flowing after that set runs low.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic
@@ -104,7 +103,7 @@ Important platform constraint:
 ### Unlock Policy
 
 - Correct-answer unlock duration is configurable with 5, 10, 15, and 30 minute options. The default is 30 minutes.
-- Correct-answer count per unlock is configurable in the paid/full-access app.
+- Correct-answer count per unlock is configurable from Settings.
 - Multiple-choice misses stay locked.
 - Incorrect and unclear answers do not unlock.
 - Revealed expected answers force the attempt to stay locked.
@@ -204,13 +203,13 @@ The MVP is complete when:
 - User-provided materials such as notes, PDFs, links, or flashcards.
 - Integrations with Anki, Quizlet, LeetCode, Notion, or Google Sheets.
 - Server-side analytics and TestFlight instrumentation.
-- Paid-app pricing experiments after retention is validated.
-- The current code does not include an in-app StoreKit paywall. For launch, set the app price in App Store Connect after the Paid Apps Agreement is active. If subscription gating becomes necessary later, re-add StoreKit around the whole app rather than reviving a Free/Pro feature split.
+- Membership pricing experiments after retention is validated.
+- Configure StoreKit subscription products in App Store Connect and verify purchase/restore in TestFlight before launch.
 
 ## Product Decisions
 
-- Launch direction is paid/full-access: no Free/Pro product split and no feature upsells inside the app.
-- Keep all current app functionality included once a user has access to the paid app.
+- Launch direction is starter-membership: let users complete the primary first-goal flow, then ask for membership when they need fresh ongoing generation or goal switching.
+- Keep membership framed as continuity and flexibility, not as a punishment for using the starter flow.
 - Keep AI generation batched and cached, not live on every app-open attempt.
 - Do not ship API keys in the iOS app.
 - Use the shield as the trigger, not as the full quiz surface.

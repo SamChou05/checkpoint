@@ -7,15 +7,11 @@ private enum QuestionRefreshReason {
     case automaticProactiveRefill
     case levelUpRefill
 
-    func countsAsRefresh(hasFullAccess: Bool) -> Bool {
-        self == .manual || self == .automaticProactiveRefill || (self == .automaticCoreRefill && hasFullAccess)
+    func countsAsRefresh(isMember: Bool) -> Bool {
+        self == .manual || self == .automaticProactiveRefill || (self == .automaticCoreRefill && isMember)
     }
 
-    func providerPreference(defaultPreference: AIProviderKind, hasFullAccess: Bool) -> AIProviderKind {
-        if self == .automaticCoreRefill && !hasFullAccess {
-            return .localTemplates
-        }
-
+    func providerPreference(defaultPreference: AIProviderKind) -> AIProviderKind {
         return defaultPreference
     }
 
@@ -67,6 +63,8 @@ final class CheckpointStore {
     var emergencyPassesRemaining = 1
     var isOnboardingPresented = false
     var isCreatingGoalProfile = false
+    var membershipTier: MembershipTier = .starter
+    var pendingMembershipFeature: MembershipFeature?
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
 
@@ -190,16 +188,24 @@ final class CheckpointStore {
         }
     }
 
+    var isMember: Bool {
+        membershipTier == .member
+    }
+
     var hasFullProductAccess: Bool {
-        true
+        isMember
     }
 
     var questionBankTargetCount: Int {
-        ProductLimits.questionBankTargetCount
+        isMember ? ProductLimits.memberQuestionBankTargetCount : ProductLimits.starterQuestionBankTargetCount
     }
 
     var canRefreshQuestionBatch: Bool {
-        hasFullProductAccess
+        isMember
+    }
+
+    var shouldShowStarterMembershipPrompt: Bool {
+        !isMember && goal != nil && usableQuestionCount <= ProductLimits.autoRefreshThreshold
     }
 
     var usableQuestionCount: Int {
@@ -236,6 +242,10 @@ final class CheckpointStore {
     }
 
     var studyAssistSummary: String {
+        guard isMember else {
+            return "Your first goal is included. Membership keeps fresh checkpoints ready when your starter set runs low."
+        }
+
         if let focus = studyFocusRecommendation {
             return focus
         }
@@ -248,7 +258,7 @@ final class CheckpointStore {
     }
 
     var studyFocusRecommendation: String? {
-        guard goal != nil else { return nil }
+        guard isMember, goal != nil else { return nil }
 
         if let missedTopic = activeQuestions
             .filter({ $0.status == .incorrect })
@@ -300,17 +310,32 @@ final class CheckpointStore {
     // MARK: - Goal profiles
 
     func presentGoalProfileCreator() {
+        guard goal == nil || canUse(.goalProfiles) else {
+            requestMembership(for: .goalProfiles)
+            return
+        }
+
         isCreatingGoalProfile = true
         isOnboardingPresented = true
     }
 
     func presentActiveGoalEditor() {
+        guard goal == nil || canUse(.goalProfiles) else {
+            requestMembership(for: .goalProfiles)
+            return
+        }
+
         isCreatingGoalProfile = false
         isOnboardingPresented = true
     }
 
     func switchActiveGoal(to goalID: Goal.ID) {
         guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return }
+        guard selectedGoal.id == goal?.id || canUse(.goalProfiles) else {
+            requestMembership(for: .goalProfiles)
+            return
+        }
+
         goal = selectedGoal
         let hasActiveQuestions = !activeQuestions.isEmpty
         questionBatchState = hasActiveQuestions ? .ready : .generating
@@ -326,6 +351,33 @@ final class CheckpointStore {
             }
         } else {
             prepareInitialQuestionsInBackground(for: selectedGoal)
+        }
+    }
+
+    // MARK: - Membership
+
+    func canUse(_ feature: MembershipFeature) -> Bool {
+        isMember
+    }
+
+    func requestMembership(for feature: MembershipFeature) {
+        pendingMembershipFeature = feature
+    }
+
+    func dismissMembershipPrompt() {
+        pendingMembershipFeature = nil
+    }
+
+    func updateMembershipTier(_ tier: MembershipTier) {
+        membershipTier = tier
+        pendingMembershipFeature = nil
+        save()
+        publishShieldContext()
+
+        if tier == .member {
+            Task { [weak self] in
+                _ = await self?.refreshQuestionBatchIfNeeded()
+            }
         }
     }
 
@@ -353,6 +405,13 @@ final class CheckpointStore {
             return
         }
 
+        if goal != nil && !isMember {
+            checkpointNotice = "Your first goal is included. Membership lets you change goals and keep separate checkpoint sets ready."
+            requestMembership(for: .goalProfiles)
+            save()
+            return
+        }
+
         let newGoal = Goal(
             title: normalizedTitle,
             deadline: max(deadline, Date()),
@@ -368,7 +427,7 @@ final class CheckpointStore {
         )
 
         let previousGoalID = goal?.id
-        let shouldCreateNewProfile = createsNewProfile ?? (hasFullProductAccess && previousGoalID != nil)
+        let shouldCreateNewProfile = createsNewProfile ?? (isMember && previousGoalID != nil)
         let shouldReplaceActiveProfile = !shouldCreateNewProfile && previousGoalID != nil
         questionRefreshesUsed = 0
         questionBatchState = .generating
@@ -508,6 +567,14 @@ final class CheckpointStore {
         starterQuestionIDs: Set<CheckpointQuestion.ID>
     ) async {
         guard goalProfiles.contains(where: { $0.id == targetGoal.id }) || goal?.id == targetGoal.id else { return }
+        guard isMember || !starterQuestionIDs.isEmpty else {
+            if goal?.id == targetGoal.id {
+                checkpointNotice = starterQuestionLimitMessage
+                requestMembership(for: .freshQuestionGeneration)
+                save()
+            }
+            return
+        }
         guard !questionBankTopOffGoalIDs.contains(targetGoal.id) else { return }
         questionBankTopOffGoalIDs.insert(targetGoal.id)
         defer { questionBankTopOffGoalIDs.remove(targetGoal.id) }
@@ -593,10 +660,17 @@ final class CheckpointStore {
 
     private func refreshQuestionBatch(reason: QuestionRefreshReason) async {
         guard let goal else { return }
+        guard isMember else {
+            checkpointNotice = starterQuestionLimitMessage
+            lastAIErrorMessage = starterQuestionLimitMessage
+            requestMembership(for: .freshQuestionGeneration)
+            save()
+            return
+        }
 
         questionBatchState = .generating
         beginQuestionGeneration(for: goal.id)
-        if reason.countsAsRefresh(hasFullAccess: hasFullProductAccess) {
+        if reason.countsAsRefresh(isMember: isMember) {
             questionRefreshesUsed += 1
         }
 
@@ -606,10 +680,7 @@ final class CheckpointStore {
             competencies: activeCompetencies,
             reportedQuestions: activeQuestionReports
         )
-        let providerPreference = reason.providerPreference(
-            defaultPreference: aiProviderPreference,
-            hasFullAccess: hasFullProductAccess
-        )
+        let providerPreference = reason.providerPreference(defaultPreference: aiProviderPreference)
         let startedAt = Date()
         let batch = await questionEngine.generateQuestionBatch(
             for: refreshRequest,
@@ -651,11 +722,19 @@ final class CheckpointStore {
 
         let refillMinimum = minimumUsableQuestionCount ?? unlockPolicy.questionsPerSession
         let needsCoreRefill = usableQuestionCount < refillMinimum && canRefreshAfterCooldown
-        let shouldRefreshProactively = hasFullProductAccess
+        let shouldRefreshProactively = isMember
             && usableQuestionCount <= ProductLimits.autoRefreshThreshold
             && canRefreshAfterCooldown
 
         guard needsCoreRefill || shouldRefreshProactively else { return false }
+
+        guard isMember else {
+            checkpointNotice = starterQuestionLimitMessage
+            lastAIErrorMessage = starterQuestionLimitMessage
+            requestMembership(for: .freshQuestionGeneration)
+            save()
+            return false
+        }
 
         lastAutomaticQuestionRefreshAt = Date()
         await refreshQuestionBatch(reason: needsCoreRefill ? .automaticCoreRefill : .automaticProactiveRefill)
@@ -831,6 +910,7 @@ final class CheckpointStore {
         questionRefreshesUsed = 0
         lastAutomaticQuestionRefreshAt = nil
         isCreatingGoalProfile = false
+        pendingMembershipFeature = nil
         isOnboardingPresented = true
         save()
         publishShieldContext()
@@ -1016,6 +1096,13 @@ final class CheckpointStore {
     func acceptQuestionLevelRecommendation() async {
         guard let recommendation = questionLevelRecommendation,
               var activeGoal = goal else {
+            return
+        }
+
+        guard isMember else {
+            checkpointNotice = "Nice progress. Membership can keep preparing harder checkpoints for this goal."
+            requestMembership(for: .freshQuestionGeneration)
+            save()
             return
         }
 
@@ -1286,6 +1373,7 @@ final class CheckpointStore {
             backendEndpoint: backendEndpoint,
             unlockSession: unlockSession,
             emergencyPassesRemaining: emergencyPassesRemaining,
+            membershipTier: membershipTier,
             questionRefreshesUsed: questionRefreshesUsed,
             lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt
         )
@@ -1315,6 +1403,10 @@ final class CheckpointStore {
         }
 
         checkpointNotice = checkpointSessionUnavailableMessage(source: source)
+        if !isMember, goal != nil, usableQuestionCount < unlockPolicy.questionsPerSession {
+            requestMembership(for: .freshQuestionGeneration)
+            save()
+        }
         return nil
     }
 
@@ -1326,9 +1418,17 @@ final class CheckpointStore {
         }
 
         if activeQuestions.isEmpty {
+            if !isMember {
+                return "Your starter checkpoints are complete. Membership keeps fresh questions ready when you need more."
+            }
+
             return source == .blockedApp
                 ? "Checkpoint opened from a blocked app, but no questions are ready yet."
                 : "No questions are ready yet."
+        }
+
+        if !isMember && usableQuestionCount == 0 {
+            return "Your starter question set has done its job. Membership keeps fresh checkpoints coming."
         }
 
         return "Checkpoint is preparing more questions. Try again in a moment or lower the minimum level."
@@ -1352,6 +1452,8 @@ final class CheckpointStore {
         backendEndpoint = snapshot.backendEndpoint ?? ""
         unlockSession = snapshot.unlockSession
         emergencyPassesRemaining = snapshot.emergencyPassesRemaining
+        membershipTier = snapshot.membershipTier ?? .starter
+        pendingMembershipFeature = nil
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
         lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
         goalProfiles = snapshot.goalProfiles ?? snapshot.goal.map { [$0] } ?? []
@@ -1717,5 +1819,9 @@ final class CheckpointStore {
     private var canRefreshAfterCooldown: Bool {
         guard let lastAutomaticQuestionRefreshAt else { return true }
         return Date().timeIntervalSince(lastAutomaticQuestionRefreshAt) >= ProductLimits.autoRefreshCooldown
+    }
+
+    private var starterQuestionLimitMessage: String {
+        "Your first goal includes a starter question set. Membership keeps fresh checkpoints ready after that set runs low."
     }
 }

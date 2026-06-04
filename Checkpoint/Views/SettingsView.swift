@@ -31,6 +31,36 @@ struct SettingsView: View {
                             .foregroundStyle(CheckpointTheme.muted)
                     }
 
+                    SectionPanel("Membership") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(store.membershipTier.displayName)
+                                        .font(.headline)
+                                        .foregroundStyle(CheckpointTheme.text)
+
+                                    Text(membershipDetailText)
+                                        .font(.subheadline)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+
+                                Spacer()
+
+                                StatusBadge(
+                                    text: store.isMember ? "Active" : "First goal",
+                                    tint: store.isMember ? CheckpointTheme.teal : CheckpointTheme.amber
+                                )
+                            }
+
+                            if !store.isMember {
+                                SecondaryActionButton(title: "Start membership", systemImage: "sparkles") {
+                                    store.requestMembership(for: .freshQuestionGeneration)
+                                }
+                            }
+                        }
+                    }
+
                     SectionPanel("Goals") {
                         if let goal = store.goal {
                             VStack(alignment: .leading, spacing: 10) {
@@ -326,6 +356,14 @@ struct SettingsView: View {
     private var goalCountText: String {
         let count = store.availableGoalProfiles.count
         return count == 1 ? "1 goal" : "\(count) goals"
+    }
+
+    private var membershipDetailText: String {
+        if store.isMember {
+            return "Fresh checkpoints, goal profiles, larger question banks, and Study Assist are active."
+        }
+
+        return "Your first goal and starter checkpoints are included. Membership keeps new questions flowing and unlocks goal switching."
     }
 
     private var historyDetailText: String {

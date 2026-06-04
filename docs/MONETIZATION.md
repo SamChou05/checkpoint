@@ -1,45 +1,66 @@
 # Monetization Plan
 
-Checkpoint is currently planned as a paid/full-access app rather than a freemium app with a Pro tier.
+Checkpoint is currently planned as a starter-membership app.
 
 ## Recommendation
 
-Launch as one paid product with all current features included:
+Let users experience the complete primary loop before payment:
 
-- Multiple goal profiles with separate focus areas, question difficulty, practice sets, history, reports, and Skill Maps.
-- Custom checkpoint rules, including question count, passing score, and 5/10/15/30 minute unlock windows.
-- Larger cached question banks, automatic refill, and adaptive Study Assist.
-- App blocking, temporary unlocks, emergency pass, history, reports, and diagnostics.
+- Create the first goal.
+- Generate a starter question set.
+- Choose blocked apps.
+- Clear checkpoints from blocked-app attempts.
+- Temporarily unlock apps after passing.
 
-This avoids making the free version strong enough to undercut conversion, and it keeps the app simpler: users buy Checkpoint, then they get Checkpoint.
+Ask for membership when the app needs to become more powerful or ongoing:
+
+- Changing or adding goal profiles.
+- Keeping fresh generated checkpoints ready after the starter set runs low.
+- Building the larger member question bank.
+- Using adaptive Study Assist and level-up regeneration.
+
+This gives users a real taste of the product while keeping backend AI exposure bounded by a finite starter bank.
 
 ## Launch Pricing
 
-The simplest launch path is paid app pricing in App Store Connect. The current candidate price remains $4.99, with no in-app Free/Pro gate in the code.
+Current candidate pricing:
 
-Before selling the app:
+- Monthly membership: `$4.99/mo`
+- Annual membership: `$29.99/yr`
+
+StoreKit product IDs in the app:
+
+- `checkpoint.membership.monthly`
+- `checkpoint.membership.yearly`
+
+Before selling membership:
 
 1. Make sure the Account Holder accepts the Paid Apps Agreement in App Store Connect.
 2. Configure banking and tax information.
-3. Set the app price under Pricing and Availability.
-4. Re-run TestFlight validation after pricing, entitlement, backend, and real-device Screen Time work are complete.
-
-If backend AI usage becomes expensive enough that one-time paid pricing is risky, revisit an app-wide subscription later. Do not revive a feature-level Free/Pro split unless user research clearly shows users understand and value that split.
+3. Create matching auto-renewable subscription products in App Store Connect.
+4. Add the products to a subscription group.
+5. Verify StoreKit purchase and restore in TestFlight.
+6. Re-run TestFlight validation after pricing, entitlement, backend, and real-device Screen Time work are complete.
 
 ## Cost Profile
 
 - Local/offline question generation has no per-user AI cost.
 - Apple Foundation Models generation has no server bill, but only works on supported devices.
 - Backend AI generation can create variable cost. Keep it batch-based, quota-limited, cooldown-protected, and cached locally.
-- Paid-only launch reduces free-user backend exposure, but does not remove the need for backend quotas.
+- The starter plan should cap free backend exposure to the first goal and starter question bank.
+- Membership revenue should cover ongoing backend refreshes, larger banks, and goal switching.
 
 ## Current Implementation
 
-- StoreKit purchase UI and Free/Pro gates have been removed from the app target.
-- Runtime behavior grants the full feature set.
-- Payment is expected to happen through App Store app pricing at launch, not an in-app feature paywall.
+- StoreKit membership UI is in the app target.
+- Runtime behavior starts users on `Starter`.
+- Starter users can create the first goal and use the core blocker/checkpoint/unlock flow.
+- Starter users are prompted positively for membership when they try to change goals or when fresh generation is needed.
+- Member users get goal profiles, larger question banks, automatic refresh, and adaptive Study Assist.
 
 ## References
 
-- Apple App Store Connect Help: Set a price
-  https://developer.apple.com/help/app-store-connect/manage-app-pricing/set-a-price/
+- Apple In-App Purchase
+  https://developer.apple.com/in-app-purchase/
+- Apple App Store Review Guidelines
+  https://developer.apple.com/app-store/review/guidelines/

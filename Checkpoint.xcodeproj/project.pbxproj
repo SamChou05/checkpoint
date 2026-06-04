@@ -25,6 +25,8 @@
 		A10000000000000000000012 /* AppleFoundationQuestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* AppleFoundationQuestionEngine.swift */; };
 		A10000000000000000000013 /* QuestionReportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000013 /* QuestionReportsView.swift */; };
 		A10000000000000000000014 /* SettingsSupportViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* SettingsSupportViews.swift */; };
+		A10000000000000000000015 /* PurchaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000015 /* PurchaseController.swift */; };
+		A10000000000000000000016 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* MembershipView.swift */; };
 		B10000000000000000000001 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
 		B10000000000000000000002 /* ShieldConfigurationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* ShieldConfigurationExtension.swift */; };
 		B10000000000000000000003 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
@@ -110,6 +112,8 @@
 		A20000000000000000000012 /* AppleFoundationQuestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleFoundationQuestionEngine.swift; sourceTree = "<group>"; };
 		A20000000000000000000013 /* QuestionReportsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionReportsView.swift; sourceTree = "<group>"; };
 		A20000000000000000000014 /* SettingsSupportViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSupportViews.swift; sourceTree = "<group>"; };
+		A20000000000000000000015 /* PurchaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseController.swift; sourceTree = "<group>"; };
+		A20000000000000000000016 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
 		A20000000000000000000017 /* Backend.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Backend.xcconfig; sourceTree = "<group>"; };
 		A20000000000000000000018 /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 		A20000000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -225,6 +229,7 @@
 				A20000000000000000000011 /* BackendQuestionEngine.swift */,
 				A20000000000000000000012 /* AppleFoundationQuestionEngine.swift */,
 				A20000000000000000000005 /* ScreenTimeController.swift */,
+				A20000000000000000000015 /* PurchaseController.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -242,6 +247,7 @@
 				A20000000000000000000014 /* SettingsSupportViews.swift */,
 				A20000000000000000000013 /* QuestionReportsView.swift */,
 				A2000000000000000000000E /* RestrictedAppsView.swift */,
+				A20000000000000000000016 /* MembershipView.swift */,
 				A40000000000000000000007 /* Components */,
 			);
 			path = Views;
@@ -516,6 +522,7 @@
 				A10000000000000000000011 /* BackendQuestionEngine.swift in Sources */,
 				A10000000000000000000012 /* AppleFoundationQuestionEngine.swift in Sources */,
 				A10000000000000000000005 /* ScreenTimeController.swift in Sources */,
+				A10000000000000000000015 /* PurchaseController.swift in Sources */,
 				A10000000000000000000006 /* RootView.swift in Sources */,
 				A10000000000000000000007 /* HomeView.swift in Sources */,
 				A10000000000000000000008 /* OnboardingView.swift in Sources */,
@@ -526,6 +533,7 @@
 				A10000000000000000000013 /* QuestionReportsView.swift in Sources */,
 				A10000000000000000000010 /* CompetencyView.swift in Sources */,
 				A1000000000000000000000E /* RestrictedAppsView.swift in Sources */,
+				A10000000000000000000016 /* MembershipView.swift in Sources */,
 				A1000000000000000000000C /* CheckpointComponents.swift in Sources */,
 				B10000000000000000000001 /* SharedAppGroup.swift in Sources */,
 			);
