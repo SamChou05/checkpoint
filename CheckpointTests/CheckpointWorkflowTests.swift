@@ -106,7 +106,7 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testCreateGoalWarmStartsLocalQuestionsWhileAIContinues() async {
+    func testCreateGoalWarmStartsLocalQuestionsWhileAIContinues() async throws {
         let goal = makeGoal()
         let engine = HybridQuestionEngine(
             localEngine: GoalAwareQuestionEngine(provider: .localTemplates),
@@ -138,6 +138,12 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertFalse(store.isQuestionBankTopOffInProgress)
         XCTAssertGreaterThan(store.activeQuestions.count, 6)
+        XCTAssertEqual(store.activeQuestions.filter { $0.status == .retired }.count, 5)
+        XCTAssertTrue(
+            try XCTUnwrap(store.nextCheckpointSession()).questions.allSatisfy {
+                $0.prompt.contains("delayed question")
+            }
+        )
         XCTAssertNotNil(store.lastQuestionGenerationDuration)
         XCTAssertNotNil(store.lastQuestionBankTopOffDuration)
     }
@@ -523,7 +529,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
         store.updateSubscriptionTier(.pro)
-        store.updateQuestionsPerSession(3)
+        store.updateQuestionsPerSession(5)
 
         let missed = makeQuestion(
             goal: goal,
@@ -540,11 +546,14 @@ final class CheckpointWorkflowTests: XCTestCase {
             nextReviewAt: Date().addingTimeInterval(-30)
         )
         let new = makeQuestion(goal: goal, index: 3, topic: "hash maps")
-        store.questions = [new, due, missed]
+        let fillerOne = makeQuestion(goal: goal, index: 4, topic: "Big-O")
+        let fillerTwo = makeQuestion(goal: goal, index: 5, topic: "trees")
+        store.questions = [new, fillerOne, due, fillerTwo, missed]
 
         let session = try XCTUnwrap(store.nextCheckpointSession())
 
-        XCTAssertEqual(session.questions.map(\.id), [missed.id, due.id, new.id])
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.questions.prefix(2).map(\.id), [missed.id, due.id])
     }
 
     @MainActor
@@ -553,7 +562,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
         store.updateSubscriptionTier(.pro)
-        store.updateQuestionsPerSession(2)
+        store.updateQuestionsPerSession(5)
         store.updateMinimumQuestionDifficulty(3)
 
         let lowDue = makeQuestion(
@@ -565,11 +574,14 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         let highNew = makeQuestion(goal: goal, index: 2, difficulty: 3)
         let higherNew = makeQuestion(goal: goal, index: 3, topic: "recursion", difficulty: 4)
-        store.questions = [lowDue, highNew, higherNew]
+        let highNewThree = makeQuestion(goal: goal, index: 4, topic: "hash maps", difficulty: 3)
+        let highNewFour = makeQuestion(goal: goal, index: 5, topic: "Big-O", difficulty: 4)
+        let highNewFive = makeQuestion(goal: goal, index: 6, topic: "trees", difficulty: 5)
+        store.questions = [lowDue, highNew, higherNew, highNewThree, highNewFour, highNewFive]
 
         let session = try XCTUnwrap(store.nextCheckpointSession())
 
-        XCTAssertEqual(session.questions.count, 2)
+        XCTAssertEqual(session.questions.count, 5)
         XCTAssertTrue(session.questions.allSatisfy { $0.difficulty >= 3 })
     }
 
@@ -1434,7 +1446,7 @@ final class AIProviderPolicyTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 150_000_000)
 
         let request = try XCTUnwrap(backendEngine.receivedRequests.first)
-        XCTAssertEqual(request.targetCount, FreemiumLimits.freeQuestionBankTargetCount - 5)
+        XCTAssertEqual(request.targetCount, FreemiumLimits.freeQuestionBankTargetCount)
         XCTAssertEqual(request.existingQuestions.count, 5)
     }
 }
@@ -1466,6 +1478,26 @@ final class UnlockPolicyTests: XCTestCase {
         XCTAssertEqual(policy.unlockMinutes, 15)
         XCTAssertEqual(policy.partialUnlockMinutes, 15)
         XCTAssertEqual(policy.emergencyUnlockMinutes, 15)
+    }
+
+    func testLegacyTinyCheckpointCountsNormalizeToFiveQuestionBaseline() throws {
+        let data = Data(
+            """
+            {
+              "unlockMinutes": 30,
+              "partialUnlockMinutes": 15,
+              "emergencyUnlockMinutes": 15,
+              "unlockOnPartial": true,
+              "questionsPerSession": 3,
+              "requiredCorrectAnswers": 3
+            }
+            """.utf8
+        )
+
+        let policy = try JSONDecoder().decode(UnlockPolicy.self, from: data)
+
+        XCTAssertEqual(policy.questionsPerSession, 5)
+        XCTAssertEqual(policy.requiredCorrectAnswers, 4)
     }
 
     @MainActor

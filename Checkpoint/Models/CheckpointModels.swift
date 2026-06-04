@@ -380,6 +380,9 @@ struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {
 
 struct UnlockPolicy: Codable, Equatable, Sendable {
     static let correctAnswerUnlockMinuteOptions = [15, 30, 45, 60]
+    static let minimumQuestionsPerSession = 5
+    static let maximumQuestionsPerSession = 10
+    static let minimumRequiredCorrectAnswers = 4
 
     var unlockMinutes: Int
     var partialUnlockMinutes: Int
@@ -402,8 +405,11 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
         self.partialUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(partialUnlockMinutes)
         self.emergencyUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(emergencyUnlockMinutes)
         self.unlockOnPartial = unlockOnPartial
-        self.questionsPerSession = min(10, max(1, questionsPerSession))
-        self.requiredCorrectAnswers = min(self.questionsPerSession, max(1, requiredCorrectAnswers))
+        self.questionsPerSession = Self.normalizedQuestionsPerSession(questionsPerSession)
+        self.requiredCorrectAnswers = Self.normalizedRequiredCorrectAnswers(
+            requiredCorrectAnswers,
+            questionsPerSession: self.questionsPerSession
+        )
         self.minimumQuestionDifficulty = Self.normalizedQuestionDifficulty(minimumQuestionDifficulty)
     }
 
@@ -441,17 +447,19 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
 
         let decodedQuestionsPerSession = try container.decodeIfPresent(Int.self, forKey: .questionsPerSession)
         let decodedRequiredCorrectAnswers = try container.decodeIfPresent(Int.self, forKey: .requiredCorrectAnswers)
-        questionsPerSession = min(
-            10,
-            max(1, decodedQuestionsPerSession ?? decodedRequiredCorrectAnswers ?? Self.default.questionsPerSession)
+        questionsPerSession = Self.normalizedQuestionsPerSession(
+            decodedQuestionsPerSession ?? decodedRequiredCorrectAnswers ?? Self.default.questionsPerSession
         )
 
         if decodedQuestionsPerSession == nil {
-            requiredCorrectAnswers = min(questionsPerSession, Self.default.requiredCorrectAnswers)
+            requiredCorrectAnswers = Self.normalizedRequiredCorrectAnswers(
+                Self.default.requiredCorrectAnswers,
+                questionsPerSession: questionsPerSession
+            )
         } else {
-            requiredCorrectAnswers = min(
-                questionsPerSession,
-                max(1, decodedRequiredCorrectAnswers ?? Self.default.requiredCorrectAnswers)
+            requiredCorrectAnswers = Self.normalizedRequiredCorrectAnswers(
+                decodedRequiredCorrectAnswers ?? Self.default.requiredCorrectAnswers,
+                questionsPerSession: questionsPerSession
             )
         }
 
@@ -470,6 +478,21 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
         }
 
         return correctAnswerUnlockMinuteOptions.last ?? minutes
+    }
+
+    static func normalizedQuestionsPerSession(_ count: Int) -> Int {
+        min(maximumQuestionsPerSession, max(minimumQuestionsPerSession, count))
+    }
+
+    static func normalizedRequiredCorrectAnswers(
+        _ count: Int,
+        questionsPerSession: Int
+    ) -> Int {
+        let normalizedQuestionCount = normalizedQuestionsPerSession(questionsPerSession)
+        return min(
+            normalizedQuestionCount,
+            max(minimumRequiredCorrectAnswers, count)
+        )
     }
 
     static func normalizedQuestionDifficulty(_ difficulty: Int) -> Int {

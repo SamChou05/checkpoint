@@ -185,12 +185,20 @@ struct SettingsView: View {
                                     .font(.subheadline)
                                     .foregroundStyle(CheckpointTheme.muted)
 
-                                Stepper("Questions per checkpoint: \(store.unlockPolicy.questionsPerSession)", value: questionsPerSessionBinding, in: 1...10)
+                                Stepper(
+                                    "Questions per checkpoint: \(store.unlockPolicy.questionsPerSession)",
+                                    value: questionsPerSessionBinding,
+                                    in: UnlockPolicy.minimumQuestionsPerSession...UnlockPolicy.maximumQuestionsPerSession
+                                )
                                     .foregroundStyle(CheckpointTheme.text)
                                     .disabled(!store.canUse(.advancedStrictness))
                                     .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
 
-                                Stepper("Correct answers needed: \(store.unlockPolicy.requiredCorrectAnswers)", value: requiredCorrectAnswersBinding, in: 1...store.unlockPolicy.questionsPerSession)
+                                Stepper(
+                                    "Correct answers needed: \(store.unlockPolicy.requiredCorrectAnswers)",
+                                    value: requiredCorrectAnswersBinding,
+                                    in: UnlockPolicy.minimumRequiredCorrectAnswers...store.unlockPolicy.questionsPerSession
+                                )
                                     .foregroundStyle(CheckpointTheme.text)
                                     .disabled(!store.canUse(.advancedStrictness))
                                     .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)

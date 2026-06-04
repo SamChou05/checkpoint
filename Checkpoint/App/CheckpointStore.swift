@@ -435,7 +435,10 @@ final class CheckpointStore {
         publishShieldContext()
 
         if !batch.questions.isEmpty {
-            topOffQuestionBankInBackground(for: newGoal)
+            topOffQuestionBankInBackground(
+                for: newGoal,
+                starterQuestionIDs: Set(batch.questions.map(\.id))
+            )
         }
     }
 
@@ -456,13 +459,19 @@ final class CheckpointStore {
         )
     }
 
-    private func topOffQuestionBankInBackground(for goal: Goal) {
+    private func topOffQuestionBankInBackground(
+        for goal: Goal,
+        starterQuestionIDs: Set<CheckpointQuestion.ID> = []
+    ) {
         Task { [weak self] in
-            await self?.topOffQuestionBank(for: goal)
+            await self?.topOffQuestionBank(for: goal, starterQuestionIDs: starterQuestionIDs)
         }
     }
 
-    private func topOffQuestionBank(for targetGoal: Goal) async {
+    private func topOffQuestionBank(
+        for targetGoal: Goal,
+        starterQuestionIDs: Set<CheckpointQuestion.ID>
+    ) async {
         guard goalProfiles.contains(where: { $0.id == targetGoal.id }) || goal?.id == targetGoal.id else { return }
         guard !questionBankTopOffGoalIDs.contains(targetGoal.id) else { return }
         questionBankTopOffGoalIDs.insert(targetGoal.id)
@@ -474,7 +483,12 @@ final class CheckpointStore {
 
         let existingQuestions = questions.filter { $0.goalID == targetGoal.id }
         let existingCompetencies = competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id }
-        let usableExistingCount = existingQuestions.filter { $0.difficulty >= targetGoal.minimumQuestionDifficulty && $0.status != .retired }.count
+        let starterQuestionsCanBeReplaced = aiProviderPreference != .localTemplates && !starterQuestionIDs.isEmpty
+        let usableExistingCount = existingQuestions.filter {
+            $0.difficulty >= targetGoal.minimumQuestionDifficulty
+                && $0.status != .retired
+                && (!starterQuestionsCanBeReplaced || !starterQuestionIDs.contains($0.id))
+        }.count
         let remainingTargetCount = max(0, questionBankTargetCount - usableExistingCount)
 
         guard remainingTargetCount > 0 else {
@@ -498,6 +512,17 @@ final class CheckpointStore {
         let existingKeys = Set(existingQuestions.map { questionKey($0) })
         let newQuestions = batch.questions.filter { !existingKeys.contains(questionKey($0)) }
         questions.append(contentsOf: newQuestions)
+        let usableGeneratedCount = newQuestions.filter {
+            $0.difficulty >= targetGoal.minimumQuestionDifficulty && $0.status != .retired
+        }.count
+        let canReplaceStarterBridge = batch.provider != .localTemplates
+            && usableGeneratedCount >= unlockPolicy.questionsPerSession
+
+        if canReplaceStarterBridge {
+            for index in questions.indices where starterQuestionIDs.contains(questions[index].id) {
+                questions[index].status = .retired
+            }
+        }
         let goalQuestions = questions.filter { $0.goalID == targetGoal.id }
         competencies.removeAll { $0.goalID == targetGoal.id }
         competencies.append(contentsOf: initialCompetencies(for: targetGoal, questions: goalQuestions))
@@ -897,10 +922,10 @@ final class CheckpointStore {
             return
         }
 
-        unlockPolicy.questionsPerSession = min(10, max(1, count))
-        unlockPolicy.requiredCorrectAnswers = min(
-            unlockPolicy.questionsPerSession,
-            unlockPolicy.requiredCorrectAnswers
+        unlockPolicy.questionsPerSession = UnlockPolicy.normalizedQuestionsPerSession(count)
+        unlockPolicy.requiredCorrectAnswers = UnlockPolicy.normalizedRequiredCorrectAnswers(
+            unlockPolicy.requiredCorrectAnswers,
+            questionsPerSession: unlockPolicy.questionsPerSession
         )
         save()
         publishShieldContext()
@@ -912,7 +937,10 @@ final class CheckpointStore {
             return
         }
 
-        unlockPolicy.requiredCorrectAnswers = min(unlockPolicy.questionsPerSession, max(1, count))
+        unlockPolicy.requiredCorrectAnswers = UnlockPolicy.normalizedRequiredCorrectAnswers(
+            count,
+            questionsPerSession: unlockPolicy.questionsPerSession
+        )
         save()
         publishShieldContext()
     }
