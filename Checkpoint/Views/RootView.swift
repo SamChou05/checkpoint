@@ -57,11 +57,8 @@ struct RootView: View {
             store.updateMembershipTier(.member)
             await purchaseController.loadProducts()
             #else
-            Task {
-                let unlocked = await purchaseController.refreshEntitlements()
-                store.updateMembershipTier(unlocked ? .member : .starter)
-                await purchaseController.loadProducts()
-            }
+            await refreshPlanAccessFromEntitlements()
+            await purchaseController.loadProducts()
             #endif
             handlePendingShieldActivation()
             Task {
@@ -71,6 +68,11 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             screenTime.reconcileShieldState()
+            #if !DEBUG
+            Task {
+                await refreshPlanAccessFromEntitlements()
+            }
+            #endif
             handlePendingShieldActivation()
         }
         .onChange(of: store.goal) { _, _ in
@@ -93,6 +95,12 @@ struct RootView: View {
             activeShieldSession = await store.preparePendingShieldSession()
             isPreparingShieldSession = false
         }
+    }
+
+    @MainActor
+    private func refreshPlanAccessFromEntitlements() async {
+        let unlocked = await purchaseController.refreshEntitlements()
+        store.updateMembershipTier(unlocked ? .member : .starter)
     }
 
     private var membershipFeatureBinding: Binding<MembershipFeature?> {
