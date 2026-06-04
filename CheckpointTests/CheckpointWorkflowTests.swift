@@ -317,6 +317,31 @@ final class CheckpointWorkflowTests: XCTestCase {
             Set(store.sortedCompetencies.map(\.topic)),
             ["argument flaws", "conditional logic", "inference", "reading structure"]
         )
+        XCTAssertEqual(store.activeGoalFocusText, "argument flaws")
+    }
+
+    @MainActor
+    func testGoalFocusTextUsesUserFocusAreasWhenProvided() {
+        let store = CheckpointStore(defaults: defaults)
+
+        store.goal = makeGoal()
+
+        XCTAssertEqual(store.activeGoalFocusText, "arrays, recursion, hash maps")
+    }
+
+    @MainActor
+    func testGoalFocusTextHidesWhenNoFocusOrGeneratedSkillMapExists() {
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        XCTAssertNil(store.activeGoalFocusText)
     }
 
     @MainActor

@@ -97,10 +97,12 @@ struct HomeView: View {
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text("Focus: \(goal.focusAreas.isEmpty ? "next meaningful rep" : goal.focusAreas)")
-                    .font(.subheadline)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
+                if let focusText = store.activeGoalFocusText {
+                    Text("Focus: \(focusText)")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
                 StatusBadge(text: goal.difficultyLabel, tint: CheckpointTheme.amber)
 

@@ -70,10 +70,12 @@ struct SettingsView: View {
                                             .font(.headline)
                                             .foregroundStyle(CheckpointTheme.text)
 
-                                        Text("Focus: \(goal.focusAreas.isEmpty ? "next meaningful rep" : goal.focusAreas)")
-                                            .font(.subheadline)
-                                            .foregroundStyle(CheckpointTheme.muted)
-                                            .fixedSize(horizontal: false, vertical: true)
+                                        if let focusText = store.activeGoalFocusText {
+                                            Text("Focus: \(focusText)")
+                                                .font(.subheadline)
+                                                .foregroundStyle(CheckpointTheme.muted)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                        }
                                     }
 
                                     Spacer()

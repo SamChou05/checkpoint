@@ -163,6 +163,18 @@ final class CheckpointStore {
         return questionReports.filter { $0.goalID == goalID }
     }
 
+    var activeGoalFocusText: String? {
+        guard let goal else { return nil }
+
+        let context = GoalQuestionContext(goal: goal)
+        if context.hasUserFocusAreas {
+            let focusText = context.contentTopics.joined(separator: ", ")
+            return focusText.isEmpty ? nil : focusText
+        }
+
+        return sortedCompetencies.first?.topic
+    }
+
     var questionGenerationDiagnosticsSummary: String {
         guard let latestTrace = questionGenerationTraces.first else {
             return "No generation runs recorded yet"
