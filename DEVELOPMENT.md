@@ -72,6 +72,7 @@ Important platform constraint:
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Question refresh is abstracted away from users. Starter users get the first generated bank; membership keeps fresh questions flowing after that set runs low.
+- Debug builds force membership on at launch so local/device testing can exercise the full product; Release builds still rely on StoreKit entitlements and App Store offer codes.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic

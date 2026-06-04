@@ -53,11 +53,16 @@ struct RootView: View {
         }
         .task {
             purchaseController.startListeningForTransactions()
+            #if DEBUG
+            store.updateMembershipTier(.member)
+            await purchaseController.loadProducts()
+            #else
             Task {
                 let unlocked = await purchaseController.refreshEntitlements()
                 store.updateMembershipTier(unlocked ? .member : .starter)
                 await purchaseController.loadProducts()
             }
+            #endif
             handlePendingShieldActivation()
             Task {
                 await screenTime.requestInitialAuthorizationIfNeeded()
