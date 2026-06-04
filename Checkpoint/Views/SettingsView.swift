@@ -369,7 +369,7 @@ struct SettingsView: View {
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    Text("\(store.questionBankSummary(for: profile)) - \(profile.difficultyLabel)")
+                    Text(goalProfileDetailText(for: profile))
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
                         .lineLimit(2)
@@ -387,6 +387,16 @@ struct SettingsView: View {
         }
         .buttonStyle(.plain)
         .disabled(isActive)
+    }
+
+    private func goalProfileDetailText(for profile: Goal) -> String {
+        var parts = ["Question level: \(profile.difficultyLabel)"]
+
+        if let readinessWarning = store.questionBankReadinessWarning(for: profile) {
+            parts.append(readinessWarning)
+        }
+
+        return parts.joined(separator: " - ")
     }
 
     private var canStopBlocking: Bool {

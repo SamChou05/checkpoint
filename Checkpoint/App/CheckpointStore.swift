@@ -251,14 +251,16 @@ final class CheckpointStore {
         }.count
     }
 
-    func questionBankSummary(for profile: Goal) -> String {
+    func questionBankReadinessWarning(for profile: Goal) -> String? {
         let readyCount = usableQuestionCount(for: profile)
 
+        guard readyCount < unlockPolicy.questionsPerSession else { return nil }
+
         if backgroundGenerationGoalIDs.contains(profile.id) || questionBankTopOffGoalIDs.contains(profile.id) {
-            return readyCount > 0 ? "\(readyCount) ready, preparing more" : "Preparing questions"
+            return readyCount > 0 ? "Preparing more checkpoints" : "Preparing checkpoints"
         }
 
-        return readyCount == 1 ? "1 ready question" : "\(readyCount) ready questions"
+        return readyCount > 0 ? "Needs more checkpoints" : "No checkpoints ready yet"
     }
 
     var isPreparingActiveGoalQuestions: Bool {

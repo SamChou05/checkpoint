@@ -1271,6 +1271,34 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testQuestionBankReadinessWarningHidesHealthyCounts() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
+
+        XCTAssertNil(store.questionBankReadinessWarning(for: goal))
+    }
+
+    @MainActor
+    func testQuestionBankReadinessWarningUsesGenericLowState() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.questions = (1..<store.unlockPolicy.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
+
+        XCTAssertEqual(store.questionBankReadinessWarning(for: goal), "Needs more checkpoints")
+
+        store.questions = []
+
+        XCTAssertEqual(store.questionBankReadinessWarning(for: goal), "No checkpoints ready yet")
+    }
+
+    @MainActor
     func testQuestionLevelRecommendationAppearsAfterStrongRecentAccuracy() throws {
         var goal = makeGoal()
         goal.minimumQuestionDifficulty = 2
