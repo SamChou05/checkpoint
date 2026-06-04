@@ -206,45 +206,7 @@ struct SettingsView: View {
                     }
 
                     SectionPanel("Practice standard") {
-                        VStack(alignment: .leading, spacing: 16) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Passing standard")
-                                    .font(.headline)
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct begins a break")
-                                    .font(.subheadline)
-                                    .foregroundStyle(CheckpointTheme.muted)
-
-                                Stepper(
-                                    "Questions per practice set: \(store.unlockPolicy.questionsPerSession)",
-                                    value: questionsPerSessionBinding,
-                                    in: UnlockPolicy.minimumQuestionsPerSession...UnlockPolicy.maximumQuestionsPerSession
-                                )
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Stepper(
-                                    "Correct answers needed: \(store.unlockPolicy.requiredCorrectAnswers)",
-                                    value: requiredCorrectAnswersBinding,
-                                    in: UnlockPolicy.minimumRequiredCorrectAnswers...store.unlockPolicy.questionsPerSession
-                                )
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Break after passing")
-                                    .font(.headline)
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Picker("Break minutes", selection: unlockMinutesBinding) {
-                                    ForEach(UnlockPolicy.correctAnswerUnlockMinuteOptions, id: \.self) { minutes in
-                                        Text("\(minutes)m").tag(minutes)
-                                    }
-                                }
-                                .pickerStyle(.menu)
-                            }
-
-                        }
+                        practiceStandardContent
                     }
 
                     SectionPanel("Advanced") {
@@ -433,25 +395,64 @@ struct SettingsView: View {
         return "\(store.issueReportCount) submitted"
     }
 
-    private var unlockMinutesBinding: Binding<Int> {
-        Binding(
-            get: { store.unlockPolicy.unlockMinutes },
-            set: { store.updateUnlockMinutes($0) }
-        )
-    }
+    private var practiceStandardContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Passing standard")
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.text)
 
-    private var questionsPerSessionBinding: Binding<Int> {
-        Binding(
-            get: { store.unlockPolicy.questionsPerSession },
-            set: { store.updateQuestionsPerSession($0) }
-        )
-    }
+                    Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct starts a break.")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                }
 
-    private var requiredCorrectAnswersBinding: Binding<Int> {
-        Binding(
-            get: { store.unlockPolicy.requiredCorrectAnswers },
-            set: { store.updateRequiredCorrectAnswers($0) }
-        )
+                Spacer(minLength: 12)
+
+                StatusBadge(
+                    text: "\(store.unlockPolicy.requiredCorrectAnswers)/\(store.unlockPolicy.questionsPerSession)",
+                    tint: CheckpointTheme.teal
+                )
+            }
+
+            Divider()
+
+            VStack(spacing: 10) {
+                PracticeStandardStepperRow(
+                    title: "Questions per practice set",
+                    value: store.unlockPolicy.questionsPerSession,
+                    decrementDisabled: store.unlockPolicy.questionsPerSession <= UnlockPolicy.minimumQuestionsPerSession,
+                    incrementDisabled: store.unlockPolicy.questionsPerSession >= UnlockPolicy.maximumQuestionsPerSession,
+                    decrementAction: {
+                        store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession - 1)
+                    },
+                    incrementAction: {
+                        store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession + 1)
+                    }
+                )
+
+                PracticeStandardStepperRow(
+                    title: "Correct answers needed",
+                    value: store.unlockPolicy.requiredCorrectAnswers,
+                    decrementDisabled: store.unlockPolicy.requiredCorrectAnswers <= UnlockPolicy.minimumRequiredCorrectAnswers,
+                    incrementDisabled: store.unlockPolicy.requiredCorrectAnswers >= store.unlockPolicy.questionsPerSession,
+                    decrementAction: {
+                        store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers - 1)
+                    },
+                    incrementAction: {
+                        store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers + 1)
+                    }
+                )
+            }
+
+            BreakDurationMenu(
+                selectedMinutes: store.unlockPolicy.unlockMinutes,
+                options: UnlockPolicy.correctAnswerUnlockMinuteOptions
+            ) { minutes in
+                store.updateUnlockMinutes(minutes)
+            }
+        }
     }
 
     private func prepareCheckpointPreview() {
@@ -482,6 +483,128 @@ struct SettingsView: View {
             }
             isPreparingStopChallenge = false
         }
+    }
+}
+
+private struct PracticeStandardStepperRow: View {
+    var title: String
+    var value: Int
+    var decrementDisabled: Bool
+    var incrementDisabled: Bool
+    var decrementAction: () -> Void
+    var incrementAction: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+                .lineLimit(1)
+                .minimumScaleFactor(0.78)
+
+            Spacer(minLength: 8)
+
+            Text("\(value)")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+                .monospacedDigit()
+                .frame(width: 24, alignment: .trailing)
+
+            HStack(spacing: 1) {
+                adjustmentButton(
+                    systemImage: "minus",
+                    accessibilityLabel: "Decrease \(title)",
+                    isDisabled: decrementDisabled,
+                    action: decrementAction
+                )
+
+                adjustmentButton(
+                    systemImage: "plus",
+                    accessibilityLabel: "Increase \(title)",
+                    isDisabled: incrementDisabled,
+                    action: incrementAction
+                )
+            }
+            .background(CheckpointTheme.panel, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(CheckpointTheme.hairline, lineWidth: 1)
+            )
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    private func adjustmentButton(
+        systemImage: String,
+        accessibilityLabel: String,
+        isDisabled: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(isDisabled ? CheckpointTheme.muted.opacity(0.45) : CheckpointTheme.teal)
+                .frame(width: 34, height: 34)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+        .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+private struct BreakDurationMenu: View {
+    var selectedMinutes: Int
+    var options: [Int]
+    var selectMinutes: (Int) -> Void
+
+    var body: some View {
+        Menu {
+            ForEach(options, id: \.self) { minutes in
+                Button {
+                    selectMinutes(minutes)
+                } label: {
+                    Label("\(minutes) minutes", systemImage: minutes == selectedMinutes ? "checkmark" : "timer")
+                }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "timer")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 30, height: 30)
+                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                Text("Break after passing")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+
+                Spacer(minLength: 8)
+
+                Text("\(selectedMinutes) min")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .monospacedDigit()
+                    .lineLimit(1)
+
+                Image(systemName: "chevron.down")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 11)
+            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(CheckpointTheme.hairline, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Choose how long protected apps open after passing a practice set.")
     }
 }
 
