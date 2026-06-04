@@ -34,7 +34,7 @@ final class PurchaseController {
                 .sorted { $0.price < $1.price }
             purchaseMessage = nil
         } catch {
-            purchaseMessage = "Could not load App Store membership yet."
+            purchaseMessage = "Could not load App Store plans yet."
         }
     }
 

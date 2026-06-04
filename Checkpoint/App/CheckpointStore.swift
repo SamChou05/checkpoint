@@ -300,7 +300,7 @@ final class CheckpointStore {
 
     var studyAssistSummary: String {
         guard isMember else {
-            return "Your first goal is included. Membership keeps fresh practice ready when your starter set runs low."
+            return "Free includes your first goal. Pro keeps fresh practice ready when your Free set runs low."
         }
 
         if let focus = studyFocusRecommendation {
@@ -420,7 +420,7 @@ final class CheckpointStore {
         return true
     }
 
-    // MARK: - Membership
+    // MARK: - Plan access
 
     func canUse(_ feature: MembershipFeature) -> Bool {
         isMember
@@ -481,7 +481,7 @@ final class CheckpointStore {
         }
 
         if goal != nil && !isMember {
-            checkpointNotice = "Your first goal is included. Membership lets you change goals and keep separate practice sets ready."
+            checkpointNotice = "Free includes one goal. Pro lets you change goals and keep separate practice sets ready."
             requestMembership(for: .goalProfiles)
             save()
             return
@@ -1272,7 +1272,7 @@ final class CheckpointStore {
                 questionBatchState = .generating
                 shouldRegenerate = true
             } else if hadActiveQuestions && usableQuestionCount < unlockPolicy.questionsPerSession {
-                checkpointNotice = "Question level updated. Membership can prepare a fresh harder question bank when your current set is below that level."
+                checkpointNotice = "Question level updated. Pro can prepare a fresh harder question bank when your current set is below that level."
                 requestMembership(for: .freshQuestionGeneration)
             }
         }
@@ -1289,7 +1289,7 @@ final class CheckpointStore {
         }
 
         guard isMember else {
-            checkpointNotice = "Nice progress. Membership can keep preparing harder checkpoints for this goal."
+            checkpointNotice = "Nice progress. Pro can keep preparing harder checkpoints for this goal."
             requestMembership(for: .freshQuestionGeneration)
             save()
             return
@@ -1662,7 +1662,7 @@ final class CheckpointStore {
 
         if activeQuestions.isEmpty {
             if !isMember {
-                return "Your starter practice sets are complete. Membership keeps fresh questions ready when you need more."
+                return "Your Free practice sets are complete. Pro keeps fresh questions ready when you need more."
             }
 
             return source == .blockedApp
@@ -1671,7 +1671,7 @@ final class CheckpointStore {
         }
 
         if !isMember && usableQuestionCount == 0 {
-            return "Your starter question set has done its job. Membership keeps fresh practice coming."
+            return "Your Free question set has done its job. Pro keeps fresh practice coming."
         }
 
         return "Checkpoint is preparing more questions. Try again in a moment or lower the minimum level."
@@ -2065,6 +2065,6 @@ final class CheckpointStore {
     }
 
     private var starterQuestionLimitMessage: String {
-        "Your first goal includes a starter question set. Membership keeps fresh practice ready after that set runs low."
+        "Free includes an initial question set for your first goal. Pro keeps fresh practice ready after that set runs low."
     }
 }

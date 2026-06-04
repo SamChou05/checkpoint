@@ -120,7 +120,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(store.goal?.id, firstGoal.id)
         XCTAssertEqual(store.availableGoalProfiles.count, 1)
         XCTAssertEqual(store.pendingMembershipFeature, .goalProfiles)
-        XCTAssertTrue(store.checkpointNotice?.contains("first goal is included") ?? false)
+        XCTAssertTrue(store.checkpointNotice?.contains("Free includes one goal") ?? false)
     }
 
     @MainActor
@@ -141,7 +141,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNil(session)
         XCTAssertNil(localEngine.receivedRequest)
         XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
-        XCTAssertTrue(store.checkpointNotice?.contains("Membership keeps fresh practice") ?? false)
+        XCTAssertTrue(store.checkpointNotice?.contains("Pro keeps fresh practice") ?? false)
     }
 
     @MainActor
@@ -1297,7 +1297,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         SharedAppGroup.markPendingShieldAttempt()
 
         XCTAssertNil(store.takePendingShieldSession())
-        XCTAssertTrue(store.checkpointNotice?.contains("Membership keeps fresh questions") ?? false)
+        XCTAssertTrue(store.checkpointNotice?.contains("Pro keeps fresh questions") ?? false)
         XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
         XCTAssertNil(store.takePendingShieldSession())
     }
@@ -1720,7 +1720,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNil(localEngine.receivedRequest)
         XCTAssertEqual(store.goal?.minimumQuestionDifficulty, 2)
         XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
-        XCTAssertTrue(store.checkpointNotice?.contains("Membership") ?? false)
+        XCTAssertTrue(store.checkpointNotice?.contains("Pro") ?? false)
     }
 
     @MainActor

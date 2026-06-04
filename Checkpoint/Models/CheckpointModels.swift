@@ -53,7 +53,7 @@ enum IssueReportCategory: String, Codable, CaseIterable, Identifiable, Sendable 
     case questionIssue = "Question issue"
     case appBlocking = "App protection"
     case goalSetup = "Goal setup"
-    case membership = "Membership"
+    case membership = "Plan and billing"
 
     var id: String { rawValue }
 }
@@ -92,9 +92,9 @@ enum MembershipTier: String, Codable, Sendable {
     var displayName: String {
         switch self {
         case .starter:
-            return "Starter"
+            return "Free"
         case .member:
-            return "Member"
+            return "Pro"
         }
     }
 }
@@ -125,7 +125,7 @@ enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
         case .goalProfiles:
             return "Create and switch between separate goals, each with its own practice areas, question level, history, and Skill Map."
         case .freshQuestionGeneration:
-            return "Keep new goal-aligned practice ready after your starter set has done its job."
+            return "Keep new goal-aligned practice ready after your Free set has done its job."
         case .largerQuestionBank:
             return "Build a larger cached question bank so practice feels varied over time."
         case .adaptiveStudyAssist:

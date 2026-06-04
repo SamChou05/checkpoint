@@ -12,57 +12,72 @@ struct MembershipView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 8) {
-                        StatusBadge(text: feature.title, tint: CheckpointTheme.amber)
-
-                        Text("Checkpoint Membership")
+                        Text("Choose your plan")
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Your first goal is included. Membership keeps goal-aligned practice ready as your priorities evolve.")
+                        Text("Start with one focused goal. Upgrade when you want Checkpoint to keep fresh practice ready as your priorities evolve.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    SectionPanel("Included") {
-                        VStack(alignment: .leading, spacing: 10) {
-                            MembershipBenefitRow(title: feature.title, detail: feature.detail, isHighlighted: true)
+                    PlanCard(
+                        title: "Free",
+                        price: "$0",
+                        cadence: "forever",
+                        detail: "Try the core Checkpoint loop with one goal.",
+                        statusText: store.isMember ? nil : "Current plan",
+                        tint: CheckpointTheme.amber
+                    ) {
+                        PlanBenefitRow(title: "One active goal", detail: "Set a goal, choose protected apps, and practice before app breaks.")
+                        PlanBenefitRow(title: "Initial question bank", detail: "Enough practice to experience the primary flow before upgrading.")
+                        PlanBenefitRow(title: "Skill Map and weekly stats", detail: "Track early progress without extra setup.")
+                    }
 
-                            ForEach(MembershipFeature.launchFeatures.filter { $0.id != feature.id }) { includedFeature in
-                                MembershipBenefitRow(title: includedFeature.title, detail: includedFeature.detail)
-                            }
+                    PlanCard(
+                        title: "Pro",
+                        price: "$4.99",
+                        cadence: "per month",
+                        detail: proPlanDetailText,
+                        statusText: store.isMember ? "Current plan" : nil,
+                        tint: CheckpointTheme.teal
+                    ) {
+                        PlanBenefitRow(title: "Up to 5 goals", detail: "Keep separate question banks, levels, and Skill Maps for each goal.")
+                        PlanBenefitRow(title: "Fresh AI practice", detail: "Generate new goal-aligned questions when your bank runs low.")
+                        PlanBenefitRow(title: "Deeper question banks", detail: "Keep more ready questions cached so switching goals feels seamless.")
+                        PlanBenefitRow(title: "Adaptive guidance", detail: "Use misses, mastery, and recent accuracy to guide what comes next.")
+
+                        if !store.isMember {
+                            Divider()
+
+                            priceContent
                         }
                     }
 
-                    SectionPanel("Price") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            priceContent
+                    if let message = purchaseController.purchaseMessage {
+                        Text(message)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.coral)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
 
-                            if let message = purchaseController.purchaseMessage {
-                                Text(message)
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.coral)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
+                    HStack(spacing: 10) {
+                        SecondaryActionButton(title: "Restore purchases", systemImage: "arrow.clockwise.circle") {
+                            restorePurchases()
+                        }
 
-                            HStack(spacing: 10) {
-                                SecondaryActionButton(title: "Restore", systemImage: "arrow.clockwise.circle") {
-                                    restorePurchases()
-                                }
-
-                                SecondaryActionButton(title: "Keep starter", systemImage: "xmark") {
-                                    close()
-                                }
-                            }
+                        SecondaryActionButton(title: store.isMember ? "Done" : "Stay on Free", systemImage: "xmark") {
+                            close()
                         }
                     }
                 }
                 .padding(20)
             }
             .checkpointScreenBackground()
-            .navigationTitle("Membership")
+            .navigationTitle("Choose your plan")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -73,6 +88,7 @@ struct MembershipView: View {
                 }
             }
             .task {
+                purchaseController.startListeningForTransactions()
                 await loadEntitlements()
             }
         }
@@ -106,6 +122,14 @@ struct MembershipView: View {
                 }
             }
         }
+    }
+
+    private var proPlanDetailText: String {
+        if store.isMember {
+            return "Fresh practice and goal switching are active."
+        }
+
+        return "For multiple goals, fresh questions, and smoother long-term practice."
     }
 
     private func loadEntitlements() async {
@@ -156,11 +180,11 @@ private struct ProductPurchaseRow: View {
         Button(action: action) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(product.displayName)
+                    Text(title)
                         .font(.headline)
                         .foregroundStyle(CheckpointTheme.text)
 
-                    Text(product.description)
+                    Text(detail)
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
                         .lineLimit(2)
@@ -185,18 +209,80 @@ private struct ProductPurchaseRow: View {
         .buttonStyle(.plain)
         .disabled(isDisabled)
     }
+
+    private var title: String {
+        product.id == MembershipProductID.yearly ? "Start annual" : "Start monthly"
+    }
+
+    private var detail: String {
+        product.id == MembershipProductID.yearly ? "Best value for consistent practice." : "Flexible monthly access."
+    }
 }
 
-private struct MembershipBenefitRow: View {
+private struct PlanCard<Content: View>: View {
+    var title: String
+    var price: String
+    var cadence: String
+    var detail: String
+    var statusText: String?
+    var tint: Color
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(title)
+                        .font(.title2.bold())
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(price)
+                            .font(.system(size: 34, weight: .bold, design: .rounded))
+                            .foregroundStyle(CheckpointTheme.text)
+
+                        Text(cadence)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.muted)
+                    }
+                }
+
+                Spacer()
+
+                if let statusText {
+                    StatusBadge(text: statusText, tint: tint)
+                }
+            }
+
+            Text(detail)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(alignment: .leading, spacing: 10) {
+                content
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(CheckpointTheme.panel.opacity(0.96))
+                .stroke(tint.opacity(0.32), lineWidth: 1)
+        )
+        .shadow(color: CheckpointTheme.ink.opacity(0.04), radius: 8, x: 0, y: 3)
+    }
+}
+
+private struct PlanBenefitRow: View {
     var title: String
     var detail: String
-    var isHighlighted = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            Image(systemName: isHighlighted ? "star.fill" : "checkmark.circle.fill")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(isHighlighted ? CheckpointTheme.amber : CheckpointTheme.teal)
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(CheckpointTheme.teal)
                 .frame(width: 22)
 
             VStack(alignment: .leading, spacing: 3) {

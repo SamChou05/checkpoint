@@ -8,6 +8,8 @@ struct SettingsView: View {
     @State private var isHistoryPresented = false
     @State private var isIssueReportsPresented = false
     @State private var isGenerationDiagnosticsPresented = false
+    @State private var isPlanPresented = false
+    @State private var purchaseController = PurchaseController()
     @State private var isAdvancedExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
     @State private var previewCheckpointSession: CheckpointSession?
@@ -32,33 +34,14 @@ struct SettingsView: View {
                             .foregroundStyle(CheckpointTheme.muted)
                     }
 
-                    SectionPanel("Membership") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack(alignment: .top) {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text(store.membershipTier.displayName)
-                                        .font(.headline)
-                                        .foregroundStyle(CheckpointTheme.text)
-
-                                    Text(membershipDetailText)
-                                        .font(.subheadline)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-
-                                Spacer()
-
-                                StatusBadge(
-                                    text: store.isMember ? "Active" : "First goal",
-                                    tint: store.isMember ? CheckpointTheme.teal : CheckpointTheme.amber
-                                )
-                            }
-
-                            if !store.isMember {
-                                SecondaryActionButton(title: "Start membership", systemImage: "sparkles") {
-                                    store.requestMembership(for: .freshQuestionGeneration)
-                                }
-                            }
+                    SectionPanel("Plan") {
+                        SettingsNavigationRow(
+                            title: "Choose your plan",
+                            detail: planDetailText,
+                            systemImage: "creditcard",
+                            trailingText: store.membershipTier.displayName
+                        ) {
+                            isPlanPresented = true
                         }
                     }
 
@@ -279,6 +262,9 @@ struct SettingsView: View {
             .sheet(isPresented: $isGenerationDiagnosticsPresented) {
                 QuestionGenerationDiagnosticsView(store: store)
             }
+            .sheet(isPresented: $isPlanPresented) {
+                MembershipView(feature: .freshQuestionGeneration, store: store, purchaseController: purchaseController)
+            }
             .sheet(item: $advancedAction) { action in
                 AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
             }
@@ -371,12 +357,12 @@ struct SettingsView: View {
         screenTime.setupState == .notStarted || screenTime.setupState == .failed
     }
 
-    private var membershipDetailText: String {
+    private var planDetailText: String {
         if store.isMember {
-            return "Goal profiles, fresh practice sets, deeper question banks, and adaptive guidance are active."
+            return "Pro is active: more goals, fresh practice, and deeper question banks."
         }
 
-        return "Your first goal is included. Membership keeps fresh practice ready and unlocks goal switching."
+        return "Free includes one goal and an initial practice set."
     }
 
     private var historyDetailText: String {
