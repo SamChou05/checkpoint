@@ -73,6 +73,9 @@ struct RootView: View {
             screenTime.reconcileShieldState()
             handlePendingShieldActivation()
         }
+        .onChange(of: store.goal) { _, _ in
+            screenTime.refreshActiveShieldConfiguration()
+        }
     }
 
     private func handlePendingShieldActivation() {

@@ -250,7 +250,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.goal = firstGoal
         store.goalProfiles = [firstGoal, secondGoal]
 
-        store.switchActiveGoal(to: secondGoal.id)
+        XCTAssertTrue(store.switchActiveGoal(to: secondGoal.id))
 
         XCTAssertEqual(store.goal?.id, secondGoal.id)
         XCTAssertEqual(store.questionBatchState, .generating)
@@ -615,7 +615,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.goalProfiles = [firstGoal, secondGoal]
         store.questions = firstQuestions + secondQuestions
 
-        store.switchActiveGoal(to: secondGoal.id)
+        XCTAssertTrue(store.switchActiveGoal(to: secondGoal.id))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertEqual(store.goal?.id, secondGoal.id)
@@ -656,7 +656,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             makeQuestion(goal: secondGoal, index: index, topic: "integrals", difficulty: 2)
         }
 
-        store.switchActiveGoal(to: secondGoal.id)
+        XCTAssertTrue(store.switchActiveGoal(to: secondGoal.id))
         try? await Task.sleep(nanoseconds: 150_000_000)
 
         let request = try XCTUnwrap(localEngine.receivedRequest)

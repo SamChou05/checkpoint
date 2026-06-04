@@ -335,7 +335,7 @@ struct HomeView: View {
     private var goalSwitcherMenuContent: some View {
         ForEach(store.availableGoalProfiles) { profile in
             Button {
-                store.switchActiveGoal(to: profile.id)
+                switchActiveGoal(to: profile.id)
             } label: {
                 Label(
                     profile.title,
@@ -360,6 +360,11 @@ struct HomeView: View {
                 Label("New goal", systemImage: "plus")
             }
         }
+    }
+
+    private func switchActiveGoal(to goalID: Goal.ID) {
+        guard store.switchActiveGoal(to: goalID) else { return }
+        screenTime.refreshActiveShieldConfiguration()
     }
 
     private func handleQuestionRefreshOnActivation() {

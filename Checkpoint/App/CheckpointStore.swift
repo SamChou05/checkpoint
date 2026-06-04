@@ -392,11 +392,12 @@ final class CheckpointStore {
         isOnboardingPresented = true
     }
 
-    func switchActiveGoal(to goalID: Goal.ID) {
-        guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return }
+    @discardableResult
+    func switchActiveGoal(to goalID: Goal.ID) -> Bool {
+        guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return false }
         guard selectedGoal.id == goal?.id || canUse(.goalProfiles) else {
             requestMembership(for: .goalProfiles)
-            return
+            return false
         }
 
         goal = selectedGoal
@@ -416,6 +417,7 @@ final class CheckpointStore {
         } else {
             prepareInitialQuestionsInBackground(for: selectedGoal)
         }
+        return true
     }
 
     // MARK: - Membership

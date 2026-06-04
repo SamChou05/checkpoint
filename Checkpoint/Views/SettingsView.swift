@@ -356,7 +356,7 @@ struct SettingsView: View {
         let isActive = profile.id == store.goal?.id
 
         return Button {
-            store.switchActiveGoal(to: profile.id)
+            switchActiveGoal(to: profile.id)
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
@@ -399,6 +399,11 @@ struct SettingsView: View {
         }
 
         return parts.joined(separator: " - ")
+    }
+
+    private func switchActiveGoal(to goalID: Goal.ID) {
+        guard store.switchActiveGoal(to: goalID) else { return }
+        screenTime.refreshActiveShieldConfiguration()
     }
 
     private var canStopBlocking: Bool {

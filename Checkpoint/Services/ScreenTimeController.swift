@@ -160,6 +160,7 @@ final class ScreenTimeController {
             return
         }
 
+        clearManagedShieldRestrictions()
         managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
         managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
 
@@ -178,6 +179,13 @@ final class ScreenTimeController {
         #else
         setupState = .unavailable
         restrictedAppsSummary = "App protection needs an iPhone build with Screen Time access."
+        #endif
+    }
+
+    func refreshActiveShieldConfiguration() {
+        #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        guard isShieldingEnabled else { return }
+        applyShield()
         #endif
     }
 
@@ -296,6 +304,14 @@ final class ScreenTimeController {
         return false
         #endif
     }
+
+    #if os(iOS) && canImport(ManagedSettings)
+    private func clearManagedShieldRestrictions() {
+        managedStore.shield.applications = nil
+        managedStore.shield.applicationCategories = nil
+        managedStore.shield.webDomains = nil
+    }
+    #endif
 
     private func scheduleForegroundRelock(until expiration: Date) {
         relockTask?.cancel()
