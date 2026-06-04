@@ -46,6 +46,8 @@ final class CheckpointStore {
     var lastQuestionProvider: AIProviderKind = .localTemplates
     var backendEndpoint = ""
     var lastAIErrorMessage: String?
+    var questionGenerationStartedAt: Date?
+    var lastQuestionGenerationDuration: TimeInterval?
     var checkpointNotice: String?
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining = 1
@@ -60,6 +62,7 @@ final class CheckpointStore {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let snapshotKey = "checkpoint.snapshot.v1"
     @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
+    @ObservationIgnored private static let initialQuestionWarmStartTargetCount = 12
 
     // MARK: - Lifecycle
 
@@ -171,6 +174,26 @@ final class CheckpointStore {
 
     var isPreparingActiveGoalQuestions: Bool {
         goal != nil && questionBatchState == .generating
+    }
+
+    var questionGenerationStatusText: String {
+        switch questionBatchState {
+        case .generating:
+            let readyText = usableQuestionCount > 0
+                ? "\(usableQuestionCount) ready; preparing more"
+                : "Preparing first checkpoints"
+            let elapsedText = questionGenerationStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
+            return "\(readyText) in the background.\(elapsedText)"
+        case .failed:
+            return lastAIErrorMessage ?? "Question preparation did not finish. Checkpoint will try again when possible."
+        case .ready:
+            if let duration = lastQuestionGenerationDuration {
+                return "\(usableQuestionCount) ready. Last prepared in \(Self.formattedDuration(duration))."
+            }
+            return "\(usableQuestionCount) ready."
+        case .idle:
+            return usableQuestionCount > 0 ? "\(usableQuestionCount) ready." : "No checkpoints prepared yet."
+        }
     }
 
     var proAssistSummary: String {
@@ -368,21 +391,73 @@ final class CheckpointStore {
 
         if goal?.id == newGoal.id {
             questionBatchState = .generating
+            beginQuestionGeneration(for: newGoal.id)
         }
 
+        let warmStartRequest = generationRequest(
+            goal: newGoal,
+            existingQuestions: [],
+            competencies: [],
+            reportedQuestions: [],
+            targetCount: Self.initialQuestionWarmStartTargetCount
+        )
+
+        if aiProviderPreference != .localTemplates {
+            let seedBatch = await questionEngine.generateQuestionBatch(
+                for: warmStartRequest,
+                preference: .localTemplates
+            )
+            if !seedBatch.questions.isEmpty {
+                questions.removeAll { $0.goalID == newGoal.id }
+                questions.append(contentsOf: seedBatch.questions)
+                competencies.removeAll { $0.goalID == newGoal.id }
+                competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: seedBatch.questions))
+                lastQuestionProvider = seedBatch.provider
+                lastAIErrorMessage = nil
+                if goal?.id == newGoal.id {
+                    questionBatchState = .generating
+                }
+                save()
+                publishShieldContext()
+            }
+        }
+
+        let existingQuestions = questions.filter { $0.goalID == newGoal.id }
+        let existingCompetencies = competencies.filter { ($0.goalID ?? newGoal.id) == newGoal.id }
+
         let batch = await questionEngine.generateQuestionBatch(
-            for: generationRequest(goal: newGoal, existingQuestions: [], competencies: [], reportedQuestions: []),
+            for: generationRequest(
+                goal: newGoal,
+                existingQuestions: existingQuestions,
+                competencies: existingCompetencies,
+                reportedQuestions: [],
+                targetCount: Self.initialQuestionWarmStartTargetCount
+            ),
             preference: aiProviderPreference
         )
 
-        questions.removeAll { $0.goalID == newGoal.id }
-        questions.append(contentsOf: batch.questions)
+        let existingKeys = Set(existingQuestions.map { questionKey($0) })
+        let newQuestions = batch.questions.filter { !existingKeys.contains(questionKey($0)) }
+        if existingQuestions.isEmpty {
+            questions.removeAll { $0.goalID == newGoal.id }
+        }
+        questions.append(contentsOf: newQuestions)
+        let goalQuestions = questions.filter { $0.goalID == newGoal.id }
         competencies.removeAll { $0.goalID == newGoal.id }
-        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: batch.questions))
-        lastQuestionProvider = batch.provider
-        lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
+        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: goalQuestions))
+        if !newQuestions.isEmpty {
+            lastQuestionProvider = batch.provider
+        }
+        if goalQuestions.isEmpty {
+            lastAIErrorMessage = "No usable questions were generated. Try adding focus topics or lowering the question level."
+        } else if newQuestions.isEmpty, aiProviderPreference != .localTemplates {
+            lastAIErrorMessage = nil
+        } else {
+            lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
+        }
         if goal?.id == newGoal.id {
-            questionBatchState = batch.questions.isEmpty ? .failed : .ready
+            questionBatchState = goalQuestions.isEmpty ? .failed : .ready
+            finishQuestionGeneration(for: newGoal.id)
         }
         save()
         publishShieldContext()
@@ -403,6 +478,7 @@ final class CheckpointStore {
         }
 
         questionBatchState = .generating
+        beginQuestionGeneration(for: goal.id)
         if reason.countsAsRefresh(isPro: isPro) {
             questionRefreshesUsed += 1
         }
@@ -428,6 +504,7 @@ final class CheckpointStore {
             lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         }
         questionBatchState = .ready
+        finishQuestionGeneration(for: goal.id)
         save()
         publishShieldContext()
     }
@@ -983,6 +1060,20 @@ final class CheckpointStore {
         questionReports.removeAll { $0.goalID == goalID }
     }
 
+    private func beginQuestionGeneration(for goalID: Goal.ID) {
+        guard goal?.id == goalID else { return }
+        questionGenerationStartedAt = Date()
+        lastQuestionGenerationDuration = nil
+    }
+
+    private func finishQuestionGeneration(for goalID: Goal.ID) {
+        guard goal?.id == goalID else { return }
+        if let questionGenerationStartedAt {
+            lastQuestionGenerationDuration = Date().timeIntervalSince(questionGenerationStartedAt)
+        }
+        questionGenerationStartedAt = nil
+    }
+
     private func replaceActiveCompetencies(with updatedCompetencies: [TopicCompetency]) {
         guard let goalID = goal?.id else { return }
         competencies.removeAll { ($0.goalID ?? goalID) == goalID }
@@ -1225,6 +1316,14 @@ final class CheckpointStore {
             .joined(separator: "+")
     }
 
+    private static func formattedDuration(_ duration: TimeInterval) -> String {
+        if duration < 1 {
+            return "under 1s"
+        }
+
+        return "\(Int(duration.rounded()))s"
+    }
+
     private func questionKey(_ question: CheckpointQuestion) -> String {
         "\(questionTopicKey(question.topic))::\(question.prompt.lowercased())"
     }
@@ -1283,14 +1382,15 @@ final class CheckpointStore {
         goal: Goal,
         existingQuestions: [CheckpointQuestion],
         competencies: [TopicCompetency],
-        reportedQuestions: [QuestionQualityReport]
+        reportedQuestions: [QuestionQualityReport],
+        targetCount: Int? = nil
     ) -> QuestionGenerationRequest {
         QuestionGenerationRequest(
             goal: goal,
             existingQuestions: existingQuestions,
             competencies: competencies,
             reportedQuestions: reportedQuestions,
-            targetCount: questionBankTargetCount,
+            targetCount: targetCount ?? questionBankTargetCount,
             minimumDifficulty: goal.minimumQuestionDifficulty,
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken

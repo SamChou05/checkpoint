@@ -96,7 +96,20 @@ struct HomeView: View {
                         ProgressView()
                             .tint(CheckpointTheme.teal)
 
-                        Text("Preparing checkpoints for this goal.")
+                        Text(store.questionGenerationStatusText)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(12)
+                    .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                } else if store.questionBatchState == .failed {
+                    HStack(spacing: 10) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(CheckpointTheme.amber)
+
+                        Text(store.questionGenerationStatusText)
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)

@@ -95,12 +95,48 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNotNil(store.goal)
         XCTAssertFalse(store.isOnboardingPresented)
         XCTAssertEqual(store.questionBatchState, .generating)
+        XCTAssertTrue(store.questionGenerationStatusText.contains("background"))
         XCTAssertTrue(store.questions.isEmpty)
 
         try? await Task.sleep(nanoseconds: 300_000_000)
 
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertGreaterThanOrEqual(store.questions.count, 5)
+        XCTAssertNotNil(store.lastQuestionGenerationDuration)
+    }
+
+    @MainActor
+    func testCreateGoalWarmStartsLocalQuestionsWhileAIContinues() async {
+        let goal = makeGoal()
+        let engine = HybridQuestionEngine(
+            localEngine: GoalAwareQuestionEngine(provider: .localTemplates),
+            backendEngine: DelayedQuestionEngine(provider: .backend, delayNanoseconds: 500_000_000),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.automatic)
+
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle,
+            waitForQuestionGeneration: false
+        )
+
+        try? await Task.sleep(nanoseconds: 120_000_000)
+
+        XCTAssertEqual(store.questionBatchState, .generating)
+        XCTAssertGreaterThanOrEqual(store.activeQuestions.count, 5)
+        XCTAssertTrue(store.questionGenerationStatusText.contains("ready; preparing more"))
+
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertGreaterThan(store.activeQuestions.count, 6)
+        XCTAssertNotNil(store.lastQuestionGenerationDuration)
     }
 
     @MainActor
@@ -133,12 +169,14 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertEqual(store.goal?.id, secondGoal.id)
         XCTAssertEqual(store.questionBatchState, .generating)
+        XCTAssertTrue(store.questionGenerationStatusText.contains("background"))
         XCTAssertTrue(store.activeQuestions.isEmpty)
 
         try? await Task.sleep(nanoseconds: 300_000_000)
 
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertGreaterThanOrEqual(store.activeQuestions.count, 5)
+        XCTAssertNotNil(store.lastQuestionGenerationDuration)
     }
 
     @MainActor
@@ -1158,14 +1196,14 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(request.goal.currentLevel, "Advanced at derivatives, weak on integrals")
         XCTAssertEqual(request.goal.focusAreas, "integrals, limits")
         XCTAssertEqual(request.minimumDifficulty, 4)
-        XCTAssertEqual(request.targetCount, 40)
+        XCTAssertEqual(request.targetCount, StopBlockingPolicy.questionsPerSession + 2)
 
         let sourcePrompt = try XCTUnwrap(store.questions.first?.sourcePrompt)
         XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: Pass calculus final"))
         XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: calculus final"))
         XCTAssertTrue(sourcePrompt.contains("The user's current level/context is: Advanced at derivatives, weak on integrals"))
         XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: integrals, limits"))
-        XCTAssertTrue(sourcePrompt.contains("Generate 40 level 4 of 5 difficulty multiple-choice questions about calculus final"))
+        XCTAssertTrue(sourcePrompt.contains("Generate 12 level 4 of 5 difficulty multiple-choice questions about calculus final"))
     }
 
     func testBackendRequestEncodesGoalContextCompetenciesAndDifficulty() throws {
@@ -1270,6 +1308,34 @@ final class AIProviderPolicyTests: XCTestCase {
         let request = try XCTUnwrap(localEngine.receivedRequest)
         XCTAssertEqual(request.backendEndpoint?.absoluteString, "https://example.com/questions")
         XCTAssertEqual(request.backendAuthorizationToken, "dev-token")
+    }
+
+    @MainActor
+    func testInitialGoalGenerationUsesSmallerWarmStartTarget() async throws {
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let suiteName = "AIProviderPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+
+        await store.createGoal(
+            title: "Pass the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 14),
+            category: .examPrep,
+            currentLevel: "Intermediate logical reasoning",
+            focusAreas: "logical reasoning",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.targetCount, StopBlockingPolicy.questionsPerSession + 2)
     }
 }
 
