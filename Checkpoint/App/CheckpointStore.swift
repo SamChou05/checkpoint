@@ -435,12 +435,21 @@ final class CheckpointStore {
     }
 
     func updateMembershipTier(_ tier: MembershipTier) {
+        guard membershipTier != tier else {
+            if pendingMembershipFeature != nil {
+                pendingMembershipFeature = nil
+                save()
+                publishShieldContext()
+            }
+            return
+        }
+
         membershipTier = tier
         pendingMembershipFeature = nil
         save()
         publishShieldContext()
 
-        if tier == .member {
+        if tier == .member, goal != nil {
             Task { [weak self] in
                 _ = await self?.refreshQuestionBatchIfNeeded()
             }

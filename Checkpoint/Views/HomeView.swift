@@ -7,6 +7,9 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
     @State private var isAcceptingLevelIncrease = false
+    @State private var lastActivationRefreshAt: Date?
+
+    private static let activationRefreshDebounceInterval: TimeInterval = 20
 
     var body: some View {
         NavigationStack {
@@ -335,7 +338,7 @@ struct HomeView: View {
     private var goalSwitcherMenuContent: some View {
         ForEach(store.availableGoalProfiles) { profile in
             Button {
-                switchActiveGoal(to: profile.id)
+                store.switchActiveGoal(to: profile.id)
             } label: {
                 Label(
                     profile.title,
@@ -362,12 +365,14 @@ struct HomeView: View {
         }
     }
 
-    private func switchActiveGoal(to goalID: Goal.ID) {
-        guard store.switchActiveGoal(to: goalID) else { return }
-        screenTime.refreshActiveShieldConfiguration()
-    }
-
     private func handleQuestionRefreshOnActivation() {
+        let now = Date()
+        if let lastActivationRefreshAt,
+           now.timeIntervalSince(lastActivationRefreshAt) < Self.activationRefreshDebounceInterval {
+            return
+        }
+        lastActivationRefreshAt = now
+
         Task {
             _ = await store.refreshQuestionBatchIfNeeded()
             await store.prepareProtectionReviewQuestionBankIfNeeded()

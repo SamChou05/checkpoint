@@ -145,6 +145,29 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testSameMembershipTierUpdateDoesNotKickOffRefreshAgain() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.questions = [makeQuestion(goal: goal, index: 1)]
+        store.pendingMembershipFeature = .freshQuestionGeneration
+
+        store.updateMembershipTier(.member)
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertNil(store.pendingMembershipFeature)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
     func testCreateGoalCanReturnBeforeInitialQuestionsFinish() async {
         let delayedEngine = DelayedQuestionEngine(
             provider: .localTemplates,
