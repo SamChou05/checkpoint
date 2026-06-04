@@ -21,6 +21,17 @@ private enum QuestionRefreshReason {
 
         return defaultPreference
     }
+
+    var diagnosticsTitle: String {
+        switch self {
+        case .manual:
+            return "Manual refresh"
+        case .automaticCoreRefill:
+            return "Automatic core refill"
+        case .automaticProactiveRefill:
+            return "Automatic proactive refill"
+        }
+    }
 }
 
 @MainActor
@@ -40,6 +51,7 @@ final class CheckpointStore {
     var attempts: [CheckpointAttempt] = []
     var competencies: [TopicCompetency] = []
     var questionReports: [QuestionQualityReport] = []
+    var questionGenerationTraces: [QuestionGenerationTrace] = []
     var unlockPolicy: UnlockPolicy = .default
     var questionBatchState: QuestionBatchState = .idle
     var aiProviderPreference: AIProviderKind = .automatic
@@ -67,6 +79,8 @@ final class CheckpointStore {
     @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
+    @ObservationIgnored private static let maximumQuestionGenerationTraceCount = 20
+    @ObservationIgnored private static let maximumQuestionGenerationPreviewCount = 12
 
     // MARK: - Lifecycle
 
@@ -149,6 +163,22 @@ final class CheckpointStore {
     var activeQuestionReports: [QuestionQualityReport] {
         guard let goalID = goal?.id else { return [] }
         return questionReports.filter { $0.goalID == goalID }
+    }
+
+    var questionGenerationDiagnosticsSummary: String {
+        guard let latestTrace = questionGenerationTraces.first else {
+            return "No generation runs recorded yet"
+        }
+
+        return "\(latestTrace.generatedQuestionCount) generated, \(latestTrace.addedQuestionCount) added by \(latestTrace.resolvedProvider.rawValue)"
+    }
+
+    var questionGenerationDiagnosticsExportText: String {
+        guard !questionGenerationTraces.isEmpty else {
+            return "No question generation diagnostics recorded."
+        }
+
+        return questionGenerationTraces.map(Self.exportText(for:)).joined(separator: "\n\n---\n\n")
     }
 
     var availableGoalProfiles: [Goal] {
@@ -415,6 +445,7 @@ final class CheckpointStore {
             targetCount: Self.initialCheckpointReadyTargetCount
         )
 
+        let startedAt = Date()
         let batch = await generateCheckpointReadyBatch(for: checkpointReadyRequest)
 
         questions.removeAll { $0.goalID == newGoal.id }
@@ -427,6 +458,15 @@ final class CheckpointStore {
         } else {
             lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         }
+        recordQuestionGenerationTrace(
+            phase: "Initial ready batch",
+            request: checkpointReadyRequest,
+            providerPreference: aiProviderPreference != .localTemplates ? .localTemplates : aiProviderPreference,
+            batch: batch,
+            addedQuestions: batch.questions,
+            startedAt: startedAt,
+            errorMessage: lastAIErrorMessage
+        )
         if goal?.id == newGoal.id {
             questionBatchState = batch.questions.isEmpty ? .failed : .ready
             finishQuestionGeneration(for: newGoal.id)
@@ -498,14 +538,16 @@ final class CheckpointStore {
             return
         }
 
+        let topOffRequest = generationRequest(
+            goal: targetGoal,
+            existingQuestions: existingQuestions,
+            competencies: existingCompetencies,
+            reportedQuestions: questionReports.filter { $0.goalID == targetGoal.id },
+            targetCount: remainingTargetCount
+        )
+        let startedAt = Date()
         let batch = await questionEngine.generateQuestionBatch(
-            for: generationRequest(
-                goal: targetGoal,
-                existingQuestions: existingQuestions,
-                competencies: existingCompetencies,
-                reportedQuestions: questionReports.filter { $0.goalID == targetGoal.id },
-                targetCount: remainingTargetCount
-            ),
+            for: topOffRequest,
             preference: aiProviderPreference
         )
 
@@ -518,9 +560,11 @@ final class CheckpointStore {
         let canReplaceStarterBridge = batch.provider != .localTemplates
             && usableGeneratedCount >= unlockPolicy.questionsPerSession
 
+        var retiredStarterQuestionCount = 0
         if canReplaceStarterBridge {
             for index in questions.indices where starterQuestionIDs.contains(questions[index].id) {
                 questions[index].status = .retired
+                retiredStarterQuestionCount += 1
             }
         }
         let goalQuestions = questions.filter { $0.goalID == targetGoal.id }
@@ -530,6 +574,16 @@ final class CheckpointStore {
             lastQuestionProvider = batch.provider
             lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         }
+        recordQuestionGenerationTrace(
+            phase: "Question bank top-off",
+            request: topOffRequest,
+            providerPreference: aiProviderPreference,
+            batch: batch,
+            addedQuestions: newQuestions,
+            retiredQuestionCount: retiredStarterQuestionCount,
+            startedAt: startedAt,
+            errorMessage: lastAIErrorMessage
+        )
         if goal?.id == targetGoal.id {
             questionBatchState = goalQuestions.isEmpty ? .failed : .ready
             finishQuestionBankTopOff(for: targetGoal.id)
@@ -558,14 +612,17 @@ final class CheckpointStore {
             questionRefreshesUsed += 1
         }
 
+        let refreshRequest = generationRequest(
+            goal: goal,
+            existingQuestions: activeQuestions,
+            competencies: activeCompetencies,
+            reportedQuestions: activeQuestionReports
+        )
+        let providerPreference = reason.providerPreference(defaultPreference: aiProviderPreference, isPro: isPro)
+        let startedAt = Date()
         let batch = await questionEngine.generateQuestionBatch(
-            for: generationRequest(
-                goal: goal,
-                existingQuestions: activeQuestions,
-                competencies: activeCompetencies,
-                reportedQuestions: activeQuestionReports
-            ),
-            preference: reason.providerPreference(defaultPreference: aiProviderPreference, isPro: isPro)
+            for: refreshRequest,
+            preference: providerPreference
         )
         let generatedQuestions = batch.questions
         let existingKeys = Set(activeQuestions.map { questionKey($0) })
@@ -578,6 +635,15 @@ final class CheckpointStore {
         } else {
             lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         }
+        recordQuestionGenerationTrace(
+            phase: reason.diagnosticsTitle,
+            request: refreshRequest,
+            providerPreference: providerPreference,
+            batch: batch,
+            addedQuestions: newQuestions,
+            startedAt: startedAt,
+            errorMessage: lastAIErrorMessage
+        )
         questionBatchState = .ready
         finishQuestionGeneration(for: goal.id)
         save()
@@ -754,6 +820,7 @@ final class CheckpointStore {
         attempts = []
         competencies = []
         questionReports = []
+        questionGenerationTraces = []
         unlockPolicy = .default
         questionBatchState = .idle
         aiProviderPreference = .automatic
@@ -888,6 +955,11 @@ final class CheckpointStore {
 
         save()
         publishShieldContext()
+    }
+
+    func clearQuestionGenerationDiagnostics() {
+        questionGenerationTraces = []
+        save()
     }
 
     func makeMissedQuestionsDueNow(_ questionIDs: Set<CheckpointQuestion.ID>) {
@@ -1198,6 +1270,7 @@ final class CheckpointStore {
             attempts: attempts,
             competencies: competencies,
             questionReports: questionReports,
+            questionGenerationTraces: questionGenerationTraces,
             unlockPolicy: unlockPolicy,
             questionBatchState: questionBatchState,
             aiProviderPreference: aiProviderPreference,
@@ -1264,6 +1337,7 @@ final class CheckpointStore {
         attempts = snapshot.attempts
         competencies = snapshot.competencies
         questionReports = snapshot.questionReports ?? []
+        questionGenerationTraces = snapshot.questionGenerationTraces ?? []
         unlockPolicy = snapshot.unlockPolicy ?? .default
         questionBatchState = snapshot.questionBatchState ?? .idle
         aiProviderPreference = snapshot.aiProviderPreference ?? .automatic
@@ -1422,6 +1496,97 @@ final class CheckpointStore {
         }
 
         return "\(Int(duration.rounded()))s"
+    }
+
+    private func recordQuestionGenerationTrace(
+        phase: String,
+        request: QuestionGenerationRequest,
+        providerPreference: AIProviderKind,
+        batch: QuestionBatch,
+        addedQuestions: [CheckpointQuestion],
+        retiredQuestionCount: Int = 0,
+        startedAt: Date,
+        errorMessage: String?
+    ) {
+        let previewQuestions = Array((addedQuestions.isEmpty ? batch.questions : addedQuestions)
+            .prefix(Self.maximumQuestionGenerationPreviewCount))
+            .map(Self.questionPreview)
+
+        let trace = QuestionGenerationTrace(
+            phase: phase,
+            goalID: request.goal.id,
+            goalTitle: request.goal.title,
+            providerPreference: providerPreference,
+            resolvedProvider: batch.provider,
+            usedFallback: batch.usedFallback,
+            targetCount: request.targetCount,
+            existingQuestionCount: request.existingQuestions.count,
+            reportedQuestionCount: request.reportedQuestions.count,
+            competencyCount: request.competencies.count,
+            minimumDifficulty: request.minimumDifficulty,
+            generatedQuestionCount: batch.questions.count,
+            addedQuestionCount: addedQuestions.count,
+            retiredQuestionCount: retiredQuestionCount,
+            duration: Date().timeIntervalSince(startedAt),
+            sourcePrompt: batch.questions.first?.sourcePrompt ?? request.sourcePrompt(provider: batch.provider),
+            errorMessage: errorMessage,
+            questions: previewQuestions
+        )
+
+        questionGenerationTraces.insert(trace, at: 0)
+        if questionGenerationTraces.count > Self.maximumQuestionGenerationTraceCount {
+            questionGenerationTraces = Array(questionGenerationTraces.prefix(Self.maximumQuestionGenerationTraceCount))
+        }
+    }
+
+    private static func questionPreview(_ question: CheckpointQuestion) -> QuestionGenerationQuestionPreview {
+        QuestionGenerationQuestionPreview(
+            prompt: question.prompt,
+            expectedAnswer: question.expectedAnswer,
+            choices: question.choices,
+            explanation: question.explanation,
+            topic: question.topic,
+            difficulty: question.difficulty
+        )
+    }
+
+    private static func exportText(for trace: QuestionGenerationTrace) -> String {
+        let date = ISO8601DateFormatter().string(from: trace.createdAt)
+        let questionText = trace.questions.enumerated().map { index, question in
+            """
+            Question \(index + 1)
+            Topic: \(question.topic)
+            Difficulty: \(question.difficulty)
+            Prompt: \(question.prompt)
+            Choices: \(question.choices.joined(separator: " | "))
+            Expected answer: \(question.expectedAnswer)
+            Explanation: \(question.explanation)
+            """
+        }.joined(separator: "\n\n")
+
+        return """
+        \(trace.phase) at \(date)
+        Goal: \(trace.goalTitle)
+        Provider preference: \(trace.providerPreference.rawValue)
+        Resolved provider: \(trace.resolvedProvider.rawValue)
+        Used fallback: \(trace.usedFallback)
+        Target count: \(trace.targetCount)
+        Existing questions: \(trace.existingQuestionCount)
+        Reported questions: \(trace.reportedQuestionCount)
+        Competencies: \(trace.competencyCount)
+        Minimum difficulty: \(trace.minimumDifficulty)
+        Generated: \(trace.generatedQuestionCount)
+        Added: \(trace.addedQuestionCount)
+        Retired: \(trace.retiredQuestionCount)
+        Duration: \(formattedDuration(trace.duration))
+        Error: \(trace.errorMessage ?? "None")
+
+        Source prompt:
+        \(trace.sourcePrompt)
+
+        Generated question previews:
+        \(questionText.isEmpty ? "None" : questionText)
+        """
     }
 
     private func questionKey(_ question: CheckpointQuestion) -> String {

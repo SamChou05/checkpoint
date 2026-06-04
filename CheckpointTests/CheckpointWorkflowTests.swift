@@ -1287,6 +1287,64 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("Generate 5 level 4 of 5 difficulty multiple-choice questions about calculus final"))
     }
 
+    @MainActor
+    func testQuestionGenerationDiagnosticsCapturePromptAndGeneratedQuestions() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let suiteName = "AIProviderPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.goal = goal
+
+        await store.refreshQuestionBatch()
+
+        let trace = try XCTUnwrap(store.questionGenerationTraces.first)
+        XCTAssertEqual(trace.phase, "Manual refresh")
+        XCTAssertEqual(trace.goalID, goal.id)
+        XCTAssertEqual(trace.providerPreference, .localTemplates)
+        XCTAssertEqual(trace.resolvedProvider, .localTemplates)
+        XCTAssertEqual(trace.targetCount, FreemiumLimits.freeQuestionBankTargetCount)
+        XCTAssertEqual(trace.generatedQuestionCount, 1)
+        XCTAssertEqual(trace.addedQuestionCount, 1)
+        XCTAssertTrue(trace.sourcePrompt.contains("Here is the user's goal: \(goal.title)"))
+        XCTAssertEqual(trace.questions.first?.prompt, store.questions.first?.prompt)
+        XCTAssertTrue(store.questionGenerationDiagnosticsExportText.contains("Source prompt:"))
+    }
+
+    @MainActor
+    func testQuestionGenerationDiagnosticsPersistAndClear() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let suiteName = "AIProviderPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.goal = goal
+
+        await store.refreshQuestionBatch()
+
+        let restoredStore = CheckpointStore(questionEngine: engine, defaults: defaults)
+        XCTAssertEqual(restoredStore.questionGenerationTraces.count, 1)
+
+        restoredStore.clearQuestionGenerationDiagnostics()
+
+        let clearedStore = CheckpointStore(questionEngine: engine, defaults: defaults)
+        XCTAssertTrue(clearedStore.questionGenerationTraces.isEmpty)
+    }
+
     func testBackendRequestEncodesGoalContextCompetenciesAndDifficulty() throws {
         let goal = makeGoal()
         let existingQuestion = makeQuestion(goal: goal, index: 1, prompt: "Existing prompt")

@@ -378,6 +378,39 @@ struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {
     var createdAt = Date()
 }
 
+struct QuestionGenerationTrace: Identifiable, Codable, Equatable, Sendable {
+    var id = UUID()
+    var createdAt = Date()
+    var phase: String
+    var goalID: Goal.ID?
+    var goalTitle: String
+    var providerPreference: AIProviderKind
+    var resolvedProvider: AIProviderKind
+    var usedFallback: Bool
+    var targetCount: Int
+    var existingQuestionCount: Int
+    var reportedQuestionCount: Int
+    var competencyCount: Int
+    var minimumDifficulty: Int
+    var generatedQuestionCount: Int
+    var addedQuestionCount: Int
+    var retiredQuestionCount: Int
+    var duration: TimeInterval
+    var sourcePrompt: String
+    var errorMessage: String?
+    var questions: [QuestionGenerationQuestionPreview]
+}
+
+struct QuestionGenerationQuestionPreview: Identifiable, Codable, Equatable, Sendable {
+    var id = UUID()
+    var prompt: String
+    var expectedAnswer: String
+    var choices: [String]
+    var explanation: String
+    var topic: String
+    var difficulty: Int
+}
+
 struct UnlockPolicy: Codable, Equatable, Sendable {
     static let correctAnswerUnlockMinuteOptions = [15, 30, 45, 60]
     static let minimumQuestionsPerSession = 5
@@ -566,6 +599,7 @@ struct AppSnapshot: Codable, Sendable {
     var attempts: [CheckpointAttempt]
     var competencies: [TopicCompetency]
     var questionReports: [QuestionQualityReport]?
+    var questionGenerationTraces: [QuestionGenerationTrace]?
     var unlockPolicy: UnlockPolicy?
     var questionBatchState: QuestionBatchState?
     var aiProviderPreference: AIProviderKind?
