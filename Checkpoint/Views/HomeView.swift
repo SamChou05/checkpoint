@@ -91,6 +91,20 @@ struct HomeView: View {
 
                 StatusBadge(text: goal.difficultyLabel, tint: CheckpointTheme.amber)
 
+                if store.isPreparingActiveGoalQuestions {
+                    HStack(spacing: 10) {
+                        ProgressView()
+                            .tint(CheckpointTheme.teal)
+
+                        Text("Preparing checkpoints for this goal.")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(12)
+                    .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                }
+
                 Text("A blocked app asks \(store.unlockPolicy.questionsPerSession) questions. \(store.unlockPolicy.requiredCorrectAnswers) correct starts the unlock timer.")
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
@@ -196,6 +210,22 @@ struct HomeView: View {
                             Spacer(minLength: 0)
                         }
                         .frame(maxWidth: .infinity)
+                    } else if isTemporarilyUnblocked {
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                StatusBadge(text: "Temporarily unblocked", tint: CheckpointTheme.amber)
+                                Spacer()
+                                Text("\(store.activeUnlockMinutesRemaining)m left")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.muted)
+                            }
+
+                            SecondaryActionButton(title: "Restart blocking", systemImage: "shield") {
+                                store.clearUnlockSession()
+                                screenTime.applyShield()
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
                     } else {
                         SecondaryActionButton(title: "Start blocking", systemImage: "shield") {
                             screenTime.applyShield()
@@ -262,5 +292,9 @@ struct HomeView: View {
         Task {
             _ = await store.refreshQuestionBatchIfNeeded()
         }
+    }
+
+    private var isTemporarilyUnblocked: Bool {
+        screenTime.setupState == .temporarilyUnlocked || store.activeUnlockMinutesRemaining > 0
     }
 }

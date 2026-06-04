@@ -104,6 +104,44 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testSwitchingToGoalWithoutQuestionsStartsBackgroundPreparation() async {
+        let delayedEngine = DelayedQuestionEngine(
+            provider: .localTemplates,
+            delayNanoseconds: 150_000_000
+        )
+        let engine = HybridQuestionEngine(
+            localEngine: delayedEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateSubscriptionTier(.pro)
+        store.updateAIProviderPreference(.localTemplates)
+        let firstGoal = makeGoal()
+        let secondGoal = Goal(
+            title: "Pass operating systems exam",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 21),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "interrupts, system calls",
+            preferredQuestionStyle: .multipleChoice
+        )
+        store.goal = firstGoal
+        store.goalProfiles = [firstGoal, secondGoal]
+
+        store.switchActiveGoal(to: secondGoal.id)
+
+        XCTAssertEqual(store.goal?.id, secondGoal.id)
+        XCTAssertEqual(store.questionBatchState, .generating)
+        XCTAssertTrue(store.activeQuestions.isEmpty)
+
+        try? await Task.sleep(nanoseconds: 300_000_000)
+
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertGreaterThanOrEqual(store.activeQuestions.count, 5)
+    }
+
+    @MainActor
     func testCreateGoalInfersCategoryFromNaturalLanguageContext() async throws {
         let store = CheckpointStore(defaults: defaults)
 
@@ -143,6 +181,39 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertEqual(store.questionsAnsweredThisWeekCount, 2)
         XCTAssertEqual(store.questionAccuracyThisWeekText, "50%")
+    }
+
+    @MainActor
+    func testCompoundQuestionTopicUpdatesCanonicalSkills() {
+        let store = CheckpointStore(defaults: defaults)
+        let goal = Goal(
+            title: "Pass operating systems exam",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "interrupts, system calls",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "interrupts, system calls",
+            difficulty: 3
+        )
+        store.goal = goal
+        store.questions = [question]
+
+        store.submitAnswer(
+            question: question,
+            answer: question.expectedAnswer,
+            result: .correct,
+            grantsUnlock: false
+        )
+
+        let topics = store.sortedCompetencies.map(\.topic)
+        XCTAssertEqual(topics, ["interrupts", "system calls"])
+        XCTAssertTrue(store.sortedCompetencies.allSatisfy { $0.attempts == 1 })
+        XCTAssertTrue(store.sortedCompetencies.allSatisfy { $0.masteryPercent < 100 })
     }
 
     @MainActor
@@ -832,7 +903,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.competencies = [recursion, arrays]
 
         XCTAssertTrue(store.proAssistSummary.contains("arrays"))
-        XCTAssertTrue(store.proAssistSummary.contains("25%"))
+        XCTAssertTrue(store.proAssistSummary.contains("\(arrays.masteryPercent)%"))
     }
 
     @MainActor

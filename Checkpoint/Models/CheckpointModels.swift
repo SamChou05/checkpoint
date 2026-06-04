@@ -496,7 +496,11 @@ struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
     var masteryPercent: Int {
         guard attempts > 0 else { return 0 }
         let weightedScore = Double(correct) + (Double(partial) * 0.5)
-        return min(100, max(0, Int((weightedScore / Double(attempts)) * 100)))
+        let accuracyScore = weightedScore / Double(attempts)
+        let levelScore = (estimatedLevel - 1.0) / 4.0
+        let confidence = min(1.0, Double(attempts) / 10.0)
+        let mastery = ((accuracyScore * 0.70) + (levelScore * 0.30)) * confidence
+        return min(100, max(0, Int(mastery * 100)))
     }
 
     var displayLevel: String {

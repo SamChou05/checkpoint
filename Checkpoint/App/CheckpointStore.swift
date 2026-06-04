@@ -59,6 +59,7 @@ final class CheckpointStore {
     @ObservationIgnored private let questionEngine: HybridQuestionEngine
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let snapshotKey = "checkpoint.snapshot.v1"
+    @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
 
     // MARK: - Lifecycle
 
@@ -91,13 +92,14 @@ final class CheckpointStore {
     }
 
     var averageMasteryText: String {
-        guard !activeCompetencies.isEmpty else { return "0%" }
-        let total = activeCompetencies.reduce(0) { $0 + $1.masteryPercent }
-        return "\(total / activeCompetencies.count)%"
+        let competencies = visibleActiveCompetencies
+        guard !competencies.isEmpty else { return "0%" }
+        let total = competencies.reduce(0) { $0 + $1.masteryPercent }
+        return "\(total / competencies.count)%"
     }
 
     var sortedCompetencies: [TopicCompetency] {
-        activeCompetencies.sorted {
+        visibleActiveCompetencies.sorted {
             if $0.masteryPercent == $1.masteryPercent {
                 return $0.topic < $1.topic
             }
@@ -133,6 +135,10 @@ final class CheckpointStore {
         return competencies.filter { $0.goalID == goalID || $0.goalID == nil }
     }
 
+    var visibleActiveCompetencies: [TopicCompetency] {
+        mergedCompetenciesForDisplay(activeCompetencies)
+    }
+
     var activeQuestionReports: [QuestionQualityReport] {
         guard let goalID = goal?.id else { return [] }
         return questionReports.filter { $0.goalID == goalID }
@@ -161,6 +167,10 @@ final class CheckpointStore {
 
     var usableQuestionCount: Int {
         activeQuestions.filter(meetsDifficultyFloor).count
+    }
+
+    var isPreparingActiveGoalQuestions: Bool {
+        goal != nil && questionBatchState == .generating
     }
 
     var proAssistSummary: String {
@@ -247,10 +257,19 @@ final class CheckpointStore {
 
         guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return }
         goal = selectedGoal
-        questionBatchState = activeQuestions.isEmpty ? .idle : .ready
+        let hasActiveQuestions = !activeQuestions.isEmpty
+        questionBatchState = hasActiveQuestions ? .ready : .generating
         checkpointNotice = nil
         save()
         publishShieldContext()
+
+        if hasActiveQuestions {
+            Task { [weak self] in
+                _ = await self?.refreshQuestionBatchIfNeeded()
+            }
+        } else {
+            prepareInitialQuestionsInBackground(for: selectedGoal)
+        }
     }
 
     func updateSubscriptionTier(_ tier: SubscriptionTier) {
@@ -331,14 +350,25 @@ final class CheckpointStore {
         if waitForQuestionGeneration {
             await generateInitialQuestionBatch(for: newGoal)
         } else {
-            Task { [weak self] in
-                await self?.generateInitialQuestionBatch(for: newGoal)
-            }
+            prepareInitialQuestionsInBackground(for: newGoal)
+        }
+    }
+
+    private func prepareInitialQuestionsInBackground(for newGoal: Goal) {
+        Task { [weak self] in
+            await self?.generateInitialQuestionBatch(for: newGoal)
         }
     }
 
     private func generateInitialQuestionBatch(for newGoal: Goal) async {
         guard goalProfiles.contains(where: { $0.id == newGoal.id }) || goal?.id == newGoal.id else { return }
+        guard !backgroundGenerationGoalIDs.contains(newGoal.id) else { return }
+        backgroundGenerationGoalIDs.insert(newGoal.id)
+        defer { backgroundGenerationGoalIDs.remove(newGoal.id) }
+
+        if goal?.id == newGoal.id {
+            questionBatchState = .generating
+        }
 
         let batch = await questionEngine.generateQuestionBatch(
             for: generationRequest(goal: newGoal, existingQuestions: [], competencies: [], reportedQuestions: []),
@@ -352,7 +382,7 @@ final class CheckpointStore {
         lastQuestionProvider = batch.provider
         lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         if goal?.id == newGoal.id {
-            questionBatchState = .ready
+            questionBatchState = batch.questions.isEmpty ? .failed : .ready
         }
         save()
         publishShieldContext()
@@ -812,23 +842,36 @@ final class CheckpointStore {
     }
 
     private func updateCompetency(for question: CheckpointQuestion, result: AnswerResult) {
+        for topic in competencyTopics(from: question.topic) {
+            updateCompetency(topic: topic, goalID: question.goalID, questionDifficulty: question.difficulty, result: result)
+        }
+    }
+
+    private func updateCompetency(
+        topic: String,
+        goalID: Goal.ID,
+        questionDifficulty: Int,
+        result: AnswerResult
+    ) {
+        let topicKey = competencyTopicKey(topic)
         let matchesQuestionGoal: (TopicCompetency) -> Bool = { competency in
-            competency.topic == question.topic
-                && (competency.goalID == question.goalID || (competency.goalID == nil && self.goal?.id == question.goalID))
+            self.competencyTopicKey(competency.topic) == topicKey
+                && (competency.goalID == goalID || (competency.goalID == nil && self.goal?.id == goalID))
         }
 
         if !competencies.contains(where: matchesQuestionGoal) {
-            competencies.append(.initial(topic: question.topic, goalID: question.goalID))
+            competencies.append(.initial(topic: topic, goalID: goalID))
         }
 
         guard let index = competencies.firstIndex(where: matchesQuestionGoal) else { return }
-        competencies[index].goalID = question.goalID
+        competencies[index].goalID = goalID
+        competencies[index].topic = topic
 
         competencies[index].attempts += 1
         competencies[index].lastResult = result
         competencies[index].lastPracticedAt = Date()
 
-        let difficultyGap = Double(question.difficulty) - competencies[index].estimatedLevel
+        let difficultyGap = Double(questionDifficulty) - competencies[index].estimatedLevel
 
         switch result {
         case .correct:
@@ -878,7 +921,15 @@ final class CheckpointStore {
     }
 
     private func competency(for topic: String) -> TopicCompetency {
-        activeCompetencies.first(where: { $0.topic == topic }) ?? .initial(topic: topic, goalID: goal?.id)
+        let topicKeys = Set(competencyTopics(from: topic).map(competencyTopicKey))
+        let matchingCompetencies = visibleActiveCompetencies.filter { topicKeys.contains(competencyTopicKey($0.topic)) }
+
+        return matchingCompetencies.min {
+            if $0.masteryPercent == $1.masteryPercent {
+                return $0.topic < $1.topic
+            }
+            return $0.masteryPercent < $1.masteryPercent
+        } ?? .initial(topic: competencyTopics(from: topic).first ?? topic, goalID: goal?.id)
     }
 
     private func targetDifficulty(for competency: TopicCompetency) -> Double {
@@ -1051,13 +1102,9 @@ final class CheckpointStore {
     }
 
     private func initialCompetencies(for goal: Goal, questions: [CheckpointQuestion]) -> [TopicCompetency] {
-        let focusTopics = goal.focusAreas
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-
-        let questionTopics = questions.map(\.topic)
-        let topics = Array(Set(focusTopics + questionTopics)).sorted()
+        let focusTopics = competencyTopics(from: goal.focusAreas)
+        let questionTopics = questions.flatMap { competencyTopics(from: $0.topic) }
+        let topics = uniqueCompetencyTopics(focusTopics + questionTopics).sorted()
 
         return topics.map { topic in
             .initial(topic: topic, estimatedLevel: estimatedStartingLevel(for: topic, goal: goal), goalID: goal.id)
@@ -1070,15 +1117,116 @@ final class CheckpointStore {
         questions: [CheckpointQuestion]
     ) -> [TopicCompetency] {
         let newCompetencies = initialCompetencies(for: goal, questions: questions)
-        let existingByTopic = Dictionary(uniqueKeysWithValues: existing.map { ($0.topic, $0) })
+        let existingByTopic = Dictionary(grouping: existing, by: { competencyTopicKey($0.topic) })
 
         return newCompetencies.map { competency in
-            existingByTopic[competency.topic] ?? competency
+            guard var existingCompetency = existingByTopic[competencyTopicKey(competency.topic)]?.first else {
+                return competency
+            }
+
+            existingCompetency.topic = competency.topic
+            existingCompetency.goalID = competency.goalID
+            return existingCompetency
         }
     }
 
+    private func mergedCompetenciesForDisplay(_ competencies: [TopicCompetency]) -> [TopicCompetency] {
+        var mergedByTopic: [String: TopicCompetency] = [:]
+
+        for competency in competencies {
+            let topics = competencyTopics(from: competency.topic)
+            for topic in topics {
+                let key = competencyTopicKey(topic)
+                var normalizedCompetency = competency
+                normalizedCompetency.topic = topic
+
+                if let existing = mergedByTopic[key] {
+                    mergedByTopic[key] = mergedCompetency(existing, with: normalizedCompetency)
+                } else {
+                    mergedByTopic[key] = normalizedCompetency
+                }
+            }
+        }
+
+        return Array(mergedByTopic.values)
+    }
+
+    private func mergedCompetency(_ lhs: TopicCompetency, with rhs: TopicCompetency) -> TopicCompetency {
+        var merged = lhs
+        let totalAttempts = lhs.attempts + rhs.attempts
+        if totalAttempts > 0 {
+            let weightedLevel = (lhs.estimatedLevel * Double(lhs.attempts)) + (rhs.estimatedLevel * Double(rhs.attempts))
+            merged.estimatedLevel = weightedLevel / Double(totalAttempts)
+        } else {
+            merged.estimatedLevel = max(lhs.estimatedLevel, rhs.estimatedLevel)
+        }
+        merged.attempts = totalAttempts
+        merged.correct = lhs.correct + rhs.correct
+        merged.partial = lhs.partial + rhs.partial
+        merged.incorrect = lhs.incorrect + rhs.incorrect
+        merged.currentStreak = max(lhs.currentStreak, rhs.currentStreak)
+
+        switch (lhs.lastPracticedAt, rhs.lastPracticedAt) {
+        case let (lhsDate?, rhsDate?) where rhsDate > lhsDate:
+            merged.lastPracticedAt = rhsDate
+            merged.lastResult = rhs.lastResult
+        case (nil, let rhsDate?):
+            merged.lastPracticedAt = rhsDate
+            merged.lastResult = rhs.lastResult
+        default:
+            break
+        }
+
+        return merged
+    }
+
+    private func competencyTopics(from text: String) -> [String] {
+        let separators = CharacterSet(charactersIn: ",;\n")
+        let topics = text
+            .components(separatedBy: separators)
+            .map(normalizedCompetencyTopic)
+            .filter { !$0.isEmpty }
+
+        let fallback = normalizedCompetencyTopic(text)
+        return uniqueCompetencyTopics(topics.isEmpty ? [fallback] : topics)
+    }
+
+    private func uniqueCompetencyTopics(_ topics: [String]) -> [String] {
+        var seenKeys = Set<String>()
+        var uniqueTopics: [String] = []
+
+        for topic in topics {
+            let normalizedTopic = normalizedCompetencyTopic(topic)
+            let key = competencyTopicKey(normalizedTopic)
+            guard !normalizedTopic.isEmpty, !seenKeys.contains(key) else { continue }
+            seenKeys.insert(key)
+            uniqueTopics.append(normalizedTopic)
+        }
+
+        return uniqueTopics
+    }
+
+    private func normalizedCompetencyTopic(_ topic: String) -> String {
+        topic
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+            .trimmingCharacters(in: CharacterSet(charactersIn: " .:-"))
+    }
+
+    private func competencyTopicKey(_ topic: String) -> String {
+        normalizedCompetencyTopic(topic).lowercased()
+    }
+
+    private func questionTopicKey(_ topic: String) -> String {
+        competencyTopics(from: topic)
+            .map(competencyTopicKey)
+            .sorted()
+            .joined(separator: "+")
+    }
+
     private func questionKey(_ question: CheckpointQuestion) -> String {
-        "\(question.topic.lowercased())::\(question.prompt.lowercased())"
+        "\(questionTopicKey(question.topic))::\(question.prompt.lowercased())"
     }
 
     private func estimatedStartingLevel(for topic: String, goal: Goal) -> Double {
