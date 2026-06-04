@@ -428,21 +428,44 @@ private struct HomeProtectionActionButton: View {
 private struct InsightsView: View {
     let store: CheckpointStore
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedMetricsID = WeeklyMetricsSummary.allGoalsID
+
+    private var metricOptions: [WeeklyMetricsSummary] {
+        [store.weeklyTotalMetrics] + store.weeklyGoalMetrics
+    }
+
+    private var selectedMetrics: WeeklyMetricsSummary {
+        metricOptions.first { $0.id == selectedMetricsID } ?? store.weeklyTotalMetrics
+    }
+
+    private var isAllGoalsSelected: Bool {
+        selectedMetrics.id == WeeklyMetricsSummary.allGoalsID
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
-                    totalStatsPanel
-                    currentGoalPanel
-                    goalBreakdownPanel
+                    scopeSelector
+                    impactPanel
+                    patternPanel
+                    skillFocusPanel
+
+                    if isAllGoalsSelected {
+                        goalBreakdownPanel
+                    }
                 }
                 .padding(20)
             }
             .checkpointScreenBackground()
             .navigationTitle("Insights")
             .toolbarTitleDisplayMode(.inline)
+            .onChange(of: metricOptions.map(\.id)) { _, availableIDs in
+                if !availableIDs.contains(selectedMetricsID) {
+                    selectedMetricsID = WeeklyMetricsSummary.allGoalsID
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") {
@@ -460,16 +483,69 @@ private struct InsightsView: View {
                 .font(.largeTitle.bold())
                 .foregroundStyle(CheckpointTheme.text)
 
-            Text("Totals show your full week. Goal rows show where the practice went.")
+            Text("See how your checkpoints are turning app friction into steady practice.")
                 .font(.subheadline)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
 
-    private var totalStatsPanel: some View {
-        SectionPanel("All goals") {
-            let metrics = store.weeklyTotalMetrics
+    private var scopeSelector: some View {
+        SectionPanel("Scope") {
+            Menu {
+                Button {
+                    selectedMetricsID = WeeklyMetricsSummary.allGoalsID
+                } label: {
+                    Label(
+                        "All goals",
+                        systemImage: selectedMetricsID == WeeklyMetricsSummary.allGoalsID ? "checkmark.circle.fill" : "circle"
+                    )
+                }
+
+                if !store.weeklyGoalMetrics.isEmpty {
+                    Divider()
+                }
+
+                ForEach(store.weeklyGoalMetrics) { metrics in
+                    Button {
+                        selectedMetricsID = metrics.id
+                    } label: {
+                        Label(
+                            metrics.title,
+                            systemImage: selectedMetricsID == metrics.id ? "checkmark.circle.fill" : "circle"
+                        )
+                    }
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Viewing")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.muted)
+
+                        Text(selectedMetrics.title)
+                            .font(.headline)
+                            .foregroundStyle(CheckpointTheme.text)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(CheckpointTheme.teal)
+                }
+                .padding(14)
+                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var impactPanel: some View {
+        SectionPanel(isAllGoalsSelected ? "All goals this week" : "Goal this week") {
+            let metrics = selectedMetrics
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 MetricTile(
@@ -494,8 +570,8 @@ private struct InsightsView: View {
                 )
 
                 MetricTile(
-                    title: "Break remaining",
-                    value: "\(store.activeUnlockMinutesRemaining)m",
+                    title: "Break time earned",
+                    value: metrics.breakTimeEarnedText,
                     tint: CheckpointTheme.coral,
                     systemImage: "timer"
                 )
@@ -503,11 +579,81 @@ private struct InsightsView: View {
         }
     }
 
+    private var patternPanel: some View {
+        SectionPanel("Patterns") {
+            let metrics = selectedMetrics
+
+            VStack(spacing: 10) {
+                InsightPatternRow(
+                    title: "Checkpoints cleared",
+                    detail: "\(metrics.checkpointsCleared)",
+                    systemImage: "flag.checkered",
+                    tint: CheckpointTheme.teal
+                )
+
+                InsightPatternRow(
+                    title: "Practice days",
+                    detail: "\(metrics.practiceDays)",
+                    systemImage: "calendar",
+                    tint: CheckpointTheme.blue
+                )
+
+                if isAllGoalsSelected {
+                    InsightPatternRow(
+                        title: "Goals practiced",
+                        detail: "\(metrics.goalsPracticed)",
+                        systemImage: "square.stack.3d.up",
+                        tint: CheckpointTheme.amber
+                    )
+                } else {
+                    InsightPatternRow(
+                        title: "Misses to review",
+                        detail: metrics.missedAnswersText,
+                        systemImage: "arrow.counterclockwise",
+                        tint: CheckpointTheme.amber
+                    )
+                }
+            }
+        }
+    }
+
     @ViewBuilder
-    private var currentGoalPanel: some View {
-        if let metrics = store.weeklyActiveGoalMetrics {
-            SectionPanel("Current goal") {
-                GoalInsightRow(metrics: metrics)
+    private var skillFocusPanel: some View {
+        let metrics = selectedMetrics
+
+        SectionPanel("Skill focus") {
+            if metrics.trackedSkillCount == 0 {
+                Text("Complete a few checkpoints to see which skills are strengthening and which ones need another pass.")
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                VStack(spacing: 10) {
+                    InsightPatternRow(
+                        title: "Tracked skills",
+                        detail: "\(metrics.trackedSkillCount)",
+                        systemImage: "books.vertical",
+                        tint: CheckpointTheme.teal
+                    )
+
+                    if let strongestSkill = metrics.strongestSkill {
+                        InsightPatternRow(
+                            title: "Strongest this week",
+                            detail: strongestSkill,
+                            systemImage: "star",
+                            tint: CheckpointTheme.blue
+                        )
+                    }
+
+                    if let reviewSkill = metrics.reviewSkill {
+                        InsightPatternRow(
+                            title: "Needs review",
+                            detail: reviewSkill,
+                            systemImage: "bookmark",
+                            tint: CheckpointTheme.amber
+                        )
+                    }
+                }
             }
         }
     }
@@ -564,10 +710,43 @@ private struct GoalInsightRow: View {
             HStack(spacing: 10) {
                 MiniInsightStat(title: "Answered", value: "\(metrics.questionsAnswered)")
                 MiniInsightStat(title: "Accuracy", value: metrics.accuracyText)
-                MiniInsightStat(title: "Progress", value: metrics.skillProgressText)
+                MiniInsightStat(title: "Breaks", value: metrics.breakTimeEarnedText)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct InsightPatternRow: View {
+    var title: String
+    var detail: String
+    var systemImage: String
+    var tint: Color
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 24)
+
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.muted)
+                .lineLimit(1)
+                .minimumScaleFactor(0.78)
+
+            Spacer(minLength: 12)
+
+            Text(detail)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+                .multilineTextAlignment(.trailing)
+                .lineLimit(2)
+                .minimumScaleFactor(0.72)
+        }
+        .padding(12)
+        .background(CheckpointTheme.panelRaised.opacity(0.65), in: RoundedRectangle(cornerRadius: 8))
     }
 }
 

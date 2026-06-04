@@ -45,6 +45,7 @@ final class CheckpointStore {
     var questions: [CheckpointQuestion] = []
     var attempts: [CheckpointAttempt] = []
     var competencies: [TopicCompetency] = []
+    var unlockEvents: [UnlockEvent] = []
     var questionReports: [QuestionQualityReport] = []
     var issueReports: [UserIssueReport] = []
     var questionGenerationTraces: [QuestionGenerationTrace] = []
@@ -112,7 +113,7 @@ final class CheckpointStore {
 
     var weeklyTotalMetrics: WeeklyMetricsSummary {
         weeklyMetricsSummary(
-            id: "all-goals",
+            id: WeeklyMetricsSummary.allGoalsID,
             title: "All goals",
             goalID: nil,
             isCurrentGoal: false
@@ -188,6 +189,11 @@ final class CheckpointStore {
         return attempts.filter { week.contains($0.createdAt) }
     }
 
+    private var unlockEventsThisWeek: [UnlockEvent] {
+        guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
+        return unlockEvents.filter { week.contains($0.createdAt) }
+    }
+
     var activeCompetencies: [TopicCompetency] {
         guard let goalID = goal?.id else { return [] }
         return competencies.filter { $0.goalID == goalID || $0.goalID == nil }
@@ -208,18 +214,57 @@ final class CheckpointStore {
             return attempt.goalID == goalID
         }
         let correctAnswers = weeklyAttempts.filter { $0.result == .correct }.count
+        let missedAnswers = weeklyAttempts.filter { $0.result != .correct }.count
         let competencies = visibleCompetencies(for: goalID)
         let masteryPercent = averageMasteryPercent(for: competencies)
+        let weeklyUnlockEvents = unlockEventsThisWeek.filter { event in
+            guard let goalID else { return true }
+            return event.goalID == goalID
+        }
+        let skillHighlights = skillHighlights(for: competencies)
 
         return WeeklyMetricsSummary(
             id: id,
             title: title,
             questionsAnswered: weeklyAttempts.count,
             correctAnswers: correctAnswers,
+            missedAnswers: missedAnswers,
             masteryPercent: masteryPercent,
             trackedSkillCount: competencies.count,
+            goalsPracticed: practicedGoalCount(for: weeklyAttempts),
+            practiceDays: practiceDayCount(for: weeklyAttempts),
+            checkpointsCleared: weeklyUnlockEvents.count,
+            breakMinutesEarned: weeklyUnlockEvents.reduce(0) { $0 + $1.minutes },
+            strongestSkill: skillHighlights.strongest,
+            reviewSkill: skillHighlights.review,
             isCurrentGoal: isCurrentGoal
         )
+    }
+
+    private func practicedGoalCount(for attempts: [CheckpointAttempt]) -> Int {
+        Set(attempts.map(\.goalID)).count
+    }
+
+    private func practiceDayCount(for attempts: [CheckpointAttempt]) -> Int {
+        let calendar = Calendar.current
+        return Set(attempts.map { calendar.startOfDay(for: $0.createdAt) }).count
+    }
+
+    private func skillHighlights(
+        for competencies: [TopicCompetency]
+    ) -> (strongest: String?, review: String?) {
+        let practicedCompetencies = competencies.filter { $0.attempts > 0 }
+        guard !practicedCompetencies.isEmpty else { return (nil, nil) }
+
+        let sortedCompetencies = practicedCompetencies.sorted { lhs, rhs in
+            if lhs.masteryPercent == rhs.masteryPercent {
+                return lhs.topic.localizedCaseInsensitiveCompare(rhs.topic) == .orderedAscending
+            }
+
+            return lhs.masteryPercent < rhs.masteryPercent
+        }
+
+        return (sortedCompetencies.last?.topic, sortedCompetencies.first?.topic)
     }
 
     private func visibleCompetencies(for goalID: Goal.ID?) -> [TopicCompetency] {
@@ -1061,12 +1106,7 @@ final class CheckpointStore {
         updateCompetency(for: question, result: result)
 
         if unlockMinutes > 0 {
-            let now = Date()
-            unlockSession = UnlockSession(
-                startedAt: now,
-                expiresAt: Calendar.current.date(byAdding: .minute, value: unlockMinutes, to: now) ?? now
-            )
-            SharedAppGroup.publishUnlockExpiration(unlockSession?.expiresAt)
+            recordUnlockSession(minutes: unlockMinutes, goalID: goal.id)
         }
 
         save()
@@ -1076,16 +1116,21 @@ final class CheckpointStore {
 
     func startUnlockSession(minutes: Int) {
         let unlockMinutes = UnlockPolicy.normalizedCorrectAnswerUnlockMinutes(minutes)
-        guard unlockMinutes > 0 else { return }
+        guard unlockMinutes > 0, let goalID = goal?.id else { return }
 
+        recordUnlockSession(minutes: unlockMinutes, goalID: goalID)
+        save()
+        publishShieldContext()
+    }
+
+    private func recordUnlockSession(minutes: Int, goalID: Goal.ID) {
         let now = Date()
         unlockSession = UnlockSession(
             startedAt: now,
-            expiresAt: Calendar.current.date(byAdding: .minute, value: unlockMinutes, to: now) ?? now
+            expiresAt: Calendar.current.date(byAdding: .minute, value: minutes, to: now) ?? now
         )
+        unlockEvents.insert(UnlockEvent(goalID: goalID, minutes: minutes, createdAt: now), at: 0)
         SharedAppGroup.publishUnlockExpiration(unlockSession?.expiresAt)
-        save()
-        publishShieldContext()
     }
 
     func clearUnlockSession() {
@@ -1100,6 +1145,7 @@ final class CheckpointStore {
         questions = []
         attempts = []
         competencies = []
+        unlockEvents = []
         questionReports = []
         issueReports = []
         questionGenerationTraces = []
@@ -1624,6 +1670,7 @@ final class CheckpointStore {
         attempts.removeAll { $0.goalID == goalID }
         competencies.removeAll { $0.goalID == goalID || $0.goalID == nil }
         questionReports.removeAll { $0.goalID == goalID }
+        unlockEvents.removeAll { $0.goalID == goalID }
     }
 
     private func beginQuestionGeneration(for goalID: Goal.ID) {
@@ -1687,6 +1734,7 @@ final class CheckpointStore {
             questions: questions,
             attempts: attempts,
             competencies: competencies,
+            unlockEvents: unlockEvents,
             questionReports: questionReports,
             issueReports: issueReports,
             questionGenerationTraces: questionGenerationTraces,
@@ -1766,6 +1814,7 @@ final class CheckpointStore {
         questions = snapshot.questions
         attempts = snapshot.attempts
         competencies = snapshot.competencies
+        unlockEvents = snapshot.unlockEvents ?? []
         questionReports = snapshot.questionReports ?? []
         issueReports = snapshot.issueReports ?? []
         questionGenerationTraces = snapshot.questionGenerationTraces ?? []

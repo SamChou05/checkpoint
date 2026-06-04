@@ -458,20 +458,32 @@ final class CheckpointWorkflowTests: XCTestCase {
             preferredQuestionStyle: .multipleChoice
         )
         let lastWeek = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date.distantPast
+        let earlierToday = Date().addingTimeInterval(-60 * 60)
 
         store.goal = goal
         store.goalProfiles = [goal, otherGoal]
         store.attempts = [
             makeAttempt(goal: goal, result: .correct, createdAt: Date()),
-            makeAttempt(goal: goal, result: .incorrect, createdAt: Date()),
+            makeAttempt(goal: goal, result: .incorrect, createdAt: earlierToday),
             makeAttempt(goal: goal, result: .correct, createdAt: lastWeek),
             makeAttempt(goal: otherGoal, result: .correct, createdAt: Date())
+        ]
+        store.unlockEvents = [
+            UnlockEvent(goalID: goal.id, minutes: 30, createdAt: Date()),
+            UnlockEvent(goalID: otherGoal.id, minutes: 15, createdAt: Date()),
+            UnlockEvent(goalID: goal.id, minutes: 30, createdAt: lastWeek)
         ]
 
         XCTAssertEqual(store.questionsAnsweredThisWeekCount, 3)
         XCTAssertEqual(store.questionAccuracyThisWeekText, "66%")
         XCTAssertEqual(store.weeklyTotalMetrics.questionsAnswered, 3)
         XCTAssertEqual(store.weeklyTotalMetrics.accuracyText, "66%")
+        XCTAssertEqual(store.weeklyTotalMetrics.missedAnswers, 1)
+        XCTAssertEqual(store.weeklyTotalMetrics.goalsPracticed, 2)
+        XCTAssertEqual(store.weeklyTotalMetrics.practiceDays, 1)
+        XCTAssertEqual(store.weeklyTotalMetrics.checkpointsCleared, 2)
+        XCTAssertEqual(store.weeklyTotalMetrics.breakMinutesEarned, 45)
+        XCTAssertEqual(store.weeklyTotalMetrics.breakTimeEarnedText, "45m")
 
         guard let activeMetrics = store.weeklyActiveGoalMetrics else {
             XCTFail("Expected active goal weekly metrics.")
@@ -479,10 +491,14 @@ final class CheckpointWorkflowTests: XCTestCase {
         }
         XCTAssertEqual(activeMetrics.questionsAnswered, 2)
         XCTAssertEqual(activeMetrics.accuracyText, "50%")
+        XCTAssertEqual(activeMetrics.missedAnswers, 1)
+        XCTAssertEqual(activeMetrics.checkpointsCleared, 1)
+        XCTAssertEqual(activeMetrics.breakMinutesEarned, 30)
 
         let otherGoalMetrics = store.weeklyGoalMetrics.first { $0.id == otherGoal.id.uuidString }
         XCTAssertEqual(otherGoalMetrics?.questionsAnswered, 1)
         XCTAssertEqual(otherGoalMetrics?.accuracyText, "100%")
+        XCTAssertEqual(otherGoalMetrics?.breakMinutesEarned, 15)
     }
 
     @MainActor
@@ -1186,6 +1202,20 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertEqual(store.attempts.count, 5)
         XCTAssertEqual(store.attempts.filter { $0.unlockMinutes > 0 }.count, 1)
+        XCTAssertEqual(store.unlockEvents.count, 1)
+        XCTAssertEqual(store.unlockEvents.first?.minutes, store.unlockPolicy.unlockMinutes)
+    }
+
+    @MainActor
+    func testStartUnlockSessionRecordsInsightUnlockEvent() throws {
+        let store = makeSeededStore(questionCount: 5)
+
+        store.startUnlockSession(minutes: store.unlockPolicy.unlockMinutes)
+
+        XCTAssertEqual(store.unlockEvents.count, 1)
+        XCTAssertEqual(store.unlockEvents.first?.minutes, store.unlockPolicy.unlockMinutes)
+        XCTAssertEqual(store.weeklyActiveGoalMetrics?.checkpointsCleared, 1)
+        XCTAssertEqual(store.weeklyActiveGoalMetrics?.breakMinutesEarned, store.unlockPolicy.unlockMinutes)
     }
 
     @MainActor

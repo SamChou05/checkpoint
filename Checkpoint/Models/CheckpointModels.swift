@@ -358,12 +358,21 @@ struct CheckpointAttempt: Identifiable, Codable, Equatable, Sendable {
 }
 
 struct WeeklyMetricsSummary: Identifiable, Equatable, Sendable {
+    static let allGoalsID = "all-goals"
+
     var id: String
     var title: String
     var questionsAnswered: Int
     var correctAnswers: Int
+    var missedAnswers: Int
     var masteryPercent: Int
     var trackedSkillCount: Int
+    var goalsPracticed: Int
+    var practiceDays: Int
+    var checkpointsCleared: Int
+    var breakMinutesEarned: Int
+    var strongestSkill: String?
+    var reviewSkill: String?
     var isCurrentGoal: Bool = false
 
     var accuracyText: String {
@@ -373,6 +382,23 @@ struct WeeklyMetricsSummary: Identifiable, Equatable, Sendable {
 
     var skillProgressText: String {
         "\(masteryPercent)%"
+    }
+
+    var breakTimeEarnedText: String {
+        Self.minutesText(breakMinutesEarned)
+    }
+
+    var missedAnswersText: String {
+        "\(missedAnswers)"
+    }
+
+    private static func minutesText(_ minutes: Int) -> String {
+        guard minutes >= 60 else { return "\(minutes)m" }
+
+        let hours = minutes / 60
+        let remainingMinutes = minutes % 60
+        guard remainingMinutes > 0 else { return "\(hours)h" }
+        return "\(hours)h \(remainingMinutes)m"
     }
 }
 
@@ -634,12 +660,32 @@ struct UnlockSession: Codable, Equatable, Sendable {
     }
 }
 
+struct UnlockEvent: Identifiable, Codable, Equatable, Sendable {
+    var id: UUID
+    var goalID: Goal.ID
+    var minutes: Int
+    var createdAt: Date
+
+    init(
+        id: UUID = UUID(),
+        goalID: Goal.ID,
+        minutes: Int,
+        createdAt: Date = Date()
+    ) {
+        self.id = id
+        self.goalID = goalID
+        self.minutes = minutes
+        self.createdAt = createdAt
+    }
+}
+
 struct AppSnapshot: Codable, Sendable {
     var goal: Goal?
     var goalProfiles: [Goal]?
     var questions: [CheckpointQuestion]
     var attempts: [CheckpointAttempt]
     var competencies: [TopicCompetency]
+    var unlockEvents: [UnlockEvent]?
     var questionReports: [QuestionQualityReport]?
     var issueReports: [UserIssueReport]?
     var questionGenerationTraces: [QuestionGenerationTrace]?
