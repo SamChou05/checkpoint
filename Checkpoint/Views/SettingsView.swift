@@ -222,38 +222,6 @@ struct SettingsView: View {
                                 .pickerStyle(.menu)
                             }
 
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Emergency pass")
-                                        .font(.headline)
-                                        .foregroundStyle(CheckpointTheme.text)
-
-                                    Text("\(store.emergencyPassesRemaining) remaining this week")
-                                        .font(.subheadline)
-                                        .foregroundStyle(CheckpointTheme.muted)
-
-                                    if !screenTime.isShieldingEnabled {
-                                        Text("Available while blocking is active")
-                                            .font(.footnote)
-                                            .foregroundStyle(CheckpointTheme.muted)
-                                    }
-                                }
-
-                                Spacer()
-
-                                Button {
-                                    let unlockMinutes = store.useEmergencyPass()
-                                    screenTime.temporarilyUnshield(minutes: unlockMinutes)
-                                } label: {
-                                    Image(systemName: "cross.case")
-                                        .font(.system(size: 18, weight: .bold))
-                                        .foregroundStyle(CheckpointTheme.paper)
-                                        .frame(width: 42, height: 42)
-                                        .background(CheckpointTheme.amber, in: RoundedRectangle(cornerRadius: 8))
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(store.emergencyPassesRemaining == 0 || !screenTime.isShieldingEnabled)
-                            }
                         }
                     }
 

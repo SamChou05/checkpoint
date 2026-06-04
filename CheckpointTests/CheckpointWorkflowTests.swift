@@ -2041,7 +2041,6 @@ final class UnlockPolicyTests: XCTestCase {
             {
               "unlockMinutes": 3,
               "partialUnlockMinutes": 2,
-              "emergencyUnlockMinutes": 3,
               "unlockOnPartial": true,
               "questionsPerSession": 5,
               "requiredCorrectAnswers": 4
@@ -2053,7 +2052,6 @@ final class UnlockPolicyTests: XCTestCase {
 
         XCTAssertEqual(policy.unlockMinutes, 5)
         XCTAssertEqual(policy.partialUnlockMinutes, 5)
-        XCTAssertEqual(policy.emergencyUnlockMinutes, 5)
     }
 
     func testLegacyTinyCheckpointCountsNormalizeToFiveQuestionBaseline() throws {
@@ -2062,7 +2060,6 @@ final class UnlockPolicyTests: XCTestCase {
             {
               "unlockMinutes": 30,
               "partialUnlockMinutes": 15,
-              "emergencyUnlockMinutes": 15,
               "unlockOnPartial": true,
               "questionsPerSession": 3,
               "requiredCorrectAnswers": 3
@@ -2074,25 +2071,6 @@ final class UnlockPolicyTests: XCTestCase {
 
         XCTAssertEqual(policy.questionsPerSession, 5)
         XCTAssertEqual(policy.requiredCorrectAnswers, 4)
-    }
-
-    @MainActor
-    func testEmergencyPassReturnsUnlockDurationAndCreatesSession() {
-        let suiteName = "UnlockPolicyTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suiteName)!
-        defer {
-            defaults.removePersistentDomain(forName: suiteName)
-            resetSharedAppGroupState()
-        }
-        resetSharedAppGroupState()
-        let store = CheckpointStore(defaults: defaults)
-
-        let unlockMinutes = store.useEmergencyPass()
-
-        XCTAssertEqual(unlockMinutes, UnlockPolicy.default.emergencyUnlockMinutes)
-        XCTAssertEqual(store.emergencyPassesRemaining, 0)
-        XCTAssertEqual(store.activeUnlockMinutesRemaining, UnlockPolicy.default.emergencyUnlockMinutes)
-        XCTAssertNotNil(store.unlockSession)
     }
 }
 

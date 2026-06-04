@@ -60,7 +60,6 @@ final class CheckpointStore {
     var lastQuestionBankTopOffDuration: TimeInterval?
     var checkpointNotice: String?
     var unlockSession: UnlockSession?
-    var emergencyPassesRemaining = 1
     var isOnboardingPresented = false
     var isCreatingGoalProfile = false
     var membershipTier: MembershipTier = .starter
@@ -929,21 +928,6 @@ final class CheckpointStore {
         publishShieldContext()
     }
 
-    @discardableResult
-    func useEmergencyPass() -> Int {
-        guard emergencyPassesRemaining > 0 else { return 0 }
-        emergencyPassesRemaining -= 1
-        let now = Date()
-        let unlockMinutes = unlockPolicy.emergencyUnlockMinutes
-        unlockSession = UnlockSession(
-            startedAt: now,
-            expiresAt: Calendar.current.date(byAdding: .minute, value: unlockMinutes, to: now) ?? now
-        )
-        SharedAppGroup.publishUnlockExpiration(unlockSession?.expiresAt)
-        save()
-        return unlockMinutes
-    }
-
     func clearUnlockSession() {
         unlockSession = nil
         SharedAppGroup.publishUnlockExpiration(nil)
@@ -969,7 +953,6 @@ final class CheckpointStore {
         lastQuestionBankTopOffDuration = nil
         checkpointNotice = nil
         unlockSession = nil
-        emergencyPassesRemaining = 1
         questionRefreshesUsed = 0
         lastAutomaticQuestionRefreshAt = nil
         isCreatingGoalProfile = false
@@ -1473,7 +1456,6 @@ final class CheckpointStore {
             lastQuestionProvider: lastQuestionProvider,
             backendEndpoint: backendEndpoint,
             unlockSession: unlockSession,
-            emergencyPassesRemaining: emergencyPassesRemaining,
             membershipTier: membershipTier,
             questionRefreshesUsed: questionRefreshesUsed,
             lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt
@@ -1552,7 +1534,6 @@ final class CheckpointStore {
         lastQuestionProvider = snapshot.lastQuestionProvider ?? .localTemplates
         backendEndpoint = snapshot.backendEndpoint ?? ""
         unlockSession = snapshot.unlockSession
-        emergencyPassesRemaining = snapshot.emergencyPassesRemaining
         membershipTier = snapshot.membershipTier ?? .starter
         pendingMembershipFeature = nil
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0

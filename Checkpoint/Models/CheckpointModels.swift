@@ -430,7 +430,6 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
 
     var unlockMinutes: Int
     var partialUnlockMinutes: Int
-    var emergencyUnlockMinutes: Int
     var unlockOnPartial: Bool
     var questionsPerSession: Int
     var requiredCorrectAnswers: Int
@@ -439,7 +438,6 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
     init(
         unlockMinutes: Int,
         partialUnlockMinutes: Int,
-        emergencyUnlockMinutes: Int,
         unlockOnPartial: Bool,
         questionsPerSession: Int,
         requiredCorrectAnswers: Int,
@@ -447,7 +445,6 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
     ) {
         self.unlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(unlockMinutes)
         self.partialUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(partialUnlockMinutes)
-        self.emergencyUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(emergencyUnlockMinutes)
         self.unlockOnPartial = unlockOnPartial
         self.questionsPerSession = Self.normalizedQuestionsPerSession(questionsPerSession)
         self.requiredCorrectAnswers = Self.normalizedRequiredCorrectAnswers(
@@ -460,7 +457,6 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
     static let `default` = UnlockPolicy(
         unlockMinutes: 30,
         partialUnlockMinutes: 15,
-        emergencyUnlockMinutes: 15,
         unlockOnPartial: true,
         questionsPerSession: 5,
         requiredCorrectAnswers: 4,
@@ -470,7 +466,6 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
     enum CodingKeys: String, CodingKey {
         case unlockMinutes
         case partialUnlockMinutes
-        case emergencyUnlockMinutes
         case unlockOnPartial
         case questionsPerSession
         case requiredCorrectAnswers
@@ -483,9 +478,6 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
         unlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(decodedUnlockMinutes)
         partialUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(
             try container.decodeIfPresent(Int.self, forKey: .partialUnlockMinutes) ?? Self.default.partialUnlockMinutes
-        )
-        emergencyUnlockMinutes = Self.normalizedCorrectAnswerUnlockMinutes(
-            try container.decodeIfPresent(Int.self, forKey: .emergencyUnlockMinutes) ?? Self.default.emergencyUnlockMinutes
         )
         unlockOnPartial = try container.decodeIfPresent(Bool.self, forKey: .unlockOnPartial) ?? Self.default.unlockOnPartial
 
@@ -617,7 +609,6 @@ struct AppSnapshot: Codable, Sendable {
     var lastQuestionProvider: AIProviderKind?
     var backendEndpoint: String?
     var unlockSession: UnlockSession?
-    var emergencyPassesRemaining: Int
     var membershipTier: MembershipTier?
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?
