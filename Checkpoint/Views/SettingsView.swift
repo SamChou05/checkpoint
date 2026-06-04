@@ -61,7 +61,7 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Goal profiles") {
+                    SectionPanel("Goals") {
                         if let goal = store.goal {
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack(alignment: .top) {
@@ -78,7 +78,7 @@ struct SettingsView: View {
 
                                     Spacer()
 
-                                    StatusBadge(text: profileCountText, tint: CheckpointTheme.teal)
+                                    StatusBadge(text: goalCountText, tint: CheckpointTheme.teal)
                                 }
 
                                 Text("Question level: \(goal.difficultyLabel)")
@@ -89,12 +89,12 @@ struct SettingsView: View {
                         }
 
                         HStack(spacing: 10) {
-                            SecondaryActionButton(title: "Edit profile", systemImage: "pencil") {
+                            SecondaryActionButton(title: "Edit goal", systemImage: "pencil") {
                                 store.presentActiveGoalEditor()
                             }
 
                             if store.canUse(.multipleGoals) {
-                                SecondaryActionButton(title: "New profile", systemImage: "plus") {
+                                SecondaryActionButton(title: "New goal", systemImage: "plus") {
                                     store.presentGoalProfileCreator()
                                 }
                             }
@@ -371,9 +371,9 @@ struct SettingsView: View {
         return "Free keeps the blocker loop usable with one goal and automatic checkpoint preparation."
     }
 
-    private var profileCountText: String {
+    private var goalCountText: String {
         let count = store.availableGoalProfiles.count
-        return count == 1 ? "1 profile" : "\(count) profiles"
+        return count == 1 ? "1 goal" : "\(count) goals"
     }
 
     private var historyDetailText: String {

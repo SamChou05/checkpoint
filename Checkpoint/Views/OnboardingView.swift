@@ -28,7 +28,7 @@ struct OnboardingView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(isNewProfile ? "Create a goal profile" : "Update goal profile")
+                        Text(isNewProfile ? "Create a goal" : "Update goal")
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
@@ -103,7 +103,8 @@ struct OnboardingView: View {
                                 focusAreas: focusAreas,
                                 preferredQuestionStyle: .multipleChoice,
                                 minimumQuestionDifficulty: minimumQuestionDifficulty,
-                                createsNewProfile: isNewProfile
+                                createsNewProfile: isNewProfile,
+                                waitForQuestionGeneration: false
                             )
                             isCreating = false
                             dismiss()
@@ -137,18 +138,18 @@ struct OnboardingView: View {
 
     private var headerSubtitle: String {
         if isNewProfile {
-            return "Set the goal, context, and level once. Checkpoint keeps its questions and skill map separate from your other profiles."
+            return "Set the goal, context, and level once. Checkpoint keeps questions and skill progress separate for each goal."
         }
 
-        return "Adjust the active profile so future questions match your current preparation level."
+        return "Adjust the current goal so future questions match your preparation level."
     }
 
     private var primaryButtonTitle: String {
         if isCreating {
-            return "Preparing questions"
+            return "Saving goal"
         }
 
-        return isNewProfile ? "Create profile" : "Update profile"
+        return isNewProfile ? "Create goal" : "Update goal"
     }
 
     private var isNewProfile: Bool {

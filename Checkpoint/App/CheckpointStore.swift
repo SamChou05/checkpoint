@@ -272,7 +272,8 @@ final class CheckpointStore {
         focusAreas: String,
         preferredQuestionStyle: QuestionFormat,
         minimumQuestionDifficulty: Int? = nil,
-        createsNewProfile: Bool? = nil
+        createsNewProfile: Bool? = nil,
+        waitForQuestionGeneration: Bool = true
     ) async {
         let normalizedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedCurrentLevel = currentLevel.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -304,31 +305,55 @@ final class CheckpointStore {
         let shouldReplaceActiveProfile = !shouldCreateNewProfile && previousGoalID != nil
         questionRefreshesUsed = 0
         questionBatchState = .generating
-        let batch = await questionEngine.generateQuestionBatch(
-            for: generationRequest(goal: newGoal, existingQuestions: [], competencies: [], reportedQuestions: []),
-            preference: aiProviderPreference
-        )
-
-        goal = newGoal
         if shouldReplaceActiveProfile, let previousGoalID {
             removeGoalData(for: previousGoalID)
             goalProfiles.removeAll { $0.id == previousGoalID }
-            upsertGoalProfile(newGoal)
-            if !isPro {
-                goalProfiles = [newGoal]
-            }
         }
 
-        questions.append(contentsOf: batch.questions)
-        lastQuestionProvider = batch.provider
-        lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
-        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: batch.questions))
-        questionBatchState = .ready
+        goal = newGoal
+        if !isPro {
+            goalProfiles = [newGoal]
+        } else {
+            upsertGoalProfile(newGoal)
+        }
+        questions.removeAll { $0.goalID == newGoal.id }
+        competencies.removeAll { $0.goalID == newGoal.id }
+        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: []))
+        lastAIErrorMessage = nil
         checkpointNotice = nil
         unlockSession = nil
         isOnboardingPresented = false
         isCreatingGoalProfile = false
         SharedAppGroup.publishUnlockExpiration(nil)
+        save()
+        publishShieldContext()
+
+        if waitForQuestionGeneration {
+            await generateInitialQuestionBatch(for: newGoal)
+        } else {
+            Task { [weak self] in
+                await self?.generateInitialQuestionBatch(for: newGoal)
+            }
+        }
+    }
+
+    private func generateInitialQuestionBatch(for newGoal: Goal) async {
+        guard goalProfiles.contains(where: { $0.id == newGoal.id }) || goal?.id == newGoal.id else { return }
+
+        let batch = await questionEngine.generateQuestionBatch(
+            for: generationRequest(goal: newGoal, existingQuestions: [], competencies: [], reportedQuestions: []),
+            preference: aiProviderPreference
+        )
+
+        questions.removeAll { $0.goalID == newGoal.id }
+        questions.append(contentsOf: batch.questions)
+        competencies.removeAll { $0.goalID == newGoal.id }
+        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: batch.questions))
+        lastQuestionProvider = batch.provider
+        lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
+        if goal?.id == newGoal.id {
+            questionBatchState = .ready
+        }
         save()
         publishShieldContext()
     }
@@ -502,6 +527,20 @@ final class CheckpointStore {
         save()
         publishShieldContext()
         return unlockMinutes
+    }
+
+    func startUnlockSession(minutes: Int) {
+        let unlockMinutes = UnlockPolicy.normalizedCorrectAnswerUnlockMinutes(minutes)
+        guard unlockMinutes > 0 else { return }
+
+        let now = Date()
+        unlockSession = UnlockSession(
+            startedAt: now,
+            expiresAt: Calendar.current.date(byAdding: .minute, value: unlockMinutes, to: now) ?? now
+        )
+        SharedAppGroup.publishUnlockExpiration(unlockSession?.expiresAt)
+        save()
+        publishShieldContext()
     }
 
     @discardableResult
@@ -936,7 +975,7 @@ final class CheckpointStore {
     private func publishShieldContext() {
         SharedAppGroup.publishShieldContext(
             goalTitle: goal?.title,
-            promptPreview: nextQuestion()?.prompt
+            promptPreview: nil
         )
     }
 

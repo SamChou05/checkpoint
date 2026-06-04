@@ -11,8 +11,7 @@ struct CheckpointAttemptView: View {
     @State private var missedQuestionIDs: Set<CheckpointQuestion.ID> = []
     @State private var answer = ""
     @State private var result: AnswerResult = .correct
-    @State private var isExplanationVisible = false
-    @State private var didRevealAnswer = false
+    @State private var checkedAnswer: CheckedCheckpointAnswer?
 
     var body: some View {
         NavigationStack {
@@ -71,8 +70,10 @@ struct CheckpointAttemptView: View {
                                     ForEach(question.choices, id: \.self) { choice in
                                         ChoiceButton(
                                             title: choice,
-                                            isSelected: answer == choice
+                                            isSelected: answer == choice,
+                                            isLocked: checkedAnswer != nil
                                         ) {
+                                            guard checkedAnswer == nil else { return }
                                             answer = choice
                                         }
                                     }
@@ -84,12 +85,48 @@ struct CheckpointAttemptView: View {
                                     .foregroundStyle(CheckpointTheme.text)
                                     .padding(12)
                                     .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                                    .disabled(checkedAnswer != nil)
                             }
                         }
                     }
 
                     SectionPanel("Result") {
-                        if usesAutomaticEvaluation {
+                        if let checkedAnswer {
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack {
+                                    Text(checkedAnswer.result == .correct ? "Correct" : "Not quite")
+                                        .font(.headline)
+                                        .foregroundStyle(CheckpointTheme.text)
+                                    Spacer()
+                                    StatusBadge(text: checkedAnswer.result.rawValue, tint: resultTint(for: checkedAnswer.result))
+                                }
+
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Answer")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(CheckpointTheme.muted)
+
+                                    Text(question.expectedAnswer)
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.text)
+                                        .fixedSize(horizontal: false, vertical: true)
+
+                                    Text(question.explanation)
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                .padding(12)
+                                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+
+                                if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
+                                    Text("Missed questions come back first on the next attempt.")
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.amber)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                        } else if usesAutomaticEvaluation {
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
                                     Text("Gate result")
@@ -98,7 +135,7 @@ struct CheckpointAttemptView: View {
                                     StatusBadge(text: automaticGateStatus, tint: automaticGateTint)
                                 }
 
-                                Text("Your choice is checked when you submit.")
+                                Text("Choose an answer, then check it to see the explanation.")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -111,48 +148,15 @@ struct CheckpointAttemptView: View {
                             }
                             .pickerStyle(.segmented)
                         }
-
-                        Button {
-                            if !isExplanationVisible {
-                                didRevealAnswer = true
-                            }
-                            isExplanationVisible.toggle()
-                        } label: {
-                            Label(isExplanationVisible ? "Hide expected answer" : "Reveal expected answer", systemImage: "lightbulb")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.amber)
-                        }
-                        .buttonStyle(.plain)
-
-                        if didRevealAnswer {
-                            Text("Revealed answers do not count toward unlock.")
-                                .font(.footnote)
-                                .foregroundStyle(CheckpointTheme.amber)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-
-                        if isExplanationVisible {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(question.expectedAnswer)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Text(question.explanation)
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                            }
-                            .padding(12)
-                            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-                        }
                     }
 
                     PrimaryActionButton(
                         title: submitButtonTitle,
                         systemImage: submitButtonIcon
                     ) {
-                        submitCurrentAnswer()
+                        handlePrimaryAction()
                     }
-                    .disabled(answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(checkedAnswer == nil && answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .padding(20)
             }
@@ -188,22 +192,14 @@ struct CheckpointAttemptView: View {
     }
 
     private var automaticGateStatus: String {
-        if didRevealAnswer {
-            return "No credit"
-        }
-
         return answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Choose" : "Ready"
     }
 
     private var automaticGateTint: Color {
-        didRevealAnswer ? CheckpointTheme.coral : CheckpointTheme.teal
+        CheckpointTheme.teal
     }
 
     private var submissionResult: AnswerResult {
-        if didRevealAnswer {
-            return .unclear
-        }
-
         return usesAutomaticEvaluation ? evaluation.result : result
     }
 
@@ -241,34 +237,38 @@ struct CheckpointAttemptView: View {
     }
 
     private var submitButtonTitle: String {
-        if didRevealAnswer {
-            return projectedSessionCanStillPass ? "Submit answer" : "Submit and stay locked"
+        guard let checkedAnswer else {
+            return "Check answer"
         }
 
-        if projectedSessionShouldFinish {
-            return projectedSessionWillPass ? passingSubmitButtonTitle : "Submit and stay locked"
+        if checkedAnswer.shouldFinish {
+            return checkedAnswer.shouldPass ? passingSubmitButtonTitle : "Stay locked"
         }
 
-        return "Submit answer"
+        return "Next question"
     }
 
     private var passingSubmitButtonTitle: String {
         switch session.purpose {
         case .temporaryUnlock:
-            return "Submit and unlock \(store.unlockPolicy.unlockMinutes) minutes"
+            return "Unlock \(store.unlockPolicy.unlockMinutes) minutes"
         case .preview:
-            return "Submit and finish"
+            return "Finish"
         case .stopBlocking:
-            return "Submit and stop blocking"
+            return "Stop blocking"
         }
     }
 
     private var submitButtonIcon: String {
-        if projectedSessionShouldFinish {
-            return projectedSessionWillPass ? passingSubmitButtonIcon : "lock"
+        guard let checkedAnswer else {
+            return "checkmark.seal"
         }
 
-        return "checkmark.seal"
+        if checkedAnswer.shouldFinish {
+            return checkedAnswer.shouldPass ? passingSubmitButtonIcon : "lock"
+        }
+
+        return "arrow.right"
     }
 
     private var passingSubmitButtonIcon: String {
@@ -282,7 +282,15 @@ struct CheckpointAttemptView: View {
         }
     }
 
-    private func submitCurrentAnswer() {
+    private func handlePrimaryAction() {
+        if checkedAnswer == nil {
+            checkCurrentAnswer()
+        } else {
+            continueAfterCheckedAnswer()
+        }
+    }
+
+    private func checkCurrentAnswer() {
         let result = submissionResult
         let updatedCorrectCount = correctAnswerCount + (result == .correct ? 1 : 0)
         var updatedMissedQuestionIDs = missedQuestionIDs
@@ -296,42 +304,44 @@ struct CheckpointAttemptView: View {
             answeredQuestionCount: answeredQuestionCount
         )
         let shouldPass = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
-        if session.purpose == .preview {
-            correctAnswerCount = updatedCorrectCount
-            missedQuestionIDs = updatedMissedQuestionIDs
 
-            guard !shouldFinish else {
-                dismiss()
-                return
-            }
-
-            advanceToNextQuestion()
-            return
+        if session.purpose != .preview {
+            store.submitAnswer(
+                question: question,
+                answer: answer,
+                result: result,
+                grantsUnlock: false
+            )
         }
 
-        let unlockMinutes = store.submitAnswer(
-            question: question,
-            answer: answer,
-            result: result,
-            grantsUnlock: false,
-            unlockMinutesOverride: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : nil
-        )
         correctAnswerCount = updatedCorrectCount
         missedQuestionIDs = updatedMissedQuestionIDs
+        checkedAnswer = CheckedCheckpointAnswer(
+            result: result,
+            shouldFinish: shouldFinish,
+            shouldPass: shouldPass,
+            unlockMinutes: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : 0,
+            missedQuestionIDs: updatedMissedQuestionIDs
+        )
+    }
 
-        guard !shouldFinish else {
-            if shouldPass {
+    private func continueAfterCheckedAnswer() {
+        guard let checkedAnswer else { return }
+
+        guard !checkedAnswer.shouldFinish else {
+            if checkedAnswer.shouldPass {
                 switch session.purpose {
                 case .temporaryUnlock:
-                    screenTime.temporarilyUnshield(minutes: unlockMinutes)
+                    store.startUnlockSession(minutes: checkedAnswer.unlockMinutes)
+                    screenTime.temporarilyUnshield(minutes: checkedAnswer.unlockMinutes)
                 case .preview:
                     break
                 case .stopBlocking:
                     store.clearUnlockSession()
                     screenTime.clearShield()
                 }
-            } else {
-                store.makeMissedQuestionsDueNow(updatedMissedQuestionIDs)
+            } else if session.purpose != .preview {
+                store.makeMissedQuestionsDueNow(checkedAnswer.missedQuestionIDs)
             }
             dismiss()
             return
@@ -344,37 +354,26 @@ struct CheckpointAttemptView: View {
         currentQuestionIndex += 1
         answer = ""
         result = .correct
-        isExplanationVisible = false
-        didRevealAnswer = false
+        checkedAnswer = nil
     }
 
-    private var projectedCorrectAnswerCount: Int {
-        correctAnswerCount + (submissionResult == .correct ? 1 : 0)
+    private func resultTint(for result: AnswerResult) -> Color {
+        result == .correct ? CheckpointTheme.teal : CheckpointTheme.coral
     }
+}
 
-    private var projectedAnsweredQuestionCount: Int {
-        currentQuestionIndex + (answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0 : 1)
-    }
-
-    private var projectedSessionCanStillPass: Bool {
-        session.canStillMeetUnlockThreshold(
-            correctAnswerCount: projectedCorrectAnswerCount,
-            answeredQuestionCount: projectedAnsweredQuestionCount
-        )
-    }
-
-    private var projectedSessionShouldFinish: Bool {
-        isFinalQuestion || !projectedSessionCanStillPass
-    }
-
-    private var projectedSessionWillPass: Bool {
-        projectedSessionShouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: projectedCorrectAnswerCount)
-    }
+private struct CheckedCheckpointAnswer {
+    let result: AnswerResult
+    let shouldFinish: Bool
+    let shouldPass: Bool
+    let unlockMinutes: Int
+    let missedQuestionIDs: Set<CheckpointQuestion.ID>
 }
 
 private struct ChoiceButton: View {
     var title: String
     var isSelected: Bool
+    var isLocked: Bool
     var action: () -> Void
 
     var body: some View {
@@ -404,5 +403,7 @@ private struct ChoiceButton: View {
             )
         }
         .buttonStyle(.plain)
+        .disabled(isLocked)
+        .opacity(isLocked && !isSelected ? 0.62 : 1)
     }
 }

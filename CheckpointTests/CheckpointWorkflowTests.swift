@@ -69,6 +69,41 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testCreateGoalCanReturnBeforeInitialQuestionsFinish() async {
+        let delayedEngine = DelayedQuestionEngine(
+            provider: .localTemplates,
+            delayNanoseconds: 150_000_000
+        )
+        let engine = HybridQuestionEngine(
+            localEngine: delayedEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+
+        await store.createGoal(
+            title: "Pass the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate logical reasoning",
+            focusAreas: "logical reasoning",
+            preferredQuestionStyle: .multipleChoice,
+            waitForQuestionGeneration: false
+        )
+
+        XCTAssertNotNil(store.goal)
+        XCTAssertFalse(store.isOnboardingPresented)
+        XCTAssertEqual(store.questionBatchState, .generating)
+        XCTAssertTrue(store.questions.isEmpty)
+
+        try? await Task.sleep(nanoseconds: 300_000_000)
+
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertGreaterThanOrEqual(store.questions.count, 5)
+    }
+
+    @MainActor
     func testCreateGoalInfersCategoryFromNaturalLanguageContext() async throws {
         let store = CheckpointStore(defaults: defaults)
 
@@ -1246,6 +1281,25 @@ private struct GoalAwareQuestionEngine: QuestionGenerating {
                 index: index,
                 topic: resolvedTopics[(index - 1) % resolvedTopics.count],
                 prompt: "\(request.goal.title) question \(index): Which choice best supports the active goal?",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+}
+
+private struct DelayedQuestionEngine: QuestionGenerating {
+    let provider: AIProviderKind
+    let delayNanoseconds: UInt64
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        try await Task.sleep(nanoseconds: delayNanoseconds)
+        return (1...6).map { index in
+            makeQuestion(
+                goal: request.goal,
+                index: index,
+                topic: "logical reasoning",
+                prompt: "\(request.goal.title) delayed question \(index)",
                 difficulty: request.minimumDifficulty,
                 sourcePrompt: request.sourcePrompt(provider: provider)
             )

@@ -16,7 +16,7 @@ struct HomeView: View {
 
                     if let goal = store.goal {
                         goalHero(goal)
-                        metricsGrid
+                        weeklyStatsPanel
                         proAssistPanel
                         screenTimePanel
                     } else {
@@ -143,35 +143,37 @@ struct HomeView: View {
         }
     }
 
-    private var metricsGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            MetricTile(
-                title: "Questions answered",
-                value: "\(store.questionsAnsweredThisWeekCount)",
-                tint: CheckpointTheme.teal,
-                systemImage: "checkmark.seal"
-            )
+    private var weeklyStatsPanel: some View {
+        SectionPanel("Weekly stats") {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                MetricTile(
+                    title: "Questions answered",
+                    value: "\(store.questionsAnsweredThisWeekCount)",
+                    tint: CheckpointTheme.teal,
+                    systemImage: "checkmark.seal"
+                )
 
-            MetricTile(
-                title: "Question accuracy",
-                value: store.questionAccuracyThisWeekText,
-                tint: CheckpointTheme.amber,
-                systemImage: "arrow.triangle.2.circlepath"
-            )
+                MetricTile(
+                    title: "Question accuracy",
+                    value: store.questionAccuracyThisWeekText,
+                    tint: CheckpointTheme.amber,
+                    systemImage: "arrow.triangle.2.circlepath"
+                )
 
-            MetricTile(
-                title: "Skill progress",
-                value: store.averageMasteryText,
-                tint: CheckpointTheme.blue,
-                systemImage: "chart.line.uptrend.xyaxis"
-            )
+                MetricTile(
+                    title: "Skill progress",
+                    value: store.averageMasteryText,
+                    tint: CheckpointTheme.blue,
+                    systemImage: "chart.line.uptrend.xyaxis"
+                )
 
-            MetricTile(
-                title: "Break time left",
-                value: "\(store.activeUnlockMinutesRemaining)m",
-                tint: CheckpointTheme.coral,
-                systemImage: "timer"
-            )
+                MetricTile(
+                    title: "Break time left",
+                    value: "\(store.activeUnlockMinutesRemaining)m",
+                    tint: CheckpointTheme.coral,
+                    systemImage: "timer"
+                )
+            }
         }
     }
 
@@ -243,7 +245,7 @@ struct HomeView: View {
                 Button {
                     store.presentGoalProfileCreator()
                 } label: {
-                    Label("New profile", systemImage: "plus")
+                    Label("New goal", systemImage: "plus")
                 }
             } label: {
                 Image(systemName: "rectangle.stack")

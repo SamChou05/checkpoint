@@ -27,7 +27,6 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
 
         let defaults = SharedAppGroup.defaults
         let goalTitle = defaults.string(forKey: SharedAppGroup.shieldGoalTitleKey) ?? "Checkpoint"
-        let prompt = defaults.string(forKey: SharedAppGroup.shieldPromptPreviewKey) ?? "Open Checkpoint and clear one checkpoint before you scroll."
 
         return ShieldConfiguration(
             backgroundBlurStyle: .systemUltraThinMaterialDark,
@@ -38,7 +37,7 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
                 color: UIColor(red: 0.95, green: 0.96, blue: 0.94, alpha: 1.0)
             ),
             subtitle: ShieldConfiguration.Label(
-                text: "\(goalTitle)\n\(prompt)",
+                text: "Goal: \(goalTitle)",
                 color: UIColor(red: 0.72, green: 0.76, blue: 0.78, alpha: 1.0)
             ),
             primaryButtonLabel: ShieldConfiguration.Label(
