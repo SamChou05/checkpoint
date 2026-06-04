@@ -56,7 +56,7 @@ struct MembershipView: View {
                         statusText: store.isMember ? "Current plan" : nil,
                         tint: CheckpointTheme.teal
                     ) {
-                        PlanBenefitRow(title: "Up to 5 goals", detail: "Keep school, exams, and personal goals organized separately.")
+                        PlanBenefitRow(title: "Up to 5 goals", detail: "Keep school, exams, interviews, and personal goals organized separately.")
                         PlanBenefitRow(title: "Practice stays ready", detail: "Get new checkpoints as your priorities and progress change.")
                         PlanBenefitRow(title: "More variety", detail: "Work through a broader range of questions so practice stays useful.")
                         PlanBenefitRow(title: "Guided review", detail: "Missed ideas come back at the right time so weak spots do not disappear.")
