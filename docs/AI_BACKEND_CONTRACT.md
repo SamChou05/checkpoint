@@ -97,6 +97,9 @@ The iOS app also validates batches before storage. It drops blank questions, dup
 
 - Generate in batches, not per blocked-app attempt.
 - Cache generated questions in the app.
+- On goal creation or goal changes, prepare a 5-question AI-first ready set, then asynchronously top off the remaining question bank.
+- When the cached bank runs low, request more AI questions before the user runs out of usable checkpoints.
+- If an AI backend is configured, the app should not silently substitute local template questions for short or failed AI batches.
 - Keep cloud calls behind the backend service; the iOS app must never contain Bedrock, AWS, or other model-provider secrets.
 - Cap batch size in the backend. The Bedrock Lambda defaults to 20 questions per call even if the app requests a larger bank.
 - Rate-limit backend calls by anonymous app install ID and source IP before calling Bedrock.

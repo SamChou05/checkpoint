@@ -414,8 +414,7 @@ struct HybridQuestionEngine: Sendable {
         for request: QuestionGenerationRequest,
         preference: AIProviderKind
     ) async -> QuestionBatch {
-        let providers = providerOrder(for: preference)
-        var firstError: Error?
+        let providers = providerOrder(for: preference, request: request)
         let minimumAcceptedQuestionCount = min(request.targetCount, UnlockPolicy.default.questionsPerSession)
 
         for provider in providers {
@@ -423,41 +422,60 @@ struct HybridQuestionEngine: Sendable {
                 let questions = try await provider.generateQuestions(for: request)
                 let sanitizedQuestions = QuestionBatchSanitizer.sanitize(questions, for: request)
 
-                if sanitizedQuestions.count >= minimumAcceptedQuestionCount {
+                let allowsPartialLocalBatch = preference == .localTemplates
+                    && provider.provider == .localTemplates
+                    && !sanitizedQuestions.isEmpty
+
+                if sanitizedQuestions.count >= minimumAcceptedQuestionCount || allowsPartialLocalBatch {
                     return QuestionBatch(
                         questions: sanitizedQuestions,
                         provider: provider.provider,
                         usedFallback: provider.provider != preference && preference != .automatic
                     )
                 }
-
-                firstError = firstError ?? QuestionGenerationError.noQuestionsGenerated
             } catch {
-                firstError = firstError ?? error
+                continue
             }
         }
 
-        let localQuestions = (try? await localEngine.generateQuestions(for: request)) ?? []
-        let fallbackQuestions = QuestionBatchSanitizer.sanitize(localQuestions, for: request)
-
         return QuestionBatch(
-            questions: fallbackQuestions,
-            provider: .localTemplates,
-            usedFallback: firstError != nil
+            questions: [],
+            provider: failureProvider(for: preference, request: request),
+            usedFallback: false
         )
     }
 
-    private func providerOrder(for preference: AIProviderKind) -> [any QuestionGenerating] {
+    private func providerOrder(
+        for preference: AIProviderKind,
+        request: QuestionGenerationRequest
+    ) -> [any QuestionGenerating] {
         switch preference {
         case .automatic:
+            if request.backendEndpoint != nil {
+                return [appleFoundationEngine, backendEngine]
+            }
             return [appleFoundationEngine, backendEngine, localEngine]
         case .appleFoundation:
+            if request.backendEndpoint != nil {
+                return [appleFoundationEngine, backendEngine]
+            }
             return [appleFoundationEngine, localEngine]
         case .backend:
-            return [backendEngine, localEngine]
+            return [backendEngine]
         case .localTemplates:
             return [localEngine]
         }
+    }
+
+    private func failureProvider(
+        for preference: AIProviderKind,
+        request: QuestionGenerationRequest
+    ) -> AIProviderKind {
+        if preference == .automatic {
+            return request.backendEndpoint == nil ? .localTemplates : .backend
+        }
+
+        return preference
     }
 }
 

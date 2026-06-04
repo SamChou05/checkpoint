@@ -607,29 +607,15 @@ final class CheckpointStore {
         }
     }
 
-    private func initialBatchProviderPreference(for request: QuestionGenerationRequest) -> AIProviderKind {
-        if request.questionContext.needsGeneratedSkillMap {
-            return aiProviderPreference
-        }
-
-        return .localTemplates
+    private func initialBatchProviderPreference(for _: QuestionGenerationRequest) -> AIProviderKind {
+        aiProviderPreference
     }
 
     private func generateCheckpointReadyBatch(
         for request: QuestionGenerationRequest,
         preference: AIProviderKind
     ) async -> QuestionBatch {
-        if preference == .localTemplates, aiProviderPreference != .localTemplates {
-            let seedBatch = await questionEngine.generateQuestionBatch(
-                for: request,
-                preference: .localTemplates
-            )
-            if !seedBatch.questions.isEmpty {
-                return seedBatch
-            }
-        }
-
-        return await questionEngine.generateQuestionBatch(
+        await questionEngine.generateQuestionBatch(
             for: request,
             preference: preference
         )
@@ -667,11 +653,9 @@ final class CheckpointStore {
 
         let existingQuestions = questions.filter { $0.goalID == targetGoal.id }
         let existingCompetencies = competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id }
-        let starterQuestionsCanBeReplaced = aiProviderPreference != .localTemplates && !starterQuestionIDs.isEmpty
         let usableExistingCount = existingQuestions.filter {
             $0.difficulty >= targetGoal.minimumQuestionDifficulty
                 && $0.status != .retired
-                && (!starterQuestionsCanBeReplaced || !starterQuestionIDs.contains($0.id))
         }.count
         let remainingTargetCount = max(0, questionBankTargetCount - usableExistingCount)
 
@@ -698,19 +682,6 @@ final class CheckpointStore {
         let existingKeys = Set(existingQuestions.map { questionKey($0) })
         let newQuestions = batch.questions.filter { !existingKeys.contains(questionKey($0)) }
         questions.append(contentsOf: newQuestions)
-        let usableGeneratedCount = newQuestions.filter {
-            $0.difficulty >= targetGoal.minimumQuestionDifficulty && $0.status != .retired
-        }.count
-        let canReplaceStarterBridge = batch.provider != .localTemplates
-            && usableGeneratedCount >= unlockPolicy.questionsPerSession
-
-        var retiredStarterQuestionCount = 0
-        if canReplaceStarterBridge {
-            for index in questions.indices where starterQuestionIDs.contains(questions[index].id) {
-                questions[index].status = .retired
-                retiredStarterQuestionCount += 1
-            }
-        }
         let goalQuestions = questions.filter { $0.goalID == targetGoal.id }
         competencies.removeAll { $0.goalID == targetGoal.id }
         competencies.append(contentsOf: initialCompetencies(for: targetGoal, questions: goalQuestions))
@@ -724,7 +695,7 @@ final class CheckpointStore {
             providerPreference: aiProviderPreference,
             batch: batch,
             addedQuestions: newQuestions,
-            retiredQuestionCount: retiredStarterQuestionCount,
+            retiredQuestionCount: 0,
             startedAt: startedAt,
             errorMessage: lastAIErrorMessage
         )
@@ -809,7 +780,7 @@ final class CheckpointStore {
         let needsCoreRefill = needsQuestionRefill(
             minimumQuestionCount: refillMinimum,
             allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
-        ) && canRefreshAfterCooldown
+        )
         let shouldRefreshProactively = isMember
             && usableQuestionCount <= ProductLimits.autoRefreshThreshold
             && canRefreshAfterCooldown

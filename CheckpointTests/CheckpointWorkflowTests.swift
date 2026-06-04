@@ -205,15 +205,21 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testCreateGoalWarmStartsLocalQuestionsWhileAIContinues() async throws {
+    func testCreateGoalPreparesFiveAIQuestionsThenTopsOffRemainder() async throws {
         let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let backendEngine = TargetCountQuestionEngine(
+            provider: .backend,
+            largeRequestDelayNanoseconds: 500_000_000
+        )
         let engine = HybridQuestionEngine(
-            localEngine: GoalAwareQuestionEngine(provider: .localTemplates),
-            backendEngine: DelayedQuestionEngine(provider: .backend, delayNanoseconds: 500_000_000),
+            localEngine: localEngine,
+            backendEngine: backendEngine,
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
         )
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.automatic)
+        store.updateBackendEndpoint("https://example.com/ai")
 
         await store.createGoal(
             title: goal.title,
@@ -229,20 +235,19 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertTrue(store.isQuestionBankTopOffInProgress)
-        XCTAssertGreaterThanOrEqual(store.activeQuestions.count, 5)
+        XCTAssertEqual(store.activeQuestions.count, 5)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, 5)
         XCTAssertTrue(store.questionGenerationStatusText.contains("Preparing more practice in the background"))
 
         try? await Task.sleep(nanoseconds: 600_000_000)
 
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertFalse(store.isQuestionBankTopOffInProgress)
-        XCTAssertGreaterThan(store.activeQuestions.count, 6)
-        XCTAssertEqual(store.activeQuestions.filter { $0.status == .retired }.count, 5)
-        XCTAssertTrue(
-            try XCTUnwrap(store.nextCheckpointSession()).questions.allSatisfy {
-                $0.prompt.contains("delayed question")
-            }
-        )
+        XCTAssertEqual(store.activeQuestions.count, ProductLimits.starterQuestionBankTargetCount)
+        XCTAssertEqual(store.activeQuestions.filter { $0.status == .retired }.count, 0)
+        XCTAssertEqual(backendEngine.receivedRequests.map(\.targetCount), [5, 35])
+        XCTAssertEqual(backendEngine.receivedRequests.last?.existingQuestions.count, 5)
         XCTAssertNotNil(store.lastQuestionGenerationDuration)
         XCTAssertNotNil(store.lastQuestionBankTopOffDuration)
     }
@@ -917,6 +922,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
         )
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
         store.updateMembershipTier(.member)
         store.goal = goal
         store.questions = (2...20).map { makeQuestion(goal: goal, index: $0) }
@@ -1444,13 +1450,15 @@ final class CheckpointWorkflowTests: XCTestCase {
     func testMemberQuietlyRefillsWhenQuestionsAreUsedUp() async throws {
         let goal = makeGoal()
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let backendEngine = TargetCountQuestionEngine(provider: .backend)
         let engine = HybridQuestionEngine(
             localEngine: localEngine,
-            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            backendEngine: backendEngine,
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
         )
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://example.com/ai")
         store.updateMembershipTier(.member)
         store.goal = goal
         store.questions = [makeQuestion(goal: goal, index: 99, status: .retired)]
@@ -1459,9 +1467,10 @@ final class CheckpointWorkflowTests: XCTestCase {
         let preparedSession = await store.prepareManualCheckpointSession()
         let session = try XCTUnwrap(preparedSession)
 
-        let request = try XCTUnwrap(localEngine.receivedRequest)
+        let request = try XCTUnwrap(backendEngine.receivedRequests.first)
         XCTAssertEqual(request.targetCount, ProductLimits.memberQuestionBankTargetCount)
-        XCTAssertEqual(session.questions.count, 1)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+        XCTAssertEqual(session.questions.count, store.unlockPolicy.questionsPerSession)
         XCTAssertEqual(store.questionRefreshesUsed, 2 + 1)
         XCTAssertNil(store.checkpointNotice)
     }
@@ -1514,21 +1523,23 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.updateAIProviderPreference(.localTemplates)
         store.updateMembershipTier(.member)
         store.goal = goal
-        store.questions = [makeQuestion(goal: goal, index: 99)]
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
 
         let didRefresh = await store.refreshQuestionBatchIfNeeded()
 
         let request = try XCTUnwrap(localEngine.receivedRequest)
         XCTAssertTrue(didRefresh)
         XCTAssertEqual(request.targetCount, ProductLimits.memberQuestionBankTargetCount)
-        XCTAssertEqual(store.questions.count, 2)
+        XCTAssertEqual(store.questions.count, store.unlockPolicy.questionsPerSession + 1)
         XCTAssertEqual(store.questionRefreshesUsed, 1)
         XCTAssertNotNil(store.lastAutomaticQuestionRefreshAt)
 
         let didRefreshAgain = await store.refreshQuestionBatchIfNeeded()
 
         XCTAssertFalse(didRefreshAgain)
-        XCTAssertEqual(store.questions.count, 2)
+        XCTAssertEqual(store.questions.count, store.unlockPolicy.questionsPerSession + 1)
         XCTAssertEqual(store.questionRefreshesUsed, 1)
     }
 
@@ -1767,7 +1778,7 @@ final class AIProviderPolicyTests: XCTestCase {
         let engine = HybridQuestionEngine(
             localEngine: StaticQuestionEngine(
                 provider: .localTemplates,
-                questions: [makeQuestion(goal: goal, index: 1, sourcePrompt: "local")]
+                questions: (1...5).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "local") }
             ),
             backendEngine: ThrowingQuestionEngine(provider: .backend),
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
@@ -1780,6 +1791,27 @@ final class AIProviderPolicyTests: XCTestCase {
 
         XCTAssertEqual(batch.provider, .localTemplates)
         XCTAssertEqual(batch.questions.first?.sourcePrompt, "local")
+    }
+
+    func testAutomaticProviderWithConfiguredBackendDoesNotUseLocalFallbackWhenAIUnavailable() async {
+        let goal = makeGoal()
+        let engine = HybridQuestionEngine(
+            localEngine: StaticQuestionEngine(
+                provider: .localTemplates,
+                questions: (1...5).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "local") }
+            ),
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+
+        let batch = await engine.generateQuestionBatch(
+            for: makeRequest(goal: goal, backendEndpoint: URL(string: "https://example.com/ai")),
+            preference: .automatic
+        )
+
+        XCTAssertEqual(batch.provider, .backend)
+        XCTAssertTrue(batch.questions.isEmpty)
+        XCTAssertFalse(batch.usedFallback)
     }
 
     func testExplicitBackendPreferenceCanUseBackendWhenConfigured() async {
@@ -1805,7 +1837,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(batch.questions.first?.sourcePrompt, "backend")
     }
 
-    func testProviderFallsBackWhenSanitizedBatchIsTooShort() async {
+    func testBackendProviderRejectsShortBatchInsteadOfUsingLocalFallback() async {
         let goal = makeGoal()
         let engine = HybridQuestionEngine(
             localEngine: StaticQuestionEngine(
@@ -1824,22 +1856,21 @@ final class AIProviderPolicyTests: XCTestCase {
             preference: .backend
         )
 
-        XCTAssertEqual(batch.provider, .localTemplates)
-        XCTAssertTrue(batch.usedFallback)
-        XCTAssertEqual(batch.questions.count, 5)
-        XCTAssertTrue(batch.questions.allSatisfy { $0.sourcePrompt == "local" })
+        XCTAssertEqual(batch.provider, .backend)
+        XCTAssertTrue(batch.questions.isEmpty)
+        XCTAssertFalse(batch.usedFallback)
     }
 
-    func testBackendPreferenceWithoutEndpointFallsBackToLocalTemplates() async {
+    func testBackendPreferenceWithoutEndpointDoesNotUseLocalTemplates() async {
         let goal = makeGoal()
         let batch = await HybridQuestionEngine().generateQuestionBatch(
             for: makeRequest(goal: goal, targetCount: 5),
             preference: .backend
         )
 
-        XCTAssertEqual(batch.provider, .localTemplates)
-        XCTAssertTrue(batch.usedFallback)
-        XCTAssertGreaterThanOrEqual(batch.questions.count, 5)
+        XCTAssertEqual(batch.provider, .backend)
+        XCTAssertTrue(batch.questions.isEmpty)
+        XCTAssertFalse(batch.usedFallback)
     }
 
     func testSanitizerRejectsDuplicateReportedAndInvalidProviderQuestions() {
@@ -2403,9 +2434,10 @@ final class AIProviderPolicyTests: XCTestCase {
 
     @MainActor
     func testInitialGoalGenerationTopsOffRemainingQuestionBankInBackground() async throws {
-        let backendEngine = CapturingQuestionEngine(provider: .backend)
+        let backendEngine = TargetCountQuestionEngine(provider: .backend)
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
-            localEngine: GoalAwareQuestionEngine(provider: .localTemplates),
+            localEngine: localEngine,
             backendEngine: backendEngine,
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
         )
@@ -2415,6 +2447,7 @@ final class AIProviderPolicyTests: XCTestCase {
 
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.automatic)
+        store.updateBackendEndpoint("https://example.com/ai")
 
         await store.createGoal(
             title: "Pass the LSAT",
@@ -2427,9 +2460,11 @@ final class AIProviderPolicyTests: XCTestCase {
 
         try? await Task.sleep(nanoseconds: 150_000_000)
 
-        let request = try XCTUnwrap(backendEngine.receivedRequests.first)
-        XCTAssertEqual(request.targetCount, ProductLimits.starterQuestionBankTargetCount)
-        XCTAssertEqual(request.existingQuestions.count, 5)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+        XCTAssertEqual(backendEngine.receivedRequests.map(\.targetCount), [5, 35])
+        XCTAssertEqual(backendEngine.receivedRequests.first?.existingQuestions.count, 0)
+        XCTAssertEqual(backendEngine.receivedRequests.last?.existingQuestions.count, 5)
+        XCTAssertEqual(store.activeQuestions.count, ProductLimits.starterQuestionBankTargetCount)
     }
 }
 
@@ -2531,6 +2566,37 @@ private final class SkillMapQuestionEngine: QuestionGenerating, @unchecked Senda
                 index: index,
                 topic: topic,
                 prompt: "\(request.goal.title) \(provider.rawValue) skill-map question \(index) for \(topic)",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+}
+
+private final class TargetCountQuestionEngine: QuestionGenerating, @unchecked Sendable {
+    let provider: AIProviderKind
+    let largeRequestDelayNanoseconds: UInt64
+    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+
+    init(provider: AIProviderKind, largeRequestDelayNanoseconds: UInt64 = 0) {
+        self.provider = provider
+        self.largeRequestDelayNanoseconds = largeRequestDelayNanoseconds
+    }
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        receivedRequests.append(request)
+
+        if request.targetCount > UnlockPolicy.default.questionsPerSession,
+           largeRequestDelayNanoseconds > 0 {
+            try await Task.sleep(nanoseconds: largeRequestDelayNanoseconds)
+        }
+
+        return (1...request.targetCount).map { index in
+            makeQuestion(
+                goal: request.goal,
+                index: index,
+                topic: request.questionContext.contentTopics[(index - 1) % request.questionContext.contentTopics.count],
+                prompt: "\(request.goal.title) \(provider.rawValue) target \(request.targetCount) question \(index)",
                 difficulty: request.minimumDifficulty,
                 sourcePrompt: request.sourcePrompt(provider: provider)
             )
