@@ -638,7 +638,7 @@ enum AnswerGrader {
         case .reflection:
             return evaluateReflection(trimmedAnswer)
         case .multipleChoice:
-            return evaluateMultipleChoice(answer: trimmedAnswer, expectedAnswer: question.expectedAnswer)
+            return evaluateMultipleChoice(answer: trimmedAnswer, question: question)
         case .shortAnswer, .codeTrace:
             return evaluateObjective(answer: trimmedAnswer, expectedAnswer: question.expectedAnswer)
         }
@@ -658,8 +658,21 @@ enum AnswerGrader {
         return AnswerEvaluation(result: .incorrect, feedback: "Too vague to count yet.")
     }
 
-    private static func evaluateMultipleChoice(answer: String, expectedAnswer: String) -> AnswerEvaluation {
-        if compact(answer) == compact(expectedAnswer) {
+    private static func evaluateMultipleChoice(answer: String, question: CheckpointQuestion) -> AnswerEvaluation {
+        let answerKey = multipleChoiceKey(answer)
+        let expectedKey = multipleChoiceKey(question.expectedAnswer)
+        let indexedExpectedChoice = multipleChoiceIndex(from: question.expectedAnswer).flatMap { index in
+            question.choices.indices.contains(index) ? question.choices[index] : nil
+        }
+        let matchingExpectedChoice = indexedExpectedChoice ?? question.choices.first {
+            let choiceKey = multipleChoiceKey($0)
+            return choiceKey == expectedKey || (choiceKey.count >= 12 && expectedKey.contains(choiceKey))
+        }
+        let explanationChoice = correctChoiceFromExplanation(question.explanation, choices: question.choices)
+        let resolvedExpectedKey = (explanationChoice ?? matchingExpectedChoice).map(multipleChoiceKey) ?? expectedKey
+        let allowsRawExpectedFallback = explanationChoice == nil
+
+        if answerKey == resolvedExpectedKey || (allowsRawExpectedFallback && answerKey == expectedKey) {
             return AnswerEvaluation(result: .correct, feedback: "Correct choice.")
         }
 
@@ -710,6 +723,104 @@ enum AnswerGrader {
 
     private static func compact(_ text: String) -> String {
         String(text.lowercased().filter { $0.isLetter || $0.isNumber })
+    }
+
+    private static func multipleChoiceKey(_ text: String) -> String {
+        var normalized = text
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        normalized = strippedAnswerPrefix(from: normalized)
+        normalized = strippedChoiceLabel(from: normalized)
+        return compact(normalized)
+    }
+
+    private static func multipleChoiceIndex(from text: String) -> Int? {
+        var normalized = text
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        normalized = strippedAnswerPrefix(from: normalized)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let strippedLabel = strippedChoiceLabel(from: normalized)
+        guard strippedLabel != normalized || normalized.count == 1 else { return nil }
+
+        let characters = Array(normalized)
+        let first = characters.count >= 3 && (characters[0] == "(" || characters[0] == "[")
+            ? characters[1]
+            : characters[0]
+
+        switch first {
+        case "a", "1": return 0
+        case "b", "2": return 1
+        case "c", "3": return 2
+        case "d", "4": return 3
+        default: return nil
+        }
+    }
+
+    private static func correctChoiceFromExplanation(_ explanation: String, choices: [String]) -> String? {
+        let explanationWords = explanation
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .lowercased()
+
+        guard explanationWords.contains("correct")
+            || explanationWords.contains("best answer")
+            || explanationWords.contains("right answer") else {
+            return nil
+        }
+
+        let normalizedExplanation = multipleChoiceKey(explanation)
+        let mentionedChoices = choices.filter { choice in
+            let key = multipleChoiceKey(choice)
+            return key.count >= 12 && normalizedExplanation.contains(key)
+        }
+
+        guard mentionedChoices.count == 1 else { return nil }
+        return mentionedChoices[0]
+    }
+
+    private static func strippedAnswerPrefix(from text: String) -> String {
+        let prefixes = [
+            "correct answer",
+            "correct choice",
+            "correct option",
+            "answer",
+            "choice",
+            "option"
+        ]
+
+        for prefix in prefixes where text.hasPrefix(prefix) {
+            let remainder = String(text.dropFirst(prefix.count))
+                .trimmingCharacters(in: CharacterSet(charactersIn: " \t\n:-."))
+            guard !remainder.isEmpty else { return text }
+            return remainder
+        }
+
+        return text
+    }
+
+    private static func strippedChoiceLabel(from text: String) -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let characters = Array(trimmed)
+        let labels = Set("abcd1234")
+
+        if characters.count >= 3,
+           (characters[0] == "(" || characters[0] == "["),
+           labels.contains(characters[1]),
+           (characters[2] == ")" || characters[2] == "]") {
+            return String(characters.dropFirst(3)).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        if characters.count >= 2,
+           labels.contains(characters[0]),
+           [".", ")", ":", "]"].contains(String(characters[1])) {
+            return String(characters.dropFirst(2)).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        return trimmed
     }
 
     private static let stopWords: Set<String> = [

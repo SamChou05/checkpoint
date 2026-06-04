@@ -1394,6 +1394,114 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(sanitized.map(\.id), [highQuestion.id])
     }
 
+    func testSanitizerResolvesExpectedAnswerLabelToVisibleChoice() throws {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which labeled answer should be treated as correct?",
+            expectedAnswer: "B",
+            choices: [
+                "A. The incorrect distractor",
+                "B. The correct labeled answer",
+                "C. Another distractor",
+                "D. Final distractor"
+            ],
+            difficulty: 2
+        )
+
+        let sanitizedQuestion = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: request).first)
+
+        XCTAssertEqual(sanitizedQuestion.expectedAnswer, "B. The correct labeled answer")
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "B. The correct labeled answer", question: sanitizedQuestion).result,
+            .correct
+        )
+    }
+
+    func testSanitizerUsesExplanationWhenItContradictsExpectedAnswer() throws {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which answer matches the explanation?",
+            expectedAnswer: "The tempting but wrong answer",
+            choices: [
+                "The tempting but wrong answer",
+                "The answer supported by the argument",
+                "An unrelated answer",
+                "A too-broad answer"
+            ],
+            explanation: "The answer supported by the argument is correct because it follows from the stated evidence.",
+            difficulty: 2
+        )
+
+        let sanitizedQuestion = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: request).first)
+
+        XCTAssertEqual(sanitizedQuestion.expectedAnswer, "The answer supported by the argument")
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "The answer supported by the argument", question: sanitizedQuestion).result,
+            .correct
+        )
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "The tempting but wrong answer", question: sanitizedQuestion).result,
+            .incorrect
+        )
+    }
+
+    func testMultipleChoiceGraderUsesExplanationForPersistedAnswerMismatch() {
+        let goal = makeGoal()
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which persisted answer should the grader trust?",
+            expectedAnswer: "The tempting but wrong answer",
+            choices: [
+                "The tempting but wrong answer",
+                "The answer supported by the argument",
+                "An unrelated answer",
+                "A too-broad answer"
+            ],
+            explanation: "The answer supported by the argument is correct because it follows from the stated evidence.",
+            difficulty: 2
+        )
+
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "The answer supported by the argument", question: question).result,
+            .correct
+        )
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "The tempting but wrong answer", question: question).result,
+            .incorrect
+        )
+    }
+
+    func testMultipleChoiceGraderDoesNotTreatLeadingArticleAsChoiceLabel() {
+        let goal = makeGoal()
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            expectedAnswer: "A legal rule should be flexible in unusual cases",
+            choices: [
+                "An unrelated answer",
+                "A legal rule should be flexible in unusual cases",
+                "A broader answer that ignores the facts",
+                "A narrower answer that denies flexibility"
+            ]
+        )
+
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "A legal rule should be flexible in unusual cases", question: question).result,
+            .correct
+        )
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "An unrelated answer", question: question).result,
+            .incorrect
+        )
+    }
+
     func testQuestionContextExtractsLearningTargetFromNaturalLanguageGoal() {
         let goal = makeLSATGoal()
         let request = makeRequest(goal: goal)
@@ -1942,6 +2050,7 @@ private func makeQuestion(
     prompt: String? = nil,
     expectedAnswer: String? = nil,
     choices: [String]? = nil,
+    explanation: String? = nil,
     status: QuestionStatus = .new,
     timesCorrect: Int = 0,
     nextReviewAt: Date? = nil,
@@ -1959,7 +2068,7 @@ private func makeQuestion(
             "Distractor \(index)B",
             "Distractor \(index)C"
         ],
-        explanation: "Explanation \(index)",
+        explanation: explanation ?? "Explanation \(index)",
         topic: topic,
         difficulty: difficulty,
         format: .multipleChoice,
