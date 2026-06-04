@@ -103,13 +103,41 @@ final class CheckpointStore {
     }
 
     var questionsAnsweredThisWeekCount: Int {
-        activeAttemptsThisWeek.count
+        weeklyTotalMetrics.questionsAnswered
     }
 
     var questionAccuracyThisWeekText: String {
-        guard !activeAttemptsThisWeek.isEmpty else { return "0%" }
-        let correct = activeAttemptsThisWeek.filter { $0.result == .correct }.count
-        return "\(Int((Double(correct) / Double(activeAttemptsThisWeek.count)) * 100))%"
+        weeklyTotalMetrics.accuracyText
+    }
+
+    var weeklyTotalMetrics: WeeklyMetricsSummary {
+        weeklyMetricsSummary(
+            id: "all-goals",
+            title: "All goals",
+            goalID: nil,
+            isCurrentGoal: false
+        )
+    }
+
+    var weeklyActiveGoalMetrics: WeeklyMetricsSummary? {
+        guard let goal else { return nil }
+        return weeklyMetricsSummary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true
+        )
+    }
+
+    var weeklyGoalMetrics: [WeeklyMetricsSummary] {
+        availableGoalProfiles.map { profile in
+            weeklyMetricsSummary(
+                id: profile.id.uuidString,
+                title: profile.title,
+                goalID: profile.id,
+                isCurrentGoal: profile.id == goal?.id
+            )
+        }
     }
 
     var averageMasteryText: String {
@@ -155,6 +183,11 @@ final class CheckpointStore {
         return activeAttempts.filter { week.contains($0.createdAt) }
     }
 
+    private var attemptsThisWeek: [CheckpointAttempt] {
+        guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
+        return attempts.filter { week.contains($0.createdAt) }
+    }
+
     var activeCompetencies: [TopicCompetency] {
         guard let goalID = goal?.id else { return [] }
         return competencies.filter { $0.goalID == goalID || $0.goalID == nil }
@@ -162,6 +195,47 @@ final class CheckpointStore {
 
     var visibleActiveCompetencies: [TopicCompetency] {
         mergedCompetenciesForDisplay(activeCompetencies)
+    }
+
+    private func weeklyMetricsSummary(
+        id: String,
+        title: String,
+        goalID: Goal.ID?,
+        isCurrentGoal: Bool
+    ) -> WeeklyMetricsSummary {
+        let weeklyAttempts = attemptsThisWeek.filter { attempt in
+            guard let goalID else { return true }
+            return attempt.goalID == goalID
+        }
+        let correctAnswers = weeklyAttempts.filter { $0.result == .correct }.count
+        let competencies = visibleCompetencies(for: goalID)
+        let masteryPercent = averageMasteryPercent(for: competencies)
+
+        return WeeklyMetricsSummary(
+            id: id,
+            title: title,
+            questionsAnswered: weeklyAttempts.count,
+            correctAnswers: correctAnswers,
+            masteryPercent: masteryPercent,
+            trackedSkillCount: competencies.count,
+            isCurrentGoal: isCurrentGoal
+        )
+    }
+
+    private func visibleCompetencies(for goalID: Goal.ID?) -> [TopicCompetency] {
+        guard let goalID else {
+            return mergedCompetenciesForDisplay(competencies)
+        }
+
+        return mergedCompetenciesForDisplay(
+            competencies.filter { $0.goalID == goalID || $0.goalID == nil }
+        )
+    }
+
+    private func averageMasteryPercent(for competencies: [TopicCompetency]) -> Int {
+        guard !competencies.isEmpty else { return 0 }
+        let total = competencies.reduce(0) { $0 + $1.masteryPercent }
+        return total / competencies.count
     }
 
     var activeQuestionReports: [QuestionQualityReport] {

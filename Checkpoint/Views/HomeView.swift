@@ -6,6 +6,7 @@ struct HomeView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
+    @State private var isInsightsPresented = false
     @State private var isAcceptingLevelIncrease = false
     @State private var lastActivationRefreshAt: Date?
 
@@ -36,6 +37,9 @@ struct HomeView: View {
             .toolbarTitleDisplayMode(.inline)
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
+            }
+            .sheet(isPresented: $isInsightsPresented) {
+                InsightsView(store: store)
             }
             .onAppear {
                 handleQuestionRefreshOnActivation()
@@ -219,34 +223,46 @@ struct HomeView: View {
 
     private var weeklyStatsPanel: some View {
         SectionPanel("Weekly stats") {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                MetricTile(
-                    title: "Questions answered",
-                    value: "\(store.questionsAnsweredThisWeekCount)",
-                    tint: CheckpointTheme.teal,
-                    systemImage: "checkmark.seal"
-                )
+            VStack(alignment: .leading, spacing: 12) {
+                let weeklyMetrics = store.weeklyTotalMetrics
 
-                MetricTile(
-                    title: "Question accuracy",
-                    value: store.questionAccuracyThisWeekText,
-                    tint: CheckpointTheme.amber,
-                    systemImage: "arrow.triangle.2.circlepath"
-                )
+                Text("Across all goals this week.")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.muted)
 
-                MetricTile(
-                    title: "Skill progress",
-                    value: store.averageMasteryText,
-                    tint: CheckpointTheme.blue,
-                    systemImage: "chart.line.uptrend.xyaxis"
-                )
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    MetricTile(
+                        title: "Questions answered",
+                        value: "\(weeklyMetrics.questionsAnswered)",
+                        tint: CheckpointTheme.teal,
+                        systemImage: "checkmark.seal"
+                    )
 
-                MetricTile(
-                    title: "Break remaining",
-                    value: "\(store.activeUnlockMinutesRemaining)m",
-                    tint: CheckpointTheme.coral,
-                    systemImage: "timer"
-                )
+                    MetricTile(
+                        title: "Question accuracy",
+                        value: weeklyMetrics.accuracyText,
+                        tint: CheckpointTheme.amber,
+                        systemImage: "arrow.triangle.2.circlepath"
+                    )
+
+                    MetricTile(
+                        title: "Skill progress",
+                        value: weeklyMetrics.skillProgressText,
+                        tint: CheckpointTheme.blue,
+                        systemImage: "chart.line.uptrend.xyaxis"
+                    )
+
+                    MetricTile(
+                        title: "Break remaining",
+                        value: "\(store.activeUnlockMinutesRemaining)m",
+                        tint: CheckpointTheme.coral,
+                        systemImage: "timer"
+                    )
+                }
+
+                SecondaryActionButton(title: "View insights", systemImage: "chart.bar.xaxis") {
+                    isInsightsPresented = true
+                }
             }
         }
     }
@@ -406,5 +422,174 @@ private struct HomeProtectionActionButton: View {
             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct InsightsView: View {
+    let store: CheckpointStore
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    header
+                    totalStatsPanel
+                    currentGoalPanel
+                    goalBreakdownPanel
+                }
+                .padding(20)
+            }
+            .checkpointScreenBackground()
+            .navigationTitle("Insights")
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                    .foregroundStyle(CheckpointTheme.teal)
+                }
+            }
+        }
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Weekly insights")
+                .font(.largeTitle.bold())
+                .foregroundStyle(CheckpointTheme.text)
+
+            Text("Totals show your full week. Goal rows show where the practice went.")
+                .font(.subheadline)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var totalStatsPanel: some View {
+        SectionPanel("All goals") {
+            let metrics = store.weeklyTotalMetrics
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                MetricTile(
+                    title: "Questions answered",
+                    value: "\(metrics.questionsAnswered)",
+                    tint: CheckpointTheme.teal,
+                    systemImage: "checkmark.seal"
+                )
+
+                MetricTile(
+                    title: "Question accuracy",
+                    value: metrics.accuracyText,
+                    tint: CheckpointTheme.amber,
+                    systemImage: "arrow.triangle.2.circlepath"
+                )
+
+                MetricTile(
+                    title: "Skill progress",
+                    value: metrics.skillProgressText,
+                    tint: CheckpointTheme.blue,
+                    systemImage: "chart.line.uptrend.xyaxis"
+                )
+
+                MetricTile(
+                    title: "Break remaining",
+                    value: "\(store.activeUnlockMinutesRemaining)m",
+                    tint: CheckpointTheme.coral,
+                    systemImage: "timer"
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var currentGoalPanel: some View {
+        if let metrics = store.weeklyActiveGoalMetrics {
+            SectionPanel("Current goal") {
+                GoalInsightRow(metrics: metrics)
+            }
+        }
+    }
+
+    private var goalBreakdownPanel: some View {
+        SectionPanel("Goal breakdown") {
+            let goalMetrics = store.weeklyGoalMetrics
+
+            if goalMetrics.isEmpty {
+                Text("Create a goal and complete a few checkpoints to see per-goal metrics.")
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(goalMetrics) { metrics in
+                        GoalInsightRow(metrics: metrics)
+
+                        if metrics.id != goalMetrics.last?.id {
+                            Divider()
+                                .padding(.vertical, 12)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct GoalInsightRow: View {
+    var metrics: WeeklyMetricsSummary
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(metrics.title)
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.text)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text("\(metrics.trackedSkillCount) tracked skills")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.muted)
+                }
+
+                Spacer(minLength: 10)
+
+                if metrics.isCurrentGoal {
+                    StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                }
+            }
+
+            HStack(spacing: 10) {
+                MiniInsightStat(title: "Answered", value: "\(metrics.questionsAnswered)")
+                MiniInsightStat(title: "Accuracy", value: metrics.accuracyText)
+                MiniInsightStat(title: "Progress", value: metrics.skillProgressText)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct MiniInsightStat: View {
+    var title: String
+    var value: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(value)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+                .monospacedDigit()
+
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.muted)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(CheckpointTheme.panelRaised.opacity(0.65), in: RoundedRectangle(cornerRadius: 8))
     }
 }

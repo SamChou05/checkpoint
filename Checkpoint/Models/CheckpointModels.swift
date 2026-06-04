@@ -357,6 +357,25 @@ struct CheckpointAttempt: Identifiable, Codable, Equatable, Sendable {
     var createdAt = Date()
 }
 
+struct WeeklyMetricsSummary: Identifiable, Equatable, Sendable {
+    var id: String
+    var title: String
+    var questionsAnswered: Int
+    var correctAnswers: Int
+    var masteryPercent: Int
+    var trackedSkillCount: Int
+    var isCurrentGoal: Bool = false
+
+    var accuracyText: String {
+        guard questionsAnswered > 0 else { return "0%" }
+        return "\(Int((Double(correctAnswers) / Double(questionsAnswered)) * 100))%"
+    }
+
+    var skillProgressText: String {
+        "\(masteryPercent)%"
+    }
+}
+
 struct CheckpointSession: Identifiable, Equatable, Sendable {
     var id = UUID()
     var questions: [CheckpointQuestion]

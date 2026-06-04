@@ -446,7 +446,7 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testWeeklyMetricsOnlyUseCurrentGoalAttemptsFromThisWeek() {
+    func testWeeklyMetricsAggregateAcrossGoalsThisWeek() {
         let store = CheckpointStore(defaults: defaults)
         let goal = makeGoal()
         let otherGoal = Goal(
@@ -460,6 +460,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let lastWeek = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date.distantPast
 
         store.goal = goal
+        store.goalProfiles = [goal, otherGoal]
         store.attempts = [
             makeAttempt(goal: goal, result: .correct, createdAt: Date()),
             makeAttempt(goal: goal, result: .incorrect, createdAt: Date()),
@@ -467,8 +468,21 @@ final class CheckpointWorkflowTests: XCTestCase {
             makeAttempt(goal: otherGoal, result: .correct, createdAt: Date())
         ]
 
-        XCTAssertEqual(store.questionsAnsweredThisWeekCount, 2)
-        XCTAssertEqual(store.questionAccuracyThisWeekText, "50%")
+        XCTAssertEqual(store.questionsAnsweredThisWeekCount, 3)
+        XCTAssertEqual(store.questionAccuracyThisWeekText, "66%")
+        XCTAssertEqual(store.weeklyTotalMetrics.questionsAnswered, 3)
+        XCTAssertEqual(store.weeklyTotalMetrics.accuracyText, "66%")
+
+        guard let activeMetrics = store.weeklyActiveGoalMetrics else {
+            XCTFail("Expected active goal weekly metrics.")
+            return
+        }
+        XCTAssertEqual(activeMetrics.questionsAnswered, 2)
+        XCTAssertEqual(activeMetrics.accuracyText, "50%")
+
+        let otherGoalMetrics = store.weeklyGoalMetrics.first { $0.id == otherGoal.id.uuidString }
+        XCTAssertEqual(otherGoalMetrics?.questionsAnswered, 1)
+        XCTAssertEqual(otherGoalMetrics?.accuracyText, "100%")
     }
 
     @MainActor
