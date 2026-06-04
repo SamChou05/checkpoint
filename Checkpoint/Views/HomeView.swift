@@ -79,7 +79,10 @@ struct HomeView: View {
         SectionPanel {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Spacer(minLength: 0)
+                    currentGoalMenu(goal)
+
+                    Spacer()
+
                     VStack(alignment: .trailing, spacing: 2) {
                         Text("Deadline \(goal.deadline, style: .date)")
                         Text(Goal.deadlineDistanceText(until: goal.deadline))
@@ -89,7 +92,10 @@ struct HomeView: View {
                     .lineLimit(1)
                 }
 
-                goalSelectionControl(goal)
+                Text("Goal: \(goal.title)")
+                    .font(.title2.bold())
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if let focusText = store.activeGoalFocusText {
                     Text("Focus: \(focusText)")
@@ -292,13 +298,6 @@ struct HomeView: View {
                     }
                 }
 
-                if screenTime.isShieldingEnabled {
-                    Text("Tap Blocking active to fully stop blocking after an 18-of-20 challenge.")
-                        .font(.footnote)
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
                 if let stopBlockingMessage {
                     Text(stopBlockingMessage)
                         .font(.footnote.weight(.semibold))
@@ -329,18 +328,25 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private func goalSelectionControl(_ goal: Goal) -> some View {
-        if store.availableGoalProfiles.count > 1 {
-            Menu {
-                goalSwitcherMenuContent
-            } label: {
-                goalSelectionLabel(goal, isInteractive: true)
+    private func currentGoalMenu(_ goal: Goal) -> some View {
+        Menu {
+            goalSwitcherMenuContent
+        } label: {
+            HStack(spacing: 6) {
+                Text("Current goal")
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 10, weight: .bold))
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Goal: \(goal.title). Switch current goal")
-        } else {
-            goalSelectionLabel(goal, isInteractive: false)
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Current goal: \(goal.title)")
     }
 
     @ViewBuilder
@@ -372,39 +378,6 @@ struct HomeView: View {
                 Label("New goal", systemImage: "plus")
             }
         }
-    }
-
-    private func goalSelectionLabel(_ goal: Goal, isInteractive: Bool) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "target")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 34, height: 34)
-                .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Goal")
-                    .font(.caption.weight(.bold))
-                    .textCase(.uppercase)
-                    .foregroundStyle(CheckpointTheme.muted)
-
-                Text(goal.title)
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer(minLength: 0)
-
-            if isInteractive {
-                Image(systemName: "chevron.down")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.teal)
-            }
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
     }
 
     private func handleQuestionRefreshOnActivation() {

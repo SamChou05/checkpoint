@@ -46,6 +46,7 @@ final class CheckpointStore {
     var attempts: [CheckpointAttempt] = []
     var competencies: [TopicCompetency] = []
     var questionReports: [QuestionQualityReport] = []
+    var issueReports: [UserIssueReport] = []
     var questionGenerationTraces: [QuestionGenerationTrace] = []
     var unlockPolicy: UnlockPolicy = .default
     var questionBatchState: QuestionBatchState = .idle
@@ -128,6 +129,10 @@ final class CheckpointStore {
 
     var reportedQuestionCount: Int {
         activeQuestionReports.count
+    }
+
+    var issueReportCount: Int {
+        issueReports.count
     }
 
     var activeQuestionDifficulty: Int {
@@ -957,6 +962,7 @@ final class CheckpointStore {
         attempts = []
         competencies = []
         questionReports = []
+        issueReports = []
         questionGenerationTraces = []
         unlockPolicy = .default
         questionBatchState = .idle
@@ -1091,6 +1097,24 @@ final class CheckpointStore {
 
         save()
         publishShieldContext()
+    }
+
+    @discardableResult
+    func submitIssueReport(category: IssueReportCategory, message: String, contact: String) -> Bool {
+        let trimmedMessage = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedMessage.isEmpty else { return false }
+
+        let report = UserIssueReport(
+            goalID: goal?.id,
+            goalTitle: goal?.title ?? "No goal",
+            category: category,
+            message: trimmedMessage,
+            contact: contact.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+
+        issueReports.insert(report, at: 0)
+        save()
+        return true
     }
 
     func clearQuestionGenerationDiagnostics() {
@@ -1519,6 +1543,7 @@ final class CheckpointStore {
             attempts: attempts,
             competencies: competencies,
             questionReports: questionReports,
+            issueReports: issueReports,
             questionGenerationTraces: questionGenerationTraces,
             unlockPolicy: unlockPolicy,
             questionBatchState: questionBatchState,
@@ -1597,6 +1622,7 @@ final class CheckpointStore {
         attempts = snapshot.attempts
         competencies = snapshot.competencies
         questionReports = snapshot.questionReports ?? []
+        issueReports = snapshot.issueReports ?? []
         questionGenerationTraces = snapshot.questionGenerationTraces ?? []
         unlockPolicy = snapshot.unlockPolicy ?? .default
         questionBatchState = snapshot.questionBatchState ?? .idle

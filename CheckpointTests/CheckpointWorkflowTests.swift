@@ -425,6 +425,35 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testIssueReportsPersistAndRejectBlankMessages() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+
+        XCTAssertFalse(store.submitIssueReport(category: .generalFeedback, message: "   ", contact: ""))
+        XCTAssertEqual(store.issueReportCount, 0)
+
+        XCTAssertTrue(
+            store.submitIssueReport(
+                category: .appBlocking,
+                message: "  The shield did not appear after I opened a blocked app.  ",
+                contact: "sam@example.com "
+            )
+        )
+        XCTAssertEqual(store.issueReportCount, 1)
+
+        let report = try XCTUnwrap(store.issueReports.first)
+        XCTAssertEqual(report.category, .appBlocking)
+        XCTAssertEqual(report.message, "The shield did not appear after I opened a blocked app.")
+        XCTAssertEqual(report.contact, "sam@example.com")
+        XCTAssertEqual(report.goalID, goal.id)
+        XCTAssertEqual(report.goalTitle, goal.title)
+
+        let reloadedStore = CheckpointStore(defaults: defaults)
+        XCTAssertEqual(reloadedStore.issueReports, store.issueReports)
+    }
+
+    @MainActor
     func testSwitchingActiveGoalRebuildsPracticeSetAndSkillMap() async throws {
         let engine = GoalAwareQuestionEngine(provider: .localTemplates)
         let store = CheckpointStore(

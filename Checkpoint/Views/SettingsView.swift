@@ -6,7 +6,7 @@ struct SettingsView: View {
 
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
-    @State private var isQuestionReportsPresented = false
+    @State private var isIssueReportsPresented = false
     @State private var isGenerationDiagnosticsPresented = false
     @State private var isAdvancedExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
@@ -136,12 +136,12 @@ struct SettingsView: View {
                             Divider()
 
                             SettingsNavigationRow(
-                                title: "Question reports",
-                                detail: questionReportsDetailText,
-                                systemImage: "exclamationmark.bubble",
-                                trailingText: "\(store.reportedQuestionCount)"
+                                title: "Report an issue",
+                                detail: issueReportsDetailText,
+                                systemImage: "bubble.left.and.bubble.right",
+                                trailingText: "\(store.issueReportCount)"
                             ) {
-                                isQuestionReportsPresented = true
+                                isIssueReportsPresented = true
                             }
                         }
                     }
@@ -318,7 +318,7 @@ struct SettingsView: View {
             .sheet(isPresented: $isHistoryPresented) {
                 HistoryView(store: store)
             }
-            .sheet(isPresented: $isQuestionReportsPresented) {
+            .sheet(isPresented: $isIssueReportsPresented) {
                 QuestionReportsView(store: store)
             }
             .sheet(isPresented: $isGenerationDiagnosticsPresented) {
@@ -423,12 +423,12 @@ struct SettingsView: View {
         return "\(store.questionsAnsweredThisWeekCount) answered this week"
     }
 
-    private var questionReportsDetailText: String {
-        if store.reportedQuestionCount == 0 {
-            return "Flag confusing or incorrect questions"
+    private var issueReportsDetailText: String {
+        if store.issueReportCount == 0 {
+            return "Questions, app issues, or feedback"
         }
 
-        return "\(store.reportedQuestionCount) submitted"
+        return "\(store.issueReportCount) submitted"
     }
 
     private var unlockMinutesBinding: Binding<Int> {

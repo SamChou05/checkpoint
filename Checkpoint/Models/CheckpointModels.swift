@@ -48,6 +48,16 @@ enum QuestionReportReason: String, Codable, CaseIterable, Identifiable, Sendable
     var id: String { rawValue }
 }
 
+enum IssueReportCategory: String, Codable, CaseIterable, Identifiable, Sendable {
+    case generalFeedback = "General feedback"
+    case questionIssue = "Question issue"
+    case appBlocking = "App blocking"
+    case goalSetup = "Goal setup"
+    case membership = "Membership"
+
+    var id: String { rawValue }
+}
+
 enum QuestionBatchState: String, Codable, Sendable {
     case idle
     case generating
@@ -389,6 +399,16 @@ struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {
     var createdAt = Date()
 }
 
+struct UserIssueReport: Identifiable, Codable, Equatable, Sendable {
+    var id = UUID()
+    var goalID: Goal.ID?
+    var goalTitle: String
+    var category: IssueReportCategory
+    var message: String
+    var contact: String
+    var createdAt = Date()
+}
+
 struct QuestionGenerationTrace: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var createdAt = Date()
@@ -602,6 +622,7 @@ struct AppSnapshot: Codable, Sendable {
     var attempts: [CheckpointAttempt]
     var competencies: [TopicCompetency]
     var questionReports: [QuestionQualityReport]?
+    var issueReports: [UserIssueReport]?
     var questionGenerationTraces: [QuestionGenerationTrace]?
     var unlockPolicy: UnlockPolicy?
     var questionBatchState: QuestionBatchState?
