@@ -92,6 +92,7 @@ final class CheckpointStore {
         load()
         isOnboardingPresented = goal == nil
         publishShieldContext()
+        replaceActiveLocalTemplateQuestionBankIfNeeded()
     }
 
     // MARK: - Derived state
@@ -401,6 +402,10 @@ final class CheckpointStore {
         }
 
         goal = selectedGoal
+        if shouldReplaceLocalTemplateQuestionBank(for: selectedGoal) {
+            clearQuestionBank(for: selectedGoal.id)
+        }
+
         let hasActiveQuestions = !activeQuestions.isEmpty
         questionBatchState = hasActiveQuestions ? .ready : .generating
         isQuestionBankTopOffInProgress = questionBankTopOffGoalIDs.contains(selectedGoal.id)
@@ -418,6 +423,36 @@ final class CheckpointStore {
             prepareInitialQuestionsInBackground(for: selectedGoal)
         }
         return true
+    }
+
+    private func replaceActiveLocalTemplateQuestionBankIfNeeded() {
+        guard let goal,
+              shouldReplaceLocalTemplateQuestionBank(for: goal) else {
+            return
+        }
+
+        clearQuestionBank(for: goal.id)
+        questionBatchState = .generating
+        isQuestionBankTopOffInProgress = false
+        questionBankTopOffStartedAt = nil
+        lastAIErrorMessage = nil
+        save()
+        publishShieldContext()
+        prepareInitialQuestionsInBackground(for: goal)
+    }
+
+    private func shouldReplaceLocalTemplateQuestionBank(for profile: Goal) -> Bool {
+        aiProviderPreference != .localTemplates
+            && resolvedBackendEndpoint != nil
+            && lastQuestionProvider == .localTemplates
+            && questions.contains { question in
+                question.goalID == profile.id && question.status != .retired
+            }
+    }
+
+    private func clearQuestionBank(for goalID: Goal.ID) {
+        questions.removeAll { $0.goalID == goalID }
+        competencies.removeAll { $0.goalID == goalID }
     }
 
     // MARK: - Plan access

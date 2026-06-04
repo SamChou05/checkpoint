@@ -253,6 +253,58 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testConfiguredBackendRegeneratesCachedLocalTemplateBankOnLaunch() async throws {
+        let goal = makeGoal()
+        let seededStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: GoalAwareQuestionEngine(provider: .localTemplates),
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        seededStore.updateAIProviderPreference(.localTemplates)
+
+        await seededStore.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        XCTAssertEqual(seededStore.lastQuestionProvider, .localTemplates)
+        XCTAssertFalse(seededStore.activeQuestions.isEmpty)
+        seededStore.updateBackendEndpoint("https://example.com/ai")
+        seededStore.updateAIProviderPreference(.automatic)
+
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let backendEngine = TargetCountQuestionEngine(
+            provider: .backend,
+            requestDelayNanoseconds: 100_000_000
+        )
+        let relaunchedStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+
+        XCTAssertTrue(relaunchedStore.activeQuestions.isEmpty)
+        XCTAssertEqual(relaunchedStore.questionBatchState, .generating)
+
+        try? await Task.sleep(nanoseconds: 300_000_000)
+
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, 5)
+        XCTAssertEqual(relaunchedStore.activeQuestions.count, ProductLimits.starterQuestionBankTargetCount)
+        XCTAssertEqual(relaunchedStore.lastQuestionProvider, .backend)
+    }
+
+    @MainActor
     func testSwitchingToGoalWithoutQuestionsStartsBackgroundPreparation() async {
         let delayedEngine = DelayedQuestionEngine(
             provider: .localTemplates,
@@ -2575,18 +2627,26 @@ private final class SkillMapQuestionEngine: QuestionGenerating, @unchecked Senda
 
 private final class TargetCountQuestionEngine: QuestionGenerating, @unchecked Sendable {
     let provider: AIProviderKind
+    let requestDelayNanoseconds: UInt64
     let largeRequestDelayNanoseconds: UInt64
     private(set) var receivedRequests: [QuestionGenerationRequest] = []
 
-    init(provider: AIProviderKind, largeRequestDelayNanoseconds: UInt64 = 0) {
+    init(
+        provider: AIProviderKind,
+        requestDelayNanoseconds: UInt64 = 0,
+        largeRequestDelayNanoseconds: UInt64 = 0
+    ) {
         self.provider = provider
+        self.requestDelayNanoseconds = requestDelayNanoseconds
         self.largeRequestDelayNanoseconds = largeRequestDelayNanoseconds
     }
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         receivedRequests.append(request)
 
-        if request.targetCount > UnlockPolicy.default.questionsPerSession,
+        if requestDelayNanoseconds > 0 {
+            try await Task.sleep(nanoseconds: requestDelayNanoseconds)
+        } else if request.targetCount > UnlockPolicy.default.questionsPerSession,
            largeRequestDelayNanoseconds > 0 {
             try await Task.sleep(nanoseconds: largeRequestDelayNanoseconds)
         }
