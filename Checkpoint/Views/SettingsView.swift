@@ -334,7 +334,9 @@ struct SettingsView: View {
                     }
                 }
                 .padding(20)
+                .padding(.bottom, 56)
             }
+            .padding(.bottom, 48)
             .checkpointScreenBackground()
             .navigationTitle("Settings")
             .toolbarTitleDisplayMode(.inline)
@@ -484,6 +486,7 @@ private struct QuestionGenerationDiagnosticsView: View {
                     }
                 }
                 .padding(20)
+                .padding(.bottom, 32)
             }
             .checkpointScreenBackground()
             .navigationTitle("Generation")

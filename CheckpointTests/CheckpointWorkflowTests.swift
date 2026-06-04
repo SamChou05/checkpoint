@@ -205,6 +205,53 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testSkillMapFallsBackToGoalTopicsWhenFocusAreasAreMissing() async {
+        let store = CheckpointStore(defaults: defaults)
+
+        await store.createGoal(
+            title: "Pass technical interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice,
+            waitForQuestionGeneration: false
+        )
+
+        XCTAssertEqual(
+            Set(store.sortedCompetencies.map(\.topic)),
+            ["Big-O", "arrays", "hash maps", "recursion"]
+        )
+    }
+
+    @MainActor
+    func testSkillMapIgnoresPlaceholderFocusAreas() async {
+        let store = CheckpointStore(defaults: defaults)
+
+        await store.createGoal(
+            title: "Pass operating systems exam",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "???, asdf, none",
+            preferredQuestionStyle: .multipleChoice,
+            waitForQuestionGeneration: false
+        )
+
+        let topics = Set(store.sortedCompetencies.map(\.topic))
+        XCTAssertFalse(topics.contains("asdf"))
+        XCTAssertEqual(
+            topics,
+            [
+                "operating systems application",
+                "operating systems concepts",
+                "operating systems problem solving",
+                "operating systems review gaps"
+            ]
+        )
+    }
+
+    @MainActor
     func testWeeklyMetricsOnlyUseCurrentGoalAttemptsFromThisWeek() {
         let store = CheckpointStore(defaults: defaults)
         let goal = makeGoal()
@@ -1026,6 +1073,67 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testQuestionLevelRecommendationAppearsAfterStrongRecentAccuracy() throws {
+        var goal = makeGoal()
+        goal.minimumQuestionDifficulty = 2
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0, difficulty: 2) }
+
+        for question in store.questions {
+            store.submitAnswer(
+                question: question,
+                answer: question.expectedAnswer,
+                result: .correct,
+                grantsUnlock: false
+            )
+        }
+
+        let recommendation = try XCTUnwrap(store.questionLevelRecommendation)
+        XCTAssertEqual(recommendation.currentQuestionLevel, 2)
+        XCTAssertEqual(recommendation.nextLevel, 3)
+        XCTAssertEqual(recommendation.accuracyPercent, 100)
+        XCTAssertEqual(recommendation.answeredCount, 5)
+    }
+
+    @MainActor
+    func testAcceptingQuestionLevelRecommendationRegeneratesHarderQuestions() async throws {
+        var goal = makeGoal()
+        goal.minimumQuestionDifficulty = 2
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.goal = goal
+        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0, difficulty: 2) }
+        let originalQuestionIDs = Set(store.questions.map(\.id))
+
+        for question in store.questions {
+            store.submitAnswer(
+                question: question,
+                answer: question.expectedAnswer,
+                result: .correct,
+                grantsUnlock: false
+            )
+        }
+
+        await store.acceptQuestionLevelRecommendation()
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(store.goal?.minimumQuestionDifficulty, 3)
+        XCTAssertEqual(request.minimumDifficulty, 3)
+        XCTAssertTrue(store.questions.filter { originalQuestionIDs.contains($0.id) }.allSatisfy { $0.status == .retired })
+        XCTAssertTrue(store.activeQuestions.contains { $0.difficulty >= 3 && !originalQuestionIDs.contains($0.id) })
+        XCTAssertEqual(store.questionRefreshesUsed, FreemiumLimits.freeQuestionRefreshLimit)
+        XCTAssertNil(store.pendingPaywallFeature)
+    }
+
+    @MainActor
     private func makeSeededStore(questionCount: Int) -> CheckpointStore {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
@@ -1282,9 +1390,10 @@ final class AIProviderPolicyTests: XCTestCase {
         let sourcePrompt = try XCTUnwrap(store.questions.first?.sourcePrompt)
         XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: Pass calculus final"))
         XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: calculus final"))
-        XCTAssertTrue(sourcePrompt.contains("The user's current level/context is: Advanced at derivatives, weak on integrals"))
         XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: integrals, limits"))
+        XCTAssertTrue(sourcePrompt.contains("The requested question difficulty floor is: level 4 of 5"))
         XCTAssertTrue(sourcePrompt.contains("Generate 5 level 4 of 5 difficulty multiple-choice questions about calculus final"))
+        XCTAssertFalse(sourcePrompt.contains("current level/context"))
     }
 
     @MainActor
@@ -1374,7 +1483,6 @@ final class AIProviderPolicyTests: XCTestCase {
 
         XCTAssertEqual(goalPayload["title"] as? String, goal.title)
         XCTAssertEqual(goalPayload["category"] as? String, goal.category.rawValue)
-        XCTAssertEqual(goalPayload["currentLevel"] as? String, goal.currentLevel)
         XCTAssertEqual(goalPayload["focusAreas"] as? String, goal.focusAreas)
         XCTAssertEqual(goalPayload["learningTarget"] as? String, "technical interviews")
         XCTAssertEqual(goalPayload["contentTopics"] as? [String], ["arrays", "recursion", "hash maps"])
@@ -1388,12 +1496,13 @@ final class AIProviderPolicyTests: XCTestCase {
         let sourcePrompt = request.sourcePrompt(provider: .backend)
         XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: \(goal.title)"))
         XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: technical interviews"))
-        XCTAssertTrue(sourcePrompt.contains("The user's current level/context is: \(goal.currentLevel)"))
         XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: arrays, recursion, hash maps"))
+        XCTAssertTrue(sourcePrompt.contains("The requested question difficulty floor is: level 3 of 5"))
         XCTAssertTrue(sourcePrompt.contains("Generate 12 level 3 of 5 difficulty multiple-choice questions about technical interviews"))
         XCTAssertTrue(sourcePrompt.contains("Use these competency notes to target weak areas: recursion"))
         XCTAssertTrue(sourcePrompt.contains("Avoid these existing prompts: Existing prompt"))
         XCTAssertTrue(sourcePrompt.contains("Avoid these reported prompts: Reported prompt"))
+        XCTAssertFalse(sourcePrompt.contains("current level/context"))
     }
 
     func testBackendClientIdentityPersistsAnonymousInstallID() throws {
@@ -1595,12 +1704,7 @@ private struct GoalAwareQuestionEngine: QuestionGenerating {
     let provider: AIProviderKind
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
-        let topics = request.goal.focusAreas
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-
-        let resolvedTopics = topics.isEmpty ? [request.goal.category.rawValue] : topics
+        let resolvedTopics = request.questionContext.contentTopics
 
         return (1...6).map { index in
             makeQuestion(
@@ -1658,6 +1762,7 @@ private final class CapturingQuestionEngine: QuestionGenerating, @unchecked Send
                 goal: request.goal,
                 index: 1,
                 topic: "integrals",
+                prompt: "\(provider.rawValue) generated question at level \(request.minimumDifficulty)",
                 difficulty: request.minimumDifficulty,
                 sourcePrompt: request.sourcePrompt(provider: provider)
             )

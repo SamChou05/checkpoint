@@ -8,11 +8,11 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 
 - Native SwiftUI app shell.
 - Natural-language goal profile onboarding flow, with one active Free goal and Pro support for multiple saved profiles.
-- Goal category is inferred internally from the typed goal/context instead of shown as user-facing setup.
+- Goal category is inferred internally from the typed goal and optional focus areas instead of shown as user-facing setup.
 - Provider-based multiple-choice question generation extracts a learning target from typed goals, so phrases like `Study for the LSAT` produce LSAT questions rather than study-habit prompts.
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
-- Per-profile 1-to-5 question difficulty floor so users can skip remedial prompts for goals they already know well.
+- Per-profile 1-to-5 question difficulty floor so users can skip remedial prompts for goals they already know well, with an opt-in level-up prompt after strong recent accuracy.
 - Correct-answer unlock windows use 15, 30, 45, or 60 minutes, with 30 minutes as the default.
 - Stored checkpoint attempts with correctness and unlock state.
 - Missed questions from a failed unlock attempt become due immediately so the next checkpoint retests them first.
@@ -24,7 +24,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Home no longer offers one-tap pause or manual checkpoint entry while blocking is active; short breaks start from blocked-app attempts or emergency passes, while fully stopping blocking requires a 9-of-10 stop challenge in Advanced.
 - Manual checkpoint preview lives in Advanced for testing and does not unlock apps.
 - Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
-- Pro users can switch goal profiles from Home; each profile keeps its own goal context, question difficulty, practice set, history, reports, and Skill Map.
+- Pro users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
 - StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for goal profiles, custom checkpoint rules, extra question variety, and adaptive guidance.
 - Privacy manifests for the app and Screen Time extensions.
 - Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.
@@ -56,7 +56,7 @@ See `docs/MONETIZATION.md` for the recommended free/Pro split, product IDs, and 
 
 ## Testing
 
-Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, Free/Pro gating, Pro goal profile isolation, Pro Assist, and provider payload sanitization.
+Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, Free/Pro gating, Pro goal profile isolation, Skill Map topic fallback, adaptive level-up, Pro Assist, and provider payload sanitization.
 
 ## Open
 

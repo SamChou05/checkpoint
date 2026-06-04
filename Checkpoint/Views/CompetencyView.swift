@@ -29,7 +29,9 @@ struct CompetencyView: View {
                     }
                 }
                 .padding(20)
+                .padding(.bottom, 56)
             }
+            .padding(.bottom, 48)
             .checkpointScreenBackground()
             .navigationTitle("Skill")
             .toolbarTitleDisplayMode(.inline)

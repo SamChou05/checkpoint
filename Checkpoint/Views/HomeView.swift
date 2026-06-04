@@ -6,6 +6,7 @@ struct HomeView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
+    @State private var isAcceptingLevelIncrease = false
 
     var body: some View {
         NavigationStack {
@@ -24,7 +25,9 @@ struct HomeView: View {
                     }
                 }
                 .padding(20)
+                .padding(.bottom, 56)
             }
+            .padding(.bottom, 48)
             .checkpointScreenBackground()
             .navigationTitle("Checkpoint")
             .toolbarTitleDisplayMode(.inline)
@@ -73,10 +76,14 @@ struct HomeView: View {
                     StatusBadge(text: "Current goal", tint: CheckpointTheme.teal)
                     Spacer()
                     goalSwitcher
-                    Text("Deadline \(goal.deadline, style: .date)")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .lineLimit(1)
+
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("Deadline \(goal.deadline, style: .date)")
+                        Text(Goal.deadlineDistanceText(until: goal.deadline))
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .lineLimit(1)
                 }
 
                 Text(goal.title)
@@ -128,17 +135,52 @@ struct HomeView: View {
 
     @ViewBuilder
     private var proAssistPanel: some View {
-        if store.isPro, let focus = store.proFocusRecommendation {
-            SectionPanel("Study Assist") {
-                VStack(alignment: .leading, spacing: 10) {
-                    StatusBadge(text: "Adaptive focus", tint: CheckpointTheme.teal)
+        let levelRecommendation = store.questionLevelRecommendation
+        let focusRecommendation = store.isPro ? store.proFocusRecommendation : nil
 
-                    Text(focus)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.text)
-                        .fixedSize(horizontal: false, vertical: true)
+        if levelRecommendation != nil || focusRecommendation != nil {
+            SectionPanel("Study Assist") {
+                VStack(alignment: .leading, spacing: 12) {
+                    if let levelRecommendation {
+                        levelUpRecommendationCard(levelRecommendation)
+                    }
+
+                    if let focusRecommendation {
+                        VStack(alignment: .leading, spacing: 10) {
+                            StatusBadge(text: "Adaptive focus", tint: CheckpointTheme.teal)
+
+                            Text(focusRecommendation)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.text)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    private func levelUpRecommendationCard(_ recommendation: QuestionLevelRecommendation) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            StatusBadge(text: "Ready for harder questions", tint: CheckpointTheme.amber)
+
+            Text("\(recommendation.accuracyPercent)% over \(recommendation.answeredCount) recent questions at level \(recommendation.currentQuestionLevel).")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+
+            SecondaryActionButton(
+                title: isAcceptingLevelIncrease ? "Preparing harder questions" : "Increase question level",
+                systemImage: "arrow.up.circle"
+            ) {
+                Task {
+                    guard !isAcceptingLevelIncrease else { return }
+                    isAcceptingLevelIncrease = true
+                    await store.acceptQuestionLevelRecommendation()
+                    isAcceptingLevelIncrease = false
+                }
+            }
+            .disabled(isAcceptingLevelIncrease)
         }
     }
 

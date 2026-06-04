@@ -6,7 +6,6 @@ struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var deadline = Calendar.current.date(byAdding: .month, value: 2, to: Date()) ?? Date()
-    @State private var currentLevel = ""
     @State private var focusAreas = ""
     @State private var minimumQuestionDifficulty = UnlockPolicy.default.minimumQuestionDifficulty
     @State private var isCreating = false
@@ -17,7 +16,6 @@ struct OnboardingView: View {
         if let goal = store.goal, !store.isCreatingGoalProfile {
             _title = State(initialValue: goal.title)
             _deadline = State(initialValue: max(goal.deadline, Date()))
-            _currentLevel = State(initialValue: goal.currentLevel)
             _focusAreas = State(initialValue: goal.focusAreas)
             _minimumQuestionDifficulty = State(initialValue: goal.minimumQuestionDifficulty)
         }
@@ -50,20 +48,24 @@ struct OnboardingView: View {
                             .foregroundStyle(CheckpointTheme.text)
                     }
 
-                    SectionPanel("Study context") {
-                        TextField("Current level", text: $currentLevel, axis: .vertical)
-                            .lineLimit(3, reservesSpace: true)
-                            .textFieldStyle(.plain)
-                            .foregroundStyle(CheckpointTheme.text)
-                            .padding(12)
-                            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-
+                    SectionPanel("Focus areas") {
                         TextField("Focus areas, separated by commas", text: $focusAreas, axis: .vertical)
                             .lineLimit(3, reservesSpace: true)
                             .textFieldStyle(.plain)
                             .foregroundStyle(CheckpointTheme.text)
                             .padding(12)
                             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+
+                        if !parsedFocusAreas.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(parsedFocusAreas, id: \.self) { focusArea in
+                                        FocusAreaChip(text: focusArea)
+                                    }
+                                }
+                                .padding(.vertical, 2)
+                            }
+                        }
 
                         HStack {
                             Text("Format")
@@ -99,7 +101,7 @@ struct OnboardingView: View {
                             await store.createGoal(
                                 title: title,
                                 deadline: deadline,
-                                currentLevel: currentLevel,
+                                currentLevel: "",
                                 focusAreas: focusAreas,
                                 preferredQuestionStyle: .multipleChoice,
                                 minimumQuestionDifficulty: minimumQuestionDifficulty,
@@ -138,7 +140,7 @@ struct OnboardingView: View {
 
     private var headerSubtitle: String {
         if isNewProfile {
-            return "Set the goal, context, and level once. Checkpoint keeps questions and skill progress separate for each goal."
+            return "Set the goal, focus areas, and question level once. Checkpoint keeps questions and skill progress separate for each goal."
         }
 
         return "Adjust the current goal so future questions match your preparation level."
@@ -154,5 +156,27 @@ struct OnboardingView: View {
 
     private var isNewProfile: Bool {
         store.goal == nil || store.isCreatingGoalProfile
+    }
+
+    private var parsedFocusAreas: [String] {
+        focusAreas
+            .components(separatedBy: CharacterSet(charactersIn: ",;\n"))
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+}
+
+private struct FocusAreaChip: View {
+    var text: String
+
+    var body: some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
     }
 }

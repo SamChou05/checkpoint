@@ -44,7 +44,7 @@ Important platform constraint:
 - Study Assist adds next-topic guidance without exposing question-bank status.
 - Natural-language goal profile onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
-- Goal category is inferred internally from the typed goal/context instead of shown as a setup choice.
+- Goal category is inferred internally from the typed goal and optional focus areas instead of shown as a setup choice.
 - Question generation extracts an internal learning target from natural-language goals, so `Study for the LSAT` becomes LSAT content rather than questions about studying.
 - Existing profiles reopen prefilled for edits; Free keeps one active profile, while Pro can create multiple profiles.
 - Home lets Pro users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
@@ -52,9 +52,9 @@ Important platform constraint:
 
 ### Question System
 
-- Goal intake captures title, deadline, current level, focus areas, and the profile-specific minimum question level; internal category inference keeps fallback question generation useful.
+- Goal intake captures title, deadline, focus areas, and the profile-specific minimum question level; internal category and topic inference keep fallback question generation useful.
 - The generation request derives a learning target, content topics, and a question directive before calling local, backend, or Apple Foundation providers.
-- Provider prompts intentionally stay simple: user goal, derived learning target, context, topics, requested count, difficulty, and multiple-choice requirements.
+- Provider prompts intentionally stay simple: user goal, derived learning target, content topics, requested count, difficulty floor, and multiple-choice requirements.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.
@@ -96,7 +96,8 @@ Important platform constraint:
   - new questions in weaker topics
   - questions near the user's estimated difficulty
 - The scheduler respects the active profile's manually configured difficulty floor when enough questions are available.
-- Initial topic levels are inferred from the user's typed current-level context, then adjusted by answer history.
+- Initial topic levels start from the active question difficulty and inferred goal topics, then adjust by answer history.
+- Strong recent accuracy surfaces an opt-in question-level increase that updates the goal difficulty and refills harder questions.
 - Skill tab shows average mastery and per-topic progress.
 
 ### Unlock Policy
@@ -296,6 +297,6 @@ Implementation status:
 - Provider output validation is implemented before questions enter the bank.
 - Automatic provider routing prefers LLM generation when on-device support or an internal backend endpoint is available, then falls back to local templates.
 - Core workflow and provider policy are covered by the `CheckpointTests` XCTest target.
-- Typed current-level context now seeds initial competency estimates.
+- Focus areas are the only user-facing study context; blank or placeholder focus text falls back to inferred goal topics for the Skill Map and provider prompts.
 - Settings exposes strictness controls, global unlock rules, and off-flow history/report access; minimum question difficulty now lives on each goal profile.
 - Backend request/response contract is documented in `docs/AI_BACKEND_CONTRACT.md`.

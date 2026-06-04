@@ -199,6 +199,24 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         Self.difficultyLabel(for: minimumQuestionDifficulty)
     }
 
+    static func deadlineDistanceText(until deadline: Date, from now: Date = Date()) -> String {
+        let secondsRemaining = Int(deadline.timeIntervalSince(now))
+        guard secondsRemaining > 0 else { return "due now" }
+
+        let days = secondsRemaining / (60 * 60 * 24)
+        let hours = (secondsRemaining % (60 * 60 * 24)) / (60 * 60)
+
+        if days > 0 {
+            return "\(days)d \(hours)h left"
+        }
+
+        if hours > 0 {
+            return "\(hours)h left"
+        }
+
+        return "<1h left"
+    }
+
     static func difficultyLabel(for level: Int) -> String {
         switch UnlockPolicy.normalizedQuestionDifficulty(level) {
         case 1:
@@ -361,6 +379,13 @@ struct CheckpointSession: Identifiable, Equatable, Sendable {
         let remainingQuestions = max(0, questions.count - answeredQuestionCount)
         return correctAnswerCount + remainingQuestions >= unlockThreshold
     }
+}
+
+struct QuestionLevelRecommendation: Equatable, Sendable {
+    var currentQuestionLevel: Int
+    var nextLevel: Int
+    var accuracyPercent: Int
+    var answeredCount: Int
 }
 
 enum StopBlockingPolicy {

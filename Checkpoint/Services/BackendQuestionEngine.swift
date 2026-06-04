@@ -81,7 +81,6 @@ private struct GoalPayload: Encodable {
     var title: String
     var deadline: Date
     var category: String
-    var currentLevel: String
     var focusAreas: String
     var learningTarget: String
     var contentTopics: [String]
@@ -92,7 +91,6 @@ private struct GoalPayload: Encodable {
         title = goal.title
         deadline = goal.deadline
         category = goal.category.rawValue
-        currentLevel = goal.currentLevel
         focusAreas = goal.focusAreas
         learningTarget = questionContext.learningTarget
         contentTopics = questionContext.contentTopics

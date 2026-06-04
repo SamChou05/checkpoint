@@ -40,8 +40,8 @@ struct QuestionGenerationRequest: Sendable {
         return """
         Here is the user's goal: \(goal.title)
         The actual learning target to test is: \(context.learningTarget)
-        The user's current level/context is: \(goal.currentLevel.isEmpty ? "Not specified" : goal.currentLevel)
         The user's focus topics are: \(context.contentTopics.joined(separator: ", "))
+        The requested question difficulty floor is: level \(minimumDifficulty) of 5
 
         Generate \(targetCount) level \(minimumDifficulty) of 5 difficulty multiple-choice questions about \(context.learningTarget).
         Question style guidance: \(context.questionDirective)
@@ -164,10 +164,7 @@ struct GoalQuestionContext: Equatable, Sendable {
     }
 
     private static func contentTopics(for goal: Goal, learningTarget: String) -> [String] {
-        let rawTopics = goal.focusAreas
-            .split(separator: ",")
-            .map { collapsedWhitespace(String($0)) }
-            .filter { !$0.isEmpty }
+        let rawTopics = meaningfulFocusTopics(from: goal.focusAreas)
 
         if isLSAT(learningTarget) {
             let mappedTopics = rawTopics.map(lsatTopic)
@@ -185,7 +182,7 @@ struct GoalQuestionContext: Equatable, Sendable {
             if learningTarget.lowercased().contains("calculus") {
                 return ["limits", "derivatives", "integrals", "applications of derivatives"]
             }
-            return [learningTarget]
+            return genericAcademicTopics(for: learningTarget)
         case .languageLearning:
             return ["vocabulary", "grammar", "translation", "reading comprehension"]
         case .fitness:
@@ -193,8 +190,79 @@ struct GoalQuestionContext: Equatable, Sendable {
         case .writing:
             return ["argument", "structure", "revision", "evidence"]
         case .custom:
-            return [learningTarget]
+            return genericAcademicTopics(for: learningTarget)
         }
+    }
+
+    private static func meaningfulFocusTopics(from focusAreas: String) -> [String] {
+        let separators = CharacterSet(charactersIn: ",;\n")
+        let placeholderTopics: Set<String> = [
+            "none",
+            "n/a",
+            "na",
+            "idk",
+            "not sure",
+            "unsure",
+            "nothing",
+            "random",
+            "misc",
+            "test",
+            "asdf"
+        ]
+
+        let topics = focusAreas
+            .components(separatedBy: separators)
+            .map(collapsedWhitespace)
+            .filter { topic in
+                let normalizedTopic = topic.lowercased()
+                guard !topic.isEmpty,
+                      !placeholderTopics.contains(normalizedTopic),
+                      topic.contains(where: { $0.isLetter || $0.isNumber })
+                else {
+                    return false
+                }
+
+                return true
+            }
+
+        return unique(topics)
+    }
+
+    private static func genericAcademicTopics(for learningTarget: String) -> [String] {
+        let subject = studySubject(from: learningTarget)
+        return [
+            "\(subject) concepts",
+            "\(subject) problem solving",
+            "\(subject) application",
+            "\(subject) review gaps"
+        ]
+    }
+
+    private static func studySubject(from learningTarget: String) -> String {
+        var subject = collapsedWhitespace(learningTarget)
+        let removableSuffixes = [
+            " exam",
+            " test",
+            " final",
+            " midterm",
+            " quiz",
+            " prep",
+            " preparation"
+        ]
+
+        var didRemoveSuffix = true
+        while didRemoveSuffix {
+            didRemoveSuffix = false
+            let lowercasedSubject = subject.lowercased()
+
+            for suffix in removableSuffixes where lowercasedSubject.hasSuffix(suffix) {
+                subject = String(subject.dropLast(suffix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+                didRemoveSuffix = true
+                break
+            }
+        }
+
+        return subject.isEmpty ? learningTarget : subject
     }
 
     private static func questionDirective(

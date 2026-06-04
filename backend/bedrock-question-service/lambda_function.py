@@ -209,7 +209,6 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         "goal": {
             "title": _clean_text(goal.get("title")),
             "category": _clean_text(goal.get("category")),
-            "currentLevel": _clean_text(goal.get("currentLevel")) or "Not specified",
             "focusAreas": _clean_text(goal.get("focusAreas")),
             "learningTarget": learning_target,
             "contentTopics": normalized_topics or [learning_target],

@@ -7,7 +7,7 @@ Checkpoint should start thinking about payment now, but should not block the cor
 Launch with a free core and one Pro subscription group.
 
 - Free: one active goal profile, local/offline question generation, basic checkpoint history, default strictness, restricted app blocking.
-- Pro: goal profiles with separate context/difficulty, custom checkpoint rules, more question variety, unlimited refreshes, richer competency analytics, and future import/sync features.
+- Pro: goal profiles with separate focus areas/difficulty, custom checkpoint rules, more question variety, unlimited refreshes, richer competency analytics, and future import/sync features.
 - Initial price test: $4.99/month and $29.99/year.
 
 This keeps the first release reviewable and useful while leaving room to monetize users who want deeper academic tracking.

@@ -341,7 +341,6 @@ def _request_payload(target_count=5, minimum_difficulty=3):
             "title": "Study for the LSAT",
             "deadline": "2026-07-01T00:00:00Z",
             "category": "Exam Prep",
-            "currentLevel": "Solid on basics, weak on timed logical reasoning.",
             "focusAreas": "Logical reasoning, reading comprehension",
             "learningTarget": "LSAT",
             "contentTopics": ["Logical Reasoning", "Reading Comprehension"],

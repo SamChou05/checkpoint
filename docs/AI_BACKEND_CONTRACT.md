@@ -16,7 +16,6 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
     "title": "Pass a coding interview in 8 weeks",
     "deadline": "2026-06-27T00:00:00Z",
     "category": "Coding Interview",
-    "currentLevel": "Basic Python. Shaky on recursion.",
     "focusAreas": "arrays, recursion, Big-O",
     "learningTarget": "coding interview in 8 weeks",
     "contentTopics": ["arrays", "recursion", "Big-O"],
@@ -81,7 +80,7 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - Every question should be answerable in 30 seconds to 3 minutes.
 - Questions should target weak topics and stay near the user's estimated level.
 - If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
-- Use `learningTarget`, `contentTopics`, `questionDirective`, current-level text, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
+- Use `learningTarget`, `contentTopics`, `questionDirective`, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
 - Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as user intent, not as the tested subject. For example, `Study for the LSAT` should produce LSAT Logical Reasoning or Reading Comprehension questions, not questions about how to study.
 - Do not ask about study plans, productivity, motivation, app blocking, or next steps unless the learning target is explicitly study skills.
 

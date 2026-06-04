@@ -5,9 +5,10 @@ private enum QuestionRefreshReason {
     case manual
     case automaticCoreRefill
     case automaticProactiveRefill
+    case levelUpRefill
 
     var canBypassFreeLimit: Bool {
-        self == .automaticCoreRefill
+        self == .automaticCoreRefill || self == .levelUpRefill
     }
 
     func countsAsRefresh(isPro: Bool) -> Bool {
@@ -30,6 +31,8 @@ private enum QuestionRefreshReason {
             return "Automatic core refill"
         case .automaticProactiveRefill:
             return "Automatic proactive refill"
+        case .levelUpRefill:
+            return "Question level increase"
         }
     }
 }
@@ -81,6 +84,9 @@ final class CheckpointStore {
     @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
     @ObservationIgnored private static let maximumQuestionGenerationTraceCount = 20
     @ObservationIgnored private static let maximumQuestionGenerationPreviewCount = 12
+    @ObservationIgnored private static let levelUpRecentAttemptWindow = 10
+    @ObservationIgnored private static let levelUpMinimumAttemptCount = 5
+    @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
 
     // MARK: - Lifecycle
 
@@ -269,6 +275,36 @@ final class CheckpointStore {
         }
 
         return "Focus next on \(competency.topic); it is your lowest mastery area at \(competency.masteryPercent)%."
+    }
+
+    var questionLevelRecommendation: QuestionLevelRecommendation? {
+        guard let goal,
+              goal.minimumQuestionDifficulty < 5,
+              !isPreparingActiveGoalQuestions else {
+            return nil
+        }
+
+        let recentAttempts = Array(activeAttempts.prefix(Self.levelUpRecentAttemptWindow))
+        let attemptsAtCurrentLevel = recentAttempts.filter { attempt in
+            guard let question = questions.first(where: { $0.id == attempt.questionID }) else {
+                return true
+            }
+
+            return question.difficulty >= goal.minimumQuestionDifficulty
+        }
+
+        guard attemptsAtCurrentLevel.count >= Self.levelUpMinimumAttemptCount else { return nil }
+
+        let correctCount = attemptsAtCurrentLevel.filter { $0.result == .correct }.count
+        let accuracy = Double(correctCount) / Double(attemptsAtCurrentLevel.count)
+        guard accuracy >= Self.levelUpAccuracyThreshold else { return nil }
+
+        return QuestionLevelRecommendation(
+            currentQuestionLevel: goal.minimumQuestionDifficulty,
+            nextLevel: goal.minimumQuestionDifficulty + 1,
+            accuracyPercent: Int((accuracy * 100).rounded()),
+            answeredCount: attemptsAtCurrentLevel.count
+        )
     }
 
     // MARK: - Pro access
@@ -1029,6 +1065,22 @@ final class CheckpointStore {
         publishShieldContext()
     }
 
+    func acceptQuestionLevelRecommendation() async {
+        guard let recommendation = questionLevelRecommendation,
+              var activeGoal = goal else {
+            return
+        }
+
+        activeGoal.minimumQuestionDifficulty = recommendation.nextLevel
+        goal = activeGoal
+        retireActiveQuestionsBelowDifficulty(recommendation.nextLevel)
+        lastAIErrorMessage = nil
+        save()
+        publishShieldContext()
+
+        await refreshQuestionBatch(reason: .levelUpRefill)
+    }
+
     func updateAIProviderPreference(_ provider: AIProviderKind) {
         aiProviderPreference = provider
         save()
@@ -1252,6 +1304,14 @@ final class CheckpointStore {
         competencies.append(contentsOf: updatedCompetencies)
     }
 
+    private func retireActiveQuestionsBelowDifficulty(_ difficulty: Int) {
+        guard let goalID = goal?.id else { return }
+
+        for index in questions.indices where questions[index].goalID == goalID && questions[index].difficulty < difficulty {
+            questions[index].status = .retired
+        }
+    }
+
     private func migrateLegacyCompetenciesToActiveGoal() {
         guard let goalID = goal?.id else { return }
 
@@ -1367,9 +1427,9 @@ final class CheckpointStore {
     }
 
     private func initialCompetencies(for goal: Goal, questions: [CheckpointQuestion]) -> [TopicCompetency] {
-        let focusTopics = competencyTopics(from: goal.focusAreas)
+        let contextTopics = GoalQuestionContext(goal: goal).contentTopics.flatMap(competencyTopics)
         let questionTopics = questions.flatMap { competencyTopics(from: $0.topic) }
-        let topics = uniqueCompetencyTopics(focusTopics + questionTopics).sorted()
+        let topics = uniqueCompetencyTopics(contextTopics + questionTopics).sorted()
 
         return topics.map { topic in
             .initial(topic: topic, estimatedLevel: estimatedStartingLevel(for: topic, goal: goal), goalID: goal.id)
@@ -1595,7 +1655,7 @@ final class CheckpointStore {
 
     private func estimatedStartingLevel(for topic: String, goal: Goal) -> Double {
         let levelText = goal.currentLevel.lowercased()
-        var estimate = 1.5
+        var estimate = max(1.5, Double(goal.minimumQuestionDifficulty) - 0.5)
 
         if containsAny(["expert", "advanced", "strong", "very comfortable"], in: levelText) {
             estimate = 3.7
