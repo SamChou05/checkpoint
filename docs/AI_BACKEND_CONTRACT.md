@@ -41,7 +41,8 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
     "What is an array?"
   ],
   "targetCount": 40,
-  "minimumDifficulty": 3
+  "minimumDifficulty": 3,
+  "difficultyGuidance": "Medium application: apply concepts to a short scenario with qualifiers and plausible distractors."
 }
 ```
 
@@ -73,6 +74,7 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - Return only valid JSON.
 - `difficulty` must be 1 through 5.
 - `difficulty` should be greater than or equal to `minimumDifficulty` from the request.
+- Use `difficultyGuidance` to make the question substance match the configured level; do not relabel an easy question as hard.
 - `format` must be `Multiple Choice`.
 - `choices` should include 4 options.
 - `expectedAnswer` must exactly match one item in `choices`.
@@ -81,6 +83,7 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - Every question should be answerable in 30 seconds to 3 minutes.
 - Questions should target weak topics and stay near the user's estimated level.
 - If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
+- If generated questions come back below `minimumDifficulty`, the backend and app should drop them instead of promoting their numeric difficulty.
 - Use `learningTarget`, `contentTopics`, `questionDirective`, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
 - If `goal.needsSkillMap` is true, infer 4 to 6 subject-matter skills from the learning target and use those skill names as returned question topics. The app uses the first generated topics to seed the Skill Map before background bank refill.
 - Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as user intent, not as the tested subject. For example, `Study for the LSAT` should produce LSAT Logical Reasoning or Reading Comprehension questions, not questions about how to study.

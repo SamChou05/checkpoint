@@ -1217,6 +1217,58 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testManualQuestionDifficultyIncreaseRegeneratesHarderQuestions() async throws {
+        var goal = makeGoal()
+        goal.minimumQuestionDifficulty = 2
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.questionRefreshesUsed = 1
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0, difficulty: 2) }
+        let originalQuestionIDs = Set(store.questions.map(\.id))
+
+        await store.updateMinimumQuestionDifficultyAndRegenerate(4)
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(store.goal?.minimumQuestionDifficulty, 4)
+        XCTAssertEqual(request.minimumDifficulty, 4)
+        XCTAssertTrue(request.sourcePrompt(provider: .localTemplates).contains("Hard reasoning"))
+        XCTAssertTrue(store.questions.filter { originalQuestionIDs.contains($0.id) }.allSatisfy { $0.status == .retired })
+        XCTAssertTrue(store.activeQuestions.contains { $0.difficulty >= 4 && !originalQuestionIDs.contains($0.id) })
+        XCTAssertEqual(store.questionRefreshesUsed, 1)
+    }
+
+    @MainActor
+    func testManualQuestionDifficultyDecreaseKeepsExistingHarderQuestions() async throws {
+        var goal = makeGoal()
+        goal.minimumQuestionDifficulty = 4
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0, difficulty: 4) }
+
+        await store.updateMinimumQuestionDifficultyAndRegenerate(2)
+
+        XCTAssertNil(localEngine.receivedRequest)
+        XCTAssertEqual(store.goal?.minimumQuestionDifficulty, 2)
+        XCTAssertTrue(store.activeQuestions.allSatisfy { $0.status != .retired })
+    }
+
+    @MainActor
     func testStarterLevelRecommendationRequestsMembershipBeforeChangingDifficulty() async throws {
         var goal = makeGoal()
         goal.minimumQuestionDifficulty = 2
@@ -1513,6 +1565,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: Study for the LSAT"))
         XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: LSAT"))
         XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: Logical Reasoning, Reading Comprehension"))
+        XCTAssertTrue(sourcePrompt.contains("Difficulty guidance for this batch: Foundations"))
         XCTAssertTrue(sourcePrompt.contains("Generate 5 level 1 of 5 difficulty multiple-choice questions about LSAT"))
         XCTAssertTrue(sourcePrompt.contains("Ask about LSAT itself, not study plans"))
     }
@@ -1578,6 +1631,21 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(questions.allSatisfy { $0.difficulty >= 4 })
     }
 
+    func testLocalTemplatesVaryQuestionWordingByDifficulty() async throws {
+        let goal = makeGoal()
+        let basicRequest = makeRequest(goal: goal, minimumDifficulty: 1)
+        let hardRequest = makeRequest(goal: goal, minimumDifficulty: 5)
+
+        let basicQuestions = try await LocalDraftQuestionEngine().generateQuestions(for: basicRequest)
+        let hardQuestions = try await LocalDraftQuestionEngine().generateQuestions(for: hardRequest)
+        let basicPrompt = try XCTUnwrap(basicQuestions.first?.prompt)
+        let hardPrompt = try XCTUnwrap(hardQuestions.first?.prompt)
+
+        XCTAssertTrue(basicPrompt.contains("Level 1 foundations"))
+        XCTAssertTrue(hardPrompt.contains("Level 5 expert synthesis"))
+        XCTAssertNotEqual(basicPrompt, hardPrompt)
+    }
+
     @MainActor
     func testStorePassesGoalContextAndDifficultyToQuestionEngine() async throws {
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
@@ -1614,6 +1682,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: calculus final"))
         XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: integrals, limits"))
         XCTAssertTrue(sourcePrompt.contains("The requested question difficulty floor is: level 4 of 5"))
+        XCTAssertTrue(sourcePrompt.contains("Difficulty guidance for this batch: Hard reasoning"))
         XCTAssertTrue(sourcePrompt.contains("Generate 5 level 4 of 5 difficulty multiple-choice questions about calculus final"))
         XCTAssertFalse(sourcePrompt.contains("current level/context"))
     }
@@ -1714,6 +1783,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(goalPayload["needsSkillMap"] as? Bool, false)
         XCTAssertEqual(payload["targetCount"] as? Int, 12)
         XCTAssertEqual(payload["minimumDifficulty"] as? Int, 3)
+        XCTAssertTrue((payload["difficultyGuidance"] as? String)?.contains("Medium application") ?? false)
         XCTAssertEqual(competencies.first?["topic"] as? String, "recursion")
         XCTAssertEqual(existingPrompts, ["Existing prompt"])
         XCTAssertEqual(reportedPrompts, ["Reported prompt"])
@@ -1723,6 +1793,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: technical interviews"))
         XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: arrays, recursion, hash maps"))
         XCTAssertTrue(sourcePrompt.contains("The requested question difficulty floor is: level 3 of 5"))
+        XCTAssertTrue(sourcePrompt.contains("Difficulty guidance for this batch: Medium application"))
         XCTAssertTrue(sourcePrompt.contains("Generate 12 level 3 of 5 difficulty multiple-choice questions about technical interviews"))
         XCTAssertTrue(sourcePrompt.contains("Use these competency notes to target weak areas: recursion"))
         XCTAssertTrue(sourcePrompt.contains("Avoid these existing prompts: Existing prompt"))

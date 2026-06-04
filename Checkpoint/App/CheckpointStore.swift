@@ -1082,15 +1082,53 @@ final class CheckpointStore {
     }
 
     func updateMinimumQuestionDifficulty(_ difficulty: Int) {
+        let shouldRegenerate = applyMinimumQuestionDifficulty(difficulty)
+        guard shouldRegenerate else { return }
+
+        Task { [weak self] in
+            await self?.refreshQuestionBatch(reason: .levelUpRefill)
+        }
+    }
+
+    func updateMinimumQuestionDifficultyAndRegenerate(_ difficulty: Int) async {
+        let shouldRegenerate = applyMinimumQuestionDifficulty(difficulty)
+        guard shouldRegenerate else { return }
+
+        await refreshQuestionBatch(reason: .levelUpRefill)
+    }
+
+    @discardableResult
+    private func applyMinimumQuestionDifficulty(_ difficulty: Int) -> Bool {
         let normalizedDifficulty = UnlockPolicy.normalizedQuestionDifficulty(difficulty)
+        let previousDifficulty = activeQuestionDifficulty
+        let hadActiveQuestions = !activeQuestions.isEmpty
+
         if var activeGoal = goal {
             activeGoal.minimumQuestionDifficulty = normalizedDifficulty
             goal = activeGoal
         } else {
             unlockPolicy.minimumQuestionDifficulty = normalizedDifficulty
         }
+
+        let didRaiseActiveGoalDifficulty = goal != nil && normalizedDifficulty > previousDifficulty
+        var shouldRegenerate = false
+
+        if didRaiseActiveGoalDifficulty {
+            retireActiveQuestionsBelowDifficulty(normalizedDifficulty)
+            lastAIErrorMessage = nil
+
+            if isMember {
+                questionBatchState = .generating
+                shouldRegenerate = true
+            } else if hadActiveQuestions && usableQuestionCount < unlockPolicy.questionsPerSession {
+                checkpointNotice = "Question level updated. Membership can prepare a fresh harder question bank when your current set is below that level."
+                requestMembership(for: .freshQuestionGeneration)
+            }
+        }
+
         save()
         publishShieldContext()
+        return shouldRegenerate
     }
 
     func acceptQuestionLevelRecommendation() async {

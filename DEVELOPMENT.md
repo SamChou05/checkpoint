@@ -55,7 +55,7 @@ Important platform constraint:
 - Goal intake captures title, deadline, focus areas, and the profile-specific minimum question level; internal category and topic inference keep fallback question generation useful.
 - The generation request derives a learning target, content topics, and a question directive before calling local, backend, or Apple Foundation providers.
 - If a goal has no usable focus areas, the initial 5-question provider batch is allowed to infer the first Skill Map; background bank top-off then uses those generated competencies.
-- Provider prompts intentionally stay simple: user goal, derived learning target, content topics, requested count, difficulty floor, and multiple-choice requirements.
+- Provider prompts intentionally stay simple: user goal, derived learning target, content topics, requested count, difficulty floor, a concise difficulty rubric, and multiple-choice requirements.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.
@@ -67,6 +67,7 @@ Important platform constraint:
 - Multi-question checkpoint sessions ask 5 questions and require 4 correct answers by default before unlocking.
 - Missed questions from a failed checkpoint set become due immediately and are prioritized in the next set.
 - Each goal profile stores a 1-to-5 minimum question difficulty so users can skip material below their level for that subject.
+- Raising the active goal's question level retires below-level questions and triggers member question-bank regeneration at the new level; lowering the level keeps existing harder questions usable.
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.

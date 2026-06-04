@@ -221,7 +221,21 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         "reportedPrompts": _list_of_strings(payload.get("reportedPrompts")),
         "targetCount": target_count,
         "minimumDifficulty": minimum_difficulty,
+        "difficultyGuidance": _clean_text(payload.get("difficultyGuidance"))
+        or _difficulty_guidance(minimum_difficulty),
     }
+
+
+def _difficulty_guidance(level: int) -> str:
+    if level <= 1:
+        return "Foundations: direct recognition, definitions, single-step facts, and gentle distractors."
+    if level == 2:
+        return "Easy application: one concept in a familiar context with light reasoning and clear distractors."
+    if level == 3:
+        return "Medium application: apply concepts to a short scenario with qualifiers and plausible distractors."
+    if level == 4:
+        return "Hard reasoning: use multi-step logic, edge cases, constraints, counterexamples, or nuanced distractors."
+    return "Expert synthesis: combine multiple concepts in a dense exam-style scenario with subtle traps."
 
 
 def _generate_provider_payload(request: dict[str, Any], bedrock_client: Any | None) -> dict[str, Any]:
@@ -323,6 +337,7 @@ Rules:
 - Each question must have exactly 4 choices.
 - expectedAnswer must exactly match one choice.
 - difficulty must be an integer from 1 to 5 and not below the requested minimum.
+- Match the requested difficulty guidance; do not relabel an easy question as hard.
 - Keep questions answerable in 30 seconds to 3 minutes.
 - Avoid duplicate prompts and avoid prompts the user reported.
 - Prefer practical exam-style or skill-check questions over definitions when the minimum difficulty is 3 or higher.
@@ -337,6 +352,8 @@ Here is the user's generation request JSON:
 {compact_request}
 
 Generate {request["targetCount"]} level {request["minimumDifficulty"]} of 5 difficulty multiple-choice questions.
+Difficulty guidance: {request["difficultyGuidance"]}
+Make the questions meaningfully match that level; do not merely set the difficulty number.
 The actual learning target to test is: {request["goal"]["learningTarget"]}
 Content topics: {", ".join(request["goal"]["contentTopics"])}
 Question style guidance: {request["goal"]["questionDirective"] or "Ask objective knowledge-check questions."}
@@ -357,6 +374,7 @@ Previous malformed response excerpt:
 {excerpt}
 
 Generate {request["targetCount"]} multiple-choice questions now.
+Difficulty guidance: {request["difficultyGuidance"]}
 Return only one compact JSON object with this exact shape:
 {{"questions":[{{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","difficulty":{request["minimumDifficulty"]},"format":"Multiple Choice"}}]}}
 
@@ -443,11 +461,9 @@ def _sanitize_questions(raw_questions: Any, request: dict[str, Any]) -> list[dic
         if len(choices) != 4:
             continue
 
-        difficulty = _clamped_int(
-            raw_question.get("difficulty"),
-            minimum=minimum_difficulty,
-            maximum=5,
-        )
+        difficulty = _clamped_int(raw_question.get("difficulty"), minimum=1, maximum=5)
+        if difficulty < minimum_difficulty:
+            continue
 
         seen_prompts.add(prompt_key)
         sanitized.append(

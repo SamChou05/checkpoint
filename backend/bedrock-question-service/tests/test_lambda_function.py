@@ -94,6 +94,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertEqual(client.calls[0]["modelId"], "google.gemma-3-4b-it")
         prompt = client.calls[0]["messages"][0]["content"][0]["text"]
         self.assertIn("Study for the LSAT", prompt)
+        self.assertIn("Difficulty guidance: Medium application", prompt)
+        self.assertIn("do not merely set the difficulty number", prompt)
         self.assertIn("Skill map mode: use the provided content topics", prompt)
 
     def test_skill_map_mode_is_prompted_when_requested(self):
@@ -118,6 +120,35 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertEqual(response["statusCode"], 200)
         prompt = client.calls[0]["messages"][0]["content"][0]["text"]
         self.assertIn("Skill map mode: infer a new 4-to-6 topic skill map", prompt)
+
+    def test_rejects_questions_below_requested_difficulty(self):
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question(
+                            "LSAT Logical Reasoning: Which assumption is required by the argument?",
+                            difficulty=2,
+                        ),
+                        _raw_question(
+                            "LSAT Logical Reasoning: Which flaw best describes the argument?",
+                            difficulty=4,
+                        ),
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=3, minimum_difficulty=4)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        body = json.loads(response["body"])
+        self.assertEqual(len(body["questions"]), 1)
+        self.assertEqual(body["questions"][0]["difficulty"], 4)
+        self.assertIn("Which flaw", body["questions"][0]["prompt"])
 
     def test_accepts_provider_top_level_question_array(self):
         client = FakeBedrockClient(
@@ -195,7 +226,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
       "choices": ["Total rejection.", "Neutral description.", "Confusion about the policy.", "Unqualified enthusiasm."],
       "explanation": "Useful is positive, while incomplete limits the approval.",
       "topic": "Reading Comprehension",
-      "difficulty": 2,
+      "difficulty": 4,
       "format": "Multiple Choice"
     }
   ]
@@ -381,7 +412,7 @@ def _request_payload(target_count=5, minimum_difficulty=3):
     }
 
 
-def _raw_question(prompt):
+def _raw_question(prompt, difficulty=3):
     return {
         "prompt": prompt,
         "expectedAnswer": "The answer that follows from the stimulus.",
@@ -393,7 +424,7 @@ def _raw_question(prompt):
         ],
         "explanation": "The correct answer stays closest to the stimulus.",
         "topic": "Logical Reasoning",
-        "difficulty": 3,
+        "difficulty": difficulty,
         "format": "Multiple Choice",
     }
 

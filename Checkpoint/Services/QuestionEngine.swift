@@ -34,6 +34,10 @@ struct QuestionGenerationRequest: Sendable {
         GoalQuestionContext(goal: goal)
     }
 
+    var difficultyGuidance: String {
+        Self.difficultyGuidance(for: minimumDifficulty)
+    }
+
     func sourcePrompt(provider: AIProviderKind) -> String {
         let context = questionContext
 
@@ -42,6 +46,8 @@ struct QuestionGenerationRequest: Sendable {
         The actual learning target to test is: \(context.learningTarget)
         The user's focus topics are: \(context.contentTopics.joined(separator: ", "))
         The requested question difficulty floor is: level \(minimumDifficulty) of 5
+        Difficulty guidance for this batch: \(difficultyGuidance)
+        Make the questions meaningfully match this level; do not merely set the difficulty number.
         \(context.needsGeneratedSkillMap ? "The user did not provide focus areas. Infer a compact 4-to-6 topic skill map from the learning target, cover those skills across the questions, and use those skill names as question topics." : "Use the user's focus topics as the skill map for question topics.")
 
         Generate \(targetCount) level \(minimumDifficulty) of 5 difficulty multiple-choice questions about \(context.learningTarget).
@@ -55,7 +61,23 @@ struct QuestionGenerationRequest: Sendable {
         - Ask about \(context.learningTarget) itself, not study plans, productivity, motivation, app blocking, or what the learner should do next unless the learning target is explicitly study skills.
         - Make every question answerable as a short multiple-choice knowledge check.
         - Each question must include 4 choices, one exact expected answer, a short explanation, a topic, and a 1-to-5 difficulty.
+        - Reject remedial/basic questions when the requested difficulty is 3 or higher.
         """
+    }
+
+    static func difficultyGuidance(for level: Int) -> String {
+        switch UnlockPolicy.normalizedQuestionDifficulty(level) {
+        case 1:
+            return "Foundations: direct recognition, definitions, single-step facts, and gentle distractors."
+        case 2:
+            return "Easy application: one concept in a familiar context with light reasoning and clear distractors."
+        case 3:
+            return "Medium application: apply concepts to a short scenario with qualifiers and plausible distractors."
+        case 4:
+            return "Hard reasoning: use multi-step logic, edge cases, constraints, counterexamples, or nuanced distractors."
+        default:
+            return "Expert synthesis: combine multiple concepts in a dense exam-style scenario with subtle traps."
+        }
     }
 
     var competencySummary: String {
@@ -1051,7 +1073,7 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
     ) -> CheckpointQuestion {
         CheckpointQuestion(
             goalID: goal.id,
-            prompt: prompt,
+            prompt: leveledPrompt(prompt, difficulty: difficulty),
             expectedAnswer: expectedAnswer,
             choices: choices,
             explanation: explanation,
@@ -1060,5 +1082,20 @@ struct LocalDraftQuestionEngine: QuestionGenerating {
             format: .multipleChoice,
             sourcePrompt: sourcePrompt
         )
+    }
+
+    private func leveledPrompt(_ prompt: String, difficulty: Int) -> String {
+        switch UnlockPolicy.normalizedQuestionDifficulty(difficulty) {
+        case 1:
+            return "Level 1 foundations: \(prompt)"
+        case 2:
+            return "Level 2 easy application: \(prompt)"
+        case 3:
+            return "Level 3 applied reasoning: \(prompt)"
+        case 4:
+            return "Level 4 advanced constraints: \(prompt) Pay close attention to qualifiers and edge cases."
+        default:
+            return "Level 5 expert synthesis: \(prompt) Resolve the strongest answer under competing plausible choices."
+        }
     }
 }
