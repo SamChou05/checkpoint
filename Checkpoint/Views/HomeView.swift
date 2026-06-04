@@ -79,10 +79,7 @@ struct HomeView: View {
         SectionPanel {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    StatusBadge(text: "Current goal", tint: CheckpointTheme.teal)
-                    Spacer()
-                    goalSwitcher
-
+                    Spacer(minLength: 0)
                     VStack(alignment: .trailing, spacing: 2) {
                         Text("Deadline \(goal.deadline, style: .date)")
                         Text(Goal.deadlineDistanceText(until: goal.deadline))
@@ -92,10 +89,7 @@ struct HomeView: View {
                     .lineLimit(1)
                 }
 
-                Text(goal.title)
-                    .font(.title2.bold())
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
+                goalSelectionControl(goal)
 
                 if let focusText = store.activeGoalFocusText {
                     Text("Focus: \(focusText)")
@@ -335,54 +329,82 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private var goalSwitcher: some View {
+    private func goalSelectionControl(_ goal: Goal) -> some View {
         if store.availableGoalProfiles.count > 1 {
             Menu {
-                ForEach(store.availableGoalProfiles) { profile in
-                    Button {
-                        store.switchActiveGoal(to: profile.id)
-                    } label: {
-                        Label(
-                            profile.title,
-                            systemImage: profile.id == store.goal?.id ? "checkmark.circle.fill" : "circle"
-                        )
-                    }
-                }
-
-                Divider()
-
-                if store.isMember && store.hasReachedGoalProfileLimit {
-                    Button {
-                        store.presentGoalProfileCreator()
-                    } label: {
-                        Label("\(store.goalProfileLimit) goal limit reached", systemImage: "checkmark.seal")
-                    }
-                    .disabled(true)
-                } else {
-                    Button {
-                        store.presentGoalProfileCreator()
-                    } label: {
-                        Label("New goal", systemImage: "plus")
-                    }
-                }
+                goalSwitcherMenuContent
             } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "rectangle.stack")
-                    Text("Switch")
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 10, weight: .bold))
-                }
-                .font(.caption.weight(.bold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .lineLimit(1)
-                .minimumScaleFactor(0.85)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-                .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                goalSelectionLabel(goal, isInteractive: true)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Switch current goal")
+            .accessibilityLabel("Goal: \(goal.title). Switch current goal")
+        } else {
+            goalSelectionLabel(goal, isInteractive: false)
         }
+    }
+
+    @ViewBuilder
+    private var goalSwitcherMenuContent: some View {
+        ForEach(store.availableGoalProfiles) { profile in
+            Button {
+                store.switchActiveGoal(to: profile.id)
+            } label: {
+                Label(
+                    profile.title,
+                    systemImage: profile.id == store.goal?.id ? "checkmark.circle.fill" : "circle"
+                )
+            }
+        }
+
+        Divider()
+
+        if store.isMember && store.hasReachedGoalProfileLimit {
+            Button {
+                store.presentGoalProfileCreator()
+            } label: {
+                Label("\(store.goalProfileLimit) goal limit reached", systemImage: "checkmark.seal")
+            }
+            .disabled(true)
+        } else {
+            Button {
+                store.presentGoalProfileCreator()
+            } label: {
+                Label("New goal", systemImage: "plus")
+            }
+        }
+    }
+
+    private func goalSelectionLabel(_ goal: Goal, isInteractive: Bool) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "target")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 34, height: 34)
+                .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Goal")
+                    .font(.caption.weight(.bold))
+                    .textCase(.uppercase)
+                    .foregroundStyle(CheckpointTheme.muted)
+
+                Text(goal.title)
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+
+            if isInteractive {
+                Image(systemName: "chevron.down")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.teal)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
     }
 
     private func handleQuestionRefreshOnActivation() {
