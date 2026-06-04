@@ -160,7 +160,6 @@ final class CheckpointWorkflowTests: XCTestCase {
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
         )
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
-        store.updateSubscriptionTier(.pro)
         store.updateAIProviderPreference(.localTemplates)
         let firstGoal = makeGoal()
         let secondGoal = Goal(
@@ -369,11 +368,11 @@ final class CheckpointWorkflowTests: XCTestCase {
         let secondGoal = try XCTUnwrap(store.goal)
         XCTAssertNotEqual(secondGoal.id, firstGoal.id)
         XCTAssertEqual(secondGoal.title, "Prepare for calculus final")
-        XCTAssertTrue(store.questions.allSatisfy { $0.goalID == secondGoal.id })
-        XCTAssertEqual(Set(store.questions.map(\.topic)), ["derivatives", "integrals"])
-        XCTAssertEqual(Set(store.competencies.map(\.topic)), ["derivatives", "integrals"])
-        XCTAssertTrue(store.attempts.isEmpty)
-        XCTAssertTrue(store.questionReports.isEmpty)
+        XCTAssertTrue(store.activeQuestions.allSatisfy { $0.goalID == secondGoal.id })
+        XCTAssertEqual(Set(store.activeQuestions.map(\.topic)), ["derivatives", "integrals"])
+        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["derivatives", "integrals"])
+        XCTAssertTrue(store.activeAttempts.isEmpty)
+        XCTAssertTrue(store.activeQuestionReports.isEmpty)
         XCTAssertNil(store.unlockSession)
         XCTAssertNil(SharedAppGroup.unlockExpiration)
 
@@ -383,7 +382,7 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testProGoalProfilesPreserveSeparateQuestionPoolsSkillMapsAndDifficulty() async throws {
+    func testGoalProfilesPreserveSeparateQuestionPoolsSkillMapsAndDifficulty() async throws {
         let engine = GoalAwareQuestionEngine(provider: .localTemplates)
         let store = CheckpointStore(
             questionEngine: HybridQuestionEngine(
@@ -393,7 +392,6 @@ final class CheckpointWorkflowTests: XCTestCase {
             ),
             defaults: defaults
         )
-        store.updateSubscriptionTier(.pro)
         store.updateAIProviderPreference(.localTemplates)
 
         await store.createGoal(
@@ -460,7 +458,6 @@ final class CheckpointWorkflowTests: XCTestCase {
             ),
             defaults: defaults
         )
-        store.updateSubscriptionTier(.pro)
 
         await store.createGoal(
             title: "Pass technical interviews",
@@ -525,22 +522,22 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testStopBlockingSessionRequiresNineOfTenQuestions() throws {
-        let store = makeSeededStore(questionCount: 12)
+    func testStopBlockingSessionRequiresEighteenOfTwentyQuestions() throws {
+        let store = makeSeededStore(questionCount: 24)
 
         let session = try XCTUnwrap(store.startStopBlockingSession())
 
         XCTAssertEqual(session.questions.count, StopBlockingPolicy.questionsPerSession)
         XCTAssertEqual(session.unlockThreshold, StopBlockingPolicy.requiredCorrectAnswers)
         XCTAssertEqual(session.purpose, .stopBlocking)
-        XCTAssertFalse(session.hasMetUnlockThreshold(correctAnswerCount: 8))
-        XCTAssertTrue(session.hasMetUnlockThreshold(correctAnswerCount: 9))
+        XCTAssertFalse(session.hasMetUnlockThreshold(correctAnswerCount: 17))
+        XCTAssertTrue(session.hasMetUnlockThreshold(correctAnswerCount: 18))
         XCTAssertEqual(Set(session.questions.map(\.id)).count, StopBlockingPolicy.questionsPerSession)
     }
 
     @MainActor
-    func testStopBlockingSessionNeedsTenReadyQuestions() {
-        let store = makeSeededStore(questionCount: 9)
+    func testStopBlockingSessionNeedsTwentyReadyQuestions() {
+        let store = makeSeededStore(questionCount: 19)
 
         XCTAssertNil(store.startStopBlockingSession())
         XCTAssertEqual(
@@ -560,7 +557,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.goal = goal
-        store.questions = (2...10).map { makeQuestion(goal: goal, index: $0) }
+        store.questions = (2...20).map { makeQuestion(goal: goal, index: $0) }
 
         let preparedSession = await store.prepareStopBlockingSession()
         let session = try XCTUnwrap(preparedSession)
@@ -572,12 +569,11 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testFreeTierKeepsCoreCheckpointAvailable() throws {
+    func testFullAccessKeepsCoreCheckpointAvailable() throws {
         let store = makeSeededStore(questionCount: 6)
 
         let session = try XCTUnwrap(store.nextCheckpointSession())
-
-        XCTAssertEqual(store.subscriptionTier, .free)
+        XCTAssertTrue(store.hasFullProductAccess)
         XCTAssertEqual(session.questions.count, 5)
         XCTAssertEqual(session.unlockThreshold, 4)
         XCTAssertTrue(store.canRefreshQuestionBatch)
@@ -588,7 +584,6 @@ final class CheckpointWorkflowTests: XCTestCase {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
-        store.updateSubscriptionTier(.pro)
         store.updateQuestionsPerSession(5)
 
         let missed = makeQuestion(
@@ -621,7 +616,6 @@ final class CheckpointWorkflowTests: XCTestCase {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
-        store.updateSubscriptionTier(.pro)
         store.updateQuestionsPerSession(5)
         store.updateMinimumQuestionDifficulty(3)
 
@@ -922,27 +916,18 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testFreeTierBlocksAdvancedStrictnessChanges() {
+    func testFullAccessAllowsAdvancedStrictnessChanges() {
         let store = CheckpointStore(defaults: defaults)
 
-        store.updateQuestionsPerSession(8)
-
-        XCTAssertEqual(store.unlockPolicy.questionsPerSession, 5)
-        XCTAssertEqual(store.unlockPolicy.requiredCorrectAnswers, 4)
-        XCTAssertEqual(store.pendingPaywallFeature, .advancedStrictness)
-
-        store.dismissPaywall()
-        store.updateSubscriptionTier(.pro)
         store.updateQuestionsPerSession(8)
         store.updateRequiredCorrectAnswers(7)
 
         XCTAssertEqual(store.unlockPolicy.questionsPerSession, 8)
         XCTAssertEqual(store.unlockPolicy.requiredCorrectAnswers, 7)
-        XCTAssertNil(store.pendingPaywallFeature)
     }
 
     @MainActor
-    func testFreeTierStopsQuestionRefreshBeforeProviderCall() async {
+    func testFullAccessRefreshesAfterOldRefreshCounter() async throws {
         let goal = makeGoal()
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
@@ -954,17 +939,18 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.updateAIProviderPreference(.localTemplates)
         store.goal = goal
         store.questions = [makeQuestion(goal: goal, index: 1)]
-        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+        store.questionRefreshesUsed = 2
 
         await store.refreshQuestionBatch()
 
-        XCTAssertNil(localEngine.receivedRequest)
-        XCTAssertEqual(store.pendingPaywallFeature, .unlimitedQuestionRefreshes)
-        XCTAssertEqual(store.questions.count, 1)
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.targetCount, ProductLimits.questionBankTargetCount)
+        XCTAssertEqual(store.questionRefreshesUsed, 2 + 1)
+        XCTAssertEqual(store.questions.count, 2)
     }
 
     @MainActor
-    func testProTierRefreshUsesLargerQuestionBankTarget() async throws {
+    func testFullAccessRefreshUsesLargerQuestionBankTarget() async throws {
         let goal = makeGoal()
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
@@ -974,22 +960,20 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.localTemplates)
-        store.updateSubscriptionTier(.pro)
         store.goal = goal
         store.questions = [makeQuestion(goal: goal, index: 99)]
-        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+        store.questionRefreshesUsed = 2
 
         await store.refreshQuestionBatch()
 
         let request = try XCTUnwrap(localEngine.receivedRequest)
-        XCTAssertEqual(request.targetCount, FreemiumLimits.proQuestionBankTargetCount)
-        XCTAssertEqual(store.questionRefreshesUsed, FreemiumLimits.freeQuestionRefreshLimit + 1)
+        XCTAssertEqual(request.targetCount, ProductLimits.questionBankTargetCount)
+        XCTAssertEqual(store.questionRefreshesUsed, 2 + 1)
         XCTAssertEqual(store.questions.count, 2)
-        XCTAssertNil(store.pendingPaywallFeature)
     }
 
     @MainActor
-    func testFreeTierDoesNotProactivelyRefreshReadyQuestionBank() async {
+    func testFullAccessProactivelyRefreshesLowReadyQuestionBank() async throws {
         let goal = makeGoal()
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
@@ -1004,13 +988,15 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         let didRefresh = await store.refreshQuestionBatchIfNeeded()
 
-        XCTAssertFalse(didRefresh)
-        XCTAssertNil(localEngine.receivedRequest)
-        XCTAssertEqual(store.questions.count, store.unlockPolicy.questionsPerSession)
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertTrue(didRefresh)
+        XCTAssertEqual(request.targetCount, ProductLimits.questionBankTargetCount)
+        XCTAssertEqual(store.questions.count, store.unlockPolicy.questionsPerSession + 1)
+        XCTAssertEqual(store.questionRefreshesUsed, 1)
     }
 
     @MainActor
-    func testFreeTierQuietlyRefillsWhenQuestionsAreUsedUp() async throws {
+    func testFullAccessQuietlyRefillsWhenQuestionsAreUsedUp() async throws {
         let goal = makeGoal()
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
@@ -1022,21 +1008,20 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.updateAIProviderPreference(.backend)
         store.goal = goal
         store.questions = [makeQuestion(goal: goal, index: 99, status: .retired)]
-        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+        store.questionRefreshesUsed = 2
 
         let preparedSession = await store.prepareManualCheckpointSession()
         let session = try XCTUnwrap(preparedSession)
 
         let request = try XCTUnwrap(localEngine.receivedRequest)
-        XCTAssertEqual(request.targetCount, FreemiumLimits.freeQuestionBankTargetCount)
+        XCTAssertEqual(request.targetCount, ProductLimits.questionBankTargetCount)
         XCTAssertEqual(session.questions.count, 1)
-        XCTAssertEqual(store.questionRefreshesUsed, FreemiumLimits.freeQuestionRefreshLimit)
-        XCTAssertNil(store.pendingPaywallFeature)
+        XCTAssertEqual(store.questionRefreshesUsed, 2 + 1)
         XCTAssertNil(store.checkpointNotice)
     }
 
     @MainActor
-    func testProAssistAutoRefreshesLowBankAndRespectsCooldown() async throws {
+    func testStudyAssistAutoRefreshesLowBankAndRespectsCooldown() async throws {
         let goal = makeGoal()
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
@@ -1046,7 +1031,6 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.localTemplates)
-        store.updateSubscriptionTier(.pro)
         store.goal = goal
         store.questions = [makeQuestion(goal: goal, index: 99)]
 
@@ -1054,7 +1038,7 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         let request = try XCTUnwrap(localEngine.receivedRequest)
         XCTAssertTrue(didRefresh)
-        XCTAssertEqual(request.targetCount, FreemiumLimits.proQuestionBankTargetCount)
+        XCTAssertEqual(request.targetCount, ProductLimits.questionBankTargetCount)
         XCTAssertEqual(store.questions.count, 2)
         XCTAssertEqual(store.questionRefreshesUsed, 1)
         XCTAssertNotNil(store.lastAutomaticQuestionRefreshAt)
@@ -1067,10 +1051,9 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testProAssistRecommendationUsesWeakestTopic() {
+    func testStudyAssistRecommendationUsesWeakestTopic() {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
-        store.updateSubscriptionTier(.pro)
         store.goal = goal
         var arrays = TopicCompetency.initial(topic: "arrays", estimatedLevel: 1.4)
         arrays.attempts = 4
@@ -1081,8 +1064,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         recursion.correct = 4
         store.competencies = [recursion, arrays]
 
-        XCTAssertTrue(store.proAssistSummary.contains("arrays"))
-        XCTAssertTrue(store.proAssistSummary.contains("\(arrays.masteryPercent)%"))
+        XCTAssertTrue(store.studyAssistSummary.contains("arrays"))
+        XCTAssertTrue(store.studyAssistSummary.contains("\(arrays.masteryPercent)%"))
     }
 
     @MainActor
@@ -1122,7 +1105,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.localTemplates)
         store.goal = goal
-        store.questionRefreshesUsed = FreemiumLimits.freeQuestionRefreshLimit
+        store.questionRefreshesUsed = 2
         store.questions = (1...5).map { makeQuestion(goal: goal, index: $0, difficulty: 2) }
         let originalQuestionIDs = Set(store.questions.map(\.id))
 
@@ -1142,8 +1125,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(request.minimumDifficulty, 3)
         XCTAssertTrue(store.questions.filter { originalQuestionIDs.contains($0.id) }.allSatisfy { $0.status == .retired })
         XCTAssertTrue(store.activeQuestions.contains { $0.difficulty >= 3 && !originalQuestionIDs.contains($0.id) })
-        XCTAssertEqual(store.questionRefreshesUsed, FreemiumLimits.freeQuestionRefreshLimit)
-        XCTAssertNil(store.pendingPaywallFeature)
+        XCTAssertEqual(store.questionRefreshesUsed, 2)
     }
 
     @MainActor
@@ -1432,7 +1414,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(trace.goalID, goal.id)
         XCTAssertEqual(trace.providerPreference, .localTemplates)
         XCTAssertEqual(trace.resolvedProvider, .localTemplates)
-        XCTAssertEqual(trace.targetCount, FreemiumLimits.freeQuestionBankTargetCount)
+        XCTAssertEqual(trace.targetCount, ProductLimits.questionBankTargetCount)
         XCTAssertEqual(trace.generatedQuestionCount, 1)
         XCTAssertEqual(trace.addedQuestionCount, 1)
         XCTAssertTrue(trace.sourcePrompt.contains("Here is the user's goal: \(goal.title)"))
@@ -1627,16 +1609,15 @@ final class AIProviderPolicyTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 150_000_000)
 
         let request = try XCTUnwrap(backendEngine.receivedRequests.first)
-        XCTAssertEqual(request.targetCount, FreemiumLimits.freeQuestionBankTargetCount)
+        XCTAssertEqual(request.targetCount, ProductLimits.questionBankTargetCount)
         XCTAssertEqual(request.existingQuestions.count, 5)
     }
 }
 
 final class UnlockPolicyTests: XCTestCase {
-    func testCorrectAnswerUnlockOptionsAreLongEnoughToMatter() {
+    func testCorrectAnswerUnlockOptionsUsePracticalShortBreaks() {
         XCTAssertEqual(UnlockPolicy.default.unlockMinutes, 30)
-        XCTAssertEqual(UnlockPolicy.correctAnswerUnlockMinuteOptions, [15, 30, 45, 60])
-        XCTAssertTrue(UnlockPolicy.correctAnswerUnlockMinuteOptions.allSatisfy { $0 >= 15 })
+        XCTAssertEqual(UnlockPolicy.correctAnswerUnlockMinuteOptions, [5, 10, 15, 30])
         XCTAssertTrue(UnlockPolicy.correctAnswerUnlockMinuteOptions.contains(30))
     }
 
@@ -1656,9 +1637,9 @@ final class UnlockPolicyTests: XCTestCase {
 
         let policy = try JSONDecoder().decode(UnlockPolicy.self, from: data)
 
-        XCTAssertEqual(policy.unlockMinutes, 15)
-        XCTAssertEqual(policy.partialUnlockMinutes, 15)
-        XCTAssertEqual(policy.emergencyUnlockMinutes, 15)
+        XCTAssertEqual(policy.unlockMinutes, 5)
+        XCTAssertEqual(policy.partialUnlockMinutes, 5)
+        XCTAssertEqual(policy.emergencyUnlockMinutes, 5)
     }
 
     func testLegacyTinyCheckpointCountsNormalizeToFiveQuestionBaseline() throws {

@@ -3,7 +3,6 @@ import SwiftUI
 struct RootView: View {
     @State private var store = CheckpointStore()
     @State private var screenTime = ScreenTimeController()
-    @State private var purchaseController = PurchaseController()
     @State private var selectedTab: AppTab = .home
     @State private var activeShieldSession: CheckpointSession?
     @State private var isPreparingShieldSession = false
@@ -23,7 +22,7 @@ struct RootView: View {
                 }
                 .tag(AppTab.skill)
 
-            SettingsView(store: store, screenTime: screenTime, purchaseController: purchaseController)
+            SettingsView(store: store, screenTime: screenTime)
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
@@ -53,19 +52,11 @@ struct RootView: View {
             Task {
                 await screenTime.requestInitialAuthorizationIfNeeded()
             }
-            purchaseController.startListeningForTransactions()
-            await purchaseController.loadProducts()
-            let isProUnlocked = await purchaseController.refreshEntitlements()
-            store.updateSubscriptionTier(isProUnlocked ? .pro : .free)
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             screenTime.reconcileShieldState()
             handlePendingShieldActivation()
-            Task {
-                let isProUnlocked = await purchaseController.refreshEntitlements()
-                store.updateSubscriptionTier(isProUnlocked ? .pro : .free)
-            }
         }
     }
 

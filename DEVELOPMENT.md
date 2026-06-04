@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: May 28, 2026
+Last updated: June 4, 2026
 
 ## Current Product Direction
 
@@ -32,13 +32,13 @@ Important platform constraint:
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
 - Home, Skill, and Settings tabs.
-- Settings keeps user-facing controls focused on Plan, Goal profiles, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
-- Settings support views, the paywall, and StoreKit purchase handling are split into focused files so screen code is easier to navigate.
+- Settings keeps user-facing controls focused on Goals, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
+- The app is currently modeled as a paid/full-access product, so there is no in-app Free/Pro feature gate in the shipped code.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
-- Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires a 9-of-10 stop challenge in Advanced.
-- Settings includes a StoreKit-ready Free/Pro plan panel and paywall entry point.
+- Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 stop challenge from Home or Advanced.
+- Settings no longer includes plan upsells or in-app purchase controls.
 - Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
@@ -46,8 +46,8 @@ Important platform constraint:
 - Onboarding starts blank and rejects empty goal titles.
 - Goal category is inferred internally from the typed goal and optional focus areas instead of shown as a setup choice.
 - Question generation extracts an internal learning target from natural-language goals, so `Study for the LSAT` becomes LSAT content rather than questions about studying.
-- Existing profiles reopen prefilled for edits; Free keeps one active profile, while Pro can create multiple profiles.
-- Home lets Pro users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
+- Existing profiles reopen prefilled for edits; users can create and switch multiple goal profiles.
+- Home lets users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
 - Home focuses on the active profile and blocking state; the manual checkpoint preview is tucked into Advanced for testing and does not unlock apps.
 
 ### Question System
@@ -71,7 +71,7 @@ Important platform constraint:
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Settings includes a manual question refresh action.
-- Manual question refreshes remain internally limited for Free, but the core blocker loop silently refills from local templates when the current set runs out; Pro focuses on more variety, custom rules, and adaptive guidance.
+- Manual question refreshes are available in the paid/full-access app; the core blocker loop also silently refills when the current set runs out.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic
@@ -103,8 +103,8 @@ Important platform constraint:
 
 ### Unlock Policy
 
-- Correct-answer unlock duration is configurable with 15, 30, 45, and 60 minute options. The default is 30 minutes.
-- Correct-answer count per unlock is configurable for Pro users; Free uses the default 4-of-5 gate.
+- Correct-answer unlock duration is configurable with 5, 10, 15, and 30 minute options. The default is 30 minutes.
+- Correct-answer count per unlock is configurable in the paid/full-access app.
 - Multiple-choice misses stay locked.
 - Incorrect and unclear answers do not unlock.
 - Revealed expected answers force the attempt to stay locked.
@@ -144,7 +144,7 @@ Important platform constraint:
 - Real Screen Time behavior must be verified on a physical iPhone.
 - Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and Screen Time extensions.
 - Family Controls distribution requires Apple approval before App Store submission.
-- Device Activity monitoring has a 15-minute minimum interval, so production unlock options should remain 15 minutes or longer.
+- Very short 5- and 10-minute unlocks rely primarily on the app-level re-lock task and foreground reconciliation; the Device Activity monitor remains an additional background re-lock path.
 - App Store readiness steps are tracked in `docs/APP_STORE_READINESS.md`.
 - The AI layer now has a provider interface with local templates, backend batch generation, and guarded Apple Foundation Models support.
 - Storage is still prototype-level UserDefaults/App Group defaults, not SwiftData or SQLite.
@@ -204,13 +204,13 @@ The MVP is complete when:
 - User-provided materials such as notes, PDFs, links, or flashcards.
 - Integrations with Anki, Quizlet, LeetCode, Notion, or Google Sheets.
 - Server-side analytics and TestFlight instrumentation.
-- Subscription/paywall experiments after retention is validated.
-- StoreKit UI, product IDs, restore hooks, and entitlement refresh are scaffolded, but real purchases still need App Store Connect products, local StoreKit configuration, and TestFlight verification.
+- Paid-app pricing experiments after retention is validated.
+- The current code does not include an in-app StoreKit paywall. For launch, set the app price in App Store Connect after the Paid Apps Agreement is active. If subscription gating becomes necessary later, re-add StoreKit around the whole app rather than reviving a Free/Pro feature split.
 
 ## Product Decisions
 
-- Keep the core Free plan to one active goal profile; Pro can add and switch separate profiles.
-- Keep the core blocked-app recovery flow free; do not trap users behind payment.
+- Launch direction is paid/full-access: no Free/Pro product split and no feature upsells inside the app.
+- Keep all current app functionality included once a user has access to the paid app.
 - Keep AI generation batched and cached, not live on every app-open attempt.
 - Do not ship API keys in the iOS app.
 - Use the shield as the trigger, not as the full quiz surface.

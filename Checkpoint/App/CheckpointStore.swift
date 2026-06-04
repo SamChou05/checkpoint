@@ -7,16 +7,12 @@ private enum QuestionRefreshReason {
     case automaticProactiveRefill
     case levelUpRefill
 
-    var canBypassFreeLimit: Bool {
-        self == .automaticCoreRefill || self == .levelUpRefill
+    func countsAsRefresh(hasFullAccess: Bool) -> Bool {
+        self == .manual || self == .automaticProactiveRefill || (self == .automaticCoreRefill && hasFullAccess)
     }
 
-    func countsAsRefresh(isPro: Bool) -> Bool {
-        self == .manual || self == .automaticProactiveRefill || (self == .automaticCoreRefill && isPro)
-    }
-
-    func providerPreference(defaultPreference: AIProviderKind, isPro: Bool) -> AIProviderKind {
-        if self == .automaticCoreRefill && !isPro {
+    func providerPreference(defaultPreference: AIProviderKind, hasFullAccess: Bool) -> AIProviderKind {
+        if self == .automaticCoreRefill && !hasFullAccess {
             return .localTemplates
         }
 
@@ -71,9 +67,7 @@ final class CheckpointStore {
     var emergencyPassesRemaining = 1
     var isOnboardingPresented = false
     var isCreatingGoalProfile = false
-    var subscriptionTier: SubscriptionTier = .free
     var questionRefreshesUsed = 0
-    var pendingPaywallFeature: ProFeature?
     var lastAutomaticQuestionRefreshAt: Date?
 
     @ObservationIgnored private let questionEngine: HybridQuestionEngine
@@ -196,16 +190,16 @@ final class CheckpointStore {
         }
     }
 
-    var isPro: Bool {
-        subscriptionTier == .pro
+    var hasFullProductAccess: Bool {
+        true
     }
 
     var questionBankTargetCount: Int {
-        isPro ? FreemiumLimits.proQuestionBankTargetCount : FreemiumLimits.freeQuestionBankTargetCount
+        ProductLimits.questionBankTargetCount
     }
 
     var canRefreshQuestionBatch: Bool {
-        isPro || questionRefreshesUsed < FreemiumLimits.freeQuestionRefreshLimit
+        hasFullProductAccess
     }
 
     var usableQuestionCount: Int {
@@ -241,24 +235,20 @@ final class CheckpointStore {
         }
     }
 
-    var proAssistSummary: String {
-        guard isPro else {
-            return "Pro can quietly add fresh questions and point you toward the next useful topic."
-        }
-
-        if let focus = proFocusRecommendation {
+    var studyAssistSummary: String {
+        if let focus = studyFocusRecommendation {
             return focus
         }
 
-        if usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold {
+        if usableQuestionCount <= ProductLimits.autoRefreshThreshold {
             return "Your practice set is getting low. Checkpoint will add fresh questions when possible."
         }
 
         return "Your practice set is healthy. Keep answering checkpoints and missed topics will surface automatically."
     }
 
-    var proFocusRecommendation: String? {
-        guard isPro, goal != nil else { return nil }
+    var studyFocusRecommendation: String? {
+        guard goal != nil else { return nil }
 
         if let missedTopic = activeQuestions
             .filter({ $0.status == .incorrect })
@@ -307,37 +297,9 @@ final class CheckpointStore {
         )
     }
 
-    // MARK: - Pro access
-
-    func canUse(_ feature: ProFeature) -> Bool {
-        switch feature {
-        case .advancedStrictness,
-             .automaticBankRefill,
-             .unlimitedQuestionRefreshes,
-             .largerQuestionBanks,
-             .deeperAnalytics,
-             .multipleGoals,
-             .importsAndSync:
-            return isPro
-        }
-    }
-
-    func requestUpgrade(for feature: ProFeature) {
-        pendingPaywallFeature = feature
-    }
-
-    func dismissPaywall() {
-        pendingPaywallFeature = nil
-    }
-
     // MARK: - Goal profiles
 
     func presentGoalProfileCreator() {
-        guard goal == nil || canUse(.multipleGoals) else {
-            requestUpgrade(for: .multipleGoals)
-            return
-        }
-
         isCreatingGoalProfile = true
         isOnboardingPresented = true
     }
@@ -348,11 +310,6 @@ final class CheckpointStore {
     }
 
     func switchActiveGoal(to goalID: Goal.ID) {
-        guard goalID == goal?.id || canUse(.multipleGoals) else {
-            requestUpgrade(for: .multipleGoals)
-            return
-        }
-
         guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return }
         goal = selectedGoal
         let hasActiveQuestions = !activeQuestions.isEmpty
@@ -370,15 +327,6 @@ final class CheckpointStore {
         } else {
             prepareInitialQuestionsInBackground(for: selectedGoal)
         }
-    }
-
-    func updateSubscriptionTier(_ tier: SubscriptionTier) {
-        subscriptionTier = tier
-        if tier == .free {
-            normalizeFreeTierLimits()
-        }
-        save()
-        publishShieldContext()
     }
 
     // MARK: - Goal creation and refresh
@@ -420,7 +368,7 @@ final class CheckpointStore {
         )
 
         let previousGoalID = goal?.id
-        let shouldCreateNewProfile = createsNewProfile ?? (isPro && previousGoalID != nil)
+        let shouldCreateNewProfile = createsNewProfile ?? (hasFullProductAccess && previousGoalID != nil)
         let shouldReplaceActiveProfile = !shouldCreateNewProfile && previousGoalID != nil
         questionRefreshesUsed = 0
         questionBatchState = .generating
@@ -432,11 +380,7 @@ final class CheckpointStore {
         goal = newGoal
         isQuestionBankTopOffInProgress = false
         questionBankTopOffStartedAt = nil
-        if !isPro {
-            goalProfiles = [newGoal]
-        } else {
-            upsertGoalProfile(newGoal)
-        }
+        upsertGoalProfile(newGoal)
         questions.removeAll { $0.goalID == newGoal.id }
         competencies.removeAll { $0.goalID == newGoal.id }
         competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: []))
@@ -650,16 +594,9 @@ final class CheckpointStore {
     private func refreshQuestionBatch(reason: QuestionRefreshReason) async {
         guard let goal else { return }
 
-        guard reason.canBypassFreeLimit || canRefreshQuestionBatch else {
-            lastAIErrorMessage = "Free includes \(FreemiumLimits.freeQuestionRefreshLimit) question refreshes per goal. Pro keeps refreshes unlimited."
-            requestUpgrade(for: .unlimitedQuestionRefreshes)
-            save()
-            return
-        }
-
         questionBatchState = .generating
         beginQuestionGeneration(for: goal.id)
-        if reason.countsAsRefresh(isPro: isPro) {
+        if reason.countsAsRefresh(hasFullAccess: hasFullProductAccess) {
             questionRefreshesUsed += 1
         }
 
@@ -669,7 +606,10 @@ final class CheckpointStore {
             competencies: activeCompetencies,
             reportedQuestions: activeQuestionReports
         )
-        let providerPreference = reason.providerPreference(defaultPreference: aiProviderPreference, isPro: isPro)
+        let providerPreference = reason.providerPreference(
+            defaultPreference: aiProviderPreference,
+            hasFullAccess: hasFullProductAccess
+        )
         let startedAt = Date()
         let batch = await questionEngine.generateQuestionBatch(
             for: refreshRequest,
@@ -711,8 +651,8 @@ final class CheckpointStore {
 
         let refillMinimum = minimumUsableQuestionCount ?? unlockPolicy.questionsPerSession
         let needsCoreRefill = usableQuestionCount < refillMinimum && canRefreshAfterCooldown
-        let shouldRefreshProactively = isPro
-            && usableQuestionCount <= FreemiumLimits.proAutoRefreshThreshold
+        let shouldRefreshProactively = hasFullProductAccess
+            && usableQuestionCount <= ProductLimits.autoRefreshThreshold
             && canRefreshAfterCooldown
 
         guard needsCoreRefill || shouldRefreshProactively else { return false }
@@ -738,7 +678,11 @@ final class CheckpointStore {
     }
 
     func nextQuestions(limit: Int) -> [CheckpointQuestion] {
-        let targetCount = min(10, max(1, limit))
+        let maximumSessionQuestionCount = max(
+            UnlockPolicy.maximumQuestionsPerSession,
+            StopBlockingPolicy.questionsPerSession
+        )
+        let targetCount = min(maximumSessionQuestionCount, max(1, limit))
         var selectedQuestions: [CheckpointQuestion] = []
         var excludedQuestionIDs = Set<CheckpointQuestion.ID>()
 
@@ -885,7 +829,6 @@ final class CheckpointStore {
         unlockSession = nil
         emergencyPassesRemaining = 1
         questionRefreshesUsed = 0
-        pendingPaywallFeature = nil
         lastAutomaticQuestionRefreshAt = nil
         isCreatingGoalProfile = false
         isOnboardingPresented = true
@@ -1040,11 +983,6 @@ final class CheckpointStore {
     }
 
     func updateQuestionsPerSession(_ count: Int) {
-        guard canUse(.advancedStrictness) else {
-            requestUpgrade(for: .advancedStrictness)
-            return
-        }
-
         unlockPolicy.questionsPerSession = UnlockPolicy.normalizedQuestionsPerSession(count)
         unlockPolicy.requiredCorrectAnswers = UnlockPolicy.normalizedRequiredCorrectAnswers(
             unlockPolicy.requiredCorrectAnswers,
@@ -1055,11 +993,6 @@ final class CheckpointStore {
     }
 
     func updateRequiredCorrectAnswers(_ count: Int) {
-        guard canUse(.advancedStrictness) else {
-            requestUpgrade(for: .advancedStrictness)
-            return
-        }
-
         unlockPolicy.requiredCorrectAnswers = UnlockPolicy.normalizedRequiredCorrectAnswers(
             count,
             questionsPerSession: unlockPolicy.questionsPerSession
@@ -1353,7 +1286,6 @@ final class CheckpointStore {
             backendEndpoint: backendEndpoint,
             unlockSession: unlockSession,
             emergencyPassesRemaining: emergencyPassesRemaining,
-            subscriptionTier: subscriptionTier,
             questionRefreshesUsed: questionRefreshesUsed,
             lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt
         )
@@ -1420,7 +1352,6 @@ final class CheckpointStore {
         backendEndpoint = snapshot.backendEndpoint ?? ""
         unlockSession = snapshot.unlockSession
         emergencyPassesRemaining = snapshot.emergencyPassesRemaining
-        subscriptionTier = snapshot.subscriptionTier ?? .free
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
         lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
         goalProfiles = snapshot.goalProfiles ?? snapshot.goal.map { [$0] } ?? []
@@ -1436,9 +1367,6 @@ final class CheckpointStore {
 
         migrateLegacyCompetenciesToActiveGoal()
 
-        if subscriptionTier == .free {
-            normalizeFreeTierLimits()
-        }
     }
 
     private func initialCompetencies(for goal: Goal, questions: [CheckpointQuestion]) -> [TopicCompetency] {
@@ -1786,13 +1714,8 @@ final class CheckpointStore {
             }
     }
 
-    private func normalizeFreeTierLimits() {
-        unlockPolicy.questionsPerSession = UnlockPolicy.default.questionsPerSession
-        unlockPolicy.requiredCorrectAnswers = UnlockPolicy.default.requiredCorrectAnswers
-    }
-
     private var canRefreshAfterCooldown: Bool {
         guard let lastAutomaticQuestionRefreshAt else { return true }
-        return Date().timeIntervalSince(lastAutomaticQuestionRefreshAt) >= FreemiumLimits.proAutoRefreshCooldown
+        return Date().timeIntervalSince(lastAutomaticQuestionRefreshAt) >= ProductLimits.autoRefreshCooldown
     }
 }

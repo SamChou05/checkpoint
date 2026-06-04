@@ -75,91 +75,10 @@ enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 }
 
-enum SubscriptionTier: String, Codable, Sendable {
-    case free
-    case pro
-
-    var displayName: String {
-        switch self {
-        case .free:
-            return "Free"
-        case .pro:
-            return "Pro"
-        }
-    }
-}
-
-enum ProFeature: String, CaseIterable, Identifiable, Sendable {
-    case advancedStrictness
-    case automaticBankRefill
-    case unlimitedQuestionRefreshes
-    case largerQuestionBanks
-    case deeperAnalytics
-    case multipleGoals
-    case importsAndSync
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .advancedStrictness:
-            return "Custom checkpoint rules"
-        case .automaticBankRefill:
-            return "Automatic question refresh"
-        case .unlimitedQuestionRefreshes:
-            return "Unlimited refreshes"
-        case .largerQuestionBanks:
-            return "More question variety"
-        case .deeperAnalytics:
-            return "Adaptive study guidance"
-        case .multipleGoals:
-            return "Goal profiles"
-        case .importsAndSync:
-            return "Imports and sync"
-        }
-    }
-
-    var detail: String {
-        switch self {
-        case .advancedStrictness:
-            return "Tune question count and passing score beyond the default 4-of-5 checkpoint."
-        case .automaticBankRefill:
-            return "Quietly add new questions when your practice set gets low."
-        case .unlimitedQuestionRefreshes:
-            return "Refresh goal-aligned questions whenever you run low or change study focus."
-        case .largerQuestionBanks:
-            return "Keep more ready questions on deck so repeated attempts stay fresh."
-        case .deeperAnalytics:
-            return "Get quiet next-topic guidance based on misses, difficulty, and mastery."
-        case .multipleGoals:
-            return "Keep separate study goals with their own context, question level, questions, and skill map."
-        case .importsAndSync:
-            return "Bring in notes, decks, PDFs, and cross-device study state later."
-        }
-    }
-
-    static var launchFeatures: [ProFeature] {
-        [
-            .advancedStrictness,
-            .multipleGoals,
-            .largerQuestionBanks,
-            .deeperAnalytics
-        ]
-    }
-}
-
-enum ProProductID {
-    static let monthly = "checkpoint.pro.monthly"
-    static let yearly = "checkpoint.pro.yearly"
-    static let all = [monthly, yearly]
-}
-
-enum FreemiumLimits {
-    static let freeQuestionRefreshLimit = 2
-    static let freeQuestionBankTargetCount = 40
-    static let proQuestionBankTargetCount = 80
-    static let proAutoRefreshThreshold = 10
-    static let proAutoRefreshCooldown: TimeInterval = 6 * 60 * 60
+enum ProductLimits {
+    static let questionBankTargetCount = 80
+    static let autoRefreshThreshold = 10
+    static let autoRefreshCooldown: TimeInterval = 6 * 60 * 60
 }
 
 struct Goal: Identifiable, Codable, Equatable, Sendable {
@@ -389,8 +308,8 @@ struct QuestionLevelRecommendation: Equatable, Sendable {
 }
 
 enum StopBlockingPolicy {
-    static let questionsPerSession = 10
-    static let requiredCorrectAnswers = 9
+    static let questionsPerSession = 20
+    static let requiredCorrectAnswers = 18
 }
 
 struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {
@@ -437,7 +356,7 @@ struct QuestionGenerationQuestionPreview: Identifiable, Codable, Equatable, Send
 }
 
 struct UnlockPolicy: Codable, Equatable, Sendable {
-    static let correctAnswerUnlockMinuteOptions = [15, 30, 45, 60]
+    static let correctAnswerUnlockMinuteOptions = [5, 10, 15, 30]
     static let minimumQuestionsPerSession = 5
     static let maximumQuestionsPerSession = 10
     static let minimumRequiredCorrectAnswers = 4
@@ -632,7 +551,6 @@ struct AppSnapshot: Codable, Sendable {
     var backendEndpoint: String?
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining: Int
-    var subscriptionTier: SubscriptionTier?
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?
 }

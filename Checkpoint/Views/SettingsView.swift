@@ -3,7 +3,6 @@ import SwiftUI
 struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
-    let purchaseController: PurchaseController
 
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
@@ -30,36 +29,6 @@ struct SettingsView: View {
                         Text("Tune the blocker, your study goal, and the checkpoint rules.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
-                    }
-
-                    SectionPanel("Plan") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack(alignment: .top) {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text(store.isPro ? "Checkpoint Pro" : "Checkpoint Free")
-                                        .font(.headline)
-                                        .foregroundStyle(CheckpointTheme.text)
-
-                                    Text(planSubtitle)
-                                        .font(.subheadline)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-
-                                Spacer()
-
-                                StatusBadge(
-                                    text: store.subscriptionTier.displayName,
-                                    tint: store.isPro ? CheckpointTheme.amber : CheckpointTheme.teal
-                                )
-                            }
-
-                            if !store.isPro {
-                                SecondaryActionButton(title: "View Pro", systemImage: "sparkles") {
-                                    store.requestUpgrade(for: .largerQuestionBanks)
-                                }
-                            }
-                        }
                     }
 
                     SectionPanel("Goals") {
@@ -94,16 +63,8 @@ struct SettingsView: View {
                                 store.presentActiveGoalEditor()
                             }
 
-                            if store.canUse(.multipleGoals) {
-                                SecondaryActionButton(title: "New goal", systemImage: "plus") {
-                                    store.presentGoalProfileCreator()
-                                }
-                            }
-                        }
-
-                        if !store.canUse(.multipleGoals) {
-                            ProLockedFeatureRow(feature: .multipleGoals) {
-                                store.requestUpgrade(for: .multipleGoals)
+                            SecondaryActionButton(title: "New goal", systemImage: "plus") {
+                                store.presentGoalProfileCreator()
                             }
                         }
                     }
@@ -171,12 +132,6 @@ struct SettingsView: View {
 
                     SectionPanel("Checkpoint rules") {
                         VStack(alignment: .leading, spacing: 16) {
-                            if !store.canUse(.advancedStrictness) {
-                                ProLockedFeatureRow(feature: .advancedStrictness) {
-                                    store.requestUpgrade(for: .advancedStrictness)
-                                }
-                            }
-
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Passing score")
                                     .font(.headline)
@@ -192,8 +147,6 @@ struct SettingsView: View {
                                     in: UnlockPolicy.minimumQuestionsPerSession...UnlockPolicy.maximumQuestionsPerSession
                                 )
                                     .foregroundStyle(CheckpointTheme.text)
-                                    .disabled(!store.canUse(.advancedStrictness))
-                                    .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
 
                                 Stepper(
                                     "Correct answers needed: \(store.unlockPolicy.requiredCorrectAnswers)",
@@ -201,8 +154,6 @@ struct SettingsView: View {
                                     in: UnlockPolicy.minimumRequiredCorrectAnswers...store.unlockPolicy.questionsPerSession
                                 )
                                     .foregroundStyle(CheckpointTheme.text)
-                                    .disabled(!store.canUse(.advancedStrictness))
-                                    .opacity(store.canUse(.advancedStrictness) ? 1 : 0.48)
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
@@ -278,7 +229,7 @@ struct SettingsView: View {
 
                                 Divider()
 
-                                Text("Stopping blocking is intentionally tucked away so app-open moments still point back to a checkpoint. To turn it off, clear a 10-question challenge with at least 9 correct.")
+                                Text("Stopping blocking requires a longer 20-question challenge with at least 18 correct. Home also opens this challenge from Blocking active.")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -361,22 +312,6 @@ struct SettingsView: View {
             .sheet(item: $stopBlockingSession) { session in
                 CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
             }
-            .sheet(
-                item: Binding(
-                    get: { store.pendingPaywallFeature },
-                    set: { feature in
-                        if feature == nil {
-                            store.dismissPaywall()
-                        }
-                    }
-                )
-            ) { feature in
-                PaywallView(
-                    feature: feature,
-                    store: store,
-                    purchaseController: purchaseController
-                )
-            }
         }
     }
 
@@ -386,14 +321,6 @@ struct SettingsView: View {
 
     private var shouldShowScreenTimeAuthorizationButton: Bool {
         screenTime.setupState == .notStarted || screenTime.setupState == .failed
-    }
-
-    private var planSubtitle: String {
-        if store.isPro {
-            return "Extra question variety, adaptive guidance, and custom checkpoint rules are active."
-        }
-
-        return "Free keeps the blocker loop usable with one goal and automatic checkpoint preparation."
     }
 
     private var goalCountText: String {

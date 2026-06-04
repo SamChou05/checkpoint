@@ -7,6 +7,9 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
     @State private var isAcceptingLevelIncrease = false
+    @State private var stopBlockingSession: CheckpointSession?
+    @State private var stopBlockingMessage: String?
+    @State private var isPreparingStopChallenge = false
 
     var body: some View {
         NavigationStack {
@@ -18,7 +21,7 @@ struct HomeView: View {
                     if let goal = store.goal {
                         goalHero(goal)
                         weeklyStatsPanel
-                        proAssistPanel
+                        studyAssistPanel
                         screenTimePanel
                     } else {
                         emptyState
@@ -33,6 +36,9 @@ struct HomeView: View {
             .toolbarTitleDisplayMode(.inline)
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
+            }
+            .sheet(item: $stopBlockingSession) { session in
+                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
             }
             .onAppear {
                 handleQuestionRefreshOnActivation()
@@ -134,9 +140,9 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private var proAssistPanel: some View {
+    private var studyAssistPanel: some View {
         let levelRecommendation = store.questionLevelRecommendation
-        let focusRecommendation = store.isPro ? store.proFocusRecommendation : nil
+        let focusRecommendation = store.studyFocusRecommendation
 
         if levelRecommendation != nil || focusRecommendation != nil {
             SectionPanel("Study Assist") {
@@ -252,6 +258,7 @@ struct HomeView: View {
                 Text(screenTime.restrictedAppsSummary)
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 HStack(spacing: 10) {
                     SecondaryActionButton(title: "Choose blocked apps", systemImage: "checklist") {
@@ -259,12 +266,13 @@ struct HomeView: View {
                     }
 
                     if screenTime.isShieldingEnabled {
-                        HStack {
-                            Spacer(minLength: 0)
-                            StatusBadge(text: "Blocking active", tint: CheckpointTheme.teal)
-                            Spacer(minLength: 0)
+                        SecondaryActionButton(
+                            title: isPreparingStopChallenge ? "Preparing stop challenge" : "Blocking active",
+                            systemImage: "shield.fill"
+                        ) {
+                            prepareStopBlockingChallenge()
                         }
-                        .frame(maxWidth: .infinity)
+                        .disabled(isPreparingStopChallenge)
                     } else if isTemporarilyUnblocked {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
@@ -286,6 +294,20 @@ struct HomeView: View {
                             screenTime.applyShield()
                         }
                     }
+                }
+
+                if screenTime.isShieldingEnabled {
+                    Text("Tap Blocking active to fully stop blocking after an 18-of-20 challenge.")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if let stopBlockingMessage {
+                    Text(stopBlockingMessage)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.amber)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
@@ -312,7 +334,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private var goalSwitcher: some View {
-        if store.isPro, store.availableGoalProfiles.count > 1 {
+        if store.availableGoalProfiles.count > 1 {
             Menu {
                 ForEach(store.availableGoalProfiles) { profile in
                     Button {
@@ -346,6 +368,21 @@ struct HomeView: View {
     private func handleQuestionRefreshOnActivation() {
         Task {
             _ = await store.refreshQuestionBatchIfNeeded()
+        }
+    }
+
+    private func prepareStopBlockingChallenge() {
+        guard !isPreparingStopChallenge else { return }
+        isPreparingStopChallenge = true
+
+        Task {
+            if let session = await store.prepareStopBlockingSession() {
+                stopBlockingMessage = nil
+                stopBlockingSession = session
+            } else {
+                stopBlockingMessage = store.checkpointNotice
+            }
+            isPreparingStopChallenge = false
         }
     }
 

@@ -1,61 +1,45 @@
 # Monetization Plan
 
-Checkpoint should start thinking about payment now, but should not block the core Screen Time loop behind a paywall until the real-device shield/unshield/re-lock workflow has passed TestFlight.
+Checkpoint is currently planned as a paid/full-access app rather than a freemium app with a Pro tier.
 
 ## Recommendation
 
-Launch with a free core and one Pro subscription group.
+Launch as one paid product with all current features included:
 
-- Free: one active goal profile, local/offline question generation, basic checkpoint history, default strictness, restricted app blocking.
-- Pro: goal profiles with separate focus areas/difficulty, custom checkpoint rules, more question variety, unlimited refreshes, richer competency analytics, and future import/sync features.
-- Initial price test: $4.99/month and $29.99/year.
+- Multiple goal profiles with separate focus areas, question difficulty, practice sets, history, reports, and Skill Maps.
+- Custom checkpoint rules, including question count, passing score, and 5/10/15/30 minute unlock windows.
+- Larger cached question banks, automatic refill, and adaptive Study Assist.
+- App blocking, temporary unlocks, emergency pass, history, reports, and diagnostics.
 
-This keeps the first release reviewable and useful while leaving room to monetize users who want deeper academic tracking.
+This avoids making the free version strong enough to undercut conversion, and it keeps the app simpler: users buy Checkpoint, then they get Checkpoint.
 
-## Implemented Free/Pro Split
+## Launch Pricing
 
-The current app has a StoreKit-ready freemium shell:
+The simplest launch path is paid app pricing in App Store Connect. The current candidate price remains $4.99, with no in-app Free/Pro gate in the code.
 
-- Free keeps the core blocker loop usable: one active goal profile, local questions, the default 5-question session, 4 correct answers required, app blocking, and temporary unlock.
-- Free gets 2 question-bank refreshes per goal.
-- Pro unlocks multiple goal profiles, automatic low-bank refill, advanced strictness tuning, unlimited refreshes, larger provider target batches, and next-topic guidance.
-- The paywall uses StoreKit product IDs and restore hooks, but App Store Connect products and a local StoreKit configuration file still need to be created before real purchases can complete.
-- The blocker recovery path is not paywalled.
+Before selling the app:
+
+1. Make sure the Account Holder accepts the Paid Apps Agreement in App Store Connect.
+2. Configure banking and tax information.
+3. Set the app price under Pricing and Availability.
+4. Re-run TestFlight validation after pricing, entitlement, backend, and real-device Screen Time work are complete.
+
+If backend AI usage becomes expensive enough that one-time paid pricing is risky, revisit an app-wide subscription later. Do not revive a feature-level Free/Pro split unless user research clearly shows users understand and value that split.
 
 ## Cost Profile
 
-The freemium gates do not create meaningful new infrastructure cost by themselves.
-
-- StoreKit has no fixed monthly fee, but Apple takes its App Store commission on paid subscriptions.
 - Local/offline question generation has no per-user AI cost.
 - Apple Foundation Models generation has no server bill, but only works on supported devices.
-- Backend AI generation can create variable cost. Keep it batch-based, quota-limited, cooldown-protected, and preferably tied to Pro refresh limits before using it broadly.
-- The free refresh limit exists partly to control backend spend if backend generation becomes active.
+- Backend AI generation can create variable cost. Keep it batch-based, quota-limited, cooldown-protected, and cached locally.
+- Paid-only launch reduces free-user backend exposure, but does not remove the need for backend quotas.
 
-## Product IDs
+## Current Implementation
 
-Use stable product IDs before creating App Store Connect products:
-
-- Subscription group: `Checkpoint Pro`
-- Monthly: `checkpoint.pro.monthly`
-- Yearly: `checkpoint.pro.yearly`
-
-## Implementation Order
-
-1. Validate the real iPhone Screen Time loop.
-2. Create the subscription group and auto-renewable subscription products in App Store Connect.
-3. Add a local StoreKit configuration file for simulator purchase testing.
-4. Verify StoreKit product loading, purchase, restore, and entitlement refresh in TestFlight.
-5. Add subscription management links and final App Review notes.
-6. Re-check that only Pro features are gated, not the user's ability to recover from a blocked app.
-
-## App Review Notes
-
-The core blocker should remain understandable without payment. If Pro is present, explain that payment unlocks advanced study and configuration features, while the base app remains usable for voluntary app blocking and checkpoint attempts.
+- StoreKit purchase UI and Free/Pro gates have been removed from the app target.
+- Runtime behavior grants the full feature set.
+- Payment is expected to happen through App Store app pricing at launch, not an in-app feature paywall.
 
 ## References
 
-- Apple App Store Connect: Offer auto-renewable subscriptions  
-  https://developer.apple.com/help/app-store-connect/manage-subscriptions/offer-auto-renewable-subscriptions/
-- Apple StoreKit current entitlements  
-  https://developer.apple.com/documentation/storekit/transaction/currententitlements
+- Apple App Store Connect Help: Set a price
+  https://developer.apple.com/help/app-store-connect/manage-app-pricing/set-a-price/

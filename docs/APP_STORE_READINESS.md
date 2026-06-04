@@ -15,7 +15,7 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
 - Blocked-app launches with no available checkpoint questions surface a recovery notice.
 - Simulator XCTest coverage passes for the core workflow.
-- StoreKit-ready Free/Pro gating is scaffolded. The core blocked-app recovery loop remains free; Pro gates goal profiles, custom checkpoint rules, automatic question refresh, next-topic guidance, and refresh capacity.
+- Paid/full-access product behavior is implemented. Goal profiles, custom checkpoint rules, automatic question refresh, next-topic guidance, and larger question banks are included without an in-app Free/Pro split.
 
 ## External Gates
 
@@ -30,7 +30,9 @@ These cannot be completed from the repo alone:
 3. Enable App Groups for all four bundle IDs with `group.com.samchou.checkpoint`.
 4. Request Family Controls distribution access from Apple for the app and Screen Time extension bundle IDs.
 5. Create development and distribution provisioning profiles after Apple grants the entitlement.
-6. Run the real shield loop on a physical iPhone before TestFlight.
+6. Accept the Paid Apps Agreement and configure banking/tax details before selling the app.
+7. Set app pricing in App Store Connect before submission.
+8. Run the real shield loop on a physical iPhone before TestFlight.
 
 ## Latest Real-Device Validation Attempt
 
@@ -78,7 +80,7 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 
 - The app stores goal, question, answer-history, competency, shield-state, and unlock-window data locally.
 - The app and extensions use App Group `UserDefaults` to coordinate shield state.
-- Unlock windows are 15 minutes or longer because Apple's Device Activity monitor requires at least a 15-minute interval.
+- Unlock windows can be 5, 10, 15, or 30 minutes. Short windows rely on the app-level re-lock task and foreground reconciliation, with Device Activity as an additional background re-lock path.
 - Backend generation, when explicitly configured, sends goal context, derived learning target/topics, competency progress, existing prompts, and reported prompts to the configured endpoint.
 - The app does not use tracking domains.
 - The current privacy manifests declare `UserDefaults` required-reason API access:
@@ -92,4 +94,4 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 - App Store privacy labels and a hosted privacy policy are finalized.
 - Screenshots, description, support URL, age rating, and review notes are created in App Store Connect.
 - Persistence is accepted as MVP-local storage or replaced with a production store.
-- Monetization scope is finalized, App Store Connect subscription products are configured, StoreKit sandbox/TestFlight purchases are verified, and blocked-app recovery remains available without payment.
+- Monetization scope is finalized, the Paid Apps Agreement is active, App Store Connect app pricing is configured, and paid-app launch assumptions are reviewed against backend AI cost.
