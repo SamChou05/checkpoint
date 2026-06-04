@@ -7,6 +7,7 @@ struct MembershipView: View {
     let purchaseController: PurchaseController
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @State private var purchasingProductID: String?
 
     var body: some View {
@@ -18,7 +19,7 @@ struct MembershipView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Start with one focused goal. Upgrade when you want Checkpoint to keep fresh practice ready as your priorities evolve.")
+                        Text("Start with one focused goal. Switch to Pro when you want more goals, more variety, and steadier review over time.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -28,13 +29,23 @@ struct MembershipView: View {
                         title: "Free",
                         price: "$0",
                         cadence: "forever",
-                        detail: "Try the core Checkpoint loop with one goal.",
+                        detail: freePlanDetailText,
                         statusText: store.isMember ? nil : "Current plan",
                         tint: CheckpointTheme.amber
                     ) {
-                        PlanBenefitRow(title: "One active goal", detail: "Set a goal, choose protected apps, and practice before app breaks.")
-                        PlanBenefitRow(title: "Initial question bank", detail: "Enough practice to experience the primary flow before upgrading.")
-                        PlanBenefitRow(title: "Skill Map and weekly stats", detail: "Track early progress without extra setup.")
+                        PlanBenefitRow(title: "One goal to start", detail: "Build a focused checkpoint around the outcome that matters most right now.")
+                        PlanBenefitRow(title: "Protected app flow", detail: "Clear a short practice set before opening the apps you chose to protect.")
+                        PlanBenefitRow(title: "Weekly progress", detail: "See your questions answered, accuracy, skill progress, and screen-time patterns.")
+
+                        if store.isMember {
+                            PlanFootnote("To return to Free, manage your Pro plan in the App Store. Free resumes after the current billing period ends.")
+
+                            SecondaryActionButton(title: "Return to Free", systemImage: "arrow.down.circle") {
+                                openSubscriptionManagement()
+                            }
+                        } else {
+                            DisabledPlanButton(title: "Current plan", systemImage: "checkmark")
+                        }
                     }
 
                     PlanCard(
@@ -45,15 +56,19 @@ struct MembershipView: View {
                         statusText: store.isMember ? "Current plan" : nil,
                         tint: CheckpointTheme.teal
                     ) {
-                        PlanBenefitRow(title: "Up to 5 goals", detail: "Keep separate question banks, levels, and Skill Maps for each goal.")
-                        PlanBenefitRow(title: "Fresh AI practice", detail: "Generate new goal-aligned questions when your bank runs low.")
-                        PlanBenefitRow(title: "Deeper question banks", detail: "Keep more ready questions cached so switching goals feels seamless.")
-                        PlanBenefitRow(title: "Adaptive guidance", detail: "Use misses, mastery, and recent accuracy to guide what comes next.")
+                        PlanBenefitRow(title: "Up to 5 goals", detail: "Keep school, exams, and personal goals organized separately.")
+                        PlanBenefitRow(title: "Practice stays ready", detail: "Get new checkpoints as your priorities and progress change.")
+                        PlanBenefitRow(title: "More variety", detail: "Work through a broader range of questions so practice stays useful.")
+                        PlanBenefitRow(title: "Guided review", detail: "Missed ideas come back at the right time so weak spots do not disappear.")
 
                         if !store.isMember {
+                            PlanFootnote("Choose a billing option to switch to Pro.")
+
                             Divider()
 
                             priceContent
+                        } else {
+                            DisabledPlanButton(title: "Current plan", systemImage: "checkmark")
                         }
                     }
 
@@ -124,12 +139,20 @@ struct MembershipView: View {
         }
     }
 
-    private var proPlanDetailText: String {
+    private var freePlanDetailText: String {
         if store.isMember {
-            return "Fresh practice and goal switching are active."
+            return "Free is always available if Pro is no longer the right fit."
         }
 
-        return "For multiple goals, fresh questions, and smoother long-term practice."
+        return "A focused way to try the full Checkpoint habit with your first goal."
+    }
+
+    private var proPlanDetailText: String {
+        if store.isMember {
+            return "Your plan for multiple goals, varied practice, and steadier review."
+        }
+
+        return "For people working across more than one goal, or practicing often enough to need new checkpoints."
     }
 
     private func loadEntitlements() async {
@@ -161,6 +184,12 @@ struct MembershipView: View {
                 store.updateMembershipTier(.member)
                 close()
             }
+        }
+    }
+
+    private func openSubscriptionManagement() {
+        if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
+            openURL(url)
         }
     }
 
@@ -211,11 +240,11 @@ private struct ProductPurchaseRow: View {
     }
 
     private var title: String {
-        product.id == MembershipProductID.yearly ? "Start annual" : "Start monthly"
+        product.id == MembershipProductID.yearly ? "Switch to Pro annually" : "Switch to Pro monthly"
     }
 
     private var detail: String {
-        product.id == MembershipProductID.yearly ? "Best value for consistent practice." : "Flexible monthly access."
+        product.id == MembershipProductID.yearly ? "Best value for consistent practice." : "Flexible monthly access. Cancel anytime in the App Store."
     }
 }
 
@@ -296,6 +325,35 @@ private struct PlanBenefitRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+    }
+}
+
+private struct DisabledPlanButton: View {
+    var title: String
+    var systemImage: String
+
+    var body: some View {
+        Label(title, systemImage: systemImage)
+            .font(.subheadline.weight(.bold))
+            .foregroundStyle(CheckpointTheme.muted)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 13)
+            .background(CheckpointTheme.panelRaised.opacity(0.65), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+}
+
+private struct PlanFootnote: View {
+    var text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
+
+    var body: some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundStyle(CheckpointTheme.muted)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
 

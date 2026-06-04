@@ -276,13 +276,13 @@ final class CheckpointStore {
     var questionGenerationStatusText: String {
         if isQuestionBankTopOffInProgress {
             let elapsedText = questionBankTopOffStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
-            return "\(usableQuestionCount) ready; building the question bank in the background.\(elapsedText)"
+            return "Preparing more practice in the background.\(elapsedText)"
         }
 
         switch questionBatchState {
         case .generating:
             let readyText = usableQuestionCount > 0
-                ? "\(usableQuestionCount) ready; preparing more"
+                ? "Preparing more practice"
                 : "Preparing first practice set"
             let elapsedText = questionGenerationStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
             return "\(readyText) in the background.\(elapsedText)"
@@ -290,17 +290,17 @@ final class CheckpointStore {
             return lastAIErrorMessage ?? "Question preparation did not finish. Checkpoint will try again when possible."
         case .ready:
             if let duration = lastQuestionGenerationDuration {
-                return "\(usableQuestionCount) ready. Last prepared in \(Self.formattedDuration(duration))."
+                return "Practice is ready. Last prepared in \(Self.formattedDuration(duration))."
             }
-            return "\(usableQuestionCount) ready."
+            return "Practice is ready."
         case .idle:
-            return usableQuestionCount > 0 ? "\(usableQuestionCount) ready." : "No practice prepared yet."
+            return usableQuestionCount > 0 ? "Practice is ready." : "No practice prepared yet."
         }
     }
 
     var studyAssistSummary: String {
         guard isMember else {
-            return "Free includes your first goal. Pro keeps fresh practice ready when your Free set runs low."
+            return "Free includes your first goal. Pro keeps new checkpoints available as you keep practicing."
         }
 
         if let focus = studyFocusRecommendation {
@@ -308,7 +308,7 @@ final class CheckpointStore {
         }
 
         if usableQuestionCount <= ProductLimits.autoRefreshThreshold {
-            return "Your practice set is getting low. Checkpoint will prepare fresh questions when possible."
+            return "Your current practice is getting low. Checkpoint will prepare more when possible."
         }
 
         return "Your practice rhythm is steady. Keep completing sets and missed topics will surface automatically."
@@ -481,7 +481,7 @@ final class CheckpointStore {
         }
 
         if goal != nil && !isMember {
-            checkpointNotice = "Free includes one goal. Pro lets you change goals and keep separate practice sets ready."
+            checkpointNotice = "Free includes one goal. Pro unlocks up to 5 goals with separate progress for each."
             requestMembership(for: .goalProfiles)
             save()
             return
@@ -1272,7 +1272,7 @@ final class CheckpointStore {
                 questionBatchState = .generating
                 shouldRegenerate = true
             } else if hadActiveQuestions && usableQuestionCount < unlockPolicy.questionsPerSession {
-                checkpointNotice = "Question level updated. Pro can prepare a fresh harder question bank when your current set is below that level."
+                checkpointNotice = "Question level updated. Pro can prepare harder checkpoints for this goal."
                 requestMembership(for: .freshQuestionGeneration)
             }
         }
@@ -1662,7 +1662,7 @@ final class CheckpointStore {
 
         if activeQuestions.isEmpty {
             if !isMember {
-                return "Your Free practice sets are complete. Pro keeps fresh questions ready when you need more."
+                return "Your Free checkpoints are complete. Pro keeps new practice ready when you need more."
             }
 
             return source == .blockedApp
@@ -1671,7 +1671,7 @@ final class CheckpointStore {
         }
 
         if !isMember && usableQuestionCount == 0 {
-            return "Your Free question set has done its job. Pro keeps fresh practice coming."
+            return "Your first Free practice set has done its job. Pro keeps new checkpoints coming."
         }
 
         return "Checkpoint is preparing more questions. Try again in a moment or lower the minimum level."
@@ -2065,6 +2065,6 @@ final class CheckpointStore {
     }
 
     private var starterQuestionLimitMessage: String {
-        "Free includes an initial question set for your first goal. Pro keeps fresh practice ready after that set runs low."
+        "Free includes an initial practice set for your first goal. Pro keeps new checkpoints available after that set runs low."
     }
 }

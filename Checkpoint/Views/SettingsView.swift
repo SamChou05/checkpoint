@@ -359,10 +359,10 @@ struct SettingsView: View {
 
     private var planDetailText: String {
         if store.isMember {
-            return "Pro is active: more goals, fresh practice, and deeper question banks."
+            return "Pro is active: multiple goals, ongoing practice, and guided review."
         }
 
-        return "Free includes one goal and an initial practice set."
+        return "Free includes one goal and the core protected-app flow."
     }
 
     private var historyDetailText: String {

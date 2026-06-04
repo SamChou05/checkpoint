@@ -110,26 +110,26 @@ enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .goalProfiles:
-            return "Goal profiles"
+            return "Multiple goals"
         case .freshQuestionGeneration:
-            return "Fresh practice sets"
+            return "Ongoing practice"
         case .largerQuestionBank:
-            return "Deeper question bank"
+            return "More variety"
         case .adaptiveStudyAssist:
-            return "Adaptive guidance"
+            return "Guided review"
         }
     }
 
     var detail: String {
         switch self {
         case .goalProfiles:
-            return "Create and switch between separate goals, each with its own practice areas, question level, history, and Skill Map."
+            return "Keep separate goals organized without blending their progress, focus areas, or question levels."
         case .freshQuestionGeneration:
-            return "Keep new goal-aligned practice ready after your Free set has done its job."
+            return "Continue getting new goal-aligned checkpoints after your first Free set has done its job."
         case .largerQuestionBank:
-            return "Build a larger cached question bank so practice feels varied over time."
+            return "See a broader range of questions so practice stays useful instead of repetitive."
         case .adaptiveStudyAssist:
-            return "Use missed topics, mastery, and recent accuracy to guide the next practice set."
+            return "Bring weak spots back into review so progress stays steady over time."
         }
     }
 

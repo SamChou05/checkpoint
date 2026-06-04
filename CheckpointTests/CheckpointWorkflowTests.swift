@@ -141,7 +141,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNil(session)
         XCTAssertNil(localEngine.receivedRequest)
         XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
-        XCTAssertTrue(store.checkpointNotice?.contains("Pro keeps fresh practice") ?? false)
+        XCTAssertTrue(store.checkpointNotice?.contains("Pro keeps new checkpoints") ?? false)
     }
 
     @MainActor
@@ -230,7 +230,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertTrue(store.isQuestionBankTopOffInProgress)
         XCTAssertGreaterThanOrEqual(store.activeQuestions.count, 5)
-        XCTAssertTrue(store.questionGenerationStatusText.contains("building the question bank"))
+        XCTAssertTrue(store.questionGenerationStatusText.contains("Preparing more practice in the background"))
 
         try? await Task.sleep(nanoseconds: 600_000_000)
 
@@ -1297,7 +1297,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         SharedAppGroup.markPendingShieldAttempt()
 
         XCTAssertNil(store.takePendingShieldSession())
-        XCTAssertTrue(store.checkpointNotice?.contains("Pro keeps fresh questions") ?? false)
+        XCTAssertTrue(store.checkpointNotice?.contains("Pro keeps new practice") ?? false)
         XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
         XCTAssertNil(store.takePendingShieldSession())
     }
