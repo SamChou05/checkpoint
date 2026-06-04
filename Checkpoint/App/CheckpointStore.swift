@@ -953,9 +953,11 @@ final class CheckpointStore {
             questions[index].status = questions[index].timesCorrect >= 3 ? .retired : .correct
             questions[index].nextReviewAt = Calendar.current.date(byAdding: .day, value: questions[index].timesCorrect + 1, to: Date())
         case .partial:
+            questions[index].timesCorrect = max(0, questions[index].timesCorrect - 1)
             questions[index].status = .due
             questions[index].nextReviewAt = Calendar.current.date(byAdding: .hour, value: 12, to: Date())
         case .incorrect, .unclear:
+            questions[index].timesCorrect = 0
             questions[index].status = .incorrect
             questions[index].nextReviewAt = Calendar.current.date(byAdding: .hour, value: 2, to: Date())
         }

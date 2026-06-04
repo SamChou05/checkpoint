@@ -641,6 +641,72 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testIncorrectAnswerResetsQuestionRetirementStreak() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        var question = makeQuestion(goal: goal, index: 1, timesCorrect: 2)
+        store.questions = [question]
+        store.competencies = [.initial(topic: question.topic, goalID: goal.id)]
+
+        store.submitAnswer(
+            question: question,
+            answer: "Wrong answer",
+            result: .incorrect,
+            grantsUnlock: false
+        )
+
+        var updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
+        XCTAssertEqual(updatedQuestion.timesCorrect, 0)
+        XCTAssertEqual(updatedQuestion.status, .incorrect)
+
+        for expectedCorrectStreak in 1...2 {
+            question = updatedQuestion
+            store.submitAnswer(
+                question: question,
+                answer: question.expectedAnswer,
+                result: .correct,
+                grantsUnlock: false
+            )
+            updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
+            XCTAssertEqual(updatedQuestion.timesCorrect, expectedCorrectStreak)
+            XCTAssertEqual(updatedQuestion.status, .correct)
+        }
+
+        store.submitAnswer(
+            question: updatedQuestion,
+            answer: updatedQuestion.expectedAnswer,
+            result: .correct,
+            grantsUnlock: false
+        )
+
+        updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
+        XCTAssertEqual(updatedQuestion.timesCorrect, 3)
+        XCTAssertEqual(updatedQuestion.status, .retired)
+    }
+
+    @MainActor
+    func testPartialAnswerReducesQuestionRetirementStreak() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        let question = makeQuestion(goal: goal, index: 1, timesCorrect: 2)
+        store.questions = [question]
+        store.competencies = [.initial(topic: question.topic, goalID: goal.id)]
+
+        store.submitAnswer(
+            question: question,
+            answer: "Close answer",
+            result: .partial,
+            grantsUnlock: false
+        )
+
+        let updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
+        XCTAssertEqual(updatedQuestion.timesCorrect, 1)
+        XCTAssertEqual(updatedQuestion.status, .due)
+    }
+
+    @MainActor
     func testClearingUnlockSessionRemovesStoredTimer() throws {
         let store = makeSeededStore(questionCount: 5)
         let question = try XCTUnwrap(store.questions.first)
@@ -1539,6 +1605,7 @@ private func makeQuestion(
     expectedAnswer: String? = nil,
     choices: [String]? = nil,
     status: QuestionStatus = .new,
+    timesCorrect: Int = 0,
     nextReviewAt: Date? = nil,
     difficulty: Int = 2,
     sourcePrompt: String = "test"
@@ -1559,6 +1626,7 @@ private func makeQuestion(
         difficulty: difficulty,
         format: .multipleChoice,
         status: status,
+        timesCorrect: timesCorrect,
         nextReviewAt: nextReviewAt,
         sourcePrompt: sourcePrompt
     )
