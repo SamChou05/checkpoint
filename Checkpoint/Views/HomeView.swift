@@ -260,7 +260,7 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 HStack(spacing: 10) {
-                    SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
+                    HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
                         isRestrictedAppsPresented = true
                     }
 
@@ -276,14 +276,14 @@ struct HomeView: View {
                                     .foregroundStyle(CheckpointTheme.muted)
                             }
 
-                            SecondaryActionButton(title: "End break early", systemImage: "shield") {
+                            HomeProtectionActionButton(title: "End break early", systemImage: "shield") {
                                 store.clearUnlockSession()
                                 screenTime.applyShield()
                             }
                         }
                         .frame(maxWidth: .infinity)
                     } else {
-                        SecondaryActionButton(title: "Start protection", systemImage: "shield") {
+                        HomeProtectionActionButton(title: "Start protection", systemImage: "shield") {
                             screenTime.applyShield()
                         }
                     }
@@ -381,5 +381,30 @@ struct HomeView: View {
 
     private var isTemporarilyUnblocked: Bool {
         screenTime.setupState == .temporarilyUnlocked || store.activeUnlockMinutesRemaining > 0
+    }
+}
+
+private struct HomeProtectionActionButton: View {
+    var title: String
+    var systemImage: String
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 16, weight: .semibold))
+
+                Text(title)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+            }
+            .font(.subheadline.weight(.bold))
+            .foregroundStyle(CheckpointTheme.text)
+            .frame(maxWidth: .infinity, minHeight: 56)
+            .padding(.horizontal, 10)
+            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 }
