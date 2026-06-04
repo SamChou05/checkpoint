@@ -16,6 +16,7 @@ struct SettingsView: View {
     @State private var stopBlockingSession: CheckpointSession?
     @State private var stopBlockingMessage: String?
     @State private var isPreparingStopChallenge = false
+    @State private var isStopProtectionConfirmationPresented = false
 
     var body: some View {
         NavigationStack {
@@ -91,7 +92,7 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
 
-                                        Text("Each goal keeps its own practice sets, Skill Map, and answer history.")
+                                Text("Each goal keeps its own practice sets, Skill Map, and answer history.")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -174,6 +175,27 @@ struct SettingsView: View {
                                 isRestrictedAppsPresented = true
                             }
 
+                            if canStopBlocking {
+                                Divider()
+
+                                Text("Turning off protection requires a longer 20-question review with at least 18 correct.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing review" : "Turn off protection", systemImage: "hand.raised") {
+                                    isStopProtectionConfirmationPresented = true
+                                }
+                                .disabled(isPreparingStopChallenge)
+
+                                if let stopBlockingMessage {
+                                    Text(stopBlockingMessage)
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.amber)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+
                             if let message = screenTime.lastErrorMessage {
                                 Text(message)
                                     .font(.footnote)
@@ -250,11 +272,6 @@ struct SettingsView: View {
 
                                 Divider()
 
-                                Text("Turning off protection requires a longer 20-question review with at least 18 correct.")
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-
                                 SecondaryActionButton(title: isPreparingPreviewCheckpoint ? "Preparing preview" : "Preview checkpoint", systemImage: "play.fill") {
                                     prepareCheckpointPreview()
                                 }
@@ -263,30 +280,6 @@ struct SettingsView: View {
 
                                 if let previewCheckpointMessage {
                                     Text(previewCheckpointMessage)
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.amber)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-
-                                SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing review" : "Turn off protection", systemImage: "hand.raised") {
-                                    guard !isPreparingStopChallenge else { return }
-                                    isPreparingStopChallenge = true
-
-                                    Task {
-                                        if let session = await store.prepareStopBlockingSession() {
-                                            stopBlockingMessage = nil
-                                            stopBlockingSession = session
-                                        } else {
-                                            stopBlockingMessage = store.checkpointNotice
-                                        }
-                                        isPreparingStopChallenge = false
-                                    }
-                                }
-                                .disabled(!canStopBlocking || isPreparingStopChallenge)
-                                .opacity(canStopBlocking ? 1 : 0.48)
-
-                                if let stopBlockingMessage {
-                                    Text(stopBlockingMessage)
                                         .font(.footnote)
                                         .foregroundStyle(CheckpointTheme.amber)
                                         .fixedSize(horizontal: false, vertical: true)
@@ -332,6 +325,15 @@ struct SettingsView: View {
             }
             .sheet(item: $stopBlockingSession) { session in
                 CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
+            }
+            .alert("Turn off protection?", isPresented: $isStopProtectionConfirmationPresented) {
+                Button("Start 20-question review") {
+                    prepareStopBlockingChallenge()
+                }
+
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("You will need to answer 18 of 20 questions correctly before protection turns off.")
             }
         }
     }
@@ -464,6 +466,21 @@ struct SettingsView: View {
                 previewCheckpointMessage = store.checkpointNotice
             }
             isPreparingPreviewCheckpoint = false
+        }
+    }
+
+    private func prepareStopBlockingChallenge() {
+        guard !isPreparingStopChallenge else { return }
+        isPreparingStopChallenge = true
+
+        Task {
+            if let session = await store.prepareStopBlockingSession() {
+                stopBlockingMessage = nil
+                stopBlockingSession = session
+            } else {
+                stopBlockingMessage = store.checkpointNotice
+            }
+            isPreparingStopChallenge = false
         }
     }
 }

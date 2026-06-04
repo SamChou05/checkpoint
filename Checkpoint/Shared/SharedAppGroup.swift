@@ -48,6 +48,7 @@ enum SharedAppGroup {
         let defaults = defaults
         defaults.set(goalTitle ?? "Checkpoint", forKey: shieldGoalTitleKey)
         defaults.set(promptPreview ?? "Open Checkpoint to complete a practice set for your current goal.", forKey: shieldPromptPreviewKey)
+        defaults.synchronize()
     }
 
     static func publishUnlockExpiration(_ date: Date?) {

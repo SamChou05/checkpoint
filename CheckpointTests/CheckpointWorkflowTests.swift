@@ -607,7 +607,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let firstQuestions = (1...12).map { index in
             makeQuestion(goal: firstGoal, index: index, topic: "arrays", difficulty: 4)
         }
-        let secondQuestions = (1...12).map { index in
+        let secondQuestions = (1...24).map { index in
             makeQuestion(goal: secondGoal, index: index, topic: "integrals", difficulty: 2)
         }
 
@@ -623,6 +623,70 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(Set(store.activeQuestions.map(\.id)), Set(secondQuestions.map(\.id)))
         XCTAssertEqual(store.usableQuestionCount(for: secondGoal), secondQuestions.count)
         XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
+    func testSwitchingGoalPreparesProtectionReviewBankWhenCachedSetIsLow() async throws {
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+
+        let firstGoal = makeGoal()
+        let secondGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+
+        store.goal = firstGoal
+        store.goalProfiles = [firstGoal, secondGoal]
+        store.questions = (1...12).map { index in
+            makeQuestion(goal: secondGoal, index: index, topic: "integrals", difficulty: 2)
+        }
+
+        store.switchActiveGoal(to: secondGoal.id)
+        try? await Task.sleep(nanoseconds: 150_000_000)
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.goal.id, secondGoal.id)
+        XCTAssertEqual(request.targetCount, ProductLimits.memberQuestionBankTargetCount)
+    }
+
+    @MainActor
+    func testSwitchingActiveGoalPublishesShieldGoalTitle() {
+        let store = CheckpointStore(defaults: defaults)
+        store.updateMembershipTier(.member)
+        let firstGoal = makeGoal()
+        let secondGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        store.goal = firstGoal
+        store.goalProfiles = [firstGoal, secondGoal]
+
+        store.switchActiveGoal(to: secondGoal.id)
+
+        XCTAssertEqual(
+            SharedAppGroup.defaults.string(forKey: SharedAppGroup.shieldGoalTitleKey),
+            secondGoal.title
+        )
     }
 
     @MainActor
@@ -767,6 +831,44 @@ final class CheckpointWorkflowTests: XCTestCase {
             store.checkpointNotice,
             "Checkpoint is preparing enough questions for the protection review. Try again in a moment or lower the minimum level."
         )
+    }
+
+    @MainActor
+    func testStopBlockingSessionUsesCachedCorrectQuestionsBeforeRefilling() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        let nextReviewAt = Date().addingTimeInterval(60 * 60 * 24 * 3)
+        let newQuestions = (1...15).map { makeQuestion(goal: goal, index: $0) }
+        let coolingDownCorrectQuestions = (16...20).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                status: .correct,
+                timesCorrect: 1,
+                lastAskedAt: Date().addingTimeInterval(-60),
+                nextReviewAt: nextReviewAt
+            )
+        }
+        store.questions = newQuestions + coolingDownCorrectQuestions
+
+        let preparedSession = await store.prepareStopBlockingSession()
+        let session = try XCTUnwrap(preparedSession)
+
+        XCTAssertEqual(session.questions.count, StopBlockingPolicy.questionsPerSession)
+        XCTAssertEqual(session.unlockThreshold, StopBlockingPolicy.requiredCorrectAnswers)
+        XCTAssertTrue(coolingDownCorrectQuestions.allSatisfy { correctQuestion in
+            session.questions.contains { $0.id == correctQuestion.id }
+        })
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
     }
 
     @MainActor

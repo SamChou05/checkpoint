@@ -411,6 +411,7 @@ final class CheckpointStore {
         if hasActiveQuestions {
             Task { [weak self] in
                 _ = await self?.refreshQuestionBatchIfNeeded()
+                await self?.prepareProtectionReviewQuestionBankIfNeeded()
             }
         } else {
             prepareInitialQuestionsInBackground(for: selectedGoal)
@@ -783,7 +784,10 @@ final class CheckpointStore {
     }
 
     @discardableResult
-    func refreshQuestionBatchIfNeeded(minimumUsableQuestionCount: Int? = nil) async -> Bool {
+    func refreshQuestionBatchIfNeeded(
+        minimumUsableQuestionCount: Int? = nil,
+        allowsEarlyCorrectReuse: Bool = false
+    ) async -> Bool {
         guard goal != nil,
               questionBatchState != .generating,
               !isQuestionBankTopOffInProgress else {
@@ -791,7 +795,10 @@ final class CheckpointStore {
         }
 
         let refillMinimum = minimumUsableQuestionCount ?? unlockPolicy.questionsPerSession
-        let needsCoreRefill = needsQuestionRefill(minimumQuestionCount: refillMinimum) && canRefreshAfterCooldown
+        let needsCoreRefill = needsQuestionRefill(
+            minimumQuestionCount: refillMinimum,
+            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+        ) && canRefreshAfterCooldown
         let shouldRefreshProactively = isMember
             && usableQuestionCount <= ProductLimits.autoRefreshThreshold
             && canRefreshAfterCooldown
@@ -811,6 +818,15 @@ final class CheckpointStore {
         return true
     }
 
+    @discardableResult
+    func prepareProtectionReviewQuestionBankIfNeeded() async -> Bool {
+        guard isMember else { return false }
+        return await refreshQuestionBatchIfNeeded(
+            minimumUsableQuestionCount: StopBlockingPolicy.questionsPerSession,
+            allowsEarlyCorrectReuse: true
+        )
+    }
+
     // MARK: - Question selection
 
     func nextQuestion() -> CheckpointQuestion? {
@@ -826,7 +842,7 @@ final class CheckpointStore {
         )
     }
 
-    func nextQuestions(limit: Int) -> [CheckpointQuestion] {
+    func nextQuestions(limit: Int, allowsEarlyCorrectReuse: Bool = false) -> [CheckpointQuestion] {
         let maximumSessionQuestionCount = max(
             UnlockPolicy.maximumQuestionsPerSession,
             StopBlockingPolicy.questionsPerSession
@@ -836,7 +852,10 @@ final class CheckpointStore {
         var excludedQuestionIDs = Set<CheckpointQuestion.ID>()
 
         while selectedQuestions.count < targetCount,
-              let question = nextQuestion(excluding: excludedQuestionIDs) {
+              let question = nextQuestion(
+                excluding: excludedQuestionIDs,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+              ) {
             selectedQuestions.append(question)
             excludedQuestionIDs.insert(question.id)
         }
@@ -844,18 +863,36 @@ final class CheckpointStore {
         return selectedQuestions
     }
 
-    private func needsQuestionRefill(minimumQuestionCount: Int) -> Bool {
+    private func needsQuestionRefill(
+        minimumQuestionCount: Int,
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> Bool {
         usableQuestionCount < minimumQuestionCount
-            || nextQuestions(limit: minimumQuestionCount).count < minimumQuestionCount
+            || nextQuestions(
+                limit: minimumQuestionCount,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            ).count < minimumQuestionCount
     }
 
-    private func nextQuestion(excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>) -> CheckpointQuestion? {
+    private func nextQuestion(
+        excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>,
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> CheckpointQuestion? {
         let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
-        return prioritizedQuestion(from: preferredQuestions) ?? prioritizedQuestion(from: availableQuestions)
+        return prioritizedQuestion(
+            from: preferredQuestions,
+            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+        ) ?? prioritizedQuestion(
+            from: availableQuestions,
+            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+        )
     }
 
-    private func prioritizedQuestion(from availableQuestions: [CheckpointQuestion]) -> CheckpointQuestion? {
+    private func prioritizedQuestion(
+        from availableQuestions: [CheckpointQuestion],
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> CheckpointQuestion? {
         let now = Date()
         let selectableQuestions = availableQuestions.filter { $0.status != .retired }
 
@@ -889,8 +926,19 @@ final class CheckpointStore {
             return reviewQuestion
         }
 
-        return selectableQuestions
+        let reusableCorrectQuestions = selectableQuestions
             .filter { $0.status == .correct && canReuseCorrectQuestion($0, now: now) }
+            .sorted(by: sortByCorrectReusePriority)
+            .first
+
+        if let reusableCorrectQuestions {
+            return reusableCorrectQuestions
+        }
+
+        guard allowsEarlyCorrectReuse else { return nil }
+
+        return selectableQuestions
+            .filter { $0.status == .correct }
             .sorted(by: sortByCorrectReusePriority)
             .first
     }
@@ -1045,7 +1093,10 @@ final class CheckpointStore {
             return session
         }
 
-        guard await refreshQuestionBatchIfNeeded(minimumUsableQuestionCount: StopBlockingPolicy.questionsPerSession) else {
+        guard await refreshQuestionBatchIfNeeded(
+            minimumUsableQuestionCount: StopBlockingPolicy.questionsPerSession,
+            allowsEarlyCorrectReuse: true
+        ) else {
             return nil
         }
 
@@ -1058,7 +1109,10 @@ final class CheckpointStore {
             return nil
         }
 
-        let selectedQuestions = nextQuestions(limit: StopBlockingPolicy.questionsPerSession)
+        let selectedQuestions = nextQuestions(
+            limit: StopBlockingPolicy.questionsPerSession,
+            allowsEarlyCorrectReuse: true
+        )
         guard selectedQuestions.count >= StopBlockingPolicy.questionsPerSession else {
             checkpointNotice = "Checkpoint is preparing enough questions for the protection review. Try again in a moment or lower the minimum level."
             return nil

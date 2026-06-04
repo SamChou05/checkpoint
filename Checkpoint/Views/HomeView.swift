@@ -7,9 +7,6 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
     @State private var isAcceptingLevelIncrease = false
-    @State private var stopBlockingSession: CheckpointSession?
-    @State private var stopBlockingMessage: String?
-    @State private var isPreparingStopChallenge = false
 
     var body: some View {
         NavigationStack {
@@ -36,9 +33,6 @@ struct HomeView: View {
             .toolbarTitleDisplayMode(.inline)
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
-            }
-            .sheet(item: $stopBlockingSession) { session in
-                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
             }
             .onAppear {
                 handleQuestionRefreshOnActivation()
@@ -268,13 +262,7 @@ struct HomeView: View {
                     }
 
                     if screenTime.isShieldingEnabled {
-                        SecondaryActionButton(
-                            title: isPreparingStopChallenge ? "Preparing review" : "Protection active",
-                            systemImage: "shield.fill"
-                        ) {
-                            prepareStopBlockingChallenge()
-                        }
-                        .disabled(isPreparingStopChallenge)
+                        StatusBadge(text: "Protection active", tint: CheckpointTheme.teal)
                     } else if isTemporarilyUnblocked {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
@@ -298,12 +286,6 @@ struct HomeView: View {
                     }
                 }
 
-                if let stopBlockingMessage {
-                    Text(stopBlockingMessage)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.amber)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
             }
         }
     }
@@ -383,21 +365,7 @@ struct HomeView: View {
     private func handleQuestionRefreshOnActivation() {
         Task {
             _ = await store.refreshQuestionBatchIfNeeded()
-        }
-    }
-
-    private func prepareStopBlockingChallenge() {
-        guard !isPreparingStopChallenge else { return }
-        isPreparingStopChallenge = true
-
-        Task {
-            if let session = await store.prepareStopBlockingSession() {
-                stopBlockingMessage = nil
-                stopBlockingSession = session
-            } else {
-                stopBlockingMessage = store.checkpointNotice
-            }
-            isPreparingStopChallenge = false
+            await store.prepareProtectionReviewQuestionBankIfNeeded()
         }
     }
 
