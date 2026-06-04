@@ -78,6 +78,7 @@ final class CheckpointStore {
     @ObservationIgnored private static let levelUpRecentAttemptWindow = 10
     @ObservationIgnored private static let levelUpMinimumAttemptCount = 5
     @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
+    @ObservationIgnored private static let correctQuestionReuseMinimumInterveningAttempts = 5
 
     // MARK: - Lifecycle
 
@@ -785,7 +786,7 @@ final class CheckpointStore {
         }
 
         let refillMinimum = minimumUsableQuestionCount ?? unlockPolicy.questionsPerSession
-        let needsCoreRefill = usableQuestionCount < refillMinimum && canRefreshAfterCooldown
+        let needsCoreRefill = needsQuestionRefill(minimumQuestionCount: refillMinimum) && canRefreshAfterCooldown
         let shouldRefreshProactively = isMember
             && usableQuestionCount <= ProductLimits.autoRefreshThreshold
             && canRefreshAfterCooldown
@@ -838,6 +839,11 @@ final class CheckpointStore {
         return selectedQuestions
     }
 
+    private func needsQuestionRefill(minimumQuestionCount: Int) -> Bool {
+        usableQuestionCount < minimumQuestionCount
+            || nextQuestions(limit: minimumQuestionCount).count < minimumQuestionCount
+    }
+
     private func nextQuestion(excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>) -> CheckpointQuestion? {
         let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
@@ -846,22 +852,23 @@ final class CheckpointStore {
 
     private func prioritizedQuestion(from availableQuestions: [CheckpointQuestion]) -> CheckpointQuestion? {
         let now = Date()
+        let selectableQuestions = availableQuestions.filter { $0.status != .retired }
 
-        if let missed = availableQuestions
+        if let missed = selectableQuestions
             .filter({ $0.status == .incorrect && ($0.nextReviewAt ?? .distantPast) <= now })
             .sorted(by: sortByReviewPriority)
             .first {
             return missed
         }
 
-        if let due = availableQuestions
-            .filter({ ($0.nextReviewAt ?? .distantFuture) <= now && $0.status != .retired })
+        if let due = selectableQuestions
+            .filter({ ($0.nextReviewAt ?? .distantFuture) <= now })
             .sorted(by: sortByReviewPriority)
             .first {
             return due
         }
 
-        let weakAreaQuestion = availableQuestions
+        let weakAreaQuestion = selectableQuestions
             .filter { $0.status == .new }
             .sorted(by: sortByAdaptivePriority)
             .first
@@ -870,10 +877,17 @@ final class CheckpointStore {
             return weakAreaQuestion
         }
 
-        return availableQuestions
-            .filter { $0.status == .new }
-            .sorted(by: sortByAdaptivePriority)
-            .first ?? availableQuestions.filter { $0.status != .retired }.randomElement()
+        if let reviewQuestion = selectableQuestions
+            .filter({ $0.status != .correct })
+            .sorted(by: sortByReviewPriority)
+            .first {
+            return reviewQuestion
+        }
+
+        return selectableQuestions
+            .filter { $0.status == .correct && canReuseCorrectQuestion($0, now: now) }
+            .sorted(by: sortByCorrectReusePriority)
+            .first
     }
 
     // MARK: - Attempts and unlocks
@@ -982,7 +996,7 @@ final class CheckpointStore {
     func preparePendingShieldSession() async -> CheckpointSession? {
         guard SharedAppGroup.pendingShieldAttemptDate != nil else { return nil }
 
-        if goal != nil && usableQuestionCount < unlockPolicy.questionsPerSession {
+        if goal != nil && needsQuestionRefill(minimumQuestionCount: unlockPolicy.questionsPerSession) {
             _ = await refreshQuestionBatchIfNeeded()
         }
 
@@ -995,7 +1009,7 @@ final class CheckpointStore {
     }
 
     func prepareManualCheckpointSession() async -> CheckpointSession? {
-        if goal != nil && usableQuestionCount < unlockPolicy.questionsPerSession {
+        if goal != nil && needsQuestionRefill(minimumQuestionCount: unlockPolicy.questionsPerSession) {
             _ = await refreshQuestionBatchIfNeeded()
         }
 
@@ -1008,7 +1022,7 @@ final class CheckpointStore {
     }
 
     func preparePreviewCheckpointSession() async -> CheckpointSession? {
-        if goal != nil && usableQuestionCount < unlockPolicy.questionsPerSession {
+        if goal != nil && needsQuestionRefill(minimumQuestionCount: unlockPolicy.questionsPerSession) {
             _ = await refreshQuestionBatchIfNeeded()
         }
 
@@ -1224,7 +1238,12 @@ final class CheckpointStore {
         case .correct:
             questions[index].timesCorrect += 1
             questions[index].status = questions[index].timesCorrect >= 3 ? .retired : .correct
-            questions[index].nextReviewAt = Calendar.current.date(byAdding: .day, value: questions[index].timesCorrect + 1, to: Date())
+            if questions[index].status == .retired {
+                questions[index].nextReviewAt = nil
+            } else {
+                let delayDays = Self.correctAnswerReviewDelayDays(for: questions[index].timesCorrect)
+                questions[index].nextReviewAt = Calendar.current.date(byAdding: .day, value: delayDays, to: Date())
+            }
         case .partial:
             questions[index].timesCorrect = max(0, questions[index].timesCorrect - 1)
             questions[index].status = .due
@@ -1302,6 +1321,55 @@ final class CheckpointStore {
             return lhs.difficulty < rhs.difficulty
         }
         return (lhs.nextReviewAt ?? .distantPast) < (rhs.nextReviewAt ?? .distantPast)
+    }
+
+    private func sortByCorrectReusePriority(_ lhs: CheckpointQuestion, _ rhs: CheckpointQuestion) -> Bool {
+        let lhsReviewDate = lhs.nextReviewAt ?? .distantPast
+        let rhsReviewDate = rhs.nextReviewAt ?? .distantPast
+
+        if lhsReviewDate != rhsReviewDate {
+            return lhsReviewDate < rhsReviewDate
+        }
+
+        let lhsLastAskedAt = lhs.lastAskedAt ?? .distantPast
+        let rhsLastAskedAt = rhs.lastAskedAt ?? .distantPast
+
+        if lhsLastAskedAt != rhsLastAskedAt {
+            return lhsLastAskedAt < rhsLastAskedAt
+        }
+
+        return lhs.timesCorrect < rhs.timesCorrect
+    }
+
+    private func canReuseCorrectQuestion(_ question: CheckpointQuestion, now: Date) -> Bool {
+        guard question.status == .correct else { return true }
+
+        if let nextReviewAt = question.nextReviewAt, nextReviewAt <= now {
+            return true
+        }
+
+        guard let lastAskedAt = question.lastAskedAt else { return true }
+
+        let interveningAttempts = attempts.filter { attempt in
+            attempt.goalID == question.goalID
+                && attempt.questionID != question.id
+                && attempt.createdAt > lastAskedAt
+        }.count
+
+        return interveningAttempts >= Self.correctQuestionReuseMinimumInterveningAttempts
+    }
+
+    private static func correctAnswerReviewDelayDays(for correctStreak: Int) -> Int {
+        switch correctStreak {
+        case ..<1:
+            return 3
+        case 1:
+            return 3
+        case 2:
+            return 7
+        default:
+            return 14
+        }
     }
 
     private func sortByAdaptivePriority(_ lhs: CheckpointQuestion, _ rhs: CheckpointQuestion) -> Bool {
