@@ -80,13 +80,36 @@ struct SettingsView: View {
 
                                     Spacer()
 
-                                    StatusBadge(text: goalCountText, tint: CheckpointTheme.teal)
+                                    StatusBadge(
+                                        text: store.goalProfileCapacityText,
+                                        tint: store.hasReachedGoalProfileLimit ? CheckpointTheme.amber : CheckpointTheme.teal
+                                    )
                                 }
 
                                 Text("Question level: \(goal.difficultyLabel)")
                                     .font(.footnote.weight(.semibold))
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
+
+                                Text("Each goal keeps its own cached checkpoints, Skill Map, and answer history.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                if store.availableGoalProfiles.count > 1 {
+                                    Divider()
+
+                                    VStack(spacing: 0) {
+                                        ForEach(store.availableGoalProfiles) { profile in
+                                            goalProfileRow(profile)
+
+                                            if profile.id != store.availableGoalProfiles.last?.id {
+                                                Divider()
+                                                    .padding(.leading, 44)
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -95,9 +118,7 @@ struct SettingsView: View {
                                 store.presentActiveGoalEditor()
                             }
 
-                            SecondaryActionButton(title: "New goal", systemImage: "plus") {
-                                store.presentGoalProfileCreator()
-                            }
+                            newGoalButton
                         }
                     }
 
@@ -347,17 +368,65 @@ struct SettingsView: View {
         }
     }
 
+    @ViewBuilder
+    private var newGoalButton: some View {
+        let isLimitReached = store.isMember && store.hasReachedGoalProfileLimit
+
+        SecondaryActionButton(
+            title: isLimitReached ? "Goal limit reached" : "New goal",
+            systemImage: isLimitReached ? "checkmark.seal" : "plus"
+        ) {
+            store.presentGoalProfileCreator()
+        }
+        .disabled(isLimitReached)
+        .opacity(isLimitReached ? 0.65 : 1)
+    }
+
+    private func goalProfileRow(_ profile: Goal) -> some View {
+        let isActive = profile.id == store.goal?.id
+
+        return Button {
+            store.switchActiveGoal(to: profile.id)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(isActive ? CheckpointTheme.teal : CheckpointTheme.muted)
+                    .frame(width: 32, height: 32)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(profile.title)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text("\(store.questionBankSummary(for: profile)) - \(profile.difficultyLabel)")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 0)
+
+                if isActive {
+                    StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                }
+            }
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(isActive)
+    }
+
     private var canStopBlocking: Bool {
         screenTime.isShieldingEnabled || screenTime.setupState == .temporarilyUnlocked
     }
 
     private var shouldShowScreenTimeAuthorizationButton: Bool {
         screenTime.setupState == .notStarted || screenTime.setupState == .failed
-    }
-
-    private var goalCountText: String {
-        let count = store.availableGoalProfiles.count
-        return count == 1 ? "1 goal" : "\(count) goals"
     }
 
     private var membershipDetailText: String {

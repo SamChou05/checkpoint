@@ -212,6 +212,26 @@ final class CheckpointStore {
         isMember ? ProductLimits.memberQuestionBankTargetCount : ProductLimits.starterQuestionBankTargetCount
     }
 
+    var goalProfileLimit: Int {
+        isMember ? ProductLimits.memberGoalProfileLimit : ProductLimits.starterGoalProfileLimit
+    }
+
+    var canCreateAdditionalGoalProfile: Bool {
+        availableGoalProfiles.count < goalProfileLimit
+    }
+
+    var hasReachedGoalProfileLimit: Bool {
+        !canCreateAdditionalGoalProfile
+    }
+
+    var goalProfileCapacityText: String {
+        "\(availableGoalProfiles.count)/\(goalProfileLimit) goals"
+    }
+
+    var goalProfileLimitMessage: String {
+        "You can keep up to \(goalProfileLimit) active goals. Edit an existing goal before adding another."
+    }
+
     var canRefreshQuestionBatch: Bool {
         isMember
     }
@@ -222,6 +242,24 @@ final class CheckpointStore {
 
     var usableQuestionCount: Int {
         activeQuestions.filter(meetsDifficultyFloor).count
+    }
+
+    func usableQuestionCount(for profile: Goal) -> Int {
+        questions.filter { question in
+            question.goalID == profile.id
+                && question.status != .retired
+                && question.difficulty >= profile.minimumQuestionDifficulty
+        }.count
+    }
+
+    func questionBankSummary(for profile: Goal) -> String {
+        let readyCount = usableQuestionCount(for: profile)
+
+        if backgroundGenerationGoalIDs.contains(profile.id) || questionBankTopOffGoalIDs.contains(profile.id) {
+            return readyCount > 0 ? "\(readyCount) ready, preparing more" : "Preparing questions"
+        }
+
+        return readyCount == 1 ? "1 ready question" : "\(readyCount) ready questions"
     }
 
     var isPreparingActiveGoalQuestions: Bool {
@@ -324,6 +362,12 @@ final class CheckpointStore {
     func presentGoalProfileCreator() {
         guard goal == nil || canUse(.goalProfiles) else {
             requestMembership(for: .goalProfiles)
+            return
+        }
+
+        guard canCreateAdditionalGoalProfile else {
+            checkpointNotice = goalProfileLimitMessage
+            save()
             return
         }
 
@@ -441,6 +485,13 @@ final class CheckpointStore {
         let previousGoalID = goal?.id
         let shouldCreateNewProfile = createsNewProfile ?? (isMember && previousGoalID != nil)
         let shouldReplaceActiveProfile = !shouldCreateNewProfile && previousGoalID != nil
+
+        guard !shouldCreateNewProfile || canCreateAdditionalGoalProfile else {
+            checkpointNotice = goalProfileLimitMessage
+            save()
+            return
+        }
+
         questionRefreshesUsed = 0
         questionBatchState = .generating
         if shouldReplaceActiveProfile, let previousGoalID {

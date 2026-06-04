@@ -351,19 +351,37 @@ struct HomeView: View {
 
                 Divider()
 
-                Button {
-                    store.presentGoalProfileCreator()
-                } label: {
-                    Label("New goal", systemImage: "plus")
+                if store.isMember && store.hasReachedGoalProfileLimit {
+                    Button {
+                        store.presentGoalProfileCreator()
+                    } label: {
+                        Label("\(store.goalProfileLimit) goal limit reached", systemImage: "checkmark.seal")
+                    }
+                    .disabled(true)
+                } else {
+                    Button {
+                        store.presentGoalProfileCreator()
+                    } label: {
+                        Label("New goal", systemImage: "plus")
+                    }
                 }
             } label: {
-                Image(systemName: "rectangle.stack")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(CheckpointTheme.teal)
-                    .frame(width: 32, height: 32)
-                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                HStack(spacing: 6) {
+                    Image(systemName: "rectangle.stack")
+                    Text("Switch")
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 10, weight: .bold))
+                }
+                .font(.caption.weight(.bold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Switch current goal")
         }
     }
 

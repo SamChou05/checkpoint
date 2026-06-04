@@ -551,6 +551,95 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testSwitchingGoalUsesCachedQuestionBankWithoutRegeneration() async throws {
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+
+        let firstGoal = makeGoal()
+        let secondGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        let firstQuestions = (1...12).map { index in
+            makeQuestion(goal: firstGoal, index: index, topic: "arrays", difficulty: 4)
+        }
+        let secondQuestions = (1...12).map { index in
+            makeQuestion(goal: secondGoal, index: index, topic: "integrals", difficulty: 2)
+        }
+
+        store.goal = firstGoal
+        store.goalProfiles = [firstGoal, secondGoal]
+        store.questions = firstQuestions + secondQuestions
+
+        store.switchActiveGoal(to: secondGoal.id)
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertEqual(store.goal?.id, secondGoal.id)
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertEqual(Set(store.activeQuestions.map(\.id)), Set(secondQuestions.map(\.id)))
+        XCTAssertEqual(store.usableQuestionCount(for: secondGoal), secondQuestions.count)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
+    func testMemberGoalProfileLimitPreventsExtraGoalAndGeneration() async throws {
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateMembershipTier(.member)
+
+        let profiles = (0..<ProductLimits.memberGoalProfileLimit).map { index in
+            Goal(
+                title: "Goal \(index + 1)",
+                deadline: Date().addingTimeInterval(60 * 60 * 24 * Double(30 + index)),
+                category: .custom,
+                currentLevel: "",
+                focusAreas: "topic \(index + 1)",
+                preferredQuestionStyle: .multipleChoice
+            )
+        }
+        let activeGoal = try XCTUnwrap(profiles.first)
+        store.goal = activeGoal
+        store.goalProfiles = profiles
+
+        await store.createGoal(
+            title: "Goal over the limit",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 90),
+            category: .custom,
+            currentLevel: "",
+            focusAreas: "extra topic",
+            preferredQuestionStyle: .multipleChoice,
+            createsNewProfile: true
+        )
+
+        XCTAssertEqual(store.availableGoalProfiles.count, ProductLimits.memberGoalProfileLimit)
+        XCTAssertEqual(store.goal?.id, activeGoal.id)
+        XCTAssertEqual(store.goalProfileCapacityText, "\(ProductLimits.memberGoalProfileLimit)/\(ProductLimits.memberGoalProfileLimit) goals")
+        XCTAssertEqual(store.checkpointNotice, store.goalProfileLimitMessage)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
     func testGoalProfilesPersistAcrossStoreReloads() async throws {
         let engine = GoalAwareQuestionEngine(provider: .localTemplates)
         let store = CheckpointStore(

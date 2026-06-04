@@ -140,6 +140,8 @@ enum MembershipProductID {
 }
 
 enum ProductLimits {
+    static let starterGoalProfileLimit = 1
+    static let memberGoalProfileLimit = 6
     static let starterQuestionBankTargetCount = 40
     static let memberQuestionBankTargetCount = 80
     static let autoRefreshThreshold = 10
