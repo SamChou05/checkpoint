@@ -128,15 +128,18 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         try? await Task.sleep(nanoseconds: 120_000_000)
 
-        XCTAssertEqual(store.questionBatchState, .generating)
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertTrue(store.isQuestionBankTopOffInProgress)
         XCTAssertGreaterThanOrEqual(store.activeQuestions.count, 5)
-        XCTAssertTrue(store.questionGenerationStatusText.contains("ready; preparing more"))
+        XCTAssertTrue(store.questionGenerationStatusText.contains("building the question bank"))
 
         try? await Task.sleep(nanoseconds: 600_000_000)
 
         XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
         XCTAssertGreaterThan(store.activeQuestions.count, 6)
         XCTAssertNotNil(store.lastQuestionGenerationDuration)
+        XCTAssertNotNil(store.lastQuestionBankTopOffDuration)
     }
 
     @MainActor
@@ -1191,19 +1194,19 @@ final class AIProviderPolicyTests: XCTestCase {
             preferredQuestionStyle: .multipleChoice
         )
 
-        let request = try XCTUnwrap(localEngine.receivedRequest)
+        let request = try XCTUnwrap(localEngine.receivedRequests.first)
         XCTAssertEqual(request.goal.title, "Pass calculus final")
         XCTAssertEqual(request.goal.currentLevel, "Advanced at derivatives, weak on integrals")
         XCTAssertEqual(request.goal.focusAreas, "integrals, limits")
         XCTAssertEqual(request.minimumDifficulty, 4)
-        XCTAssertEqual(request.targetCount, StopBlockingPolicy.questionsPerSession + 2)
+        XCTAssertEqual(request.targetCount, 5)
 
         let sourcePrompt = try XCTUnwrap(store.questions.first?.sourcePrompt)
         XCTAssertTrue(sourcePrompt.contains("Here is the user's goal: Pass calculus final"))
         XCTAssertTrue(sourcePrompt.contains("The actual learning target to test is: calculus final"))
         XCTAssertTrue(sourcePrompt.contains("The user's current level/context is: Advanced at derivatives, weak on integrals"))
         XCTAssertTrue(sourcePrompt.contains("The user's focus topics are: integrals, limits"))
-        XCTAssertTrue(sourcePrompt.contains("Generate 12 level 4 of 5 difficulty multiple-choice questions about calculus final"))
+        XCTAssertTrue(sourcePrompt.contains("Generate 5 level 4 of 5 difficulty multiple-choice questions about calculus final"))
     }
 
     func testBackendRequestEncodesGoalContextCompetenciesAndDifficulty() throws {
@@ -1334,8 +1337,39 @@ final class AIProviderPolicyTests: XCTestCase {
             preferredQuestionStyle: .multipleChoice
         )
 
-        let request = try XCTUnwrap(localEngine.receivedRequest)
-        XCTAssertEqual(request.targetCount, StopBlockingPolicy.questionsPerSession + 2)
+        let request = try XCTUnwrap(localEngine.receivedRequests.first)
+        XCTAssertEqual(request.targetCount, 5)
+    }
+
+    @MainActor
+    func testInitialGoalGenerationTopsOffRemainingQuestionBankInBackground() async throws {
+        let backendEngine = CapturingQuestionEngine(provider: .backend)
+        let engine = HybridQuestionEngine(
+            localEngine: GoalAwareQuestionEngine(provider: .localTemplates),
+            backendEngine: backendEngine,
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let suiteName = "AIProviderPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.automatic)
+
+        await store.createGoal(
+            title: "Pass the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 14),
+            category: .examPrep,
+            currentLevel: "Intermediate logical reasoning",
+            focusAreas: "logical reasoning",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        try? await Task.sleep(nanoseconds: 150_000_000)
+
+        let request = try XCTUnwrap(backendEngine.receivedRequests.first)
+        XCTAssertEqual(request.targetCount, FreemiumLimits.freeQuestionBankTargetCount - 5)
+        XCTAssertEqual(request.existingQuestions.count, 5)
     }
 }
 
@@ -1454,14 +1488,15 @@ private struct ThrowingQuestionEngine: QuestionGenerating {
 
 private final class CapturingQuestionEngine: QuestionGenerating, @unchecked Sendable {
     let provider: AIProviderKind
-    private(set) var receivedRequest: QuestionGenerationRequest?
+    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+    var receivedRequest: QuestionGenerationRequest? { receivedRequests.last }
 
     init(provider: AIProviderKind) {
         self.provider = provider
     }
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
-        receivedRequest = request
+        receivedRequests.append(request)
         return [
             makeQuestion(
                 goal: request.goal,

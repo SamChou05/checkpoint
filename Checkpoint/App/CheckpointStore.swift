@@ -48,6 +48,9 @@ final class CheckpointStore {
     var lastAIErrorMessage: String?
     var questionGenerationStartedAt: Date?
     var lastQuestionGenerationDuration: TimeInterval?
+    var isQuestionBankTopOffInProgress = false
+    var questionBankTopOffStartedAt: Date?
+    var lastQuestionBankTopOffDuration: TimeInterval?
     var checkpointNotice: String?
     var unlockSession: UnlockSession?
     var emergencyPassesRemaining = 1
@@ -62,7 +65,8 @@ final class CheckpointStore {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let snapshotKey = "checkpoint.snapshot.v1"
     @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
-    @ObservationIgnored private static let initialQuestionWarmStartTargetCount = 12
+    @ObservationIgnored private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
+    @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
 
     // MARK: - Lifecycle
 
@@ -173,10 +177,15 @@ final class CheckpointStore {
     }
 
     var isPreparingActiveGoalQuestions: Bool {
-        goal != nil && questionBatchState == .generating
+        goal != nil && (questionBatchState == .generating || isQuestionBankTopOffInProgress)
     }
 
     var questionGenerationStatusText: String {
+        if isQuestionBankTopOffInProgress {
+            let elapsedText = questionBankTopOffStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
+            return "\(usableQuestionCount) ready; building the question bank in the background.\(elapsedText)"
+        }
+
         switch questionBatchState {
         case .generating:
             let readyText = usableQuestionCount > 0
@@ -282,6 +291,8 @@ final class CheckpointStore {
         goal = selectedGoal
         let hasActiveQuestions = !activeQuestions.isEmpty
         questionBatchState = hasActiveQuestions ? .ready : .generating
+        isQuestionBankTopOffInProgress = questionBankTopOffGoalIDs.contains(selectedGoal.id)
+        questionBankTopOffStartedAt = isQuestionBankTopOffInProgress ? questionBankTopOffStartedAt ?? Date() : nil
         checkpointNotice = nil
         save()
         publishShieldContext()
@@ -353,6 +364,8 @@ final class CheckpointStore {
         }
 
         goal = newGoal
+        isQuestionBankTopOffInProgress = false
+        questionBankTopOffStartedAt = nil
         if !isPro {
             goalProfiles = [newGoal]
         } else {
@@ -394,70 +407,107 @@ final class CheckpointStore {
             beginQuestionGeneration(for: newGoal.id)
         }
 
-        let warmStartRequest = generationRequest(
+        let checkpointReadyRequest = generationRequest(
             goal: newGoal,
             existingQuestions: [],
             competencies: [],
             reportedQuestions: [],
-            targetCount: Self.initialQuestionWarmStartTargetCount
+            targetCount: Self.initialCheckpointReadyTargetCount
         )
 
+        let batch = await generateCheckpointReadyBatch(for: checkpointReadyRequest)
+
+        questions.removeAll { $0.goalID == newGoal.id }
+        questions.append(contentsOf: batch.questions)
+        competencies.removeAll { $0.goalID == newGoal.id }
+        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: batch.questions))
+        lastQuestionProvider = batch.provider
+        if batch.questions.isEmpty {
+            lastAIErrorMessage = "No usable questions were generated. Try adding focus topics or lowering the question level."
+        } else {
+            lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
+        }
+        if goal?.id == newGoal.id {
+            questionBatchState = batch.questions.isEmpty ? .failed : .ready
+            finishQuestionGeneration(for: newGoal.id)
+        }
+        save()
+        publishShieldContext()
+
+        if !batch.questions.isEmpty {
+            topOffQuestionBankInBackground(for: newGoal)
+        }
+    }
+
+    private func generateCheckpointReadyBatch(for request: QuestionGenerationRequest) async -> QuestionBatch {
         if aiProviderPreference != .localTemplates {
             let seedBatch = await questionEngine.generateQuestionBatch(
-                for: warmStartRequest,
+                for: request,
                 preference: .localTemplates
             )
             if !seedBatch.questions.isEmpty {
-                questions.removeAll { $0.goalID == newGoal.id }
-                questions.append(contentsOf: seedBatch.questions)
-                competencies.removeAll { $0.goalID == newGoal.id }
-                competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: seedBatch.questions))
-                lastQuestionProvider = seedBatch.provider
-                lastAIErrorMessage = nil
-                if goal?.id == newGoal.id {
-                    questionBatchState = .generating
-                }
-                save()
-                publishShieldContext()
+                return seedBatch
             }
         }
 
-        let existingQuestions = questions.filter { $0.goalID == newGoal.id }
-        let existingCompetencies = competencies.filter { ($0.goalID ?? newGoal.id) == newGoal.id }
+        return await questionEngine.generateQuestionBatch(
+            for: request,
+            preference: aiProviderPreference
+        )
+    }
+
+    private func topOffQuestionBankInBackground(for goal: Goal) {
+        Task { [weak self] in
+            await self?.topOffQuestionBank(for: goal)
+        }
+    }
+
+    private func topOffQuestionBank(for targetGoal: Goal) async {
+        guard goalProfiles.contains(where: { $0.id == targetGoal.id }) || goal?.id == targetGoal.id else { return }
+        guard !questionBankTopOffGoalIDs.contains(targetGoal.id) else { return }
+        questionBankTopOffGoalIDs.insert(targetGoal.id)
+        defer { questionBankTopOffGoalIDs.remove(targetGoal.id) }
+
+        if goal?.id == targetGoal.id {
+            beginQuestionBankTopOff(for: targetGoal.id)
+        }
+
+        let existingQuestions = questions.filter { $0.goalID == targetGoal.id }
+        let existingCompetencies = competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id }
+        let usableExistingCount = existingQuestions.filter { $0.difficulty >= targetGoal.minimumQuestionDifficulty && $0.status != .retired }.count
+        let remainingTargetCount = max(0, questionBankTargetCount - usableExistingCount)
+
+        guard remainingTargetCount > 0 else {
+            if goal?.id == targetGoal.id {
+                finishQuestionBankTopOff(for: targetGoal.id)
+            }
+            return
+        }
 
         let batch = await questionEngine.generateQuestionBatch(
             for: generationRequest(
-                goal: newGoal,
+                goal: targetGoal,
                 existingQuestions: existingQuestions,
                 competencies: existingCompetencies,
-                reportedQuestions: [],
-                targetCount: Self.initialQuestionWarmStartTargetCount
+                reportedQuestions: questionReports.filter { $0.goalID == targetGoal.id },
+                targetCount: remainingTargetCount
             ),
             preference: aiProviderPreference
         )
 
         let existingKeys = Set(existingQuestions.map { questionKey($0) })
         let newQuestions = batch.questions.filter { !existingKeys.contains(questionKey($0)) }
-        if existingQuestions.isEmpty {
-            questions.removeAll { $0.goalID == newGoal.id }
-        }
         questions.append(contentsOf: newQuestions)
-        let goalQuestions = questions.filter { $0.goalID == newGoal.id }
-        competencies.removeAll { $0.goalID == newGoal.id }
-        competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: goalQuestions))
+        let goalQuestions = questions.filter { $0.goalID == targetGoal.id }
+        competencies.removeAll { $0.goalID == targetGoal.id }
+        competencies.append(contentsOf: initialCompetencies(for: targetGoal, questions: goalQuestions))
         if !newQuestions.isEmpty {
             lastQuestionProvider = batch.provider
-        }
-        if goalQuestions.isEmpty {
-            lastAIErrorMessage = "No usable questions were generated. Try adding focus topics or lowering the question level."
-        } else if newQuestions.isEmpty, aiProviderPreference != .localTemplates {
-            lastAIErrorMessage = nil
-        } else {
             lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
         }
-        if goal?.id == newGoal.id {
+        if goal?.id == targetGoal.id {
             questionBatchState = goalQuestions.isEmpty ? .failed : .ready
-            finishQuestionGeneration(for: newGoal.id)
+            finishQuestionBankTopOff(for: targetGoal.id)
         }
         save()
         publishShieldContext()
@@ -512,7 +562,8 @@ final class CheckpointStore {
     @discardableResult
     func refreshQuestionBatchIfNeeded(minimumUsableQuestionCount: Int? = nil) async -> Bool {
         guard goal != nil,
-              questionBatchState != .generating else {
+              questionBatchState != .generating,
+              !isQuestionBankTopOffInProgress else {
             return false
         }
 
@@ -684,6 +735,9 @@ final class CheckpointStore {
         lastQuestionProvider = .localTemplates
         backendEndpoint = ""
         lastAIErrorMessage = nil
+        isQuestionBankTopOffInProgress = false
+        questionBankTopOffStartedAt = nil
+        lastQuestionBankTopOffDuration = nil
         checkpointNotice = nil
         unlockSession = nil
         emergencyPassesRemaining = 1
@@ -1072,6 +1126,22 @@ final class CheckpointStore {
             lastQuestionGenerationDuration = Date().timeIntervalSince(questionGenerationStartedAt)
         }
         questionGenerationStartedAt = nil
+    }
+
+    private func beginQuestionBankTopOff(for goalID: Goal.ID) {
+        guard goal?.id == goalID else { return }
+        isQuestionBankTopOffInProgress = true
+        questionBankTopOffStartedAt = Date()
+        lastQuestionBankTopOffDuration = nil
+    }
+
+    private func finishQuestionBankTopOff(for goalID: Goal.ID) {
+        guard goal?.id == goalID else { return }
+        if let questionBankTopOffStartedAt {
+            lastQuestionBankTopOffDuration = Date().timeIntervalSince(questionBankTopOffStartedAt)
+        }
+        isQuestionBankTopOffInProgress = false
+        questionBankTopOffStartedAt = nil
     }
 
     private func replaceActiveCompetencies(with updatedCompetencies: [TopicCompetency]) {
