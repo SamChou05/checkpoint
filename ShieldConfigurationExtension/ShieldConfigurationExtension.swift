@@ -25,8 +25,7 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
     private func configuration() -> ShieldConfiguration {
         SharedAppGroup.markShieldConfigurationRendered()
 
-        let defaults = SharedAppGroup.defaults
-        let goalTitle = defaults.string(forKey: SharedAppGroup.shieldGoalTitleKey) ?? "Checkpoint"
+        let context = SharedAppGroup.currentShieldContext()
 
         return ShieldConfiguration(
             backgroundBlurStyle: .systemUltraThinMaterialDark,
@@ -37,7 +36,7 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
                 color: UIColor(red: 0.95, green: 0.96, blue: 0.94, alpha: 1.0)
             ),
             subtitle: ShieldConfiguration.Label(
-                text: "Goal: \(goalTitle)",
+                text: "Goal: \(context.goalTitle)",
                 color: UIColor(red: 0.72, green: 0.76, blue: 0.78, alpha: 1.0)
             ),
             primaryButtonLabel: ShieldConfiguration.Label(

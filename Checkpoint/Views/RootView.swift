@@ -76,6 +76,9 @@ struct RootView: View {
         .onChange(of: store.goal) { _, _ in
             screenTime.refreshActiveShieldConfiguration()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .checkpointShieldContextDidChange)) { _ in
+            screenTime.refreshActiveShieldConfiguration()
+        }
     }
 
     private func handlePendingShieldActivation() {

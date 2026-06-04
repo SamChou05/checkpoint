@@ -9,6 +9,13 @@ import FamilyControls
 #endif
 
 enum SharedAppGroup {
+    struct ShieldContext: Codable, Equatable {
+        var goalTitle: String
+        var promptPreview: String
+        var revision: String
+        var updatedAt: Date
+    }
+
     static let identifier = "group.com.samchou.checkpoint"
 
     static let pendingShieldAttemptDateKey = "pendingShieldAttemptDate"
@@ -20,6 +27,7 @@ enum SharedAppGroup {
     static let lastUnlockExpirationKey = "lastUnlockExpiration"
     static let desiredShieldActiveKey = "desiredShieldActive"
     static let screenTimeSelectionKey = "checkpoint.screenTime.selection.v1"
+    private static let shieldContextFileName = "shield-context.json"
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: identifier) ?? .standard
@@ -45,10 +53,43 @@ enum SharedAppGroup {
     }
 
     static func publishShieldContext(goalTitle: String?, promptPreview: String?) {
+        let context = ShieldContext(
+            goalTitle: goalTitle ?? "Checkpoint",
+            promptPreview: promptPreview ?? "Open Checkpoint to complete a practice set for your current goal.",
+            revision: UUID().uuidString,
+            updatedAt: Date()
+        )
+        let previousContext = currentShieldContext()
         let defaults = defaults
-        defaults.set(goalTitle ?? "Checkpoint", forKey: shieldGoalTitleKey)
-        defaults.set(promptPreview ?? "Open Checkpoint to complete a practice set for your current goal.", forKey: shieldPromptPreviewKey)
+        defaults.set(context.goalTitle, forKey: shieldGoalTitleKey)
+        defaults.set(context.promptPreview, forKey: shieldPromptPreviewKey)
+        writeShieldContext(context)
         defaults.synchronize()
+
+        if previousContext.goalTitle != context.goalTitle ||
+            previousContext.promptPreview != context.promptPreview {
+            NotificationCenter.default.post(name: .checkpointShieldContextDidChange, object: nil)
+        }
+    }
+
+    static func currentShieldContext() -> ShieldContext {
+        if let context = readShieldContext() {
+            return context
+        }
+
+        let defaults = defaults
+        defaults.synchronize()
+        return ShieldContext(
+            goalTitle: defaults.string(forKey: shieldGoalTitleKey) ?? "Checkpoint",
+            promptPreview: defaults.string(forKey: shieldPromptPreviewKey) ?? "Open Checkpoint to complete a practice set for your current goal.",
+            revision: "legacy-defaults",
+            updatedAt: .distantPast
+        )
+    }
+
+    static func removeShieldContextFile() {
+        guard let url = shieldContextURL else { return }
+        try? FileManager.default.removeItem(at: url)
     }
 
     static func publishUnlockExpiration(_ date: Date?) {
@@ -88,6 +129,26 @@ enum SharedAppGroup {
         defaults.integer(forKey: shieldAttemptCountKey)
     }
 
+    private static var shieldContextURL: URL? {
+        FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
+            .appendingPathComponent(shieldContextFileName)
+    }
+
+    private static func readShieldContext() -> ShieldContext? {
+        guard let url = shieldContextURL,
+              let data = try? Data(contentsOf: url) else { return nil }
+
+        return try? JSONDecoder().decode(ShieldContext.self, from: data)
+    }
+
+    private static func writeShieldContext(_ context: ShieldContext) {
+        guard let url = shieldContextURL,
+              let data = try? JSONEncoder().encode(context) else { return }
+
+        try? data.write(to: url, options: [.atomic])
+    }
+
     #if os(iOS) && canImport(FamilyControls)
     static func categoryInclusiveSelection(_ selection: FamilyActivitySelection) -> FamilyActivitySelection {
         guard !selection.includeEntireCategory else { return selection }
@@ -99,6 +160,10 @@ enum SharedAppGroup {
         return inclusiveSelection
     }
     #endif
+}
+
+extension Notification.Name {
+    static let checkpointShieldContextDidChange = Notification.Name("checkpoint.shieldContextDidChange")
 }
 
 #if os(iOS) && canImport(DeviceActivity)

@@ -703,6 +703,17 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         store.goal = firstGoal
         store.goalProfiles = [firstGoal, secondGoal]
+        let notificationExpectation = expectation(description: "Shield context change notification")
+        let observer = NotificationCenter.default.addObserver(
+            forName: .checkpointShieldContextDidChange,
+            object: nil,
+            queue: nil
+        ) { _ in
+            notificationExpectation.fulfill()
+        }
+        defer {
+            NotificationCenter.default.removeObserver(observer)
+        }
 
         store.switchActiveGoal(to: secondGoal.id)
 
@@ -710,6 +721,8 @@ final class CheckpointWorkflowTests: XCTestCase {
             SharedAppGroup.defaults.string(forKey: SharedAppGroup.shieldGoalTitleKey),
             secondGoal.title
         )
+        XCTAssertEqual(SharedAppGroup.currentShieldContext().goalTitle, secondGoal.title)
+        wait(for: [notificationExpectation], timeout: 0.2)
     }
 
     @MainActor
@@ -2691,4 +2704,6 @@ private func resetSharedAppGroupState() {
         SharedAppGroup.desiredShieldActiveKey,
         SharedAppGroup.screenTimeSelectionKey
     ].forEach { defaults.removeObject(forKey: $0) }
+    defaults.synchronize()
+    SharedAppGroup.removeShieldContextFile()
 }
