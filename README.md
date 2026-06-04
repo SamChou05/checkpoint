@@ -10,6 +10,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Natural-language goal profile onboarding flow, with one active Free goal and Pro support for multiple saved profiles.
 - Goal category is inferred internally from the typed goal and optional focus areas instead of shown as user-facing setup.
 - Provider-based multiple-choice question generation extracts a learning target from typed goals, so phrases like `Study for the LSAT` produce LSAT questions rather than study-habit prompts.
+- Goals without focus areas ask the configured provider to infer an initial Skill Map from the learning target, then the background bank refill uses those generated skill topics.
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
 - Per-profile 1-to-5 question difficulty floor so users can skip remedial prompts for goals they already know well, with an opt-in level-up prompt after strong recent accuracy.
@@ -23,7 +24,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Question quality reporting lives in Settings instead of interrupting the checkpoint quiz.
 - Home no longer offers one-tap pause or manual checkpoint entry while blocking is active; short breaks start from blocked-app attempts or emergency passes, while fully stopping blocking requires a 9-of-10 stop challenge in Advanced.
 - Manual checkpoint preview lives in Advanced for testing and does not unlock apps.
-- Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
+- Checkpoint quietly prepares fresh questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
 - Pro users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
 - StoreKit-ready Free/Pro plan state, paywall UI, restore hook, and Pro gating for goal profiles, custom checkpoint rules, extra question variety, and adaptive guidance.
 - Privacy manifests for the app and Screen Time extensions.

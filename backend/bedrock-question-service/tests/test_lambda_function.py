@@ -92,7 +92,32 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertEqual(body["questions"][0]["format"], "Multiple Choice")
         self.assertEqual(body["questions"][0]["difficulty"], 3)
         self.assertEqual(client.calls[0]["modelId"], "google.gemma-3-4b-it")
-        self.assertIn("Study for the LSAT", client.calls[0]["messages"][0]["content"][0]["text"])
+        prompt = client.calls[0]["messages"][0]["content"][0]["text"]
+        self.assertIn("Study for the LSAT", prompt)
+        self.assertIn("Skill map mode: use the provided content topics", prompt)
+
+    def test_skill_map_mode_is_prompted_when_requested(self):
+        payload = _request_payload(target_count=3, minimum_difficulty=3)
+        payload["goal"]["focusAreas"] = ""
+        payload["goal"]["needsSkillMap"] = True
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(payload),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        prompt = client.calls[0]["messages"][0]["content"][0]["text"]
+        self.assertIn("Skill map mode: infer a new 4-to-6 topic skill map", prompt)
 
     def test_accepts_provider_top_level_question_array(self):
         client = FakeBedrockClient(
@@ -345,6 +370,7 @@ def _request_payload(target_count=5, minimum_difficulty=3):
             "learningTarget": "LSAT",
             "contentTopics": ["Logical Reasoning", "Reading Comprehension"],
             "questionDirective": "Generate original LSAT-style Logical Reasoning and Reading Comprehension questions.",
+            "needsSkillMap": False,
             "preferredQuestionStyle": "Multiple Choice",
         },
         "competencies": [],

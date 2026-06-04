@@ -42,6 +42,7 @@ struct QuestionGenerationRequest: Sendable {
         The actual learning target to test is: \(context.learningTarget)
         The user's focus topics are: \(context.contentTopics.joined(separator: ", "))
         The requested question difficulty floor is: level \(minimumDifficulty) of 5
+        \(context.needsGeneratedSkillMap ? "The user did not provide focus areas. Infer a compact 4-to-6 topic skill map from the learning target, cover those skills across the questions, and use those skill names as question topics." : "Use the user's focus topics as the skill map for question topics.")
 
         Generate \(targetCount) level \(minimumDifficulty) of 5 difficulty multiple-choice questions about \(context.learningTarget).
         Question style guidance: \(context.questionDirective)
@@ -70,11 +71,21 @@ struct GoalQuestionContext: Equatable, Sendable {
     var contentTopics: [String]
     var questionDirective: String
     var allowsStudyStrategyQuestions: Bool
+    var hasUserFocusAreas: Bool
+
+    var needsGeneratedSkillMap: Bool {
+        !hasUserFocusAreas
+    }
 
     init(goal: Goal) {
         let target = GoalQuestionContext.learningTarget(from: goal)
+        let focusTopics = GoalQuestionContext.meaningfulFocusTopics(from: goal.focusAreas)
         learningTarget = target
-        contentTopics = GoalQuestionContext.contentTopics(for: goal, learningTarget: target)
+        contentTopics = GoalQuestionContext.contentTopics(
+            for: goal,
+            learningTarget: target,
+            focusTopics: focusTopics
+        )
         questionDirective = GoalQuestionContext.questionDirective(
             goal: goal,
             learningTarget: target,
@@ -84,6 +95,7 @@ struct GoalQuestionContext: Equatable, Sendable {
             goal: goal,
             learningTarget: target
         )
+        hasUserFocusAreas = !focusTopics.isEmpty
     }
 
     private static func learningTarget(from goal: Goal) -> String {
@@ -163,9 +175,11 @@ struct GoalQuestionContext: Equatable, Sendable {
         return trimmed
     }
 
-    private static func contentTopics(for goal: Goal, learningTarget: String) -> [String] {
-        let rawTopics = meaningfulFocusTopics(from: goal.focusAreas)
-
+    private static func contentTopics(
+        for goal: Goal,
+        learningTarget: String,
+        focusTopics rawTopics: [String]
+    ) -> [String] {
         if isLSAT(learningTarget) {
             let mappedTopics = rawTopics.map(lsatTopic)
             return unique(mappedTopics.isEmpty ? ["Logical Reasoning", "Reading Comprehension"] : mappedTopics)

@@ -482,7 +482,11 @@ final class CheckpointStore {
         )
 
         let startedAt = Date()
-        let batch = await generateCheckpointReadyBatch(for: checkpointReadyRequest)
+        let providerPreference = initialBatchProviderPreference(for: checkpointReadyRequest)
+        let batch = await generateCheckpointReadyBatch(
+            for: checkpointReadyRequest,
+            preference: providerPreference
+        )
 
         questions.removeAll { $0.goalID == newGoal.id }
         questions.append(contentsOf: batch.questions)
@@ -497,7 +501,7 @@ final class CheckpointStore {
         recordQuestionGenerationTrace(
             phase: "Initial ready batch",
             request: checkpointReadyRequest,
-            providerPreference: aiProviderPreference != .localTemplates ? .localTemplates : aiProviderPreference,
+            providerPreference: providerPreference,
             batch: batch,
             addedQuestions: batch.questions,
             startedAt: startedAt,
@@ -518,8 +522,19 @@ final class CheckpointStore {
         }
     }
 
-    private func generateCheckpointReadyBatch(for request: QuestionGenerationRequest) async -> QuestionBatch {
-        if aiProviderPreference != .localTemplates {
+    private func initialBatchProviderPreference(for request: QuestionGenerationRequest) -> AIProviderKind {
+        if request.questionContext.needsGeneratedSkillMap {
+            return aiProviderPreference
+        }
+
+        return .localTemplates
+    }
+
+    private func generateCheckpointReadyBatch(
+        for request: QuestionGenerationRequest,
+        preference: AIProviderKind
+    ) async -> QuestionBatch {
+        if preference == .localTemplates, aiProviderPreference != .localTemplates {
             let seedBatch = await questionEngine.generateQuestionBatch(
                 for: request,
                 preference: .localTemplates
@@ -531,7 +546,7 @@ final class CheckpointStore {
 
         return await questionEngine.generateQuestionBatch(
             for: request,
-            preference: aiProviderPreference
+            preference: preference
         )
     }
 
@@ -1427,9 +1442,20 @@ final class CheckpointStore {
     }
 
     private func initialCompetencies(for goal: Goal, questions: [CheckpointQuestion]) -> [TopicCompetency] {
-        let contextTopics = GoalQuestionContext(goal: goal).contentTopics.flatMap(competencyTopics)
-        let questionTopics = questions.flatMap { competencyTopics(from: $0.topic) }
-        let topics = uniqueCompetencyTopics(contextTopics + questionTopics).sorted()
+        let questionTopics = questions
+            .filter { $0.status != .retired }
+            .flatMap { competencyTopics(from: $0.topic) }
+        let context = GoalQuestionContext(goal: goal)
+        let seedTopics: [String]
+
+        if context.needsGeneratedSkillMap {
+            seedTopics = questionTopics
+        } else {
+            let contextTopics = context.contentTopics.flatMap(competencyTopics)
+            seedTopics = contextTopics + questionTopics
+        }
+
+        let topics = uniqueCompetencyTopics(seedTopics).sorted()
 
         return topics.map { topic in
             .initial(topic: topic, estimatedLevel: estimatedStartingLevel(for: topic, goal: goal), goalID: goal.id)

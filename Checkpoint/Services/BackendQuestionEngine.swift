@@ -85,6 +85,7 @@ private struct GoalPayload: Encodable {
     var learningTarget: String
     var contentTopics: [String]
     var questionDirective: String
+    var needsSkillMap: Bool
     var preferredQuestionStyle: String
 
     init(goal: Goal, questionContext: GoalQuestionContext) {
@@ -95,6 +96,7 @@ private struct GoalPayload: Encodable {
         learningTarget = questionContext.learningTarget
         contentTopics = questionContext.contentTopics
         questionDirective = questionContext.questionDirective
+        needsSkillMap = questionContext.needsGeneratedSkillMap
         preferredQuestionStyle = QuestionFormat.multipleChoice.rawValue
     }
 }

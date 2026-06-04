@@ -213,6 +213,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
             "learningTarget": learning_target,
             "contentTopics": normalized_topics or [learning_target],
             "questionDirective": _clean_text(goal.get("questionDirective")),
+            "needsSkillMap": bool(goal.get("needsSkillMap")),
             "preferredQuestionStyle": "Multiple Choice",
         },
         "competencies": _list_of_dicts(payload.get("competencies")),
@@ -325,6 +326,7 @@ Rules:
 - Keep questions answerable in 30 seconds to 3 minutes.
 - Avoid duplicate prompts and avoid prompts the user reported.
 - Prefer practical exam-style or skill-check questions over definitions when the minimum difficulty is 3 or higher.
+- If the request needs a skill map, infer 4 to 6 subject-matter skills from the learning target and use those exact skill names as question topics.
 """.strip()
 
 
@@ -338,6 +340,7 @@ Generate {request["targetCount"]} level {request["minimumDifficulty"]} of 5 diff
 The actual learning target to test is: {request["goal"]["learningTarget"]}
 Content topics: {", ".join(request["goal"]["contentTopics"])}
 Question style guidance: {request["goal"]["questionDirective"] or "Ask objective knowledge-check questions."}
+Skill map mode: {"infer a new 4-to-6 topic skill map and use those skill names as question topics" if request["goal"]["needsSkillMap"] else "use the provided content topics as the skill map"}
 
 Return only the JSON object. Do not wrap it in Markdown.
 """.strip()

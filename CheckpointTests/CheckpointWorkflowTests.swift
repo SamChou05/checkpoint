@@ -205,22 +205,42 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testSkillMapFallsBackToGoalTopicsWhenFocusAreasAreMissing() async {
-        let store = CheckpointStore(defaults: defaults)
+    func testGoalWithoutFocusAreasUsesProviderQuestionTopicsForInitialSkillMap() async throws {
+        let backendEngine = SkillMapQuestionEngine(
+            provider: .backend,
+            topics: ["argument flaws", "conditional logic", "inference", "reading structure"]
+        )
+        let localEngine = SkillMapQuestionEngine(
+            provider: .localTemplates,
+            topics: ["generic fallback"]
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
 
         await store.createGoal(
-            title: "Pass technical interviews",
+            title: "Study for the LSAT",
             deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
-            category: .codingInterview,
+            category: .examPrep,
             currentLevel: "",
             focusAreas: "",
             preferredQuestionStyle: .multipleChoice,
-            waitForQuestionGeneration: false
+            waitForQuestionGeneration: true
         )
 
+        let initialRequest = try XCTUnwrap(backendEngine.receivedRequests.first)
+        XCTAssertTrue(initialRequest.questionContext.needsGeneratedSkillMap)
+        XCTAssertEqual(initialRequest.targetCount, 5)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
         XCTAssertEqual(
             Set(store.sortedCompetencies.map(\.topic)),
-            ["Big-O", "arrays", "hash maps", "recursion"]
+            ["argument flaws", "conditional logic", "inference", "reading structure"]
         )
     }
 
@@ -235,20 +255,13 @@ final class CheckpointWorkflowTests: XCTestCase {
             currentLevel: "",
             focusAreas: "???, asdf, none",
             preferredQuestionStyle: .multipleChoice,
-            waitForQuestionGeneration: false
+            waitForQuestionGeneration: true
         )
 
         let topics = Set(store.sortedCompetencies.map(\.topic))
         XCTAssertFalse(topics.contains("asdf"))
-        XCTAssertEqual(
-            topics,
-            [
-                "operating systems application",
-                "operating systems concepts",
-                "operating systems problem solving",
-                "operating systems review gaps"
-            ]
-        )
+        XCTAssertFalse(topics.isEmpty)
+        XCTAssertTrue(topics.allSatisfy { $0.hasPrefix("operating systems") })
     }
 
     @MainActor
@@ -1487,6 +1500,7 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(goalPayload["learningTarget"] as? String, "technical interviews")
         XCTAssertEqual(goalPayload["contentTopics"] as? [String], ["arrays", "recursion", "hash maps"])
         XCTAssertNotNil(goalPayload["questionDirective"] as? String)
+        XCTAssertEqual(goalPayload["needsSkillMap"] as? Bool, false)
         XCTAssertEqual(payload["targetCount"] as? Int, 12)
         XCTAssertEqual(payload["minimumDifficulty"] as? Int, 3)
         XCTAssertEqual(competencies.first?["topic"] as? String, "recursion")
@@ -1712,6 +1726,33 @@ private struct GoalAwareQuestionEngine: QuestionGenerating {
                 index: index,
                 topic: resolvedTopics[(index - 1) % resolvedTopics.count],
                 prompt: "\(request.goal.title) question \(index): Which choice best supports the active goal?",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+}
+
+private final class SkillMapQuestionEngine: QuestionGenerating, @unchecked Sendable {
+    let provider: AIProviderKind
+    let topics: [String]
+    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+
+    init(provider: AIProviderKind, topics: [String]) {
+        self.provider = provider
+        self.topics = topics
+    }
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        receivedRequests.append(request)
+
+        return (1...max(request.targetCount, topics.count)).map { index in
+            let topic = topics[(index - 1) % topics.count]
+            return makeQuestion(
+                goal: request.goal,
+                index: index,
+                topic: topic,
+                prompt: "\(request.goal.title) \(provider.rawValue) skill-map question \(index) for \(topic)",
                 difficulty: request.minimumDifficulty,
                 sourcePrompt: request.sourcePrompt(provider: provider)
             )

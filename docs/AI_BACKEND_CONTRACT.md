@@ -20,6 +20,7 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
     "learningTarget": "coding interview in 8 weeks",
     "contentTopics": ["arrays", "recursion", "Big-O"],
     "questionDirective": "Generate concrete coding-interview knowledge checks about arrays, recursion, Big-O: data-structure choice, algorithm behavior, complexity, edge cases, or debugging.",
+    "needsSkillMap": false,
     "preferredQuestionStyle": "Multiple Choice"
   },
   "competencies": [
@@ -81,6 +82,7 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - Questions should target weak topics and stay near the user's estimated level.
 - If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
 - Use `learningTarget`, `contentTopics`, `questionDirective`, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
+- If `goal.needsSkillMap` is true, infer 4 to 6 subject-matter skills from the learning target and use those skill names as returned question topics. The app uses the first generated topics to seed the Skill Map before background bank refill.
 - Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as user intent, not as the tested subject. For example, `Study for the LSAT` should produce LSAT Logical Reasoning or Reading Comprehension questions, not questions about how to study.
 - Do not ask about study plans, productivity, motivation, app blocking, or next steps unless the learning target is explicitly study skills.
 

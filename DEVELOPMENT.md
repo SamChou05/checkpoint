@@ -54,6 +54,7 @@ Important platform constraint:
 
 - Goal intake captures title, deadline, focus areas, and the profile-specific minimum question level; internal category and topic inference keep fallback question generation useful.
 - The generation request derives a learning target, content topics, and a question directive before calling local, backend, or Apple Foundation providers.
+- If a goal has no usable focus areas, the initial 5-question provider batch is allowed to infer the first Skill Map; background bank top-off then uses those generated competencies.
 - Provider prompts intentionally stay simple: user goal, derived learning target, content topics, requested count, difficulty floor, and multiple-choice requirements.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
@@ -297,6 +298,6 @@ Implementation status:
 - Provider output validation is implemented before questions enter the bank.
 - Automatic provider routing prefers LLM generation when on-device support or an internal backend endpoint is available, then falls back to local templates.
 - Core workflow and provider policy are covered by the `CheckpointTests` XCTest target.
-- Focus areas are the only user-facing study context; blank or placeholder focus text falls back to inferred goal topics for the Skill Map and provider prompts.
+- Focus areas are the only user-facing study context; blank or placeholder focus text triggers generated Skill Map mode, with local inferred topics as the fallback when AI providers are unavailable.
 - Settings exposes strictness controls, global unlock rules, and off-flow history/report access; minimum question difficulty now lives on each goal profile.
 - Backend request/response contract is documented in `docs/AI_BACKEND_CONTRACT.md`.
