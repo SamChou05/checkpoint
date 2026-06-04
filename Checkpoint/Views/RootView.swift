@@ -23,7 +23,7 @@ struct RootView: View {
                 }
                 .tag(AppTab.skill)
 
-            SettingsView(store: store, screenTime: screenTime)
+            SettingsView(store: store, screenTime: screenTime, purchaseController: purchaseController)
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
@@ -52,14 +52,12 @@ struct RootView: View {
                 .interactiveDismissDisabled(store.goal == nil)
         }
         .task {
+            purchaseController.onMembershipEntitlementChange = { unlocked in
+                store.updateMembershipTier(unlocked ? .member : .starter)
+            }
             purchaseController.startListeningForTransactions()
-            #if DEBUG
-            store.updateMembershipTier(.member)
-            await purchaseController.loadProducts()
-            #else
             await refreshPlanAccessFromEntitlements()
             await purchaseController.loadProducts()
-            #endif
             handlePendingShieldActivation()
             Task {
                 await screenTime.requestInitialAuthorizationIfNeeded()
@@ -68,11 +66,9 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             screenTime.reconcileShieldState()
-            #if !DEBUG
             Task {
                 await refreshPlanAccessFromEntitlements()
             }
-            #endif
             handlePendingShieldActivation()
         }
         .onChange(of: store.goal) { _, _ in

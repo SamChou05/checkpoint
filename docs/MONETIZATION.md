@@ -53,6 +53,8 @@ Before selling membership:
 ## Current Implementation
 
 - StoreKit membership UI is in the app target.
+- A checked-in local StoreKit configuration supports Debug purchase and restore testing from the shared `Checkpoint` scheme.
+- App Store Connect still needs matching subscription products before TestFlight purchase validation.
 - Runtime behavior starts users on `Starter`.
 - Starter users can create the first goal and use the core blocker/checkpoint/unlock flow.
 - Starter users are prompted positively for membership when they try to change goals or when fresh generation is needed.

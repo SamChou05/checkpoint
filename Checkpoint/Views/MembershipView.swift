@@ -50,8 +50,8 @@ struct MembershipView: View {
 
                     PlanCard(
                         title: "Pro",
-                        price: "$4.99",
-                        cadence: "per month",
+                        price: proPriceText,
+                        cadence: proPriceCadenceText,
                         detail: proPlanDetailText,
                         statusText: store.isMember ? "Current plan" : nil,
                         tint: CheckpointTheme.teal
@@ -80,9 +80,11 @@ struct MembershipView: View {
                     }
 
                     HStack(spacing: 10) {
-                        SecondaryActionButton(title: "Restore purchases", systemImage: "arrow.clockwise.circle") {
+                        SecondaryActionButton(title: purchaseController.isRestoringPurchases ? "Restoring" : "Restore purchases", systemImage: "arrow.clockwise.circle") {
                             restorePurchases()
                         }
+                        .disabled(purchaseController.isRestoringPurchases || purchasingProductID != nil)
+                        .opacity(purchaseController.isRestoringPurchases || purchasingProductID != nil ? 0.64 : 1)
 
                         SecondaryActionButton(title: store.isMember ? "Done" : "Stay on Free", systemImage: "xmark") {
                             close()
@@ -155,12 +157,42 @@ struct MembershipView: View {
         return "For people working across more than one goal, or practicing often enough to need new checkpoints."
     }
 
+    private var monthlyProduct: Product? {
+        purchaseController.products.first { $0.id == MembershipProductID.monthly }
+    }
+
+    private var yearlyProduct: Product? {
+        purchaseController.products.first { $0.id == MembershipProductID.yearly }
+    }
+
+    private var proPriceText: String {
+        if let monthlyProduct {
+            return monthlyProduct.displayPrice
+        }
+
+        if let yearlyProduct {
+            return yearlyProduct.displayPrice
+        }
+
+        return "$4.99"
+    }
+
+    private var proPriceCadenceText: String {
+        if monthlyProduct != nil {
+            return "per month"
+        }
+
+        if yearlyProduct != nil {
+            return "per year"
+        }
+
+        return "per month"
+    }
+
     private func loadEntitlements() async {
         await purchaseController.loadProducts()
         let unlocked = await purchaseController.refreshEntitlements()
-        if unlocked {
-            store.updateMembershipTier(.member)
-        }
+        store.updateMembershipTier(unlocked ? .member : .starter)
     }
 
     private func purchase(_ product: Product) {

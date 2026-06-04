@@ -7,9 +7,11 @@ final class PurchaseController {
     var products: [Product] = []
     var purchasedProductIDs: Set<String> = []
     var isLoadingProducts = false
+    var isRestoringPurchases = false
     var purchaseMessage: String?
 
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
+    @ObservationIgnored var onMembershipEntitlementChange: ((Bool) -> Void)?
 
     var isMembershipUnlocked: Bool {
         purchasedProductIDs.contains { MembershipProductID.all.contains($0) }
@@ -30,8 +32,10 @@ final class PurchaseController {
         defer { isLoadingProducts = false }
 
         do {
-            products = try await Product.products(for: MembershipProductID.all)
-                .sorted { $0.price < $1.price }
+            let loadedProducts = try await Product.products(for: MembershipProductID.all)
+            products = MembershipProductID.all.compactMap { productID in
+                loadedProducts.first { $0.id == productID }
+            }
             purchaseMessage = nil
         } catch {
             purchaseMessage = "Could not load App Store plans yet."
@@ -44,7 +48,8 @@ final class PurchaseController {
 
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result,
-                  MembershipProductID.all.contains(transaction.productID) else {
+                  MembershipProductID.all.contains(transaction.productID),
+                  isActive(transaction) else {
                 continue
             }
 
@@ -52,6 +57,7 @@ final class PurchaseController {
         }
 
         purchasedProductIDs = activeProductIDs
+        publishMembershipEntitlement()
         return isMembershipUnlocked
     }
 
@@ -88,6 +94,9 @@ final class PurchaseController {
 
     @discardableResult
     func restorePurchases() async -> Bool {
+        isRestoringPurchases = true
+        defer { isRestoringPurchases = false }
+
         do {
             try await AppStore.sync()
             purchaseMessage = nil
@@ -106,5 +115,19 @@ final class PurchaseController {
 
         await transaction.finish()
         _ = await refreshEntitlements()
+    }
+
+    private func isActive(_ transaction: Transaction) -> Bool {
+        guard transaction.revocationDate == nil else { return false }
+
+        if let expirationDate = transaction.expirationDate {
+            return expirationDate > Date()
+        }
+
+        return true
+    }
+
+    private func publishMembershipEntitlement() {
+        onMembershipEntitlementChange?(isMembershipUnlocked)
     }
 }

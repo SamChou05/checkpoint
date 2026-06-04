@@ -35,6 +35,8 @@ Findings:
 - [ ] App Store Connect has an auto-renewable subscription group.
 - [ ] Monthly product ID exists: `checkpoint.membership.monthly`.
 - [ ] Annual product ID exists: `checkpoint.membership.yearly`.
+- [ ] Local StoreKit monthly and annual purchases switch the app to Pro in Debug.
+- [ ] Local StoreKit cleared or expired subscriptions return the app to Free.
 - [ ] Release builds start on Free when no current entitlement is present.
 - [ ] StoreKit sandbox/TestFlight purchase switches the app to Pro.
 - [ ] Restore purchases switches the app to Pro when an active entitlement exists.

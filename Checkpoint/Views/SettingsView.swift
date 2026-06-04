@@ -3,13 +3,13 @@ import SwiftUI
 struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
+    let purchaseController: PurchaseController
 
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
     @State private var isIssueReportsPresented = false
     @State private var isGenerationDiagnosticsPresented = false
     @State private var isPlanPresented = false
-    @State private var purchaseController = PurchaseController()
     @State private var isAdvancedExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
     @State private var previewCheckpointSession: CheckpointSession?

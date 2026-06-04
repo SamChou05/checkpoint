@@ -1,0 +1,140 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "C0DEC0DE",
+  "nonRenewingSubscriptions" : [
+  ],
+  "products" : [
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : {
+          "index" : 2,
+          "type" : "generic"
+        },
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "C0DE5EED",
+      "localizations" : [
+        {
+          "locale" : "en_US",
+          "name" : "Checkpoint Pro"
+        }
+      ],
+      "name" : "Checkpoint Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+          ],
+          "codeOffers" : [
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "C0DE0001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Multiple goals, ongoing practice generation, broader checkpoint variety, and guided review.",
+              "displayName" : "Checkpoint Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "checkpoint.membership.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Checkpoint Pro Monthly",
+          "subscriptionGroupID" : "C0DE5EED",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+          ]
+        },
+        {
+          "adHocOffers" : [
+          ],
+          "codeOffers" : [
+          ],
+          "displayPrice" : "29.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "C0DE0002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Multiple goals, ongoing practice generation, broader checkpoint variety, and guided review.",
+              "displayName" : "Checkpoint Pro Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "checkpoint.membership.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Checkpoint Pro Annual",
+          "subscriptionGroupID" : "C0DE5EED",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
