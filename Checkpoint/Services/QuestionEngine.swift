@@ -60,7 +60,9 @@ struct QuestionGenerationRequest: Sendable {
         Requirements:
         - Ask about \(context.learningTarget) itself, not study plans, productivity, motivation, app blocking, or what the learner should do next unless the learning target is explicitly study skills.
         - Make every question answerable as a short multiple-choice knowledge check.
-        - Each question must include 4 choices, one exact expected answer, a short explanation, a topic, and a 1-to-5 difficulty.
+        - Each question must include exactly 4 answer choices.
+        - All 4 choices must be unique in meaning and wording; do not repeat or lightly rephrase the same answer.
+        - The expected answer must exactly match one visible choice, with a short explanation, a topic, and a 1-to-5 difficulty.
         - Reject remedial/basic questions when the requested difficulty is 3 or higher.
         """
     }
@@ -413,13 +415,14 @@ struct HybridQuestionEngine: Sendable {
     ) async -> QuestionBatch {
         let providers = providerOrder(for: preference)
         var firstError: Error?
+        let minimumAcceptedQuestionCount = min(request.targetCount, UnlockPolicy.default.questionsPerSession)
 
         for provider in providers {
             do {
                 let questions = try await provider.generateQuestions(for: request)
                 let sanitizedQuestions = QuestionBatchSanitizer.sanitize(questions, for: request)
 
-                if !sanitizedQuestions.isEmpty {
+                if sanitizedQuestions.count >= minimumAcceptedQuestionCount {
                     return QuestionBatch(
                         questions: sanitizedQuestions,
                         provider: provider.provider,
@@ -510,8 +513,9 @@ enum QuestionBatchSanitizer {
         question.prompt.count >= 12
             && !question.expectedAnswer.isEmpty
             && question.format == .multipleChoice
-            && question.choices.count >= 2
-            && question.choices.contains(where: { answerKey($0) == answerKey(question.expectedAnswer) })
+            && question.choices.count == 4
+            && hasUniqueChoices(question.choices)
+            && question.choices.filter { answerKey($0) == answerKey(question.expectedAnswer) }.count == 1
             && !question.explanation.isEmpty
             && !question.topic.isEmpty
             && !isStudyStrategyPrompt(question.prompt, context: request.questionContext)
@@ -556,13 +560,13 @@ enum QuestionBatchSanitizer {
         var uniqueChoices: [String] = []
 
         for choice in clippedChoices {
-            let key = canonicalPrompt(choice)
+            let key = choiceUniquenessKey(choice)
             guard !seen.contains(key) else { continue }
             seen.insert(key)
             uniqueChoices.append(choice)
         }
 
-        guard uniqueChoices.count >= 2 else { return nil }
+        guard uniqueChoices.count == 4 else { return nil }
 
         let indexedChoice = expectedChoiceIndex(from: expectedAnswer).flatMap { index in
             uniqueChoices.indices.contains(index) ? uniqueChoices[index] : nil
@@ -579,9 +583,24 @@ enum QuestionBatchSanitizer {
         let expectedChoice = explanationChoice ?? matchedChoice
         let finalExpectedKey = answerKey(expectedChoice)
         let distractors = uniqueChoices.filter { answerKey($0) != finalExpectedKey }
+        guard distractors.count == 3 else { return nil }
+
         let finalChoices = [expectedChoice] + Array(distractors.prefix(3))
+        guard hasUniqueChoices(finalChoices) else { return nil }
 
         return (expectedAnswer: expectedChoice, choices: finalChoices.shuffled())
+    }
+
+    private static func hasUniqueChoices(_ choices: [String]) -> Bool {
+        var seen: Set<String> = []
+
+        for choice in choices {
+            let key = choiceUniquenessKey(choice)
+            guard !key.isEmpty, !seen.contains(key) else { return false }
+            seen.insert(key)
+        }
+
+        return true
     }
 
     private static func correctChoiceFromExplanation(_ explanation: String, choices: [String]) -> String? {
@@ -639,6 +658,10 @@ enum QuestionBatchSanitizer {
         normalized = strippedAnswerPrefix(from: normalized)
         normalized = strippedChoiceLabel(from: normalized)
         return normalized.filter { $0.isLetter || $0.isNumber }
+    }
+
+    private static func choiceUniquenessKey(_ text: String) -> String {
+        answerKey(text)
     }
 
     private static func strippedAnswerPrefix(from text: String) -> String {

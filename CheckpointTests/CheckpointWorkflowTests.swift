@@ -43,7 +43,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertTrue(store.backendEndpoint.isEmpty)
         XCTAssertTrue(store.questions.allSatisfy { question in
             question.format == .multipleChoice
-                && question.choices.count >= 2
+                && question.choices.count == 4
+                && hasUniqueTestChoices(question.choices)
                 && question.choices.contains(question.expectedAnswer)
                 && !question.explanation.isEmpty
                 && !question.topic.isEmpty
@@ -1434,11 +1435,11 @@ final class AIProviderPolicyTests: XCTestCase {
         let engine = HybridQuestionEngine(
             localEngine: StaticQuestionEngine(
                 provider: .localTemplates,
-                questions: [makeQuestion(goal: goal, index: 1, sourcePrompt: "local")]
+                questions: (1...5).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "local") }
             ),
             backendEngine: StaticQuestionEngine(
                 provider: .backend,
-                questions: [makeQuestion(goal: goal, index: 2, sourcePrompt: "backend")]
+                questions: (1...5).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "backend") }
             ),
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
         )
@@ -1477,11 +1478,11 @@ final class AIProviderPolicyTests: XCTestCase {
         let engine = HybridQuestionEngine(
             localEngine: StaticQuestionEngine(
                 provider: .localTemplates,
-                questions: [makeQuestion(goal: goal, index: 1, sourcePrompt: "local")]
+                questions: (1...5).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "local") }
             ),
             backendEngine: StaticQuestionEngine(
                 provider: .backend,
-                questions: [makeQuestion(goal: goal, index: 2, sourcePrompt: "backend")]
+                questions: (1...5).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "backend") }
             ),
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
         )
@@ -1493,6 +1494,31 @@ final class AIProviderPolicyTests: XCTestCase {
 
         XCTAssertEqual(batch.provider, .backend)
         XCTAssertEqual(batch.questions.first?.sourcePrompt, "backend")
+    }
+
+    func testProviderFallsBackWhenSanitizedBatchIsTooShort() async {
+        let goal = makeGoal()
+        let engine = HybridQuestionEngine(
+            localEngine: StaticQuestionEngine(
+                provider: .localTemplates,
+                questions: (1...5).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "local") }
+            ),
+            backendEngine: StaticQuestionEngine(
+                provider: .backend,
+                questions: (1...3).map { makeQuestion(goal: goal, index: $0, sourcePrompt: "backend") }
+            ),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+
+        let batch = await engine.generateQuestionBatch(
+            for: makeRequest(goal: goal, targetCount: 5, backendEndpoint: URL(string: "https://example.com/ai")),
+            preference: .backend
+        )
+
+        XCTAssertEqual(batch.provider, .localTemplates)
+        XCTAssertTrue(batch.usedFallback)
+        XCTAssertEqual(batch.questions.count, 5)
+        XCTAssertTrue(batch.questions.allSatisfy { $0.sourcePrompt == "local" })
     }
 
     func testBackendPreferenceWithoutEndpointFallsBackToLocalTemplates() async {
@@ -1580,10 +1606,56 @@ final class AIProviderPolicyTests: XCTestCase {
         let sanitizedQuestion = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: request).first)
 
         XCTAssertEqual(sanitizedQuestion.expectedAnswer, "B. The correct labeled answer")
+        XCTAssertEqual(sanitizedQuestion.choices.count, 4)
+        XCTAssertTrue(hasUniqueTestChoices(sanitizedQuestion.choices))
         XCTAssertEqual(
             AnswerGrader.evaluate(answer: "B. The correct labeled answer", question: sanitizedQuestion).result,
             .correct
         )
+    }
+
+    func testSanitizerRejectsDuplicateMultipleChoiceAnswers() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which answer choice should be rejected for duplicate options?",
+            expectedAnswer: "A. The same answer",
+            choices: [
+                "A. The same answer",
+                "The same answer",
+                "B. A different answer",
+                "C. Another different answer"
+            ],
+            difficulty: 2
+        )
+
+        let sanitized = QuestionBatchSanitizer.sanitize([question], for: request)
+
+        XCTAssertTrue(sanitized.isEmpty)
+    }
+
+    func testSanitizerRejectsQuestionsWithFewerThanFourUniqueAnswers() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which answer choice should be rejected for too few unique options?",
+            expectedAnswer: "The only supported answer",
+            choices: [
+                "The only supported answer",
+                "A plausible distractor",
+                "A plausible distractor",
+                "A second distractor"
+            ],
+            difficulty: 2
+        )
+
+        let sanitized = QuestionBatchSanitizer.sanitize([question], for: request)
+
+        XCTAssertTrue(sanitized.isEmpty)
     }
 
     func testSanitizerUsesExplanationWhenItContradictsExpectedAnswer() throws {
@@ -2193,6 +2265,35 @@ private func makeGoal() -> Goal {
         focusAreas: "arrays, recursion, hash maps",
         preferredQuestionStyle: .multipleChoice
     )
+}
+
+private func hasUniqueTestChoices(_ choices: [String]) -> Bool {
+    Set(choices.map(testChoiceKey)).count == choices.count
+}
+
+private func testChoiceKey(_ choice: String) -> String {
+    var normalized = choice
+        .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+        .lowercased()
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+
+    let labelCharacters = ["a", "b", "c", "d", "1", "2", "3", "4"]
+    let separatorCharacters = CharacterSet(charactersIn: " \t\n.:-)")
+    let characters = Array(normalized)
+
+    if characters.count >= 2,
+       labelCharacters.contains(String(characters[0])),
+       String(characters[1]).rangeOfCharacter(from: separatorCharacters) != nil {
+        normalized.removeFirst()
+        normalized = normalized.trimmingCharacters(in: CharacterSet(charactersIn: " \t\n.:-)"))
+    } else if characters.count >= 3,
+              characters[0] == "(" || characters[0] == "[",
+              labelCharacters.contains(String(characters[1])) {
+        normalized.removeFirst(2)
+        normalized = normalized.trimmingCharacters(in: CharacterSet(charactersIn: " \t\n.:-)]"))
+    }
+
+    return normalized.filter { $0.isLetter || $0.isNumber }
 }
 
 private func makeLSATGoal() -> Goal {
