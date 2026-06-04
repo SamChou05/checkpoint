@@ -13,7 +13,7 @@ struct RestrictedAppsView: View {
         NavigationStack {
             content
                 .checkpointScreenBackground()
-                .navigationTitle("Blocked Apps")
+                .navigationTitle("Protected Apps")
                 .toolbarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
@@ -39,11 +39,11 @@ struct RestrictedAppsView: View {
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(CheckpointTheme.amber)
 
-                    Text("App blocking unavailable")
+                    Text("App protection unavailable")
                         .font(.title3.bold())
                         .foregroundStyle(CheckpointTheme.text)
 
-                    Text("Open this on an iPhone build with Screen Time access to choose blocked apps.")
+                    Text("Open this on an iPhone build with Screen Time access to choose protected apps.")
                         .font(.subheadline)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -69,7 +69,7 @@ private struct FamilyPickerContent: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Choose apps, categories, or websites to put behind checkpoints.")
+                Text("Choose apps, categories, or websites to place behind goal practice.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)

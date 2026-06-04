@@ -77,7 +77,7 @@ struct OnboardingView: View {
 
                     SectionPanel("Question level") {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Start checkpoints at \(Goal.difficultyLabel(for: minimumQuestionDifficulty)) or higher.")
+                            Text("Begin practice at \(Goal.difficultyLabel(for: minimumQuestionDifficulty)) or higher.")
                                 .font(.subheadline)
                                 .foregroundStyle(CheckpointTheme.muted)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -140,10 +140,10 @@ struct OnboardingView: View {
 
     private var headerSubtitle: String {
         if isNewProfile {
-            return "Set the goal, focus areas, and question level once. Checkpoint keeps questions and skill progress separate for each goal."
+            return "Name the goal, choose the practice areas, and set the level. Checkpoint keeps each goal's practice separate."
         }
 
-        return "Adjust the current goal so future questions match your preparation level."
+        return "Refine this goal so future practice matches your current preparation."
     }
 
     private var primaryButtonTitle: String {

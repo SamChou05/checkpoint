@@ -19,15 +19,15 @@ final class ScreenTimeController {
     enum SetupState: String {
         case notStarted = "Not set up"
         case authorized = "Authorized"
-        case shieldActive = "Blocking active"
-        case temporarilyUnlocked = "Temporarily open"
+        case shieldActive = "Protection active"
+        case temporarilyUnlocked = "Break in progress"
         case failed = "Needs attention"
         case readyForSpike = "Ready"
         case unavailable = "Unavailable in this build"
     }
 
     var setupState: SetupState = .notStarted
-    var restrictedAppsSummary = "No blocked apps selected"
+    var restrictedAppsSummary = "No protected apps selected"
     var lastErrorMessage: String?
     var isShieldingEnabled = false
 
@@ -46,7 +46,7 @@ final class ScreenTimeController {
                 return "Open Checkpoint has been tapped \(actionCount)x, but the custom shield page has not reported yet. Reinstall the signed app and verify the Shield Configuration extension entitlements if the default Restricted page appears."
             }
 
-            return "Custom shield has not reported yet. Open a blocked app after starting blocking; if the default Restricted page appears, verify the Shield Configuration extension provisioning."
+            return "Custom shield has not reported yet. Open a protected app after starting protection; if the default Restricted page appears, verify the Shield Configuration extension provisioning."
         }
 
         let lastRendered = SharedAppGroup.shieldConfigurationRenderDate?.formatted(date: .abbreviated, time: .shortened) ?? "recently"
@@ -116,7 +116,7 @@ final class ScreenTimeController {
             lastErrorMessage = nil
         case .denied:
             setupState = .failed
-            lastErrorMessage = "Screen Time access is denied. Allow Screen Time access before starting app blocking."
+            lastErrorMessage = "Screen Time access is denied. Allow Screen Time access before starting app protection."
         case .approved:
             if setupState != .shieldActive && setupState != .temporarilyUnlocked {
                 setupState = .authorized
@@ -143,7 +143,7 @@ final class ScreenTimeController {
             managedStore.clearAllSettings()
             isShieldingEnabled = false
             setupState = .authorized
-            lastErrorMessage = "Choose at least one blocked app, category, or website before starting app blocking."
+            lastErrorMessage = "Choose at least one protected app, category, or website before starting app protection."
             SharedAppGroup.publishDesiredShieldActive(false)
             SharedAppGroup.publishUnlockExpiration(nil)
             updateSummary()
@@ -153,7 +153,7 @@ final class ScreenTimeController {
         guard isScreenTimeAuthorized else {
             isShieldingEnabled = false
             setupState = .failed
-            lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app blocking."
+            lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
             SharedAppGroup.publishDesiredShieldActive(false)
             SharedAppGroup.publishUnlockExpiration(nil)
             updateSummary()
@@ -177,7 +177,7 @@ final class ScreenTimeController {
         updateSummary()
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "App blocking needs an iPhone build with Screen Time access."
+        restrictedAppsSummary = "App protection needs an iPhone build with Screen Time access."
         #endif
     }
 
@@ -202,7 +202,7 @@ final class ScreenTimeController {
 
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         guard hasSelection else {
-            lastErrorMessage = "No blocked apps are selected, so there is nothing to unlock."
+            lastErrorMessage = "No protected apps are selected, so there is nothing to open."
             return
         }
 
@@ -257,12 +257,12 @@ final class ScreenTimeController {
         let webCount = selection.webDomainTokens.count
 
         if appCount + categoryCount + webCount == 0 {
-            restrictedAppsSummary = "No blocked apps selected"
+            restrictedAppsSummary = "No protected apps selected"
         } else {
             restrictedAppsSummary = "\(appCount) apps, \(categoryCount) categories, \(webCount) websites selected"
         }
         #else
-        restrictedAppsSummary = "App blocking is unavailable in this build."
+        restrictedAppsSummary = "App protection is unavailable in this build."
         #endif
     }
 

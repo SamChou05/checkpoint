@@ -263,10 +263,10 @@ final class CheckpointStore {
         guard readyCount < unlockPolicy.questionsPerSession else { return nil }
 
         if backgroundGenerationGoalIDs.contains(profile.id) || questionBankTopOffGoalIDs.contains(profile.id) {
-            return readyCount > 0 ? "Preparing more checkpoints" : "Preparing checkpoints"
+            return readyCount > 0 ? "Preparing more practice" : "Preparing practice"
         }
 
-        return readyCount > 0 ? "Needs more checkpoints" : "No checkpoints ready yet"
+        return readyCount > 0 ? "Practice set low" : "No practice ready yet"
     }
 
     var isPreparingActiveGoalQuestions: Bool {
@@ -283,7 +283,7 @@ final class CheckpointStore {
         case .generating:
             let readyText = usableQuestionCount > 0
                 ? "\(usableQuestionCount) ready; preparing more"
-                : "Preparing first checkpoints"
+                : "Preparing first practice set"
             let elapsedText = questionGenerationStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
             return "\(readyText) in the background.\(elapsedText)"
         case .failed:
@@ -294,13 +294,13 @@ final class CheckpointStore {
             }
             return "\(usableQuestionCount) ready."
         case .idle:
-            return usableQuestionCount > 0 ? "\(usableQuestionCount) ready." : "No checkpoints prepared yet."
+            return usableQuestionCount > 0 ? "\(usableQuestionCount) ready." : "No practice prepared yet."
         }
     }
 
     var studyAssistSummary: String {
         guard isMember else {
-            return "Your first goal is included. Membership keeps fresh checkpoints ready when your starter set runs low."
+            return "Your first goal is included. Membership keeps fresh practice ready when your starter set runs low."
         }
 
         if let focus = studyFocusRecommendation {
@@ -308,10 +308,10 @@ final class CheckpointStore {
         }
 
         if usableQuestionCount <= ProductLimits.autoRefreshThreshold {
-            return "Your practice set is getting low. Checkpoint will add fresh questions when possible."
+            return "Your practice set is getting low. Checkpoint will prepare fresh questions when possible."
         }
 
-        return "Your practice set is healthy. Keep answering checkpoints and missed topics will surface automatically."
+        return "Your practice rhythm is steady. Keep completing sets and missed topics will surface automatically."
     }
 
     var studyFocusRecommendation: String? {
@@ -322,16 +322,16 @@ final class CheckpointStore {
             .sorted(by: sortByReviewPriority)
             .first?
             .topic {
-            return "Focus next on \(missedTopic); recent misses are ready for review."
+            return "Next focus: \(missedTopic). Recent misses are ready for review."
         }
 
         guard let competency = sortedCompetencies.first else { return nil }
 
         if competency.attempts == 0 {
-            return "Start with \(competency.topic); it has the least evidence so far."
+            return "Start with \(competency.topic). Checkpoint needs more evidence there."
         }
 
-        return "Focus next on \(competency.topic); it is your lowest mastery area at \(competency.masteryPercent)%."
+        return "Next focus: \(competency.topic). It is your lowest mastery area at \(competency.masteryPercent)%."
     }
 
     var questionLevelRecommendation: QuestionLevelRecommendation? {
@@ -469,7 +469,7 @@ final class CheckpointStore {
         }
 
         if goal != nil && !isMember {
-            checkpointNotice = "Your first goal is included. Membership lets you change goals and keep separate checkpoint sets ready."
+            checkpointNotice = "Your first goal is included. Membership lets you change goals and keep separate practice sets ready."
             requestMembership(for: .goalProfiles)
             save()
             return
@@ -1060,7 +1060,7 @@ final class CheckpointStore {
 
         let selectedQuestions = nextQuestions(limit: StopBlockingPolicy.questionsPerSession)
         guard selectedQuestions.count >= StopBlockingPolicy.questionsPerSession else {
-            checkpointNotice = "Checkpoint is preparing enough questions for the stop challenge. Try again in a moment or lower the minimum level."
+            checkpointNotice = "Checkpoint is preparing enough questions for the protection review. Try again in a moment or lower the minimum level."
             return nil
         }
 
@@ -1591,22 +1591,22 @@ final class CheckpointStore {
     private func checkpointSessionUnavailableMessage(source: CheckpointSessionSource) -> String {
         if goal == nil {
             return source == .blockedApp
-                ? "Checkpoint opened from a blocked app, but no goal is set yet."
-                : "Create a goal before starting a checkpoint."
+                ? "Checkpoint opened from a protected app, but no goal is set yet."
+                : "Create a goal before starting a practice set."
         }
 
         if activeQuestions.isEmpty {
             if !isMember {
-                return "Your starter checkpoints are complete. Membership keeps fresh questions ready when you need more."
+                return "Your starter practice sets are complete. Membership keeps fresh questions ready when you need more."
             }
 
             return source == .blockedApp
-                ? "Checkpoint opened from a blocked app, but no questions are ready yet."
+                ? "Checkpoint opened from a protected app, but no questions are ready yet."
                 : "No questions are ready yet."
         }
 
         if !isMember && usableQuestionCount == 0 {
-            return "Your starter question set has done its job. Membership keeps fresh checkpoints coming."
+            return "Your starter question set has done its job. Membership keeps fresh practice coming."
         }
 
         return "Checkpoint is preparing more questions. Try again in a moment or lower the minimum level."
@@ -2000,6 +2000,6 @@ final class CheckpointStore {
     }
 
     private var starterQuestionLimitMessage: String {
-        "Your first goal includes a starter question set. Membership keeps fresh checkpoints ready after that set runs low."
+        "Your first goal includes a starter question set. Membership keeps fresh practice ready after that set runs low."
     }
 }

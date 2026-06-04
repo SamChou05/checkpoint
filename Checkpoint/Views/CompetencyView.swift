@@ -12,7 +12,7 @@ struct CompetencyView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Checkpoint uses your answers to keep questions challenging without jumping too far ahead.")
+                        Text("Your Skill Map shows where consistent practice is building strength and where the next reps should go.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -67,7 +67,7 @@ struct CompetencyView: View {
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Create a goal and answer a few checkpoints. Missed topics will move toward the top.")
+                Text("Create a goal and complete a few practice sets. Topics needing attention will rise to the top.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -88,7 +88,7 @@ private struct CompetencyRow: View {
                             .font(.headline)
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Level \(competency.displayLevel) of 5 - \(competency.attempts) attempts")
+                        Text("Level \(competency.displayLevel) of 5 - \(competency.attempts) practice reps")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.muted)
                     }

@@ -141,7 +141,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNil(session)
         XCTAssertNil(localEngine.receivedRequest)
         XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
-        XCTAssertTrue(store.checkpointNotice?.contains("Membership keeps fresh checkpoints") ?? false)
+        XCTAssertTrue(store.checkpointNotice?.contains("Membership keeps fresh practice") ?? false)
     }
 
     @MainActor
@@ -765,7 +765,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNil(store.startStopBlockingSession())
         XCTAssertEqual(
             store.checkpointNotice,
-            "Checkpoint is preparing enough questions for the stop challenge. Try again in a moment or lower the minimum level."
+            "Checkpoint is preparing enough questions for the protection review. Try again in a moment or lower the minimum level."
         )
     }
 
@@ -1169,7 +1169,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(defaults: defaults)
 
         XCTAssertNil(store.startManualCheckpointSession())
-        XCTAssertEqual(store.checkpointNotice, "Create a goal before starting a checkpoint.")
+        XCTAssertEqual(store.checkpointNotice, "Create a goal before starting a practice set.")
 
         store.clearCheckpointNotice()
         XCTAssertNil(store.checkpointNotice)
@@ -1180,7 +1180,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let screenTime = ScreenTimeController(defaults: defaults)
 
         XCTAssertFalse(screenTime.hasSelection)
-        XCTAssertEqual(screenTime.restrictedAppsSummary, "No blocked apps selected")
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "No protected apps selected")
     }
 
     @MainActor
@@ -1214,7 +1214,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertFalse(screenTime.isShieldingEnabled)
         XCTAssertEqual(
             screenTime.lastErrorMessage,
-            "Choose at least one blocked app, category, or website before starting app blocking."
+            "Choose at least one protected app, category, or website before starting app protection."
         )
         XCTAssertFalse(SharedAppGroup.desiredShieldActive)
     }
@@ -1434,11 +1434,11 @@ final class CheckpointWorkflowTests: XCTestCase {
             makeQuestion(goal: goal, index: $0)
         }
 
-        XCTAssertEqual(store.questionBankReadinessWarning(for: goal), "Needs more checkpoints")
+        XCTAssertEqual(store.questionBankReadinessWarning(for: goal), "Practice set low")
 
         store.questions = []
 
-        XCTAssertEqual(store.questionBankReadinessWarning(for: goal), "No checkpoints ready yet")
+        XCTAssertEqual(store.questionBankReadinessWarning(for: goal), "No practice ready yet")
     }
 
     @MainActor

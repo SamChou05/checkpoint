@@ -26,7 +26,7 @@ struct SettingsView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Tune the blocker, your study goal, and the checkpoint rules.")
+                        Text("Adjust your goal, protected apps, and practice standards.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                     }
@@ -91,7 +91,7 @@ struct SettingsView: View {
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
 
-                                Text("Each goal keeps its own cached checkpoints, Skill Map, and answer history.")
+                                        Text("Each goal keeps its own practice sets, Skill Map, and answer history.")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -125,7 +125,7 @@ struct SettingsView: View {
                     SectionPanel("Activity") {
                         VStack(spacing: 14) {
                             SettingsNavigationRow(
-                                title: "Checkpoint history",
+                                title: "Practice history",
                                 detail: historyDetailText,
                                 systemImage: "clock.arrow.circlepath",
                                 trailingText: "\(store.activeAttempts.count)"
@@ -146,7 +146,7 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("App blocking") {
+                    SectionPanel("Protected apps") {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
                                 Text("Connection")
@@ -170,7 +170,7 @@ struct SettingsView: View {
                                 }
                             }
 
-                            SecondaryActionButton(title: "Choose blocked apps", systemImage: "checklist") {
+                            SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
                                 isRestrictedAppsPresented = true
                             }
 
@@ -183,19 +183,19 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Checkpoint rules") {
+                    SectionPanel("Practice standard") {
                         VStack(alignment: .leading, spacing: 16) {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Passing score")
+                                Text("Passing standard")
                                     .font(.headline)
                                     .foregroundStyle(CheckpointTheme.text)
 
-                                Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct to unlock")
+                                Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct begins a break")
                                     .font(.subheadline)
                                     .foregroundStyle(CheckpointTheme.muted)
 
                                 Stepper(
-                                    "Questions per checkpoint: \(store.unlockPolicy.questionsPerSession)",
+                                    "Questions per practice set: \(store.unlockPolicy.questionsPerSession)",
                                     value: questionsPerSessionBinding,
                                     in: UnlockPolicy.minimumQuestionsPerSession...UnlockPolicy.maximumQuestionsPerSession
                                 )
@@ -210,11 +210,11 @@ struct SettingsView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Unlock time after passing")
+                                Text("Break after passing")
                                     .font(.headline)
                                     .foregroundStyle(CheckpointTheme.text)
 
-                                Picker("Unlock minutes", selection: unlockMinutesBinding) {
+                                Picker("Break minutes", selection: unlockMinutesBinding) {
                                     ForEach(UnlockPolicy.correctAnswerUnlockMinuteOptions, id: \.self) { minutes in
                                         Text("\(minutes)m").tag(minutes)
                                     }
@@ -250,7 +250,7 @@ struct SettingsView: View {
 
                                 Divider()
 
-                                Text("Stopping blocking requires a longer 20-question challenge with at least 18 correct. Home also opens this challenge from Blocking active.")
+                                Text("Turning off protection requires a longer 20-question review with at least 18 correct.")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -268,7 +268,7 @@ struct SettingsView: View {
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
 
-                                SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing stop challenge" : "Stop blocking", systemImage: "hand.raised") {
+                                SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing review" : "Turn off protection", systemImage: "hand.raised") {
                                     guard !isPreparingStopChallenge else { return }
                                     isPreparingStopChallenge = true
 
@@ -409,15 +409,15 @@ struct SettingsView: View {
 
     private var membershipDetailText: String {
         if store.isMember {
-            return "Fresh checkpoints, goal profiles, larger question banks, and Study Assist are active."
+            return "Goal profiles, fresh practice sets, deeper question banks, and adaptive guidance are active."
         }
 
-        return "Your first goal and starter checkpoints are included. Membership keeps new questions flowing and unlocks goal switching."
+        return "Your first goal is included. Membership keeps fresh practice ready and unlocks goal switching."
     }
 
     private var historyDetailText: String {
         if store.activeAttempts.isEmpty {
-            return "No checkpoint answers yet"
+            return "No practice answers yet"
         }
 
         return "\(store.questionsAnsweredThisWeekCount) answered this week"

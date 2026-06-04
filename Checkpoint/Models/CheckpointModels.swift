@@ -51,7 +51,7 @@ enum QuestionReportReason: String, Codable, CaseIterable, Identifiable, Sendable
 enum IssueReportCategory: String, Codable, CaseIterable, Identifiable, Sendable {
     case generalFeedback = "General feedback"
     case questionIssue = "Question issue"
-    case appBlocking = "App blocking"
+    case appBlocking = "App protection"
     case goalSetup = "Goal setup"
     case membership = "Membership"
 
@@ -112,24 +112,24 @@ enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
         case .goalProfiles:
             return "Goal profiles"
         case .freshQuestionGeneration:
-            return "Fresh checkpoints"
+            return "Fresh practice sets"
         case .largerQuestionBank:
-            return "More question variety"
+            return "Deeper question bank"
         case .adaptiveStudyAssist:
-            return "Study Assist"
+            return "Adaptive guidance"
         }
     }
 
     var detail: String {
         switch self {
         case .goalProfiles:
-            return "Create and switch between separate goals, each with its own focus areas, question level, history, and Skill Map."
+            return "Create and switch between separate goals, each with its own practice areas, question level, history, and Skill Map."
         case .freshQuestionGeneration:
-            return "Keep new goal-aligned questions ready after your starter set has done its job."
+            return "Keep new goal-aligned practice ready after your starter set has done its job."
         case .largerQuestionBank:
-            return "Build a larger cached question bank so checkpoints feel less repetitive over time."
+            return "Build a larger cached question bank so practice feels varied over time."
         case .adaptiveStudyAssist:
-            return "Use missed topics, mastery, and recent accuracy to guide what Checkpoint prepares next."
+            return "Use missed topics, mastery, and recent accuracy to guide the next practice set."
         }
     }
 

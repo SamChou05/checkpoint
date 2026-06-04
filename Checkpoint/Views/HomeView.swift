@@ -54,11 +54,11 @@ struct HomeView: View {
     private var header: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Study before distraction")
+                Text("Consistency compounds")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.teal)
 
-                Text("Clear a checkpoint before you scroll.")
+                Text("Practice toward the goal you chose.")
                     .font(.largeTitle.bold())
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
@@ -133,7 +133,7 @@ struct HomeView: View {
                     .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
                 }
 
-                Text("A blocked app asks \(store.unlockPolicy.questionsPerSession) questions. \(store.unlockPolicy.requiredCorrectAnswers) correct starts the unlock timer.")
+                Text("Protected apps open after a short practice set: \(store.unlockPolicy.questionsPerSession) questions, \(store.unlockPolicy.requiredCorrectAnswers) correct to begin a break.")
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -147,7 +147,7 @@ struct HomeView: View {
         let focusRecommendation = store.studyFocusRecommendation
 
         if levelRecommendation != nil || focusRecommendation != nil {
-            SectionPanel("Study Assist") {
+            SectionPanel("Next step") {
                 VStack(alignment: .leading, spacing: 12) {
                     if let levelRecommendation {
                         levelUpRecommendationCard(levelRecommendation)
@@ -155,7 +155,7 @@ struct HomeView: View {
 
                     if let focusRecommendation {
                         VStack(alignment: .leading, spacing: 10) {
-                            StatusBadge(text: "Adaptive focus", tint: CheckpointTheme.teal)
+                            StatusBadge(text: "Next focus", tint: CheckpointTheme.teal)
 
                             Text(focusRecommendation)
                                 .font(.subheadline.weight(.semibold))
@@ -170,15 +170,15 @@ struct HomeView: View {
 
     private func levelUpRecommendationCard(_ recommendation: QuestionLevelRecommendation) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            StatusBadge(text: "Ready for harder questions", tint: CheckpointTheme.amber)
+            StatusBadge(text: "Ready for more depth", tint: CheckpointTheme.amber)
 
-            Text("\(recommendation.accuracyPercent)% over \(recommendation.answeredCount) recent questions at level \(recommendation.currentQuestionLevel).")
+            Text("\(recommendation.accuracyPercent)% accuracy across \(recommendation.answeredCount) recent level \(recommendation.currentQuestionLevel) questions.")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
 
             SecondaryActionButton(
-                title: isAcceptingLevelIncrease ? "Preparing harder questions" : "Increase question level",
+                title: isAcceptingLevelIncrease ? "Preparing deeper questions" : "Raise question level",
                 systemImage: "arrow.up.circle"
             ) {
                 Task {
@@ -245,7 +245,7 @@ struct HomeView: View {
                 )
 
                 MetricTile(
-                    title: "Break time left",
+                    title: "Break remaining",
                     value: "\(store.activeUnlockMinutesRemaining)m",
                     tint: CheckpointTheme.coral,
                     systemImage: "timer"
@@ -255,7 +255,7 @@ struct HomeView: View {
     }
 
     private var screenTimePanel: some View {
-        SectionPanel("Blocked apps") {
+        SectionPanel("Protected apps") {
             VStack(alignment: .leading, spacing: 12) {
                 Text(screenTime.restrictedAppsSummary)
                     .font(.subheadline)
@@ -263,13 +263,13 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 HStack(spacing: 10) {
-                    SecondaryActionButton(title: "Choose blocked apps", systemImage: "checklist") {
+                    SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
                         isRestrictedAppsPresented = true
                     }
 
                     if screenTime.isShieldingEnabled {
                         SecondaryActionButton(
-                            title: isPreparingStopChallenge ? "Preparing stop challenge" : "Blocking active",
+                            title: isPreparingStopChallenge ? "Preparing review" : "Protection active",
                             systemImage: "shield.fill"
                         ) {
                             prepareStopBlockingChallenge()
@@ -278,21 +278,21 @@ struct HomeView: View {
                     } else if isTemporarilyUnblocked {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
-                                StatusBadge(text: "Temporarily unblocked", tint: CheckpointTheme.amber)
+                                StatusBadge(text: "Break in progress", tint: CheckpointTheme.amber)
                                 Spacer()
                                 Text("\(store.activeUnlockMinutesRemaining)m left")
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(CheckpointTheme.muted)
                             }
 
-                            SecondaryActionButton(title: "Restart blocking", systemImage: "shield") {
+                            SecondaryActionButton(title: "End break early", systemImage: "shield") {
                                 store.clearUnlockSession()
                                 screenTime.applyShield()
                             }
                         }
                         .frame(maxWidth: .infinity)
                     } else {
-                        SecondaryActionButton(title: "Start blocking", systemImage: "shield") {
+                        SecondaryActionButton(title: "Start protection", systemImage: "shield") {
                             screenTime.applyShield()
                         }
                     }
@@ -311,11 +311,11 @@ struct HomeView: View {
     private var emptyState: some View {
         SectionPanel {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Set one goal first.")
+                Text("Begin with one goal.")
                     .font(.title2.bold())
                     .foregroundStyle(CheckpointTheme.text)
 
-                    Text("Checkpoint will prepare multiple-choice questions, then ask the right ones when a blocked app is opened.")
+                    Text("Checkpoint will prepare short practice sets for that goal and place them before the apps you want to use more intentionally.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)

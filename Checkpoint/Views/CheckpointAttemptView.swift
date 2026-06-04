@@ -120,7 +120,7 @@ struct CheckpointAttemptView: View {
                                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
 
                                 if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
-                                    Text("Missed questions come back first on the next attempt.")
+                                    Text("Missed questions return early so practice stays focused.")
                                         .font(.footnote.weight(.semibold))
                                         .foregroundStyle(CheckpointTheme.amber)
                                         .fixedSize(horizontal: false, vertical: true)
@@ -129,13 +129,13 @@ struct CheckpointAttemptView: View {
                         } else if usesAutomaticEvaluation {
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
-                                    Text("Gate result")
+                                    Text("Checkpoint result")
                                         .foregroundStyle(CheckpointTheme.muted)
                                     Spacer()
                                     StatusBadge(text: automaticGateStatus, tint: automaticGateTint)
                                 }
 
-                                Text("Choose an answer, then check it to see the explanation.")
+                                Text("Choose an answer to see feedback.")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -206,33 +206,33 @@ struct CheckpointAttemptView: View {
     private var sessionBadgeText: String {
         switch session.purpose {
         case .temporaryUnlock:
-            return "Blocked app attempt"
+            return "Protected app"
         case .preview:
             return "Preview"
         case .stopBlocking:
-            return "Stop blocking challenge"
+            return "Protection review"
         }
     }
 
     private var sessionTitle: String {
         switch session.purpose {
         case .temporaryUnlock:
-            return "Clear \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")"
+            return "Complete \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")"
         case .preview:
-            return "Preview checkpoint"
+            return "Preview practice set"
         case .stopBlocking:
-            return "Clear the stop challenge"
+            return "Complete protection review"
         }
     }
 
     private var sessionSubtitle: String {
         switch session.purpose {
         case .temporaryUnlock:
-            return "Get \(session.unlockThreshold) of \(session.questions.count) correct before the \(store.unlockPolicy.unlockMinutes)-minute unlock."
+            return "Answer \(session.unlockThreshold) of \(session.questions.count) correctly to begin a \(store.unlockPolicy.unlockMinutes)-minute break."
         case .preview:
-            return "Try the checkpoint flow without changing blocking state."
+            return "Preview the practice flow without changing protection."
         case .stopBlocking:
-            return "Get \(session.unlockThreshold) of \(session.questions.count) correct to turn app blocking off."
+            return "Answer \(session.unlockThreshold) of \(session.questions.count) correctly to turn app protection off."
         }
     }
 
@@ -242,7 +242,7 @@ struct CheckpointAttemptView: View {
         }
 
         if checkedAnswer.shouldFinish {
-            return checkedAnswer.shouldPass ? passingSubmitButtonTitle : "Stay locked"
+            return checkedAnswer.shouldPass ? passingSubmitButtonTitle : "Stay protected"
         }
 
         return "Next question"
@@ -251,11 +251,11 @@ struct CheckpointAttemptView: View {
     private var passingSubmitButtonTitle: String {
         switch session.purpose {
         case .temporaryUnlock:
-            return "Unlock \(store.unlockPolicy.unlockMinutes) minutes"
+            return "Begin \(store.unlockPolicy.unlockMinutes)-minute break"
         case .preview:
             return "Finish"
         case .stopBlocking:
-            return "Stop blocking"
+            return "Turn off protection"
         }
     }
 

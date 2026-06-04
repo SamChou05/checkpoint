@@ -20,7 +20,7 @@ struct MembershipView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Your first goal is included. Membership keeps fresh checkpoints ready and lets you move between goals when life changes.")
+                        Text("Your first goal is included. Membership keeps goal-aligned practice ready as your priorities evolve.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)

@@ -47,7 +47,7 @@ enum SharedAppGroup {
     static func publishShieldContext(goalTitle: String?, promptPreview: String?) {
         let defaults = defaults
         defaults.set(goalTitle ?? "Checkpoint", forKey: shieldGoalTitleKey)
-        defaults.set(promptPreview ?? "Open Checkpoint and clear one checkpoint before you scroll.", forKey: shieldPromptPreviewKey)
+        defaults.set(promptPreview ?? "Open Checkpoint to complete a practice set for your current goal.", forKey: shieldPromptPreviewKey)
     }
 
     static func publishUnlockExpiration(_ date: Date?) {
