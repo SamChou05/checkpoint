@@ -189,11 +189,6 @@ final class CheckpointStore {
         return attempts.filter { week.contains($0.createdAt) }
     }
 
-    private var unlockEventsThisWeek: [UnlockEvent] {
-        guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
-        return unlockEvents.filter { week.contains($0.createdAt) }
-    }
-
     var activeCompetencies: [TopicCompetency] {
         guard let goalID = goal?.id else { return [] }
         return competencies.filter { $0.goalID == goalID || $0.goalID == nil }
@@ -216,10 +211,13 @@ final class CheckpointStore {
         let correctAnswers = weeklyAttempts.filter { $0.result == .correct }.count
         let missedAnswers = weeklyAttempts.filter { $0.result != .correct }.count
         let competencies = visibleCompetencies(for: goalID)
-        let masteryPercent = averageMasteryPercent(for: competencies)
-        let weeklyUnlockEvents = unlockEventsThisWeek.filter { event in
+        let scopedUnlockEvents = unlockEvents.filter { event in
             guard let goalID else { return true }
             return event.goalID == goalID
+        }
+        let weeklyUnlockEvents = scopedUnlockEvents.filter { event in
+            guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return false }
+            return week.contains(event.createdAt)
         }
         let skillHighlights = skillHighlights(for: competencies)
 
@@ -229,25 +227,35 @@ final class CheckpointStore {
             questionsAnswered: weeklyAttempts.count,
             correctAnswers: correctAnswers,
             missedAnswers: missedAnswers,
-            masteryPercent: masteryPercent,
-            trackedSkillCount: competencies.count,
-            goalsPracticed: practicedGoalCount(for: weeklyAttempts),
-            practiceDays: practiceDayCount(for: weeklyAttempts),
+            checkpointStreakDays: checkpointStreakDays(for: scopedUnlockEvents),
             checkpointsCleared: weeklyUnlockEvents.count,
-            breakMinutesEarned: weeklyUnlockEvents.reduce(0) { $0 + $1.minutes },
             strongestSkill: skillHighlights.strongest,
             reviewSkill: skillHighlights.review,
             isCurrentGoal: isCurrentGoal
         )
     }
 
-    private func practicedGoalCount(for attempts: [CheckpointAttempt]) -> Int {
-        Set(attempts.map(\.goalID)).count
-    }
-
-    private func practiceDayCount(for attempts: [CheckpointAttempt]) -> Int {
+    private func checkpointStreakDays(for unlockEvents: [UnlockEvent]) -> Int {
         let calendar = Calendar.current
-        return Set(attempts.map { calendar.startOfDay(for: $0.createdAt) }).count
+        let clearedDays = Set(unlockEvents.map { calendar.startOfDay(for: $0.createdAt) })
+        guard !clearedDays.isEmpty else { return 0 }
+
+        let today = calendar.startOfDay(for: Date())
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+        guard var cursor = clearedDays.contains(today) ? today : (clearedDays.contains(yesterday) ? yesterday : nil) else {
+            return 0
+        }
+
+        var streak = 0
+        while clearedDays.contains(cursor) {
+            streak += 1
+            guard let previousDay = calendar.date(byAdding: .day, value: -1, to: cursor) else {
+                break
+            }
+            cursor = previousDay
+        }
+
+        return streak
     }
 
     private func skillHighlights(

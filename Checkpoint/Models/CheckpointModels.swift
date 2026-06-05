@@ -365,12 +365,8 @@ struct WeeklyMetricsSummary: Identifiable, Equatable, Sendable {
     var questionsAnswered: Int
     var correctAnswers: Int
     var missedAnswers: Int
-    var masteryPercent: Int
-    var trackedSkillCount: Int
-    var goalsPracticed: Int
-    var practiceDays: Int
+    var checkpointStreakDays: Int
     var checkpointsCleared: Int
-    var breakMinutesEarned: Int
     var strongestSkill: String?
     var reviewSkill: String?
     var isCurrentGoal: Bool = false
@@ -380,25 +376,12 @@ struct WeeklyMetricsSummary: Identifiable, Equatable, Sendable {
         return "\(Int((Double(correctAnswers) / Double(questionsAnswered)) * 100))%"
     }
 
-    var skillProgressText: String {
-        "\(masteryPercent)%"
+    var checkpointStreakText: String {
+        checkpointStreakDays == 1 ? "1 day" : "\(checkpointStreakDays) days"
     }
 
-    var breakTimeEarnedText: String {
-        Self.minutesText(breakMinutesEarned)
-    }
-
-    var missedAnswersText: String {
-        "\(missedAnswers)"
-    }
-
-    private static func minutesText(_ minutes: Int) -> String {
-        guard minutes >= 60 else { return "\(minutes)m" }
-
-        let hours = minutes / 60
-        let remainingMinutes = minutes % 60
-        guard remainingMinutes > 0 else { return "\(hours)h" }
-        return "\(hours)h \(remainingMinutes)m"
+    var hasWeeklyReviewActivity: Bool {
+        questionsAnswered > 0 || checkpointsCleared > 0 || checkpointStreakDays > 0
     }
 }
 
