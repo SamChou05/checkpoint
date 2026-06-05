@@ -5,7 +5,7 @@ Description: Checkpoint Bedrock question-generation backend
 Parameters:
   BedrockModelId:
     Type: String
-    Default: google.gemma-3-4b-it
+    Default: amazon.nova-lite-v1:0
   BedrockFallbackModelId:
     Type: String
     Default: amazon.nova-micro-v1:0
