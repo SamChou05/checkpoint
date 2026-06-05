@@ -36,7 +36,7 @@ final class PurchaseController {
             products = MembershipProductID.all.compactMap { productID in
                 loadedProducts.first { $0.id == productID }
             }
-            purchaseMessage = nil
+            purchaseMessage = products.isEmpty ? Self.productsUnavailableMessage : nil
         } catch {
             purchaseMessage = "Could not load App Store plans yet."
         }
@@ -129,5 +129,13 @@ final class PurchaseController {
 
     private func publishMembershipEntitlement() {
         onMembershipEntitlementChange?(isMembershipUnlocked)
+    }
+
+    private static var productsUnavailableMessage: String {
+        #if DEBUG
+        "App Store plans are not available yet. Check StoreKit or App Store Connect setup, then try again."
+        #else
+        "App Store plans are not available yet. Try again soon."
+        #endif
     }
 }

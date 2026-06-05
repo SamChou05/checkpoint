@@ -35,7 +35,7 @@ struct MembershipView: View {
                     ) {
                         PlanBenefitRow(title: "One goal to start", detail: "Build a focused checkpoint around the outcome that matters most right now.")
                         PlanBenefitRow(title: "Protected app flow", detail: "Clear a short practice set before opening the apps you chose to protect.")
-                        PlanBenefitRow(title: "Weekly progress", detail: "See your questions answered, accuracy, skill progress, and screen-time patterns.")
+                        PlanBenefitRow(title: "Weekly review", detail: "See the reps, checkpoint streak, accuracy, and skill focus your protected apps created.")
 
                         if store.isMember {
                             PlanFootnote("To return to Free, manage your Pro plan in the App Store. Free resumes after the current billing period ends.")
@@ -123,10 +123,25 @@ struct MembershipView: View {
                     .foregroundStyle(CheckpointTheme.muted)
             }
         } else if purchaseController.products.isEmpty {
-            FallbackPriceRow(title: "Monthly", price: "$4.99/mo")
-            FallbackPriceRow(title: "Annual", price: "$29.99/yr")
+            FallbackPriceButton(
+                title: "Monthly",
+                price: "$4.99/mo",
+                isPurchasing: purchasingProductID == MembershipProductID.monthly,
+                isDisabled: purchasingProductID != nil
+            ) {
+                purchaseProduct(with: MembershipProductID.monthly)
+            }
 
-            Text("App Store pricing appears here before purchase.")
+            FallbackPriceButton(
+                title: "Annual",
+                price: "$29.99/yr",
+                isPurchasing: purchasingProductID == MembershipProductID.yearly,
+                isDisabled: purchasingProductID != nil
+            ) {
+                purchaseProduct(with: MembershipProductID.yearly)
+            }
+
+            Text("Tap a plan to retry App Store pricing. Apple shows the final price before purchase.")
                 .font(.footnote)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
@@ -215,6 +230,31 @@ struct MembershipView: View {
         }
     }
 
+    private func purchaseProduct(with productID: String) {
+        guard purchasingProductID == nil else { return }
+        purchasingProductID = productID
+
+        Task {
+            if purchaseController.products.isEmpty {
+                await purchaseController.loadProducts()
+            }
+
+            guard let product = purchaseController.products.first(where: { $0.id == productID }) else {
+                purchasingProductID = nil
+                purchaseController.purchaseMessage = unavailablePlanMessage
+                return
+            }
+
+            let unlocked = await purchaseController.purchase(product)
+            purchasingProductID = nil
+
+            if unlocked {
+                store.updateMembershipTier(.member)
+                close()
+            }
+        }
+    }
+
     private func restorePurchases() {
         Task {
             let unlocked = await purchaseController.restorePurchases()
@@ -229,6 +269,14 @@ struct MembershipView: View {
         if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
             openURL(url)
         }
+    }
+
+    private var unavailablePlanMessage: String {
+        #if DEBUG
+        "That App Store plan is not available yet. Check StoreKit or App Store Connect setup, then try again."
+        #else
+        "That App Store plan is not available yet. Try again soon."
+        #endif
     }
 
     private func close() {
@@ -399,23 +447,44 @@ private struct PlanFootnote: View {
     }
 }
 
-private struct FallbackPriceRow: View {
+private struct FallbackPriceButton: View {
     var title: String
     var price: String
+    var isPurchasing: Bool
+    var isDisabled: Bool
+    var action: () -> Void
 
     var body: some View {
-        HStack {
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(CheckpointTheme.text)
+        Button(action: action) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.text)
 
-            Spacer()
+                    Text("Open App Store purchase when available.")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                }
 
-            Text(price)
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(CheckpointTheme.text)
+                Spacer()
+
+                if isPurchasing {
+                    ProgressView()
+                } else {
+                    Text(price)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(CheckpointTheme.paper)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8))
+                }
+            }
+            .padding(12)
+            .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 8))
         }
-        .padding(12)
-        .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 8))
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+        .opacity(isDisabled && !isPurchasing ? 0.64 : 1)
     }
 }
