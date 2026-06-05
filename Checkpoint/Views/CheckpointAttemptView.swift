@@ -120,7 +120,7 @@ struct CheckpointAttemptView: View {
                                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
 
                                 if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
-                                    Text("Missed questions return early so practice stays focused.")
+                                    Text(failedSessionFeedbackText)
                                         .font(.footnote.weight(.semibold))
                                         .foregroundStyle(CheckpointTheme.amber)
                                         .fixedSize(horizontal: false, vertical: true)
@@ -312,6 +312,11 @@ struct CheckpointAttemptView: View {
                 result: result,
                 grantsUnlock: false
             )
+
+            if shouldFinish && !shouldPass {
+                store.makeMissedQuestionsDueNow(updatedMissedQuestionIDs)
+                store.startCheckpointRetryCooldown()
+            }
         }
 
         correctAnswerCount = updatedCorrectCount
@@ -340,8 +345,6 @@ struct CheckpointAttemptView: View {
                     store.clearUnlockSession()
                     screenTime.clearShield()
                 }
-            } else if session.purpose != .preview {
-                store.makeMissedQuestionsDueNow(checkedAnswer.missedQuestionIDs)
             }
             dismiss()
             return
@@ -359,6 +362,15 @@ struct CheckpointAttemptView: View {
 
     private func resultTint(for result: AnswerResult) -> Color {
         result == .correct ? CheckpointTheme.teal : CheckpointTheme.coral
+    }
+
+    private var failedSessionFeedbackText: String {
+        switch session.purpose {
+        case .preview:
+            return "Missed questions return early so practice stays focused."
+        case .temporaryUnlock, .stopBlocking:
+            return "Missed questions return early, and the next checkpoint opens after a 5-minute reset."
+        }
     }
 }
 

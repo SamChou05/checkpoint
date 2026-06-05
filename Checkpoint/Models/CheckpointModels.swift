@@ -678,6 +678,7 @@ struct AppSnapshot: Codable, Sendable {
     var lastQuestionProvider: AIProviderKind?
     var backendEndpoint: String?
     var unlockSession: UnlockSession?
+    var checkpointRetryCooldownUntil: Date?
     var membershipTier: MembershipTier?
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?

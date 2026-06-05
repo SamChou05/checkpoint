@@ -284,36 +284,34 @@ struct HomeView: View {
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
 
-                HStack(spacing: 10) {
-                    HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
-                        isRestrictedAppsPresented = true
-                    }
+                if isTemporarilyUnblocked {
+                    BreakRemainingStat(expiresAt: store.unlockSession?.expiresAt)
 
-                    if screenTime.isShieldingEnabled {
-                        StatusBadge(text: "Protection active", tint: CheckpointTheme.teal)
-                    } else if isTemporarilyUnblocked {
-                        VStack(alignment: .leading, spacing: 10) {
-                            HStack {
-                                StatusBadge(text: "Break in progress", tint: CheckpointTheme.amber)
-                                Spacer()
-                                Text("\(store.activeUnlockMinutesRemaining)m left")
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.muted)
-                            }
-
-                            HomeProtectionActionButton(title: "End break early", systemImage: "shield") {
-                                store.clearUnlockSession()
-                                screenTime.applyShield()
-                            }
+                    HStack(spacing: 10) {
+                        HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
+                            isRestrictedAppsPresented = true
                         }
-                        .frame(maxWidth: .infinity)
-                    } else {
-                        HomeProtectionActionButton(title: "Start protection", systemImage: "shield") {
+
+                        HomeProtectionActionButton(title: "End break early", systemImage: "shield") {
+                            store.clearUnlockSession()
                             screenTime.applyShield()
                         }
                     }
-                }
+                } else {
+                    HStack(spacing: 10) {
+                        HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
+                            isRestrictedAppsPresented = true
+                        }
 
+                        if screenTime.isShieldingEnabled {
+                            StatusBadge(text: "Protection active", tint: CheckpointTheme.teal)
+                        } else {
+                            HomeProtectionActionButton(title: "Start protection", systemImage: "shield") {
+                                screenTime.applyShield()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -431,6 +429,51 @@ private struct HomeProtectionActionButton: View {
             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct BreakRemainingStat: View {
+    var expiresAt: Date?
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 60)) { context in
+            HStack(spacing: 12) {
+                Image(systemName: "timer")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(CheckpointTheme.amber)
+                    .frame(width: 24)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Break remaining")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    Text("Protection restarts automatically when this ends.")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 12)
+
+                Text(valueText(at: context.date))
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+            }
+            .padding(12)
+            .background(CheckpointTheme.panelRaised.opacity(0.72), in: RoundedRectangle(cornerRadius: 8))
+        }
+    }
+
+    private func valueText(at date: Date) -> String {
+        guard let expiresAt else { return "Ending" }
+
+        let minutesRemaining = max(0, Int(ceil(expiresAt.timeIntervalSince(date) / 60)))
+        guard minutesRemaining > 0 else { return "Ending" }
+        return "\(minutesRemaining)m"
     }
 }
 

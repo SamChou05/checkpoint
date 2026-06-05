@@ -62,6 +62,7 @@ final class CheckpointStore {
     var lastQuestionBankTopOffDuration: TimeInterval?
     var checkpointNotice: String?
     var unlockSession: UnlockSession?
+    var checkpointRetryCooldownUntil: Date?
     var isOnboardingPresented = false
     var isCreatingGoalProfile = false
     var membershipTier: MembershipTier = .starter
@@ -81,6 +82,7 @@ final class CheckpointStore {
     @ObservationIgnored private static let levelUpMinimumAttemptCount = 5
     @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
     @ObservationIgnored private static let maximumExactQuestionAskCount = 2
+    @ObservationIgnored private static let failedCheckpointCooldown: TimeInterval = 5 * 60
 
     // MARK: - Lifecycle
 
@@ -91,6 +93,7 @@ final class CheckpointStore {
         self.questionEngine = questionEngine
         self.defaults = defaults
         load()
+        clearExpiredCheckpointRetryCooldown()
         isOnboardingPresented = goal == nil
         publishShieldContext()
         replaceActiveLocalTemplateQuestionBankIfNeeded()
@@ -101,6 +104,19 @@ final class CheckpointStore {
     var activeUnlockMinutesRemaining: Int {
         guard let unlockSession, unlockSession.isActive else { return 0 }
         return max(0, Int(ceil(unlockSession.expiresAt.timeIntervalSinceNow / 60)))
+    }
+
+    var checkpointRetryCooldownRemainingSeconds: Int {
+        guard let checkpointRetryCooldownUntil else { return 0 }
+        return max(0, Int(ceil(checkpointRetryCooldownUntil.timeIntervalSinceNow)))
+    }
+
+    var checkpointRetryCooldownRemainingText: String {
+        Self.formattedRetryCooldownDuration(TimeInterval(checkpointRetryCooldownRemainingSeconds))
+    }
+
+    var isCheckpointRetryCooldownActive: Bool {
+        checkpointRetryCooldownRemainingSeconds > 0
     }
 
     var questionsAnsweredThisWeekCount: Int {
@@ -1222,6 +1238,7 @@ final class CheckpointStore {
         lastQuestionBankTopOffDuration = nil
         checkpointNotice = nil
         unlockSession = nil
+        checkpointRetryCooldownUntil = nil
         questionRefreshesUsed = 0
         lastAutomaticQuestionRefreshAt = nil
         isCreatingGoalProfile = false
@@ -1234,6 +1251,11 @@ final class CheckpointStore {
     // MARK: - Checkpoint sessions
 
     func takePendingShieldSession() -> CheckpointSession? {
+        guard SharedAppGroup.pendingShieldAttemptDate != nil else { return nil }
+        if let cooldownMessage = checkpointRetryCooldownMessage(source: .blockedApp) {
+            checkpointNotice = cooldownMessage
+            return nil
+        }
         guard SharedAppGroup.consumePendingShieldAttempt() != nil else { return nil }
         return checkpointSession(source: .blockedApp)
     }
@@ -1249,6 +1271,11 @@ final class CheckpointStore {
     func preparePendingShieldSession() async -> CheckpointSession? {
         guard SharedAppGroup.pendingShieldAttemptDate != nil else { return nil }
 
+        if let cooldownMessage = checkpointRetryCooldownMessage(source: .blockedApp) {
+            checkpointNotice = cooldownMessage
+            return nil
+        }
+
         if goal != nil && needsQuestionRefill(minimumQuestionCount: unlockPolicy.questionsPerSession) {
             _ = await refreshQuestionBatchIfNeeded()
         }
@@ -1262,6 +1289,11 @@ final class CheckpointStore {
     }
 
     func prepareManualCheckpointSession() async -> CheckpointSession? {
+        if let cooldownMessage = checkpointRetryCooldownMessage(source: .manual) {
+            checkpointNotice = cooldownMessage
+            return nil
+        }
+
         if goal != nil && needsQuestionRefill(minimumQuestionCount: unlockPolicy.questionsPerSession) {
             _ = await refreshQuestionBatchIfNeeded()
         }
@@ -1288,6 +1320,11 @@ final class CheckpointStore {
     }
 
     func prepareStopBlockingSession() async -> CheckpointSession? {
+        if let cooldownMessage = checkpointRetryCooldownMessage(source: .manual) {
+            checkpointNotice = cooldownMessage
+            return nil
+        }
+
         if let session = startStopBlockingSession() {
             return session
         }
@@ -1303,6 +1340,11 @@ final class CheckpointStore {
     }
 
     func startStopBlockingSession() -> CheckpointSession? {
+        if let cooldownMessage = checkpointRetryCooldownMessage(source: .manual) {
+            checkpointNotice = cooldownMessage
+            return nil
+        }
+
         guard goal != nil else {
             checkpointNotice = "Create a goal before stopping blocking."
             return nil
@@ -1385,6 +1427,13 @@ final class CheckpointStore {
             questions[index].nextReviewAt = now
         }
 
+        save()
+        publishShieldContext()
+    }
+
+    func startCheckpointRetryCooldown(now: Date = Date()) {
+        checkpointRetryCooldownUntil = now.addingTimeInterval(Self.failedCheckpointCooldown)
+        checkpointNotice = "Checkpoint stays protected. Take a short reset, then try again in \(checkpointRetryCooldownRemainingText)."
         save()
         publishShieldContext()
     }
@@ -1803,6 +1852,7 @@ final class CheckpointStore {
             lastQuestionProvider: lastQuestionProvider,
             backendEndpoint: backendEndpoint,
             unlockSession: unlockSession,
+            checkpointRetryCooldownUntil: checkpointRetryCooldownUntil,
             membershipTier: membershipTier,
             questionRefreshesUsed: questionRefreshesUsed,
             lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt
@@ -1823,6 +1873,11 @@ final class CheckpointStore {
         source: CheckpointSessionSource,
         purpose: CheckpointSessionPurpose = .temporaryUnlock
     ) -> CheckpointSession? {
+        if purpose != .preview, let cooldownMessage = checkpointRetryCooldownMessage(source: source) {
+            checkpointNotice = cooldownMessage
+            return nil
+        }
+
         if let session = nextCheckpointSession() {
             checkpointNotice = nil
             return CheckpointSession(
@@ -1864,6 +1919,29 @@ final class CheckpointStore {
         return "Checkpoint is preparing more questions. Try again in a moment or lower the minimum level."
     }
 
+    private func checkpointRetryCooldownMessage(source: CheckpointSessionSource) -> String? {
+        clearExpiredCheckpointRetryCooldown()
+
+        guard isCheckpointRetryCooldownActive else { return nil }
+
+        switch source {
+        case .blockedApp:
+            return "Take a short reset. Try this checkpoint again in \(checkpointRetryCooldownRemainingText)."
+        case .manual:
+            return "Try another checkpoint in \(checkpointRetryCooldownRemainingText)."
+        }
+    }
+
+    private func clearExpiredCheckpointRetryCooldown(now: Date = Date()) {
+        guard let checkpointRetryCooldownUntil,
+              checkpointRetryCooldownUntil <= now else {
+            return
+        }
+
+        self.checkpointRetryCooldownUntil = nil
+        save()
+    }
+
     private func load() {
         guard
             let data = defaults.data(forKey: snapshotKey),
@@ -1883,6 +1961,7 @@ final class CheckpointStore {
         lastQuestionProvider = snapshot.lastQuestionProvider ?? .localTemplates
         backendEndpoint = snapshot.backendEndpoint ?? ""
         unlockSession = snapshot.unlockSession
+        checkpointRetryCooldownUntil = snapshot.checkpointRetryCooldownUntil
         membershipTier = snapshot.membershipTier ?? .starter
         pendingMembershipFeature = nil
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
@@ -2043,6 +2122,16 @@ final class CheckpointStore {
         }
 
         return "\(Int(duration.rounded()))s"
+    }
+
+    private static func formattedRetryCooldownDuration(_ duration: TimeInterval) -> String {
+        let remainingSeconds = max(0, Int(ceil(duration)))
+        if remainingSeconds >= 60 {
+            let minutes = Int(ceil(Double(remainingSeconds) / 60.0))
+            return minutes == 1 ? "1 minute" : "\(minutes) minutes"
+        }
+
+        return remainingSeconds == 1 ? "1 second" : "\(remainingSeconds) seconds"
     }
 
     private func recordQuestionGenerationTrace(

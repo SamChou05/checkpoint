@@ -1597,6 +1597,47 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testFailedCheckpointCooldownBlocksImmediateRetryButNotPreview() throws {
+        let store = makeSeededStore(questionCount: 6)
+
+        store.startCheckpointRetryCooldown()
+
+        XCTAssertTrue(store.isCheckpointRetryCooldownActive)
+        XCTAssertNil(store.startManualCheckpointSession())
+        XCTAssertTrue(store.checkpointNotice?.contains("Try another checkpoint") ?? false)
+        XCTAssertNotNil(store.startPreviewCheckpointSession())
+
+        SharedAppGroup.markPendingShieldAttempt()
+        XCTAssertNil(store.takePendingShieldSession())
+        XCTAssertNotNil(SharedAppGroup.pendingShieldAttemptDate)
+        XCTAssertTrue(store.checkpointNotice?.contains("Try this checkpoint") ?? false)
+    }
+
+    @MainActor
+    func testExpiredFailedCheckpointCooldownClearsAndAllowsRetry() throws {
+        let store = makeSeededStore(questionCount: 6)
+        store.checkpointRetryCooldownUntil = Date().addingTimeInterval(-1)
+
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertNil(store.checkpointRetryCooldownUntil)
+        XCTAssertFalse(store.isCheckpointRetryCooldownActive)
+    }
+
+    @MainActor
+    func testFailedCheckpointCooldownPersistsAcrossRelaunch() {
+        let store = makeSeededStore(questionCount: 6)
+        store.startCheckpointRetryCooldown()
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertTrue(relaunchedStore.isCheckpointRetryCooldownActive)
+        XCTAssertNil(relaunchedStore.startManualCheckpointSession())
+        XCTAssertTrue(relaunchedStore.checkpointNotice?.contains("Try another checkpoint") ?? false)
+    }
+
+    @MainActor
     func testPendingShieldAttemptCreatesOneCheckpointSessionThenClears() throws {
         let store = makeSeededStore(questionCount: 6)
 
