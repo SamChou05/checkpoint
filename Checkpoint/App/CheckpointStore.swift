@@ -94,6 +94,7 @@ final class CheckpointStore {
         self.defaults = defaults
         load()
         clearExpiredCheckpointRetryCooldown()
+        recoverTransientQuestionGenerationState()
         isOnboardingPresented = goal == nil
         publishShieldContext()
         replaceActiveLocalTemplateQuestionBankIfNeeded()
@@ -386,11 +387,20 @@ final class CheckpointStore {
     }
 
     var shouldShowStarterMembershipPrompt: Bool {
-        !isMember && goal != nil && usableQuestionCount <= ProductLimits.autoRefreshThreshold
+        !isMember && goal != nil && readyQuestionCount <= ProductLimits.autoRefreshThreshold
     }
 
     var usableQuestionCount: Int {
         activeQuestions.filter(isSelectableQuestion).filter(meetsDifficultyFloor).count
+    }
+
+    var readyQuestionCount: Int {
+        guard let goal else { return 0 }
+        return readyQuestionCount(for: goal)
+    }
+
+    var hasReadyCheckpointSet: Bool {
+        goal != nil && nextQuestions(limit: unlockPolicy.questionsPerSession).count >= unlockPolicy.questionsPerSession
     }
 
     func usableQuestionCount(for profile: Goal) -> Int {
@@ -401,8 +411,35 @@ final class CheckpointStore {
         }.count
     }
 
+    private func readyQuestionCount(for profile: Goal, allowsEarlyCorrectReuse: Bool = false) -> Int {
+        let now = Date()
+        return questions.filter { question in
+            question.goalID == profile.id
+                && question.difficulty >= profile.minimumQuestionDifficulty
+                && isReadyQuestionBankCandidate(
+                    question,
+                    now: now,
+                    allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+                )
+        }.count
+    }
+
+    private func questionBankDeficit(
+        for profile: Goal,
+        targetCount: Int? = nil,
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> Int {
+        max(
+            0,
+            (targetCount ?? questionBankTargetCount) - readyQuestionCount(
+                for: profile,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            )
+        )
+    }
+
     func questionBankReadinessWarning(for profile: Goal) -> String? {
-        let readyCount = usableQuestionCount(for: profile)
+        let readyCount = readyQuestionCount(for: profile)
 
         guard readyCount < unlockPolicy.questionsPerSession else { return nil }
 
@@ -414,17 +451,29 @@ final class CheckpointStore {
     }
 
     var isPreparingActiveGoalQuestions: Bool {
-        goal != nil && (questionBatchState == .generating || isQuestionBankTopOffInProgress)
+        goal != nil
+            && !hasReadyCheckpointSet
+            && (questionBatchState == .generating || isQuestionBankTopOffInProgress)
+    }
+
+    var isQuestionGenerationBlockingPractice: Bool {
+        questionBatchState == .failed && !hasReadyCheckpointSet
     }
 
     var questionGenerationStatusText: String {
         if isQuestionBankTopOffInProgress {
+            if hasReadyCheckpointSet {
+                return "Practice is ready."
+            }
             let elapsedText = questionBankTopOffStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
             return "Preparing more practice in the background.\(elapsedText)"
         }
 
         switch questionBatchState {
         case .generating:
+            if hasReadyCheckpointSet {
+                return "Practice is ready."
+            }
             let readyText = usableQuestionCount > 0
                 ? "Preparing more practice"
                 : "Preparing first practice set"
@@ -449,10 +498,6 @@ final class CheckpointStore {
 
         if let focus = studyFocusRecommendation {
             return focus
-        }
-
-        if usableQuestionCount <= ProductLimits.autoRefreshThreshold {
-            return "Your current practice is getting low. Checkpoint will prepare more when possible."
         }
 
         return "Your practice rhythm is steady. Keep completing sets and missed topics will surface automatically."
@@ -855,6 +900,17 @@ final class CheckpointStore {
         }
     }
 
+    private func scheduleQuestionBankMaintenanceIfNeeded(for targetGoal: Goal) {
+        guard isMember,
+              readyQuestionCount(for: targetGoal) <= ProductLimits.autoRefreshThreshold,
+              questionBankDeficit(for: targetGoal) > 0,
+              !questionBankTopOffGoalIDs.contains(targetGoal.id) else {
+            return
+        }
+
+        topOffQuestionBankInBackground(for: targetGoal)
+    }
+
     private func topOffQuestionBank(
         for targetGoal: Goal,
         starterQuestionIDs: Set<CheckpointQuestion.ID>
@@ -878,11 +934,7 @@ final class CheckpointStore {
 
         let existingQuestions = questions.filter { $0.goalID == targetGoal.id }
         let existingCompetencies = competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id }
-        let usableExistingCount = existingQuestions.filter {
-            $0.difficulty >= targetGoal.minimumQuestionDifficulty
-                && isSelectableQuestion($0)
-        }.count
-        let remainingTargetCount = max(0, questionBankTargetCount - usableExistingCount)
+        let remainingTargetCount = questionBankDeficit(for: targetGoal)
 
         guard remainingTargetCount > 0 else {
             if goal?.id == targetGoal.id {
@@ -904,8 +956,21 @@ final class CheckpointStore {
             preference: aiProviderPreference
         )
 
+        guard let currentTargetGoal = availableGoalProfiles.first(where: { $0.id == targetGoal.id }) ?? (goal?.id == targetGoal.id ? goal : nil),
+              currentTargetGoal.minimumQuestionDifficulty == targetGoal.minimumQuestionDifficulty else {
+            if goal?.id == targetGoal.id {
+                finishQuestionBankTopOff(for: targetGoal.id)
+            }
+            save()
+            publishShieldContext()
+            return
+        }
+
         let existingKeys = Set(existingQuestions.map { questionKey($0) })
-        let newQuestions = batch.questions.filter { !existingKeys.contains(questionKey($0)) }
+        let newQuestions = batch.questions.filter {
+            $0.difficulty >= currentTargetGoal.minimumQuestionDifficulty
+                && !existingKeys.contains(questionKey($0))
+        }
         questions.append(contentsOf: newQuestions)
         let goalQuestions = questions.filter { $0.goalID == targetGoal.id }
         competencies.removeAll { $0.goalID == targetGoal.id }
@@ -936,7 +1001,7 @@ final class CheckpointStore {
         await refreshQuestionBatch(reason: .manual)
     }
 
-    private func refreshQuestionBatch(reason: QuestionRefreshReason) async {
+    private func refreshQuestionBatch(reason: QuestionRefreshReason, targetCount: Int? = nil) async {
         guard let goal else { return }
         guard isMember else {
             checkpointNotice = starterQuestionLimitMessage
@@ -956,7 +1021,8 @@ final class CheckpointStore {
             goal: goal,
             existingQuestions: activeQuestions,
             competencies: activeCompetencies,
-            reportedQuestions: activeQuestionReports
+            reportedQuestions: activeQuestionReports,
+            targetCount: targetCount
         )
         let providerPreference = reason.providerPreference(defaultPreference: aiProviderPreference)
         let startedAt = Date()
@@ -995,9 +1061,8 @@ final class CheckpointStore {
         minimumUsableQuestionCount: Int? = nil,
         allowsEarlyCorrectReuse: Bool = false
     ) async -> Bool {
-        guard goal != nil,
-              questionBatchState != .generating,
-              !isQuestionBankTopOffInProgress else {
+        guard let goal,
+              questionBatchState != .generating else {
             return false
         }
 
@@ -1006,8 +1071,13 @@ final class CheckpointStore {
             minimumQuestionCount: refillMinimum,
             allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
         )
+        guard needsCoreRefill || !isQuestionBankTopOffInProgress else {
+            return false
+        }
+
         let shouldRefreshProactively = isMember
-            && usableQuestionCount <= ProductLimits.autoRefreshThreshold
+            && readyQuestionCount <= ProductLimits.autoRefreshThreshold
+            && questionBankDeficit(for: goal, allowsEarlyCorrectReuse: allowsEarlyCorrectReuse) > 0
             && canRefreshAfterCooldown
 
         guard needsCoreRefill || shouldRefreshProactively else { return false }
@@ -1021,7 +1091,27 @@ final class CheckpointStore {
         }
 
         lastAutomaticQuestionRefreshAt = Date()
-        await refreshQuestionBatch(reason: needsCoreRefill ? .automaticCoreRefill : .automaticProactiveRefill)
+        if needsCoreRefill {
+            let readyCount = readyQuestionCount(
+                for: goal,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            )
+            let urgentTargetCount = max(
+                Self.initialCheckpointReadyTargetCount,
+                refillMinimum - readyCount
+            )
+            await refreshQuestionBatch(
+                reason: .automaticCoreRefill,
+                targetCount: urgentTargetCount
+            )
+            scheduleQuestionBankMaintenanceIfNeeded(for: goal)
+        } else {
+            if QuestionRefreshReason.automaticProactiveRefill.countsAsRefresh(isMember: isMember) {
+                questionRefreshesUsed += 1
+            }
+            save()
+            topOffQuestionBankInBackground(for: goal)
+        }
         return true
     }
 
@@ -1187,6 +1277,7 @@ final class CheckpointStore {
             recordUnlockSession(minutes: unlockMinutes, goalID: goal.id)
         }
 
+        scheduleQuestionBankMaintenanceIfNeeded(for: goal)
         save()
         publishShieldContext()
         return unlockMinutes
@@ -1678,6 +1769,25 @@ final class CheckpointStore {
         return nextReviewAt <= now
     }
 
+    private func isReadyQuestionBankCandidate(
+        _ question: CheckpointQuestion,
+        now: Date,
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> Bool {
+        guard isSelectableQuestion(question) else { return false }
+
+        switch question.status {
+        case .new, .due, .skipped:
+            return true
+        case .incorrect:
+            return (question.nextReviewAt ?? .distantPast) <= now
+        case .correct:
+            return allowsEarlyCorrectReuse || canReuseCorrectQuestion(question, now: now)
+        case .retired:
+            return false
+        }
+    }
+
     private func isSelectableQuestion(_ question: CheckpointQuestion) -> Bool {
         question.status != .retired && question.timesAsked < Self.maximumExactQuestionAskCount
     }
@@ -1940,6 +2050,22 @@ final class CheckpointStore {
 
         self.checkpointRetryCooldownUntil = nil
         save()
+    }
+
+    private func recoverTransientQuestionGenerationState() {
+        if questionBatchState == .generating {
+            questionGenerationStartedAt = nil
+            lastQuestionGenerationDuration = nil
+            questionBatchState = activeQuestions.isEmpty ? .idle : .ready
+            save()
+
+            if activeQuestions.isEmpty, let goal {
+                prepareInitialQuestionsInBackground(for: goal)
+            }
+        } else if questionBatchState == .failed, hasReadyCheckpointSet {
+            questionBatchState = .ready
+            save()
+        }
     }
 
     private func load() {

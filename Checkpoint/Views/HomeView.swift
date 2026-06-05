@@ -119,7 +119,7 @@ struct HomeView: View {
                     }
                     .padding(12)
                     .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-                } else if store.questionBatchState == .failed {
+                } else if store.isQuestionGenerationBlockingPractice {
                     HStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.system(size: 15, weight: .semibold))
