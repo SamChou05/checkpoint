@@ -552,6 +552,53 @@ final class CheckpointStore {
         return true
     }
 
+    @discardableResult
+    func deleteGoalProfile(_ goalID: Goal.ID) -> Bool {
+        guard let deletedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return false }
+
+        let wasActiveGoal = goal?.id == goalID
+        backgroundGenerationGoalIDs.remove(goalID)
+        questionBankTopOffGoalIDs.remove(goalID)
+        removeGoalData(for: goalID, includeLegacyCompetencies: wasActiveGoal)
+        goalProfiles.removeAll { $0.id == goalID }
+
+        if wasActiveGoal {
+            let replacementGoal = goalProfiles
+                .sorted { $0.createdAt > $1.createdAt }
+                .first
+            goal = replacementGoal
+            unlockSession = nil
+            SharedAppGroup.publishUnlockExpiration(nil)
+
+            if let replacementGoal {
+                let hasReplacementQuestions = questions.contains { question in
+                    question.goalID == replacementGoal.id && question.status != .retired
+                }
+                let isPreparingReplacementQuestions = backgroundGenerationGoalIDs.contains(replacementGoal.id)
+                    || questionBankTopOffGoalIDs.contains(replacementGoal.id)
+                questionBatchState = hasReplacementQuestions ? .ready : .generating
+                isQuestionBankTopOffInProgress = questionBankTopOffGoalIDs.contains(replacementGoal.id)
+                questionBankTopOffStartedAt = isQuestionBankTopOffInProgress ? questionBankTopOffStartedAt ?? Date() : nil
+
+                if !hasReplacementQuestions && !isPreparingReplacementQuestions {
+                    prepareInitialQuestionsInBackground(for: replacementGoal)
+                }
+            } else {
+                questionBatchState = .idle
+                isQuestionBankTopOffInProgress = false
+                questionBankTopOffStartedAt = nil
+                isOnboardingPresented = true
+            }
+        }
+
+        checkpointNotice = "\(deletedGoal.title) was deleted."
+        pendingMembershipFeature = nil
+        isCreatingGoalProfile = false
+        save()
+        publishShieldContext()
+        return true
+    }
+
     private func replaceActiveLocalTemplateQuestionBankIfNeeded() {
         guard let goal,
               shouldReplaceLocalTemplateQuestionBank(for: goal) else {
@@ -676,7 +723,7 @@ final class CheckpointStore {
         questionRefreshesUsed = 0
         questionBatchState = .generating
         if shouldReplaceActiveProfile, let previousGoalID {
-            removeGoalData(for: previousGoalID)
+            removeGoalData(for: previousGoalID, includeLegacyCompetencies: true)
             goalProfiles.removeAll { $0.id == previousGoalID }
         }
 
@@ -1677,10 +1724,10 @@ final class CheckpointStore {
         }
     }
 
-    private func removeGoalData(for goalID: Goal.ID) {
+    private func removeGoalData(for goalID: Goal.ID, includeLegacyCompetencies: Bool = false) {
         questions.removeAll { $0.goalID == goalID }
         attempts.removeAll { $0.goalID == goalID }
-        competencies.removeAll { $0.goalID == goalID || $0.goalID == nil }
+        competencies.removeAll { $0.goalID == goalID || (includeLegacyCompetencies && $0.goalID == nil) }
         questionReports.removeAll { $0.goalID == goalID }
         unlockEvents.removeAll { $0.goalID == goalID }
     }

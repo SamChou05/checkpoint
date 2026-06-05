@@ -936,6 +936,104 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testDeletingInactiveGoalRemovesOnlyThatGoalData() throws {
+        let store = CheckpointStore(defaults: defaults)
+        store.updateMembershipTier(.member)
+        let activeGoal = makeGoal()
+        let inactiveGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        store.goal = activeGoal
+        store.goalProfiles = [activeGoal, inactiveGoal]
+        store.questions = [
+            makeQuestion(goal: activeGoal, index: 1, topic: "arrays"),
+            makeQuestion(goal: inactiveGoal, index: 2, topic: "integrals")
+        ]
+        store.attempts = [
+            makeAttempt(goal: activeGoal, result: .correct, createdAt: Date()),
+            makeAttempt(goal: inactiveGoal, result: .incorrect, createdAt: Date())
+        ]
+        store.competencies = [
+            TopicCompetency.initial(topic: "arrays", goalID: activeGoal.id),
+            TopicCompetency.initial(topic: "integrals", goalID: inactiveGoal.id)
+        ]
+        store.unlockEvents = [
+            UnlockEvent(goalID: activeGoal.id, minutes: 30),
+            UnlockEvent(goalID: inactiveGoal.id, minutes: 15)
+        ]
+
+        XCTAssertTrue(store.deleteGoalProfile(inactiveGoal.id))
+
+        XCTAssertEqual(store.goal?.id, activeGoal.id)
+        XCTAssertEqual(store.availableGoalProfiles.map(\.id), [activeGoal.id])
+        XCTAssertTrue(store.questions.allSatisfy { $0.goalID == activeGoal.id })
+        XCTAssertTrue(store.attempts.allSatisfy { $0.goalID == activeGoal.id })
+        XCTAssertTrue(store.competencies.allSatisfy { $0.goalID == activeGoal.id })
+        XCTAssertTrue(store.unlockEvents.allSatisfy { $0.goalID == activeGoal.id })
+        XCTAssertEqual(SharedAppGroup.currentShieldContext().goalTitle, activeGoal.title)
+    }
+
+    @MainActor
+    func testDeletingActiveGoalSwitchesToRemainingGoalAndClearsUnlock() throws {
+        let store = CheckpointStore(defaults: defaults)
+        store.updateMembershipTier(.member)
+        let activeGoal = makeGoal()
+        let replacementGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        store.goal = activeGoal
+        store.goalProfiles = [activeGoal, replacementGoal]
+        store.questions = [
+            makeQuestion(goal: activeGoal, index: 1, topic: "arrays"),
+            makeQuestion(goal: replacementGoal, index: 2, topic: "integrals")
+        ]
+        store.startUnlockSession(minutes: 5)
+        XCTAssertNotNil(store.unlockSession)
+
+        XCTAssertTrue(store.deleteGoalProfile(activeGoal.id))
+
+        XCTAssertEqual(store.goal?.id, replacementGoal.id)
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertNil(store.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertTrue(store.questions.allSatisfy { $0.goalID == replacementGoal.id })
+        XCTAssertEqual(SharedAppGroup.currentShieldContext().goalTitle, replacementGoal.title)
+    }
+
+    @MainActor
+    func testDeletingOnlyGoalReturnsToGoalSetup() throws {
+        let store = CheckpointStore(defaults: defaults)
+        let goal = makeGoal()
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = [makeQuestion(goal: goal, index: 1)]
+        store.competencies = [TopicCompetency.initial(topic: "arrays", goalID: goal.id)]
+        store.startUnlockSession(minutes: 5)
+
+        XCTAssertTrue(store.deleteGoalProfile(goal.id))
+
+        XCTAssertNil(store.goal)
+        XCTAssertTrue(store.availableGoalProfiles.isEmpty)
+        XCTAssertTrue(store.questions.isEmpty)
+        XCTAssertTrue(store.competencies.isEmpty)
+        XCTAssertNil(store.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertEqual(store.questionBatchState, .idle)
+        XCTAssertTrue(store.isOnboardingPresented)
+        XCTAssertEqual(SharedAppGroup.currentShieldContext().goalTitle, "Checkpoint")
+    }
+
+    @MainActor
     func testCheckpointSessionUsesFiveDistinctQuestionsByDefault() throws {
         let store = makeSeededStore(questionCount: 7)
 

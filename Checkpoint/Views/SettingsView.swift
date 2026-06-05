@@ -19,6 +19,7 @@ struct SettingsView: View {
     @State private var stopBlockingMessage: String?
     @State private var isPreparingStopChallenge = false
     @State private var isStopProtectionConfirmationPresented = false
+    @State private var pendingGoalDeletion: Goal?
 
     var body: some View {
         NavigationStack {
@@ -103,6 +104,10 @@ struct SettingsView: View {
                             }
 
                             newGoalButton
+                        }
+
+                        if let goal = store.goal, store.availableGoalProfiles.count <= 1 {
+                            deleteGoalButton(goal)
                         }
                     }
 
@@ -283,6 +288,17 @@ struct SettingsView: View {
             } message: {
                 Text("You will need to answer 18 of 20 questions correctly before protection turns off.")
             }
+            .alert("Delete goal?", isPresented: goalDeletionConfirmationBinding) {
+                Button("Delete goal", role: .destructive) {
+                    confirmGoalDeletion()
+                }
+
+                Button("Cancel", role: .cancel) {
+                    pendingGoalDeletion = nil
+                }
+            } message: {
+                Text(goalDeletionConfirmationMessage)
+            }
         }
     }
 
@@ -303,40 +319,71 @@ struct SettingsView: View {
     private func goalProfileRow(_ profile: Goal) -> some View {
         let isActive = profile.id == store.goal?.id
 
-        return Button {
-            store.switchActiveGoal(to: profile.id)
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(isActive ? CheckpointTheme.teal : CheckpointTheme.muted)
-                    .frame(width: 32, height: 32)
+        return HStack(spacing: 10) {
+            Button {
+                store.switchActiveGoal(to: profile.id)
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(isActive ? CheckpointTheme.teal : CheckpointTheme.muted)
+                        .frame(width: 32, height: 32)
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(profile.title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.text)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(profile.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
 
-                    Text(goalProfileDetailText(for: profile))
-                        .font(.footnote)
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
+                        Text(goalProfileDetailText(for: profile))
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer(minLength: 0)
+
+                    if isActive {
+                        StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                    }
                 }
-
-                Spacer(minLength: 0)
-
-                if isActive {
-                    StatusBadge(text: "Current", tint: CheckpointTheme.teal)
-                }
+                .contentShape(Rectangle())
             }
-            .padding(.vertical, 10)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            .disabled(isActive)
+
+            Button {
+                pendingGoalDeletion = profile
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(CheckpointTheme.coral)
+                    .frame(width: 36, height: 36)
+                    .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Delete \(profile.title)")
+        }
+        .padding(.vertical, 10)
+    }
+
+    private func deleteGoalButton(_ goal: Goal) -> some View {
+        Button {
+            pendingGoalDeletion = goal
+        } label: {
+            Label("Delete goal", systemImage: "trash")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.coral)
+                .multilineTextAlignment(.center)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 13)
+                .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
-        .disabled(isActive)
     }
 
     private func goalProfileDetailText(for profile: Goal) -> String {
@@ -469,6 +516,30 @@ struct SettingsView: View {
             }
             isPreparingStopChallenge = false
         }
+    }
+
+    private var goalDeletionConfirmationBinding: Binding<Bool> {
+        Binding {
+            pendingGoalDeletion != nil
+        } set: { isPresented in
+            if !isPresented {
+                pendingGoalDeletion = nil
+            }
+        }
+    }
+
+    private var goalDeletionConfirmationMessage: String {
+        guard let pendingGoalDeletion else {
+            return "This removes the goal and its saved practice data."
+        }
+
+        return "This removes \(pendingGoalDeletion.title), including its questions, Skill Map, practice history, reports, and unlock history."
+    }
+
+    private func confirmGoalDeletion() {
+        guard let pendingGoalDeletion else { return }
+        _ = store.deleteGoalProfile(pendingGoalDeletion.id)
+        self.pendingGoalDeletion = nil
     }
 }
 
