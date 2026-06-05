@@ -183,6 +183,34 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         prompt = client.calls[0]["messages"][0]["content"][0]["text"]
         self.assertIn("Skill map mode: infer a new 4-to-6 topic skill map", prompt)
 
+    def test_existing_question_coverage_is_prompted_for_novelty(self):
+        payload = _request_payload(target_count=2, minimum_difficulty=3)
+        payload["existingQuestionCoverage"] = [
+            {
+                "topic": "Virtual Memory",
+                "prompt": "Operating Systems: What does the MMU do during address translation?",
+                "expectedAnswer": "It translates virtual memory addresses to physical memory addresses.",
+                "difficulty": 3,
+            }
+        ]
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question("Operating Systems: Why can a valid virtual address still cause a page fault?")
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(_event(payload), bedrock_client=client)
+
+        self.assertEqual(response["statusCode"], 200)
+        prompt = client.calls[0]["messages"][0]["content"][0]["text"]
+        self.assertIn("Existing coverage by topic: Virtual Memory: 1", prompt)
+        self.assertIn("Avoid repeating these tested ideas: Virtual Memory:", prompt)
+        self.assertIn("Expand the question bank with new angles", prompt)
+
     def test_rejects_questions_below_requested_difficulty(self):
         client = FakeBedrockClient(
             json.dumps(
@@ -469,6 +497,53 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         questions = json.loads(response["body"])["questions"]
         self.assertEqual(len(questions), 1)
         self.assertNotIn("MMU", questions[0]["prompt"])
+
+    def test_rejects_same_topic_answer_as_existing_coverage(self):
+        repeated = {
+            "prompt": "Operating Systems: Which MMU behavior is central to virtual memory?",
+            "expectedAnswer": "It maps virtual memory addresses to physical memory addresses.",
+            "choices": [
+                "It maps virtual memory addresses to physical memory addresses.",
+                "It chooses the next process to run on the CPU.",
+                "It stores every interrupt handler in user space.",
+                "It compresses disk blocks before loading pages.",
+            ],
+            "explanation": "The MMU maps virtual addresses to physical addresses.",
+            "topic": "Virtual Memory",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+        }
+        novel = {
+            "prompt": "Operating Systems: Why can a valid virtual address still cause a page fault?",
+            "expectedAnswer": "The page is valid but not currently resident in physical memory.",
+            "choices": [
+                "The page is valid but not currently resident in physical memory.",
+                "The process has no virtual address space.",
+                "The CPU cannot execute after any interrupt.",
+                "The stack pointer must equal the page-table base.",
+            ],
+            "explanation": "A valid virtual page can still require loading or remapping before access completes.",
+            "topic": "Virtual Memory",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+        }
+        payload = _request_payload(target_count=2, minimum_difficulty=3)
+        payload["existingQuestionCoverage"] = [
+            {
+                "topic": "Virtual Memory",
+                "prompt": "Operating Systems: What does the MMU do during address translation?",
+                "expectedAnswer": "It translates virtual memory addresses to physical memory addresses.",
+                "difficulty": 3,
+            }
+        ]
+        client = FakeBedrockClient(json.dumps({"questions": [repeated, novel]}))
+
+        response = lambda_function.handle_http_request(_event(payload), bedrock_client=client)
+
+        self.assertEqual(response["statusCode"], 200)
+        questions = json.loads(response["body"])["questions"]
+        self.assertEqual(len(questions), 1)
+        self.assertIn("page fault", questions[0]["prompt"])
 
     def test_rejects_overlong_provider_prompts_before_clipping(self):
         long_prompt = "LSAT Logical Reasoning: " + ("This stimulus is too long. " * 20)
@@ -924,6 +999,7 @@ def _request_payload(target_count=5, minimum_difficulty=3):
         },
         "competencies": [],
         "existingPrompts": [],
+        "existingQuestionCoverage": [],
         "reportedPrompts": [],
         "targetCount": target_count,
         "minimumDifficulty": minimum_difficulty,

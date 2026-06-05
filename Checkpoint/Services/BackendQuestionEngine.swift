@@ -63,6 +63,7 @@ struct BackendQuestionRequest: Encodable {
     private var goal: GoalPayload
     private var competencies: [CompetencyPayload]
     private var existingPrompts: [String]
+    private var existingQuestionCoverage: [QuestionCoveragePayload]
     private var reportedPrompts: [String]
     private var targetCount: Int
     private var minimumDifficulty: Int
@@ -72,6 +73,7 @@ struct BackendQuestionRequest: Encodable {
         goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
         competencies = request.competencies.map(CompetencyPayload.init)
         existingPrompts = request.existingQuestions.map(\.prompt)
+        existingQuestionCoverage = request.existingQuestions.prefix(30).map(QuestionCoveragePayload.init)
         reportedPrompts = request.reportedQuestions.map(\.prompt)
         targetCount = request.targetCount
         minimumDifficulty = request.minimumDifficulty
@@ -100,6 +102,20 @@ private struct GoalPayload: Encodable {
         questionDirective = questionContext.questionDirective
         needsSkillMap = questionContext.needsGeneratedSkillMap
         preferredQuestionStyle = QuestionFormat.multipleChoice.rawValue
+    }
+}
+
+private struct QuestionCoveragePayload: Encodable {
+    var topic: String
+    var prompt: String
+    var expectedAnswer: String
+    var difficulty: Int
+
+    init(question: CheckpointQuestion) {
+        topic = question.topic
+        prompt = question.prompt
+        expectedAnswer = question.expectedAnswer
+        difficulty = question.difficulty
     }
 }
 
