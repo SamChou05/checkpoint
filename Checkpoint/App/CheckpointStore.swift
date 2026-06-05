@@ -80,7 +80,7 @@ final class CheckpointStore {
     @ObservationIgnored private static let levelUpRecentAttemptWindow = 10
     @ObservationIgnored private static let levelUpMinimumAttemptCount = 5
     @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
-    @ObservationIgnored private static let correctQuestionReuseMinimumInterveningAttempts = 5
+    @ObservationIgnored private static let maximumExactQuestionAskCount = 2
 
     // MARK: - Lifecycle
 
@@ -374,13 +374,13 @@ final class CheckpointStore {
     }
 
     var usableQuestionCount: Int {
-        activeQuestions.filter(meetsDifficultyFloor).count
+        activeQuestions.filter(isSelectableQuestion).filter(meetsDifficultyFloor).count
     }
 
     func usableQuestionCount(for profile: Goal) -> Int {
         questions.filter { question in
             question.goalID == profile.id
-                && question.status != .retired
+                && isSelectableQuestion(question)
                 && question.difficulty >= profile.minimumQuestionDifficulty
         }.count
     }
@@ -817,7 +817,7 @@ final class CheckpointStore {
         let existingCompetencies = competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id }
         let usableExistingCount = existingQuestions.filter {
             $0.difficulty >= targetGoal.minimumQuestionDifficulty
-                && $0.status != .retired
+                && isSelectableQuestion($0)
         }.count
         let remainingTargetCount = max(0, questionBankTargetCount - usableExistingCount)
 
@@ -1024,21 +1024,17 @@ final class CheckpointStore {
     ) -> CheckpointQuestion? {
         let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
-        return prioritizedQuestion(
-            from: preferredQuestions,
-            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
-        ) ?? prioritizedQuestion(
-            from: availableQuestions,
-            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
-        )
+        return prioritizedNonCorrectQuestion(from: preferredQuestions)
+            ?? prioritizedNonCorrectQuestion(from: availableQuestions)
+            ?? prioritizedCorrectQuestion(from: preferredQuestions, allowsEarlyCorrectReuse: allowsEarlyCorrectReuse)
+            ?? prioritizedCorrectQuestion(from: availableQuestions, allowsEarlyCorrectReuse: allowsEarlyCorrectReuse)
     }
 
-    private func prioritizedQuestion(
-        from availableQuestions: [CheckpointQuestion],
-        allowsEarlyCorrectReuse: Bool = false
-    ) -> CheckpointQuestion? {
+    private func prioritizedNonCorrectQuestion(from availableQuestions: [CheckpointQuestion]) -> CheckpointQuestion? {
         let now = Date()
-        let selectableQuestions = availableQuestions.filter { $0.status != .retired }
+        let selectableQuestions = availableQuestions
+            .filter(isSelectableQuestion)
+            .filter { $0.status != .correct }
 
         if let missed = selectableQuestions
             .filter({ $0.status == .incorrect && ($0.nextReviewAt ?? .distantPast) <= now })
@@ -1070,8 +1066,20 @@ final class CheckpointStore {
             return reviewQuestion
         }
 
+        return nil
+    }
+
+    private func prioritizedCorrectQuestion(
+        from availableQuestions: [CheckpointQuestion],
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> CheckpointQuestion? {
+        let now = Date()
+        let selectableQuestions = availableQuestions
+            .filter(isSelectableQuestion)
+            .filter { $0.status == .correct }
+
         let reusableCorrectQuestions = selectableQuestions
-            .filter { $0.status == .correct && canReuseCorrectQuestion($0, now: now) }
+            .filter { canReuseCorrectQuestion($0, now: now) }
             .sorted(by: sortByCorrectReusePriority)
             .first
 
@@ -1082,7 +1090,6 @@ final class CheckpointStore {
         guard allowsEarlyCorrectReuse else { return nil }
 
         return selectableQuestions
-            .filter { $0.status == .correct }
             .sorted(by: sortByCorrectReusePriority)
             .first
     }
@@ -1476,6 +1483,11 @@ final class CheckpointStore {
             questions[index].status = .incorrect
             questions[index].nextReviewAt = Calendar.current.date(byAdding: .hour, value: 2, to: Date())
         }
+
+        if questions[index].timesAsked >= Self.maximumExactQuestionAskCount {
+            questions[index].status = .retired
+            questions[index].nextReviewAt = nil
+        }
     }
 
     private func unlockMinutes(for result: AnswerResult) -> Int {
@@ -1566,20 +1578,12 @@ final class CheckpointStore {
 
     private func canReuseCorrectQuestion(_ question: CheckpointQuestion, now: Date) -> Bool {
         guard question.status == .correct else { return true }
+        guard let nextReviewAt = question.nextReviewAt else { return true }
+        return nextReviewAt <= now
+    }
 
-        if let nextReviewAt = question.nextReviewAt, nextReviewAt <= now {
-            return true
-        }
-
-        guard let lastAskedAt = question.lastAskedAt else { return true }
-
-        let interveningAttempts = attempts.filter { attempt in
-            attempt.goalID == question.goalID
-                && attempt.questionID != question.id
-                && attempt.createdAt > lastAskedAt
-        }.count
-
-        return interveningAttempts >= Self.correctQuestionReuseMinimumInterveningAttempts
+    private func isSelectableQuestion(_ question: CheckpointQuestion) -> Bool {
+        question.status != .retired && question.timesAsked < Self.maximumExactQuestionAskCount
     }
 
     private static func correctAnswerReviewDelayDays(for correctStreak: Int) -> Int {
@@ -1614,7 +1618,7 @@ final class CheckpointStore {
     }
 
     private func meetsDifficultyFloor(_ question: CheckpointQuestion) -> Bool {
-        question.status != .retired && question.difficulty >= activeQuestionDifficulty
+        isSelectableQuestion(question) && question.difficulty >= activeQuestionDifficulty
     }
 
     private func competency(for topic: String) -> TopicCompetency {

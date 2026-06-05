@@ -1074,7 +1074,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             goal: goal,
             index: 2,
             topic: "arrays",
-            status: .correct,
+            status: .due,
             nextReviewAt: Date().addingTimeInterval(-30)
         )
         let new = makeQuestion(goal: goal, index: 3, topic: "hash maps")
@@ -1141,36 +1141,105 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testCheckpointSessionReusesCorrectQuestionAfterEnoughOtherAnswers() throws {
+    func testCheckpointSessionDoesNotReuseCorrectQuestionWhileFreshQuestionsRemain() throws {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
         store.updateQuestionsPerSession(5)
         let lastAskedAt = Date().addingTimeInterval(-60 * 60)
 
-        let recentCorrect = makeQuestion(
+        let dueCorrect = makeQuestion(
             goal: goal,
             index: 1,
             status: .correct,
+            timesAsked: 1,
             timesCorrect: 1,
             lastAskedAt: lastAskedAt,
-            nextReviewAt: Date().addingTimeInterval(60 * 60 * 24 * 3)
+            nextReviewAt: Date().addingTimeInterval(-60)
         )
-        let freshQuestions = (2...5).map { makeQuestion(goal: goal, index: $0) }
-        store.questions = [recentCorrect] + freshQuestions
-        store.attempts = (1...5).map { index in
-            makeAttempt(
-                goal: goal,
-                questionID: UUID(),
-                result: .correct,
-                createdAt: lastAskedAt.addingTimeInterval(Double(index * 60))
-            )
-        }
+        let freshQuestions = (2...6).map { makeQuestion(goal: goal, index: $0) }
+        store.questions = [dueCorrect] + freshQuestions
 
         let session = try XCTUnwrap(store.nextCheckpointSession())
 
         XCTAssertEqual(session.questions.count, 5)
-        XCTAssertEqual(session.questions.last?.id, recentCorrect.id)
+        XCTAssertEqual(Set(session.questions.map(\.id)), Set(freshQuestions.map(\.id)))
+        XCTAssertFalse(session.questions.contains { $0.id == dueCorrect.id })
+    }
+
+    @MainActor
+    func testCheckpointSessionReusesDueCorrectQuestionOnlyAfterFreshQuestionsAreUsed() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+
+        let dueCorrect = makeQuestion(
+            goal: goal,
+            index: 1,
+            status: .correct,
+            timesAsked: 1,
+            timesCorrect: 1,
+            lastAskedAt: Date().addingTimeInterval(-60 * 60),
+            nextReviewAt: Date().addingTimeInterval(-60)
+        )
+        let freshQuestions = (2...5).map { makeQuestion(goal: goal, index: $0) }
+        store.questions = [dueCorrect] + freshQuestions
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.questions.last?.id, dueCorrect.id)
+    }
+
+    @MainActor
+    func testCheckpointSessionUsesFreshLowerDifficultyBeforeRepeatingCorrectQuestion() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+        store.updateMinimumQuestionDifficulty(5)
+
+        let dueCorrect = makeQuestion(
+            goal: goal,
+            index: 1,
+            status: .correct,
+            timesAsked: 1,
+            timesCorrect: 1,
+            nextReviewAt: Date().addingTimeInterval(-60),
+            difficulty: 5
+        )
+        let freshQuestions = (2...6).map { makeQuestion(goal: goal, index: $0, difficulty: 3) }
+        store.questions = [dueCorrect] + freshQuestions
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(Set(session.questions.map(\.id)), Set(freshQuestions.map(\.id)))
+        XCTAssertFalse(session.questions.contains { $0.id == dueCorrect.id })
+    }
+
+    @MainActor
+    func testCheckpointSessionSkipsExactQuestionsAskedTwiceEvenIfStatusIsNotRetired() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+
+        let exhaustedQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            status: .new,
+            timesAsked: 2
+        )
+        let freshQuestions = (2...5).map { makeQuestion(goal: goal, index: $0) }
+        store.questions = [exhaustedQuestion] + freshQuestions
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(store.usableQuestionCount, 4)
+        XCTAssertEqual(session.questions.count, 4)
+        XCTAssertFalse(session.questions.contains { $0.id == exhaustedQuestion.id })
     }
 
     @MainActor
@@ -1277,11 +1346,11 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testIncorrectAnswerResetsQuestionRetirementStreak() throws {
+    func testIncorrectAnswerResetsQuestionCorrectStreak() throws {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
-        var question = makeQuestion(goal: goal, index: 1, timesCorrect: 2)
+        let question = makeQuestion(goal: goal, index: 1, timesCorrect: 2)
         store.questions = [question]
         store.competencies = [.initial(topic: question.topic, goalID: goal.id)]
 
@@ -1292,33 +1361,68 @@ final class CheckpointWorkflowTests: XCTestCase {
             grantsUnlock: false
         )
 
-        var updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
+        let updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
         XCTAssertEqual(updatedQuestion.timesCorrect, 0)
         XCTAssertEqual(updatedQuestion.status, .incorrect)
+    }
 
-        for expectedCorrectStreak in 1...2 {
-            question = updatedQuestion
-            store.submitAnswer(
-                question: question,
-                answer: question.expectedAnswer,
-                result: .correct,
-                grantsUnlock: false
-            )
-            updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
-            XCTAssertEqual(updatedQuestion.timesCorrect, expectedCorrectStreak)
-            XCTAssertEqual(updatedQuestion.status, .correct)
-        }
+    @MainActor
+    func testSecondAskRetiresExactQuestionAfterCorrectAnswer() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            status: .correct,
+            timesAsked: 1,
+            timesCorrect: 1,
+            nextReviewAt: Date().addingTimeInterval(-60)
+        )
+        store.questions = [question]
+        store.competencies = [.initial(topic: question.topic, goalID: goal.id)]
 
         store.submitAnswer(
-            question: updatedQuestion,
-            answer: updatedQuestion.expectedAnswer,
+            question: question,
+            answer: question.expectedAnswer,
             result: .correct,
             grantsUnlock: false
         )
 
-        updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
-        XCTAssertEqual(updatedQuestion.timesCorrect, 3)
+        let updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
+        XCTAssertEqual(updatedQuestion.timesAsked, 2)
+        XCTAssertEqual(updatedQuestion.timesCorrect, 2)
         XCTAssertEqual(updatedQuestion.status, .retired)
+        XCTAssertNil(updatedQuestion.nextReviewAt)
+    }
+
+    @MainActor
+    func testSecondAskRetiresExactQuestionAfterIncorrectAnswer() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            status: .incorrect,
+            timesAsked: 1,
+            nextReviewAt: Date().addingTimeInterval(-60)
+        )
+        store.questions = [question]
+        store.competencies = [.initial(topic: question.topic, goalID: goal.id)]
+
+        store.submitAnswer(
+            question: question,
+            answer: "Wrong answer",
+            result: .incorrect,
+            grantsUnlock: false
+        )
+
+        let updatedQuestion = try XCTUnwrap(store.questions.first { $0.id == question.id })
+        XCTAssertEqual(updatedQuestion.timesAsked, 2)
+        XCTAssertEqual(updatedQuestion.timesCorrect, 0)
+        XCTAssertEqual(updatedQuestion.status, .retired)
+        XCTAssertNil(updatedQuestion.nextReviewAt)
     }
 
     @MainActor
@@ -3060,6 +3164,7 @@ private func makeQuestion(
     choices: [String]? = nil,
     explanation: String? = nil,
     status: QuestionStatus = .new,
+    timesAsked: Int = 0,
     timesCorrect: Int = 0,
     lastAskedAt: Date? = nil,
     nextReviewAt: Date? = nil,
@@ -3082,6 +3187,7 @@ private func makeQuestion(
         difficulty: difficulty,
         format: .multipleChoice,
         status: status,
+        timesAsked: timesAsked,
         timesCorrect: timesCorrect,
         lastAskedAt: lastAskedAt,
         nextReviewAt: nextReviewAt,
