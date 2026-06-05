@@ -6,6 +6,13 @@ import ManagedSettingsUI
 import UIKit
 
 final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
+    private enum Theme {
+        static let ink = UIColor(red: 0.06, green: 0.14, blue: 0.12, alpha: 1.0)
+        static let paper = UIColor(red: 0.95, green: 0.96, blue: 0.93, alpha: 1.0)
+        static let muted = UIColor(red: 0.35, green: 0.41, blue: 0.38, alpha: 1.0)
+        static let teal = UIColor(red: 0.11, green: 0.31, blue: 0.28, alpha: 1.0)
+    }
+
     override func configuration(shielding application: Application) -> ShieldConfiguration {
         configuration()
     }
@@ -28,27 +35,32 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
         let context = SharedAppGroup.currentShieldContext()
 
         return ShieldConfiguration(
-            backgroundBlurStyle: .systemUltraThinMaterialDark,
-            backgroundColor: UIColor(red: 0.05, green: 0.06, blue: 0.08, alpha: 0.96),
-            icon: UIImage(systemName: "shield.lefthalf.filled"),
+            backgroundBlurStyle: .systemUltraThinMaterialLight,
+            backgroundColor: Theme.paper,
+            icon: mascotIcon,
             title: ShieldConfiguration.Label(
                 text: "Clear a checkpoint",
-                color: UIColor(red: 0.95, green: 0.96, blue: 0.94, alpha: 1.0)
+                color: Theme.ink
             ),
             subtitle: ShieldConfiguration.Label(
                 text: "Goal: \(context.goalTitle)",
-                color: UIColor(red: 0.72, green: 0.76, blue: 0.78, alpha: 1.0)
+                color: Theme.muted
             ),
             primaryButtonLabel: ShieldConfiguration.Label(
                 text: "Open Checkpoint",
-                color: .black
+                color: Theme.paper
             ),
-            primaryButtonBackgroundColor: UIColor(red: 0.20, green: 0.78, blue: 0.68, alpha: 1.0),
+            primaryButtonBackgroundColor: Theme.teal,
             secondaryButtonLabel: ShieldConfiguration.Label(
                 text: "Stay locked",
-                color: UIColor(red: 0.95, green: 0.96, blue: 0.94, alpha: 1.0)
+                color: Theme.ink
             )
         )
+    }
+
+    private var mascotIcon: UIImage? {
+        UIImage(named: "ShieldMascot", in: Bundle(for: Self.self), compatibleWith: nil) ??
+            UIImage(systemName: "shield.lefthalf.filled")
     }
 }
 #endif
