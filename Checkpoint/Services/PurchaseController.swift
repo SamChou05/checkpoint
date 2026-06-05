@@ -14,7 +14,11 @@ final class PurchaseController {
     @ObservationIgnored var onMembershipEntitlementChange: ((Bool) -> Void)?
 
     var isMembershipUnlocked: Bool {
-        purchasedProductIDs.contains { MembershipProductID.all.contains($0) }
+        if Self.hasDebugTesterEntitlement {
+            return true
+        }
+
+        return purchasedProductIDs.contains { MembershipProductID.all.contains($0) }
     }
 
     func startListeningForTransactions() {
@@ -44,6 +48,12 @@ final class PurchaseController {
 
     @discardableResult
     func refreshEntitlements() async -> Bool {
+        if Self.hasDebugTesterEntitlement {
+            purchasedProductIDs = [MembershipProductID.monthly]
+            publishMembershipEntitlement()
+            return true
+        }
+
         var activeProductIDs: Set<String> = []
 
         for await result in Transaction.currentEntitlements {
@@ -136,6 +146,14 @@ final class PurchaseController {
         "App Store plans are not available yet. Check StoreKit or App Store Connect setup, then try again."
         #else
         "App Store plans are not available yet. Try again soon."
+        #endif
+    }
+
+    private static var hasDebugTesterEntitlement: Bool {
+        #if DEBUG
+        true
+        #else
+        false
         #endif
     }
 }
