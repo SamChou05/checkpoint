@@ -14,8 +14,8 @@ This keeps AWS credentials out of the iOS app.
 
 | Name | Default | Purpose |
 | --- | --- | --- |
-| `BEDROCK_MODEL_ID` | `google.gemma-3-4b-it` | Bedrock model ID to call through the Converse API. |
-| `BEDROCK_FALLBACK_MODEL_ID` | `amazon.nova-micro-v1:0` | Secondary model used only if the primary model returns malformed JSON. |
+| `BEDROCK_MODEL_ID` | `amazon.nova-lite-v1:0` | Bedrock model ID to call through the Converse API. |
+| `BEDROCK_FALLBACK_MODEL_ID` | `amazon.nova-micro-v1:0` | Secondary model used if the primary model invocation or JSON parsing fails. |
 | `MAX_QUESTIONS_PER_BATCH` | `20` | Caps per-call output cost even if the app requests a larger bank. |
 | `BEDROCK_MAX_TOKENS` | `6000` | Maximum Bedrock response tokens. |
 | `BEDROCK_TEMPERATURE` | `0.35` | Lower temperature keeps answers more stable. |
@@ -37,8 +37,8 @@ sam deploy --guided
 Suggested guided values:
 
 - Region: same region where the selected Bedrock model is enabled.
-- `BedrockModelId`: start with `google.gemma-3-4b-it` for the cheapest output-heavy text generation path.
-- `BedrockFallbackModelId`: keep `amazon.nova-micro-v1:0` enabled so malformed primary output can recover without failing the app.
+- `BedrockModelId`: start with `amazon.nova-lite-v1:0` for stronger instruction following and answer consistency.
+- `BedrockFallbackModelId`: keep `amazon.nova-micro-v1:0` enabled so primary invocation or malformed output can recover without failing the app.
 - `MaxQuestionsPerBatch`: `20` for early cost control.
 - `MaxRequestsPerInstallPerDay`: `40` is generous because the app generates cached batches, not one request per unlock.
 - `MaxRequestsPerIPPerDay`: `400` covers shared networks while limiting obvious scraping.

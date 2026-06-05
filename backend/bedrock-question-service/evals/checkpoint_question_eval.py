@@ -1,0 +1,995 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+
+SERVICE_DIR = Path(__file__).resolve().parents[1]
+if str(SERVICE_DIR) not in sys.path:
+    sys.path.insert(0, str(SERVICE_DIR))
+
+import lambda_function  # noqa: E402
+
+try:  # SymPy is an eval-only dependency used for objective calculus checks.
+    import sympy as sp  # type: ignore
+    from sympy.parsing.sympy_parser import (  # type: ignore
+        convert_xor,
+        implicit_multiplication_application,
+        parse_expr,
+        standard_transformations,
+    )
+except Exception:  # pragma: no cover - dependency availability is environment-specific.
+    sp = None
+    parse_expr = None
+    standard_transformations = ()
+    implicit_multiplication_application = None
+    convert_xor = None
+
+
+DEFAULT_FIXTURE_PATH = Path(__file__).resolve().parent / "fixtures" / "question_generation_cases.jsonl"
+DEFAULT_FORBIDDEN_TERMS = [
+    "blocked app",
+    "screen time",
+    "open another app",
+    "study schedule",
+    "study plan",
+    "motivation",
+]
+DISALLOWED_CHOICE_TEXT = {
+    "all of the above",
+    "none of the above",
+    "both a and b",
+    "both b and c",
+    "all choices are correct",
+}
+SCENARIO_SIGNALS = [
+    "if ",
+    "when ",
+    "suppose ",
+    "given ",
+    "because ",
+    "therefore",
+    "however",
+    "a student",
+    "an engineer",
+    "a runner",
+    "a function",
+    "a passage",
+    "an argument",
+    "scenario",
+    "constraint",
+]
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Evaluate Checkpoint AI question-generation outputs.")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    score_parser = subparsers.add_parser("score", help="Score captured model responses against fixtures.")
+    score_parser.add_argument("--fixtures", default=str(DEFAULT_FIXTURE_PATH), help="JSONL fixture file.")
+    score_parser.add_argument("--responses", required=True, help="JSONL response file to score.")
+    score_parser.add_argument("--output", help="Optional JSON report path.")
+    score_parser.add_argument("--markdown-output", help="Optional Markdown summary path.")
+    score_parser.add_argument("--no-fail", action="store_true", help="Always exit 0 after writing the report.")
+
+    capture_parser = subparsers.add_parser(
+        "capture-bedrock",
+        help="Invoke the configured Bedrock backend prompt for each fixture and write responses JSONL.",
+    )
+    capture_parser.add_argument("--fixtures", default=str(DEFAULT_FIXTURE_PATH), help="JSONL fixture file.")
+    capture_parser.add_argument("--responses", required=True, help="JSONL response output path.")
+    capture_parser.add_argument("--runs-per-case", type=int, default=1, help="Number of generations per fixture.")
+    capture_parser.add_argument(
+        "--prompt-variant",
+        default=None,
+        help="Optional CHECKPOINT_PROMPT_VARIANT value for prompt A/B experiments.",
+    )
+    capture_parser.add_argument("--sleep-seconds", type=float, default=0.0, help="Delay between provider calls.")
+    capture_parser.add_argument("--stop-on-error", action="store_true", help="Stop capture after the first provider error.")
+    capture_parser.add_argument("--no-fail", action="store_true", help="Exit 0 even when provider errors are captured.")
+
+    args = parser.parse_args()
+    if args.command == "score":
+        report = score_response_file(Path(args.fixtures), Path(args.responses))
+        write_report(report, args.output, args.markdown_output)
+        print(summary_text(report))
+        return 0 if args.no_fail or report["summary"]["failed_cases"] == 0 else 1
+
+    if args.command == "capture-bedrock":
+        error_count = capture_bedrock_responses(
+            fixtures_path=Path(args.fixtures),
+            responses_path=Path(args.responses),
+            runs_per_case=args.runs_per_case,
+            prompt_variant=args.prompt_variant,
+            sleep_seconds=args.sleep_seconds,
+            stop_on_error=args.stop_on_error,
+        )
+        return 0 if args.no_fail or error_count == 0 else 1
+
+    return 2
+
+
+def load_jsonl(path: Path) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    with path.open(encoding="utf-8") as file:
+        for line_number, line in enumerate(file, start=1):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            try:
+                record = json.loads(stripped)
+            except json.JSONDecodeError as error:
+                raise ValueError(f"{path}:{line_number} is not valid JSONL") from error
+            if not isinstance(record, dict):
+                raise ValueError(f"{path}:{line_number} must contain a JSON object")
+            records.append(record)
+    return records
+
+
+def score_response_file(fixtures_path: Path, responses_path: Path) -> dict[str, Any]:
+    fixtures = {fixture["case_id"]: fixture for fixture in load_jsonl(fixtures_path)}
+    responses = load_jsonl(responses_path)
+    grouped_responses: dict[str, list[dict[str, Any]]] = {}
+
+    for response in responses:
+        case_id = response.get("case_id")
+        if not isinstance(case_id, str):
+            raise ValueError("Each response row must include a string case_id")
+        grouped_responses.setdefault(case_id, []).append(response)
+
+    case_results = []
+    for case_id, fixture in fixtures.items():
+        rows = grouped_responses.get(case_id, [])
+        if not rows:
+            case_results.append(missing_case_result(fixture))
+            continue
+
+        for response in rows:
+            case_results.append(score_case_response(fixture, response))
+
+    passed_cases = sum(1 for result in case_results if result["passed"])
+    failed_cases = len(case_results) - passed_cases
+    total_questions = sum(result["question_count"] for result in case_results)
+    total_usable = sum(result["usable_count"] for result in case_results)
+
+    return {
+        "summary": {
+            "fixture_count": len(fixtures),
+            "response_runs": len(case_results),
+            "passed_cases": passed_cases,
+            "failed_cases": failed_cases,
+            "total_questions": total_questions,
+            "total_usable_questions": total_usable,
+            "usable_question_rate": ratio(total_usable, total_questions),
+        },
+        "cases": case_results,
+    }
+
+
+def missing_case_result(fixture: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "case_id": fixture["case_id"],
+        "description": fixture.get("description", ""),
+        "run": None,
+        "passed": False,
+        "question_count": 0,
+        "usable_count": 0,
+        "minimum_usable_questions": minimum_usable_questions(fixture),
+        "failures": ["No response row found for this fixture."],
+        "warnings": [],
+        "questions": [],
+    }
+
+
+def score_case_response(fixture: dict[str, Any], response: dict[str, Any]) -> dict[str, Any]:
+    questions = extract_questions(response)
+    question_results = [score_question(question, fixture, index) for index, question in enumerate(questions)]
+    usable_count = sum(1 for result in question_results if not result["failures"])
+    min_usable = minimum_usable_questions(fixture)
+    failures: list[str] = []
+    warnings: list[str] = []
+
+    provider_error = response.get("provider_error")
+    if isinstance(provider_error, dict):
+        error_type = clean_text(provider_error.get("type"))
+        message = clean_text(provider_error.get("message"))
+        failures.append(f"Provider error during capture: {error_type}: {message}")
+
+    if usable_count < min_usable:
+        failures.append(f"Only {usable_count} usable questions; expected at least {min_usable}.")
+
+    seen_prompts: set[str] = set()
+    for result in question_results:
+        prompt_key = duplicate_prompt_key(result["prompt"])
+        if prompt_key and prompt_key in seen_prompts:
+            failures.append(f"Duplicate or near-duplicate prompt in batch: {result['prompt']}")
+        seen_prompts.add(prompt_key)
+        warnings.extend(f"Q{result['index'] + 1}: {warning}" for warning in result["warnings"])
+
+    return {
+        "case_id": fixture["case_id"],
+        "description": fixture.get("description", ""),
+        "run": response.get("run"),
+        "passed": not failures,
+        "question_count": len(questions),
+        "usable_count": usable_count,
+        "minimum_usable_questions": min_usable,
+        "failures": failures,
+        "warnings": warnings,
+        "questions": question_results,
+    }
+
+
+def extract_questions(response: dict[str, Any]) -> list[dict[str, Any]]:
+    if isinstance(response.get("questions"), list):
+        return [question for question in response["questions"] if isinstance(question, dict)]
+
+    body = response.get("body")
+    if isinstance(body, str):
+        try:
+            parsed = json.loads(body)
+        except json.JSONDecodeError:
+            return []
+        if isinstance(parsed, dict) and isinstance(parsed.get("questions"), list):
+            return [question for question in parsed["questions"] if isinstance(question, dict)]
+
+    payload = response.get("response")
+    if isinstance(payload, dict) and isinstance(payload.get("questions"), list):
+        return [question for question in payload["questions"] if isinstance(question, dict)]
+
+    return []
+
+
+def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int) -> dict[str, Any]:
+    payload = fixture["payload"]
+    expected = fixture.get("expect", {})
+    minimum_difficulty = int(payload.get("minimumDifficulty", 1))
+    configured_forbidden_terms = list(expected.get("forbidden_terms", []))
+    forbidden_terms = configured_forbidden_terms or DEFAULT_FORBIDDEN_TERMS
+    required_terms = [str(term) for term in expected.get("required_terms_any", []) if str(term).strip()]
+
+    prompt = clean_text(question.get("prompt"))
+    expected_answer = clean_text(question.get("expectedAnswer"))
+    explanation = clean_text(question.get("explanation"))
+    topic = clean_text(question.get("topic"))
+    choices = [clean_text(choice) for choice in question.get("choices", []) if clean_text(choice)]
+    difficulty = integer(question.get("difficulty"))
+    format_value = clean_text(question.get("format")).lower()
+    combined_text = " ".join([prompt, expected_answer, explanation, topic, " ".join(choices)])
+
+    failures: list[str] = []
+    warnings: list[str] = []
+
+    if len(prompt) < 12:
+        failures.append("Prompt is blank or too short.")
+    if looks_truncated(prompt):
+        failures.append("Prompt appears truncated at the sanitizer length limit.")
+    if asks_for_free_response_artifact(prompt):
+        failures.append("Prompt asks for a free-response artifact instead of a multiple-choice decision.")
+    if prompt_contains_embedded_options(prompt):
+        failures.append("Prompt embeds answer options instead of keeping options only in choices.")
+    if prompt_contains_latex_markup(prompt):
+        failures.append("Prompt includes LaTeX markup that may not render cleanly in the app.")
+    if looks_like_broad_subjunctive_selection(prompt):
+        failures.append("Broad subjunctive sentence-selection prompt is likely to allow multiple correct answers.")
+    if looks_like_ambiguous_complexity_prompt(prompt):
+        failures.append("Complexity prompt is underspecified or depends on hidden operation costs.")
+    if looks_like_risky_exact_calculus(prompt, expected_answer):
+        failures.append("Risky exact calculus prompt is likely to produce fragile or unverifiable answers.")
+    if looks_like_risky_limit_setup_prompt(prompt):
+        failures.append("Risky limit-setup prompt may have algebraically equivalent answer choices.")
+    calculus_failure = calculus_correctness_failure(prompt, expected_answer)
+    if calculus_failure:
+        failures.append(calculus_failure)
+    if not expected_answer:
+        failures.append("Missing expectedAnswer.")
+    if looks_like_answer_label(expected_answer):
+        failures.append("expectedAnswer is an answer label instead of answer text.")
+    if not explanation:
+        failures.append("Missing explanation.")
+    if not topic:
+        failures.append("Missing topic.")
+    if format_value not in {"multiple choice", "multiplechoice", ""}:
+        failures.append(f"Unexpected format: {question.get('format')!r}.")
+    if len(choices) != 4:
+        failures.append(f"Expected 4 choices, found {len(choices)}.")
+    elif any(looks_like_answer_label(choice) for choice in choices):
+        failures.append("One or more choices are answer labels instead of answer text.")
+    if difficulty < minimum_difficulty:
+        failures.append(f"Difficulty {difficulty} is below requested minimum {minimum_difficulty}.")
+
+    expected_matches = sum(1 for choice in choices if choice == expected_answer)
+    if expected_matches != 1:
+        failures.append(f"expectedAnswer must exactly match one choice; found {expected_matches}.")
+
+    if len({choice_key(choice) for choice in choices}) != len(choices):
+        failures.append("Choices are duplicate or near-duplicate by semantic key.")
+
+    disallowed_choices = [choice for choice in choices if choice_key(choice) in DISALLOWED_CHOICE_TEXT]
+    if disallowed_choices:
+        failures.append(f"Disallowed choice text: {', '.join(disallowed_choices)}.")
+
+    if expected_is_bare_output(expected_answer) and choices_have_mixed_output_types(choices):
+        failures.append("Expected answer is a bare output, but choices mix outputs with explanations.")
+
+    if choices_have_multiple_true_limit_claims(prompt, choices):
+        failures.append("Limit question includes multiple answer choices that are simultaneously true.")
+
+    if looks_like_ambiguous_one_sided_limit(prompt, expected_answer, choices):
+        failures.append("One-sided limit question mixes 'does not exist' with infinity choices ambiguously.")
+    if looks_like_ambiguous_interval_solution_choice(prompt, choices, explanation):
+        failures.append("Interval question has multiple defensible answer choices.")
+    if explanation_supports_different_choice(expected_answer, choices, explanation):
+        failures.append("Explanation supports a different answer choice than expectedAnswer.")
+
+    duplicate_blocked = blocked_prompt_duplicate(prompt, payload)
+    if duplicate_blocked:
+        failures.append(f"Prompt duplicates existing/reported prompt: {duplicate_blocked}")
+
+    leaked_terms = sorted({term for term in forbidden_terms if contains_term(combined_text, term)})
+    if leaked_terms:
+        failures.append(f"Forbidden terms appeared: {', '.join(leaked_terms)}.")
+
+    if required_terms and not any(contains_term(combined_text, term) for term in required_terms):
+        failures.append(f"No required subject signal found; expected one of: {', '.join(required_terms)}.")
+
+    if difficulty >= 3 and prompt and not has_scenario_signal(prompt):
+        warnings.append("Difficulty is 3+ but prompt has weak scenario/application signal.")
+
+    if has_choice_length_imbalance(choices):
+        warnings.append("Answer choices have large length imbalance that may clue the answer.")
+
+    if re.search(r"\bwhich of the following is (?:true|false)\b", prompt, flags=re.IGNORECASE):
+        warnings.append("Prompt uses generic true/false wording.")
+
+    return {
+        "index": index,
+        "prompt": prompt,
+        "topic": topic,
+        "difficulty": difficulty,
+        "failures": failures,
+        "warnings": warnings,
+    }
+
+
+def minimum_usable_questions(fixture: dict[str, Any]) -> int:
+    expected = fixture.get("expect", {})
+    if isinstance(expected.get("min_usable_questions"), int):
+        return expected["min_usable_questions"]
+    return integer(fixture.get("payload", {}).get("targetCount")) or 1
+
+
+def blocked_prompt_duplicate(prompt: str, payload: dict[str, Any]) -> str | None:
+    prompt_key = canonical(prompt)
+    for source_key in ["existingPrompts", "reportedPrompts"]:
+        for blocked in payload.get(source_key, []):
+            if prompt_key == canonical(str(blocked)):
+                return str(blocked)
+    return None
+
+
+def capture_bedrock_responses(
+    fixtures_path: Path,
+    responses_path: Path,
+    runs_per_case: int,
+    prompt_variant: str | None,
+    sleep_seconds: float,
+    stop_on_error: bool,
+) -> int:
+    fixtures = load_jsonl(fixtures_path)
+    responses_path.parent.mkdir(parents=True, exist_ok=True)
+    error_count = 0
+    previous_variant = os.environ.get("CHECKPOINT_PROMPT_VARIANT")
+    if prompt_variant is not None:
+        os.environ["CHECKPOINT_PROMPT_VARIANT"] = prompt_variant
+    active_variant = os.environ.get("CHECKPOINT_PROMPT_VARIANT", "method-first")
+
+    try:
+        with responses_path.open("w", encoding="utf-8") as file:
+            for fixture in fixtures:
+                for run in range(1, runs_per_case + 1):
+                    try:
+                        normalized = lambda_function._normalize_request(fixture["payload"])  # noqa: SLF001
+                        questions, raw_attempts = capture_generation_attempts(normalized)
+                        record = {
+                            "case_id": fixture["case_id"],
+                            "run": run,
+                            "captured_at": int(time.time()),
+                            "prompt_variant": active_variant,
+                            "model_attempts": lambda_function._model_attempts(),  # noqa: SLF001
+                            "questions": questions,
+                            "raw_question_count": sum(len(attempt["raw_questions"]) for attempt in raw_attempts),
+                            "raw_attempts": raw_attempts,
+                            "raw_questions": [
+                                question
+                                for attempt in raw_attempts
+                                for question in attempt["raw_questions"]
+                            ],
+                        }
+                    except Exception as error:  # pragma: no cover - exact provider failures vary by environment.
+                        error_count += 1
+                        record = {
+                            "case_id": fixture["case_id"],
+                            "run": run,
+                            "captured_at": int(time.time()),
+                            "prompt_variant": active_variant,
+                            "model_attempts": lambda_function._model_attempts(),  # noqa: SLF001
+                            "questions": [],
+                            "provider_error": {
+                                "type": type(error).__name__,
+                                "message": clean_text(str(error)),
+                            },
+                        }
+                    file.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
+                    file.flush()
+                    if record.get("provider_error") and stop_on_error:
+                        print(f"Stopped after provider error for {fixture['case_id']} run {run}.", file=sys.stderr)
+                        return error_count
+                    if sleep_seconds > 0:
+                        time.sleep(sleep_seconds)
+    finally:
+        if prompt_variant is not None:
+            if previous_variant is None:
+                os.environ.pop("CHECKPOINT_PROMPT_VARIANT", None)
+            else:
+                os.environ["CHECKPOINT_PROMPT_VARIANT"] = previous_variant
+    if error_count:
+        print(f"Captured {error_count} provider errors in {responses_path}.", file=sys.stderr)
+    return error_count
+
+
+def capture_generation_attempts(request: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    target_count = request["targetCount"]
+    attempts = lambda_function._int_env(  # noqa: SLF001
+        "GENERATION_ATTEMPTS",
+        lambda_function.DEFAULT_GENERATION_ATTEMPTS,
+        maximum=5,
+    )
+    questions: list[dict[str, Any]] = []
+    raw_attempts: list[dict[str, Any]] = []
+    current_request = json.loads(json.dumps(request))
+
+    for attempt_number in range(1, attempts + 1):
+        provider_payload = lambda_function._generate_provider_payload(current_request, None)  # noqa: SLF001
+        raw_questions = provider_payload.get("questions", [])
+        if not isinstance(raw_questions, list):
+            raw_questions = []
+        sanitized = lambda_function._sanitize_questions(raw_questions, current_request)  # noqa: SLF001
+        raw_attempts.append(
+            {
+                "attempt": attempt_number,
+                "requested_count": current_request["targetCount"],
+                "raw_questions": raw_questions,
+                "sanitized_count": len(sanitized),
+            }
+        )
+        questions.extend(sanitized)
+
+        if len(questions) >= target_count:
+            break
+
+        current_request = json.loads(json.dumps(request))
+        current_request["targetCount"] = target_count - len(questions)
+        current_request["existingPrompts"] = (
+            request["existingPrompts"] + [question["prompt"] for question in questions]
+        )
+
+    return questions[:target_count], raw_attempts
+
+
+def write_report(report: dict[str, Any], output: str | None, markdown_output: str | None) -> None:
+    if output:
+        output_path = Path(output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    if markdown_output:
+        markdown_path = Path(markdown_output)
+        markdown_path.parent.mkdir(parents=True, exist_ok=True)
+        markdown_path.write_text(markdown_report(report), encoding="utf-8")
+
+
+def summary_text(report: dict[str, Any]) -> str:
+    summary = report["summary"]
+    return (
+        f"Prompt eval: {summary['passed_cases']}/{summary['response_runs']} response runs passed; "
+        f"{summary['total_usable_questions']}/{summary['total_questions']} questions usable "
+        f"({summary['usable_question_rate']:.1%})."
+    )
+
+
+def markdown_report(report: dict[str, Any]) -> str:
+    lines = [
+        "# Checkpoint Question Generation Eval",
+        "",
+        summary_text(report),
+        "",
+        "| Case | Run | Pass | Usable | Failures | Warnings |",
+        "| --- | ---: | :---: | ---: | --- | --- |",
+    ]
+    for result in report["cases"]:
+        failures = "<br>".join(result["failures"]) if result["failures"] else ""
+        warnings = "<br>".join(result["warnings"][:5]) if result["warnings"] else ""
+        lines.append(
+            "| {case_id} | {run} | {passed} | {usable}/{count} | {failures} | {warnings} |".format(
+                case_id=result["case_id"],
+                run="" if result["run"] is None else result["run"],
+                passed="yes" if result["passed"] else "no",
+                usable=result["usable_count"],
+                count=result["question_count"],
+                failures=escape_markdown_table(failures),
+                warnings=escape_markdown_table(warnings),
+            )
+        )
+    return "\n".join(lines) + "\n"
+
+
+def clean_text(value: Any) -> str:
+    if value is None:
+        return ""
+    return " ".join(str(value).split()).strip()
+
+
+def integer(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def canonical(value: str) -> str:
+    return "".join(character.lower() for character in value if character.isalnum())
+
+
+def duplicate_prompt_key(prompt: str) -> str:
+    return lambda_function._duplicate_prompt_key(prompt)  # noqa: SLF001
+
+
+def choice_key(value: str) -> str:
+    return lambda_function._choice_uniqueness_key(value)  # noqa: SLF001
+
+
+def contains_term(text: str, term: str) -> bool:
+    cleaned_term = clean_text(term)
+    if not cleaned_term:
+        return False
+    return cleaned_term.lower() in text.lower()
+
+
+def has_scenario_signal(prompt: str) -> bool:
+    lowered = prompt.lower()
+    return any(signal in lowered for signal in SCENARIO_SIGNALS) or ":" in prompt or "?" in prompt and len(prompt) >= 90
+
+
+def looks_truncated(prompt: str) -> bool:
+    if len(prompt) < 355:
+        return False
+    return prompt[-1] not in ".?!`)]}'\""
+
+
+def asks_for_free_response_artifact(prompt: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(write|create|produce)\s+(?:a\s+)?(?:function|code|algorithm|program|plan)\b",
+            prompt,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def looks_like_answer_label(value: str) -> bool:
+    return lambda_function._looks_like_answer_label(value)  # noqa: SLF001
+
+
+def looks_like_ambiguous_complexity_prompt(prompt: str) -> bool:
+    return lambda_function._looks_like_ambiguous_complexity_prompt(prompt)  # noqa: SLF001
+
+
+def looks_like_risky_exact_calculus(prompt: str, expected_answer: str) -> bool:
+    return lambda_function._looks_like_risky_exact_calculus(prompt, expected_answer)  # noqa: SLF001
+
+
+def looks_like_risky_limit_setup_prompt(prompt: str) -> bool:
+    return lambda_function._looks_like_risky_limit_setup_prompt(prompt)  # noqa: SLF001
+
+
+def prompt_contains_embedded_options(prompt: str) -> bool:
+    return lambda_function._prompt_contains_embedded_options(prompt)  # noqa: SLF001
+
+
+def prompt_contains_latex_markup(prompt: str) -> bool:
+    return lambda_function._prompt_contains_latex_markup(prompt)  # noqa: SLF001
+
+
+def looks_like_broad_subjunctive_selection(prompt: str) -> bool:
+    return lambda_function._looks_like_broad_subjunctive_selection(prompt)  # noqa: SLF001
+
+
+def looks_like_ambiguous_one_sided_limit(prompt: str, expected_answer: str, choices: list[str]) -> bool:
+    return lambda_function._looks_like_ambiguous_one_sided_limit(prompt, expected_answer, choices)  # noqa: SLF001
+
+
+def looks_like_ambiguous_interval_solution_choice(
+    prompt: str,
+    choices: list[str],
+    explanation: str,
+) -> bool:
+    return lambda_function._looks_like_ambiguous_interval_solution_choice(prompt, choices, explanation)  # noqa: SLF001
+
+
+def explanation_supports_different_choice(
+    expected_answer: str,
+    choices: list[str],
+    explanation: str,
+) -> bool:
+    return lambda_function._explanation_supports_different_choice(expected_answer, choices, explanation)  # noqa: SLF001
+
+
+def calculus_correctness_failure(prompt: str, expected_answer: str) -> str | None:
+    if sp is None or parse_expr is None:
+        return None
+
+    lowered = prompt.lower()
+    if not any(term in lowered for term in ["integral", "derivative", "limit"]):
+        return None
+
+    computed = computed_calculus_result(prompt)
+    if computed is None or computed in {sp.oo, -sp.oo, sp.zoo, sp.nan}:
+        return None
+
+    if not expected_is_math_result_answer(expected_answer):
+        return None
+
+    expected_values = expected_math_values(expected_answer)
+    if not expected_values:
+        return None
+
+    if any(sympy_equivalent(expected_value, computed) for expected_value in expected_values):
+        return None
+
+    return f"Expected answer does not match computed calculus result ({format_sympy(computed)})."
+
+
+def computed_calculus_result(prompt: str) -> Any | None:
+    for evaluator in [
+        computed_integral_result,
+        computed_derivative_result,
+        computed_limit_result,
+    ]:
+        result = evaluator(prompt)
+        if result is not None:
+            return result
+    return None
+
+
+def computed_integral_result(prompt: str) -> Any | None:
+    function_integral_patterns = [
+        r"function\s+(?P<name>[a-z])\(x\)\s*=\s*(?P<expr>.+?)[\.,]\s*.*?definite\s+integral\s+from\s*(?P<a>[-+\w./π]+)\s*to\s*(?P<b>[-+\w./π]+)",
+        r"function\s+(?P<name>[a-z])\(x\)\s*=\s*(?P<expr>.+?)[\.,]\s*.*?integral\s+of\s+(?P=name)\(x\)\s+from\s*(?P<a>[-+\w./π]+)\s*to\s*(?P<b>[-+\w./π]+)",
+    ]
+    for pattern in function_integral_patterns:
+        match = re.search(pattern, prompt, flags=re.IGNORECASE)
+        if not match:
+            continue
+
+        expr = parse_math(clean_calculus_expression(match.group("expr")))
+        lower = parse_math(match.group("a"))
+        upper = parse_math(match.group("b"))
+        if expr is None or lower is None or upper is None:
+            continue
+
+        x = sp.Symbol("x")
+        try:
+            return sp.simplify(sp.integrate(expr, (x, lower, upper)))
+        except Exception:
+            continue
+
+    integral_limit_match = re.search(
+        r"function\s+(?P<name>[a-z])\(x\)\s*=\s*(?P<expr>.+?)[\.,]\s*.*?limit\s+as\s+x\s+approaches\s+(?P<upper>[-+\w./π]+|infinity|-infinity)\s+of\s+the\s+integral\s+from\s+(?P<lower>[-+\w./π]+)\s+to\s+x\s+of\s+(?P=name)\(t\)\s*d\s*t",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    if integral_limit_match:
+        x = sp.Symbol("x")
+        t = sp.Symbol("t")
+        expr = parse_math(clean_calculus_expression(integral_limit_match.group("expr")))
+        lower = parse_math(integral_limit_match.group("lower"))
+        upper = parse_math(integral_limit_match.group("upper"))
+        if expr is not None and lower is not None and upper is not None:
+            try:
+                integrand = expr.subs(x, t)
+                return sp.simplify(sp.integrate(integrand, (t, lower, upper)))
+            except Exception:
+                pass
+
+    patterns = [
+        r"∫\s*from\s*(?P<a>[-+\w./π]+)\s*to\s*(?P<b>[-+\w./π]+)\s*of\s*\(?(?P<expr>.+?)\)?\s*d\s*x\b",
+        r"∫\s*\(?(?P<expr>.+?)\)?\s*d\s*x\s*from\s*x\s*=\s*(?P<a>[-+\w./π]+)\s*to\s*x\s*=\s*(?P<b>[-+\w./π]+)",
+        r"integral\s+of\s+(?:the\s+function\s+)?(?:[a-z]\(x\)\s*=\s*)?(?P<expr>.+?)\s+from\s+x\s*=\s*(?P<a>[-+\w./π]+)\s*to\s*x\s*=\s*(?P<b>[-+\w./π]+)",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, prompt, flags=re.IGNORECASE)
+        if not match:
+            continue
+
+        expr = parse_math(clean_calculus_expression(match.group("expr")))
+        lower = parse_math(match.group("a"))
+        upper = parse_math(match.group("b"))
+        if expr is None or lower is None or upper is None:
+            continue
+
+        x = sp.Symbol("x")
+        try:
+            return sp.simplify(sp.integrate(expr, (x, lower, upper)))
+        except Exception:
+            continue
+
+    return None
+
+
+def computed_derivative_result(prompt: str) -> Any | None:
+    match = re.search(
+        r"derivative\s+of\s+(?:the\s+function\s+)?(?:[a-z]\(x\)\s*=\s*)?(?P<expr>.+?)\s+at\s+x\s*=\s*(?P<point>[-+\w./π]+)",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+
+    expr = parse_math(clean_calculus_expression(match.group("expr")))
+    point = parse_math(match.group("point"))
+    if expr is None or point is None:
+        return None
+
+    x = sp.Symbol("x")
+    try:
+        return sp.simplify(sp.diff(expr, x).subs(x, point))
+    except Exception:
+        return None
+
+
+def computed_limit_result(prompt: str) -> Any | None:
+    derivative_definition_match = re.search(
+        r"function\s+(?P<name>[a-z])\(x\)\s*=\s*(?P<expr>.+?)\.\s*.*?lim\s*\(\s*x\s*(?:→|->)\s*(?P<point>[-+\w./π]+)\s*\)\s*\[\s*(?P=name)\(x\)\s*-\s*(?P=name)\(\s*(?P=point)\s*\)\s*\]\s*/\s*\(\s*x\s*-\s*(?P=point)\s*\)",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    if derivative_definition_match:
+        expr = parse_math(clean_calculus_expression(derivative_definition_match.group("expr")))
+        point = parse_math(derivative_definition_match.group("point"))
+        if expr is not None and point is not None:
+            x = sp.Symbol("x")
+            try:
+                return sp.simplify(sp.diff(expr, x).subs(x, point))
+            except Exception:
+                pass
+
+    function_match = re.search(
+        r"[a-z]\(x\)\s*=\s*(?P<expr>.+?),\s*(?:determine|find|evaluate).*?limit\s+as\s+x\s+approaches\s+(?P<point>[-+\w./π]+|infinity)\s+of\s+[a-z]\(x\)",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    function_after_match = re.search(
+        r"[a-z]\(x\)\s*=\s*(?P<expr>.+?)[\.,]\s*.*?limit\s+of\s+[a-z]\(x\)\s+as\s+x\s+approaches\s+(?P<point>[-+\w./π]+|infinity|-infinity)",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    notation_match = re.search(
+        r"lim\s*\(\s*x\s*(?:→|->)\s*(?P<point>[-+\w./π]+|infinity)\s*\)\s*\[?(?P<expr>.+?)\]?(?:\.|,|\?|$)",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    direct_match = re.search(
+        r"limit\s+as\s+x\s+approaches\s+(?P<point>[-+\w./π]+|infinity)\s+of\s+(?:the\s+function\s+)?(?P<expr>.+?)(?:\s+after\b|\.|,|\?|$)",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    match = function_match or function_after_match or notation_match or direct_match
+    if not match:
+        return None
+
+    expr = parse_math(clean_calculus_expression(match.group("expr")))
+    point = parse_math(match.group("point"))
+    if expr is None or point is None:
+        return None
+
+    x = sp.Symbol("x")
+    try:
+        return sp.simplify(sp.limit(expr, x, point))
+    except Exception:
+        return None
+
+
+def expected_math_values(expected_answer: str) -> list[Any]:
+    snippets: list[str] = [expected_answer]
+    snippets.extend(
+        match.group(1)
+        for match in re.finditer(
+            r"\b(?:is|equals|=)\s*([-+]?\d+(?:\.\d+)?(?:\s*/\s*(?:[-+]?\d+(?:\.\d+)?|e|π|pi))?)",
+            expected_answer,
+            flags=re.IGNORECASE,
+        )
+    )
+    snippets.extend(
+        match.group(0)
+        for match in re.finditer(
+            r"[-+]?\d+(?:\.\d+)?(?:\s*/\s*(?:[-+]?\d+(?:\.\d+)?|e|π|pi))?",
+            expected_answer,
+            flags=re.IGNORECASE,
+        )
+    )
+
+    values: list[Any] = []
+    seen: set[str] = set()
+    for snippet in snippets:
+        parsed = parse_math(snippet)
+        if parsed is None:
+            continue
+        key = format_sympy(parsed)
+        if key in seen:
+            continue
+        seen.add(key)
+        values.append(parsed)
+    return values
+
+
+def expected_is_math_result_answer(expected_answer: str) -> bool:
+    if expected_is_bare_output(expected_answer):
+        return True
+
+    normalized = clean_text(expected_answer).lower()
+    return bool(
+        re.search(
+            r"\b(?:limit|integral|derivative|value|result)\s+(?:is|equals)\b|\b(?:equals|approaches|converges to)\s+[-+\dπpie∞]",
+            normalized,
+        )
+    )
+
+
+def parse_math(raw_value: str) -> Any | None:
+    if sp is None or parse_expr is None:
+        return None
+
+    value = clean_math_text(raw_value)
+    if not value:
+        return None
+    words = set(re.findall(r"[A-Za-z]+", value))
+    allowed_words = {"x", "t", "e", "E", "pi", "oo", "sin", "cos", "tan", "log", "ln", "sqrt"}
+    if not words.issubset(allowed_words):
+        return None
+
+    x = sp.Symbol("x")
+    t = sp.Symbol("t")
+    local_dict = {
+        "x": x,
+        "t": t,
+        "e": sp.E,
+        "E": sp.E,
+        "pi": sp.pi,
+        "oo": sp.oo,
+        "sin": sp.sin,
+        "cos": sp.cos,
+        "tan": sp.tan,
+        "log": sp.log,
+        "ln": sp.log,
+        "sqrt": sp.sqrt,
+    }
+    transformations = standard_transformations + (
+        implicit_multiplication_application,
+        convert_xor,
+    )
+
+    try:
+        return sp.simplify(
+            parse_expr(
+                value,
+                local_dict=local_dict,
+                transformations=transformations,
+                evaluate=True,
+            )
+        )
+    except Exception:
+        return None
+
+
+def clean_math_text(value: str) -> str:
+    cleaned = clean_text(value)
+    cleaned = cleaned.replace("−", "-").replace("π", "pi").replace("^", "**")
+    cleaned = re.sub(r"\binfinity\b", "oo", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bln\s*\(", "log(", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"[\.,;:]+$", "", cleaned)
+    return cleaned.strip()
+
+
+def clean_calculus_expression(value: str) -> str:
+    cleaned = clean_text(value)
+    cleaned = re.split(
+        r"\s+(?:after|using|when|which|what|because|where|additionally)\b",
+        cleaned,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )[0]
+    cleaned = cleaned.strip(" []")
+    return cleaned
+
+
+def sympy_equivalent(left: Any, right: Any) -> bool:
+    try:
+        return bool(sp.simplify(left - right) == 0)
+    except Exception:
+        return False
+
+
+def format_sympy(value: Any) -> str:
+    try:
+        return str(sp.simplify(value))
+    except Exception:
+        return str(value)
+
+
+def expected_is_bare_output(expected_answer: str) -> bool:
+    stripped = expected_answer.strip()
+    if stripped.lower() in {"true", "false", "null", "none", "undefined", "infinity", "-infinity", "∞", "-∞"}:
+        return True
+    if re.fullmatch(r"-?\d+(?:\.\d+)?", stripped):
+        return True
+    if re.fullmatch(r"-?\d+(?:\.\d+)?\s*/\s*-?\d+(?:\.\d+)?", stripped):
+        return True
+    if re.fullmatch(r"[-+*/^().\d\sπpie]+", stripped, flags=re.IGNORECASE) and re.search(r"\d", stripped):
+        return True
+    if re.fullmatch(r"\[[^\]]+\]", stripped):
+        return True
+    return False
+
+
+def choices_have_mixed_output_types(choices: list[str]) -> bool:
+    if len(choices) != 4:
+        return False
+    bare_count = sum(1 for choice in choices if expected_is_bare_output(choice))
+    return 0 < bare_count < len(choices)
+
+
+def choices_have_multiple_true_limit_claims(prompt: str, choices: list[str]) -> bool:
+    if not re.search(r"\blimit\b.*\bas\s+x\s+approaches\b.*\bis\s+l\b", prompt, flags=re.IGNORECASE):
+        return False
+
+    positive_sides = set()
+    for choice in choices:
+        normalized = clean_text(choice).lower()
+        match = re.search(
+            r"\blimit\b.*\bfrom\s+the\s+(left|right)\b.*\bis\s+(?:also\s+)?l\b",
+            normalized,
+        )
+        if match and "not necessarily" not in normalized and "not " not in normalized:
+            positive_sides.add(match.group(1))
+
+    return {"left", "right"}.issubset(positive_sides)
+
+
+def has_choice_length_imbalance(choices: list[str]) -> bool:
+    if len(choices) != 4:
+        return False
+    lengths = [len(choice) for choice in choices]
+    shortest = max(1, min(lengths))
+    longest = max(lengths)
+    return longest - shortest >= 60 and longest / shortest >= 3
+
+
+def ratio(numerator: int, denominator: int) -> float:
+    return numerator / denominator if denominator else 0.0
+
+
+def escape_markdown_table(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", "<br>")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
