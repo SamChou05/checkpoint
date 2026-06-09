@@ -16,6 +16,8 @@ import ManagedSettings
 @MainActor
 @Observable
 final class ScreenTimeController {
+    static let unlockRelockMonitorLeadIn: TimeInterval = 30
+
     enum SetupState: String {
         case notStarted = "Not set up"
         case authorized = "Authorized"
@@ -302,14 +304,14 @@ final class ScreenTimeController {
     private func persistSelection() {
         #if os(iOS) && canImport(FamilyControls)
         guard let data = try? JSONEncoder().encode(selection) else { return }
-        defaults.set(data, forKey: SharedAppGroup.screenTimeSelectionKey)
+        SharedAppGroup.publishScreenTimeSelectionData(data)
         #endif
     }
 
     private func restoreSelection() {
         #if os(iOS) && canImport(FamilyControls)
         guard
-            let data = defaults.data(forKey: SharedAppGroup.screenTimeSelectionKey),
+            let data = SharedAppGroup.screenTimeSelectionData(),
             let restoredSelection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
         else { return }
 
@@ -358,14 +360,17 @@ final class ScreenTimeController {
     private func scheduleUnlockRelockMonitor(from start: Date, until expiration: Date) {
         #if os(iOS) && canImport(DeviceActivity)
         let calendar = Calendar.current
+        let intervalStart = Self.unlockRelockMonitorStart(for: start, expiration: expiration)
         let schedule = DeviceActivitySchedule(
-            intervalStart: Self.dateComponents(for: start, calendar: calendar),
+            intervalStart: Self.dateComponents(for: intervalStart, calendar: calendar),
             intervalEnd: Self.dateComponents(for: expiration, calendar: calendar),
             repeats: false
         )
 
         do {
+            stopUnlockRelockMonitor()
             try activityCenter.startMonitoring(.checkpointUnlockWindow, during: schedule)
+            SharedAppGroup.markUnlockRelockMonitorScheduled(intervalStart: intervalStart, expectedEnd: expiration)
         } catch {
             lastErrorMessage = "System re-lock timer could not start: \(error.localizedDescription). Checkpoint will re-lock when the app is active."
         }
@@ -383,5 +388,11 @@ final class ScreenTimeController {
         components.calendar = calendar
         components.timeZone = calendar.timeZone
         return components
+    }
+
+    static func unlockRelockMonitorStart(for start: Date, expiration: Date) -> Date {
+        let latestSafeStart = expiration.addingTimeInterval(-1)
+        let leadInStart = start.addingTimeInterval(-unlockRelockMonitorLeadIn)
+        return min(leadInStart, latestSafeStart)
     }
 }

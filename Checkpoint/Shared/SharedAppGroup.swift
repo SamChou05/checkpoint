@@ -27,7 +27,15 @@ enum SharedAppGroup {
     static let lastUnlockExpirationKey = "lastUnlockExpiration"
     static let desiredShieldActiveKey = "desiredShieldActive"
     static let screenTimeSelectionKey = "checkpoint.screenTime.selection.v1"
+    static let unlockRelockMonitorScheduledAtKey = "unlockRelockMonitorScheduledAt"
+    static let unlockRelockMonitorIntervalStartKey = "unlockRelockMonitorIntervalStart"
+    static let unlockRelockMonitorExpectedEndKey = "unlockRelockMonitorExpectedEnd"
+    static let unlockRelockExtensionIntervalStartCountKey = "unlockRelockExtensionIntervalStartCount"
+    static let unlockRelockExtensionIntervalEndCountKey = "unlockRelockExtensionIntervalEndCount"
+    static let unlockRelockExtensionLastEventDateKey = "unlockRelockExtensionLastEventDate"
+    static let unlockRelockExtensionLastResultKey = "unlockRelockExtensionLastResult"
     private static let shieldContextFileName = "shield-context.json"
+    private static let screenTimeSelectionFileName = "screen-time-selection.json"
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: identifier) ?? .standard
@@ -99,10 +107,13 @@ enum SharedAppGroup {
         } else {
             defaults.removeObject(forKey: lastUnlockExpirationKey)
         }
+        defaults.synchronize()
     }
 
     static func publishDesiredShieldActive(_ isActive: Bool) {
+        let defaults = defaults
         defaults.set(isActive, forKey: desiredShieldActiveKey)
+        defaults.synchronize()
     }
 
     static func markUnlockRelockNeedsAppReconciliation() {
@@ -119,7 +130,56 @@ enum SharedAppGroup {
     }
 
     static var unlockExpiration: Date? {
-        defaults.object(forKey: lastUnlockExpirationKey) as? Date
+        defaults.synchronize()
+        return defaults.object(forKey: lastUnlockExpirationKey) as? Date
+    }
+
+    static func publishScreenTimeSelectionData(_ data: Data) {
+        let defaults = defaults
+        defaults.set(data, forKey: screenTimeSelectionKey)
+        writeScreenTimeSelectionData(data)
+        defaults.synchronize()
+    }
+
+    static func screenTimeSelectionData() -> Data? {
+        let defaults = defaults
+        defaults.synchronize()
+
+        if let data = defaults.data(forKey: screenTimeSelectionKey) {
+            return data
+        }
+
+        return readScreenTimeSelectionData()
+    }
+
+    static func removeScreenTimeSelectionFile() {
+        guard let url = screenTimeSelectionURL else { return }
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    static func markUnlockRelockMonitorScheduled(intervalStart: Date, expectedEnd: Date) {
+        let defaults = defaults
+        defaults.set(Date(), forKey: unlockRelockMonitorScheduledAtKey)
+        defaults.set(intervalStart, forKey: unlockRelockMonitorIntervalStartKey)
+        defaults.set(expectedEnd, forKey: unlockRelockMonitorExpectedEndKey)
+        defaults.removeObject(forKey: unlockRelockExtensionLastResultKey)
+        defaults.synchronize()
+    }
+
+    static func markUnlockRelockExtensionIntervalStarted() {
+        let defaults = defaults
+        defaults.set(defaults.integer(forKey: unlockRelockExtensionIntervalStartCountKey) + 1, forKey: unlockRelockExtensionIntervalStartCountKey)
+        defaults.set(Date(), forKey: unlockRelockExtensionLastEventDateKey)
+        defaults.set("started", forKey: unlockRelockExtensionLastResultKey)
+        defaults.synchronize()
+    }
+
+    static func markUnlockRelockExtensionIntervalEnded(result: String) {
+        let defaults = defaults
+        defaults.set(defaults.integer(forKey: unlockRelockExtensionIntervalEndCountKey) + 1, forKey: unlockRelockExtensionIntervalEndCountKey)
+        defaults.set(Date(), forKey: unlockRelockExtensionLastEventDateKey)
+        defaults.set(result, forKey: unlockRelockExtensionLastResultKey)
+        defaults.synchronize()
     }
 
     static var shieldConfigurationRenderDate: Date? {
@@ -140,6 +200,12 @@ enum SharedAppGroup {
             .appendingPathComponent(shieldContextFileName)
     }
 
+    private static var screenTimeSelectionURL: URL? {
+        FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
+            .appendingPathComponent(screenTimeSelectionFileName)
+    }
+
     private static func readShieldContext() -> ShieldContext? {
         guard let url = shieldContextURL,
               let data = try? Data(contentsOf: url) else { return nil }
@@ -151,6 +217,16 @@ enum SharedAppGroup {
         guard let url = shieldContextURL,
               let data = try? JSONEncoder().encode(context) else { return }
 
+        try? data.write(to: url, options: [.atomic])
+    }
+
+    private static func readScreenTimeSelectionData() -> Data? {
+        guard let url = screenTimeSelectionURL else { return nil }
+        return try? Data(contentsOf: url)
+    }
+
+    private static func writeScreenTimeSelectionData(_ data: Data) {
+        guard let url = screenTimeSelectionURL else { return }
         try? data.write(to: url, options: [.atomic])
     }
 

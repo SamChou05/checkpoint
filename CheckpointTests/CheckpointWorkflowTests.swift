@@ -1674,6 +1674,47 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testUnlockRelockMonitorStartsInsideCurrentBreakWindow() {
+        let start = Date(timeIntervalSince1970: 1_780_000_000)
+        let expiration = start.addingTimeInterval(300)
+
+        let monitorStart = ScreenTimeController.unlockRelockMonitorStart(for: start, expiration: expiration)
+
+        XCTAssertEqual(monitorStart.timeIntervalSince(start), -ScreenTimeController.unlockRelockMonitorLeadIn, accuracy: 0.001)
+        XCTAssertLessThan(monitorStart, expiration)
+    }
+
+    @MainActor
+    func testSharedSelectionDataFallsBackToAppGroupFileForExtensions() {
+        let data = Data("encoded protected app selection".utf8)
+
+        SharedAppGroup.publishScreenTimeSelectionData(data)
+        SharedAppGroup.defaults.removeObject(forKey: SharedAppGroup.screenTimeSelectionKey)
+        SharedAppGroup.defaults.synchronize()
+
+        XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), data)
+    }
+
+    @MainActor
+    func testUnlockRelockExtensionDiagnosticsAreRecorded() {
+        let intervalStart = Date().addingTimeInterval(-30)
+        let expectedEnd = Date().addingTimeInterval(300)
+
+        SharedAppGroup.markUnlockRelockMonitorScheduled(intervalStart: intervalStart, expectedEnd: expectedEnd)
+        SharedAppGroup.markUnlockRelockExtensionIntervalStarted()
+        SharedAppGroup.markUnlockRelockExtensionIntervalEnded(result: "relocked")
+
+        let defaults = SharedAppGroup.defaults
+        XCTAssertNotNil(defaults.object(forKey: SharedAppGroup.unlockRelockMonitorScheduledAtKey) as? Date)
+        XCTAssertEqual(defaults.object(forKey: SharedAppGroup.unlockRelockMonitorIntervalStartKey) as? Date, intervalStart)
+        XCTAssertEqual(defaults.object(forKey: SharedAppGroup.unlockRelockMonitorExpectedEndKey) as? Date, expectedEnd)
+        XCTAssertEqual(defaults.integer(forKey: SharedAppGroup.unlockRelockExtensionIntervalStartCountKey), 1)
+        XCTAssertEqual(defaults.integer(forKey: SharedAppGroup.unlockRelockExtensionIntervalEndCountKey), 1)
+        XCTAssertEqual(defaults.string(forKey: SharedAppGroup.unlockRelockExtensionLastResultKey), "relocked")
+        XCTAssertNotNil(defaults.object(forKey: SharedAppGroup.unlockRelockExtensionLastEventDateKey) as? Date)
+    }
+
+    @MainActor
     func testPendingShieldAttemptWithoutQuestionsShowsRecoveryNotice() {
         let store = CheckpointStore(defaults: defaults)
         store.goal = makeGoal()
@@ -3541,8 +3582,16 @@ private func resetSharedAppGroupState() {
         SharedAppGroup.shieldConfigurationRenderCountKey,
         SharedAppGroup.lastUnlockExpirationKey,
         SharedAppGroup.desiredShieldActiveKey,
-        SharedAppGroup.screenTimeSelectionKey
+        SharedAppGroup.screenTimeSelectionKey,
+        SharedAppGroup.unlockRelockMonitorScheduledAtKey,
+        SharedAppGroup.unlockRelockMonitorIntervalStartKey,
+        SharedAppGroup.unlockRelockMonitorExpectedEndKey,
+        SharedAppGroup.unlockRelockExtensionIntervalStartCountKey,
+        SharedAppGroup.unlockRelockExtensionIntervalEndCountKey,
+        SharedAppGroup.unlockRelockExtensionLastEventDateKey,
+        SharedAppGroup.unlockRelockExtensionLastResultKey
     ].forEach { defaults.removeObject(forKey: $0) }
     defaults.synchronize()
     SharedAppGroup.removeShieldContextFile()
+    SharedAppGroup.removeScreenTimeSelectionFile()
 }

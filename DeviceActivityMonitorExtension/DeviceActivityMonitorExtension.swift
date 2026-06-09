@@ -8,6 +8,12 @@ import ManagedSettings
 final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     private let managedStore = ManagedSettingsStore()
 
+    override func intervalDidStart(for activity: DeviceActivityName) {
+        super.intervalDidStart(for: activity)
+        guard activity == .checkpointUnlockWindow else { return }
+        SharedAppGroup.markUnlockRelockExtensionIntervalStarted()
+    }
+
     override func intervalDidEnd(for activity: DeviceActivityName) {
         super.intervalDidEnd(for: activity)
         guard activity == .checkpointUnlockWindow else { return }
@@ -15,18 +21,23 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     }
 
     private func reapplyShieldIfUnlockExpired() {
-        guard SharedAppGroup.desiredShieldActive else { return }
+        guard SharedAppGroup.desiredShieldActive else {
+            SharedAppGroup.markUnlockRelockExtensionIntervalEnded(result: "skipped: protection inactive")
+            return
+        }
 
         if let unlockExpiration = SharedAppGroup.unlockExpiration, unlockExpiration > Date() {
+            SharedAppGroup.markUnlockRelockExtensionIntervalEnded(result: "skipped: break still active")
             return
         }
 
         guard let selection = restoredSelection, hasRestrictedItems(in: selection) else {
-            managedStore.clearAllSettings()
             SharedAppGroup.markUnlockRelockNeedsAppReconciliation()
+            SharedAppGroup.markUnlockRelockExtensionIntervalEnded(result: "failed: missing protected app selection")
             return
         }
 
+        managedStore.clearAllSettings()
         managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
         managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
 
@@ -38,11 +49,12 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
 
         SharedAppGroup.publishDesiredShieldActive(true)
         SharedAppGroup.publishUnlockExpiration(nil)
+        SharedAppGroup.markUnlockRelockExtensionIntervalEnded(result: "relocked")
     }
 
     private var restoredSelection: FamilyActivitySelection? {
         guard
-            let data = SharedAppGroup.defaults.data(forKey: SharedAppGroup.screenTimeSelectionKey),
+            let data = SharedAppGroup.screenTimeSelectionData(),
             let decodedSelection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
         else { return nil }
 
