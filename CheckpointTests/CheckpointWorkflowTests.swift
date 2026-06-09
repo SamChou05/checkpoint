@@ -1663,6 +1663,17 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testRelockReconciliationPreservesProtectionIntentWhenSelectionRestoreFails() {
+        SharedAppGroup.publishDesiredShieldActive(true)
+        SharedAppGroup.publishUnlockExpiration(Date().addingTimeInterval(-1))
+
+        SharedAppGroup.markUnlockRelockNeedsAppReconciliation()
+
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+    }
+
+    @MainActor
     func testPendingShieldAttemptWithoutQuestionsShowsRecoveryNotice() {
         let store = CheckpointStore(defaults: defaults)
         store.goal = makeGoal()

@@ -251,10 +251,15 @@ final class ScreenTimeController {
         #endif
     }
 
-    func reconcileShieldState() {
-        guard SharedAppGroup.desiredShieldActive else { return }
+    func reconcileShieldState(
+        protectionShouldRemainActive: Bool? = nil,
+        fallbackUnlockExpiration: Date? = nil
+    ) {
+        let shouldRemainActive = protectionShouldRemainActive ?? SharedAppGroup.desiredShieldActive
+        guard shouldRemainActive else { return }
 
-        if let unlockExpiration = SharedAppGroup.unlockExpiration, unlockExpiration > Date() {
+        let unlockExpiration = SharedAppGroup.unlockExpiration ?? fallbackUnlockExpiration
+        if let unlockExpiration, unlockExpiration > Date() {
             setupState = .temporarilyUnlocked
             isShieldingEnabled = false
             scheduleForegroundRelock(until: unlockExpiration)

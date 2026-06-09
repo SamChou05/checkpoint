@@ -58,6 +58,7 @@ struct RootView: View {
             purchaseController.startListeningForTransactions()
             await refreshPlanAccessFromEntitlements()
             await purchaseController.loadProducts()
+            reconcileProtectionState()
             handlePendingShieldActivation()
             Task {
                 await screenTime.requestInitialAuthorizationIfNeeded()
@@ -65,7 +66,7 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
-            screenTime.reconcileShieldState()
+            reconcileProtectionState()
             Task {
                 await refreshPlanAccessFromEntitlements()
             }
@@ -91,6 +92,13 @@ struct RootView: View {
             activeShieldSession = await store.preparePendingShieldSession()
             isPreparingShieldSession = false
         }
+    }
+
+    private func reconcileProtectionState() {
+        screenTime.reconcileShieldState(
+            protectionShouldRemainActive: SharedAppGroup.desiredShieldActive || store.unlockSession != nil,
+            fallbackUnlockExpiration: store.unlockSession?.expiresAt
+        )
     }
 
     @MainActor

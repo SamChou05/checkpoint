@@ -23,8 +23,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
 
         guard let selection = restoredSelection, hasRestrictedItems(in: selection) else {
             managedStore.clearAllSettings()
-            SharedAppGroup.publishDesiredShieldActive(false)
-            SharedAppGroup.publishUnlockExpiration(nil)
+            SharedAppGroup.markUnlockRelockNeedsAppReconciliation()
             return
         }
 

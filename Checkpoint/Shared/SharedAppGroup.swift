@@ -105,6 +105,11 @@ enum SharedAppGroup {
         defaults.set(isActive, forKey: desiredShieldActiveKey)
     }
 
+    static func markUnlockRelockNeedsAppReconciliation() {
+        publishDesiredShieldActive(true)
+        publishUnlockExpiration(nil)
+    }
+
     static var desiredShieldActive: Bool {
         defaults.bool(forKey: desiredShieldActiveKey)
     }
