@@ -76,6 +76,7 @@ final class CheckpointStore {
     @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
+    @ObservationIgnored private static let urgentRefillTargetMultiplier = 2
     @ObservationIgnored private static let maximumQuestionGenerationTraceCount = 20
     @ObservationIgnored private static let maximumQuestionGenerationPreviewCount = 12
     @ObservationIgnored private static let levelUpRecentAttemptWindow = 10
@@ -83,6 +84,8 @@ final class CheckpointStore {
     @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
     @ObservationIgnored private static let maximumExactQuestionAskCount = 2
     @ObservationIgnored private static let failedCheckpointCooldown: TimeInterval = 5 * 60
+    @ObservationIgnored private static let questionBankTopOffWaitIntervalNanoseconds: UInt64 = 100_000_000
+    @ObservationIgnored private static let questionBankTopOffWaitAttemptCount = 10
 
     // MARK: - Lifecycle
 
@@ -98,6 +101,7 @@ final class CheckpointStore {
         isOnboardingPresented = goal == nil
         publishShieldContext()
         replaceActiveLocalTemplateQuestionBankIfNeeded()
+        resumeQuestionBankMaintenanceIfNeeded()
     }
 
     // MARK: - Derived state
@@ -895,6 +899,13 @@ final class CheckpointStore {
         for goal: Goal,
         starterQuestionIDs: Set<CheckpointQuestion.ID> = []
     ) {
+        guard !questionBankTopOffGoalIDs.contains(goal.id) else { return }
+
+        questionBankTopOffGoalIDs.insert(goal.id)
+        if self.goal?.id == goal.id {
+            beginQuestionBankTopOff(for: goal.id)
+        }
+
         Task { [weak self] in
             await self?.topOffQuestionBank(for: goal, starterQuestionIDs: starterQuestionIDs)
         }
@@ -915,6 +926,13 @@ final class CheckpointStore {
         for targetGoal: Goal,
         starterQuestionIDs: Set<CheckpointQuestion.ID>
     ) async {
+        defer {
+            questionBankTopOffGoalIDs.remove(targetGoal.id)
+            if goal?.id == targetGoal.id {
+                finishQuestionBankTopOff(for: targetGoal.id)
+            }
+        }
+
         guard goalProfiles.contains(where: { $0.id == targetGoal.id }) || goal?.id == targetGoal.id else { return }
         guard isMember || !starterQuestionIDs.isEmpty else {
             if goal?.id == targetGoal.id {
@@ -924,24 +942,12 @@ final class CheckpointStore {
             }
             return
         }
-        guard !questionBankTopOffGoalIDs.contains(targetGoal.id) else { return }
-        questionBankTopOffGoalIDs.insert(targetGoal.id)
-        defer { questionBankTopOffGoalIDs.remove(targetGoal.id) }
-
-        if goal?.id == targetGoal.id {
-            beginQuestionBankTopOff(for: targetGoal.id)
-        }
 
         let existingQuestions = questions.filter { $0.goalID == targetGoal.id }
         let existingCompetencies = competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id }
         let remainingTargetCount = questionBankDeficit(for: targetGoal)
 
-        guard remainingTargetCount > 0 else {
-            if goal?.id == targetGoal.id {
-                finishQuestionBankTopOff(for: targetGoal.id)
-            }
-            return
-        }
+        guard remainingTargetCount > 0 else { return }
 
         let topOffRequest = generationRequest(
             goal: targetGoal,
@@ -958,9 +964,6 @@ final class CheckpointStore {
 
         guard let currentTargetGoal = availableGoalProfiles.first(where: { $0.id == targetGoal.id }) ?? (goal?.id == targetGoal.id ? goal : nil),
               currentTargetGoal.minimumQuestionDifficulty == targetGoal.minimumQuestionDifficulty else {
-            if goal?.id == targetGoal.id {
-                finishQuestionBankTopOff(for: targetGoal.id)
-            }
             save()
             publishShieldContext()
             return
@@ -991,7 +994,6 @@ final class CheckpointStore {
         )
         if goal?.id == targetGoal.id {
             questionBatchState = goalQuestions.isEmpty ? .failed : .ready
-            finishQuestionBankTopOff(for: targetGoal.id)
         }
         save()
         publishShieldContext()
@@ -1090,14 +1092,13 @@ final class CheckpointStore {
             return false
         }
 
-        lastAutomaticQuestionRefreshAt = Date()
         if needsCoreRefill {
             let readyCount = readyQuestionCount(
                 for: goal,
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
             )
             let urgentTargetCount = max(
-                Self.initialCheckpointReadyTargetCount,
+                Self.initialCheckpointReadyTargetCount * Self.urgentRefillTargetMultiplier,
                 refillMinimum - readyCount
             )
             await refreshQuestionBatch(
@@ -1106,6 +1107,7 @@ final class CheckpointStore {
             )
             scheduleQuestionBankMaintenanceIfNeeded(for: goal)
         } else {
+            lastAutomaticQuestionRefreshAt = Date()
             if QuestionRefreshReason.automaticProactiveRefill.countsAsRefresh(isMember: isMember) {
                 questionRefreshesUsed += 1
             }
@@ -1131,11 +1133,18 @@ final class CheckpointStore {
     }
 
     func nextCheckpointSession() -> CheckpointSession? {
-        let selectedQuestions = nextQuestions(limit: unlockPolicy.questionsPerSession)
+        nextCheckpointSession(requiresFullSet: false)
+    }
+
+    private func nextCheckpointSession(requiresFullSet: Bool) -> CheckpointSession? {
+        let questionCount = unlockPolicy.questionsPerSession
+        let selectedQuestions = nextQuestions(limit: questionCount)
         guard !selectedQuestions.isEmpty else { return nil }
+        guard !requiresFullSet || selectedQuestions.count >= questionCount else { return nil }
+
         return CheckpointSession(
             questions: selectedQuestions,
-            requiredCorrectAnswers: min(unlockPolicy.requiredCorrectAnswers, selectedQuestions.count)
+            requiredCorrectAnswers: unlockPolicy.requiredCorrectAnswers
         )
     }
 
@@ -1347,8 +1356,10 @@ final class CheckpointStore {
             checkpointNotice = cooldownMessage
             return nil
         }
+
+        guard let session = checkpointSession(source: .blockedApp) else { return nil }
         guard SharedAppGroup.consumePendingShieldAttempt() != nil else { return nil }
-        return checkpointSession(source: .blockedApp)
+        return session
     }
 
     func startManualCheckpointSession() -> CheckpointSession? {
@@ -1375,8 +1386,15 @@ final class CheckpointStore {
             return session
         }
 
+        if let goalID = goal?.id {
+            await waitForQuestionBankTopOffIfNeeded(for: goalID)
+            if let session = takePendingShieldSession() {
+                return session
+            }
+        }
+
         guard await refreshQuestionBatchIfNeeded() else { return nil }
-        return checkpointSession(source: .blockedApp)
+        return takePendingShieldSession()
     }
 
     func prepareManualCheckpointSession() async -> CheckpointSession? {
@@ -1988,7 +2006,7 @@ final class CheckpointStore {
             return nil
         }
 
-        if let session = nextCheckpointSession() {
+        if let session = nextCheckpointSession(requiresFullSet: true) {
             checkpointNotice = nil
             return CheckpointSession(
                 questions: session.questions,
@@ -2065,6 +2083,29 @@ final class CheckpointStore {
         } else if questionBatchState == .failed, hasReadyCheckpointSet {
             questionBatchState = .ready
             save()
+        }
+    }
+
+    private func resumeQuestionBankMaintenanceIfNeeded() {
+        guard let goal,
+              isMember,
+              questionBatchState != .generating,
+              !backgroundGenerationGoalIDs.contains(goal.id),
+              !questionBankTopOffGoalIDs.contains(goal.id),
+              readyQuestionCount(for: goal) <= ProductLimits.autoRefreshThreshold,
+              questionBankDeficit(for: goal) > 0 else {
+            return
+        }
+
+        topOffQuestionBankInBackground(for: goal)
+    }
+
+    private func waitForQuestionBankTopOffIfNeeded(for goalID: Goal.ID) async {
+        var attempts = 0
+        while questionBankTopOffGoalIDs.contains(goalID),
+              attempts < Self.questionBankTopOffWaitAttemptCount {
+            try? await Task.sleep(nanoseconds: Self.questionBankTopOffWaitIntervalNanoseconds)
+            attempts += 1
         }
     }
 

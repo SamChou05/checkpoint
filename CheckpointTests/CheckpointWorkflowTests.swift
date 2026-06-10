@@ -799,7 +799,7 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         let request = try XCTUnwrap(localEngine.receivedRequest)
         XCTAssertEqual(request.goal.id, secondGoal.id)
-        XCTAssertEqual(request.targetCount, StopBlockingPolicy.questionsPerSession - 12)
+        XCTAssertEqual(request.targetCount, UnlockPolicy.default.questionsPerSession * 2)
     }
 
     @MainActor
@@ -1889,7 +1889,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let session = try XCTUnwrap(preparedSession)
 
         let request = try XCTUnwrap(backendEngine.receivedRequests.first)
-        XCTAssertEqual(request.targetCount, store.unlockPolicy.questionsPerSession)
+        XCTAssertEqual(request.targetCount, store.unlockPolicy.questionsPerSession * 2)
         XCTAssertTrue(localEngine.receivedRequests.isEmpty)
         XCTAssertEqual(session.questions.count, store.unlockPolicy.questionsPerSession)
         XCTAssertEqual(store.questionRefreshesUsed, 2 + 1)
@@ -1930,9 +1930,57 @@ final class CheckpointWorkflowTests: XCTestCase {
         let session = try XCTUnwrap(preparedSession)
 
         XCTAssertEqual(session.questions.count, store.unlockPolicy.questionsPerSession)
-        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, store.unlockPolicy.questionsPerSession)
+        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, store.unlockPolicy.questionsPerSession * 2)
         XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
         XCTAssertNil(store.checkpointNotice)
+    }
+
+    @MainActor
+    func testPendingShieldAttemptDoesNotStartPartialSessionWhenRefillIsShort() async throws {
+        let goal = makeGoal()
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.questions = (1...3).map { makeQuestion(goal: goal, index: $0) }
+
+        SharedAppGroup.markPendingShieldAttempt()
+        let preparedSession = await store.preparePendingShieldSession()
+
+        XCTAssertNil(preparedSession)
+        XCTAssertNotNil(SharedAppGroup.pendingShieldAttemptDate)
+        XCTAssertFalse(store.checkpointNotice?.contains("3") ?? false)
+        XCTAssertGreaterThanOrEqual(localEngine.receivedRequests.first?.targetCount ?? 0, store.unlockPolicy.questionsPerSession * 2)
+    }
+
+    @MainActor
+    func testPendingShieldAttemptConsumesAfterSecondRefillCompletesFullSet() async throws {
+        let goal = makeGoal()
+        let localEngine = CountSequenceQuestionEngine(provider: .localTemplates, counts: [1, 10])
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.localTemplates)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.questions = (1...3).map { makeQuestion(goal: goal, index: $0) }
+
+        SharedAppGroup.markPendingShieldAttempt()
+        let preparedSession = await store.preparePendingShieldSession()
+        let session = try XCTUnwrap(preparedSession)
+
+        XCTAssertEqual(session.questions.count, store.unlockPolicy.questionsPerSession)
+        XCTAssertEqual(localEngine.receivedRequests.count, 2)
+        XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
     }
 
     @MainActor
@@ -1975,14 +2023,14 @@ final class CheckpointWorkflowTests: XCTestCase {
         let session = try XCTUnwrap(preparedSession)
 
         XCTAssertEqual(session.questions.count, UnlockPolicy.default.questionsPerSession)
-        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, UnlockPolicy.default.questionsPerSession)
+        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, UnlockPolicy.default.questionsPerSession * 2)
         XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
     }
 
     @MainActor
     func testMemberRefillsWhenCorrectQuestionsAreStillCoolingDown() async throws {
         let goal = makeGoal()
-        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let localEngine = TargetCountQuestionEngine(provider: .localTemplates)
         let engine = HybridQuestionEngine(
             localEngine: localEngine,
             backendEngine: ThrowingQuestionEngine(provider: .backend),
@@ -2007,8 +2055,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         let preparedSession = await store.prepareManualCheckpointSession()
         let session = try XCTUnwrap(preparedSession)
 
-        let request = try XCTUnwrap(localEngine.receivedRequest)
-        XCTAssertEqual(request.targetCount, store.unlockPolicy.questionsPerSession)
+        let request = try XCTUnwrap(localEngine.receivedRequests.first)
+        XCTAssertEqual(request.targetCount, store.unlockPolicy.questionsPerSession * 2)
         XCTAssertFalse(session.questions.contains { question in
             question.status == .correct && (question.nextReviewAt ?? .distantPast) > Date()
         })
@@ -2047,6 +2095,35 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertFalse(didRefreshAgain)
         XCTAssertEqual(store.questions.count, store.unlockPolicy.questionsPerSession + 1)
         XCTAssertEqual(store.questionRefreshesUsed, 1)
+    }
+
+    @MainActor
+    func testLowQuestionBankResumesTopOffOnRelaunchEvenAfterRecentCoreRefill() async throws {
+        let goal = makeGoal()
+        let seededStore = CheckpointStore(defaults: defaults)
+        seededStore.updateMembershipTier(.member)
+        seededStore.goal = goal
+        seededStore.questions = (1...UnlockPolicy.default.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
+        seededStore.lastAutomaticQuestionRefreshAt = Date()
+        seededStore.updateAIProviderPreference(.localTemplates)
+
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let relaunchedStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        XCTAssertEqual(relaunchedStore.goal?.id, goal.id)
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertEqual(request.targetCount, ProductLimits.memberQuestionBankTargetCount - UnlockPolicy.default.questionsPerSession)
     }
 
     @MainActor
@@ -2146,6 +2223,7 @@ final class CheckpointWorkflowTests: XCTestCase {
                 grantsUnlock: false
             )
         }
+        try await Task.sleep(nanoseconds: 100_000_000)
 
         await store.acceptQuestionLevelRecommendation()
 
@@ -3385,6 +3463,35 @@ private final class TargetCountQuestionEngine: QuestionGenerating, @unchecked Se
                 index: index,
                 topic: request.questionContext.contentTopics[(index - 1) % request.questionContext.contentTopics.count],
                 prompt: "\(request.goal.title) \(provider.rawValue) target \(request.targetCount) question \(index)",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+}
+
+private final class CountSequenceQuestionEngine: QuestionGenerating, @unchecked Sendable {
+    let provider: AIProviderKind
+    let counts: [Int]
+    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+
+    init(provider: AIProviderKind, counts: [Int]) {
+        self.provider = provider
+        self.counts = counts
+    }
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        receivedRequests.append(request)
+        let requestIndex = receivedRequests.count - 1
+        let count = counts.indices.contains(requestIndex) ? counts[requestIndex] : (counts.last ?? request.targetCount)
+        guard count > 0 else { return [] }
+
+        return (1...count).map { index in
+            makeQuestion(
+                goal: request.goal,
+                index: (requestIndex + 1) * 100 + index,
+                topic: request.questionContext.contentTopics[(index - 1) % request.questionContext.contentTopics.count],
+                prompt: "\(request.goal.title) \(provider.rawValue) sequence \(requestIndex + 1) question \(index)",
                 difficulty: request.minimumDifficulty,
                 sourcePrompt: request.sourcePrompt(provider: provider)
             )
