@@ -1,13 +1,17 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var store = CheckpointStore()
+    let store: CheckpointStore
     @State private var screenTime = ScreenTimeController()
     @State private var purchaseController = PurchaseController()
     @State private var selectedTab: AppTab = .home
     @State private var activeShieldSession: CheckpointSession?
     @State private var isPreparingShieldSession = false
     @Environment(\.scenePhase) private var scenePhase
+
+    init(store: CheckpointStore) {
+        self.store = store
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -57,20 +61,31 @@ struct RootView: View {
             }
             purchaseController.startListeningForTransactions()
             await refreshPlanAccessFromEntitlements()
-            await purchaseController.loadProducts()
             reconcileProtectionState()
             handlePendingShieldActivation()
             Task {
                 await screenTime.requestInitialAuthorizationIfNeeded()
             }
+            Task {
+                await store.prepareQuestionMaintenanceAfterLaunch()
+                QuestionBankBackgroundScheduler.schedule()
+            }
+            Task {
+                await purchaseController.loadProducts()
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
-            guard newPhase == .active else { return }
-            reconcileProtectionState()
-            Task {
-                await refreshPlanAccessFromEntitlements()
+            if newPhase == .active {
+                reconcileProtectionState()
+                Task {
+                    await refreshPlanAccessFromEntitlements()
+                    _ = await store.performBackgroundQuestionMaintenance(maximumBatchCount: 1)
+                }
+                handlePendingShieldActivation()
+            } else if newPhase == .background {
+                store.scheduleServerQuestionReserveMaintenance()
+                QuestionBankBackgroundScheduler.schedule()
             }
-            handlePendingShieldActivation()
         }
         .onChange(of: store.goal) { _, _ in
             screenTime.refreshActiveShieldConfiguration()

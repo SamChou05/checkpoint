@@ -678,6 +678,117 @@ class PromptEvalTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertTrue(any("near-duplicate prompt" in failure for failure in result["failures"]))
 
+    def test_rejects_prompt_repeated_from_structured_feedback(self):
+        fixture = _fixture()
+        reported_prompt = _good_question()["prompt"]
+        fixture["payload"]["reportedQuestionFeedback"] = [
+            {
+                "prompt": reported_prompt,
+                "reason": "Confusing",
+                "note": "The stem was ambiguous.",
+            }
+        ]
+
+        result = checkpoint_question_eval.score_case_response(
+            fixture,
+            {
+                "case_id": "coding_eval",
+                "run": 1,
+                "questions": [_good_question()],
+            },
+        )
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(
+            any(
+                "duplicates existing/reported prompt" in failure
+                for failure in result["questions"][0]["failures"]
+            )
+        )
+
+    def test_coverage_plan_grading_requires_each_planned_slot(self):
+        fixture = _fixture()
+        fixture["payload"]["coveragePlan"] = [
+            {"topic": "arrays", "avenue": "Edge case or constraint"},
+            {"topic": "recursion", "avenue": "Misconception diagnosis"},
+        ]
+        fixture["expect"].update(
+            {
+                "require_coverage_plan_adherence": True,
+                "require_subtopic": True,
+                "require_avenue": True,
+                "min_distinct_subtopics": 2,
+                "min_distinct_avenues": 2,
+                "require_unique_subtopic_avenue_pairs": True,
+            }
+        )
+        arrays = {
+            **_good_question(),
+            "topic": "arrays",
+            "subtopic": "empty-input boundaries",
+            "avenue": "Edge case or constraint",
+        }
+        recursion = {
+            **_good_question(),
+            "prompt": "A recursive traversal keeps descending after a leaf. Which misconception caused the extra call?",
+            "topic": "recursion",
+            "subtopic": "base-case placement",
+            "avenue": "Misconception diagnosis",
+        }
+
+        passing = checkpoint_question_eval.score_case_response(
+            fixture,
+            {"case_id": "coding_eval", "run": 1, "questions": [arrays, recursion]},
+        )
+        missing = checkpoint_question_eval.score_case_response(
+            fixture,
+            {"case_id": "coding_eval", "run": 2, "questions": [arrays]},
+        )
+
+        self.assertTrue(passing["passed"])
+        self.assertEqual(passing["coverage"]["matched_usable_slot_count"], 2)
+        self.assertFalse(missing["passed"])
+        self.assertTrue(any("Missing usable coverage-plan slots" in failure for failure in missing["failures"]))
+
+    def test_repeat_run_metrics_detect_production_style_prompt_overlap(self):
+        responses = [
+            {
+                "run": 1,
+                "questions": [
+                    {
+                        "prompt": "A service stores account records by identifier and needs average constant-time lookup. Which data structure best fits?"
+                    }
+                ],
+            },
+            {
+                "run": 2,
+                "questions": [
+                    {
+                        "prompt": "A service stores account records by identifier and needs average constant-time lookup. What data structure fits?"
+                    }
+                ],
+            },
+            {
+                "run": 3,
+                "questions": [
+                    {
+                        "prompt": "A recursive traversal reaches a leaf. Which base case prevents another child call?"
+                    }
+                ],
+            },
+        ]
+
+        metrics = checkpoint_question_eval.repeat_run_freshness_metrics(
+            "coding_eval",
+            responses,
+        )
+
+        self.assertIsNotNone(metrics)
+        self.assertEqual(metrics["run_pair_count"], 3)
+        self.assertEqual(metrics["compared_prompt_count"], 3)
+        self.assertEqual(metrics["overlapping_prompt_count"], 1)
+        self.assertAlmostEqual(metrics["prompt_freshness_rate"], 2 / 3)
+
     def test_provider_capture_error_is_scoreable_failure(self):
         result = checkpoint_question_eval.score_case_response(
             _fixture(),

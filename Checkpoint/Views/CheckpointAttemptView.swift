@@ -6,12 +6,25 @@ struct CheckpointAttemptView: View {
     let session: CheckpointSession
 
     @Environment(\.dismiss) private var dismiss
+    @State private var sessionQuestions: [CheckpointQuestion]
     @State private var currentQuestionIndex = 0
     @State private var correctAnswerCount = 0
     @State private var missedQuestionIDs: Set<CheckpointQuestion.ID> = []
+    @State private var voidedQuestionIDs: Set<CheckpointQuestion.ID> = []
     @State private var answer = ""
     @State private var result: AnswerResult = .correct
     @State private var checkedAnswer: CheckedCheckpointAnswer?
+    @State private var isReportingQuestion = false
+    @State private var reportReason: QuestionReportReason = .confusing
+    @State private var reportNote = ""
+    @State private var reportReplacementUnavailable = false
+
+    init(store: CheckpointStore, screenTime: ScreenTimeController, session: CheckpointSession) {
+        self.store = store
+        self.screenTime = screenTime
+        self.session = session
+        _sessionQuestions = State(initialValue: session.questions)
+    }
 
     var body: some View {
         NavigationStack {
@@ -30,20 +43,27 @@ struct CheckpointAttemptView: View {
 
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("Question \(currentQuestionIndex + 1) of \(session.questions.count)")
+                                Text("Question \(displayedUsefulQuestionNumber) of \(effectiveQuestionCount)")
                                     .font(.caption.weight(.bold))
                                     .foregroundStyle(CheckpointTheme.text)
 
                                 Spacer()
 
-                                Text("\(correctAnswerCount)/\(session.unlockThreshold) correct")
+                                Text("\(correctAnswerCount)/\(effectiveUnlockThreshold) correct")
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(CheckpointTheme.muted)
+
+                            }
+
+                            if !voidedQuestionIDs.isEmpty {
+                                Text("\(voidedQuestionIDs.count) question\(voidedQuestionIDs.count == 1 ? "" : "s") replaced and not scored")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.blue)
                             }
 
                             ProgressView(
-                                value: Double(currentQuestionIndex),
-                                total: Double(max(session.questions.count, 1))
+                                value: Double(completedUsefulQuestionCount),
+                                total: Double(max(effectiveQuestionCount, 1))
                             )
                             .tint(CheckpointTheme.teal)
                         }
@@ -94,15 +114,26 @@ struct CheckpointAttemptView: View {
                         if let checkedAnswer {
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
-                                    Text(checkedAnswer.result == .correct ? "Correct" : "Not quite")
+                                    Text(
+                                        checkedAnswer.isVoided
+                                            ? "Not scored"
+                                            : (checkedAnswer.result == .correct ? "Correct" : "Not quite")
+                                    )
                                         .font(.headline)
                                         .foregroundStyle(CheckpointTheme.text)
                                     Spacer()
-                                    StatusBadge(text: checkedAnswer.result.rawValue, tint: resultTint(for: checkedAnswer.result))
+                                    StatusBadge(
+                                        text: checkedAnswer.isVoided ? "Replaced" : checkedAnswer.result.rawValue,
+                                        tint: checkedAnswer.isVoided ? CheckpointTheme.blue : resultTint(for: checkedAnswer.result)
+                                    )
                                 }
 
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("Answer")
+                                    Text(
+                                        isExpectedAnswerDisputed
+                                            ? "Reported answer (may be incorrect)"
+                                            : "Answer"
+                                    )
                                         .font(.caption.weight(.bold))
                                         .foregroundStyle(CheckpointTheme.muted)
 
@@ -119,7 +150,12 @@ struct CheckpointAttemptView: View {
                                 .padding(12)
                                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
 
-                                if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
+                                reportQuestionControls
+
+                                if !checkedAnswer.isVoided
+                                    && checkedAnswer.result != .correct
+                                    && checkedAnswer.shouldFinish
+                                    && !checkedAnswer.shouldPass {
                                     Text(failedSessionFeedbackText)
                                         .font(.footnote.weight(.semibold))
                                         .foregroundStyle(CheckpointTheme.amber)
@@ -150,17 +186,26 @@ struct CheckpointAttemptView: View {
                         }
                     }
 
-                    PrimaryActionButton(
-                        title: submitButtonTitle,
-                        systemImage: submitButtonIcon
-                    ) {
-                        handlePrimaryAction()
+                    if let checkedAnswer, checkedAnswer.shouldFinish, session.purpose != .preview {
+                        growthReceiptPanel(for: checkedAnswer)
                     }
-                    .disabled(checkedAnswer == nil && answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
                 }
                 .padding(20)
             }
             .checkpointScreenBackground()
+            .safeAreaInset(edge: .bottom) {
+                PrimaryActionButton(
+                    title: submitButtonTitle,
+                    systemImage: submitButtonIcon
+                ) {
+                    handlePrimaryAction()
+                }
+                .disabled(checkedAnswer == nil && answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(.ultraThinMaterial)
+            }
             .navigationTitle("Checkpoint")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
@@ -176,11 +221,48 @@ struct CheckpointAttemptView: View {
     }
 
     private var question: CheckpointQuestion {
-        session.questions[currentQuestionIndex]
+        sessionQuestions[currentQuestionIndex]
     }
 
     private var isFinalQuestion: Bool {
-        currentQuestionIndex >= session.questions.count - 1
+        currentQuestionIndex >= sessionQuestions.count - 1
+    }
+
+    private var effectiveQuestionCount: Int {
+        max(0, sessionQuestions.count - voidedQuestionIDs.count)
+    }
+
+    private var displayedUsefulQuestionNumber: Int {
+        let usefulQuestionsBeforeCurrent = sessionQuestions
+            .prefix(min(currentQuestionIndex, sessionQuestions.count))
+            .filter { !voidedQuestionIDs.contains($0.id) }
+            .count
+        return min(max(1, effectiveQuestionCount), usefulQuestionsBeforeCurrent + 1)
+    }
+
+    private var completedUsefulQuestionCount: Int {
+        let usefulQuestionsBeforeCurrent = sessionQuestions
+            .prefix(min(currentQuestionIndex, sessionQuestions.count))
+            .filter { !voidedQuestionIDs.contains($0.id) }
+            .count
+        let currentQuestionCounts = checkedAnswer != nil && !voidedQuestionIDs.contains(question.id)
+        return usefulQuestionsBeforeCurrent + (currentQuestionCounts ? 1 : 0)
+    }
+
+    private var effectiveUnlockThreshold: Int {
+        CheckpointSessionOutcome.evaluate(
+            requiredCorrectAnswers: session.requiredCorrectAnswers,
+            effectiveQuestionCount: effectiveQuestionCount,
+            answeredQuestionCount: answeredUsefulQuestionCount,
+            correctAnswerCount: correctAnswerCount
+        ).unlockThreshold
+    }
+
+    private var answeredUsefulQuestionCount: Int {
+        sessionQuestions
+            .prefix(min(currentQuestionIndex + 1, sessionQuestions.count))
+            .filter { !voidedQuestionIDs.contains($0.id) }
+            .count
     }
 
     private var usesAutomaticEvaluation: Bool {
@@ -189,6 +271,10 @@ struct CheckpointAttemptView: View {
 
     private var evaluation: AnswerEvaluation {
         AnswerGrader.evaluate(answer: answer, question: question)
+    }
+
+    private var isExpectedAnswerDisputed: Bool {
+        store.questionReport(for: question)?.reason == .wrongAnswer
     }
 
     private var automaticGateStatus: String {
@@ -298,12 +384,15 @@ struct CheckpointAttemptView: View {
             updatedMissedQuestionIDs.insert(question.id)
         }
 
-        let answeredQuestionCount = currentQuestionIndex + 1
-        let shouldFinish = isFinalQuestion || !session.canStillMeetUnlockThreshold(
-            correctAnswerCount: updatedCorrectCount,
-            answeredQuestionCount: answeredQuestionCount
+        let answeredQuestionCount = answeredUsefulQuestionCount
+        let outcome = CheckpointSessionOutcome.evaluate(
+            requiredCorrectAnswers: session.requiredCorrectAnswers,
+            effectiveQuestionCount: effectiveQuestionCount,
+            answeredQuestionCount: answeredQuestionCount,
+            correctAnswerCount: updatedCorrectCount
         )
-        let shouldPass = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
+        let shouldFinish = isFinalQuestion || outcome.shouldFinish
+        let shouldPass = shouldFinish && updatedCorrectCount >= outcome.unlockThreshold
 
         if session.purpose != .preview {
             store.submitAnswer(
@@ -326,7 +415,8 @@ struct CheckpointAttemptView: View {
             shouldFinish: shouldFinish,
             shouldPass: shouldPass,
             unlockMinutes: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : 0,
-            missedQuestionIDs: updatedMissedQuestionIDs
+            missedQuestionIDs: updatedMissedQuestionIDs,
+            isVoided: false
         )
     }
 
@@ -358,6 +448,214 @@ struct CheckpointAttemptView: View {
         answer = ""
         result = .correct
         checkedAnswer = nil
+        isReportingQuestion = false
+        reportReason = .confusing
+        reportNote = ""
+        reportReplacementUnavailable = false
+    }
+
+    @ViewBuilder
+    private var reportQuestionControls: some View {
+        if store.hasReportedQuestion(question) {
+            let savedReport = store.questionReport(for: question)
+            VStack(alignment: .leading, spacing: 5) {
+                Label(
+                    savedReport?.reason.invalidatesLearningEvidence == false
+                        ? "Difficulty feedback saved"
+                        : "Question reported",
+                    systemImage: "checkmark.circle.fill"
+                )
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+
+                Text(
+                    reportReplacementUnavailable
+                        ? (savedReport?.replacementState == .pending
+                            ? "No ready replacement was available, so this checkpoint result is unchanged. A fresh question is being prepared for next time."
+                            : "No ready replacement was available, so this checkpoint result is unchanged. Future checkpoints will still avoid this item.")
+                        : savedReport?.reason.invalidatesLearningEvidence == false
+                        ? "Your answer still counts, and future questions will be calibrated around this signal."
+                        : "It won't return in future checkpoints or count toward your learning progress."
+                )
+                    .font(.caption)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.top, 2)
+        } else if isReportingQuestion {
+            VStack(alignment: .leading, spacing: 10) {
+                Divider()
+                    .overlay(CheckpointTheme.hairline)
+
+                Picker("What's wrong?", selection: $reportReason) {
+                    ForEach(QuestionReportReason.allCases) { reason in
+                        Text(reason.rawValue).tag(reason)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                TextField("Optional note", text: $reportNote, axis: .vertical)
+                    .lineLimit(3, reservesSpace: false)
+                    .textFieldStyle(.plain)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .padding(10)
+                    .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                    .onChange(of: reportNote) { _, updatedNote in
+                        if updatedNote.count > 280 {
+                            reportNote = String(updatedNote.prefix(280))
+                        }
+                    }
+
+                HStack(spacing: 16) {
+                    Button("Cancel") {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isReportingQuestion = false
+                        }
+                    }
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .frame(minHeight: 44)
+
+                    Spacer()
+
+                    Button("Send report") {
+                        submitQuestionReport()
+                    }
+                    .fontWeight(.semibold)
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(minHeight: 44)
+                }
+                .font(.footnote)
+            }
+        } else {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isReportingQuestion = true
+                }
+            } label: {
+                Label("Report question", systemImage: "flag")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+            .buttonStyle(.plain)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+            .padding(.top, 2)
+        }
+    }
+
+    private func submitQuestionReport() {
+        let submittedReason = reportReason
+        let submittedQuestion = question
+        let didSubmit = store.reportQuestion(submittedQuestion, reason: submittedReason, note: reportNote)
+        isReportingQuestion = false
+        reportReason = .confusing
+        reportNote = ""
+
+        guard didSubmit, submittedReason.invalidatesLearningEvidence else { return }
+        reportReplacementUnavailable = !voidCurrentQuestion(submittedQuestion)
+    }
+
+    @discardableResult
+    private func voidCurrentQuestion(_ submittedQuestion: CheckpointQuestion) -> Bool {
+        guard let previousResult = checkedAnswer else { return false }
+
+        let excludedIDs = Set(sessionQuestions.map(\.id))
+        guard let replacement = store.replacementQuestion(
+            excluding: excludedIDs,
+            alongside: sessionQuestions.filter { !voidedQuestionIDs.contains($0.id) }
+        ) else {
+            return false
+        }
+        sessionQuestions.append(replacement)
+
+        voidedQuestionIDs.insert(submittedQuestion.id)
+        if previousResult.result == .correct {
+            correctAnswerCount = max(0, correctAnswerCount - 1)
+        }
+        missedQuestionIDs.remove(submittedQuestion.id)
+
+        let answeredQuestionCount = answeredUsefulQuestionCount
+        let outcome = CheckpointSessionOutcome.evaluate(
+            requiredCorrectAnswers: session.requiredCorrectAnswers,
+            effectiveQuestionCount: effectiveQuestionCount,
+            answeredQuestionCount: answeredQuestionCount,
+            correctAnswerCount: correctAnswerCount
+        )
+        let shouldFinish = outcome.shouldFinish
+        let shouldPass = outcome.shouldPass
+
+        if session.purpose != .preview,
+           previousResult.shouldFinish,
+           !previousResult.shouldPass {
+            store.clearCheckpointRetryCooldown()
+        }
+        if session.purpose != .preview, shouldFinish, !shouldPass {
+            store.makeMissedQuestionsDueNow(missedQuestionIDs)
+            store.startCheckpointRetryCooldown()
+        }
+
+        checkedAnswer = CheckedCheckpointAnswer(
+            result: previousResult.result,
+            shouldFinish: shouldFinish,
+            shouldPass: shouldPass,
+            unlockMinutes: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : 0,
+            missedQuestionIDs: missedQuestionIDs,
+            isVoided: true
+        )
+        return true
+    }
+
+    private func growthReceiptPanel(for checkedAnswer: CheckedCheckpointAnswer) -> some View {
+        var currentSession = session
+        currentSession.questions = sessionQuestions
+        let summary = store.growthSummary(
+            for: currentSession,
+            answeredQuestionCount: currentQuestionIndex + 1,
+            missedQuestionIDs: checkedAnswer.missedQuestionIDs
+        )
+
+        return SectionPanel("Session recap") {
+            VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label(summary.scoreText, systemImage: "chart.line.uptrend.xyaxis")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    if let deadlineText = summary.deadlineText {
+                        Text(deadlineText)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.muted)
+                    }
+                }
+
+                if let strengthenedTopic = summary.strengthenedTopic {
+                    GrowthSignalRow(
+                        title: "Answered well",
+                        detail: strengthenedTopic,
+                        systemImage: "arrow.up.right",
+                        tint: CheckpointTheme.teal
+                    )
+                }
+
+                if let reviewTopic = summary.reviewTopic {
+                    GrowthSignalRow(
+                        title: "Review next",
+                        detail: reviewTopic,
+                        systemImage: "scope",
+                        tint: CheckpointTheme.amber
+                    )
+                }
+
+                if let nextCheckpointText = summary.nextCheckpointText {
+                    GrowthSignalRow(
+                        title: "Next checkpoint",
+                        detail: nextCheckpointText,
+                        systemImage: "arrow.right.circle",
+                        tint: CheckpointTheme.blue
+                    )
+                }
+            }
+        }
     }
 
     private func resultTint(for result: AnswerResult) -> Color {
@@ -374,12 +672,59 @@ struct CheckpointAttemptView: View {
     }
 }
 
+private struct GrowthSignalRow: View {
+    var title: String
+    var detail: String
+    var systemImage: String
+    var tint: Color
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 10) {
+                signalLabel
+                Spacer(minLength: 12)
+                signalDetail
+                    .multilineTextAlignment(.trailing)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                signalLabel
+                signalDetail
+                    .multilineTextAlignment(.leading)
+            }
+        }
+        .padding(10)
+        .background(CheckpointTheme.panelRaised.opacity(0.72), in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var signalLabel: some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 20)
+
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.muted)
+        }
+    }
+
+    private var signalDetail: some View {
+        Text(detail)
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.text)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
 private struct CheckedCheckpointAnswer {
     let result: AnswerResult
     let shouldFinish: Bool
     let shouldPass: Bool
     let unlockMinutes: Int
     let missedQuestionIDs: Set<CheckpointQuestion.ID>
+    let isVoided: Bool
 }
 
 private struct ChoiceButton: View {

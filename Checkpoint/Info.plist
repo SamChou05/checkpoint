@@ -24,6 +24,11 @@
 	<string>$(CHECKPOINT_AI_BACKEND_ENDPOINT)</string>
 	<key>CheckpointAIBackendToken</key>
 	<string>$(CHECKPOINT_AI_BACKEND_TOKEN)</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.samchou.checkpoint.question-refresh</string>
+		<string>com.samchou.checkpoint.question-processing</string>
+	</array>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -37,6 +42,11 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations~iphone</key>

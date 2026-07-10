@@ -18,6 +18,7 @@ Checkpoint may store the following information locally on the user's device:
 - Protected-app configuration selected through Apple's Screen Time APIs.
 - Shield state, unlock expiration, and app-group coordination data used by Screen Time extensions.
 - Question reports and diagnostic information shown inside the app.
+- A random installation identifier and, if the optional cloud question reserve is enabled, a random installation secret stored in the iOS Keychain.
 
 ## Screen Time Data
 
@@ -29,7 +30,9 @@ Checkpoint does not sell Screen Time selections or use them for advertising.
 
 Checkpoint generates practice questions in batches and caches them locally.
 
-When backend AI generation is configured, Checkpoint may send goal context, focus areas, derived learning targets, weak topics, existing question prompts, and reported question prompts to the configured backend service so new questions can be generated. Backend credentials are not stored in the app.
+When backend AI generation is configured, Checkpoint may send goal context, focus areas, derived learning targets, weak topics, existing question prompts, and reported question prompts to the configured backend service so new questions can be generated. AWS and model-provider credentials are not stored in the app.
+
+Pro users may separately choose to enable the cloud question reserve. When enabled, Checkpoint retains one bounded, revisioned goal-generation snapshot and up to 20 prepared or awaiting-delivery questions per goal so generation can finish while Checkpoint is not running. The backend authenticates access with a random per-installation secret; it stores only a cryptographic hash of that secret. Screen Time selections, unlock history, purchase records, and the learner's complete answer history are not uploaded to the reserve.
 
 If backend generation is unavailable, Checkpoint can use on-device generation when supported or local templates.
 
@@ -47,7 +50,9 @@ Checkpoint does not sell user data. If backend AI generation is enabled, the app
 
 ## Retention
 
-Local app data remains on the device until the user deletes app data, resets the app, or uninstalls Checkpoint. Backend retention should be finalized before public launch and reflected here.
+Local app data remains on the device until the user deletes app data, resets the app, or uninstalls Checkpoint.
+
+Cloud-reserve goal snapshots, prepared questions, bounded recent coverage, and operational metadata expire automatically after at most 30 days without an authenticated update. Disabling the reserve, deleting a goal, or resetting Checkpoint also sends an authenticated deletion request. Automatic expiry remains the fallback if the device is offline or the app is uninstalled before it can send that request. Minimal abuse-prevention counters and an expired installation credential hash may remain until their configured TTL expires.
 
 ## Contact
 

@@ -29,6 +29,41 @@ enum QuestionStatus: String, Codable, Sendable {
     case retired
 }
 
+enum QuestionAvenue: String, Codable, CaseIterable, Sendable {
+    case foundationalConcept = "Foundational concept"
+    case application = "Application"
+    case comparison = "Comparison or tradeoff"
+    case misconceptionDiagnosis = "Misconception diagnosis"
+    case edgeCase = "Edge case or constraint"
+    case transfer = "Transfer to a new scenario"
+    case interpretation = "Interpretation or inference"
+
+    static func generationSet(minimumDifficulty: Int) -> [QuestionAvenue] {
+        switch UnlockPolicy.normalizedQuestionDifficulty(minimumDifficulty) {
+        case 1:
+            return [.foundationalConcept, .application, .comparison, .interpretation]
+        case 2:
+            return [.application, .comparison, .misconceptionDiagnosis, .transfer, .interpretation]
+        default:
+            return [.application, .comparison, .misconceptionDiagnosis, .edgeCase, .transfer, .interpretation]
+        }
+    }
+
+    static func providerValue(_ rawValue: String) -> QuestionAvenue? {
+        let normalized = rawValue
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .filter { $0.isLetter || $0.isNumber }
+            .lowercased()
+
+        return allCases.first { avenue in
+            avenue.rawValue
+                .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+                .filter { $0.isLetter || $0.isNumber }
+                .lowercased() == normalized
+        }
+    }
+}
+
 enum AnswerResult: String, Codable, CaseIterable, Identifiable, Sendable {
     case correct = "Correct"
     case partial = "Partial"
@@ -46,6 +81,32 @@ enum QuestionReportReason: String, Codable, CaseIterable, Identifiable, Sendable
     case irrelevant = "Irrelevant"
 
     var id: String { rawValue }
+
+    var invalidatesLearningEvidence: Bool {
+        switch self {
+        case .confusing, .wrongAnswer, .irrelevant:
+            return true
+        case .tooEasy, .tooHard:
+            return false
+        }
+    }
+
+    var estimatedLevelAdjustment: Double {
+        switch self {
+        case .tooEasy:
+            return 0.25
+        case .tooHard:
+            return -0.25
+        case .confusing, .wrongAnswer, .irrelevant:
+            return 0
+        }
+    }
+}
+
+enum QuestionReportReplacementState: String, Codable, Sendable {
+    case pending
+    case prepared
+    case notEligible
 }
 
 enum IssueReportCategory: String, Codable, CaseIterable, Identifiable, Sendable {
@@ -154,8 +215,9 @@ enum ProductLimits {
     static let memberGoalProfileLimit = 5
     static let starterQuestionBankTargetCount = 40
     static let memberQuestionBankTargetCount = 80
-    static let autoRefreshThreshold = 10
+    static let autoRefreshThreshold = 20
     static let autoRefreshCooldown: TimeInterval = 6 * 60 * 60
+    static let starterQuestionQualityReplacementLimit = 3
 }
 
 struct Goal: Identifiable, Codable, Equatable, Sendable {
@@ -167,6 +229,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
     var focusAreas: String
     var preferredQuestionStyle: QuestionFormat
     var minimumQuestionDifficulty: Int
+    var hasCompletedInitialQuestionProvisioning: Bool
     var createdAt = Date()
 
     init(
@@ -178,6 +241,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         focusAreas: String,
         preferredQuestionStyle: QuestionFormat,
         minimumQuestionDifficulty: Int = UnlockPolicy.default.minimumQuestionDifficulty,
+        hasCompletedInitialQuestionProvisioning: Bool = false,
         createdAt: Date = Date()
     ) {
         self.id = id
@@ -188,6 +252,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         self.focusAreas = focusAreas
         self.preferredQuestionStyle = preferredQuestionStyle
         self.minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(minimumQuestionDifficulty)
+        self.hasCompletedInitialQuestionProvisioning = hasCompletedInitialQuestionProvisioning
         self.createdAt = createdAt
     }
 
@@ -237,6 +302,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         case focusAreas
         case preferredQuestionStyle
         case minimumQuestionDifficulty
+        case hasCompletedInitialQuestionProvisioning
         case createdAt
     }
 
@@ -253,6 +319,12 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
             try container.decodeIfPresent(Int.self, forKey: .minimumQuestionDifficulty)
                 ?? UnlockPolicy.default.minimumQuestionDifficulty
         )
+        // Existing installations predate resumable provisioning. Treat their first
+        // question bank as complete so a Free account cannot be refilled indefinitely.
+        hasCompletedInitialQuestionProvisioning = try container.decodeIfPresent(
+            Bool.self,
+            forKey: .hasCompletedInitialQuestionProvisioning
+        ) ?? true
         createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
     }
 }
@@ -265,6 +337,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var choices: [String]
     var explanation: String
     var topic: String
+    var subtopic: String
+    var avenue: QuestionAvenue
     var difficulty: Int
     var format: QuestionFormat
     var status: QuestionStatus = .new
@@ -273,6 +347,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var lastAskedAt: Date?
     var nextReviewAt: Date?
     var sourcePrompt: String
+    var goalContextFingerprint: String?
 
     init(
         id: UUID = UUID(),
@@ -282,6 +357,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         choices: [String] = [],
         explanation: String,
         topic: String,
+        subtopic: String = "",
+        avenue: QuestionAvenue = .application,
         difficulty: Int,
         format: QuestionFormat,
         status: QuestionStatus = .new,
@@ -289,7 +366,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         timesCorrect: Int = 0,
         lastAskedAt: Date? = nil,
         nextReviewAt: Date? = nil,
-        sourcePrompt: String
+        sourcePrompt: String,
+        goalContextFingerprint: String? = nil
     ) {
         self.id = id
         self.goalID = goalID
@@ -298,6 +376,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         self.choices = choices
         self.explanation = explanation
         self.topic = topic
+        self.subtopic = subtopic.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? topic : subtopic
+        self.avenue = avenue
         self.difficulty = difficulty
         self.format = format
         self.status = status
@@ -306,6 +386,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         self.lastAskedAt = lastAskedAt
         self.nextReviewAt = nextReviewAt
         self.sourcePrompt = sourcePrompt
+        self.goalContextFingerprint = goalContextFingerprint
     }
 
     enum CodingKeys: String, CodingKey {
@@ -316,6 +397,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         case choices
         case explanation
         case topic
+        case subtopic
+        case avenue
         case difficulty
         case format
         case status
@@ -324,6 +407,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         case lastAskedAt
         case nextReviewAt
         case sourcePrompt
+        case goalContextFingerprint
     }
 
     init(from decoder: Decoder) throws {
@@ -335,6 +419,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         choices = try container.decodeIfPresent([String].self, forKey: .choices) ?? []
         explanation = try container.decode(String.self, forKey: .explanation)
         topic = try container.decode(String.self, forKey: .topic)
+        subtopic = try container.decodeIfPresent(String.self, forKey: .subtopic) ?? topic
+        avenue = try container.decodeIfPresent(QuestionAvenue.self, forKey: .avenue) ?? .application
         difficulty = try container.decode(Int.self, forKey: .difficulty)
         format = try container.decode(QuestionFormat.self, forKey: .format)
         status = try container.decodeIfPresent(QuestionStatus.self, forKey: .status) ?? .new
@@ -343,6 +429,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         lastAskedAt = try container.decodeIfPresent(Date.self, forKey: .lastAskedAt)
         nextReviewAt = try container.decodeIfPresent(Date.self, forKey: .nextReviewAt)
         sourcePrompt = try container.decodeIfPresent(String.self, forKey: .sourcePrompt) ?? ""
+        goalContextFingerprint = try container.decodeIfPresent(String.self, forKey: .goalContextFingerprint)
     }
 }
 
@@ -405,6 +492,51 @@ struct CheckpointSession: Identifiable, Equatable, Sendable {
     }
 }
 
+struct CheckpointSessionOutcome: Equatable, Sendable {
+    var unlockThreshold: Int
+    var shouldFinish: Bool
+    var shouldPass: Bool
+
+    static func evaluate(
+        requiredCorrectAnswers: Int,
+        effectiveQuestionCount: Int,
+        answeredQuestionCount: Int,
+        correctAnswerCount: Int
+    ) -> Self {
+        let normalizedQuestionCount = max(0, effectiveQuestionCount)
+        let threshold = max(1, requiredCorrectAnswers)
+        let answeredCount = min(max(0, answeredQuestionCount), normalizedQuestionCount)
+        let correctCount = min(max(0, correctAnswerCount), answeredCount)
+        let remainingCount = max(0, normalizedQuestionCount - answeredCount)
+        let shouldFinish = remainingCount == 0 || correctCount + remainingCount < threshold
+
+        return Self(
+            unlockThreshold: threshold,
+            shouldFinish: shouldFinish,
+            shouldPass: shouldFinish && correctCount >= threshold
+        )
+    }
+}
+
+struct CheckpointGrowthSummary: Equatable, Sendable {
+    var answeredCount: Int
+    var correctCount: Int
+    var strengthenedTopic: String?
+    var reviewTopic: String?
+    var nextTopic: String?
+    var nextAvenue: QuestionAvenue?
+    var deadlineText: String?
+
+    var scoreText: String {
+        "\(correctCount) of \(answeredCount) useful answers"
+    }
+
+    var nextCheckpointText: String? {
+        guard let nextTopic, let nextAvenue else { return nil }
+        return "\(nextTopic) · \(nextAvenue.rawValue)"
+    }
+}
+
 struct QuestionLevelRecommendation: Equatable, Sendable {
     var currentQuestionLevel: Int
     var nextLevel: Int
@@ -424,6 +556,14 @@ struct QuestionQualityReport: Identifiable, Codable, Equatable, Sendable {
     var prompt: String
     var reason: QuestionReportReason
     var note: String
+    var expectedAnswer: String? = nil
+    var choices: [String]? = nil
+    var explanation: String? = nil
+    var topic: String? = nil
+    var subtopic: String? = nil
+    var avenue: QuestionAvenue? = nil
+    var difficulty: Int? = nil
+    var replacementState: QuestionReportReplacementState? = nil
     var createdAt = Date()
 }
 
@@ -662,7 +802,15 @@ struct UnlockEvent: Identifiable, Codable, Equatable, Sendable {
     }
 }
 
+struct PendingQuestionReserveAcknowledgement: Codable, Equatable, Sendable {
+    var goalID: Goal.ID
+    var goalRevision: String
+    var deliveryID: String
+}
+
 struct AppSnapshot: Codable, Sendable {
+    static let currentSchemaVersion = 1
+
     var goal: Goal?
     var goalProfiles: [Goal]?
     var questions: [CheckpointQuestion]
@@ -677,11 +825,15 @@ struct AppSnapshot: Codable, Sendable {
     var aiProviderPreference: AIProviderKind?
     var lastQuestionProvider: AIProviderKind?
     var backendEndpoint: String?
+    var serverQuestionReserveEnabled: Bool?
+    var pendingQuestionReserveAcknowledgements: [PendingQuestionReserveAcknowledgement]?
     var unlockSession: UnlockSession?
     var checkpointRetryCooldownUntil: Date?
     var membershipTier: MembershipTier?
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?
+    var schemaVersion: Int? = nil
+    var savedAt: Date? = nil
 }
 
 struct AnswerEvaluation: Equatable, Sendable {

@@ -22,6 +22,11 @@ Parameters:
     Type: Number
     Default: 400
     MinValue: 1
+  MaxReserveBatchesPerInstallPerDay:
+    Type: Number
+    Default: 4
+    MinValue: 1
+    MaxValue: 100
   BackendToken:
     Type: String
     Default: ""
@@ -38,6 +43,8 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
       AttributeDefinitions:
         - AttributeName: rateKey
           AttributeType: S
@@ -47,6 +54,55 @@ Resources:
       TimeToLiveSpecification:
         AttributeName: expiresAt
         Enabled: true
+
+  QuestionReserveTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+        - AttributeName: duePartition
+          AttributeType: S
+        - AttributeName: nextAttemptAt
+          AttributeType: N
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: DueWorkIndex
+          KeySchema:
+            - AttributeName: duePartition
+              KeyType: HASH
+            - AttributeName: nextAttemptAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+  QuestionReserveDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600
+
+  QuestionReserveQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      VisibilityTimeout: 600
+      MessageRetentionPeriod: 345600
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt QuestionReserveDeadLetterQueue.Arn
+        maxReceiveCount: 5
 
   CheckpointQuestionFunction:
     Type: AWS::Serverless::Function
@@ -64,8 +120,11 @@ Resources:
           CHECKPOINT_BACKEND_TOKEN: !Ref BackendToken
           ALLOW_UNAUTHENTICATED_BACKEND: !Ref AllowUnauthenticatedBackend
           RATE_LIMIT_TABLE_NAME: !Ref QuestionRateLimitTable
+          RESERVE_TABLE_NAME: !Ref QuestionReserveTable
+          RESERVE_QUEUE_URL: !Ref QuestionReserveQueue
           MAX_REQUESTS_PER_INSTALL_PER_DAY: !Ref MaxRequestsPerInstallPerDay
           MAX_REQUESTS_PER_IP_PER_DAY: !Ref MaxRequestsPerIPPerDay
+          MAX_RESERVE_BATCHES_PER_INSTALL_PER_DAY: !Ref MaxReserveBatchesPerInstallPerDay
       FunctionUrlConfig:
         AuthType: NONE
         Cors:
@@ -75,6 +134,7 @@ Resources:
             - authorization
             - content-type
             - x-checkpoint-install-id
+            - x-checkpoint-install-secret
           AllowMethods:
             - POST
             - OPTIONS
@@ -89,6 +149,83 @@ Resources:
               Action:
                 - dynamodb:UpdateItem
               Resource: !GetAtt QuestionRateLimitTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:DeleteItem
+                - dynamodb:Query
+              Resource:
+                - !GetAtt QuestionReserveTable.Arn
+                - !Sub "${QuestionReserveTable.Arn}/index/*"
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt QuestionReserveQueue.Arn
+
+  CheckpointQuestionReserveWorkerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.12
+      Handler: lambda_function.reserve_worker_handler
+      CodeUri: .
+      Timeout: 90
+      MemorySize: 256
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelId
+          MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
+          RATE_LIMIT_TABLE_NAME: !Ref QuestionRateLimitTable
+          RESERVE_TABLE_NAME: !Ref QuestionReserveTable
+          RESERVE_QUEUE_URL: !Ref QuestionReserveQueue
+          MAX_RESERVE_BATCHES_PER_INSTALL_PER_DAY: !Ref MaxReserveBatchesPerInstallPerDay
+      Events:
+        ReserveQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt QuestionReserveQueue.Arn
+            BatchSize: 1
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            ScalingConfig:
+              MaximumConcurrency: 4
+        ReserveRecovery:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: rate(15 minutes)
+            FlexibleTimeWindow:
+              Mode: "OFF"
+            Input: '{"operation":"reserveRecovery"}'
+            RetryPolicy:
+              MaximumRetryAttempts: 2
+              MaximumEventAgeInSeconds: 900
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:Query
+              Resource:
+                - !GetAtt QuestionReserveTable.Arn
+                - !Sub "${QuestionReserveTable.Arn}/index/*"
+            - Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
+              Resource: !GetAtt QuestionRateLimitTable.Arn
+            - Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+                - sqs:SendMessage
+              Resource: !GetAtt QuestionReserveQueue.Arn
 
 Outputs:
   QuestionEndpoint:

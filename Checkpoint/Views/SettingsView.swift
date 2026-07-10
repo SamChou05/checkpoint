@@ -197,6 +197,28 @@ struct SettingsView: View {
                         practiceStandardContent
                     }
 
+                    if store.isServerQuestionReserveConfigured {
+                        SectionPanel("Questions ready in the background") {
+                            Toggle(
+                                "Cloud question reserve",
+                                isOn: Binding(
+                                    get: { store.serverQuestionReserveEnabled },
+                                    set: { store.updateServerQuestionReserveEnabled($0) }
+                                )
+                            )
+                            .tint(CheckpointTheme.teal)
+
+                            Text(
+                                store.isMember
+                                    ? "When enabled, Checkpoint keeps a limited goal snapshot and prepared questions on the server for up to 30 days so new practice can be ready while the app is closed."
+                                    : "Cloud question reserve is a Pro feature. Your on-device starter bank remains available without it."
+                            )
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+
                     SectionPanel("Advanced") {
                         DisclosureGroup(isExpanded: $isAdvancedExpanded) {
                             VStack(alignment: .leading, spacing: 14) {
@@ -678,8 +700,28 @@ private struct QuestionGenerationDiagnosticsView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Recent prompts, providers, and generated question previews.")
+                        Text("Recent prompts, providers, generated question previews, and background preparation status.")
                             .font(.subheadline)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    SectionPanel("Background preparation") {
+                        Text(QuestionBankBackgroundScheduler.diagnosticsSummary)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        ShareLink(item: QuestionBankBackgroundScheduler.diagnosticsSupportText) {
+                            Label("Share background details", systemImage: "square.and.arrow.up")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.teal)
+                        }
+                    }
+
+                    SectionPanel("Saved data") {
+                        Text(store.persistenceDiagnosticsSummary)
+                            .font(.footnote)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -712,7 +754,7 @@ private struct QuestionGenerationDiagnosticsView: View {
 
                 if !store.questionGenerationTraces.isEmpty {
                     ToolbarItemGroup(placement: .primaryAction) {
-                        ShareLink(item: store.questionGenerationDiagnosticsExportText) {
+                        ShareLink(item: store.questionGenerationDiagnosticsSupportText) {
                             Image(systemName: "square.and.arrow.up")
                         }
                         .foregroundStyle(CheckpointTheme.teal)

@@ -7,7 +7,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 ## Current Build
 
 - Native SwiftUI app shell.
-- Natural-language goal onboarding flow with the first goal included and membership unlocking goal switching plus fresh ongoing question generation.
+- Natural-language goal onboarding with a familiarity recommendation, an optional “calibrate me” start, and an advanced manual level override.
 - Goal category is inferred internally from the typed goal and optional focus areas instead of shown as user-facing setup.
 - Provider-based multiple-choice question generation extracts a learning target from typed goals, so phrases like `Study for the LSAT` produce LSAT questions rather than study-habit prompts.
 - Goals without focus areas ask the configured provider to infer an initial Skill Map from the learning target, then the background bank refill uses those generated skill topics.
@@ -21,12 +21,17 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Recovery states for blocked-app launches when no checkpoint questions are available.
 - Academic paper-inspired UI for Home, Checkpoint, Skill, and Settings, with history available from Settings.
 - Settings now keeps user controls focused on Goals, App blocking, Checkpoint rules, and a collapsed Advanced troubleshooting area for diagnostics and reset.
-- Question quality reporting lives in Settings instead of interrupting the checkpoint quiz.
+- Question feedback is available after grading. Defective items are retired and voided only when a ready replacement can preserve the fixed unlock gate; difficulty-only feedback keeps the answer as evidence and tunes future targeting. Free includes three persisted one-for-one quality replacements per goal, while Pro continues replacement maintenance with the larger bank.
 - Home no longer offers one-tap pause or manual checkpoint entry while blocking is active; short breaks start from blocked-app attempts or emergency passes, while fully stopping blocking requires an 18-of-20 stop challenge.
 - Manual checkpoint preview lives in Advanced for testing and does not unlock apps.
 - Checkpoint quietly prepares fresh questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
+- Pro users can explicitly enable a bounded cloud question reserve. One authenticated 20-question batch per goal can finish through the AWS queue while the app process is absent, then enters the local bank only when its usable or never-asked reserve is low.
+- Five-question sessions cap urgent reviews, start fresh work in weaker topics, rotate topics/subtopics/assessment avenues, and reserve a stretch item when one is ready.
+- The final screen shows a compact session recap while the unlock action stays pinned and immediately reachable.
 - Users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
 - Starter/membership product behavior: the first goal, app blocking, and checkpoint unlock loop are usable before payment; membership keeps fresh checkpoints ready, unlocks goal profiles, larger question banks, and adaptive Study Assist.
+- Goal edits preserve profile identity, attempts, reports, unlock history, and context-versioned retired question records while refreshing only the incompatible practice context.
+- Versioned snapshots keep a validated previous-save backup, recover from a corrupt primary, and refuse to overwrite snapshots created by a newer app version.
 - Privacy manifests for the app and Screen Time extensions.
 - Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.
 - Shield Configuration extension target for branded Screen Time shield UI.
@@ -46,8 +51,9 @@ The MVP uses a hybrid provider approach:
 - Configure production backend URLs through `Checkpoint/Config/Secrets.xcconfig` or another internal build configuration, not user-facing Settings and never with AWS credentials in the app.
 - Backend calls include an anonymous install ID and the Bedrock service can enforce DynamoDB-backed install/IP daily quotas before model invocation.
 - The Bedrock service retries malformed model output and can fall back to Nova Micro if the cheapest primary model does not return valid JSON.
+- The optional server reserve uses a client-generated Keychain secret, monotonic goal sync, DynamoDB state, SQS leases, a 15-minute EventBridge recovery sweep, idempotent delivery, TTL deletion, and a four-batch-per-install daily worker limit. It never continuously generates merely because time passes.
 
-The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
+The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`; reserve lifecycle and operations are in `docs/SERVER_QUESTION_RESERVE.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
 
 ## App Store Readiness
 

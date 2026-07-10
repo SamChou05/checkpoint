@@ -39,8 +39,8 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
 
         Rules:
         - Test the learning target itself, not studying, motivation, app blocking, or next steps unless the target is study skills.
-        - Return exactly {"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","difficulty":1,"format":"Multiple Choice"}]}.
-        - Each question has a self-contained stem, one best answer, exactly 4 choices, a short explanation, a topic, and difficulty 1-5.
+        - Return exactly {"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","subtopic":"...","avenue":"Application","difficulty":1,"format":"Multiple Choice"}]}.
+        - Each question has a self-contained stem, one best answer, exactly 4 choices, a short explanation, a topic, a concrete subtopic, one exact planned avenue label, and difficulty 1-5.
         - Keep each prompt under 280 characters and do not include answer labels or option text inside the prompt field.
         - Do not use answer labels such as A, B, C, D, or "choice B" as expectedAnswer or choice text; write the actual answer text.
         - Choices are parallel, similar length, mutually exclusive, plausible, and not paraphrases.
@@ -57,6 +57,8 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         - For Spanish object-pronoun questions, the answer must be the pronoun alone or a complete grammatical sentence with correct pronoun placement.
         - For Spanish grammar with subjunctive, object pronouns, and travel vocabulary, use constrained cloze, pronoun replacement, and translation/vocabulary items without examples or answer labels in the prompt.
         - For level 3 and above, use application or reasoning, not simple recall.
+        - Follow the numbered coverage plan in order so the batch rotates topics and assessment avenues.
+        - Select a new concrete subtopic for each slot instead of paraphrasing a previously tested idea.
         - Avoid existing or reported prompts.
         - Generate exactly the requested number of usable questions. Do not stop early.
         - Return JSON only.
@@ -65,12 +67,18 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         let prompt = request.sourcePrompt(provider: provider)
 
         let session = LanguageModelSession(instructions: instructions)
-        let options = GenerationOptions(temperature: 0.4, maximumResponseTokens: 1800)
+        let maximumResponseTokens = min(4_096, max(1_800, request.targetCount * 420))
+        let options = GenerationOptions(temperature: 0.4, maximumResponseTokens: maximumResponseTokens)
         let response = try await session.respond(to: Prompt(prompt), options: options)
         let data = try extractJSONData(from: response.content)
         let payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
-        let questions = payload.questions.map {
-            $0.makeQuestion(goalID: request.goal.id, sourcePrompt: request.sourcePrompt(provider: provider))
+        let plan = request.coveragePlan
+        let questions = payload.questions.enumerated().map { index, payload in
+            payload.makeQuestion(
+                goalID: request.goal.id,
+                sourcePrompt: request.sourcePrompt(provider: provider),
+                coverageSlot: plan.indices.contains(index) ? plan[index] : nil
+            )
         }
 
         guard !questions.isEmpty else {
