@@ -137,7 +137,6 @@ Resources:
             - x-checkpoint-install-secret
           AllowMethods:
             - POST
-            - OPTIONS
       Policies:
         - Statement:
             - Effect: Allow
