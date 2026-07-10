@@ -2,12 +2,18 @@
 
 Use this as the source of truth for the final TestFlight and App Store readiness pass. Keep each entry dated, include the device/build, and link the follow-up commit when a test creates work.
 
-Last updated: June 4, 2026 PDT.
+Last updated: July 10, 2026 EDT.
 
 ## Latest Local Validation
 
 | Date | Area | Build or Device | Result | Notes |
 | --- | --- | --- | --- | --- |
+| July 10, 2026 | Simulator XCTest suite | Xcode 26.4.1, iPhone 17 simulator | Pass | 203 passed, 0 failed after release configuration changes. |
+| July 10, 2026 | Bedrock question service | Python 3.12 unittest + Ruff + SAM CLI | Pass | 106 passed, 0 failed; SAM lint and build passed. |
+| July 10, 2026 | AWS production deployment | `checkpoint-question-service-prod`, `us-east-1` | Pass | Authenticated generation and the complete reserve lifecycle passed against the live stack; unauthenticated requests returned 401. |
+| July 10, 2026 | AWS production controls | DynamoDB, SQS, EventBridge, Lambda | Pass | TTL and encryption enabled; DLQ redrive/visibility and recovery schedule verified; smoke invocations reported zero Lambda errors. |
+| July 10, 2026 | Physical-device Release archive | Checkpoint 1.0 (2) | Pass | Archive contains the live backend endpoint, rotated Keychain-backed credential, and all three extensions. |
+| July 10, 2026 | App Store export | Checkpoint 1.0 (2) | Blocked | Xcode reported `No Accounts` and no App Store profiles for the app and three extensions. Sign in and verify Family Controls distribution access before retrying. |
 | June 4, 2026 | Simulator XCTest suite | XcodeBuildMCP, iPhone 17 simulator | Pass | 101 passed, 0 failed after StoreKit config checks were added. |
 | June 4, 2026 | Simulator app launch | XcodeBuildMCP, iPhone 17 simulator | Pass | Debug app built, installed, and launched without diagnostics. |
 | June 4, 2026 | Release simulator build | Xcode 26.4.1, iPhone 17 simulator | Pass | Release build completed successfully after launch-readiness changes. |
@@ -26,9 +32,9 @@ These must pass before broader TestFlight testing.
 - [ ] Local StoreKit Annual purchase switches Free to Pro.
 - [ ] Local StoreKit expired or cleared subscription returns Pro to Free on foreground refresh.
 - [ ] Restore purchases restores Pro only when a current local entitlement exists.
-- [ ] Release build uses the intended backend endpoint or intentionally falls back to Apple/local generation.
-- [ ] Exposed backend has `CHECKPOINT_BACKEND_TOKEN` configured and does not set `ALLOW_UNAUTHENTICATED_BACKEND=true`.
-- [ ] Backend endpoint rejects unauthenticated requests.
+- [x] Release build uses the intended backend endpoint or intentionally falls back to Apple/local generation.
+- [x] Exposed backend has `CHECKPOINT_BACKEND_TOKEN` configured and does not set `ALLOW_UNAUTHENTICATED_BACKEND=true`.
+- [x] Backend endpoint rejects unauthenticated requests.
 - [ ] Backend endpoint rate limits by install ID and IP before calling Bedrock.
 - [ ] Backend question batch generation returns valid, unique, on-target choices for LSAT, technical interview, and school exam goals.
 - [ ] Latest installed iPhone build is launched once while the iPhone is unlocked.

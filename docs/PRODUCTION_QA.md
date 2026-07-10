@@ -11,7 +11,11 @@ Run: July 10, 2026 EDT.
 - [x] Bedrock question service suite passed: 106 tests, 0 failures, including 22 server-reserve tests.
 - [x] Python compilation, `ruff`, plist validation, `git diff --check`, and CloudFormation-aware YAML parsing passed.
 - [x] Focused reserve tests cover opt-in, authentication recovery, stale revisions, durable save-before-ack and ACK retry across relaunch, duplicate delivery, partial-batch recovery, low-fresh pulls, fast shield delivery, background coalescing, downgrade purge, and interrupted-purge retry.
-- [ ] AWS SAM CLI validation/build and a live deployed-stack integration test remain to be run; SAM CLI is not installed in the current environment.
+- [x] AWS SAM lint/build passed and `checkpoint-question-service-prod` deployed in `us-east-1`; authenticated generation plus register/sync/worker/pull/ack/purge/delete smoke tests passed.
+- [x] Deployed DynamoDB TTL/SSE, SQS SSE/visibility/DLQ redrive, 15-minute recovery schedule, and zero-error Lambda smoke metrics were verified.
+- [x] A physical-device Release archive `1.0 (2)` succeeded with all extensions and the live backend configuration embedded.
+- [ ] App Store export is blocked: Xcode reports no signed-in account and no App Store distribution profiles for the app or its three extensions.
+- [ ] CloudWatch notification alarms and an AWS Budget still need owner-selected destinations/thresholds; the worker-side generation quotas are active.
 - [ ] The latest changes still require physical-device background-task, shield-loop, and StoreKit verification.
 
 ## Previous Device QA Run
