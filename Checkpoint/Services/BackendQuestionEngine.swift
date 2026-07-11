@@ -18,7 +18,9 @@ struct BackendQuestionEngine: QuestionGenerating {
            !token.isEmpty {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-        urlRequest.timeoutInterval = 45
+        // Interactive generation must fail over quickly enough that a slow or
+        // unreachable cloud service never blocks a checkpoint from becoming ready.
+        urlRequest.timeoutInterval = 8
         urlRequest.httpBody = try BackendQuestionRequest(request: request).encodedData()
 
         let (data, response) = try await URLSession.shared.data(for: urlRequest)

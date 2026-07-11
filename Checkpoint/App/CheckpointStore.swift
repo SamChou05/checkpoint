@@ -6,6 +6,7 @@ private enum QuestionRefreshReason {
     case automaticCoreRefill
     case automaticProactiveRefill
     case levelUpRefill
+    case cloudPlanActivation
 
     func countsAsRefresh(isMember: Bool) -> Bool {
         self == .manual || self == .automaticProactiveRefill || (self == .automaticCoreRefill && isMember)
@@ -25,6 +26,8 @@ private enum QuestionRefreshReason {
             return "Automatic proactive refill"
         case .levelUpRefill:
             return "Question level increase"
+        case .cloudPlanActivation:
+            return "Pro cloud activation"
         }
     }
 }
@@ -55,7 +58,11 @@ final class CheckpointStore {
     var lastQuestionProvider: AIProviderKind = .localTemplates
     var backendEndpoint = ""
     private(set) var backendQuestionGenerationConsentGranted = false
+    private(set) var backendQuestionGenerationConsentPromptAnswered = false
     var serverQuestionReserveEnabled = false
+    private(set) var pendingServerQuestionReserveDeletionGoalIDs: [Goal.ID] = []
+    private var pendingServerQuestionReserveCredentialReset = false
+    private var cloudPreparedGoalIDs: Set<Goal.ID> = []
     var lastAIErrorMessage: String?
     var questionGenerationStartedAt: Date?
     var lastQuestionGenerationDuration: TimeInterval?
@@ -68,6 +75,7 @@ final class CheckpointStore {
     var isOnboardingPresented = false
     var isCreatingGoalProfile = false
     var membershipTier: MembershipTier = .starter
+    private(set) var hasVerifiedMembershipForCurrentLaunch = false
     var pendingMembershipFeature: MembershipFeature?
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
@@ -85,6 +93,10 @@ final class CheckpointStore {
     @ObservationIgnored private var backgroundGenerationTasks: [Goal.ID: Task<Void, Never>] = [:]
     @ObservationIgnored private var questionBankTopOffTasks: [Goal.ID: Task<Void, Never>] = [:]
     @ObservationIgnored private var serverQuestionReserveTasks: [Goal.ID: (revision: String, desiredCount: Int, task: Task<Void, Never>)] = [:]
+    @ObservationIgnored private var cloudActivationPreparationTask: (id: UUID, task: Task<Void, Never>)?
+    @ObservationIgnored private var localRoutingPreparationTask: (id: UUID, task: Task<Void, Never>)?
+    @ObservationIgnored private var serverReserveShutdownTask: (id: UUID, task: Task<Void, Never>)?
+    @ObservationIgnored private var questionGenerationRoutingRevision: UInt64 = 0
     @ObservationIgnored private var pendingQuestionReserveAcknowledgements: [PendingQuestionReserveAcknowledgement] = []
     @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
     @ObservationIgnored private static let urgentRefillTargetMultiplier = 2
@@ -130,7 +142,6 @@ final class CheckpointStore {
         isOnboardingPresented = goal == nil
         publishShieldContext()
         if automaticallyStartsQuestionMaintenance {
-            replaceActiveLocalTemplateQuestionBankIfNeeded()
             resumeQuestionBankMaintenanceIfNeeded()
         }
     }
@@ -140,18 +151,13 @@ final class CheckpointStore {
     /// before any generation work can begin.
     func prepareQuestionMaintenanceAfterLaunch() async {
         defer { scheduleServerQuestionReserveMaintenance() }
-        if let replacementGoal = replaceActiveLocalTemplateQuestionBankIfNeeded(
-            startsGeneration: false
-        ) {
-            await awaitInitialQuestionGeneration(for: replacementGoal)
-            return
-        }
-
         guard let goal else { return }
         if activeQuestions.isEmpty {
             if isMember || !goal.hasCompletedInitialQuestionProvisioning {
                 await awaitInitialQuestionGeneration(for: goal)
             }
+        } else if shouldPrepareFirstCloudQuestions {
+            await prepareFirstCloudQuestionsIfNeeded()
         } else {
             _ = await performBackgroundQuestionMaintenance(maximumBatchCount: 1)
         }
@@ -427,6 +433,21 @@ final class CheckpointStore {
         membershipTier == .member
     }
 
+    var isProCloudQuestionGenerationActive: Bool {
+        hasVerifiedMembershipForCurrentLaunch
+            && isMember
+            && backendQuestionGenerationConsentGranted
+            && rawBackendEndpoint != nil
+    }
+
+    var shouldPresentProCloudGenerationConsent: Bool {
+        hasVerifiedMembershipForCurrentLaunch
+            && isMember
+            && goal != nil
+            && isBackendQuestionGenerationConfigured
+            && !backendQuestionGenerationConsentPromptAnswered
+    }
+
     var hasFullProductAccess: Bool {
         isMember
     }
@@ -460,6 +481,10 @@ final class CheckpointStore {
     }
 
     var needsBackgroundQuestionMaintenance: Bool {
+        if !pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+            || pendingServerQuestionReserveCredentialReset {
+            return true
+        }
         if isMember {
             return availableGoalProfiles.contains { profile in
                 hasPendingQuestionReportReplacement(for: profile)
@@ -698,9 +723,6 @@ final class CheckpointStore {
         }
 
         goal = selectedGoal
-        if shouldReplaceLocalTemplateQuestionBank(for: selectedGoal) {
-            clearQuestionBank(for: selectedGoal.id)
-        }
         let activeSelectedGoal = goal ?? selectedGoal
 
         let hasActiveQuestions = usableQuestionCount(for: activeSelectedGoal) > 0
@@ -712,7 +734,9 @@ final class CheckpointStore {
         publishShieldContext()
         scheduleServerQuestionReserveMaintenance()
 
-        if hasActiveQuestions {
+        if hasActiveQuestions, shouldPrepareFirstCloudQuestions {
+            scheduleFirstCloudQuestionsPreparation()
+        } else if hasActiveQuestions {
             Task { [weak self] in
                 _ = await self?.refreshQuestionBatchIfNeeded()
                 await self?.prepareProtectionReviewQuestionBankIfNeeded()
@@ -727,7 +751,6 @@ final class CheckpointStore {
     func deleteGoalProfile(_ goalID: Goal.ID) -> Bool {
         guard let deletedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return false }
 
-        let reserveConfiguration = resolvedQuestionReserveConfiguration
         let wasActiveGoal = goal?.id == goalID
         let canceledReserveTask = cancelQuestionMaintenance(for: goalID)
         backgroundGenerationGoalIDs.remove(goalID)
@@ -769,9 +792,8 @@ final class CheckpointStore {
         isCreatingGoalProfile = false
         save()
         publishShieldContext()
-        scheduleServerQuestionReserveDeletion(
+        enqueueServerQuestionReserveDeletion(
             goalIDs: [goalID],
-            configuration: reserveConfiguration,
             resetsCredentials: false,
             waitingFor: canceledReserveTask.map { [$0] } ?? []
         )
@@ -779,55 +801,42 @@ final class CheckpointStore {
         return true
     }
 
-    @discardableResult
-    private func replaceActiveLocalTemplateQuestionBankIfNeeded(
-        startsGeneration: Bool = true
-    ) -> Goal? {
-        guard let goal,
-              shouldReplaceLocalTemplateQuestionBank(for: goal) else {
-            return nil
-        }
+    private func removeReplaceableQuestionsForCloudTransition(
+        candidateIDs: Set<CheckpointQuestion.ID>,
+        replacementCount: Int,
+        goal: Goal
+    ) -> Int {
+        guard replacementCount > 0 else { return 0 }
 
-        clearQuestionBank(for: goal.id)
-        guard let replacementGoal = self.goal else { return nil }
-        questionBatchState = .generating
-        isQuestionBankTopOffInProgress = false
-        questionBankTopOffStartedAt = nil
-        lastAIErrorMessage = nil
-        save()
-        publishShieldContext()
-        if startsGeneration {
-            prepareInitialQuestionsInBackground(for: replacementGoal)
-        }
-        return replacementGoal
-    }
+        let activeQuestionCount = questions.filter {
+            $0.goalID == goal.id && $0.status != .retired
+        }.count
+        let overflowCount = max(0, activeQuestionCount - questionBankTargetCount)
+        let removalLimit = min(replacementCount, overflowCount)
+        guard removalLimit > 0 else { return 0 }
 
-    private func shouldReplaceLocalTemplateQuestionBank(for profile: Goal) -> Bool {
-        aiProviderPreference != .localTemplates
-            && resolvedBackendEndpoint != nil
-            && lastQuestionProvider == .localTemplates
-            && questions.contains { question in
-                question.goalID == profile.id && question.status != .retired
-            }
-    }
-
-    private func clearQuestionBank(for goalID: Goal.ID) {
-        let historicalQuestionIDs = Set(
-            attempts.filter { $0.goalID == goalID }.map(\.questionID)
-                + questionReports.filter { $0.goalID == goalID }.map(\.questionID)
+        let historicallyReferencedIDs = Set(
+            attempts.filter { $0.goalID == goal.id }.map(\.questionID)
+                + questionReports.filter { $0.goalID == goal.id }.map(\.questionID)
         )
-        questions.removeAll { question in
-            question.goalID == goalID && !historicalQuestionIDs.contains(question.id)
-        }
-        for index in questions.indices where questions[index].goalID == goalID {
-            questions[index].status = .retired
-            questions[index].nextReviewAt = nil
-        }
-        setInitialQuestionProvisioningCompleted(false, for: goalID)
-        if let profile = availableGoalProfiles.first(where: { $0.id == goalID })
-            ?? (goal?.id == goalID ? goal : nil) {
-            rebuildCompetencies(for: profile)
-        }
+        let removableIDs = Set(
+            questions
+                .filter {
+                    $0.goalID == goal.id
+                        && candidateIDs.contains($0.id)
+                        && !historicallyReferencedIDs.contains($0.id)
+                        && $0.status == .new
+                        && $0.timesAsked == 0
+                }
+                .sorted { $0.id.uuidString < $1.id.uuidString }
+                .prefix(removalLimit)
+                .map(\.id)
+        )
+        guard !removableIDs.isEmpty else { return 0 }
+
+        questions.removeAll { removableIDs.contains($0.id) }
+        rebuildCompetencies(for: goal)
+        return removableIDs.count
     }
 
     // MARK: - Plan access
@@ -845,49 +854,74 @@ final class CheckpointStore {
     }
 
     func updateMembershipTier(_ tier: MembershipTier) {
+        hasVerifiedMembershipForCurrentLaunch = true
         guard membershipTier != tier else {
-            // A previous downgrade purge may have been interrupted when the app
-            // was suspended or terminated. Re-issuing desiredCount zero is
-            // idempotent and prevents persisted Starter launches from stranding
-            // cloud reserve work until its TTL expires.
-            if tier == .starter, serverQuestionReserveEnabled {
-                for profile in availableGoalProfiles {
-                    _ = startServerQuestionReserveMaintenance(for: profile, desiredCount: 0)
-                }
+            var didChange = false
+            var shouldScheduleCloudReserve = false
+            if tier == .member,
+               (!pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+                || pendingServerQuestionReserveCredentialReset) {
+                startServerQuestionReserveShutdownIfNeeded()
+            }
+            if tier == .member,
+               shouldUseProCloudQuestionReserve,
+               !serverQuestionReserveEnabled {
+                serverQuestionReserveEnabled = true
+                didChange = true
+                shouldScheduleCloudReserve = true
+            } else if tier == .starter,
+                      (serverQuestionReserveEnabled
+                        || !pendingServerQuestionReserveDeletionGoalIDs.isEmpty) {
+                stopServerQuestionReserveForInactivePlan()
+                didChange = true
+            } else if tier == .starter,
+                      pendingServerQuestionReserveCredentialReset {
+                startServerQuestionReserveShutdownIfNeeded()
             }
             if pendingMembershipFeature != nil {
                 pendingMembershipFeature = nil
+                didChange = true
+            }
+            if didChange {
                 save()
                 publishShieldContext()
+            }
+            if shouldScheduleCloudReserve {
+                scheduleServerQuestionReserveMaintenance()
+                if isProCloudQuestionGenerationActive {
+                    scheduleFirstCloudQuestionsPreparation()
+                }
             }
             return
         }
 
+        invalidateQuestionGenerationRouting()
+        let interruptedQuestionTasks = Array(backgroundGenerationTasks.values)
+            + Array(questionBankTopOffTasks.values)
+        interruptedQuestionTasks.forEach { $0.cancel() }
         membershipTier = tier
         pendingMembershipFeature = nil
         if tier == .starter {
-            for (goalID, task) in backgroundGenerationTasks {
-                let profile = availableGoalProfiles.first(where: { $0.id == goalID })
-                    ?? (goal?.id == goalID ? goal : nil)
-                if profile?.id != goal?.id || profile?.hasCompletedInitialQuestionProvisioning == true {
-                    task.cancel()
-                }
-            }
-            questionBankTopOffTasks.values.forEach { $0.cancel() }
-            serverQuestionReserveTasks.values.forEach { $0.task.cancel() }
-            serverQuestionReserveTasks = [:]
+            stopServerQuestionReserveForInactivePlan()
+        } else if shouldUseProCloudQuestionReserve {
+            serverQuestionReserveEnabled = true
+            startServerQuestionReserveShutdownIfNeeded()
         }
         save()
         publishShieldContext()
 
-        if tier == .member, goal != nil {
+        if tier == .starter {
+            scheduleLocalQuestionPreparationAfterRoutingChange(
+                waitingFor: interruptedQuestionTasks
+            )
+        } else if tier == .member, goal != nil {
             scheduleServerQuestionReserveMaintenance()
-            Task { [weak self] in
-                _ = await self?.refreshQuestionBatchIfNeeded()
-            }
-        } else if tier == .starter, serverQuestionReserveEnabled {
-            for profile in availableGoalProfiles {
-                _ = startServerQuestionReserveMaintenance(for: profile, desiredCount: 0)
+            if isProCloudQuestionGenerationActive {
+                scheduleFirstCloudQuestionsPreparation(waitingFor: interruptedQuestionTasks)
+            } else {
+                scheduleLocalQuestionPreparationAfterRoutingChange(
+                    waitingFor: interruptedQuestionTasks
+                )
             }
         }
     }
@@ -981,9 +1015,8 @@ final class CheckpointStore {
         save()
         publishShieldContext()
         if shouldReplaceActiveProfile, let previousGoalID {
-            scheduleServerQuestionReserveDeletion(
+            enqueueServerQuestionReserveDeletion(
                 goalIDs: [previousGoalID],
-                configuration: resolvedQuestionReserveConfiguration,
                 resetsCredentials: false,
                 waitingFor: canceledPreviousReserveTask.map { [$0] } ?? []
             )
@@ -1068,6 +1101,9 @@ final class CheckpointStore {
         let difficultyChanged = updatedGoal.minimumQuestionDifficulty != existingGoal.minimumQuestionDifficulty
         let difficultyRaised = updatedGoal.minimumQuestionDifficulty > existingGoal.minimumQuestionDifficulty
         let shouldPrepareReplacementQuestions = questionContextChanged || currentLevelChanged || difficultyChanged
+        if shouldPrepareReplacementQuestions {
+            cloudPreparedGoalIDs.remove(existingGoal.id)
+        }
 
         let interruptedGenerationTask = backgroundGenerationTasks[existingGoal.id]
         let interruptedTopOffTask = questionBankTopOffTasks[existingGoal.id]
@@ -1217,13 +1253,16 @@ final class CheckpointStore {
         )
 
         let startedAt = Date()
+        let routingRevision = questionGenerationRoutingRevision
         let providerPreference = initialBatchProviderPreference(for: checkpointReadyRequest)
         let batch = await generateCheckpointReadyBatch(
             for: checkpointReadyRequest,
             preference: providerPreference
         )
 
-        guard let currentGoal = availableGoalProfiles.first(where: { $0.id == newGoal.id })
+        guard !Task.isCancelled,
+              routingRevision == questionGenerationRoutingRevision,
+              let currentGoal = availableGoalProfiles.first(where: { $0.id == newGoal.id })
                 ?? (goal?.id == newGoal.id ? goal : nil),
               currentGoal == newGoal,
               isMember || !currentGoal.hasCompletedInitialQuestionProvisioning else {
@@ -1249,6 +1288,9 @@ final class CheckpointStore {
             return true
         }.map { questionStampedForCurrentContext($0, goal: newGoal) }
         questions.append(contentsOf: newQuestions)
+        if batch.provider == .backend, !newQuestions.isEmpty {
+            cloudPreparedGoalIDs.insert(newGoal.id)
+        }
         rebuildCompetencies(for: newGoal)
         lastQuestionProvider = batch.provider
         if newQuestions.isEmpty {
@@ -1281,10 +1323,7 @@ final class CheckpointStore {
     }
 
     private func initialBatchProviderPreference(for request: QuestionGenerationRequest) -> AIProviderKind {
-        consentFilteredProviderPreference(
-            aiProviderPreference,
-            hasBackendEndpoint: request.backendEndpoint != nil
-        )
+        planQuestionProviderPreference(hasBackendEndpoint: request.backendEndpoint != nil)
     }
 
     private func generateCheckpointReadyBatch(
@@ -1437,12 +1476,14 @@ final class CheckpointStore {
                 targetCount: requestedCount
             )
             let startedAt = Date()
+            let routingRevision = questionGenerationRoutingRevision
             let batch = await questionEngine.generateQuestionBatch(
                 for: topOffRequest,
                 preference: providerPreference
             )
 
             guard !Task.isCancelled,
+                  routingRevision == questionGenerationRoutingRevision,
                   let latestGoal = availableGoalProfiles.first(where: { $0.id == targetGoal.id })
                     ?? (goal?.id == targetGoal.id ? goal : nil),
                   latestGoal == targetGoal else {
@@ -1480,6 +1521,9 @@ final class CheckpointStore {
 
             if !newQuestions.isEmpty {
                 madeProgress = true
+                if batch.provider == .backend {
+                    cloudPreparedGoalIDs.insert(latestGoal.id)
+                }
                 lastQuestionProvider = batch.provider
                 lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
             }
@@ -1543,9 +1587,7 @@ final class CheckpointStore {
             questionRefreshesUsed += 1
         }
 
-        let providerPreference = consentFilteredProviderPreference(
-            reason.providerPreference(defaultPreference: aiProviderPreference)
-        )
+        let providerPreference = planQuestionProviderPreference()
         let requestedCount = min(
             targetCount ?? generationChunkCount(for: providerPreference),
             generationChunkCount(for: providerPreference)
@@ -1558,21 +1600,44 @@ final class CheckpointStore {
             targetCount: requestedCount
         )
         let startedAt = Date()
+        let routingRevision = questionGenerationRoutingRevision
+        let cloudReplacementCandidateIDs = reason == .cloudPlanActivation
+            ? Set(activeQuestions.filter { $0.status == .new && $0.timesAsked == 0 }.map(\.id))
+            : []
         let batch = await questionEngine.generateQuestionBatch(
             for: refreshRequest,
             preference: providerPreference
         )
-        let generatedQuestions = batch.questions
-        guard let currentGoal = availableGoalProfiles.first(where: { $0.id == goal.id })
+        let generatedQuestions = reason == .cloudPlanActivation && batch.provider != .backend
+            ? []
+            : batch.questions
+        guard !Task.isCancelled,
+              routingRevision == questionGenerationRoutingRevision,
+              let currentGoal = availableGoalProfiles.first(where: { $0.id == goal.id })
                 ?? (self.goal?.id == goal.id ? self.goal : nil),
               currentGoal == goal else {
+            questionBatchState = activeQuestions.isEmpty ? .idle : .ready
             finishQuestionGeneration(for: goal.id)
+            save()
+            publishShieldContext()
             return
         }
 
         let newQuestions = ingestGeneratedQuestions(generatedQuestions, for: currentGoal)
+        if batch.provider == .backend, !newQuestions.isEmpty {
+            cloudPreparedGoalIDs.insert(currentGoal.id)
+        }
+        let replacedQuestionCount = reason == .cloudPlanActivation
+            ? removeReplaceableQuestionsForCloudTransition(
+                candidateIDs: cloudReplacementCandidateIDs,
+                replacementCount: newQuestions.count,
+                goal: currentGoal
+            )
+            : 0
         let goalQuestions = questions.filter { $0.goalID == goal.id }
-        lastQuestionProvider = batch.provider
+        if !newQuestions.isEmpty || reason != .cloudPlanActivation {
+            lastQuestionProvider = batch.provider
+        }
         if newQuestions.isEmpty {
             lastAIErrorMessage = "No new usable questions were added. Try refining the goal or refreshing later."
         } else {
@@ -1584,6 +1649,7 @@ final class CheckpointStore {
             providerPreference: providerPreference,
             batch: batch,
             addedQuestions: newQuestions,
+            retiredQuestionCount: replacedQuestionCount,
             startedAt: startedAt,
             errorMessage: lastAIErrorMessage
         )
@@ -2002,12 +2068,25 @@ final class CheckpointStore {
     }
 
     func resetDemoData() {
-        let reserveConfiguration = resolvedQuestionReserveConfiguration
-        let reserveGoalIDs = Array(availableGoalProfiles.prefix(5).map(\.id))
+        let hadCloudState = backendQuestionGenerationConsentGranted
+            || serverQuestionReserveEnabled
+            || !pendingQuestionReserveAcknowledgements.isEmpty
+            || !pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+            || pendingServerQuestionReserveCredentialReset
+        let reserveGoalIDs = hadCloudState
+            ? Array(
+                Set(availableGoalProfiles.prefix(5).map(\.id))
+                    .union(pendingServerQuestionReserveDeletionGoalIDs)
+            )
+            : []
         let inFlightReserveTasks = serverQuestionReserveTasks.values.map(\.task)
         backgroundGenerationTasks.values.forEach { $0.cancel() }
         questionBankTopOffTasks.values.forEach { $0.cancel() }
         serverQuestionReserveTasks.values.forEach { $0.task.cancel() }
+        cloudActivationPreparationTask?.task.cancel()
+        cloudActivationPreparationTask = nil
+        localRoutingPreparationTask?.task.cancel()
+        localRoutingPreparationTask = nil
         backgroundGenerationTasks = [:]
         questionBankTopOffTasks = [:]
         serverQuestionReserveTasks = [:]
@@ -2027,9 +2106,12 @@ final class CheckpointStore {
         questionBatchState = .idle
         aiProviderPreference = .automatic
         lastQuestionProvider = .localTemplates
-        backendEndpoint = ""
         backendQuestionGenerationConsentGranted = false
+        backendQuestionGenerationConsentPromptAnswered = false
         serverQuestionReserveEnabled = false
+        pendingServerQuestionReserveDeletionGoalIDs = reserveGoalIDs
+        pendingServerQuestionReserveCredentialReset = hadCloudState
+        cloudPreparedGoalIDs = []
         lastAIErrorMessage = nil
         isQuestionBankTopOffInProgress = false
         questionBankTopOffStartedAt = nil
@@ -2048,12 +2130,13 @@ final class CheckpointStore {
         defaults.removeObject(forKey: snapshotBackupKey)
         save()
         publishShieldContext()
-        scheduleServerQuestionReserveDeletion(
-            goalIDs: reserveGoalIDs,
-            configuration: reserveConfiguration,
-            resetsCredentials: true,
-            waitingFor: inFlightReserveTasks
-        )
+        if hadCloudState {
+            enqueueServerQuestionReserveDeletion(
+                goalIDs: reserveGoalIDs,
+                resetsCredentials: true,
+                waitingFor: inFlightReserveTasks
+            )
+        }
     }
 
     // MARK: - Checkpoint sessions
@@ -2499,8 +2582,18 @@ final class CheckpointStore {
     }
 
     func updateBackendEndpoint(_ endpoint: String) {
+        guard backendEndpoint != endpoint else { return }
+        let interruptedTasks = Array(backgroundGenerationTasks.values)
+            + Array(questionBankTopOffTasks.values)
+        invalidateQuestionGenerationRouting()
+        interruptedTasks.forEach { $0.cancel() }
         backendEndpoint = endpoint
         save()
+        if isProCloudQuestionGenerationActive {
+            scheduleFirstCloudQuestionsPreparation(waitingFor: interruptedTasks)
+        } else if !interruptedTasks.isEmpty {
+            scheduleLocalQuestionPreparationAfterRoutingChange(waitingFor: interruptedTasks)
+        }
     }
 
     var isBackendQuestionGenerationConfigured: Bool {
@@ -2514,30 +2607,66 @@ final class CheckpointStore {
     func updateBackendQuestionGenerationConsent(_ isGranted: Bool) {
         if isGranted {
             guard rawQuestionReserveConfiguration != nil else { return }
+            let routingChanged = !backendQuestionGenerationConsentGranted
+            let interruptedTasks = routingChanged
+                ? Array(backgroundGenerationTasks.values) + Array(questionBankTopOffTasks.values)
+                : []
+            if routingChanged {
+                invalidateQuestionGenerationRouting()
+                interruptedTasks.forEach { $0.cancel() }
+            }
             backendQuestionGenerationConsentGranted = true
+            backendQuestionGenerationConsentPromptAnswered = true
+            if isMember {
+                serverQuestionReserveEnabled = true
+            }
             save()
+            if isMember {
+                scheduleServerQuestionReserveMaintenance()
+                if routingChanged, isProCloudQuestionGenerationActive {
+                    scheduleFirstCloudQuestionsPreparation(waitingFor: interruptedTasks)
+                }
+            }
             return
         }
 
         // Capture the consented configuration before closing the gate so the
         // already-authorized server data can be deleted as part of withdrawal.
-        let configuration = resolvedQuestionReserveConfiguration
-        let goalIDs = Array(availableGoalProfiles.prefix(5).map(\.id))
+        let goalIDs = Array(
+            Set(availableGoalProfiles.prefix(5).map(\.id))
+                .union(pendingServerQuestionReserveDeletionGoalIDs)
+        )
         let inFlightReserveTasks = serverQuestionReserveTasks.values.map(\.task)
+        let interruptedQuestionTasks = Array(backgroundGenerationTasks.values)
+            + Array(questionBankTopOffTasks.values)
+        if backendQuestionGenerationConsentGranted {
+            invalidateQuestionGenerationRouting()
+        }
         backendQuestionGenerationConsentGranted = false
+        backendQuestionGenerationConsentPromptAnswered = true
         serverQuestionReserveEnabled = false
-        backgroundGenerationTasks.values.forEach { $0.cancel() }
-        questionBankTopOffTasks.values.forEach { $0.cancel() }
+        cloudActivationPreparationTask?.task.cancel()
+        cloudActivationPreparationTask = nil
+        interruptedQuestionTasks.forEach { $0.cancel() }
         serverQuestionReserveTasks.values.forEach { $0.task.cancel() }
         serverQuestionReserveTasks = [:]
         pendingQuestionReserveAcknowledgements = []
+        pendingServerQuestionReserveDeletionGoalIDs = goalIDs
+        pendingServerQuestionReserveCredentialReset = true
         save()
-        scheduleServerQuestionReserveDeletion(
-            goalIDs: goalIDs,
-            configuration: configuration,
-            resetsCredentials: true,
-            waitingFor: inFlightReserveTasks
+        startServerQuestionReserveShutdownIfNeeded(waitingFor: inFlightReserveTasks)
+        scheduleLocalQuestionPreparationAfterRoutingChange(
+            waitingFor: interruptedQuestionTasks
         )
+    }
+
+    func declineProCloudQuestionGeneration() {
+        guard !backendQuestionGenerationConsentGranted else {
+            updateBackendQuestionGenerationConsent(false)
+            return
+        }
+        backendQuestionGenerationConsentPromptAnswered = true
+        save()
     }
 
     func updateServerQuestionReserveEnabled(_ isEnabled: Bool) {
@@ -2549,31 +2678,248 @@ final class CheckpointStore {
                 return
             }
             guard rawQuestionReserveConfiguration != nil else { return }
-            backendQuestionGenerationConsentGranted = true
-            serverQuestionReserveEnabled = true
-            save()
-            scheduleServerQuestionReserveMaintenance()
+            updateBackendQuestionGenerationConsent(true)
             return
         }
 
-        let configuration = resolvedQuestionReserveConfiguration
+        updateBackendQuestionGenerationConsent(false)
+    }
+
+    private func stopServerQuestionReserveForInactivePlan() {
         let goalIDs = Array(availableGoalProfiles.prefix(5).map(\.id))
         let inFlightReserveTasks = serverQuestionReserveTasks.values.map(\.task)
+        pendingServerQuestionReserveDeletionGoalIDs = Array(
+            Set(pendingServerQuestionReserveDeletionGoalIDs).union(goalIDs)
+        ).sorted { $0.uuidString < $1.uuidString }
         serverQuestionReserveEnabled = false
         serverQuestionReserveTasks.values.forEach { $0.task.cancel() }
         serverQuestionReserveTasks = [:]
         pendingQuestionReserveAcknowledgements = []
-        save()
-        scheduleServerQuestionReserveDeletion(
-            goalIDs: goalIDs,
-            configuration: configuration,
-            resetsCredentials: true,
-            waitingFor: inFlightReserveTasks
+        startServerQuestionReserveShutdownIfNeeded(waitingFor: inFlightReserveTasks)
+    }
+
+    private var shouldPrepareFirstCloudQuestions: Bool {
+        guard isProCloudQuestionGenerationActive, let goal else { return false }
+        return !cloudPreparedGoalIDs.contains(goal.id) || questionBankDeficit(for: goal) > 0
+    }
+
+    private var shouldUseProCloudQuestionReserve: Bool {
+        hasVerifiedMembershipForCurrentLaunch
+            && isMember
+            && backendQuestionGenerationConsentGranted
+            && rawQuestionReserveConfiguration != nil
+    }
+
+    private func scheduleLocalQuestionPreparationAfterRoutingChange(
+        waitingFor interruptedTasks: [Task<Void, Never>]
+    ) {
+        var tasksToAwait = interruptedTasks
+        if let existingTask = localRoutingPreparationTask?.task {
+            existingTask.cancel()
+            tasksToAwait.append(existingTask)
+        }
+
+        let taskID = UUID()
+        let task = Task { @MainActor [weak self] in
+            for interruptedTask in tasksToAwait {
+                await interruptedTask.value
+            }
+            guard !Task.isCancelled, let self else { return }
+            await self.prepareLocalQuestionsAfterRoutingChange()
+            self.finishLocalRoutingPreparation(taskID: taskID)
+        }
+        localRoutingPreparationTask = (taskID, task)
+    }
+
+    private func finishLocalRoutingPreparation(taskID: UUID) {
+        guard localRoutingPreparationTask?.id == taskID else { return }
+        localRoutingPreparationTask = nil
+    }
+
+    private func prepareLocalQuestionsAfterRoutingChange() async {
+        guard !isProCloudQuestionGenerationActive, let goal else { return }
+
+        if usableQuestionCount(for: goal) < Self.initialCheckpointReadyTargetCount,
+           isMember || !goal.hasCompletedInitialQuestionProvisioning {
+            await awaitInitialQuestionGeneration(for: goal)
+            return
+        }
+
+        guard (isMember || !goal.hasCompletedInitialQuestionProvisioning),
+              questionBankDeficit(for: goal) > 0 else {
+            return
+        }
+        let task = startQuestionBankTopOff(
+            for: goal,
+            starterQuestionIDs: Set(activeQuestions.map(\.id)),
+            providerPreference: .localTemplates,
+            maximumBatches: Self.foregroundTopOffBatchLimit
+        )
+        if let task {
+            await task.value
+        }
+    }
+
+    private func startServerQuestionReserveShutdownIfNeeded(
+        waitingFor inFlightTasks: [Task<Void, Never>] = []
+    ) {
+        guard serverReserveShutdownTask == nil,
+              (!pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+                || pendingServerQuestionReserveCredentialReset) else {
+            return
+        }
+
+        let goalIDs = Array(pendingServerQuestionReserveDeletionGoalIDs.prefix(5))
+        let configuration = rawQuestionReserveConfiguration
+        guard goalIDs.isEmpty || configuration != nil else { return }
+        let performsCredentialReset = goalIDs.isEmpty
+            && pendingServerQuestionReserveCredentialReset
+        let service = questionReserveService
+        let taskID = UUID()
+        let task = Task { @MainActor [weak self] in
+            for inFlightTask in inFlightTasks {
+                await inFlightTask.value
+            }
+            guard !Task.isCancelled else { return }
+            let succeeded: Bool
+            do {
+                if performsCredentialReset {
+                    await service.resetCredentialsAndRotateIdentity()
+                } else if let configuration, !goalIDs.isEmpty {
+                    try await service.delete(goalIDs: goalIDs, configuration: configuration)
+                }
+                succeeded = true
+            } catch {
+                succeeded = false
+            }
+            self?.finishServerQuestionReserveShutdown(
+                taskID: taskID,
+                deletedGoalIDs: goalIDs,
+                performedCredentialReset: performsCredentialReset,
+                succeeded: succeeded
+            )
+        }
+        serverReserveShutdownTask = (taskID, task)
+    }
+
+    private func finishServerQuestionReserveShutdown(
+        taskID: UUID,
+        deletedGoalIDs: [Goal.ID],
+        performedCredentialReset: Bool,
+        succeeded: Bool
+    ) {
+        guard serverReserveShutdownTask?.id == taskID else { return }
+        serverReserveShutdownTask = nil
+        if succeeded {
+            let deletedIDs = Set(deletedGoalIDs)
+            pendingServerQuestionReserveDeletionGoalIDs.removeAll { deletedIDs.contains($0) }
+            if performedCredentialReset {
+                pendingServerQuestionReserveCredentialReset = false
+            }
+            save()
+        }
+
+        if succeeded,
+           (!pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+            || pendingServerQuestionReserveCredentialReset) {
+            startServerQuestionReserveShutdownIfNeeded()
+            return
+        }
+
+        if shouldUseProCloudQuestionReserve,
+           pendingServerQuestionReserveDeletionGoalIDs.isEmpty {
+            serverQuestionReserveEnabled = true
+            save()
+            scheduleServerQuestionReserveMaintenance()
+        }
+    }
+
+    private func scheduleFirstCloudQuestionsPreparation(
+        waitingFor interruptedTasks: [Task<Void, Never>] = []
+    ) {
+        guard isProCloudQuestionGenerationActive, let scheduledGoalID = goal?.id else { return }
+
+        var tasksToAwait = interruptedTasks
+        if let existingTask = cloudActivationPreparationTask?.task {
+            existingTask.cancel()
+            tasksToAwait.append(existingTask)
+        }
+
+        let taskID = UUID()
+        let task = Task { @MainActor [weak self] in
+            for interruptedTask in tasksToAwait {
+                await interruptedTask.value
+            }
+            guard !Task.isCancelled, let self else { return }
+            await self.prepareFirstCloudQuestionsIfNeeded(expectedGoalID: scheduledGoalID)
+            self.finishCloudActivationPreparation(taskID: taskID)
+        }
+        cloudActivationPreparationTask = (taskID, task)
+    }
+
+    private func finishCloudActivationPreparation(taskID: UUID) {
+        guard cloudActivationPreparationTask?.id == taskID else { return }
+        cloudActivationPreparationTask = nil
+    }
+
+    private func prepareFirstCloudQuestionsIfNeeded(expectedGoalID: Goal.ID? = nil) async {
+        guard isProCloudQuestionGenerationActive,
+              let goal,
+              expectedGoalID == nil || expectedGoalID == goal.id else {
+            return
+        }
+
+        let activeTasks = [
+            backgroundGenerationTasks[goal.id],
+            questionBankTopOffTasks[goal.id]
+        ].compactMap { $0 }
+        for activeTask in activeTasks {
+            await activeTask.value
+        }
+
+        guard !Task.isCancelled,
+              isProCloudQuestionGenerationActive,
+              self.goal?.id == goal.id else {
+            return
+        }
+
+        if activeQuestions.isEmpty {
+            await awaitInitialQuestionGeneration(for: goal)
+            return
+        }
+
+        if questionBankDeficit(for: goal) > 0 {
+            let task = startQuestionBankTopOff(
+                for: goal,
+                starterQuestionIDs: [],
+                providerPreference: .backend,
+                maximumBatches: Self.foregroundTopOffBatchLimit
+            )
+            if let task {
+                await task.value
+            }
+            return
+        }
+
+        guard !cloudPreparedGoalIDs.contains(goal.id) else { return }
+        await refreshQuestionBatch(
+            reason: .cloudPlanActivation,
+            targetCount: Self.backendGenerationChunkCount
         )
     }
 
     func scheduleServerQuestionReserveMaintenance() {
-        guard serverQuestionReserveEnabled, isMember else { return }
+        if !pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+            || pendingServerQuestionReserveCredentialReset {
+            startServerQuestionReserveShutdownIfNeeded()
+            return
+        }
+        guard serverQuestionReserveEnabled,
+              isMember,
+              serverReserveShutdownTask == nil,
+              pendingServerQuestionReserveDeletionGoalIDs.isEmpty else {
+            return
+        }
         for profile in availableGoalProfiles {
             _ = startServerQuestionReserveMaintenance(
                 for: profile,
@@ -2583,16 +2929,15 @@ final class CheckpointStore {
     }
 
     func performServerQuestionReserveMaintenance() async {
-        guard serverQuestionReserveEnabled else { return }
-        if !isMember {
-            let purgeTasks = availableGoalProfiles.compactMap {
-                startServerQuestionReserveMaintenance(for: $0, desiredCount: 0)
-            }
-            for task in purgeTasks {
-                await task.value
+        if !pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+            || pendingServerQuestionReserveCredentialReset {
+            startServerQuestionReserveShutdownIfNeeded()
+            if let shutdownTask = serverReserveShutdownTask?.task {
+                await shutdownTask.value
             }
             return
         }
+        guard serverQuestionReserveEnabled, isMember else { return }
         let tasks = availableGoalProfiles.compactMap {
             startServerQuestionReserveMaintenance(
                 for: $0,
@@ -2916,24 +3261,25 @@ final class CheckpointStore {
             ?? (goal?.id == id ? goal : nil)
     }
 
-    private func scheduleServerQuestionReserveDeletion(
+    private func enqueueServerQuestionReserveDeletion(
         goalIDs: [Goal.ID],
-        configuration: QuestionReserveConfiguration?,
         resetsCredentials: Bool,
         waitingFor tasks: [Task<Void, Never>] = []
     ) {
-        let service = questionReserveService
-        Task {
-            for task in tasks {
-                await task.value
-            }
-            if let configuration, !goalIDs.isEmpty {
-                try? await service.delete(goalIDs: goalIDs, configuration: configuration)
-            }
-            if resetsCredentials {
-                await service.resetCredentialsAndRotateIdentity()
-            }
+        guard backendQuestionGenerationConsentGranted
+                || serverQuestionReserveEnabled
+                || !pendingServerQuestionReserveDeletionGoalIDs.isEmpty
+                || pendingServerQuestionReserveCredentialReset
+                || resetsCredentials else {
+            return
         }
+        pendingServerQuestionReserveDeletionGoalIDs = Array(
+            Set(pendingServerQuestionReserveDeletionGoalIDs).union(goalIDs)
+        ).sorted { $0.uuidString < $1.uuidString }
+        pendingServerQuestionReserveCredentialReset = pendingServerQuestionReserveCredentialReset
+            || resetsCredentials
+        save()
+        startServerQuestionReserveShutdownIfNeeded(waitingFor: tasks)
     }
 
     // MARK: - Adaptive scheduler
@@ -3374,6 +3720,7 @@ final class CheckpointStore {
         questionReports.removeAll { $0.goalID == goalID }
         unlockEvents.removeAll { $0.goalID == goalID }
         pendingQuestionReserveAcknowledgements.removeAll { $0.goalID == goalID }
+        cloudPreparedGoalIDs.remove(goalID)
     }
 
     @discardableResult
@@ -3500,7 +3847,11 @@ final class CheckpointStore {
             lastQuestionProvider: lastQuestionProvider,
             backendEndpoint: backendEndpoint,
             backendQuestionGenerationConsentGranted: backendQuestionGenerationConsentGranted,
+            backendQuestionGenerationConsentPromptAnswered: backendQuestionGenerationConsentPromptAnswered,
             serverQuestionReserveEnabled: serverQuestionReserveEnabled,
+            pendingServerQuestionReserveDeletionGoalIDs: pendingServerQuestionReserveDeletionGoalIDs,
+            pendingServerQuestionReserveCredentialReset: pendingServerQuestionReserveCredentialReset,
+            cloudPreparedGoalIDs: Array(cloudPreparedGoalIDs),
             pendingQuestionReserveAcknowledgements: pendingQuestionReserveAcknowledgements,
             unlockSession: unlockSession,
             checkpointRetryCooldownUntil: checkpointRetryCooldownUntil,
@@ -3853,8 +4204,15 @@ final class CheckpointStore {
         lastQuestionProvider = snapshot.lastQuestionProvider ?? .localTemplates
         backendEndpoint = snapshot.backendEndpoint ?? ""
         backendQuestionGenerationConsentGranted = snapshot.backendQuestionGenerationConsentGranted ?? false
+        backendQuestionGenerationConsentPromptAnswered = snapshot.backendQuestionGenerationConsentPromptAnswered
+            ?? backendQuestionGenerationConsentGranted
         serverQuestionReserveEnabled = backendQuestionGenerationConsentGranted
             && (snapshot.serverQuestionReserveEnabled ?? false)
+        pendingServerQuestionReserveDeletionGoalIDs = Array(
+            Set(snapshot.pendingServerQuestionReserveDeletionGoalIDs ?? [])
+        ).sorted { $0.uuidString < $1.uuidString }
+        pendingServerQuestionReserveCredentialReset = snapshot.pendingServerQuestionReserveCredentialReset ?? false
+        cloudPreparedGoalIDs = Set(snapshot.cloudPreparedGoalIDs ?? [])
         pendingQuestionReserveAcknowledgements = backendQuestionGenerationConsentGranted
             ? Array((snapshot.pendingQuestionReserveAcknowledgements ?? []).suffix(5))
             : []
@@ -4316,7 +4674,7 @@ final class CheckpointStore {
     }
 
     private var resolvedBackendEndpoint: URL? {
-        guard backendQuestionGenerationConsentGranted else { return nil }
+        guard isProCloudQuestionGenerationActive else { return nil }
         return rawBackendEndpoint
     }
 
@@ -4333,7 +4691,7 @@ final class CheckpointStore {
     }
 
     private var resolvedBackendAuthorizationToken: String? {
-        guard backendQuestionGenerationConsentGranted else { return nil }
+        guard isProCloudQuestionGenerationActive else { return nil }
         return rawBackendAuthorizationToken
     }
 
@@ -4346,6 +4704,11 @@ final class CheckpointStore {
     }
 
     private var resolvedQuestionReserveConfiguration: QuestionReserveConfiguration? {
+        guard shouldUseProCloudQuestionReserve else { return nil }
+        return rawQuestionReserveConfiguration
+    }
+
+    private var consentedQuestionReserveConfiguration: QuestionReserveConfiguration? {
         guard backendQuestionGenerationConsentGranted else { return nil }
         return rawQuestionReserveConfiguration
     }
@@ -4385,28 +4748,20 @@ final class CheckpointStore {
     }
 
     private func questionBankMaintenanceProviderPreference(for profile: Goal) -> AIProviderKind {
-        let providerPreference = consentFilteredProviderPreference(aiProviderPreference)
-        if providerPreference == .automatic {
-            if resolvedBackendEndpoint != nil {
-                return .backend
-            }
-            if lastQuestionProvider == .localTemplates,
-               questions.contains(where: { $0.goalID == profile.id }) {
-                return .localTemplates
-            }
-        }
-        return providerPreference
+        planQuestionProviderPreference()
     }
 
-    private func consentFilteredProviderPreference(
-        _ providerPreference: AIProviderKind,
+    private func planQuestionProviderPreference(
         hasBackendEndpoint: Bool? = nil
     ) -> AIProviderKind {
         let canReachBackend = hasBackendEndpoint ?? (resolvedBackendEndpoint != nil)
-        if providerPreference == .backend, !canReachBackend {
-            return .automatic
-        }
-        return providerPreference
+        return isMember && backendQuestionGenerationConsentGranted && canReachBackend
+            ? .backend
+            : .localTemplates
+    }
+
+    private func invalidateQuestionGenerationRouting() {
+        questionGenerationRoutingRevision &+= 1
     }
 
     private func generationChunkCount(for providerPreference: AIProviderKind) -> Int {

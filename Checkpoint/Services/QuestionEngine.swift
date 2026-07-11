@@ -718,7 +718,7 @@ struct HybridQuestionEngine: Sendable {
             }
             return [appleFoundationEngine, localEngine]
         case .backend:
-            return [backendEngine]
+            return [backendEngine, appleFoundationEngine, localEngine]
         case .localTemplates:
             return [localEngine]
         }

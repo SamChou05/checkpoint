@@ -199,40 +199,46 @@ struct SettingsView: View {
 
                     if store.isBackendQuestionGenerationConfigured {
                         SectionPanel("Cloud question generation") {
-                            Toggle(
-                                "Allow cloud question generation",
-                                isOn: Binding(
-                                    get: { store.backendQuestionGenerationConsentGranted },
-                                    set: { store.updateBackendQuestionGenerationConsent($0) }
-                                )
-                            )
-                            .tint(CheckpointTheme.teal)
-
-                            Text("When allowed, Checkpoint can send your learning goal, focus areas, skill progress, recent question coverage, and question reports to its AWS question service. Turn this off to use only on-device or local generation and request deletion of any cloud reserve.")
-                            .font(.footnote)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                            if store.backendQuestionGenerationConsentGranted {
-                                Divider()
-
+                            if store.isMember {
                                 Toggle(
-                                    "Questions ready while the app is closed",
+                                    "Use Pro cloud questions",
                                     isOn: Binding(
-                                        get: { store.serverQuestionReserveEnabled },
-                                        set: { store.updateServerQuestionReserveEnabled($0) }
+                                        get: { store.backendQuestionGenerationConsentGranted },
+                                        set: { store.updateBackendQuestionGenerationConsent($0) }
                                     )
                                 )
                                 .tint(CheckpointTheme.teal)
 
                                 Text(
-                                    store.isMember
-                                        ? "The optional cloud reserve keeps one limited goal snapshot and up to 20 prepared questions per goal for at most 30 days without an authenticated update."
-                                        : "Background cloud reserve is a Pro feature. Your on-device starter bank remains available without it."
-                                )
+                                    store.isProCloudQuestionGenerationActive
+                                        ? "Cloud-first generation and the background question reserve are active. Local generation takes over automatically during an outage."
+                                        : "Pro is using local generation. Enable cloud questions for more variety and questions prepared while the app is closed."
+                                    )
                                 .font(.footnote)
                                 .foregroundStyle(CheckpointTheme.muted)
                                 .fixedSize(horizontal: false, vertical: true)
+
+                                Text("When enabled, Checkpoint sends your goal details, focus areas, skill progress, recent question coverage, and question-report notes to its AWS service. Up to 20 prepared questions per goal may be retained for 30 days; turning this off requests deletion.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            } else {
+                                Label("Free questions are generated on this device", systemImage: "iphone")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text("Pro adds cloud-first generation and a background reserve. Free never sends question-generation data to the cloud.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                if store.backendQuestionGenerationConsentGranted {
+                                    Button("Clear saved cloud permission and data") {
+                                        store.updateBackendQuestionGenerationConsent(false)
+                                    }
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.coral)
+                                }
                             }
                         }
                     }
