@@ -1514,6 +1514,17 @@ final class CheckpointStore {
 
     private func refreshQuestionBatch(reason: QuestionRefreshReason, targetCount: Int? = nil) async {
         guard let goal else { return }
+        if reason == .levelUpRefill {
+            let interruptedTasks = [
+                backgroundGenerationTasks[goal.id],
+                questionBankTopOffTasks[goal.id]
+            ].compactMap { $0 }
+            interruptedTasks.forEach { $0.cancel() }
+            for task in interruptedTasks {
+                await task.value
+            }
+            guard self.goal == goal else { return }
+        }
         guard isMember else {
             checkpointNotice = starterQuestionLimitMessage
             lastAIErrorMessage = starterQuestionLimitMessage
@@ -1580,6 +1591,9 @@ final class CheckpointStore {
         finishQuestionGeneration(for: goal.id)
         save()
         publishShieldContext()
+        if reason == .levelUpRefill {
+            scheduleQuestionBankMaintenanceIfNeeded(for: currentGoal)
+        }
     }
 
     @discardableResult
@@ -2456,12 +2470,13 @@ final class CheckpointStore {
 
         save()
         publishShieldContext()
+        scheduleServerQuestionReserveMaintenance()
         return shouldRegenerate
     }
 
     func acceptQuestionLevelRecommendation() async {
         guard let recommendation = questionLevelRecommendation,
-              var activeGoal = goal else {
+              goal != nil else {
             return
         }
 
@@ -2472,12 +2487,8 @@ final class CheckpointStore {
             return
         }
 
-        activeGoal.minimumQuestionDifficulty = recommendation.nextLevel
-        goal = activeGoal
-        retireActiveQuestionsBelowDifficulty(recommendation.nextLevel)
-        lastAIErrorMessage = nil
-        save()
-        publishShieldContext()
+        let shouldRegenerate = applyMinimumQuestionDifficulty(recommendation.nextLevel)
+        guard shouldRegenerate else { return }
 
         await refreshQuestionBatch(reason: .levelUpRefill)
     }

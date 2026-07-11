@@ -6,7 +6,7 @@ Use this checklist before TestFlight and again before App Store submission. Mark
 
 Run: July 10, 2026 EDT.
 
-- [x] Complete Debug iOS simulator suite passed: 211 tests, 0 failures, including explicit backend consent, cancellation-insensitive reserve deletion ordering, and public legal-URL validation.
+- [x] Complete Debug iOS simulator suite passed: 212 tests, 0 failures, including explicit backend consent, cancellation-insensitive reserve deletion ordering, public legal-URL validation, and level-up supersession of an in-flight question-bank top-off.
 - [x] Release iOS simulator build succeeded, including all three Screen Time extensions.
 - [x] Bedrock question service suite passed: 106 tests, 0 failures, including 22 server-reserve tests.
 - [x] Python compilation, `ruff`, plist validation, `git diff --check`, and CloudFormation-aware YAML parsing passed.

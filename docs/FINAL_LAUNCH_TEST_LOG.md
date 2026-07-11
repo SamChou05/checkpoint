@@ -8,7 +8,7 @@ Last updated: July 10, 2026 EDT.
 
 | Date | Area | Build or Device | Result | Notes |
 | --- | --- | --- | --- | --- |
-| July 10, 2026 | Simulator XCTest suite | Xcode 26.4.1, iPhone 17 simulator | Pass | 211 passed, 0 failed after backend-consent, reserve deletion-ordering, legal-link, and release configuration changes. |
+| July 10, 2026 | Simulator XCTest suite | Xcode 26.4.1, iPhone 17 Pro simulator | Pass | 212 passed, 0 failed after backend-consent, reserve deletion-ordering, legal-link, release configuration, async top-off synchronization, and level-up supersession changes. |
 | July 10, 2026 | Bedrock question service | Python 3.12 unittest + Ruff + SAM CLI | Pass | 106 passed, 0 failed; SAM lint and build passed. |
 | July 10, 2026 | AWS production deployment | `checkpoint-question-service-prod`, `us-east-1` | Pass | Authenticated generation and the complete reserve lifecycle passed against the live stack; unauthenticated requests returned 401. |
 | July 10, 2026 | AWS production controls | DynamoDB, SQS, EventBridge, Lambda | Pass | TTL and encryption enabled; DLQ redrive/visibility and recovery schedule verified; smoke invocations reported zero Lambda errors. |

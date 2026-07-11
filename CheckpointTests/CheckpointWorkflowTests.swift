@@ -24,6 +24,23 @@ final class CheckpointWorkflowTests: XCTestCase {
         super.tearDown()
     }
 
+    @MainActor
+    private func waitUntil(
+        timeout: TimeInterval = 5,
+        pollIntervalNanoseconds: UInt64 = 20_000_000,
+        condition: () -> Bool
+    ) async -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition(), Date() < deadline {
+            do {
+                try await Task.sleep(nanoseconds: pollIntervalNanoseconds)
+            } catch {
+                return false
+            }
+        }
+        return condition()
+    }
+
     func testLegalResourceURLsRequirePublicHTTPSHosts() {
         XCTAssertEqual(
             AppResourceURL.validatedHTTPSValue("https://privacy.checkpoint-app.com/policy")?.absoluteString,
@@ -1461,8 +1478,13 @@ final class CheckpointWorkflowTests: XCTestCase {
             waitForQuestionGeneration: false
         )
 
-        try? await Task.sleep(nanoseconds: 120_000_000)
+        let preparedInitialBatch = await waitUntil {
+            store.questionBatchState == .ready
+                && store.isQuestionBankTopOffInProgress
+                && store.activeQuestions.count == UnlockPolicy.default.questionsPerSession
+        }
 
+        XCTAssertTrue(preparedInitialBatch)
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertTrue(store.isQuestionBankTopOffInProgress)
         XCTAssertEqual(store.activeQuestions.count, 5)
@@ -1471,8 +1493,12 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertFalse(store.isPreparingActiveGoalQuestions)
         XCTAssertEqual(store.questionGenerationStatusText, "Practice is ready.")
 
-        try? await Task.sleep(nanoseconds: 1_200_000_000)
+        let completedTopOff = await waitUntil {
+            !store.isQuestionBankTopOffInProgress
+                && store.activeQuestions.count == ProductLimits.starterQuestionBankTargetCount
+        }
 
+        XCTAssertTrue(completedTopOff)
         XCTAssertEqual(store.questionBatchState, .ready)
         XCTAssertFalse(store.isQuestionBankTopOffInProgress)
         XCTAssertEqual(store.activeQuestions.count, ProductLimits.starterQuestionBankTargetCount)
@@ -1528,8 +1554,12 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertTrue(relaunchedStore.activeQuestions.isEmpty)
         XCTAssertEqual(relaunchedStore.questionBatchState, .generating)
 
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        let completedRegeneration = await waitUntil {
+            !relaunchedStore.isQuestionBankTopOffInProgress
+                && relaunchedStore.activeQuestions.count == ProductLimits.starterQuestionBankTargetCount
+        }
 
+        XCTAssertTrue(completedRegeneration)
         XCTAssertTrue(localEngine.receivedRequests.isEmpty)
         XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, 5)
         XCTAssertEqual(
@@ -4127,10 +4157,12 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.updateMembershipTier(.member)
         store.goal = goal
         store.questionRefreshesUsed = 2
-        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0, difficulty: 2) }
+        store.questions = (1...ProductLimits.memberQuestionBankTargetCount).map {
+            makeQuestion(goal: goal, index: $0, difficulty: 2)
+        }
         let originalQuestionIDs = Set(store.questions.map(\.id))
 
-        for question in store.questions {
+        for question in store.questions.prefix(5) {
             store.submitAnswer(
                 question: question,
                 answer: question.expectedAnswer,
@@ -4138,8 +4170,6 @@ final class CheckpointWorkflowTests: XCTestCase {
                 grantsUnlock: false
             )
         }
-        try await Task.sleep(nanoseconds: 100_000_000)
-
         await store.acceptQuestionLevelRecommendation()
 
         let request = try XCTUnwrap(localEngine.receivedRequests.first { $0.minimumDifficulty == 3 })
@@ -4148,6 +4178,63 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertTrue(store.questions.filter { originalQuestionIDs.contains($0.id) }.allSatisfy { $0.status == .retired })
         XCTAssertTrue(store.activeQuestions.contains { $0.difficulty >= 3 && !originalQuestionIDs.contains($0.id) })
         XCTAssertEqual(store.questionRefreshesUsed, 2)
+    }
+
+    @MainActor
+    func testAcceptingQuestionLevelRecommendationSupersedesInFlightTopOff() async throws {
+        var goal = makeGoal()
+        goal.minimumQuestionDifficulty = 2
+        let backendEngine = TargetCountQuestionEngine(
+            provider: .backend,
+            requestDelayNanoseconds: 300_000_000
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: ThrowingQuestionEngine(provider: .localTemplates),
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.questions = (1...15).map { makeQuestion(goal: goal, index: $0, difficulty: 2) }
+
+        for question in store.questions.prefix(5) {
+            store.submitAnswer(
+                question: question,
+                answer: question.expectedAnswer,
+                result: .correct,
+                grantsUnlock: false
+            )
+        }
+
+        let startedTopOff = await waitUntil {
+            store.isQuestionBankTopOffInProgress
+                && backendEngine.receivedRequests.contains { $0.minimumDifficulty == 2 }
+        }
+        XCTAssertTrue(startedTopOff)
+        XCTAssertNotNil(store.questionLevelRecommendation)
+
+        await store.acceptQuestionLevelRecommendation()
+
+        XCTAssertEqual(store.goal?.minimumQuestionDifficulty, 3)
+        XCTAssertTrue(backendEngine.receivedRequests.contains { $0.minimumDifficulty == 3 })
+        XCTAssertTrue(store.isQuestionBankTopOffInProgress)
+        let checkpointReadyQuestions = store.activeQuestions.filter { $0.status != .retired }
+        XCTAssertFalse(checkpointReadyQuestions.isEmpty)
+        XCTAssertTrue(checkpointReadyQuestions.allSatisfy { $0.difficulty >= 3 })
+
+        let completedReplacementTopOff = await waitUntil {
+            !store.isQuestionBankTopOffInProgress
+        }
+        XCTAssertTrue(completedReplacementTopOff)
+        let replenishedQuestions = store.activeQuestions.filter { $0.status != .retired }
+        XCTAssertGreaterThan(replenishedQuestions.count, checkpointReadyQuestions.count)
+        XCTAssertTrue(replenishedQuestions.allSatisfy { $0.difficulty >= 3 })
     }
 
     @MainActor
@@ -6287,7 +6374,11 @@ private final class TargetCountQuestionEngine: QuestionGenerating, @unchecked Se
     let provider: AIProviderKind
     let requestDelayNanoseconds: UInt64
     let largeRequestDelayNanoseconds: UInt64
-    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+    private let lock = NSLock()
+    private var storedRequests: [QuestionGenerationRequest] = []
+    var receivedRequests: [QuestionGenerationRequest] {
+        lock.withLock { storedRequests }
+    }
 
     init(
         provider: AIProviderKind,
@@ -6300,7 +6391,9 @@ private final class TargetCountQuestionEngine: QuestionGenerating, @unchecked Se
     }
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
-        receivedRequests.append(request)
+        lock.withLock {
+            storedRequests.append(request)
+        }
 
         if requestDelayNanoseconds > 0 {
             try await Task.sleep(nanoseconds: requestDelayNanoseconds)
