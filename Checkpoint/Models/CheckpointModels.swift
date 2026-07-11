@@ -216,15 +216,15 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
     static func difficultyLabel(for level: Int) -> String {
         switch UnlockPolicy.normalizedQuestionDifficulty(level) {
         case 1:
-            return "Level 1 of 5 (Basics)"
+            return "Basics"
         case 2:
-            return "Level 2 of 5 (Easy)"
+            return "Foundational"
         case 3:
-            return "Level 3 of 5 (Medium)"
+            return "Intermediate"
         case 4:
-            return "Level 4 of 5 (Hard)"
+            return "Advanced"
         default:
-            return "Level 5 of 5 (Expert)"
+            return "Expert"
         }
     }
 
@@ -456,6 +456,7 @@ struct QuestionGenerationTrace: Identifiable, Codable, Equatable, Sendable {
     var retiredQuestionCount: Int
     var duration: TimeInterval
     var sourcePrompt: String
+    var failure: QuestionGenerationFailureKind?
     var errorMessage: String?
     var questions: [QuestionGenerationQuestionPreview]
 }
@@ -674,6 +675,8 @@ struct AppSnapshot: Codable, Sendable {
     var questionGenerationTraces: [QuestionGenerationTrace]?
     var unlockPolicy: UnlockPolicy?
     var questionBatchState: QuestionBatchState?
+    var lastAIErrorMessage: String?
+    var lastQuestionGenerationFailure: QuestionGenerationFailureKind?
     var aiProviderPreference: AIProviderKind?
     var lastQuestionProvider: AIProviderKind?
     var backendEndpoint: String?

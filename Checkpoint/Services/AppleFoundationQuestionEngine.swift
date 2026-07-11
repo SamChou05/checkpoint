@@ -26,6 +26,9 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
     let provider: AIProviderKind = .appleFoundation
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        var providerRequest = request
+        providerRequest.targetCount = min(request.targetCount, UnlockPolicy.maximumQuestionsPerSession)
+
         let model = SystemLanguageModel.default
         guard model.isAvailable else {
             throw QuestionGenerationError.providerUnavailable
@@ -39,38 +42,41 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
 
         Rules:
         - Test the learning target itself, not studying, motivation, app blocking, or next steps unless the target is study skills.
+        - Treat any legacy category as optional metadata. Never replace, narrow, or reinterpret the learner's stated goal because of it.
+        - Select authentic question forms, terminology, notation, source material, and reasoning patterns for the stated subject rather than applying a fixed interview or exam template.
         - Return exactly {"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","difficulty":1,"format":"Multiple Choice"}]}.
         - Each question has a self-contained stem, one best answer, exactly 4 choices, a short explanation, a topic, and difficulty 1-5.
         - Keep each prompt under 280 characters and do not include answer labels or option text inside the prompt field.
         - Do not use answer labels such as A, B, C, D, or "choice B" as expectedAnswer or choice text; write the actual answer text.
         - Choices are parallel, similar length, mutually exclusive, plausible, and not paraphrases.
         - Do not use "All of the above", "None of the above", or "Both A and B".
-        - Do not ask the learner to write a function, write code, create a plan, or produce a free-response artifact.
-        - For math, code, and logic questions, verify the answer before returning it; if unsure, write a conceptual application question.
-        - For calculus or hard math, prefer method selection, interpretation, sign/behavior analysis, or error analysis over raw exact-value computation.
-        - Avoid "correct setup for evaluating a limit" items when algebraically equivalent expressions could both be defensible.
-        - Avoid exact derivative-sign-at-a-single-point prompts; prefer interval behavior, sign-chart interpretation, or method selection.
-        - If asking which interval contains a solution, root, or critical point, compute all relevant values and ensure exactly one listed interval satisfies the prompt.
-        - For coding complexity, specify the algorithm and case, and account for slicing, copying, sorting, and recursion stack space.
-        - For language questions, the expected answer must demonstrate the named grammar concept with correct tense, mood, agreement, accents, and terminology.
-        - For Spanish subjunctive, prefer constrained cloze questions over broad sentence-selection prompts.
-        - For Spanish object-pronoun questions, the answer must be the pronoun alone or a complete grammatical sentence with correct pronoun placement.
-        - For Spanish grammar with subjunctive, object pronouns, and travel vocabulary, use constrained cloze, pronoun replacement, and translation/vocabulary items without examples or answer labels in the prompt.
+        - Do not require a free-response artifact; ask the learner to choose the best answer.
+        - Before returning the batch, solve or verify every item using the standards of its subject. If the answer is uncertain or multiple choices could be defensible, replace the item.
+        - Preserve correct subject conventions, including terminology, notation, grammar, chronology, units, and evidentiary qualifiers wherever they apply.
+        - Include all facts, source material, passages, examples, or constraints needed to answer each question without outside context.
         - For level 3 and above, use application or reasoning, not simple recall.
         - Avoid existing or reported prompts.
         - Generate exactly the requested number of usable questions. Do not stop early.
         - Return JSON only.
         """
 
-        let prompt = request.sourcePrompt(provider: provider)
+        let prompt = providerRequest.sourcePrompt(provider: provider)
 
         let session = LanguageModelSession(instructions: instructions)
-        let options = GenerationOptions(temperature: 0.4, maximumResponseTokens: 1800)
+        let options = GenerationOptions(temperature: 0.4, maximumResponseTokens: 4000)
         let response = try await session.respond(to: Prompt(prompt), options: options)
         let data = try extractJSONData(from: response.content)
-        let payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+        let payload: BackendQuestionResponse
+        do {
+            payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+        } catch {
+            throw QuestionGenerationError.badResponse
+        }
         let questions = payload.questions.map {
-            $0.makeQuestion(goalID: request.goal.id, sourcePrompt: request.sourcePrompt(provider: provider))
+            $0.makeQuestion(
+                goalID: providerRequest.goal.id,
+                sourcePrompt: providerRequest.sourcePrompt(provider: provider)
+            )
         }
 
         guard !questions.isEmpty else {

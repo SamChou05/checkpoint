@@ -16,18 +16,34 @@ struct BackendQuestionEngine: QuestionGenerating {
            !token.isEmpty {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-        urlRequest.timeoutInterval = 20
+        urlRequest.timeoutInterval = 45
         urlRequest.httpBody = try JSONEncoder().encode(BackendQuestionRequest(request: request))
 
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200..<300).contains(httpResponse.statusCode)
-        else {
-            throw QuestionGenerationError.badResponse
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw QuestionGenerationError.serviceUnavailable
         }
 
-        let payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+        guard (200..<300).contains(httpResponse.statusCode) else {
+            switch httpResponse.statusCode {
+            case 429:
+                throw QuestionGenerationError.rateLimited
+            case 400, 401, 403, 404:
+                throw QuestionGenerationError.serviceUnavailable
+            case 500..<600:
+                throw QuestionGenerationError.serviceUnavailable
+            default:
+                throw QuestionGenerationError.badResponse
+            }
+        }
+
+        let payload: BackendQuestionResponse
+        do {
+            payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+        } catch {
+            throw QuestionGenerationError.badResponse
+        }
         let questions = payload.questions.map {
             $0.makeQuestion(goalID: request.goal.id, sourcePrompt: request.sourcePrompt(provider: provider))
         }
@@ -85,6 +101,7 @@ private struct GoalPayload: Encodable {
     var title: String
     var deadline: Date
     var category: String
+    var currentLevel: String
     var focusAreas: String
     var learningTarget: String
     var contentTopics: [String]
@@ -96,6 +113,7 @@ private struct GoalPayload: Encodable {
         title = goal.title
         deadline = goal.deadline
         category = goal.category.rawValue
+        currentLevel = goal.currentLevel
         focusAreas = goal.focusAreas
         learningTarget = questionContext.learningTarget
         contentTopics = questionContext.contentTopics
@@ -109,12 +127,14 @@ private struct QuestionCoveragePayload: Encodable {
     var topic: String
     var prompt: String
     var expectedAnswer: String
+    var choices: [String]
     var difficulty: Int
 
     init(question: CheckpointQuestion) {
         topic = question.topic
         prompt = question.prompt
         expectedAnswer = question.expectedAnswer
+        choices = question.choices
         difficulty = question.difficulty
     }
 }

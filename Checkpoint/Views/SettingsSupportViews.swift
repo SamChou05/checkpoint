@@ -8,14 +8,14 @@ enum AdvancedSettingsAction: String, Identifiable {
     var title: String {
         switch self {
         case .resetData:
-            return "Reset Checkpoint?"
+            return "Erase all data?"
         }
     }
 
     var detail: String {
         switch self {
         case .resetData:
-            return "This clears your goal, questions, skill map, history, reports, and blocking state on this device."
+            return "This erases all goals and progress on this device and turns off app protection. This can't be undone."
         }
     }
 
@@ -29,7 +29,7 @@ enum AdvancedSettingsAction: String, Identifiable {
     var buttonTitle: String {
         switch self {
         case .resetData:
-            return "Reset app data"
+            return "Erase all data"
         }
     }
 
@@ -85,9 +85,6 @@ struct AdvancedConfirmationView: View {
                             }
                             .disabled(!isConfirmed)
 
-                            SecondaryActionButton(title: "Cancel", systemImage: "xmark") {
-                                dismiss()
-                            }
                         }
                     }
                 }

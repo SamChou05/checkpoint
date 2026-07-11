@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: June 4, 2026
+Last updated: July 11, 2026
 
 ## Current Product Direction
 
@@ -9,7 +9,7 @@ Checkpoint is an iOS app that lets a user pick restricted apps, set a goal, and 
 The App Store-safe workflow is:
 
 1. User creates a goal profile in Checkpoint.
-2. Checkpoint generates and stores a local multiple-choice question bank for that active profile.
+2. Checkpoint generates and caches a multiple-choice question bank for that active profile.
 3. User grants Family Controls permission.
 4. User picks restricted apps inside Checkpoint.
 5. Checkpoint shields those apps.
@@ -31,35 +31,35 @@ Important platform constraint:
 
 - SwiftUI iOS app project.
 - Academic paper-inspired visual system.
-- Home, Skill, and Settings tabs.
-- Settings keeps user-facing controls focused on Goals, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
+- Home, Progress, and Settings tabs.
+- Settings keeps user-facing controls focused on goals, app protection, and checkpoint rules; reset is collapsed under App data and diagnostics live in Debug-only Developer tools.
 - The app is currently modeled as a starter-membership product: the first goal and core blocker loop are included before payment, while membership unlocks goal switching and ongoing fresh generation.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
-- Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
-- Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
-- Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 stop challenge from Home or Advanced.
-- Settings includes a compact Membership section without putting payment decisions in the core checkpoint flow.
-- Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
+- Feedback notes are accessible from Settings, saved locally, and shareable through the system share sheet.
+- Screen Time authorization is requested only after the user chooses to set up app protection; Settings keeps a fallback access button when permission is not ready.
+- Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 review from Settings.
+- Settings places a compact Plan section below the core goal and app-protection controls.
+- Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh AI-generated questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
-- Natural-language goal profile onboarding flow.
+- Natural-language goal profile onboarding with sensible defaults and optional topic/starting-level customization.
 - Onboarding starts blank and rejects empty goal titles.
-- Goal category is inferred internally from the typed goal and optional focus areas instead of shown as a setup choice.
+- The raw typed goal is authoritative. Legacy category is compatibility metadata only, and new goals default to `Custom` instead of being classified by subject keywords.
 - Question generation extracts an internal learning target from natural-language goals, so `Study for the LSAT` becomes LSAT content rather than questions about studying.
 - Existing profiles reopen prefilled for edits; users can create and switch multiple goal profiles.
 - Home lets users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
-- Home focuses on the active profile and blocking state; the manual checkpoint preview is tucked into Advanced for testing and does not unlock apps.
+- Home focuses on the active profile and blocking state; the manual checkpoint preview is tucked into Debug-only Developer tools and does not unlock apps.
 
 ### Question System
 
-- Goal intake captures title, deadline, focus areas, and the profile-specific minimum question level; internal category and topic inference keep fallback question generation useful.
-- The generation request derives a learning target, content topics, and a question directive before calling local, backend, or Apple Foundation providers.
+- Goal intake captures title, deadline, focus areas, and the profile-specific minimum question level; internal category and topic inference keep question generation aligned.
+- The generation request derives a learning target, content topics, and a question directive before calling the configured cloud backend in production.
 - If a goal has no usable focus areas, the initial 5-question provider batch is allowed to infer the first Skill Map; background bank top-off then uses those generated competencies.
 - Provider prompts intentionally stay simple: user goal, derived learning target, content topics, requested count, difficulty floor, a concise difficulty rubric, and multiple-choice requirements.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
-- Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
-- Backend and Apple Foundation Models providers are wired behind a shared generation interface.
+- Backend generation and an explicit internal Apple Foundation Models experiment are wired behind a shared interface.
 - A first AWS Bedrock Lambda backend is scaffolded in `backend/bedrock-question-service`; it matches the app contract, validates model output, and keeps provider credentials off-device.
+- Live-backend smoke tests exercised LSAT, MCAT, Spanish, modern history, and raw-goal beekeeping cases. The endpoint produced full validated sets across all five domains; one Spanish run initially yielded only 4 of 5 under the stricter local gate and passed on retry, confirming why the backend must retry partial batches before declaring a set ready. Endpoint and token values live only in ignored local configuration and remain outside version control.
 - AI generation should happen in batches and be cached locally, not live on every app-open attempt.
 - Questions store prompt, expected answer, answer choices, explanation, topic, difficulty, format, status, ask count, correctness count, and next review date.
 - Answer attempts are stored in history.
@@ -71,15 +71,17 @@ Important platform constraint:
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
+- Checkpoint requires at least five validated questions before marking the first practice set ready. It does not substitute canned questions when AI output is missing or rejected.
+- The user sees pending generation and retryable service, connection, or quality failures, with goal-editing offered only when more specific subject context could help.
 - Question refresh is abstracted away from users. Starter users get the first generated bank; membership keeps fresh questions flowing after that set runs low.
 - Debug and Release builds both use StoreKit entitlements for Free/Pro access; local development uses `Checkpoint/Config/CheckpointProducts.storekit` through the shared Xcode scheme.
 - Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
-  - Automatic
-  - Apple Foundation Models
+  - Automatic (production cloud backend)
   - Backend
-  - Local Templates
-- Automatic tries Apple Foundation Models first, then a configured backend LLM, then Local Templates as the no-cost/offline fallback.
+  - Apple Foundation Models (explicit internal experiment)
+- Production `Automatic` routes directly to the configured backend LLM.
+- Apple Foundation Models is never selected by production `Automatic`; its availability, OS model version, and reasoning capability vary too much for it to be a production fallback or question source.
 - Provider routing is internal so users do not need to choose a question source.
 - The app stores the last provider used for diagnostics.
 - Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, oversized, and off-target study-strategy questions.
@@ -100,7 +102,7 @@ Important platform constraint:
 - The scheduler respects the active profile's manually configured difficulty floor when enough questions are available.
 - Initial topic levels start from the active question difficulty and inferred goal topics, then adjust by answer history.
 - Strong recent accuracy surfaces an opt-in question-level increase that updates the goal difficulty and refills harder questions.
-- Skill tab shows average mastery and per-topic progress.
+- Progress tab shows actionable per-topic progress, with detailed answer counts available on demand.
 
 ### Unlock Policy
 
@@ -135,7 +137,7 @@ Important platform constraint:
 - Shield configuration shows Checkpoint-branded shield copy.
 - Shield configuration writes render diagnostics to the shared App Group so Settings can confirm whether iOS loaded the custom shield page or fell back to the system Restricted page.
 - Shield action records a pending checkpoint attempt in shared App Group state and asks iOS to open Checkpoint.
-- Pending shield attempts are consumed at the app root, so the checkpoint sheet can appear even if Checkpoint opens on Settings or Skill.
+- Pending shield attempts are consumed at the app root, so the checkpoint sheet can appear even if Checkpoint opens on Settings or Progress.
 - Device Activity monitor re-applies selected app/category/web shields after a temporary unlock expires.
 - Main app consumes pending shield attempts on launch or foreground activation and opens the checkpoint answer flow.
 
@@ -147,7 +149,7 @@ Important platform constraint:
 - Family Controls distribution requires Apple approval before App Store submission.
 - Very short 5- and 10-minute unlocks rely primarily on the app-level re-lock task and foreground reconciliation; the Device Activity monitor remains an additional background re-lock path.
 - App Store readiness steps are tracked in `docs/APP_STORE_READINESS.md`.
-- The AI layer now has a provider interface with local templates, backend batch generation, and guarded Apple Foundation Models support.
+- The AI layer has production backend batch generation plus guarded Apple Foundation Models support for explicit internal experiments.
 - Storage is still prototype-level UserDefaults/App Group defaults, not SwiftData or SQLite.
 
 ## In-Progress Direction Before Device Setup
@@ -172,7 +174,7 @@ The MVP is complete when:
 - Completing the checkpoint set temporarily unlocks access.
 - Incorrect or unclear answers keep access blocked.
 - Missed questions return later, and failed checkpoint sets retest missed questions first on the next attempt.
-- The Skill tab reflects topic-level competency.
+- The Progress tab reflects topic-level competency.
 - The app re-locks reliably after unlock expiration.
 
 ## Next Work
@@ -189,7 +191,8 @@ The MVP is complete when:
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.
 - Replace prototype persistence with SwiftData or SQLite.
 - Deploy and verify the Bedrock backend against a real endpoint/model.
-- Verify Apple Foundation Models generation with the iOS SDK and supported hardware.
+- Configure Release with an HTTPS backend endpoint and token through `Checkpoint/Config/Secrets.xcconfig` or the `CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE` and `CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE` build settings.
+- Keep Apple Foundation Models validation separate as an internal experiment; it is not a release-readiness dependency.
 
 ### P1
 
@@ -220,85 +223,38 @@ The MVP is complete when:
 
 ## AI Cost Strategy
 
-The cheapest scalable architecture is hybrid:
+The scalable AI-only architecture is:
 
 1. Generate questions in batches.
-2. Cache generated questions locally.
-3. Track progress locally without AI.
-4. Use deterministic scheduling for missed, due, and weak-area questions.
-5. Use AI only when a goal is created or the current set can no longer fill the next checkpoint.
+2. Cache accepted questions on the device.
+3. Track progress and schedule missed, due, and weak-area questions without another model call.
+4. Use AI when a goal is created or the current set can no longer fill the next checkpoint.
+5. Require a full validated 5-question set before marking practice ready.
 
 Avoid:
 
-- Calling an AI API every time a user opens a blocked app.
+- Calling an AI service every time a user opens a blocked app.
 - Using AI to grade every answer when multiple-choice answer keys can work.
-- Shipping API keys inside the iOS app.
+- Shipping provider credentials inside the iOS app.
+- Substituting canned questions when AI generation fails or its output does not pass validation.
 
-Recommended MVP path:
+Current provider policy:
 
-- Start with local templates and deterministic tracking.
-- Add a backend endpoint for batch question generation.
-- Generate 20 to 40 questions per goal or topic batch while costs are being validated.
-- Store expected answer, explanation, topic, difficulty, and quality flags.
-- Use multiple choice for the MVP so grading is deterministic and cheap.
-- Revisit open-ended prompts only after the core blocker loop is reliable.
-- Add on-device generation later where available.
-
-Cost options:
-
-1. Template-only local generation
-   - Lowest cost.
-   - No per-prompt AI charges.
-   - Weakest personalization.
-
-2. Apple Foundation Models on-device
-   - No per-prompt server bill.
-   - Private and offline-capable.
-   - Requires supported Apple Intelligence devices and Apple Intelligence enabled.
-   - Smaller on-device model means prompts must be simpler and outputs need validation.
-
-3. API batch generation
-   - Best MVP quality-to-effort tradeoff.
-   - Costs scale with batch refreshes, not every app-open attempt.
-   - Requires backend for key security, quotas, and abuse control.
-
-4. Self-hosted open-weight model
-   - No vendor per-prompt fee.
-   - Still has compute, hosting, maintenance, observability, and scaling costs.
-   - Makes sense later if usage volume is high and predictable.
-
-5. Bundled/local open-weight model in the app
-   - Fixed server cost near zero.
-   - Hard on iOS because models can be large, slower, battery-intensive, and quality varies.
-   - Better as a later experiment than the first MVP path.
-
-Current recommendation:
-
-- MVP: template/local tracking plus optional backend batch generation.
-- Add Apple Foundation Models as an on-device option for supported devices.
-- Consider self-hosting only after usage data shows API spend is a real problem.
-
-Apple Foundation Models device implication:
-
-- Foundation Models works on Apple Intelligence-compatible devices when Apple Intelligence is enabled.
-- Current iPhone support is iPhone 15 Pro models and iPhone 16 models or later.
-- This excludes iPhone 15, iPhone 15 Plus, iPhone 14 series, iPhone 13 series, iPhone SE, and older devices.
-- Because the likely early user base may include students with older iPhones, Foundation Models should not be the only MVP AI path.
-- Best MVP architecture remains provider-based:
-  - Use Apple Foundation Models on supported devices.
-  - Use cached local templates when offline or unsupported.
-  - Use backend batch generation as an explicit quality upgrade, not the default scale path.
+- Production `Automatic` routes directly to the configured cloud backend.
+- Apple Foundation Models is code-supported only as an explicit internal experiment and is excluded from production cost and availability assumptions.
+- Backend costs scale with batch creation and refreshes, so generation remains quota-limited, cooldown-protected, and cached.
+- A Release build must include a valid HTTPS backend endpoint and token because the cloud backend is the canonical production source.
 
 Implementation status:
 
-- Provider enum and routing are implemented.
-- Local template provider is implemented.
+- Provider routing is implemented.
 - Backend provider contract is implemented as a POST endpoint that returns question JSON.
 - AWS Bedrock Lambda reference service is implemented under `backend/bedrock-question-service`.
-- Apple Foundation Models provider is guarded behind iOS/FoundationModels availability and falls back automatically when unavailable.
-- Provider output validation is implemented before questions enter the bank.
-- Automatic provider routing prefers LLM generation when on-device support or an internal backend endpoint is available, then falls back to local templates.
+- Apple Foundation Models support is guarded by platform and device availability and can be selected only for explicit internal experiments.
+- Production `Automatic` routes directly to the configured backend; there is no alternate production source or canned question fallback.
+- Provider and app validation run before questions enter the bank, and fewer than five accepted questions leaves the batch unready.
+- Pending generation and service, connection, or quality failures are visible and retryable instead of silently replaced.
 - Core workflow and provider policy are covered by the `CheckpointTests` XCTest target.
-- Focus areas are the only user-facing study context; blank or placeholder focus text triggers generated Skill Map mode, with local inferred topics as the fallback when AI providers are unavailable.
-- Settings exposes strictness controls, global unlock rules, and off-flow history/report access; minimum question difficulty now lives on each goal profile.
+- Focus areas are optional user-facing study context; blank or placeholder focus text asks AI to infer a Skill Map from the exact learning target instead of inserting a canned topic map.
+- Settings exposes strictness controls, global unlock rules, and off-flow history/report access; minimum question difficulty lives on each goal profile.
 - Backend request/response contract is documented in `docs/AI_BACKEND_CONTRACT.md`.

@@ -1,7 +1,7 @@
-// Public defaults for Checkpoint's internal AI backend build settings.
-// Local and release secrets live in Secrets.xcconfig, which is ignored by git.
+// CI can inject release values through *_OVERRIDE. Local and release secrets can
+// still live in Secrets.xcconfig, which is ignored by git and loaded last.
 
-CHECKPOINT_AI_BACKEND_ENDPOINT =
-CHECKPOINT_AI_BACKEND_TOKEN =
+CHECKPOINT_AI_BACKEND_ENDPOINT = $(CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE)
+CHECKPOINT_AI_BACKEND_TOKEN = $(CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE)
 
 #include? "Secrets.xcconfig"

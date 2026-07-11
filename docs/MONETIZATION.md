@@ -44,11 +44,12 @@ Before selling membership:
 
 ## Cost Profile
 
-- Local/offline question generation has no per-user AI cost.
-- Apple Foundation Models generation has no server bill, but only works on supported devices.
-- Backend AI generation can create variable cost. Keep it batch-based, quota-limited, cooldown-protected, and cached locally.
-- The starter plan should cap free backend exposure to the first goal and starter question bank.
+- Production `Automatic` routes directly to the configured cloud backend, so production generation has a variable server cost. Keep it batch-based, quota-limited, cooldown-protected, and cached locally.
+- Apple Foundation Models remains an explicit internal experiment and is excluded from production cost assumptions because availability, OS model version, and reasoning capability vary.
+- There is no alternate production source or canned question fallback.
+- The starter plan should cap backend exposure to the first goal and starter question bank.
 - Membership revenue should cover ongoing backend refreshes, larger banks, and goal switching.
+- Release builds require a valid HTTPS backend endpoint and token for the canonical production generation path.
 
 ## Current Implementation
 

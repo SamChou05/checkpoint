@@ -27,11 +27,35 @@ enum CheckpointTheme {
 struct PrimaryActionButton: View {
     var title: String
     var systemImage: String
+    var isLoading: Bool
     var action: () -> Void
+
+    @Environment(\.isEnabled) private var isEnabled
+
+    init(
+        title: String,
+        systemImage: String,
+        isLoading: Bool = false,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.systemImage = systemImage
+        self.isLoading = isLoading
+        self.action = action
+    }
 
     var body: some View {
         Button(action: action) {
-            Label(title, systemImage: systemImage)
+            HStack(spacing: 8) {
+                if isLoading {
+                    ProgressView()
+                        .tint(CheckpointTheme.paper)
+                } else {
+                    Image(systemName: systemImage)
+                }
+
+                Text(title)
+            }
                 .font(.headline)
                 .foregroundStyle(CheckpointTheme.paper)
                 .multilineTextAlignment(.center)
@@ -42,6 +66,8 @@ struct PrimaryActionButton: View {
                 .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
+        .opacity(isEnabled ? 1 : 0.58)
+        .accessibilityLabel(isLoading ? "\(title), in progress" : title)
     }
 }
 
@@ -49,6 +75,8 @@ struct SecondaryActionButton: View {
     var title: String
     var systemImage: String
     var action: () -> Void
+
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         Button(action: action) {
@@ -63,6 +91,7 @@ struct SecondaryActionButton: View {
                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
+        .opacity(isEnabled ? 1 : 0.58)
     }
 }
 
@@ -81,6 +110,7 @@ struct SectionPanel<Content: View>: View {
                 Text(title)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.muted)
+                    .accessibilityAddTraits(.isHeader)
             }
 
             content
@@ -136,7 +166,6 @@ struct StatusBadge: View {
     var body: some View {
         Text(text)
             .font(.caption.weight(.bold))
-            .textCase(.uppercase)
             .foregroundStyle(tint)
             .lineLimit(1)
             .minimumScaleFactor(0.85)

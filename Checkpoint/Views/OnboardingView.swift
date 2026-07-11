@@ -9,6 +9,7 @@ struct OnboardingView: View {
     @State private var focusAreas = ""
     @State private var minimumQuestionDifficulty = UnlockPolicy.default.minimumQuestionDifficulty
     @State private var isCreating = false
+    @State private var isCustomizationExpanded = false
 
     init(store: CheckpointStore) {
         self.store = store
@@ -18,6 +19,10 @@ struct OnboardingView: View {
             _deadline = State(initialValue: max(goal.deadline, Date()))
             _focusAreas = State(initialValue: goal.focusAreas)
             _minimumQuestionDifficulty = State(initialValue: goal.minimumQuestionDifficulty)
+            _isCustomizationExpanded = State(
+                initialValue: !goal.focusAreas.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    || goal.minimumQuestionDifficulty != UnlockPolicy.default.minimumQuestionDifficulty
+            )
         }
     }
 
@@ -46,54 +51,75 @@ struct OnboardingView: View {
 
                         DatePicker("Deadline", selection: $deadline, in: Date()..., displayedComponents: .date)
                             .foregroundStyle(CheckpointTheme.text)
+
+                        if shouldShowGoalInterpretation,
+                           let interpretation = setupGuidance.interpretation {
+                            Label("We'll prepare \(interpretation.lowercased()).", systemImage: "sparkles")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.teal)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
 
-                    SectionPanel("Focus areas") {
-                        TextField("Focus areas, separated by commas", text: $focusAreas, axis: .vertical)
-                            .lineLimit(3, reservesSpace: true)
-                            .textFieldStyle(.plain)
-                            .foregroundStyle(CheckpointTheme.text)
-                            .padding(12)
-                            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                    SectionPanel {
+                        DisclosureGroup(isExpanded: $isCustomizationExpanded) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Topics to focus on")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.text)
 
-                        if !parsedFocusAreas.isEmpty {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(parsedFocusAreas, id: \.self) { focusArea in
-                                        FocusAreaChip(text: focusArea)
+                                    Text("Optional. Leave this blank and we'll choose from your goal.")
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.muted)
+
+                                    TextField("For example: contracts, vocabulary", text: $focusAreas, axis: .vertical)
+                                        .lineLimit(3, reservesSpace: true)
+                                        .textFieldStyle(.plain)
+                                        .foregroundStyle(CheckpointTheme.text)
+                                        .padding(12)
+                                        .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+
+                                    if !parsedFocusAreas.isEmpty {
+                                        ScrollView(.horizontal, showsIndicators: false) {
+                                            HStack(spacing: 8) {
+                                                ForEach(parsedFocusAreas, id: \.self) { focusArea in
+                                                    FocusAreaChip(text: focusArea)
+                                                }
+                                            }
+                                            .padding(.vertical, 2)
+                                        }
                                     }
                                 }
-                                .padding(.vertical, 2)
+
+                                Divider()
+
+                                Stepper(
+                                    "Starting level: \(Goal.difficultyLabel(for: minimumQuestionDifficulty))",
+                                    value: $minimumQuestionDifficulty,
+                                    in: 1...5
+                                )
+                                .foregroundStyle(CheckpointTheme.text)
+                            }
+                            .padding(.top, 12)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Customize practice")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text("Optional topics and starting level")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
                             }
                         }
-
-                        HStack {
-                            Text("Format")
-                                .foregroundStyle(CheckpointTheme.muted)
-                            Spacer()
-                            StatusBadge(text: QuestionFormat.multipleChoice.rawValue, tint: CheckpointTheme.teal)
-                        }
-                    }
-
-                    SectionPanel("Question level") {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Begin practice at \(Goal.difficultyLabel(for: minimumQuestionDifficulty)) or higher.")
-                                .font(.subheadline)
-                                .foregroundStyle(CheckpointTheme.muted)
-                                .fixedSize(horizontal: false, vertical: true)
-
-                            Stepper(
-                                "Minimum: \(Goal.difficultyLabel(for: minimumQuestionDifficulty))",
-                                value: $minimumQuestionDifficulty,
-                                in: 1...5
-                            )
-                            .foregroundStyle(CheckpointTheme.text)
-                        }
+                        .tint(CheckpointTheme.teal)
                     }
 
                     PrimaryActionButton(
                         title: primaryButtonTitle,
-                        systemImage: "book.closed"
+                        systemImage: "book.closed",
+                        isLoading: isCreating
                     ) {
                         Task {
                             guard !isCreating else { return }
@@ -109,10 +135,15 @@ struct OnboardingView: View {
                                 waitForQuestionGeneration: false
                             )
                             isCreating = false
-                            dismiss()
+                            if !store.isOnboardingPresented {
+                                dismiss()
+                            }
                         }
                     }
-                    .disabled(isCreating || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(
+                        isCreating
+                            || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    )
                 }
                 .padding(20)
             }
@@ -120,7 +151,7 @@ struct OnboardingView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     if store.goal != nil {
-                        Button("Done") {
+                        Button("Cancel") {
                             store.isCreatingGoalProfile = false
                             store.isOnboardingPresented = false
                             dismiss()
@@ -140,22 +171,26 @@ struct OnboardingView: View {
 
     private var headerSubtitle: String {
         if isNewProfile {
-            return "Name the goal, choose the practice areas, and set the level. Checkpoint keeps each goal's practice separate."
+            return "Tell us what you're working toward. We'll handle the practice details."
         }
 
-        return "Refine this goal so future practice matches your current preparation."
+        return "Update what you're working toward."
     }
 
     private var primaryButtonTitle: String {
-        if isCreating {
-            return "Saving goal"
-        }
-
-        return isNewProfile ? "Create goal" : "Update goal"
+        return isNewProfile ? "Create goal" : "Save changes"
     }
 
     private var isNewProfile: Bool {
         store.goal == nil || store.isCreatingGoalProfile
+    }
+
+    private var setupGuidance: GoalSetupGuidance {
+        GoalSetupGuidance(title: title, focusAreas: focusAreas)
+    }
+
+    private var shouldShowGoalInterpretation: Bool {
+        parsedFocusAreas.isEmpty && setupGuidance.interpretation != nil
     }
 
     private var parsedFocusAreas: [String] {

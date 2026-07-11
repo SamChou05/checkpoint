@@ -39,6 +39,34 @@ final class ScreenTimeController {
         setupState == .temporarilyUnlocked
     }
 
+    var userFacingProtectionStatus: String {
+        switch setupState {
+        case .shieldActive:
+            return "On"
+        case .temporarilyUnlocked:
+            return "Break in progress"
+        case .failed:
+            return "Permission needed"
+        case .unavailable:
+            return "iPhone only"
+        case .notStarted, .authorized, .readyForSpike:
+            return "Off"
+        }
+    }
+
+    var userFacingErrorMessage: String? {
+        guard lastErrorMessage != nil else { return nil }
+
+        switch setupState {
+        case .failed:
+            return "Allow Screen Time so Checkpoint can protect the apps you choose."
+        case .authorized where !hasSelection:
+            return "Choose at least one app, category, or website to protect."
+        default:
+            return "App protection needs attention. Try again."
+        }
+    }
+
     var shieldExtensionDiagnosticsText: String {
         let renderCount = SharedAppGroup.shieldConfigurationRenderCount
         let actionCount = SharedAppGroup.shieldAttemptCount
@@ -101,7 +129,7 @@ final class ScreenTimeController {
         }
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "Screen Time access needs an iPhone build."
+        restrictedAppsSummary = "App protection is available on iPhone."
         #endif
     }
 
@@ -133,7 +161,7 @@ final class ScreenTimeController {
         }
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "Screen Time access needs an iPhone build."
+        restrictedAppsSummary = "App protection is available on iPhone."
         #endif
     }
 
@@ -189,7 +217,7 @@ final class ScreenTimeController {
         updateSummary()
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "App protection needs an iPhone build with Screen Time access."
+        restrictedAppsSummary = "App protection is available on iPhone."
         #endif
     }
 
@@ -280,6 +308,9 @@ final class ScreenTimeController {
 
     func updateSelection(_ newSelection: FamilyActivitySelection) {
         selection = SharedAppGroup.categoryInclusiveSelection(newSelection)
+        if hasSelection {
+            lastErrorMessage = nil
+        }
     }
     #else
     var hasSelection: Bool { false }
@@ -294,10 +325,20 @@ final class ScreenTimeController {
         if appCount + categoryCount + webCount == 0 {
             restrictedAppsSummary = "No protected apps selected"
         } else {
-            restrictedAppsSummary = "\(appCount) apps, \(categoryCount) categories, \(webCount) websites selected"
+            var parts: [String] = []
+            if appCount > 0 {
+                parts.append("\(appCount) \(appCount == 1 ? "app" : "apps")")
+            }
+            if categoryCount > 0 {
+                parts.append("\(categoryCount) \(categoryCount == 1 ? "category" : "categories")")
+            }
+            if webCount > 0 {
+                parts.append("\(webCount) \(webCount == 1 ? "site" : "sites")")
+            }
+            restrictedAppsSummary = parts.joined(separator: ", ") + " selected"
         }
         #else
-        restrictedAppsSummary = "App protection is unavailable in this build."
+        restrictedAppsSummary = "App protection is available on iPhone."
         #endif
     }
 
