@@ -8,16 +8,6 @@ struct HistoryView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Checkpoint History")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
-
-                        Text("Every checkpoint answer is stored so missed questions can return later.")
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
-                    }
-
                     if store.activeAttempts.isEmpty {
                         emptyState
                     } else {
@@ -49,11 +39,11 @@ struct HistoryView: View {
                     .font(.system(size: 28, weight: .semibold))
                     .foregroundStyle(CheckpointTheme.amber)
 
-                Text("No checkpoints yet")
+                Text("No practice yet")
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Blocked-app checkpoints appear here after the first rep.")
+                Text("Your answers will appear here after your first checkpoint.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
             }
@@ -63,36 +53,53 @@ struct HistoryView: View {
 
 private struct AttemptRow: View {
     var attempt: CheckpointAttempt
+    @State private var isExpanded = false
 
     var body: some View {
         SectionPanel {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    StatusBadge(text: attempt.result.rawValue, tint: tint)
-                    Spacer()
-                    Text(attempt.createdAt, style: .time)
-                        .font(.caption.weight(.semibold))
+            DisclosureGroup(isExpanded: $isExpanded) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Your answer")
+                        .font(.caption.weight(.bold))
                         .foregroundStyle(CheckpointTheme.muted)
+
+                    Text(attempt.answer)
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.text)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                .padding(.top, 10)
+            } label: {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        StatusBadge(text: resultLabel, tint: tint)
+                        Spacer()
+                        Text(attempt.createdAt.formatted(date: .abbreviated, time: .shortened))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.muted)
+                    }
 
-                Text(attempt.prompt)
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(attempt.answer)
-                    .font(.subheadline)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                HStack {
-                    Label("\(attempt.unlockMinutes)m unlock", systemImage: "timer")
-                    Spacer()
-                    Label("Stored", systemImage: "archivebox")
+                    Text(attempt.prompt)
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.text)
+                        .lineLimit(isExpanded ? nil : 2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.muted)
             }
+            .tint(CheckpointTheme.teal)
+        }
+    }
+
+    private var resultLabel: String {
+        switch attempt.result {
+        case .correct:
+            return "Correct"
+        case .partial:
+            return "Almost"
+        case .incorrect:
+            return "Missed"
+        case .unclear:
+            return "Not sure"
         }
     }
 

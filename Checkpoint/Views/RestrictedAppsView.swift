@@ -25,6 +25,11 @@ struct RestrictedAppsView: View {
                 }
         }
         .preferredColorScheme(.light)
+        .task {
+            if screenTime.setupState == .notStarted || screenTime.setupState == .failed {
+                await screenTime.requestAuthorization()
+            }
+        }
     }
 
     @ViewBuilder
@@ -43,7 +48,7 @@ struct RestrictedAppsView: View {
                         .font(.title3.bold())
                         .foregroundStyle(CheckpointTheme.text)
 
-                    Text("Open this on an iPhone build with Screen Time access to choose protected apps.")
+                    Text("App protection is available on iPhone.")
                         .font(.subheadline)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -69,18 +74,12 @@ private struct FamilyPickerContent: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Choose apps, categories, or websites to place behind goal practice.")
+                Text("Choose what Checkpoint should protect.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
 
-                HStack {
-                    Label("\(localSelection.applicationTokens.count) apps", systemImage: "app")
-                    Spacer()
-                    Label("\(localSelection.categoryTokens.count) categories", systemImage: "square.grid.2x2")
-                    Spacer()
-                    Label("\(localSelection.webDomainTokens.count) sites", systemImage: "globe")
-                }
+                Label(selectionSummary, systemImage: "checklist")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
             }
@@ -92,6 +91,26 @@ private struct FamilyPickerContent: View {
                     screenTime.updateSelection(newSelection)
                 }
         }
+    }
+
+    private var selectionSummary: String {
+        var parts: [String] = []
+        appendSelectionCount(localSelection.applicationTokens.count, singular: "app", plural: "apps", to: &parts)
+        appendSelectionCount(localSelection.categoryTokens.count, singular: "category", plural: "categories", to: &parts)
+        appendSelectionCount(localSelection.webDomainTokens.count, singular: "site", plural: "sites", to: &parts)
+
+        guard !parts.isEmpty else { return "Nothing selected yet" }
+        return parts.joined(separator: ", ") + " selected"
+    }
+
+    private func appendSelectionCount(
+        _ count: Int,
+        singular: String,
+        plural: String,
+        to parts: inout [String]
+    ) {
+        guard count > 0 else { return }
+        parts.append("\(count) \(count == 1 ? singular : plural)")
     }
 }
 #endif

@@ -19,7 +19,7 @@ struct RootView: View {
 
             CompetencyView(store: store)
                 .tabItem {
-                    Label("Skill", systemImage: "chart.line.uptrend.xyaxis")
+                    Label("Progress", systemImage: "chart.line.uptrend.xyaxis")
                 }
                 .tag(AppTab.skill)
 
@@ -60,9 +60,6 @@ struct RootView: View {
             await purchaseController.loadProducts()
             reconcileProtectionState()
             handlePendingShieldActivation()
-            Task {
-                await screenTime.requestInitialAuthorizationIfNeeded()
-            }
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }

@@ -7,22 +7,14 @@ struct CompetencyView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Skill Map")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
-
-                        Text("Your Skill Map shows where consistent practice is building strength and where the next reps should go.")
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
-                    summary
-
                     if store.sortedCompetencies.isEmpty {
                         emptyState
                     } else {
+                        Text("See what's strong and what to practice next. Topics needing attention appear first.")
+                            .font(.subheadline)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+
                         ForEach(store.sortedCompetencies) { competency in
                             CompetencyRow(competency: competency)
                         }
@@ -33,26 +25,8 @@ struct CompetencyView: View {
             }
             .padding(.bottom, 48)
             .checkpointScreenBackground()
-            .navigationTitle("Skill")
+            .navigationTitle("Progress")
             .toolbarTitleDisplayMode(.inline)
-        }
-    }
-
-    private var summary: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            MetricTile(
-                title: "Skill progress",
-                value: store.averageMasteryText,
-                tint: CheckpointTheme.teal,
-                systemImage: "chart.line.uptrend.xyaxis"
-            )
-
-            MetricTile(
-                title: "Tracked topics",
-                value: "\(store.sortedCompetencies.count)",
-                tint: CheckpointTheme.amber,
-                systemImage: "scope"
-            )
         }
     }
 
@@ -63,11 +37,11 @@ struct CompetencyView: View {
                     .font(.system(size: 28, weight: .semibold))
                     .foregroundStyle(CheckpointTheme.amber)
 
-                Text("No skill data yet")
+                Text("No progress yet")
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Create a goal and complete a few practice sets. Topics needing attention will rise to the top.")
+                Text("Complete a few practice questions to see what to review next.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -78,6 +52,7 @@ struct CompetencyView: View {
 
 private struct CompetencyRow: View {
     var competency: TopicCompetency
+    @State private var isExpanded = false
 
     var body: some View {
         SectionPanel {
@@ -88,30 +63,67 @@ private struct CompetencyRow: View {
                             .font(.headline)
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Level \(competency.displayLevel) of 5 - \(competency.attempts) practice reps")
+                        Text(questionCountText)
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.muted)
                     }
 
                     Spacer()
 
-                    StatusBadge(text: "\(competency.masteryPercent)%", tint: tint)
+                    StatusBadge(text: progressLabel, tint: tint)
                 }
 
                 ProgressView(value: Double(competency.masteryPercent), total: 100)
                     .tint(tint)
+                    .accessibilityLabel("Progress")
+                    .accessibilityValue(progressLabel)
 
-                HStack {
-                    Label("\(competency.correct)", systemImage: "checkmark.circle")
-                    Spacer()
-                    Label("\(competency.partial)", systemImage: "circle.lefthalf.filled")
-                    Spacer()
-                    Label("\(competency.incorrect)", systemImage: "xmark.circle")
+                DisclosureGroup(isExpanded: $isExpanded) {
+                    HStack {
+                        detailCount(title: "Correct", value: competency.correct, systemImage: "checkmark.circle")
+                        Spacer()
+                        detailCount(title: "Almost", value: competency.partial, systemImage: "circle.lefthalf.filled")
+                        Spacer()
+                        detailCount(title: "Missed", value: competency.incorrect, systemImage: "xmark.circle")
+                    }
+                    .padding(.top, 10)
+                } label: {
+                    Text("Details")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.teal)
                 }
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.muted)
+                .tint(CheckpointTheme.teal)
             }
         }
+    }
+
+    private var questionCountText: String {
+        "\(competency.attempts) \(competency.attempts == 1 ? "question" : "questions") answered"
+    }
+
+    private var progressLabel: String {
+        switch competency.masteryPercent {
+        case 75...:
+            return "Strong"
+        case 40..<75:
+            return "Building"
+        default:
+            return "Needs practice"
+        }
+    }
+
+    private func detailCount(title: String, value: Int, systemImage: String) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Label("\(value)", systemImage: systemImage)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.muted)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title): \(value)")
     }
 
     private var tint: Color {

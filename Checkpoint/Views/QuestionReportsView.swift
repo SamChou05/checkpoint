@@ -6,25 +6,18 @@ struct QuestionReportsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var category: IssueReportCategory = .generalFeedback
     @State private var message = ""
-    @State private var contact = ""
     @State private var statusMessage: String?
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Report an issue")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
+                    Text("Save the details, then share the note through your preferred support channel.")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                        Text("Send feedback, question problems, or app issues from one place.")
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
-                    SectionPanel("Issue") {
+                    SectionPanel("Feedback note") {
                         VStack(alignment: .leading, spacing: 12) {
                             Picker("Type", selection: $category) {
                                 ForEach(IssueReportCategory.allCases) { category in
@@ -40,16 +33,8 @@ struct QuestionReportsView: View {
                                 .padding(12)
                                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
 
-                            TextField("Email optional", text: $contact)
-                                .textInputAutocapitalization(.never)
-                                .keyboardType(.emailAddress)
-                                .textFieldStyle(.plain)
-                                .foregroundStyle(CheckpointTheme.text)
-                                .padding(12)
-                                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-
-                            PrimaryActionButton(title: "Submit", systemImage: "paperplane") {
-                                submitReport()
+                            PrimaryActionButton(title: "Save note", systemImage: "square.and.arrow.down") {
+                                saveNote()
                             }
                             .disabled(message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             .opacity(message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.55 : 1)
@@ -63,14 +48,8 @@ struct QuestionReportsView: View {
                         }
                     }
 
-                    SectionPanel("Recent submissions") {
-                        if store.issueReports.isEmpty {
-                            EmptyIssueReportsState(
-                                systemImage: "tray",
-                                title: "No reports yet",
-                                detail: "Submitted feedback will appear here."
-                            )
-                        } else {
+                    if !store.issueReports.isEmpty {
+                        SectionPanel("Saved notes") {
                             VStack(spacing: 12) {
                                 ForEach(Array(store.issueReports.prefix(10))) { report in
                                     SubmittedIssueReportRow(report: report)
@@ -82,7 +61,7 @@ struct QuestionReportsView: View {
                 .padding(20)
             }
             .checkpointScreenBackground()
-            .navigationTitle("Report an issue")
+            .navigationTitle("Help & Feedback")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -95,22 +74,21 @@ struct QuestionReportsView: View {
         }
     }
 
-    private func submitReport() {
+    private func saveNote() {
         let didSubmit = store.submitIssueReport(
             category: category,
             message: message,
-            contact: contact
+            contact: ""
         )
 
         guard didSubmit else {
-            statusMessage = "Add a short note before submitting."
+            statusMessage = "Add a short note before saving."
             return
         }
 
         message = ""
-        contact = ""
         category = .generalFeedback
-        statusMessage = "Submitted."
+        statusMessage = "Saved on this device. Use Share on the note when you're ready to send it."
     }
 }
 
@@ -127,6 +105,14 @@ private struct SubmittedIssueReportRow: View {
                 Text(report.createdAt, style: .date)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.muted)
+
+                ShareLink(item: shareText) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(CheckpointTheme.teal)
+                        .frame(width: 32, height: 32)
+                }
+                .accessibilityLabel("Share feedback note")
             }
 
             Text(report.message)
@@ -134,38 +120,22 @@ private struct SubmittedIssueReportRow: View {
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if !report.goalTitle.isEmpty {
-                Text("Goal: \(report.goalTitle)")
-                    .font(.footnote)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
         }
         .padding(12)
         .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
     }
-}
 
-private struct EmptyIssueReportsState: View {
-    var systemImage: String
-    var title: String
-    var detail: String
+    private var shareText: String {
+        var lines = [
+            "Checkpoint feedback",
+            "Type: \(report.category.rawValue)",
+            report.message
+        ]
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Image(systemName: systemImage)
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.amber)
-
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(CheckpointTheme.text)
-
-            Text(detail)
-                .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+        if !report.goalTitle.isEmpty, report.goalTitle != "No goal" {
+            lines.append("Goal: \(report.goalTitle)")
         }
+
+        return lines.joined(separator: "\n")
     }
 }

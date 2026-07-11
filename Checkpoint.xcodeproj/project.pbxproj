@@ -350,6 +350,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A90000000000000000000002 /* Build configuration list for PBXNativeTarget "Checkpoint" */;
 			buildPhases = (
+				A71000000000000000000001 /* Validate AI Service Configuration */,
 				A70000000000000000000001 /* Sources */,
 				A30000000000000000000001 /* Frameworks */,
 				A70000000000000000000002 /* Resources */,
@@ -524,6 +525,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A71000000000000000000001 /* Validate AI Service Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Validate AI Service Configuration";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" != \"Release\" ]; then\n  exit 0\nfi\n\nendpoint=\"${CHECKPOINT_AI_BACKEND_ENDPOINT:-}\"\ntoken=\"${CHECKPOINT_AI_BACKEND_TOKEN:-}\"\n\ninvalid_endpoint() {\n  echo \"error: Release requires a real HTTPS CHECKPOINT_AI_BACKEND_ENDPOINT. Configure Secrets.xcconfig or CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE.\"\n  exit 1\n}\n\ncase \"$endpoint\" in\n  https://*) ;;\n  *) invalid_endpoint ;;\nesac\n\nendpoint_host=\"${endpoint#https://}\"\nendpoint_host=\"${endpoint_host%%/*}\"\ncase \"$endpoint_host\" in\n  *.*) ;;\n  *) invalid_endpoint ;;\nesac\n\nif printf '%s' \"$endpoint\" | grep -Eiq '[[:space:]]|\\$\\(|your-lambda-url|example\\.(com|invalid)'; then\n  invalid_endpoint\nfi\n\nif [ \"${#token}\" -lt 24 ] || printf '%s' \"$token\" | grep -Eiq '\\$\\(|replace-with|example|test-only'; then\n  echo \"error: Release requires a non-placeholder CHECKPOINT_AI_BACKEND_TOKEN of at least 24 characters. Configure Secrets.xcconfig or CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE.\"\n  exit 1\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A70000000000000000000001 /* Sources */ = {

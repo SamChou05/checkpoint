@@ -29,9 +29,11 @@ Checkpoint does not sell Screen Time selections or use them for advertising.
 
 Checkpoint generates practice questions in batches and caches them locally.
 
-When backend AI generation is configured, Checkpoint may send goal context, focus areas, derived learning targets, weak topics, existing question prompts, and reported question prompts to the configured backend service so new questions can be generated. Backend credentials are not stored in the app.
+Production Automatic generation uses the configured cloud backend. Checkpoint may send goal context, focus areas, derived learning targets, weak topics, existing question prompts, and reported question prompts to that service so new questions can be generated. Provider credentials are not included in user data sent for question generation.
 
-If backend generation is unavailable, Checkpoint can use on-device generation when supported or local templates.
+An Apple Foundation Models path remains code-supported only for explicit internal experiments. It is not selected by production Automatic and is not a production fallback or question source.
+
+Checkpoint does not substitute canned questions when neither AI path can produce a validated batch. The app instead shows that generation is pending or that a service, connection, or quality issue can be retried.
 
 ## Purchases
 
@@ -43,7 +45,7 @@ Checkpoint does not use third-party advertising or tracking identifiers in the c
 
 ## Data Sharing
 
-Checkpoint does not sell user data. If backend AI generation is enabled, the app sends only the goal and question-generation context needed to generate practice material.
+Checkpoint does not sell user data. When backend AI generation is used, the app sends only the goal and question-generation context needed to generate practice material.
 
 ## Retention
 

@@ -43,11 +43,11 @@ DEFAULT_FORBIDDEN_TERMS = [
     "motivation",
 ]
 DISALLOWED_CHOICE_TEXT = {
-    "all of the above",
-    "none of the above",
-    "both a and b",
-    "both b and c",
-    "all choices are correct",
+    "alloftheabove",
+    "noneoftheabove",
+    "bothaandb",
+    "bothbandc",
+    "allchoicesarecorrect",
 }
 SCENARIO_SIGNALS = [
     "if ",
@@ -254,6 +254,11 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
     configured_forbidden_terms = list(expected.get("forbidden_terms", []))
     forbidden_terms = configured_forbidden_terms or DEFAULT_FORBIDDEN_TERMS
     required_terms = [str(term) for term in expected.get("required_terms_any", []) if str(term).strip()]
+    required_grounding_terms = [
+        str(term)
+        for term in expected.get("required_grounding_terms_any", [])
+        if str(term).strip()
+    ]
 
     prompt = clean_text(question.get("prompt"))
     expected_answer = clean_text(question.get("expectedAnswer"))
@@ -263,6 +268,7 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
     difficulty = integer(question.get("difficulty"))
     format_value = clean_text(question.get("format")).lower()
     combined_text = " ".join([prompt, expected_answer, explanation, topic, " ".join(choices)])
+    learner_visible_text = " ".join([prompt, expected_answer, " ".join(choices)])
 
     failures: list[str] = []
     warnings: list[str] = []
@@ -273,21 +279,12 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
         failures.append("Prompt appears truncated at the sanitizer length limit.")
     if asks_for_free_response_artifact(prompt):
         failures.append("Prompt asks for a free-response artifact instead of a multiple-choice decision.")
+    if looks_like_generic_meta_question(prompt, expected_answer, choices, explanation):
+        failures.append("Question uses a generic meta-reasoning filler instead of subject-matter content.")
     if prompt_contains_embedded_options(prompt):
         failures.append("Prompt embeds answer options instead of keeping options only in choices.")
     if prompt_contains_latex_markup(prompt):
         failures.append("Prompt includes LaTeX markup that may not render cleanly in the app.")
-    if looks_like_broad_subjunctive_selection(prompt):
-        failures.append("Broad subjunctive sentence-selection prompt is likely to allow multiple correct answers.")
-    if looks_like_ambiguous_complexity_prompt(prompt):
-        failures.append("Complexity prompt is underspecified or depends on hidden operation costs.")
-    if looks_like_risky_exact_calculus(prompt, expected_answer):
-        failures.append("Risky exact calculus prompt is likely to produce fragile or unverifiable answers.")
-    if looks_like_risky_limit_setup_prompt(prompt):
-        failures.append("Risky limit-setup prompt may have algebraically equivalent answer choices.")
-    calculus_failure = calculus_correctness_failure(prompt, expected_answer)
-    if calculus_failure:
-        failures.append(calculus_failure)
     if not expected_answer:
         failures.append("Missing expectedAnswer.")
     if looks_like_answer_label(expected_answer):
@@ -310,7 +307,7 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
         failures.append(f"expectedAnswer must exactly match one choice; found {expected_matches}.")
 
     if len({choice_key(choice) for choice in choices}) != len(choices):
-        failures.append("Choices are duplicate or near-duplicate by semantic key.")
+        failures.append("Choices are duplicates after case, punctuation, and answer-label normalization.")
 
     disallowed_choices = [choice for choice in choices if choice_key(choice) in DISALLOWED_CHOICE_TEXT]
     if disallowed_choices:
@@ -319,13 +316,6 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
     if expected_is_bare_output(expected_answer) and choices_have_mixed_output_types(choices):
         failures.append("Expected answer is a bare output, but choices mix outputs with explanations.")
 
-    if choices_have_multiple_true_limit_claims(prompt, choices):
-        failures.append("Limit question includes multiple answer choices that are simultaneously true.")
-
-    if looks_like_ambiguous_one_sided_limit(prompt, expected_answer, choices):
-        failures.append("One-sided limit question mixes 'does not exist' with infinity choices ambiguously.")
-    if looks_like_ambiguous_interval_solution_choice(prompt, choices, explanation):
-        failures.append("Interval question has multiple defensible answer choices.")
     if explanation_supports_different_choice(expected_answer, choices, explanation):
         failures.append("Explanation supports a different answer choice than expectedAnswer.")
 
@@ -339,6 +329,14 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
 
     if required_terms and not any(contains_term(combined_text, term) for term in required_terms):
         failures.append(f"No required subject signal found; expected one of: {', '.join(required_terms)}.")
+
+    if required_grounding_terms and not any(
+        contains_term(learner_visible_text, term) for term in required_grounding_terms
+    ):
+        failures.append(
+            "Question and choices are not visibly grounded in the learning goal; "
+            f"expected one of: {', '.join(required_grounding_terms)}."
+        )
 
     if difficulty >= 3 and prompt and not has_scenario_signal(prompt):
         warnings.append("Difficulty is 3+ but prompt has weak scenario/application signal.")
@@ -389,7 +387,7 @@ def capture_bedrock_responses(
     previous_variant = os.environ.get("CHECKPOINT_PROMPT_VARIANT")
     if prompt_variant is not None:
         os.environ["CHECKPOINT_PROMPT_VARIANT"] = prompt_variant
-    active_variant = os.environ.get("CHECKPOINT_PROMPT_VARIANT", "method-first")
+    active_variant = os.environ.get("CHECKPOINT_PROMPT_VARIANT", "balanced")
 
     try:
         with responses_path.open("w", encoding="utf-8") as file:
@@ -588,16 +586,18 @@ def looks_like_answer_label(value: str) -> bool:
     return lambda_function._looks_like_answer_label(value)  # noqa: SLF001
 
 
-def looks_like_ambiguous_complexity_prompt(prompt: str) -> bool:
-    return lambda_function._looks_like_ambiguous_complexity_prompt(prompt)  # noqa: SLF001
-
-
-def looks_like_risky_exact_calculus(prompt: str, expected_answer: str) -> bool:
-    return lambda_function._looks_like_risky_exact_calculus(prompt, expected_answer)  # noqa: SLF001
-
-
-def looks_like_risky_limit_setup_prompt(prompt: str) -> bool:
-    return lambda_function._looks_like_risky_limit_setup_prompt(prompt)  # noqa: SLF001
+def looks_like_generic_meta_question(
+    prompt: str,
+    expected_answer: str,
+    choices: list[str],
+    explanation: str,
+) -> bool:
+    return lambda_function._looks_like_generic_meta_question(  # noqa: SLF001
+        prompt,
+        expected_answer,
+        choices,
+        explanation,
+    )
 
 
 def prompt_contains_embedded_options(prompt: str) -> bool:
@@ -606,22 +606,6 @@ def prompt_contains_embedded_options(prompt: str) -> bool:
 
 def prompt_contains_latex_markup(prompt: str) -> bool:
     return lambda_function._prompt_contains_latex_markup(prompt)  # noqa: SLF001
-
-
-def looks_like_broad_subjunctive_selection(prompt: str) -> bool:
-    return lambda_function._looks_like_broad_subjunctive_selection(prompt)  # noqa: SLF001
-
-
-def looks_like_ambiguous_one_sided_limit(prompt: str, expected_answer: str, choices: list[str]) -> bool:
-    return lambda_function._looks_like_ambiguous_one_sided_limit(prompt, expected_answer, choices)  # noqa: SLF001
-
-
-def looks_like_ambiguous_interval_solution_choice(
-    prompt: str,
-    choices: list[str],
-    explanation: str,
-) -> bool:
-    return lambda_function._looks_like_ambiguous_interval_solution_choice(prompt, choices, explanation)  # noqa: SLF001
 
 
 def explanation_supports_different_choice(

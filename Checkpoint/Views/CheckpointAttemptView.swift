@@ -18,15 +18,10 @@ struct CheckpointAttemptView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 8) {
-                        StatusBadge(text: sessionBadgeText, tint: CheckpointTheme.amber)
-
-                        Text(sessionTitle)
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
-
                         Text(sessionSubtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+                            .fixedSize(horizontal: false, vertical: true)
 
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
@@ -42,7 +37,7 @@ struct CheckpointAttemptView: View {
                             }
 
                             ProgressView(
-                                value: Double(currentQuestionIndex),
+                                value: Double(completedQuestionCount),
                                 total: Double(max(session.questions.count, 1))
                             )
                             .tint(CheckpointTheme.teal)
@@ -54,10 +49,6 @@ struct CheckpointAttemptView: View {
                         VStack(alignment: .leading, spacing: 14) {
                             HStack {
                                 StatusBadge(text: question.topic, tint: CheckpointTheme.teal)
-                                Spacer()
-                                Text(question.format.rawValue)
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.muted)
                             }
 
                             Text(question.prompt)
@@ -90,65 +81,7 @@ struct CheckpointAttemptView: View {
                         }
                     }
 
-                    SectionPanel("Result") {
-                        if let checkedAnswer {
-                            VStack(alignment: .leading, spacing: 10) {
-                                HStack {
-                                    Text(checkedAnswer.result == .correct ? "Correct" : "Not quite")
-                                        .font(.headline)
-                                        .foregroundStyle(CheckpointTheme.text)
-                                    Spacer()
-                                    StatusBadge(text: checkedAnswer.result.rawValue, tint: resultTint(for: checkedAnswer.result))
-                                }
-
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Answer")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(CheckpointTheme.muted)
-
-                                    Text(question.expectedAnswer)
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.text)
-                                        .fixedSize(horizontal: false, vertical: true)
-
-                                    Text(question.explanation)
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                .padding(12)
-                                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-
-                                if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
-                                    Text(failedSessionFeedbackText)
-                                        .font(.footnote.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.amber)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                            }
-                        } else if usesAutomaticEvaluation {
-                            VStack(alignment: .leading, spacing: 10) {
-                                HStack {
-                                    Text("Checkpoint result")
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                    Spacer()
-                                    StatusBadge(text: automaticGateStatus, tint: automaticGateTint)
-                                }
-
-                                Text("Choose an answer to see feedback.")
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        } else {
-                            Picker("How did you do?", selection: $result) {
-                                ForEach(AnswerResult.allCases) { result in
-                                    Text(result.rawValue).tag(result)
-                                }
-                            }
-                            .pickerStyle(.segmented)
-                        }
-                    }
+                    resultPanel
 
                     PrimaryActionButton(
                         title: submitButtonTitle,
@@ -183,6 +116,10 @@ struct CheckpointAttemptView: View {
         currentQuestionIndex >= session.questions.count - 1
     }
 
+    private var completedQuestionCount: Int {
+        currentQuestionIndex + (checkedAnswer == nil ? 0 : 1)
+    }
+
     private var usesAutomaticEvaluation: Bool {
         question.format != .reflection
     }
@@ -191,48 +128,18 @@ struct CheckpointAttemptView: View {
         AnswerGrader.evaluate(answer: answer, question: question)
     }
 
-    private var automaticGateStatus: String {
-        return answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Choose" : "Ready"
-    }
-
-    private var automaticGateTint: Color {
-        CheckpointTheme.teal
-    }
-
     private var submissionResult: AnswerResult {
         return usesAutomaticEvaluation ? evaluation.result : result
-    }
-
-    private var sessionBadgeText: String {
-        switch session.purpose {
-        case .temporaryUnlock:
-            return "Protected app"
-        case .preview:
-            return "Preview"
-        case .stopBlocking:
-            return "Protection review"
-        }
-    }
-
-    private var sessionTitle: String {
-        switch session.purpose {
-        case .temporaryUnlock:
-            return "Complete \(session.questions.count) \(session.questions.count == 1 ? "question" : "questions")"
-        case .preview:
-            return "Preview practice set"
-        case .stopBlocking:
-            return "Complete protection review"
-        }
     }
 
     private var sessionSubtitle: String {
         switch session.purpose {
         case .temporaryUnlock:
-            return "Answer \(session.unlockThreshold) of \(session.questions.count) correctly to begin a \(store.unlockPolicy.unlockMinutes)-minute break."
+            return "Get \(session.unlockThreshold) of \(session.questions.count) correct to start a \(store.unlockPolicy.unlockMinutes)-minute break."
         case .preview:
-            return "Preview the practice flow without changing protection."
+            return "Practice preview — app protection won't change."
         case .stopBlocking:
-            return "Answer \(session.unlockThreshold) of \(session.questions.count) correctly to turn app protection off."
+            return "Get \(session.unlockThreshold) of \(session.questions.count) correct to turn app protection off."
         }
     }
 
@@ -242,7 +149,7 @@ struct CheckpointAttemptView: View {
         }
 
         if checkedAnswer.shouldFinish {
-            return checkedAnswer.shouldPass ? passingSubmitButtonTitle : "Stay protected"
+            return checkedAnswer.shouldPass ? passingSubmitButtonTitle : "Done"
         }
 
         return "Next question"
@@ -325,8 +232,7 @@ struct CheckpointAttemptView: View {
             result: result,
             shouldFinish: shouldFinish,
             shouldPass: shouldPass,
-            unlockMinutes: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : 0,
-            missedQuestionIDs: updatedMissedQuestionIDs
+            unlockMinutes: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : 0
         )
     }
 
@@ -367,9 +273,71 @@ struct CheckpointAttemptView: View {
     private var failedSessionFeedbackText: String {
         switch session.purpose {
         case .preview:
-            return "Missed questions return early so practice stays focused."
+            return "We'll revisit what you missed."
         case .temporaryUnlock, .stopBlocking:
-            return "Missed questions return early, and the next checkpoint opens after a 5-minute reset."
+            return "Protection stays on. Try again in 5 minutes, and we'll revisit what you missed."
+        }
+    }
+
+    @ViewBuilder
+    private var resultPanel: some View {
+        if let checkedAnswer {
+            SectionPanel("Feedback") {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(checkedAnswer.result == .correct ? "Correct" : "Not quite")
+                        .font(.headline)
+                        .foregroundStyle(resultTint(for: checkedAnswer.result))
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        if checkedAnswer.result != .correct {
+                            Text("Correct answer")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(CheckpointTheme.muted)
+
+                            Text(question.expectedAnswer)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.text)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+
+                        Text(question.explanation)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(12)
+                    .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+
+                    if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
+                        Text(failedSessionFeedbackText)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        } else if !usesAutomaticEvaluation {
+            SectionPanel("How did it go?") {
+                Picker("How did it go?", selection: $result) {
+                    ForEach(AnswerResult.allCases) { result in
+                        Text(selfAssessmentLabel(for: result)).tag(result)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+    }
+
+    private func selfAssessmentLabel(for result: AnswerResult) -> String {
+        switch result {
+        case .correct:
+            return "Got it"
+        case .partial:
+            return "Almost"
+        case .incorrect:
+            return "Need practice"
+        case .unclear:
+            return "Not sure"
         }
     }
 }
@@ -379,7 +347,6 @@ private struct CheckedCheckpointAnswer {
     let shouldFinish: Bool
     let shouldPass: Bool
     let unlockMinutes: Int
-    let missedQuestionIDs: Set<CheckpointQuestion.ID>
 }
 
 private struct ChoiceButton: View {

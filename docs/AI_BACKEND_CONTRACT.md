@@ -1,46 +1,36 @@
 # AI Backend Contract
 
-Checkpoint can generate multiple-choice questions through a backend endpoint when higher-quality generation is explicitly needed beyond Apple Foundation Models and Local Templates. A first AWS Bedrock Lambda implementation lives in `backend/bedrock-question-service`.
+Checkpoint generates multiple-choice questions only through AI providers. In production, `Automatic` routes directly to the configured cloud backend. It never substitutes canned or template questions. A first AWS Bedrock Lambda implementation lives in `backend/bedrock-question-service`.
+
+Apple Foundation Models remains code-supported only as an explicit internal experiment. It is not selected by production `Automatic` and is not a production fallback or question source because availability, OS model version, and reasoning capability vary.
 
 The iOS app sends a `POST` request to the endpoint configured by the app or backend service layer. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from `Checkpoint/Config/Secrets.xcconfig`, the `CheckpointAIBackendEndpoint` Info.plist key, or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. For an exposed Function URL, configure `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN` and set the same value as `CHECKPOINT_BACKEND_TOKEN` in Lambda; never place AWS credentials in the app.
 
-For local/TestFlight builds, copy `Checkpoint/Config/Secrets.example.xcconfig` to `Checkpoint/Config/Secrets.xcconfig`. Use the escaped URL style shown in the example (`https:/$()/...`) so Xcode does not treat `//` as an xcconfig comment.
+For development and TestFlight builds, copy `Checkpoint/Config/Secrets.example.xcconfig` to `Checkpoint/Config/Secrets.xcconfig`. Use the escaped URL style shown in the example (`https:/$()/...`) so Xcode does not treat `//` as an xcconfig comment. CI can instead supply `CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE` and `CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE`.
+
+Release builds fail at build time unless the resolved endpoint is HTTPS and the token is nonempty. This backend configuration is mandatory because the cloud backend is the canonical production question source.
 
 The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls. The Bedrock Lambda can use that header, plus source IP, for daily quota counters. The install ID is a random UUID generated on-device and is not a user account identifier.
 
 ## Request
 
+The minimum useful contract is the user's raw goal. `focusAreas` and `currentLevel` are optional. The backend derives content topics from focus areas when present and requests an AI-generated skill map when the goal remains broad. `learningTarget`, `contentTopics`, `questionDirective`, and `needsSkillMap` remain accepted as optional compatibility/enrichment fields, but correctness must not depend on a client recognizing the subject in advance.
+
 ```json
 {
   "goal": {
-    "title": "Pass a coding interview in 8 weeks",
+    "title": "<raw user goal>",
     "deadline": "2026-06-27T00:00:00Z",
-    "category": "Coding Interview",
-    "focusAreas": "arrays, recursion, Big-O",
-    "learningTarget": "coding interview in 8 weeks",
-    "contentTopics": ["arrays", "recursion", "Big-O"],
-    "questionDirective": "Generate concrete coding-interview knowledge checks about arrays, recursion, Big-O: data-structure choice, algorithm behavior, complexity, edge cases, or debugging.",
-    "needsSkillMap": false,
+    "category": "Custom",
+    "focusAreas": "<optional focus area one, optional focus area two>",
+    "currentLevel": "<optional learner level>",
     "preferredQuestionStyle": "Multiple Choice"
   },
-  "competencies": [
-    {
-      "topic": "recursion",
-      "estimatedLevel": 2.1,
-      "masteryPercent": 50,
-      "attempts": 4,
-      "correct": 2,
-      "partial": 0,
-      "incorrect": 2
-    }
-  ],
-  "existingPrompts": [
-    "Explain the tradeoff to watch for when solving an arrays problem."
-  ],
-  "reportedPrompts": [
-    "What is an array?"
-  ],
-  "targetCount": 40,
+  "competencies": [],
+  "existingPrompts": [],
+  "existingQuestionCoverage": [],
+  "reportedPrompts": [],
+  "targetCount": 5,
   "minimumDifficulty": 3,
   "difficultyGuidance": "Medium application: apply concepts to a short scenario with qualifiers and plausible distractors."
 }
@@ -52,16 +42,16 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 {
   "questions": [
     {
-      "prompt": "For an intermediate interview candidate, which tradeoff matters most when choosing between recursion and iteration for a tree traversal?",
-      "expectedAnswer": "Recursion is concise, but iteration can avoid call-stack depth limits.",
+      "prompt": "<self-contained question grounded in the user's educational goal>",
+      "expectedAnswer": "<complete text of the correct answer>",
       "choices": [
-        "Recursion is concise, but iteration can avoid call-stack depth limits.",
-        "Iteration always uses O(1) memory for every tree traversal.",
-        "Recursion always changes the traversal from O(n) to O(log n).",
-        "The choice only affects variable naming, not behavior."
+        "<complete text of the correct answer>",
+        "<plausible misconception one>",
+        "<plausible misconception two>",
+        "<plausible misconception three>"
       ],
-      "explanation": "Both approaches can visit each node once, but stack depth and implementation clarity are the practical tradeoffs.",
-      "topic": "recursion",
+      "explanation": "<why the expected answer follows from the question and subject knowledge>",
+      "topic": "<supplied or inferred competency>",
       "difficulty": 3,
       "format": "Multiple Choice"
     }
@@ -78,7 +68,7 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - `format` must be `Multiple Choice`.
 - `choices` should include 4 options.
 - `expectedAnswer` must exactly match one item in `choices`.
-- All 4 choices must be meaningfully distinct in wording and substance. Do not include near-synonyms or paraphrases of the same answer, such as `maps virtual addresses to physical addresses` and `translates virtual addresses to physical addresses`.
+- All 4 choices must be meaningfully distinct in wording and substance. Do not include near-synonyms or paraphrases of the same answer.
 - Distractors should test different misconceptions, not restate the same mechanism with synonyms.
 - Avoid prompts listed in `existingPrompts` and `reportedPrompts`.
 - Prefer objective questions for MVP.
@@ -86,28 +76,38 @@ The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls.
 - Questions should target weak topics and stay near the user's estimated level.
 - If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
 - If generated questions come back below `minimumDifficulty`, the backend and app should drop them instead of promoting their numeric difficulty.
-- Use `learningTarget`, `contentTopics`, `questionDirective`, competency estimates, and `minimumDifficulty` together when writing the prompt and assigning difficulty.
-- If `goal.needsSkillMap` is true, infer 4 to 6 subject-matter skills from the learning target and use those skill names as returned question topics. The app uses the first generated topics to seed the Skill Map before background bank refill.
-- Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as user intent, not as the tested subject. For example, `Study for the LSAT` should produce LSAT Logical Reasoning or Reading Comprehension questions, not questions about how to study.
+- Treat the raw goal and focus areas as canonical. Use optional derived fields and competency estimates only when they remain aligned with that user input.
+- If focus areas are present and derived topics are absent, split the focus areas into the initial topic map. If the goal remains broad, infer 4 to 6 subject-matter skills and use those skill names as returned question topics.
+- Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as intent, not as the tested subject. Test the knowledge or skill named by the goal itself.
+- Use one domain-general assessment prompt and structural validator path. Production code must not branch on named exams, languages, technical fields, or other subjects; named examples belong in eval fixtures.
 - Do not ask about study plans, productivity, motivation, app blocking, or next steps unless the learning target is explicitly study skills.
 
-The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, duplicate or near-duplicate answer choices, off-target study-strategy prompts, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
+The iOS app also validates batches before storage. It drops blank questions, duplicate prompts, repeated answer-choice sets, reported prompts, questions below the configured minimum difficulty, missing topics, missing answers or explanations, missing choices, duplicate or near-duplicate answer choices, generic meta-assessment filler, off-target study-strategy prompts, and oversized prompt text. If a provider returns an expected answer that is not in the choices, the sanitizer can repair the choices by adding the expected answer before storage.
+
+Checkpoint does not mark the first practice set ready unless at least five questions survive validation. A short or rejected response remains unready; no canned questions are inserted to reach the minimum.
+
+## Client Readiness And Recovery
+
+- While generation and validation are running, the app shows that questions are being prepared and lets the user leave the screen.
+- Missing or unusable provider configuration surfaces a visible service-unavailable state.
+- Network, timeout, rate-limit, or provider failures surface a retryable connection/service state.
+- Responses rejected by the app's quality checks surface a quality state with `Try again` and `Edit topics` actions.
+- If an already-ready bank cannot be topped off, existing accepted questions remain usable while the refresh failure is handled separately.
 
 ## Cost Rules
 
 - Generate in batches, not per blocked-app attempt.
 - Cache generated questions in the app.
-- On goal creation or goal changes, prepare a 5-question AI-first ready set, then asynchronously top off the remaining question bank.
+- On goal creation or goal changes, prepare a validated 5-question ready set, then asynchronously top off the remaining question bank.
 - When the cached bank runs low, request more AI questions before the user runs out of usable checkpoints.
-- If an AI backend is configured, the app should not silently substitute local template questions for short or failed AI batches.
+- Do not substitute canned or template questions for short, failed, or rejected AI batches.
 - Keep cloud calls behind the backend service; the iOS app must never contain Bedrock, AWS, or other model-provider secrets.
 - Exposed backend URLs should fail closed without `CHECKPOINT_BACKEND_TOKEN`; only set `ALLOW_UNAUTHENTICATED_BACKEND=true` for controlled local/private testing.
 - Cap batch size in the backend. The Bedrock Lambda defaults to 20 questions per call even if the app requests a larger bank.
 - Rate-limit backend calls by anonymous app install ID and source IP before calling Bedrock.
-- Retry malformed model output in the backend and use a configured fallback model before returning a generation error.
-- Use backend generation only when:
+- Retry malformed model output against the pinned production model before returning a generation error. Alternate models remain disabled unless they pass the same eval suite and quality thresholds.
+- Use backend generation when:
+  - production `Automatic` prepares a question batch
   - the bank is low
   - the user refreshes
-  - Automatic provider routing has an internally configured backend endpoint and no on-device Apple Foundation model is available
   - the app explicitly selects Backend generation internally
-  - the app needs better quality than templates

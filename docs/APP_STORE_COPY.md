@@ -68,7 +68,7 @@ Checkpoint uses Apple's Screen Time APIs to let users choose apps, categories, a
 
 The app uses Family Controls, Managed Settings, Managed Settings UI, Device Activity, and App Groups. App Groups are used to share shield state, pending checkpoint attempts, selected Screen Time tokens, current goal title, unlock expiration, and diagnostics between the app and its extensions.
 
-Question generation is batch-based and cached. The app does not call AI on every protected-app attempt. Backend generation, when configured, sends goal context and question-generation metadata to the configured endpoint. If backend or on-device generation is unavailable, the app can fall back to local templates.
+Question generation is AI-only, batch-based, and cached. The app does not call AI on every protected-app attempt. Production Automatic generation uses the configured cloud backend, which receives the goal context and question-generation metadata needed to prepare a batch. Checkpoint does not substitute canned questions. A practice set is ready only after at least five questions pass validation; pending generation and retryable service, connection, or quality failures are shown in the app.
 
 ## Screenshot Plan
 

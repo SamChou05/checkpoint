@@ -8,6 +8,7 @@ struct HomeView: View {
     @State private var isRestrictedAppsPresented = false
     @State private var isWeeklyReviewPresented = false
     @State private var isAcceptingLevelIncrease = false
+    @State private var isRetryingInitialQuestions = false
     @State private var lastActivationRefreshAt: Date?
 
     private static let activationRefreshDebounceInterval: TimeInterval = 20
@@ -16,7 +17,6 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    header
                     checkpointNoticePanel
 
                     if let goal = store.goal {
@@ -52,60 +52,33 @@ struct HomeView: View {
         }
     }
 
-    private var header: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Consistency compounds")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
-
-                Text("Practice toward the goal you chose.")
-                    .font(.largeTitle.bold())
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer()
-
-            Image(systemName: "shield.lefthalf.filled")
-                .font(.system(size: 28, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.blue)
-                .frame(width: 48, height: 48)
-                .background(CheckpointTheme.blue.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
-        }
-        .padding(.top, 8)
-    }
-
     private func goalHero(_ goal: Goal) -> some View {
         SectionPanel {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    currentGoalMenu(goal)
+                    if store.availableGoalProfiles.count > 1 {
+                        currentGoalMenu(goal)
+                    }
 
                     Spacer()
 
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text("Deadline: \(goal.deadline.formatted(.dateTime.month(.twoDigits).day(.twoDigits).year(.twoDigits)))")
-                        Text(Goal.deadlineDistanceText(until: goal.deadline))
-                    }
+                    Text("Due \(goal.deadline.formatted(.dateTime.month(.abbreviated).day().year()))")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.muted)
                     .lineLimit(1)
                 }
 
-                Text("Goal: \(goal.title)")
+                Text(goal.title)
                     .font(.title2.bold())
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if let focusText = store.activeGoalFocusText {
-                    Text("Focus: \(focusText)")
+                    Label(focusText, systemImage: "scope")
                         .font(.subheadline)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-
-                StatusBadge(text: goal.difficultyLabel, tint: CheckpointTheme.amber)
 
                 if store.isPreparingActiveGoalQuestions {
                     HStack(spacing: 10) {
@@ -120,21 +93,45 @@ struct HomeView: View {
                     .padding(12)
                     .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
                 } else if store.isQuestionGenerationBlockingPractice {
-                    HStack(spacing: 10) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(CheckpointTheme.amber)
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(CheckpointTheme.amber)
 
-                        Text(store.questionGenerationStatusText)
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(store.lastQuestionGenerationFailure?.title ?? "Questions aren't ready")
+                                    .font(.footnote.weight(.bold))
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text(store.questionGenerationStatusText)
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+
+                        HStack(spacing: 10) {
+                            SecondaryActionButton(
+                                title: isRetryingInitialQuestions ? "Trying again" : "Try again",
+                                systemImage: "arrow.clockwise"
+                            ) {
+                                retryInitialQuestionGeneration()
+                            }
+                            .disabled(isRetryingInitialQuestions)
+
+                            if store.lastQuestionGenerationFailure?.allowsEditingTopics == true {
+                                SecondaryActionButton(title: "Edit topics", systemImage: "pencil") {
+                                    store.presentActiveGoalEditor()
+                                }
+                            }
+                        }
                     }
                     .padding(12)
                     .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
                 }
 
-                Text("Protected apps open after a short practice set: \(store.unlockPolicy.questionsPerSession) questions, \(store.unlockPolicy.requiredCorrectAnswers) correct to begin a break.")
+                Text("Answer \(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correctly to start a break.")
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -173,13 +170,13 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 10) {
             StatusBadge(text: "Ready for more depth", tint: CheckpointTheme.amber)
 
-            Text("\(recommendation.accuracyPercent)% accuracy across \(recommendation.answeredCount) recent level \(recommendation.currentQuestionLevel) questions.")
+            Text("You've been consistently accurate. Try harder questions?")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
 
             SecondaryActionButton(
-                title: isAcceptingLevelIncrease ? "Preparing deeper questions" : "Raise question level",
+                title: isAcceptingLevelIncrease ? "Preparing harder questions" : "Use harder questions",
                 systemImage: "arrow.up.circle"
             ) {
                 Task {
@@ -235,7 +232,7 @@ struct HomeView: View {
 
                     HStack(spacing: 10) {
                         CompactReviewStat(
-                            title: "Reps",
+                            title: "Questions",
                             value: "\(weeklyMetrics.questionsAnswered)",
                             systemImage: "checkmark.seal",
                             tint: CheckpointTheme.teal
@@ -270,10 +267,10 @@ struct HomeView: View {
         }
 
         if metrics.checkpointStreakDays > 0 {
-            return "\(metrics.questionsAnswered) reps toward your goals this week. \(metrics.checkpointStreakText) checkpoint streak."
+            return "\(metrics.questionsAnswered) questions answered this week. \(metrics.checkpointStreakText) checkpoint streak."
         }
 
-        return "\(metrics.questionsAnswered) reps toward your goals this week."
+        return "\(metrics.questionsAnswered) questions answered this week."
     }
 
     private var screenTimePanel: some View {
@@ -297,19 +294,41 @@ struct HomeView: View {
                             screenTime.applyShield()
                         }
                     }
-                } else {
+                } else if screenTime.isShieldingEnabled {
                     HStack(spacing: 10) {
-                        HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
+                        HomeProtectionActionButton(title: "Change apps", systemImage: "checklist") {
                             isRestrictedAppsPresented = true
                         }
 
-                        if screenTime.isShieldingEnabled {
-                            StatusBadge(text: "Protection active", tint: CheckpointTheme.teal)
-                        } else {
-                            HomeProtectionActionButton(title: "Start protection", systemImage: "shield") {
+                        StatusBadge(text: "Protection on", tint: CheckpointTheme.teal)
+                    }
+                } else {
+                    if let errorMessage = screenTime.userFacingErrorMessage {
+                        Text(errorMessage)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    switch screenTime.setupState {
+                    case .notStarted, .failed:
+                        PrimaryActionButton(title: "Set up app protection", systemImage: "shield") {
+                            isRestrictedAppsPresented = true
+                        }
+                    case .authorized, .readyForSpike:
+                        if screenTime.hasSelection {
+                            PrimaryActionButton(title: "Start protection", systemImage: "shield") {
                                 screenTime.applyShield()
                             }
+                        } else {
+                            PrimaryActionButton(title: "Choose apps", systemImage: "checklist") {
+                                isRestrictedAppsPresented = true
+                            }
                         }
+                    case .unavailable:
+                        EmptyView()
+                    case .shieldActive, .temporarilyUnlocked:
+                        EmptyView()
                     }
                 }
             }
@@ -372,14 +391,7 @@ struct HomeView: View {
 
         Divider()
 
-        if store.isMember && store.hasReachedGoalProfileLimit {
-            Button {
-                store.presentGoalProfileCreator()
-            } label: {
-                Label("\(store.goalProfileLimit) goal limit reached", systemImage: "checkmark.seal")
-            }
-            .disabled(true)
-        } else {
+        if !store.isMember || !store.hasReachedGoalProfileLimit {
             Button {
                 store.presentGoalProfileCreator()
             } label: {
@@ -399,6 +411,15 @@ struct HomeView: View {
         Task {
             _ = await store.refreshQuestionBatchIfNeeded()
             await store.prepareProtectionReviewQuestionBankIfNeeded()
+        }
+    }
+
+    private func retryInitialQuestionGeneration() {
+        Task {
+            guard !isRetryingInitialQuestions else { return }
+            isRetryingInitialQuestions = true
+            await store.retryInitialQuestionGeneration()
+            isRetryingInitialQuestions = false
         }
     }
 
@@ -533,7 +554,7 @@ private struct WeeklyReviewView: View {
                 .font(.largeTitle.bold())
                 .foregroundStyle(CheckpointTheme.text)
 
-            Text("A short read on the practice your protected apps created this week.")
+            Text("A quick look at this week's questions, breaks, and progress.")
                 .font(.subheadline)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
@@ -541,7 +562,7 @@ private struct WeeklyReviewView: View {
     }
 
     private var scopeSelector: some View {
-        SectionPanel("Scope") {
+        SectionPanel("Goal") {
             Menu {
                 Button {
                     selectedMetricsID = WeeklyMetricsSummary.allGoalsID
@@ -620,14 +641,14 @@ private struct WeeklyReviewView: View {
     }
 
     private var signalPanel: some View {
-        SectionPanel("Signals") {
+        SectionPanel("This week") {
             let metrics = selectedMetrics
 
             VStack(spacing: 10) {
                 WeeklySignalRow(
-                    title: "Learning reps",
+                    title: "Questions answered",
                     value: "\(metrics.questionsAnswered)",
-                    detail: "Questions answered this week",
+                    detail: nil,
                     systemImage: "checkmark.seal",
                     tint: CheckpointTheme.teal
                 )
@@ -649,9 +670,9 @@ private struct WeeklyReviewView: View {
                 )
 
                 WeeklySignalRow(
-                    title: "Protected-app moments",
+                    title: "App breaks",
                     value: "\(metrics.checkpointsCleared)",
-                    detail: "Successful checkpoints before an app break",
+                    detail: "Breaks earned by passing a checkpoint",
                     systemImage: "shield.lefthalf.filled",
                     tint: CheckpointTheme.blue
                 )
@@ -670,7 +691,7 @@ private struct WeeklyReviewView: View {
                         WeeklySignalRow(
                             title: "Strengthening",
                             value: strongestSkill,
-                            detail: "Your best-performing skill signal",
+                            detail: "Your strongest topic this week",
                             systemImage: "star",
                             tint: CheckpointTheme.blue
                         )
@@ -692,7 +713,7 @@ private struct WeeklyReviewView: View {
 
     private func heroTitle(for metrics: WeeklyMetricsSummary) -> String {
         if metrics.questionsAnswered > 0 {
-            return "\(metrics.questionsAnswered) focused reps completed this week."
+            return "\(metrics.questionsAnswered) questions answered this week."
         }
 
         if metrics.checkpointStreakDays > 0 {
@@ -704,8 +725,8 @@ private struct WeeklyReviewView: View {
 
     private func heroDetail(for metrics: WeeklyMetricsSummary) -> String {
         if metrics.checkpointsCleared > 0 {
-            let checkpointText = metrics.checkpointsCleared == 1 ? "1 protected-app moment" : "\(metrics.checkpointsCleared) protected-app moments"
-            return "\(checkpointText) became practice before a break."
+            let checkpointText = metrics.checkpointsCleared == 1 ? "1 app break" : "\(metrics.checkpointsCleared) app breaks"
+            return "You earned \(checkpointText) by passing a checkpoint."
         }
 
         if metrics.questionsAnswered > 0 {

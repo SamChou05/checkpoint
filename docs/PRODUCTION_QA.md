@@ -10,7 +10,7 @@ Started: June 4, 2026 PDT.
 - [x] Bedrock question service unit tests passed: 15 passed, 0 failed.
 - [x] Release simulator build succeeded.
 - [x] `Checkpoint/Config/Secrets.xcconfig` is ignored and not tracked.
-- [x] Backend endpoint is configured locally and returned valid `questions` JSON for an authenticated LSAT request.
+- [x] Backend endpoint is configured locally and returned authenticated, validated question sets across exam, language, history, and uncommon raw-goal fixtures.
 - [x] Backend endpoint returned 401 for the same request without the bearer token.
 - [x] Release physical-device build succeeded on connected iPhone.
 - [x] Debug physical-device build, install, and launch succeeded on connected iPhone after StoreKit membership flow changes.

@@ -10,7 +10,9 @@ struct SettingsView: View {
     @State private var isIssueReportsPresented = false
     @State private var isGenerationDiagnosticsPresented = false
     @State private var isPlanPresented = false
-    @State private var isAdvancedExpanded = false
+    @State private var isPracticeStandardExpanded = false
+    @State private var isAppDataExpanded = false
+    @State private var isDeveloperToolsExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
     @State private var previewCheckpointSession: CheckpointSession?
     @State private var previewCheckpointMessage: String?
@@ -25,27 +27,6 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Settings")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
-
-                        Text("Adjust your goal, protected apps, and practice standards.")
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
-                    }
-
-                    SectionPanel("Plan") {
-                        SettingsNavigationRow(
-                            title: "Choose your plan",
-                            detail: planDetailText,
-                            systemImage: "creditcard",
-                            trailingText: store.membershipTier.displayName
-                        ) {
-                            isPlanPresented = true
-                        }
-                    }
-
                     SectionPanel("Goals") {
                         if let goal = store.goal {
                             VStack(alignment: .leading, spacing: 10) {
@@ -65,21 +46,13 @@ struct SettingsView: View {
 
                                     Spacer()
 
-                                    StatusBadge(
-                                        text: store.goalProfileCapacityText,
-                                        tint: store.hasReachedGoalProfileLimit ? CheckpointTheme.amber : CheckpointTheme.teal
-                                    )
+                                    if store.availableGoalProfiles.count > 1 || (store.isMember && store.hasReachedGoalProfileLimit) {
+                                        StatusBadge(
+                                            text: store.goalProfileCapacityText,
+                                            tint: store.hasReachedGoalProfileLimit ? CheckpointTheme.amber : CheckpointTheme.teal
+                                        )
+                                    }
                                 }
-
-                                Text("Question level: \(goal.difficultyLabel)")
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                Text("Each goal keeps its own practice sets, Skill Map, and answer history.")
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
 
                                 if store.availableGoalProfiles.count > 1 {
                                     Divider()
@@ -111,37 +84,13 @@ struct SettingsView: View {
                         }
                     }
 
-                    SectionPanel("Activity") {
-                        VStack(spacing: 14) {
-                            SettingsNavigationRow(
-                                title: "Practice history",
-                                detail: historyDetailText,
-                                systemImage: "clock.arrow.circlepath",
-                                trailingText: "\(store.activeAttempts.count)"
-                            ) {
-                                isHistoryPresented = true
-                            }
-
-                            Divider()
-
-                            SettingsNavigationRow(
-                                title: "Report an issue",
-                                detail: issueReportsDetailText,
-                                systemImage: "bubble.left.and.bubble.right",
-                                trailingText: "\(store.issueReportCount)"
-                            ) {
-                                isIssueReportsPresented = true
-                            }
-                        }
-                    }
-
                     SectionPanel("Protected apps") {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
-                                Text("Connection")
+                                Text("Status")
                                     .foregroundStyle(CheckpointTheme.muted)
                                 Spacer()
-                                Text(screenTime.setupState.rawValue)
+                                Text(screenTime.userFacingProtectionStatus)
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(CheckpointTheme.text)
                             }
@@ -157,19 +106,14 @@ struct SettingsView: View {
                                         await screenTime.requestAuthorization()
                                     }
                                 }
-                            }
-
-                            SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
-                                isRestrictedAppsPresented = true
+                            } else if screenTime.setupState != .unavailable {
+                                SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
+                                    isRestrictedAppsPresented = true
+                                }
                             }
 
                             if canStopBlocking {
                                 Divider()
-
-                                Text("Turning off protection requires a longer 20-question review with at least 18 correct.")
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
 
                                 SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing review" : "Turn off protection", systemImage: "hand.raised") {
                                     isStopProtectionConfirmationPresented = true
@@ -184,7 +128,7 @@ struct SettingsView: View {
                                 }
                             }
 
-                            if let message = screenTime.lastErrorMessage {
+                            if let message = screenTime.userFacingErrorMessage {
                                 Text(message)
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.coral)
@@ -197,56 +141,13 @@ struct SettingsView: View {
                         practiceStandardContent
                     }
 
-                    SectionPanel("Advanced") {
-                        DisclosureGroup(isExpanded: $isAdvancedExpanded) {
-                            VStack(alignment: .leading, spacing: 14) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Blocking diagnostics")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.text)
+                    activityPanel
+                    planPanel
+                    appDataPanel
 
-                                    Text(screenTime.shieldExtensionDiagnosticsText)
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-
-                                SettingsNavigationRow(
-                                    title: "Generation diagnostics",
-                                    detail: store.questionGenerationDiagnosticsSummary,
-                                    systemImage: "text.magnifyingglass",
-                                    trailingText: "\(store.questionGenerationTraces.count)"
-                                ) {
-                                    isGenerationDiagnosticsPresented = true
-                                }
-
-                                Divider()
-
-                                SecondaryActionButton(title: isPreparingPreviewCheckpoint ? "Preparing preview" : "Preview checkpoint", systemImage: "play.fill") {
-                                    prepareCheckpointPreview()
-                                }
-                                .disabled(store.goal == nil || isPreparingPreviewCheckpoint)
-                                .opacity(store.goal == nil ? 0.48 : 1)
-
-                                if let previewCheckpointMessage {
-                                    Text(previewCheckpointMessage)
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.amber)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-
-                                SecondaryActionButton(title: "Reset app data", systemImage: "arrow.counterclockwise") {
-                                    advancedAction = .resetData
-                                }
-                            }
-                            .padding(.top, 10)
-                        } label: {
-                            Text("Troubleshooting and reset")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.text)
-                        }
-                        .tint(CheckpointTheme.teal)
-                    }
+                    #if DEBUG
+                    developerToolsPanel
+                    #endif
                 }
                 .padding(20)
                 .padding(.bottom, 56)
@@ -387,13 +288,11 @@ struct SettingsView: View {
     }
 
     private func goalProfileDetailText(for profile: Goal) -> String {
-        var parts = ["Question level: \(profile.difficultyLabel)"]
-
         if let readinessWarning = store.questionBankReadinessWarning(for: profile) {
-            parts.append(readinessWarning)
+            return readinessWarning
         }
 
-        return parts.joined(separator: " - ")
+        return "Due \(profile.deadline.formatted(.dateTime.month(.abbreviated).day().year()))"
     }
 
     private var canStopBlocking: Bool {
@@ -409,84 +308,182 @@ struct SettingsView: View {
             return "Pro is active: multiple goals, ongoing practice, and guided review."
         }
 
-        return "Free includes one goal and the core protected-app flow."
+        return "Free includes one goal and app protection."
     }
 
     private var historyDetailText: String {
-        if store.activeAttempts.isEmpty {
-            return "No practice answers yet"
-        }
-
-        return "\(store.questionsAnsweredThisWeekCount) answered this week"
+        store.activeAttempts.isEmpty ? "No practice yet" : "Review past answers"
     }
 
     private var issueReportsDetailText: String {
         if store.issueReportCount == 0 {
-            return "Questions, app issues, or feedback"
+            return "Save or share an issue"
         }
 
-        return "\(store.issueReportCount) submitted"
+        return "\(store.issueReportCount) saved"
     }
 
     private var practiceStandardContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Passing standard")
-                        .font(.headline)
-                        .foregroundStyle(CheckpointTheme.text)
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Passing standard")
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
 
-                    Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct starts a break.")
-                        .font(.subheadline)
-                        .foregroundStyle(CheckpointTheme.muted)
+                Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct starts a \(store.unlockPolicy.unlockMinutes)-minute break.")
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+
+            DisclosureGroup(isExpanded: $isPracticeStandardExpanded) {
+                VStack(alignment: .leading, spacing: 12) {
+                    PracticeStandardStepperRow(
+                        title: "Questions per checkpoint",
+                        value: store.unlockPolicy.questionsPerSession,
+                        decrementDisabled: store.unlockPolicy.questionsPerSession <= UnlockPolicy.minimumQuestionsPerSession,
+                        incrementDisabled: store.unlockPolicy.questionsPerSession >= UnlockPolicy.maximumQuestionsPerSession,
+                        decrementAction: {
+                            store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession - 1)
+                        },
+                        incrementAction: {
+                            store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession + 1)
+                        }
+                    )
+
+                    PracticeStandardStepperRow(
+                        title: "Correct answers needed",
+                        value: store.unlockPolicy.requiredCorrectAnswers,
+                        decrementDisabled: store.unlockPolicy.requiredCorrectAnswers <= UnlockPolicy.minimumRequiredCorrectAnswers,
+                        incrementDisabled: store.unlockPolicy.requiredCorrectAnswers >= store.unlockPolicy.questionsPerSession,
+                        decrementAction: {
+                            store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers - 1)
+                        },
+                        incrementAction: {
+                            store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers + 1)
+                        }
+                    )
+
+                    BreakDurationMenu(
+                        selectedMinutes: store.unlockPolicy.unlockMinutes,
+                        options: UnlockPolicy.correctAnswerUnlockMinuteOptions
+                    ) { minutes in
+                        store.updateUnlockMinutes(minutes)
+                    }
+                }
+                .padding(.top, 10)
+            } label: {
+                Text("Customize")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+            }
+            .tint(CheckpointTheme.teal)
+        }
+    }
+
+    private var activityPanel: some View {
+        SectionPanel("Activity & help") {
+            VStack(spacing: 14) {
+                SettingsNavigationRow(
+                    title: "Practice history",
+                    detail: historyDetailText,
+                    systemImage: "clock.arrow.circlepath",
+                    trailingText: "\(store.activeAttempts.count)"
+                ) {
+                    isHistoryPresented = true
                 }
 
-                Spacer(minLength: 12)
+                Divider()
 
-                StatusBadge(
-                    text: "\(store.unlockPolicy.requiredCorrectAnswers)/\(store.unlockPolicy.questionsPerSession)",
-                    tint: CheckpointTheme.teal
-                )
-            }
-
-            Divider()
-
-            VStack(spacing: 10) {
-                PracticeStandardStepperRow(
-                    title: "Questions per practice set",
-                    value: store.unlockPolicy.questionsPerSession,
-                    decrementDisabled: store.unlockPolicy.questionsPerSession <= UnlockPolicy.minimumQuestionsPerSession,
-                    incrementDisabled: store.unlockPolicy.questionsPerSession >= UnlockPolicy.maximumQuestionsPerSession,
-                    decrementAction: {
-                        store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession - 1)
-                    },
-                    incrementAction: {
-                        store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession + 1)
-                    }
-                )
-
-                PracticeStandardStepperRow(
-                    title: "Correct answers needed",
-                    value: store.unlockPolicy.requiredCorrectAnswers,
-                    decrementDisabled: store.unlockPolicy.requiredCorrectAnswers <= UnlockPolicy.minimumRequiredCorrectAnswers,
-                    incrementDisabled: store.unlockPolicy.requiredCorrectAnswers >= store.unlockPolicy.questionsPerSession,
-                    decrementAction: {
-                        store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers - 1)
-                    },
-                    incrementAction: {
-                        store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers + 1)
-                    }
-                )
-            }
-
-            BreakDurationMenu(
-                selectedMinutes: store.unlockPolicy.unlockMinutes,
-                options: UnlockPolicy.correctAnswerUnlockMinuteOptions
-            ) { minutes in
-                store.updateUnlockMinutes(minutes)
+                SettingsNavigationRow(
+                    title: "Help & feedback",
+                    detail: issueReportsDetailText,
+                    systemImage: "bubble.left.and.bubble.right",
+                    trailingText: "\(store.issueReportCount)"
+                ) {
+                    isIssueReportsPresented = true
+                }
             }
         }
     }
+
+    private var planPanel: some View {
+        SectionPanel("Plan") {
+            SettingsNavigationRow(
+                title: "Free and Pro",
+                detail: planDetailText,
+                systemImage: "creditcard",
+                trailingText: store.membershipTier.displayName
+            ) {
+                isPlanPresented = true
+            }
+        }
+    }
+
+    private var appDataPanel: some View {
+        SectionPanel("App data") {
+            DisclosureGroup(isExpanded: $isAppDataExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Erase your goals and progress, and turn off app protection.")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    SecondaryActionButton(title: "Reset Checkpoint", systemImage: "arrow.counterclockwise") {
+                        advancedAction = .resetData
+                    }
+                }
+                .padding(.top, 10)
+            } label: {
+                Text("Reset options")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+            }
+            .tint(CheckpointTheme.teal)
+        }
+    }
+
+    #if DEBUG
+    private var developerToolsPanel: some View {
+        SectionPanel("Developer tools") {
+            DisclosureGroup(isExpanded: $isDeveloperToolsExpanded) {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text(screenTime.shieldExtensionDiagnosticsText)
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    SettingsNavigationRow(
+                        title: "Question diagnostics",
+                        detail: store.questionGenerationDiagnosticsSummary,
+                        systemImage: "text.magnifyingglass",
+                        trailingText: "\(store.questionGenerationTraces.count)"
+                    ) {
+                        isGenerationDiagnosticsPresented = true
+                    }
+
+                    SecondaryActionButton(title: isPreparingPreviewCheckpoint ? "Preparing preview" : "Preview checkpoint", systemImage: "play.fill") {
+                        prepareCheckpointPreview()
+                    }
+                    .disabled(store.goal == nil || isPreparingPreviewCheckpoint)
+                    .opacity(store.goal == nil ? 0.48 : 1)
+
+                    if let previewCheckpointMessage {
+                        Text(previewCheckpointMessage)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(.top, 10)
+            } label: {
+                Text("Diagnostics and preview")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+            }
+            .tint(CheckpointTheme.teal)
+        }
+    }
+    #endif
 
     private func prepareCheckpointPreview() {
         guard !isPreparingPreviewCheckpoint else { return }
@@ -533,7 +530,7 @@ struct SettingsView: View {
             return "This removes the goal and its saved practice data."
         }
 
-        return "This removes \(pendingGoalDeletion.title), including its questions, Skill Map, practice history, reports, and unlock history."
+        return "Delete “\(pendingGoalDeletion.title)” and all of its progress? This can't be undone."
     }
 
     private func confirmGoalDeletion() {

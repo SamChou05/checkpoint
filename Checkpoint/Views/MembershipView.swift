@@ -14,63 +14,55 @@ struct MembershipView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Choose your plan")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
+                    Text(headerDetailText)
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                        Text("Start with one focused goal. Switch to Pro when you want more goals, more variety, and steadier review over time.")
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    if !store.isMember {
+                        SectionPanel("Current plan") {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Free")
+                                        .font(.headline)
+                                        .foregroundStyle(CheckpointTheme.text)
 
-                    PlanCard(
-                        title: "Free",
-                        price: "$0",
-                        cadence: "forever",
-                        detail: freePlanDetailText,
-                        statusText: store.isMember ? nil : "Current plan",
-                        tint: CheckpointTheme.amber
-                    ) {
-                        PlanBenefitRow(title: "One goal to start", detail: "Build a focused checkpoint around the outcome that matters most right now.")
-                        PlanBenefitRow(title: "Protected app flow", detail: "Clear a short practice set before opening the apps you chose to protect.")
-                        PlanBenefitRow(title: "Weekly review", detail: "See the reps, checkpoint streak, accuracy, and skill focus your protected apps created.")
+                                    Text("One goal with app protection")
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                }
 
-                        if store.isMember {
-                            PlanFootnote("To return to Free, manage your Pro plan in the App Store. Free resumes after the current billing period ends.")
+                                Spacer()
 
-                            SecondaryActionButton(title: "Return to Free", systemImage: "arrow.down.circle") {
-                                openSubscriptionManagement()
+                                StatusBadge(text: "Current", tint: CheckpointTheme.amber)
                             }
-                        } else {
-                            DisabledPlanButton(title: "Current plan", systemImage: "checkmark")
                         }
                     }
 
                     PlanCard(
                         title: "Pro",
-                        price: proPriceText,
-                        cadence: proPriceCadenceText,
+                        price: store.isMember ? nil : proPriceText,
+                        cadence: store.isMember ? nil : proPriceCadenceText,
                         detail: proPlanDetailText,
                         statusText: store.isMember ? "Current plan" : nil,
                         tint: CheckpointTheme.teal
                     ) {
                         PlanBenefitRow(title: "Up to 5 goals", detail: "Keep school, exams, interviews, and personal goals organized separately.")
-                        PlanBenefitRow(title: "Practice stays ready", detail: "Get new checkpoints as your priorities and progress change.")
-                        PlanBenefitRow(title: "More variety", detail: "Work through a broader range of questions so practice stays useful.")
-                        PlanBenefitRow(title: "Guided review", detail: "Missed ideas come back at the right time so weak spots do not disappear.")
+                        PlanBenefitRow(title: "Fresh, varied practice", detail: "Keep getting useful checkpoints as you progress.")
+                        PlanBenefitRow(title: "Review missed topics", detail: "Bring weak spots back into practice automatically.")
 
                         if !store.isMember {
-                            PlanFootnote("Choose a billing option to switch to Pro.")
-
                             Divider()
 
                             priceContent
 
                             PlanFootnote(subscriptionDisclosureText)
                         } else {
-                            DisabledPlanButton(title: "Current plan", systemImage: "checkmark")
+                            PlanFootnote("Billing and cancellation are managed by Apple.")
+
+                            SecondaryActionButton(title: "Manage subscription", systemImage: "creditcard") {
+                                openSubscriptionManagement()
+                            }
                         }
                     }
 
@@ -81,22 +73,18 @@ struct MembershipView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    HStack(spacing: 10) {
+                    if !store.isMember {
                         SecondaryActionButton(title: purchaseController.isRestoringPurchases ? "Restoring" : "Restore purchases", systemImage: "arrow.clockwise.circle") {
                             restorePurchases()
                         }
                         .disabled(purchaseController.isRestoringPurchases || purchasingProductID != nil)
                         .opacity(purchaseController.isRestoringPurchases || purchasingProductID != nil ? 0.64 : 1)
-
-                        SecondaryActionButton(title: store.isMember ? "Done" : "Stay on Free", systemImage: "xmark") {
-                            close()
-                        }
                     }
                 }
                 .padding(20)
             }
             .checkpointScreenBackground()
-            .navigationTitle("Choose your plan")
+            .navigationTitle(store.isMember ? "Your Plan" : "Choose Your Plan")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -123,28 +111,17 @@ struct MembershipView: View {
                     .foregroundStyle(CheckpointTheme.muted)
             }
         } else if purchaseController.products.isEmpty {
-            FallbackPriceButton(
-                title: "Monthly",
-                price: "$4.99/mo",
-                isPurchasing: purchasingProductID == MembershipProductID.monthly,
-                isDisabled: purchasingProductID != nil
-            ) {
-                purchaseProduct(with: MembershipProductID.monthly)
-            }
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Plans are temporarily unavailable.")
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
 
-            FallbackPriceButton(
-                title: "Annual",
-                price: "$29.99/yr",
-                isPurchasing: purchasingProductID == MembershipProductID.yearly,
-                isDisabled: purchasingProductID != nil
-            ) {
-                purchaseProduct(with: MembershipProductID.yearly)
+                SecondaryActionButton(title: "Try again", systemImage: "arrow.clockwise") {
+                    Task {
+                        await purchaseController.loadProducts()
+                    }
+                }
             }
-
-            Text("Tap a plan to retry App Store pricing. Apple shows the final price before purchase.")
-                .font(.footnote)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
         } else {
             ForEach(purchaseController.products, id: \.id) { product in
                 ProductPurchaseRow(
@@ -158,20 +135,20 @@ struct MembershipView: View {
         }
     }
 
-    private var freePlanDetailText: String {
+    private var headerDetailText: String {
         if store.isMember {
-            return "Free is always available if Pro is no longer the right fit."
+            return "Pro is active. Manage your subscription or review what's included."
         }
 
-        return "A focused way to try the full Checkpoint habit with your first goal."
+        return feature.detail
     }
 
     private var proPlanDetailText: String {
         if store.isMember {
-            return "Your plan for multiple goals, varied practice, and steadier review."
+            return "Multiple goals, fresh practice, and guided review."
         }
 
-        return "For people working across more than one goal, or practicing often enough to need new checkpoints."
+        return "For more goals and practice that keeps adapting as you learn."
     }
 
     private var monthlyProduct: Product? {
@@ -182,7 +159,7 @@ struct MembershipView: View {
         purchaseController.products.first { $0.id == MembershipProductID.yearly }
     }
 
-    private var proPriceText: String {
+    private var proPriceText: String? {
         if let monthlyProduct {
             return monthlyProduct.displayPrice
         }
@@ -191,10 +168,10 @@ struct MembershipView: View {
             return yearlyProduct.displayPrice
         }
 
-        return "$4.99"
+        return nil
     }
 
-    private var proPriceCadenceText: String {
+    private var proPriceCadenceText: String? {
         if monthlyProduct != nil {
             return "per month"
         }
@@ -203,7 +180,7 @@ struct MembershipView: View {
             return "per year"
         }
 
-        return "per month"
+        return nil
     }
 
     private var subscriptionDisclosureText: String {
@@ -230,31 +207,6 @@ struct MembershipView: View {
         }
     }
 
-    private func purchaseProduct(with productID: String) {
-        guard purchasingProductID == nil else { return }
-        purchasingProductID = productID
-
-        Task {
-            if purchaseController.products.isEmpty {
-                await purchaseController.loadProducts()
-            }
-
-            guard let product = purchaseController.products.first(where: { $0.id == productID }) else {
-                purchasingProductID = nil
-                purchaseController.purchaseMessage = unavailablePlanMessage
-                return
-            }
-
-            let unlocked = await purchaseController.purchase(product)
-            purchasingProductID = nil
-
-            if unlocked {
-                store.updateMembershipTier(.member)
-                close()
-            }
-        }
-    }
-
     private func restorePurchases() {
         Task {
             let unlocked = await purchaseController.restorePurchases()
@@ -269,14 +221,6 @@ struct MembershipView: View {
         if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
             openURL(url)
         }
-    }
-
-    private var unavailablePlanMessage: String {
-        #if DEBUG
-        "That App Store plan is not available yet. Check StoreKit or App Store Connect setup, then try again."
-        #else
-        "That App Store plan is not available yet. Try again soon."
-        #endif
     }
 
     private func close() {
@@ -326,7 +270,7 @@ private struct ProductPurchaseRow: View {
     }
 
     private var title: String {
-        product.id == MembershipProductID.yearly ? "Switch to Pro annually" : "Switch to Pro monthly"
+        product.id == MembershipProductID.yearly ? "Annual" : "Monthly"
     }
 
     private var detail: String {
@@ -340,8 +284,8 @@ private struct ProductPurchaseRow: View {
 
 private struct PlanCard<Content: View>: View {
     var title: String
-    var price: String
-    var cadence: String
+    var price: String?
+    var cadence: String?
     var detail: String
     var statusText: String?
     var tint: Color
@@ -355,14 +299,18 @@ private struct PlanCard<Content: View>: View {
                         .font(.title2.bold())
                         .foregroundStyle(CheckpointTheme.text)
 
-                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text(price)
-                            .font(.system(size: 34, weight: .bold, design: .rounded))
-                            .foregroundStyle(CheckpointTheme.text)
+                    if let price {
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text(price)
+                                .font(.system(size: 34, weight: .bold, design: .rounded))
+                                .foregroundStyle(CheckpointTheme.text)
 
-                        Text(cadence)
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.muted)
+                            if let cadence {
+                                Text(cadence)
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.muted)
+                            }
+                        }
                     }
                 }
 
@@ -418,20 +366,6 @@ private struct PlanBenefitRow: View {
     }
 }
 
-private struct DisabledPlanButton: View {
-    var title: String
-    var systemImage: String
-
-    var body: some View {
-        Label(title, systemImage: systemImage)
-            .font(.subheadline.weight(.bold))
-            .foregroundStyle(CheckpointTheme.muted)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 13)
-            .background(CheckpointTheme.panelRaised.opacity(0.65), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-    }
-}
-
 private struct PlanFootnote: View {
     var text: String
 
@@ -444,47 +378,5 @@ private struct PlanFootnote: View {
             .font(.footnote)
             .foregroundStyle(CheckpointTheme.muted)
             .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
-private struct FallbackPriceButton: View {
-    var title: String
-    var price: String
-    var isPurchasing: Bool
-    var isDisabled: Bool
-    var action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundStyle(CheckpointTheme.text)
-
-                    Text("Open App Store purchase when available.")
-                        .font(.footnote)
-                        .foregroundStyle(CheckpointTheme.muted)
-                }
-
-                Spacer()
-
-                if isPurchasing {
-                    ProgressView()
-                } else {
-                    Text(price)
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(CheckpointTheme.paper)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8))
-                }
-            }
-            .padding(12)
-            .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
-        .disabled(isDisabled)
-        .opacity(isDisabled && !isPurchasing ? 0.64 : 1)
     }
 }

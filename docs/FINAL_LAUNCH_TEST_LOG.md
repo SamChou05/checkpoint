@@ -30,7 +30,7 @@ These must pass before broader TestFlight testing.
 - [ ] Exposed backend has `CHECKPOINT_BACKEND_TOKEN` configured and does not set `ALLOW_UNAUTHENTICATED_BACKEND=true`.
 - [ ] Backend endpoint rejects unauthenticated requests.
 - [ ] Backend endpoint rate limits by install ID and IP before calling Bedrock.
-- [ ] Backend question batch generation returns valid, unique, on-target choices for LSAT, technical interview, and school exam goals.
+- [ ] Backend question batch generation returns valid, unique, on-target choices across exam, language, technical, humanities, and uncommon raw-goal cases.
 - [ ] Latest installed iPhone build is launched once while the iPhone is unlocked.
 - [ ] Physical iPhone shield loop passes the full real-device plan below.
 

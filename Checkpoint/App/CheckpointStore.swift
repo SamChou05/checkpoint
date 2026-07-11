@@ -52,9 +52,10 @@ final class CheckpointStore {
     var unlockPolicy: UnlockPolicy = .default
     var questionBatchState: QuestionBatchState = .idle
     var aiProviderPreference: AIProviderKind = .automatic
-    var lastQuestionProvider: AIProviderKind = .localTemplates
+    var lastQuestionProvider: AIProviderKind = .automatic
     var backendEndpoint = ""
     var lastAIErrorMessage: String?
+    var lastQuestionGenerationFailure: QuestionGenerationFailureKind?
     var questionGenerationStartedAt: Date?
     var lastQuestionGenerationDuration: TimeInterval?
     var isQuestionBankTopOffInProgress = false
@@ -100,7 +101,7 @@ final class CheckpointStore {
         recoverTransientQuestionGenerationState()
         isOnboardingPresented = goal == nil
         publishShieldContext()
-        replaceActiveLocalTemplateQuestionBankIfNeeded()
+        removeLegacyLocalQuestionBankIfNeeded()
         resumeQuestionBankMaintenanceIfNeeded()
     }
 
@@ -391,11 +392,21 @@ final class CheckpointStore {
     }
 
     var shouldShowStarterMembershipPrompt: Bool {
-        !isMember && goal != nil && readyQuestionCount <= ProductLimits.autoRefreshThreshold
+        !isMember
+            && goal != nil
+            && hasConsumedStarterPractice
+            && readyQuestionCount <= ProductLimits.autoRefreshThreshold
     }
 
     var usableQuestionCount: Int {
         activeQuestions.filter(isSelectableQuestion).filter(meetsDifficultyFloor).count
+    }
+
+    private var hasConsumedStarterPractice: Bool {
+        !activeAttempts.isEmpty
+            || activeQuestions.contains { question in
+                question.timesAsked > 0 || question.status == .retired
+            }
     }
 
     var readyQuestionCount: Int {
@@ -469,8 +480,9 @@ final class CheckpointStore {
             if hasReadyCheckpointSet {
                 return "Practice is ready."
             }
-            let elapsedText = questionBankTopOffStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
-            return "Preparing more practice in the background.\(elapsedText)"
+            return usableQuestionCount > 0
+                ? "Getting your next checkpoint ready."
+                : "Getting your checkpoint ready. You can leave this screen."
         }
 
         switch questionBatchState {
@@ -478,20 +490,17 @@ final class CheckpointStore {
             if hasReadyCheckpointSet {
                 return "Practice is ready."
             }
-            let readyText = usableQuestionCount > 0
-                ? "Preparing more practice"
-                : "Preparing first practice set"
-            let elapsedText = questionGenerationStartedAt.map { " Started \(Self.formattedDuration(Date().timeIntervalSince($0))) ago." } ?? ""
-            return "\(readyText) in the background.\(elapsedText)"
-        case .failed:
-            return lastAIErrorMessage ?? "Question preparation did not finish. Checkpoint will try again when possible."
-        case .ready:
-            if let duration = lastQuestionGenerationDuration {
-                return "Practice is ready. Last prepared in \(Self.formattedDuration(duration))."
+            if usableQuestionCount > 0 {
+                return "Getting your next checkpoint ready."
             }
+            return "Getting your first checkpoint ready. Your goal is saved, so you can leave this screen."
+        case .failed:
+            return lastQuestionGenerationFailure?.message
+                ?? "Your checkpoint isn't ready yet. Try again in a little while."
+        case .ready:
             return "Practice is ready."
         case .idle:
-            return usableQuestionCount > 0 ? "Practice is ready." : "No practice prepared yet."
+            return usableQuestionCount > 0 ? "Practice is ready." : "Your first checkpoint isn't ready yet."
         }
     }
 
@@ -515,16 +524,16 @@ final class CheckpointStore {
             .sorted(by: sortByReviewPriority)
             .first?
             .topic {
-            return "Next focus: \(missedTopic). Recent misses are ready for review."
+            return "\(missedTopic) has a few missed questions ready for review."
         }
 
         guard let competency = sortedCompetencies.first else { return nil }
 
         if competency.attempts == 0 {
-            return "Start with \(competency.topic). Checkpoint needs more evidence there."
+            return "Start with \(competency.topic) to build your progress."
         }
 
-        return "Next focus: \(competency.topic). It is your lowest mastery area at \(competency.masteryPercent)%."
+        return "\(competency.topic) would benefit from another pass."
     }
 
     var questionLevelRecommendation: QuestionLevelRecommendation? {
@@ -594,7 +603,7 @@ final class CheckpointStore {
         }
 
         goal = selectedGoal
-        if shouldReplaceLocalTemplateQuestionBank(for: selectedGoal) {
+        if hasLegacyLocalQuestionBank(for: selectedGoal) {
             clearQuestionBank(for: selectedGoal.id)
         }
 
@@ -664,9 +673,9 @@ final class CheckpointStore {
         return true
     }
 
-    private func replaceActiveLocalTemplateQuestionBankIfNeeded() {
+    private func removeLegacyLocalQuestionBankIfNeeded() {
         guard let goal,
-              shouldReplaceLocalTemplateQuestionBank(for: goal) else {
+              hasLegacyLocalQuestionBank(for: goal) else {
             return
         }
 
@@ -675,15 +684,14 @@ final class CheckpointStore {
         isQuestionBankTopOffInProgress = false
         questionBankTopOffStartedAt = nil
         lastAIErrorMessage = nil
+        lastQuestionGenerationFailure = nil
         save()
         publishShieldContext()
         prepareInitialQuestionsInBackground(for: goal)
     }
 
-    private func shouldReplaceLocalTemplateQuestionBank(for profile: Goal) -> Bool {
-        aiProviderPreference != .localTemplates
-            && resolvedBackendEndpoint != nil
-            && lastQuestionProvider == .localTemplates
+    private func hasLegacyLocalQuestionBank(for profile: Goal) -> Bool {
+        lastQuestionProvider == .localTemplates
             && questions.contains { question in
                 question.goalID == profile.id && question.status != .retired
             }
@@ -764,11 +772,7 @@ final class CheckpointStore {
         let newGoal = Goal(
             title: normalizedTitle,
             deadline: max(deadline, Date()),
-            category: category ?? inferredGoalCategory(
-                title: normalizedTitle,
-                currentLevel: normalizedCurrentLevel,
-                focusAreas: normalizedFocusAreas
-            ),
+            category: category ?? .custom,
             currentLevel: normalizedCurrentLevel,
             focusAreas: normalizedFocusAreas,
             preferredQuestionStyle: preferredQuestionStyle,
@@ -800,6 +804,7 @@ final class CheckpointStore {
         competencies.removeAll { $0.goalID == newGoal.id }
         competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: []))
         lastAIErrorMessage = nil
+        lastQuestionGenerationFailure = nil
         checkpointNotice = nil
         unlockSession = nil
         isOnboardingPresented = false
@@ -837,7 +842,7 @@ final class CheckpointStore {
             existingQuestions: [],
             competencies: [],
             reportedQuestions: [],
-            targetCount: Self.initialCheckpointReadyTargetCount
+            targetCount: unlockPolicy.questionsPerSession
         )
 
         let startedAt = Date()
@@ -852,10 +857,14 @@ final class CheckpointStore {
         competencies.removeAll { $0.goalID == newGoal.id }
         competencies.append(contentsOf: initialCompetencies(for: newGoal, questions: batch.questions))
         lastQuestionProvider = batch.provider
-        if batch.questions.isEmpty {
-            lastAIErrorMessage = "No usable questions were generated. Try adding focus topics or lowering the question level."
+        let hasReadyInitialSet = batch.questions.count >= unlockPolicy.questionsPerSession
+        if !hasReadyInitialSet {
+            let failure = batch.failure ?? .qualityRejected
+            lastQuestionGenerationFailure = failure
+            lastAIErrorMessage = failure.message
         } else {
-            lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
+            lastQuestionGenerationFailure = nil
+            lastAIErrorMessage = nil
         }
         recordQuestionGenerationTrace(
             phase: "Initial ready batch",
@@ -867,7 +876,7 @@ final class CheckpointStore {
             errorMessage: lastAIErrorMessage
         )
         if goal?.id == newGoal.id {
-            questionBatchState = batch.questions.isEmpty ? .failed : .ready
+            questionBatchState = hasReadyInitialSet ? .ready : .failed
             finishQuestionGeneration(for: newGoal.id)
         }
         save()
@@ -893,6 +902,11 @@ final class CheckpointStore {
             for: request,
             preference: preference
         )
+    }
+
+    func retryInitialQuestionGeneration() async {
+        guard let goal else { return }
+        await generateInitialQuestionBatch(for: goal)
     }
 
     private func topOffQuestionBankInBackground(
@@ -980,7 +994,11 @@ final class CheckpointStore {
         competencies.append(contentsOf: initialCompetencies(for: targetGoal, questions: goalQuestions))
         if !newQuestions.isEmpty {
             lastQuestionProvider = batch.provider
-            lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
+            lastQuestionGenerationFailure = nil
+            lastAIErrorMessage = nil
+        } else if let failure = batch.failure {
+            lastQuestionGenerationFailure = failure
+            lastAIErrorMessage = failure.message
         }
         recordQuestionGenerationTrace(
             phase: "Question bank top-off",
@@ -993,7 +1011,9 @@ final class CheckpointStore {
             errorMessage: lastAIErrorMessage
         )
         if goal?.id == targetGoal.id {
-            questionBatchState = goalQuestions.isEmpty ? .failed : .ready
+            questionBatchState = readyQuestionCount(for: currentTargetGoal) >= unlockPolicy.questionsPerSession
+                ? .ready
+                : .failed
         }
         save()
         publishShieldContext()
@@ -1039,9 +1059,12 @@ final class CheckpointStore {
         replaceActiveCompetencies(with: mergeCompetencies(existing: activeCompetencies, goal: goal, questions: activeQuestions))
         lastQuestionProvider = batch.provider
         if newQuestions.isEmpty {
-            lastAIErrorMessage = "No new usable questions were added. Try refining the goal or refreshing later."
+            let failure = batch.failure ?? .qualityRejected
+            lastQuestionGenerationFailure = failure
+            lastAIErrorMessage = failure.message
         } else {
-            lastAIErrorMessage = batch.usedFallback ? "Checkpoint used the best available question path for this device." : nil
+            lastQuestionGenerationFailure = nil
+            lastAIErrorMessage = nil
         }
         recordQuestionGenerationTrace(
             phase: reason.diagnosticsTitle,
@@ -1052,7 +1075,7 @@ final class CheckpointStore {
             startedAt: startedAt,
             errorMessage: lastAIErrorMessage
         )
-        questionBatchState = .ready
+        questionBatchState = hasReadyCheckpointSet ? .ready : .failed
         finishQuestionGeneration(for: goal.id)
         save()
         publishShieldContext()
@@ -1085,10 +1108,12 @@ final class CheckpointStore {
         guard needsCoreRefill || shouldRefreshProactively else { return false }
 
         guard isMember else {
-            checkpointNotice = starterQuestionLimitMessage
-            lastAIErrorMessage = starterQuestionLimitMessage
-            requestMembership(for: .freshQuestionGeneration)
-            save()
+            if hasConsumedStarterPractice {
+                checkpointNotice = starterQuestionLimitMessage
+                lastAIErrorMessage = starterQuestionLimitMessage
+                requestMembership(for: .freshQuestionGeneration)
+                save()
+            }
             return false
         }
 
@@ -1330,9 +1355,10 @@ final class CheckpointStore {
         unlockPolicy = .default
         questionBatchState = .idle
         aiProviderPreference = .automatic
-        lastQuestionProvider = .localTemplates
+        lastQuestionProvider = .automatic
         backendEndpoint = ""
         lastAIErrorMessage = nil
+        lastQuestionGenerationFailure = nil
         isQuestionBankTopOffInProgress = false
         questionBankTopOffStartedAt = nil
         lastQuestionBankTopOffDuration = nil
@@ -1613,12 +1639,13 @@ final class CheckpointStore {
         if didRaiseActiveGoalDifficulty {
             retireActiveQuestionsBelowDifficulty(normalizedDifficulty)
             lastAIErrorMessage = nil
+            lastQuestionGenerationFailure = nil
 
             if isMember {
                 questionBatchState = .generating
                 shouldRegenerate = true
             } else if hadActiveQuestions && usableQuestionCount < unlockPolicy.questionsPerSession {
-                checkpointNotice = "Question level updated. Pro can prepare harder checkpoints for this goal."
+                checkpointNotice = "Harder questions selected. Pro can prepare new checkpoints at this difficulty."
                 requestMembership(for: .freshQuestionGeneration)
             }
         }
@@ -1645,6 +1672,7 @@ final class CheckpointStore {
         goal = activeGoal
         retireActiveQuestionsBelowDifficulty(recommendation.nextLevel)
         lastAIErrorMessage = nil
+        lastQuestionGenerationFailure = nil
         save()
         publishShieldContext()
 
@@ -1652,7 +1680,7 @@ final class CheckpointStore {
     }
 
     func updateAIProviderPreference(_ provider: AIProviderKind) {
-        aiProviderPreference = provider
+        aiProviderPreference = provider == .localTemplates ? .automatic : provider
         save()
     }
 
@@ -1861,36 +1889,6 @@ final class CheckpointStore {
         min(5.0, max(1.0, competency.estimatedLevel + 0.5))
     }
 
-    private func inferredGoalCategory(
-        title: String,
-        currentLevel: String,
-        focusAreas: String
-    ) -> GoalCategory {
-        let signal = [title, currentLevel, focusAreas].joined(separator: " ").lowercased()
-
-        if containsAny(["coding interview", "leetcode", "algorithm", "data structure", "system design", "programming interview"], in: signal) {
-            return .codingInterview
-        }
-
-        if containsAny(["exam", "test", "final", "midterm", "quiz", "lsat", "sat", "act", "mcat", "gre", "calculus"], in: signal) {
-            return .examPrep
-        }
-
-        if containsAny(["language", "spanish", "french", "japanese", "korean", "mandarin", "grammar", "vocabulary"], in: signal) {
-            return .languageLearning
-        }
-
-        if containsAny(["fitness", "workout", "running", "marathon", "strength", "gym"], in: signal) {
-            return .fitness
-        }
-
-        if containsAny(["writing", "essay", "blog", "book", "draft", "publish"], in: signal) {
-            return .writing
-        }
-
-        return .custom
-    }
-
     // MARK: - Profile helpers
 
     private func upsertGoalProfile(_ profile: Goal) {
@@ -1913,6 +1911,8 @@ final class CheckpointStore {
         guard goal?.id == goalID else { return }
         questionGenerationStartedAt = Date()
         lastQuestionGenerationDuration = nil
+        lastQuestionGenerationFailure = nil
+        lastAIErrorMessage = nil
     }
 
     private func finishQuestionGeneration(for goalID: Goal.ID) {
@@ -1976,6 +1976,8 @@ final class CheckpointStore {
             questionGenerationTraces: questionGenerationTraces,
             unlockPolicy: unlockPolicy,
             questionBatchState: questionBatchState,
+            lastAIErrorMessage: lastAIErrorMessage,
+            lastQuestionGenerationFailure: lastQuestionGenerationFailure,
             aiProviderPreference: aiProviderPreference,
             lastQuestionProvider: lastQuestionProvider,
             backendEndpoint: backendEndpoint,
@@ -2016,7 +2018,10 @@ final class CheckpointStore {
         }
 
         checkpointNotice = checkpointSessionUnavailableMessage(source: source)
-        if !isMember, goal != nil, usableQuestionCount < unlockPolicy.questionsPerSession {
+        if !isMember,
+           goal != nil,
+           hasConsumedStarterPractice,
+           usableQuestionCount < unlockPolicy.questionsPerSession {
             requestMembership(for: .freshQuestionGeneration)
             save()
         }
@@ -2031,8 +2036,17 @@ final class CheckpointStore {
         }
 
         if activeQuestions.isEmpty {
-            if !isMember {
+            if !isMember, hasConsumedStarterPractice {
                 return "Your Free checkpoints are complete. Pro keeps new practice ready when you need more."
+            }
+
+            if questionBatchState == .generating {
+                return "Checkpoint is still preparing your first practice set. Try again in a moment."
+            }
+
+            if questionBatchState == .failed {
+                return lastQuestionGenerationFailure?.message
+                    ?? "Your checkpoint isn't ready yet. Try again or add a few topics to your goal."
             }
 
             return source == .blockedApp
@@ -2040,11 +2054,11 @@ final class CheckpointStore {
                 : "No questions are ready yet."
         }
 
-        if !isMember && usableQuestionCount == 0 {
+        if !isMember && hasConsumedStarterPractice && usableQuestionCount == 0 {
             return "Your first Free practice set has done its job. Pro keeps new checkpoints coming."
         }
 
-        return "Checkpoint is preparing more questions. Try again in a moment or lower the minimum level."
+        return "Checkpoint is preparing more questions. Try again in a moment or choose an easier starting level in your goal settings."
     }
 
     private func checkpointRetryCooldownMessage(source: CheckpointSessionSource) -> String? {
@@ -2124,8 +2138,13 @@ final class CheckpointStore {
         questionGenerationTraces = snapshot.questionGenerationTraces ?? []
         unlockPolicy = snapshot.unlockPolicy ?? .default
         questionBatchState = snapshot.questionBatchState ?? .idle
-        aiProviderPreference = snapshot.aiProviderPreference ?? .automatic
-        lastQuestionProvider = snapshot.lastQuestionProvider ?? .localTemplates
+        lastAIErrorMessage = snapshot.lastAIErrorMessage
+        lastQuestionGenerationFailure = snapshot.lastQuestionGenerationFailure
+        let savedProviderPreference = snapshot.aiProviderPreference ?? .automatic
+        aiProviderPreference = [.automatic, .backend].contains(savedProviderPreference)
+            ? savedProviderPreference
+            : .automatic
+        lastQuestionProvider = snapshot.lastQuestionProvider ?? .automatic
         backendEndpoint = snapshot.backendEndpoint ?? ""
         unlockSession = snapshot.unlockSession
         checkpointRetryCooldownUntil = snapshot.checkpointRetryCooldownUntil
@@ -2156,7 +2175,7 @@ final class CheckpointStore {
         let seedTopics: [String]
 
         if context.needsGeneratedSkillMap {
-            seedTopics = questionTopics
+            seedTopics = questionTopics.isEmpty ? context.contentTopics : questionTopics
         } else {
             let contextTopics = context.contentTopics.flatMap(competencyTopics)
             seedTopics = contextTopics + questionTopics
@@ -2332,6 +2351,7 @@ final class CheckpointStore {
             retiredQuestionCount: retiredQuestionCount,
             duration: Date().timeIntervalSince(startedAt),
             sourcePrompt: batch.questions.first?.sourcePrompt ?? request.sourcePrompt(provider: batch.provider),
+            failure: batch.failure,
             errorMessage: errorMessage,
             questions: previewQuestions
         )
@@ -2373,6 +2393,7 @@ final class CheckpointStore {
         Provider preference: \(trace.providerPreference.rawValue)
         Resolved provider: \(trace.resolvedProvider.rawValue)
         Used fallback: \(trace.usedFallback)
+        Failure: \(trace.failure?.rawValue ?? "None")
         Target count: \(trace.targetCount)
         Existing questions: \(trace.existingQuestionCount)
         Reported questions: \(trace.reportedQuestionCount)
@@ -2490,11 +2511,13 @@ final class CheckpointStore {
         infoKey: String,
         environmentKey: String
     ) -> String? {
-        let candidates = [
+        var candidates = [
             storedValue,
-            ProcessInfo.processInfo.environment[environmentKey],
-            Bundle.main.object(forInfoDictionaryKey: infoKey) as? String
+            ProcessInfo.processInfo.environment[environmentKey]
         ]
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
+            candidates.append(Bundle.main.object(forInfoDictionaryKey: infoKey) as? String)
+        }
 
         return candidates
             .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
