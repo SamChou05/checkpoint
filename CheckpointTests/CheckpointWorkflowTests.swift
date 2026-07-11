@@ -4738,6 +4738,23 @@ final class CheckpointWorkflowTests: XCTestCase {
 }
 
 final class AIProviderPolicyTests: XCTestCase {
+    @MainActor
+    private func waitUntil(
+        timeout: TimeInterval = 5,
+        pollIntervalNanoseconds: UInt64 = 20_000_000,
+        condition: () -> Bool
+    ) async -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition(), Date() < deadline {
+            do {
+                try await Task.sleep(nanoseconds: pollIntervalNanoseconds)
+            } catch {
+                return false
+            }
+        }
+        return condition()
+    }
+
     func testLegacyProviderPayloadGetsDistinctPlannedCoverageMetadata() throws {
         let payload = try JSONDecoder().decode(
             GeneratedQuestionPayload.self,
@@ -6108,8 +6125,15 @@ final class AIProviderPolicyTests: XCTestCase {
             preferredQuestionStyle: .multipleChoice
         )
 
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        let completedTopOff = await waitUntil {
+            !store.isQuestionBankTopOffInProgress
+                && store.activeQuestions.count == ProductLimits.memberQuestionBankTargetCount
+        }
 
+        XCTAssertTrue(
+            completedTopOff,
+            "\(store.questionGenerationTraces.map { ($0.targetCount, $0.generatedQuestionCount, $0.addedQuestionCount, $0.errorMessage ?? "") })"
+        )
         XCTAssertTrue(localEngine.receivedRequests.isEmpty)
         XCTAssertEqual(backendEngine.receivedRequests.map(\.targetCount), [5, 20, 20, 20, 15])
         XCTAssertEqual(backendEngine.receivedRequests.first?.existingQuestions.count, 0)
