@@ -68,7 +68,9 @@ Run this before TestFlight and again before App Store submission:
 
 ## App Review Notes Draft
 
-Use this as a starting point in App Store Connect review notes:
+The canonical, copy/paste-ready notes and exact submission sequence now live in
+`docs/APP_STORE_SUBMISSION_PACKET.md`. Keep the overview below aligned with that
+packet when product behavior changes.
 
 Checkpoint helps users reduce distracting app use by combining Apple's Screen Time APIs with goal-based learning checkpoints. Users choose a learning goal and select apps or categories they want to restrict. When a restricted app is opened, the Screen Time shield prompts the user to return to Checkpoint and complete a short multiple-choice checkpoint. Passing the checkpoint temporarily unblocks the selected apps; failing keeps them restricted and prioritizes missed questions on the next attempt.
 
@@ -92,7 +94,10 @@ AI question generation is batch-based and cached. By default, Checkpoint prefers
 - Family Controls distribution access is approved for all shipping bundle IDs.
 - A real iPhone passes the shield/unshield/re-lock test plan.
 - App Store privacy labels and a hosted privacy policy are finalized.
+- The hosted Privacy Policy and selected Terms of Use are accessible inside the app, and ordinary backend generation has a documented consent path before transmitting goal context.
 - Screenshots, description, support URL, age rating, and review notes are created in App Store Connect. Draft copy is tracked in `docs/APP_STORE_COPY.md`.
 - A hosted privacy policy is published from the draft in `docs/PRIVACY_POLICY_DRAFT.md`.
+- The final archive and IPA have a write-once manifest and verified SHA-256 inventory created with `docs/RELEASE_ARTIFACTS.md`.
+- App Attest/server-issued authorization is implemented for public backend use, or the owner explicitly accepts the abuse and AI-cost risk of an extractable client bearer guarded only by quotas.
 - Persistence is accepted as MVP-local storage or replaced with a production store.
 - Monetization scope is finalized, the Paid Apps Agreement is active, App Store Connect subscription products are configured, and starter/member launch assumptions are reviewed against backend AI cost.

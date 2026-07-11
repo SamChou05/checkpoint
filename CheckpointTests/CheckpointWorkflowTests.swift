@@ -24,6 +24,18 @@ final class CheckpointWorkflowTests: XCTestCase {
         super.tearDown()
     }
 
+    func testLegalResourceURLsRequirePublicHTTPSHosts() {
+        XCTAssertEqual(
+            AppResourceURL.validatedHTTPSValue("https://privacy.checkpoint-app.com/policy")?.absoluteString,
+            "https://privacy.checkpoint-app.com/policy"
+        )
+        XCTAssertNil(AppResourceURL.validatedHTTPSValue("http://privacy.checkpoint-app.com/policy"))
+        XCTAssertNil(AppResourceURL.validatedHTTPSValue("https://example.com/privacy"))
+        XCTAssertNil(AppResourceURL.validatedHTTPSValue("https://localhost/privacy"))
+        XCTAssertNil(AppResourceURL.validatedHTTPSValue("https://192.168.1.5/privacy"))
+        XCTAssertNil(AppResourceURL.validatedHTTPSValue("https://user:password@privacy.checkpoint-app.com/policy"))
+    }
+
     @MainActor
     private func makeReserveStore(
         service: any QuestionReserveServing
@@ -243,6 +255,43 @@ final class CheckpointWorkflowTests: XCTestCase {
             originalInstallID
         )
         XCTAssertEqual(requests[1].value(forHTTPHeaderField: "X-Checkpoint-Install-Secret"), newSecret)
+    }
+
+    @MainActor
+    func testBackendQuestionGenerationConsentDefaultsOffWhileRawConfigurationRemainsDetectable() {
+        let store = makeReserveStore(service: FakeQuestionReserveService())
+
+        XCTAssertFalse(store.backendQuestionGenerationConsentGranted)
+        XCTAssertTrue(store.isBackendQuestionGenerationConfigured)
+        XCTAssertTrue(store.isServerQuestionReserveConfigured)
+        XCTAssertFalse(store.serverQuestionReserveEnabled)
+    }
+
+    @MainActor
+    func testBackendQuestionGenerationConsentPersistsAndLegacySnapshotDefaultsOff() throws {
+        let store = makeReserveStore(service: FakeQuestionReserveService())
+        store.updateBackendQuestionGenerationConsent(true)
+
+        let persistedData = try XCTUnwrap(defaults.data(forKey: "checkpoint.snapshot.v1"))
+        let persistedSnapshot = try JSONDecoder().decode(AppSnapshot.self, from: persistedData)
+        XCTAssertEqual(persistedSnapshot.backendQuestionGenerationConsentGranted, true)
+        XCTAssertTrue(makeReserveStore(service: FakeQuestionReserveService()).backendQuestionGenerationConsentGranted)
+
+        var legacyJSON = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: persistedData) as? [String: Any]
+        )
+        legacyJSON.removeValue(forKey: "backendQuestionGenerationConsentGranted")
+        legacyJSON["serverQuestionReserveEnabled"] = true
+        defaults.set(
+            try JSONSerialization.data(withJSONObject: legacyJSON, options: [.sortedKeys]),
+            forKey: "checkpoint.snapshot.v1"
+        )
+        defaults.removeObject(forKey: "checkpoint.snapshot.backup.v1")
+
+        let legacyStore = makeReserveStore(service: FakeQuestionReserveService())
+        XCTAssertFalse(legacyStore.backendQuestionGenerationConsentGranted)
+        XCTAssertFalse(legacyStore.serverQuestionReserveEnabled)
+        XCTAssertTrue(legacyStore.isServerQuestionReserveConfigured)
     }
 
     @MainActor
@@ -524,8 +573,10 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.questions = (1...12).map { makeQuestion(goal: goal, index: $0) }
 
         store.updateServerQuestionReserveEnabled(true)
+        XCTAssertTrue(store.backendQuestionGenerationConsentGranted)
         await store.performServerQuestionReserveMaintenance()
         let relaunchedStore = makeReserveStore(service: FakeQuestionReserveService())
+        XCTAssertTrue(relaunchedStore.backendQuestionGenerationConsentGranted)
         XCTAssertTrue(relaunchedStore.serverQuestionReserveEnabled)
 
         await reserve.clearRecordedCalls()
@@ -539,6 +590,169 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(snapshot.deletedGoalIDs, [[goal.id]])
         XCTAssertEqual(snapshot.credentialResetCount, 1)
         XCTAssertFalse(store.serverQuestionReserveEnabled)
+    }
+
+    @MainActor
+    func testWithdrawingBackendQuestionGenerationConsentDisablesAndPurgesReserve() async {
+        let goal = makeGoal()
+        let reserve = FakeQuestionReserveService()
+        let store = makeReserveStore(service: reserve)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...12).map { makeQuestion(goal: goal, index: $0) }
+        store.updateServerQuestionReserveEnabled(true)
+        await store.performServerQuestionReserveMaintenance()
+        await reserve.clearRecordedCalls()
+
+        store.updateBackendQuestionGenerationConsent(false)
+        for _ in 0..<20 {
+            if await reserve.snapshot().credentialResetCount > 0 { break }
+            await Task.yield()
+        }
+        await store.performServerQuestionReserveMaintenance()
+
+        let snapshot = await reserve.snapshot()
+        XCTAssertFalse(store.backendQuestionGenerationConsentGranted)
+        XCTAssertFalse(store.serverQuestionReserveEnabled)
+        XCTAssertTrue(store.isServerQuestionReserveConfigured)
+        XCTAssertEqual(snapshot.deletedGoalIDs, [[goal.id]])
+        XCTAssertEqual(snapshot.credentialResetCount, 1)
+        XCTAssertTrue(snapshot.syncCalls.isEmpty)
+        XCTAssertEqual(snapshot.pullCount, 0)
+    }
+
+    @MainActor
+    func testConsentWithdrawalDeletesAfterAnUncooperativeInFlightReserveSync() async {
+        let goal = makeGoal()
+        let reserve = FakeQuestionReserveService(
+            syncDelayNanoseconds: 100_000_000,
+            ignoresSyncCancellation: true
+        )
+        let store = makeReserveStore(service: reserve)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...12).map { makeQuestion(goal: goal, index: $0) }
+        store.updateServerQuestionReserveEnabled(true)
+
+        let maintenance = Task { @MainActor in
+            await store.performServerQuestionReserveMaintenance()
+        }
+        for _ in 0..<50 {
+            if await reserve.snapshot().syncAttemptCount > 0 { break }
+            await Task.yield()
+        }
+
+        store.updateBackendQuestionGenerationConsent(false)
+        await maintenance.value
+        for _ in 0..<50 {
+            if await reserve.snapshot().deletedGoalIDs == [[goal.id]] { break }
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+
+        let snapshot = await reserve.snapshot()
+        XCTAssertEqual(snapshot.operationSequence, ["sync", "delete"])
+        XCTAssertEqual(snapshot.deletedGoalIDs, [[goal.id]])
+        XCTAssertEqual(snapshot.credentialResetCount, 1)
+    }
+
+    @MainActor
+    func testWithdrawingBackendConsentCancelsInFlightInitialGeneration() async {
+        let goal = makeGoal()
+        let backendEngine = TargetCountQuestionEngine(
+            provider: .backend,
+            requestDelayNanoseconds: 300_000_000
+        )
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            questionReserveService: FakeQuestionReserveService(),
+            questionReserveConfiguration: QuestionReserveConfiguration(
+                endpoint: URL(string: "https://example.com/api")!,
+                authorizationToken: "backend-token"
+            ),
+            defaults: defaults,
+            automaticallyStartsQuestionMaintenance: false
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://example.com/questions")
+        store.updateBackendQuestionGenerationConsent(true)
+
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle,
+            waitForQuestionGeneration: false
+        )
+        for _ in 0..<20 where backendEngine.receivedRequests.isEmpty {
+            await Task.yield()
+        }
+        XCTAssertTrue(store.isPreparingActiveGoalQuestions)
+        XCTAssertEqual(backendEngine.receivedRequests.first?.backendEndpoint?.absoluteString, "https://example.com/questions")
+
+        store.updateBackendQuestionGenerationConsent(false)
+        try? await Task.sleep(nanoseconds: 50_000_000)
+
+        XCTAssertFalse(store.backendQuestionGenerationConsentGranted)
+        XCTAssertFalse(store.isPreparingActiveGoalQuestions)
+        XCTAssertTrue(store.activeQuestions.isEmpty)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
+    func testWithdrawingBackendConsentCancelsInFlightQuestionBankTopOff() async {
+        let goal = makeGoal()
+        let backendEngine = TargetCountQuestionEngine(
+            provider: .backend,
+            requestDelayNanoseconds: 300_000_000
+        )
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                localEngine: localEngine,
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            questionReserveService: FakeQuestionReserveService(),
+            questionReserveConfiguration: QuestionReserveConfiguration(
+                endpoint: URL(string: "https://example.com/api")!,
+                authorizationToken: "backend-token"
+            ),
+            defaults: defaults,
+            automaticallyStartsQuestionMaintenance: false
+        )
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://example.com/questions")
+        store.updateBackendQuestionGenerationConsent(true)
+
+        let maintenance = Task { @MainActor in
+            await store.performBackgroundQuestionMaintenance(maximumBatchCount: 1)
+        }
+        for _ in 0..<20 where backendEngine.receivedRequests.isEmpty {
+            await Task.yield()
+        }
+        XCTAssertTrue(store.isQuestionBankTopOffInProgress)
+
+        store.updateBackendQuestionGenerationConsent(false)
+        let succeeded = await maintenance.value
+
+        XCTAssertFalse(succeeded)
+        XCTAssertFalse(store.backendQuestionGenerationConsentGranted)
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
+        XCTAssertEqual(store.activeQuestions.count, 5)
+        XCTAssertTrue(localEngine.receivedRequests.isEmpty)
     }
 
     @MainActor
@@ -632,6 +846,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.goal = goal
         store.goalProfiles = [goal]
         store.questions = []
+        store.updateBackendQuestionGenerationConsent(true)
         store.serverQuestionReserveEnabled = true
 
         let maintenance = Task { @MainActor in
@@ -666,6 +881,7 @@ final class CheckpointWorkflowTests: XCTestCase {
                 timesCorrect: 1
             )
         }
+        store.updateBackendQuestionGenerationConsent(true)
         store.serverQuestionReserveEnabled = true
 
         await store.performServerQuestionReserveMaintenance()
@@ -686,6 +902,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.goal = goal
         store.goalProfiles = [goal]
         store.questions = []
+        store.updateBackendQuestionGenerationConsent(true)
         store.serverQuestionReserveEnabled = true
 
         async let first: Void = store.performServerQuestionReserveMaintenance()
@@ -706,6 +923,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.goal = goal
         store.goalProfiles = [goal]
         store.questions = (1...12).map { makeQuestion(goal: goal, index: $0) }
+        store.updateBackendQuestionGenerationConsent(true)
         store.serverQuestionReserveEnabled = true
         let startedAt = Date()
 
@@ -1231,6 +1449,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.automatic)
         store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
 
         await store.createGoal(
             title: goal.title,
@@ -1289,6 +1508,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(seededStore.lastQuestionProvider, .localTemplates)
         XCTAssertFalse(seededStore.activeQuestions.isEmpty)
         seededStore.updateBackendEndpoint("https://example.com/ai")
+        seededStore.updateBackendQuestionGenerationConsent(true)
         seededStore.updateAIProviderPreference(.automatic)
 
         let localEngine = CapturingQuestionEngine(provider: .localTemplates)
@@ -1404,6 +1624,8 @@ final class CheckpointWorkflowTests: XCTestCase {
             defaults: defaults
         )
         store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
 
         await store.createGoal(
             title: "Study for the LSAT",
@@ -3566,6 +3788,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.backend)
         store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
         store.updateMembershipTier(.member)
         store.goal = goal
         store.questions = [makeQuestion(goal: goal, index: 99, status: .retired)]
@@ -3594,6 +3817,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.backend)
         store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
         store.updateMembershipTier(.member)
         store.goal = goal
         store.questions = (1...store.unlockPolicy.questionsPerSession).map {
@@ -3677,6 +3901,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let seededStore = CheckpointStore(defaults: defaults)
         seededStore.updateAIProviderPreference(.backend)
         seededStore.updateBackendEndpoint("https://example.com/ai")
+        seededStore.updateBackendQuestionGenerationConsent(true)
         seededStore.updateMembershipTier(.member)
         seededStore.goal = goal
         seededStore.questions = (1...UnlockPolicy.default.questionsPerSession).map {
@@ -4030,6 +4255,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         store.updateAIProviderPreference(.backend)
         store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
         store.updateMembershipTier(.member)
         store.goal = firstGoal
         store.goalProfiles = [firstGoal, secondGoal]
@@ -4066,6 +4292,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         seededStore.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
         seededStore.lastQuestionProvider = .backend
         seededStore.updateBackendEndpoint("https://example.com/ai")
+        seededStore.updateBackendQuestionGenerationConsent(true)
 
         let backendEngine = TargetCountQuestionEngine(provider: .backend)
         let relaunchedStore = CheckpointStore(
@@ -4104,6 +4331,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         store.updateMembershipTier(.member)
         store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
         store.goal = goal
         store.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
 
@@ -4150,6 +4378,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         store.updateMembershipTier(.member)
         store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
         store.goal = goal
         store.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
 
@@ -4175,6 +4404,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         seededStore.questionBatchState = .ready
         seededStore.lastQuestionProvider = .backend
         seededStore.updateBackendEndpoint("https://example.com/ai")
+        seededStore.updateBackendQuestionGenerationConsent(true)
 
         let backendEngine = TargetCountQuestionEngine(provider: .backend)
         let relaunchedStore = CheckpointStore(
@@ -4203,6 +4433,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         seededStore.questionBatchState = .ready
         seededStore.lastQuestionProvider = .backend
         seededStore.updateBackendEndpoint("https://example.com/ai")
+        seededStore.updateBackendQuestionGenerationConsent(true)
         let answeredQuestion = try XCTUnwrap(seededStore.questions.first)
         seededStore.submitAnswer(
             question: answeredQuestion,
@@ -5526,7 +5757,46 @@ final class AIProviderPolicyTests: XCTestCase {
     }
 
     @MainActor
-    func testStoreUsesInternalBackendEnvironmentConfiguration() async throws {
+    func testStoreRedactsInternalBackendConfigurationFromRequestsWithoutConsent() async throws {
+        setenv("CHECKPOINT_AI_BACKEND_ENDPOINT", "https://example.com/questions", 1)
+        setenv("CHECKPOINT_AI_BACKEND_TOKEN", "dev-token", 1)
+        defer {
+            unsetenv("CHECKPOINT_AI_BACKEND_ENDPOINT")
+            unsetenv("CHECKPOINT_AI_BACKEND_TOKEN")
+        }
+
+        let localEngine = CapturingQuestionEngine(provider: .localTemplates)
+        let engine = HybridQuestionEngine(
+            localEngine: localEngine,
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+        )
+        let suiteName = "AIProviderPolicyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.backend)
+
+        XCTAssertTrue(store.isBackendQuestionGenerationConfigured)
+        XCTAssertFalse(store.backendQuestionGenerationConsentGranted)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 14),
+            category: .examPrep,
+            currentLevel: "Intermediate logical reasoning",
+            focusAreas: "logical reasoning",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let request = try XCTUnwrap(localEngine.receivedRequest)
+        XCTAssertNil(request.backendEndpoint)
+        XCTAssertNil(request.backendAuthorizationToken)
+    }
+
+    @MainActor
+    func testStoreUsesInternalBackendEnvironmentConfigurationAfterConsent() async throws {
         setenv("CHECKPOINT_AI_BACKEND_ENDPOINT", "https://example.com/questions", 1)
         setenv("CHECKPOINT_AI_BACKEND_TOKEN", "dev-token", 1)
         defer {
@@ -5546,6 +5816,7 @@ final class AIProviderPolicyTests: XCTestCase {
 
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.localTemplates)
+        store.updateBackendQuestionGenerationConsent(true)
 
         await store.createGoal(
             title: "Study for the LSAT",
@@ -5605,6 +5876,7 @@ final class AIProviderPolicyTests: XCTestCase {
         let store = CheckpointStore(questionEngine: engine, defaults: defaults)
         store.updateAIProviderPreference(.automatic)
         store.updateBackendEndpoint("https://example.com/ai")
+        store.updateBackendQuestionGenerationConsent(true)
 
         await store.createGoal(
             title: "Pass the LSAT",
@@ -5683,39 +5955,46 @@ private struct FakeQuestionReserveSyncCall: Sendable {
 
 private struct FakeQuestionReserveSnapshot: Sendable {
     var syncCalls: [FakeQuestionReserveSyncCall]
+    var syncAttemptCount: Int
     var pullCount: Int
     var acknowledgementAttempts: Int
     var acknowledgedDeliveryIDs: [String]
     var acknowledgementPersistenceChecks: [Bool]
     var deletedGoalIDs: [[Goal.ID]]
     var credentialResetCount: Int
+    var operationSequence: [String]
 }
 
 private actor FakeQuestionReserveService: QuestionReserveServing {
     private var delivery: QuestionReserveDelivery?
     private let acknowledgementPersistenceCheck: (@Sendable () -> Bool)?
     private let syncDelayNanoseconds: UInt64
+    private let ignoresSyncCancellation: Bool
     private let pullDelayNanoseconds: UInt64
     private var acknowledgementFailures: Int
     private var syncCalls: [FakeQuestionReserveSyncCall] = []
+    private var syncAttemptCount = 0
     private var pullCount = 0
     private var acknowledgementAttempts = 0
     private var acknowledgedDeliveryIDs: [String] = []
     private var acknowledgementPersistenceChecks: [Bool] = []
     private var deletedGoalIDs: [[Goal.ID]] = []
     private var credentialResetCount = 0
+    private var operationSequence: [String] = []
 
     init(
         delivery: QuestionReserveDelivery? = nil,
         acknowledgementFailures: Int = 0,
         acknowledgementPersistenceCheck: (@Sendable () -> Bool)? = nil,
         syncDelayNanoseconds: UInt64 = 0,
+        ignoresSyncCancellation: Bool = false,
         pullDelayNanoseconds: UInt64 = 0
     ) {
         self.delivery = delivery
         self.acknowledgementFailures = acknowledgementFailures
         self.acknowledgementPersistenceCheck = acknowledgementPersistenceCheck
         self.syncDelayNanoseconds = syncDelayNanoseconds
+        self.ignoresSyncCancellation = ignoresSyncCancellation
         self.pullDelayNanoseconds = pullDelayNanoseconds
     }
 
@@ -5726,8 +6005,16 @@ private actor FakeQuestionReserveService: QuestionReserveServing {
         generationRequest: QuestionGenerationRequest,
         configuration: QuestionReserveConfiguration
     ) async throws {
+        syncAttemptCount += 1
         if syncDelayNanoseconds > 0 {
-            try await Task.sleep(nanoseconds: syncDelayNanoseconds)
+            if ignoresSyncCancellation {
+                let delay = syncDelayNanoseconds
+                await Task.detached {
+                    try? await Task.sleep(nanoseconds: delay)
+                }.value
+            } else {
+                try await Task.sleep(nanoseconds: syncDelayNanoseconds)
+            }
         }
         syncCalls.append(
             FakeQuestionReserveSyncCall(
@@ -5736,6 +6023,7 @@ private actor FakeQuestionReserveService: QuestionReserveServing {
                 desiredReserveCount: desiredReserveCount
             )
         )
+        operationSequence.append("sync")
     }
 
     func pull(
@@ -5775,6 +6063,7 @@ private actor FakeQuestionReserveService: QuestionReserveServing {
         configuration: QuestionReserveConfiguration
     ) async throws {
         deletedGoalIDs.append(goalIDs)
+        operationSequence.append("delete")
     }
 
     func resetCredentialsAndRotateIdentity() async {
@@ -5784,23 +6073,27 @@ private actor FakeQuestionReserveService: QuestionReserveServing {
     func snapshot() -> FakeQuestionReserveSnapshot {
         FakeQuestionReserveSnapshot(
             syncCalls: syncCalls,
+            syncAttemptCount: syncAttemptCount,
             pullCount: pullCount,
             acknowledgementAttempts: acknowledgementAttempts,
             acknowledgedDeliveryIDs: acknowledgedDeliveryIDs,
             acknowledgementPersistenceChecks: acknowledgementPersistenceChecks,
             deletedGoalIDs: deletedGoalIDs,
-            credentialResetCount: credentialResetCount
+            credentialResetCount: credentialResetCount,
+            operationSequence: operationSequence
         )
     }
 
     func clearRecordedCalls() {
         syncCalls = []
+        syncAttemptCount = 0
         pullCount = 0
         acknowledgementAttempts = 0
         acknowledgedDeliveryIDs = []
         acknowledgementPersistenceChecks = []
         deletedGoalIDs = []
         credentialResetCount = 0
+        operationSequence = []
     }
 }
 

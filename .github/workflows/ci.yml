@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend tests and SAM validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend/bedrock-question-service
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install test tools
+        run: python -m pip install --disable-pip-version-check ruff "sympy>=1.12"
+
+      - name: Run backend tests
+        run: python -m unittest discover -s tests
+
+      - name: Run Python lint
+        run: ruff check lambda_function.py tests evals/checkpoint_question_eval.py
+
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@v3
+        with:
+          use-installer: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate and build the SAM application
+        run: |
+          sam validate --lint
+          sam build
+
+  ios:
+    name: iOS tests and Release build
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Report build tools
+        run: |
+          sw_vers
+          xcodebuild -version
+
+      - name: Validate release tooling and source configuration
+        run: |
+          python3 -c 'import ast, pathlib; ast.parse(pathlib.Path("scripts/release-preflight.sh").read_text())'
+          bash -n scripts/generate_release_manifest.sh
+          scripts/release-preflight.sh \
+            --skip-git \
+            --skip-backend \
+            --skip-ios-build \
+            --no-archive
+
+      - name: Select an available iPhone simulator
+        id: simulator
+        shell: bash
+        run: |
+          simulator_id="$({
+            xcrun simctl list devices available --json \
+              | python3 -c 'import json, sys; data = json.load(sys.stdin); print(next(device["udid"] for runtime in data["devices"].values() for device in runtime if device["name"].startswith("iPhone")))'
+          })"
+          echo "id=$simulator_id" >> "$GITHUB_OUTPUT"
+
+      - name: Run iOS simulator tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Checkpoint.xcodeproj \
+            -scheme Checkpoint \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.id }}"
+
+      - name: Build the Release configuration
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Checkpoint.xcodeproj \
+            -scheme Checkpoint \
+            -configuration Release \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.id }}" \
+            CODE_SIGNING_ALLOWED=NO

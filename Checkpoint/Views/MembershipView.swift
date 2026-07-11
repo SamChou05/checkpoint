@@ -69,6 +69,7 @@ struct MembershipView: View {
                             priceContent
 
                             PlanFootnote(subscriptionDisclosureText)
+                            subscriptionLegalLinks
                         } else {
                             DisabledPlanButton(title: "Current plan", systemImage: "checkmark")
                         }
@@ -208,6 +209,30 @@ struct MembershipView: View {
 
     private var subscriptionDisclosureText: String {
         "Billing is handled by Apple. Subscriptions renew automatically until canceled in App Store account settings."
+    }
+
+    @ViewBuilder
+    private var subscriptionLegalLinks: some View {
+        let privacyPolicyURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointPrivacyPolicyURL"
+        )
+        let termsOfUseURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointTermsOfUseURL"
+        )
+
+        if privacyPolicyURL != nil || termsOfUseURL != nil {
+            HStack(spacing: 16) {
+                if let privacyPolicyURL {
+                    Link("Privacy Policy", destination: privacyPolicyURL)
+                }
+
+                if let termsOfUseURL {
+                    Link("Terms of Use", destination: termsOfUseURL)
+                }
+            }
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.teal)
+        }
     }
 
     private func loadEntitlements() async {

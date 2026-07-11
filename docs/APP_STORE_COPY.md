@@ -1,6 +1,9 @@
 # App Store Copy Draft
 
-This is a working draft for App Store Connect. Tune it after screenshots and final pricing are locked.
+This is a working copy draft. The field-by-field placeholders, canonical App
+Review notes, privacy worksheet, and current App Store Connect submission order
+live in `docs/APP_STORE_SUBMISSION_PACKET.md`. Tune this copy after screenshots
+and final pricing are locked.
 
 ## App Name
 
@@ -36,6 +39,8 @@ What Checkpoint does:
 
 Checkpoint is designed to feel steady, academic, and low-friction. It is not about guilt or punishment. It is about making the next small rep easier to choose.
 
+Terms of Use (Apple Standard EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+
 ## Keywords Draft
 
 screen time, study, focus, habits, learning, exam prep, productivity, app blocker, goals, practice
@@ -48,7 +53,7 @@ Initial TestFlight build for Checkpoint's goal-based app protection and practice
 
 Checkpoint has a Free plan and a Pro plan.
 
-Free includes one goal, protected-app setup, short checkpoint sets, and the primary unlock flow.
+Free includes one goal and the complete Screen Time protection, checkpoint, timed-unlock, and re-lock flow.
 
 Pro adds multiple goals, ongoing fresh practice generation, broader question variety, and guided review.
 
@@ -64,11 +69,10 @@ StoreKit product IDs:
 
 ## App Review Notes Draft
 
-Checkpoint uses Apple's Screen Time APIs to let users choose apps, categories, and websites they want to protect. When a protected app is opened, iOS shows a Checkpoint shield. The shield directs the user back to Checkpoint, where the user completes a short multiple-choice practice set based on their current learning goal. Passing the checkpoint temporarily unlocks the selected apps; failing keeps the apps protected and prioritizes missed questions for review.
-
-The app uses Family Controls, Managed Settings, Managed Settings UI, Device Activity, and App Groups. App Groups are used to share shield state, pending checkpoint attempts, selected Screen Time tokens, current goal title, unlock expiration, and diagnostics between the app and its extensions.
-
-Question generation is batch-based and cached. The app does not call AI on every protected-app attempt. Backend generation, when configured, sends goal context and question-generation metadata to the configured endpoint. If backend or on-device generation is unavailable, the app can fall back to local templates.
+Use the canonical copy/paste draft in
+`docs/APP_STORE_SUBMISSION_PACKET.md`. It includes the no-login reviewer path,
+Family Controls and App Group behavior, iOS-managed background tasks, the
+opt-in cloud reserve, backend retention boundaries, and StoreKit products.
 
 ## Screenshot Plan
 
@@ -88,4 +92,5 @@ These need real hosted pages before App Store submission:
 
 - Privacy Policy URL
 - Support URL
+- Terms of Use URL (the current build defaults to Apple's standard EULA)
 - Optional marketing landing page

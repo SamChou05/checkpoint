@@ -197,26 +197,48 @@ struct SettingsView: View {
                         practiceStandardContent
                     }
 
-                    if store.isServerQuestionReserveConfigured {
-                        SectionPanel("Questions ready in the background") {
+                    if store.isBackendQuestionGenerationConfigured {
+                        SectionPanel("Cloud question generation") {
                             Toggle(
-                                "Cloud question reserve",
+                                "Allow cloud question generation",
                                 isOn: Binding(
-                                    get: { store.serverQuestionReserveEnabled },
-                                    set: { store.updateServerQuestionReserveEnabled($0) }
+                                    get: { store.backendQuestionGenerationConsentGranted },
+                                    set: { store.updateBackendQuestionGenerationConsent($0) }
                                 )
                             )
                             .tint(CheckpointTheme.teal)
 
-                            Text(
-                                store.isMember
-                                    ? "When enabled, Checkpoint keeps a limited goal snapshot and prepared questions on the server for up to 30 days so new practice can be ready while the app is closed."
-                                    : "Cloud question reserve is a Pro feature. Your on-device starter bank remains available without it."
-                            )
+                            Text("When allowed, Checkpoint can send your learning goal, focus areas, skill progress, recent question coverage, and question reports to its AWS question service. Turn this off to use only on-device or local generation and request deletion of any cloud reserve.")
                             .font(.footnote)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
+
+                            if store.backendQuestionGenerationConsentGranted {
+                                Divider()
+
+                                Toggle(
+                                    "Questions ready while the app is closed",
+                                    isOn: Binding(
+                                        get: { store.serverQuestionReserveEnabled },
+                                        set: { store.updateServerQuestionReserveEnabled($0) }
+                                    )
+                                )
+                                .tint(CheckpointTheme.teal)
+
+                                Text(
+                                    store.isMember
+                                        ? "The optional cloud reserve keeps one limited goal snapshot and up to 20 prepared questions per goal for at most 30 days without an authenticated update."
+                                        : "Background cloud reserve is a Pro feature. Your on-device starter bank remains available without it."
+                                )
+                                .font(.footnote)
+                                .foregroundStyle(CheckpointTheme.muted)
+                                .fixedSize(horizontal: false, vertical: true)
+                            }
                         }
+                    }
+
+                    SectionPanel("Help & legal") {
+                        helpAndLegalContent
                     }
 
                     SectionPanel("Advanced") {
@@ -508,6 +530,103 @@ struct SettingsView: View {
                 store.updateUnlockMinutes(minutes)
             }
         }
+    }
+
+    @ViewBuilder
+    private var helpAndLegalContent: some View {
+        let privacyPolicyURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointPrivacyPolicyURL"
+        )
+        let termsOfUseURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointTermsOfUseURL"
+        )
+        let supportURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointSupportURL"
+        )
+
+        VStack(alignment: .leading, spacing: 14) {
+            if let privacyPolicyURL {
+                legalResourceLink(
+                    title: "Privacy Policy",
+                    systemImage: "hand.raised",
+                    destination: privacyPolicyURL
+                )
+
+                Divider()
+            }
+
+            if let termsOfUseURL {
+                legalResourceLink(
+                    title: "Terms of Use",
+                    systemImage: "doc.text",
+                    destination: termsOfUseURL
+                )
+            }
+
+            if let supportURL {
+                if termsOfUseURL != nil {
+                    Divider()
+                }
+
+                legalResourceLink(
+                    title: "Support",
+                    systemImage: "questionmark.circle",
+                    destination: supportURL
+                )
+            }
+
+            let missingResources = [
+                privacyPolicyURL == nil ? "Privacy Policy" : nil,
+                termsOfUseURL == nil ? "Terms of Use" : nil,
+                supportURL == nil ? "Support" : nil
+            ].compactMap { $0 }
+
+            if !missingResources.isEmpty {
+                if privacyPolicyURL != nil || termsOfUseURL != nil || supportURL != nil {
+                    Divider()
+                }
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Label("Release setup needed", systemImage: "exclamationmark.triangle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.amber)
+
+                    Text("Configure valid HTTPS links for: \(missingResources.joined(separator: ", ")).")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+
+    private func legalResourceLink(
+        title: String,
+        systemImage: String,
+        destination: URL
+    ) -> some View {
+        Link(destination: destination) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 34, height: 34)
+                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Spacer(minLength: 0)
+
+                Image(systemName: "arrow.up.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens in your browser")
     }
 
     private func prepareCheckpointPreview() {

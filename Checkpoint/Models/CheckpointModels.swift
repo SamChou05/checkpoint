@@ -825,6 +825,7 @@ struct AppSnapshot: Codable, Sendable {
     var aiProviderPreference: AIProviderKind?
     var lastQuestionProvider: AIProviderKind?
     var backendEndpoint: String?
+    var backendQuestionGenerationConsentGranted: Bool?
     var serverQuestionReserveEnabled: Bool?
     var pendingQuestionReserveAcknowledgements: [PendingQuestionReserveAcknowledgement]?
     var unlockSession: UnlockSession?

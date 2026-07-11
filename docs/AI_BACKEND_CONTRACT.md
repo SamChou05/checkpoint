@@ -8,6 +8,18 @@ For local/TestFlight builds, copy `Checkpoint/Config/Secrets.example.xcconfig` t
 
 The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls. The Bedrock Lambda can use that header, plus source IP, for daily quota counters. The install ID is a random UUID generated on-device and is not a user account identifier.
 
+A configured endpoint is not consent. The shipping app keeps the endpoint and
+authorization value out of generation requests until the user explicitly
+allows Cloud question generation in Settings. Withdrawing that consent
+disables the cloud reserve, requests deletion of retained reserve state, and
+returns generation to supported on-device or local-template paths.
+
+The current shared bearer must be treated as an extractable client API value,
+not a durable secret: an IPA recipient can read and replay it. Install/IP
+quotas limit routine abuse, but unrestricted public backend access requires
+App Attest plus server-issued short-lived authorization (or an equivalent
+control) before the legacy bearer is removed.
+
 The optional Pro server reserve adds an authenticated, durable contract under `/reserve/*`. It is disabled until the user explicitly opts in. The client creates a separate 256-bit `X-Checkpoint-Install-Secret`, saves it in Keychain before registration, and sends it only over HTTPS. The backend stores only its SHA-256 hash. This credential authorizes only the anonymous installation's bounded goal reserve; it is not an account, purchase credential, or cross-device identity.
 
 ## Request

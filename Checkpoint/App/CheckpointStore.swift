@@ -54,6 +54,7 @@ final class CheckpointStore {
     var aiProviderPreference: AIProviderKind = .automatic
     var lastQuestionProvider: AIProviderKind = .localTemplates
     var backendEndpoint = ""
+    private(set) var backendQuestionGenerationConsentGranted = false
     var serverQuestionReserveEnabled = false
     var lastAIErrorMessage: String?
     var questionGenerationStartedAt: Date?
@@ -728,7 +729,7 @@ final class CheckpointStore {
 
         let reserveConfiguration = resolvedQuestionReserveConfiguration
         let wasActiveGoal = goal?.id == goalID
-        cancelQuestionMaintenance(for: goalID)
+        let canceledReserveTask = cancelQuestionMaintenance(for: goalID)
         backgroundGenerationGoalIDs.remove(goalID)
         questionBankTopOffGoalIDs.remove(goalID)
         removeGoalData(for: goalID, includeLegacyCompetencies: wasActiveGoal)
@@ -771,7 +772,8 @@ final class CheckpointStore {
         scheduleServerQuestionReserveDeletion(
             goalIDs: [goalID],
             configuration: reserveConfiguration,
-            resetsCredentials: false
+            resetsCredentials: false,
+            waitingFor: canceledReserveTask.map { [$0] } ?? []
         )
         scheduleServerQuestionReserveMaintenance()
         return true
@@ -956,8 +958,9 @@ final class CheckpointStore {
 
         questionRefreshesUsed = 0
         questionBatchState = .generating
+        var canceledPreviousReserveTask: Task<Void, Never>?
         if shouldReplaceActiveProfile, let previousGoalID {
-            cancelQuestionMaintenance(for: previousGoalID)
+            canceledPreviousReserveTask = cancelQuestionMaintenance(for: previousGoalID)
             removeGoalData(for: previousGoalID, includeLegacyCompetencies: true)
             goalProfiles.removeAll { $0.id == previousGoalID }
         }
@@ -981,7 +984,8 @@ final class CheckpointStore {
             scheduleServerQuestionReserveDeletion(
                 goalIDs: [previousGoalID],
                 configuration: resolvedQuestionReserveConfiguration,
-                resetsCredentials: false
+                resetsCredentials: false,
+                waitingFor: canceledPreviousReserveTask.map { [$0] } ?? []
             )
         }
         scheduleServerQuestionReserveMaintenance()
@@ -1276,8 +1280,11 @@ final class CheckpointStore {
         }
     }
 
-    private func initialBatchProviderPreference(for _: QuestionGenerationRequest) -> AIProviderKind {
-        aiProviderPreference
+    private func initialBatchProviderPreference(for request: QuestionGenerationRequest) -> AIProviderKind {
+        consentFilteredProviderPreference(
+            aiProviderPreference,
+            hasBackendEndpoint: request.backendEndpoint != nil
+        )
     }
 
     private func generateCheckpointReadyBatch(
@@ -1525,7 +1532,9 @@ final class CheckpointStore {
             questionRefreshesUsed += 1
         }
 
-        let providerPreference = reason.providerPreference(defaultPreference: aiProviderPreference)
+        let providerPreference = consentFilteredProviderPreference(
+            reason.providerPreference(defaultPreference: aiProviderPreference)
+        )
         let requestedCount = min(
             targetCount ?? generationChunkCount(for: providerPreference),
             generationChunkCount(for: providerPreference)
@@ -1981,6 +1990,7 @@ final class CheckpointStore {
     func resetDemoData() {
         let reserveConfiguration = resolvedQuestionReserveConfiguration
         let reserveGoalIDs = Array(availableGoalProfiles.prefix(5).map(\.id))
+        let inFlightReserveTasks = serverQuestionReserveTasks.values.map(\.task)
         backgroundGenerationTasks.values.forEach { $0.cancel() }
         questionBankTopOffTasks.values.forEach { $0.cancel() }
         serverQuestionReserveTasks.values.forEach { $0.task.cancel() }
@@ -2004,6 +2014,7 @@ final class CheckpointStore {
         aiProviderPreference = .automatic
         lastQuestionProvider = .localTemplates
         backendEndpoint = ""
+        backendQuestionGenerationConsentGranted = false
         serverQuestionReserveEnabled = false
         lastAIErrorMessage = nil
         isQuestionBankTopOffInProgress = false
@@ -2026,7 +2037,8 @@ final class CheckpointStore {
         scheduleServerQuestionReserveDeletion(
             goalIDs: reserveGoalIDs,
             configuration: reserveConfiguration,
-            resetsCredentials: true
+            resetsCredentials: true,
+            waitingFor: inFlightReserveTasks
         )
     }
 
@@ -2480,8 +2492,41 @@ final class CheckpointStore {
         save()
     }
 
+    var isBackendQuestionGenerationConfigured: Bool {
+        rawQuestionReserveConfiguration != nil
+    }
+
     var isServerQuestionReserveConfigured: Bool {
-        resolvedQuestionReserveConfiguration != nil
+        rawQuestionReserveConfiguration != nil
+    }
+
+    func updateBackendQuestionGenerationConsent(_ isGranted: Bool) {
+        if isGranted {
+            guard rawQuestionReserveConfiguration != nil else { return }
+            backendQuestionGenerationConsentGranted = true
+            save()
+            return
+        }
+
+        // Capture the consented configuration before closing the gate so the
+        // already-authorized server data can be deleted as part of withdrawal.
+        let configuration = resolvedQuestionReserveConfiguration
+        let goalIDs = Array(availableGoalProfiles.prefix(5).map(\.id))
+        let inFlightReserveTasks = serverQuestionReserveTasks.values.map(\.task)
+        backendQuestionGenerationConsentGranted = false
+        serverQuestionReserveEnabled = false
+        backgroundGenerationTasks.values.forEach { $0.cancel() }
+        questionBankTopOffTasks.values.forEach { $0.cancel() }
+        serverQuestionReserveTasks.values.forEach { $0.task.cancel() }
+        serverQuestionReserveTasks = [:]
+        pendingQuestionReserveAcknowledgements = []
+        save()
+        scheduleServerQuestionReserveDeletion(
+            goalIDs: goalIDs,
+            configuration: configuration,
+            resetsCredentials: true,
+            waitingFor: inFlightReserveTasks
+        )
     }
 
     func updateServerQuestionReserveEnabled(_ isEnabled: Bool) {
@@ -2492,7 +2537,8 @@ final class CheckpointStore {
                 save()
                 return
             }
-            guard resolvedQuestionReserveConfiguration != nil else { return }
+            guard rawQuestionReserveConfiguration != nil else { return }
+            backendQuestionGenerationConsentGranted = true
             serverQuestionReserveEnabled = true
             save()
             scheduleServerQuestionReserveMaintenance()
@@ -2501,6 +2547,7 @@ final class CheckpointStore {
 
         let configuration = resolvedQuestionReserveConfiguration
         let goalIDs = Array(availableGoalProfiles.prefix(5).map(\.id))
+        let inFlightReserveTasks = serverQuestionReserveTasks.values.map(\.task)
         serverQuestionReserveEnabled = false
         serverQuestionReserveTasks.values.forEach { $0.task.cancel() }
         serverQuestionReserveTasks = [:]
@@ -2509,7 +2556,8 @@ final class CheckpointStore {
         scheduleServerQuestionReserveDeletion(
             goalIDs: goalIDs,
             configuration: configuration,
-            resetsCredentials: true
+            resetsCredentials: true,
+            waitingFor: inFlightReserveTasks
         )
     }
 
@@ -2860,10 +2908,14 @@ final class CheckpointStore {
     private func scheduleServerQuestionReserveDeletion(
         goalIDs: [Goal.ID],
         configuration: QuestionReserveConfiguration?,
-        resetsCredentials: Bool
+        resetsCredentials: Bool,
+        waitingFor tasks: [Task<Void, Never>] = []
     ) {
         let service = questionReserveService
         Task {
+            for task in tasks {
+                await task.value
+            }
             if let configuration, !goalIDs.isEmpty {
                 try? await service.delete(goalIDs: goalIDs, configuration: configuration)
             }
@@ -3313,11 +3365,14 @@ final class CheckpointStore {
         pendingQuestionReserveAcknowledgements.removeAll { $0.goalID == goalID }
     }
 
-    private func cancelQuestionMaintenance(for goalID: Goal.ID) {
+    @discardableResult
+    private func cancelQuestionMaintenance(for goalID: Goal.ID) -> Task<Void, Never>? {
+        let reserveTask = serverQuestionReserveTasks[goalID]?.task
         backgroundGenerationTasks[goalID]?.cancel()
         questionBankTopOffTasks[goalID]?.cancel()
-        serverQuestionReserveTasks[goalID]?.task.cancel()
+        reserveTask?.cancel()
         serverQuestionReserveTasks[goalID] = nil
+        return reserveTask
     }
 
     private func awaitQuestionMaintenanceTask(_ task: Task<Void, Never>) async {
@@ -3433,6 +3488,7 @@ final class CheckpointStore {
             aiProviderPreference: aiProviderPreference,
             lastQuestionProvider: lastQuestionProvider,
             backendEndpoint: backendEndpoint,
+            backendQuestionGenerationConsentGranted: backendQuestionGenerationConsentGranted,
             serverQuestionReserveEnabled: serverQuestionReserveEnabled,
             pendingQuestionReserveAcknowledgements: pendingQuestionReserveAcknowledgements,
             unlockSession: unlockSession,
@@ -3785,10 +3841,12 @@ final class CheckpointStore {
         aiProviderPreference = snapshot.aiProviderPreference ?? .automatic
         lastQuestionProvider = snapshot.lastQuestionProvider ?? .localTemplates
         backendEndpoint = snapshot.backendEndpoint ?? ""
-        serverQuestionReserveEnabled = snapshot.serverQuestionReserveEnabled ?? false
-        pendingQuestionReserveAcknowledgements = Array(
-            (snapshot.pendingQuestionReserveAcknowledgements ?? []).suffix(5)
-        )
+        backendQuestionGenerationConsentGranted = snapshot.backendQuestionGenerationConsentGranted ?? false
+        serverQuestionReserveEnabled = backendQuestionGenerationConsentGranted
+            && (snapshot.serverQuestionReserveEnabled ?? false)
+        pendingQuestionReserveAcknowledgements = backendQuestionGenerationConsentGranted
+            ? Array((snapshot.pendingQuestionReserveAcknowledgements ?? []).suffix(5))
+            : []
         unlockSession = snapshot.unlockSession
         checkpointRetryCooldownUntil = snapshot.checkpointRetryCooldownUntil
         membershipTier = snapshot.membershipTier ?? .starter
@@ -4247,6 +4305,11 @@ final class CheckpointStore {
     }
 
     private var resolvedBackendEndpoint: URL? {
+        guard backendQuestionGenerationConsentGranted else { return nil }
+        return rawBackendEndpoint
+    }
+
+    private var rawBackendEndpoint: URL? {
         guard let endpoint = firstConfiguredBackendValue(
             storedValue: backendEndpoint,
             infoKey: "CheckpointAIBackendEndpoint",
@@ -4259,6 +4322,11 @@ final class CheckpointStore {
     }
 
     private var resolvedBackendAuthorizationToken: String? {
+        guard backendQuestionGenerationConsentGranted else { return nil }
+        return rawBackendAuthorizationToken
+    }
+
+    private var rawBackendAuthorizationToken: String? {
         firstConfiguredBackendValue(
             storedValue: nil,
             infoKey: "CheckpointAIBackendToken",
@@ -4267,13 +4335,18 @@ final class CheckpointStore {
     }
 
     private var resolvedQuestionReserveConfiguration: QuestionReserveConfiguration? {
+        guard backendQuestionGenerationConsentGranted else { return nil }
+        return rawQuestionReserveConfiguration
+    }
+
+    private var rawQuestionReserveConfiguration: QuestionReserveConfiguration? {
         if let questionReserveConfigurationOverride {
             return questionReserveConfigurationOverride
         }
-        guard let endpoint = resolvedBackendEndpoint else { return nil }
+        guard let endpoint = rawBackendEndpoint else { return nil }
         return QuestionReserveConfiguration(
             endpoint: endpoint,
-            authorizationToken: resolvedBackendAuthorizationToken
+            authorizationToken: rawBackendAuthorizationToken
         )
     }
 
@@ -4301,7 +4374,8 @@ final class CheckpointStore {
     }
 
     private func questionBankMaintenanceProviderPreference(for profile: Goal) -> AIProviderKind {
-        if aiProviderPreference == .automatic {
+        let providerPreference = consentFilteredProviderPreference(aiProviderPreference)
+        if providerPreference == .automatic {
             if resolvedBackendEndpoint != nil {
                 return .backend
             }
@@ -4310,7 +4384,18 @@ final class CheckpointStore {
                 return .localTemplates
             }
         }
-        return aiProviderPreference
+        return providerPreference
+    }
+
+    private func consentFilteredProviderPreference(
+        _ providerPreference: AIProviderKind,
+        hasBackendEndpoint: Bool? = nil
+    ) -> AIProviderKind {
+        let canReachBackend = hasBackendEndpoint ?? (resolvedBackendEndpoint != nil)
+        if providerPreference == .backend, !canReachBackend {
+            return .automatic
+        }
+        return providerPreference
     }
 
     private func generationChunkCount(for providerPreference: AIProviderKind) -> Int {

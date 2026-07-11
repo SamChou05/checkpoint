@@ -6,16 +6,19 @@ Use this checklist before TestFlight and again before App Store submission. Mark
 
 Run: July 10, 2026 EDT.
 
-- [x] Complete Debug iOS simulator suite passed: 203 tests, 0 failures.
+- [x] Complete Debug iOS simulator suite passed: 211 tests, 0 failures, including explicit backend consent, cancellation-insensitive reserve deletion ordering, and public legal-URL validation.
 - [x] Release iOS simulator build succeeded, including all three Screen Time extensions.
 - [x] Bedrock question service suite passed: 106 tests, 0 failures, including 22 server-reserve tests.
 - [x] Python compilation, `ruff`, plist validation, `git diff --check`, and CloudFormation-aware YAML parsing passed.
 - [x] Focused reserve tests cover opt-in, authentication recovery, stale revisions, durable save-before-ack and ACK retry across relaunch, duplicate delivery, partial-batch recovery, low-fresh pulls, fast shield delivery, background coalescing, downgrade purge, and interrupted-purge retry.
 - [x] AWS SAM lint/build passed and `checkpoint-question-service-prod` deployed in `us-east-1`; authenticated generation plus register/sync/worker/pull/ack/purge/delete smoke tests passed.
 - [x] Deployed DynamoDB TTL/SSE, SQS SSE/visibility/DLQ redrive, 15-minute recovery schedule, and zero-error Lambda smoke metrics were verified.
+- [x] Deployed 30-day stack-managed Lambda log retention plus endpoint 5xx, worker error, stale reserve queue, and reserve DLQ alarms; all four alarms reported `OK` after an authenticated live smoke test.
 - [x] A physical-device Release archive `1.0 (2)` succeeded with all extensions and the live backend configuration embedded.
+- [x] The production backend credential exposed during local archive inspection was rotated, the earlier archive was deleted, and `1.0 (2)` was rebuilt and verified with the replacement credential.
+- [ ] Rebuild the final archive from the final commit after owner-approved Privacy/Support URLs are configured and the backend-consent gate is included; the current archive remains a technical validation artifact.
 - [ ] App Store export is blocked: Xcode reports no signed-in account and no App Store distribution profiles for the app or its three extensions.
-- [ ] CloudWatch notification alarms and an AWS Budget still need owner-selected destinations/thresholds; the worker-side generation quotas are active.
+- [ ] An owner-selected SNS notification destination and AWS Budget threshold still need to be configured; the alarms and worker-side generation quotas are active.
 - [ ] The latest changes still require physical-device background-task, shield-loop, and StoreKit verification.
 
 ## Previous Device QA Run

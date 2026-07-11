@@ -46,6 +46,7 @@ The MVP uses a hybrid provider approach:
 - Automatic tries Apple Foundation Models when available, then a configured backend LLM, then Local Templates as the no-cost/offline fallback.
 - Apple Foundation Models can provide on-device generation on Apple Intelligence-compatible devices.
 - Backend LLM generation is batch-based and reserved for internal app configuration; the first AWS Bedrock Lambda service lives in `backend/bedrock-question-service`.
+- Even when that service is configured, goal context stays off the network until the user explicitly allows Cloud question generation in Settings; withdrawing consent returns generation to Apple Foundation/local paths and requests cloud-reserve deletion.
 - Local Templates keep the app usable without network, backend, or supported on-device models.
 - Provider prompts and payloads include a derived learning target, content topics, and a directive to test the subject matter instead of asking about study plans or app usage.
 - Configure production backend URLs through `Checkpoint/Config/Secrets.xcconfig` or another internal build configuration, not user-facing Settings and never with AWS credentials in the app.
@@ -53,7 +54,7 @@ The MVP uses a hybrid provider approach:
 - The Bedrock service retries malformed model output and can fall back to Nova Micro if the cheapest primary model does not return valid JSON.
 - The optional server reserve uses a client-generated Keychain secret, monotonic goal sync, DynamoDB state, SQS leases, a 15-minute EventBridge recovery sweep, idempotent delivery, TTL deletion, and a four-batch-per-install daily worker limit. It never continuously generates merely because time passes.
 
-The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`; reserve lifecycle and operations are in `docs/SERVER_QUESTION_RESERVE.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
+The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`; reserve lifecycle and operations are in `docs/SERVER_QUESTION_RESERVE.md`, and the staged App Attest/session path for unrestricted public use is in `docs/PUBLIC_BACKEND_AUTH.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
 
 ## App Store Readiness
 
@@ -63,11 +64,16 @@ See `docs/MONETIZATION.md` for the starter-membership monetization direction and
 
 See `docs/STOREKIT_LAUNCH.md` for local StoreKit testing and App Store Connect subscription setup.
 
-See `docs/FINAL_LAUNCH_TEST_LOG.md` for the final manual validation log, and `docs/APP_STORE_COPY.md` plus `docs/PRIVACY_POLICY_DRAFT.md` for App Store submission drafts.
+See `docs/FINAL_LAUNCH_TEST_LOG.md` for the final manual validation log. The canonical App Store handoff and exact submission order live in `docs/APP_STORE_SUBMISSION_PACKET.md`; copy and privacy-policy drafts remain in `docs/APP_STORE_COPY.md` and `docs/PRIVACY_POLICY_DRAFT.md`. Use `docs/RELEASE_ARTIFACTS.md` to create a write-once manifest and checksums for every upload.
 
 ## Testing
 
 Run the `Checkpoint` scheme tests in Xcode. The suite covers the 4-of-5 unlock gate, failed-session retesting, missed/due scheduling, shield-triggered session creation, no-question recovery states, no-cost local generation, provider fallback policy, unlock duration policy, emergency unlock session creation, empty Screen Time selection defaults, starter membership gates, member goal profile isolation, Skill Map topic fallback, adaptive level-up, Study Assist, and provider payload sanitization.
+
+Pull requests run the backend tests, Python/SAM validation, iOS simulator tests,
+and a Release simulator build in GitHub Actions. Before a TestFlight or App
+Store build, run `scripts/release-preflight.sh`; its credential-safe checks are
+documented in `docs/LOCAL_RELEASE_PREFLIGHT.md`.
 
 ## Open
 

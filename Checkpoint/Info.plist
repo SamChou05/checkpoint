@@ -24,6 +24,12 @@
 	<string>$(CHECKPOINT_AI_BACKEND_ENDPOINT)</string>
 	<key>CheckpointAIBackendToken</key>
 	<string>$(CHECKPOINT_AI_BACKEND_TOKEN)</string>
+	<key>CheckpointPrivacyPolicyURL</key>
+	<string>$(CHECKPOINT_PRIVACY_POLICY_URL)</string>
+	<key>CheckpointSupportURL</key>
+	<string>$(CHECKPOINT_SUPPORT_URL)</string>
+	<key>CheckpointTermsOfUseURL</key>
+	<string>$(CHECKPOINT_TERMS_OF_USE_URL)</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>com.samchou.checkpoint.question-refresh</string>

@@ -51,8 +51,23 @@ Suggested guided values:
 - `MaxReserveBatchesPerInstallPerDay`: `4` permits up to 80 prepared questions per UTC day while containing queue-worker cost.
 - `BackendToken`: set a long random value for internal TestFlight testing.
 - `AllowUnauthenticatedBackend`: keep `false` for exposed Function URLs.
+- `LogRetentionDays`: keep `30` for an early production release unless support needs a longer investigation window.
+- `AlarmNotificationTopicArn`: optionally provide an existing SNS topic ARN. When omitted, alarms are still created and visible in CloudWatch but do not send notifications.
 
 The deployed stack outputs `QuestionEndpoint`. Configure the iOS app to use that URL as its internal AI backend endpoint.
+
+## Monitoring And Operations
+
+The stack routes each Lambda to its own stack-scoped CloudWatch log group and expires log events after `LogRetentionDays` (30 days by default). It also creates four standard-resolution CloudWatch alarms:
+
+- three or more Function URL `5xx` responses within five minutes
+- reserve work whose oldest SQS message remains at least 15 minutes old across two consecutive five-minute checks
+- any visible message in the reserve dead-letter queue
+- any unhandled reserve-worker or scheduled-recovery Lambda error
+
+Set `AlarmNotificationTopicArn` to an existing SNS topic to receive both alarm and recovery notifications. The template intentionally does not create subscriptions because notification ownership and destination are deployment-specific. The stack outputs the two log-group names and four alarm names for runbook and dashboard use.
+
+An older deployment may retain Lambda's automatically created `/aws/lambda/<physical-function-name>` log groups. After deploying this version and confirming that new log events reach the stack-scoped groups, review those old groups separately and delete them only if their history is no longer needed.
 
 ## IAM
 
@@ -69,6 +84,7 @@ The deployed stack outputs `QuestionEndpoint`. Configure the iOS app to use that
 - The reserve worker atomically applies a separate per-install UTC-day batch quota immediately before Bedrock invocation. Provider failures back off exponentially and become terminal after five consecutive attempts until materially changed goal input is synced.
 - API Gateway or Lambda Function URL throttling should be enabled before broader TestFlight.
 - Keep `CHECKPOINT_BACKEND_TOKEN` set for early testing if you expose a Function URL directly. Empty tokens fail closed unless `ALLOW_UNAUTHENTICATED_BACKEND=true` is explicitly configured.
+- The four standard-resolution CloudWatch alarms cost up to approximately `$0.40/month` in `us-east-1` before any CloudWatch free-tier allowance. Log ingestion is unchanged; the explicit retention window bounds storage instead of allowing logs to grow indefinitely. SNS delivery, when configured, follows the pricing of the existing topic and subscription type.
 
 ## Local Tests
 
