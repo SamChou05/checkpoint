@@ -52,6 +52,8 @@ struct RootView: View {
                 .interactiveDismissDisabled(store.goal == nil)
         }
         .task {
+            reconcileProtectionState()
+            handlePendingShieldActivation()
             purchaseController.onMembershipEntitlementChange = { unlocked in
                 store.updateMembershipTier(unlocked ? .member : .starter)
             }
@@ -69,8 +71,26 @@ struct RootView: View {
             }
             handlePendingShieldActivation()
         }
-        .onChange(of: store.goal) { _, _ in
-            screenTime.refreshActiveShieldConfiguration()
+        .onChange(of: store.goal) { _, newGoal in
+            if newGoal == nil {
+                store.clearUnlockSession()
+                screenTime.clearShield()
+            } else {
+                reconcileProtectionState()
+                screenTime.refreshActiveShieldConfiguration()
+            }
+        }
+        .onChange(of: screenTime.hasSelection) { _, hasSelection in
+            if !hasSelection {
+                store.clearUnlockSession()
+            }
+        }
+        .onChange(of: screenTime.setupState) { _, setupState in
+            if setupState == .shieldActive,
+               store.unlockSession != nil,
+               store.unlockSession?.isActive != true {
+                store.clearUnlockSession()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .checkpointShieldContextDidChange)) { _ in
             screenTime.refreshActiveShieldConfiguration()
@@ -80,22 +100,69 @@ struct RootView: View {
     private func handlePendingShieldActivation() {
         guard activeShieldSession == nil else { return }
         guard !isPreparingShieldSession else { return }
-        guard SharedAppGroup.pendingShieldAttemptDate != nil else { return }
+        guard let pendingAttempt = SharedAppGroup.currentPendingShieldAttempt else { return }
+        let protectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        guard protectionSnapshot.acceptsPendingShieldAttempt(
+            configurationRevision: pendingAttempt.protectionConfigurationRevision,
+            hasSelection: screenTime.hasSelection
+        )
+        else {
+            _ = SharedAppGroup.consumePendingShieldAttempt(matchingID: pendingAttempt.id)
+            return
+        }
+        let pendingProtectionRevision = pendingAttempt.protectionConfigurationRevision
+            ?? protectionSnapshot.configurationRevision
 
         selectedTab = .home
         isPreparingShieldSession = true
 
         Task {
-            activeShieldSession = await store.preparePendingShieldSession()
+            let preparedSession = await store.preparePendingShieldSession(
+                pendingAttemptID: pendingAttempt.id
+            )
+            let latestProtectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
+            let pendingAttemptAfterPreparation = SharedAppGroup.currentPendingShieldAttempt
+            let newerPendingAttemptExists = pendingAttemptAfterPreparation.map {
+                $0.id != pendingAttempt.id
+            } ?? false
+            if pendingAttemptAfterPreparation == nil,
+               latestProtectionSnapshot.acceptsPendingShieldAttempt(
+                configurationRevision: pendingProtectionRevision,
+                hasSelection: screenTime.hasSelection
+            ) {
+                activeShieldSession = preparedSession
+            }
             isPreparingShieldSession = false
+            if newerPendingAttemptExists {
+                handlePendingShieldActivation()
+            }
         }
     }
 
     private func reconcileProtectionState() {
+        guard store.goal != nil else {
+            if store.unlockSession != nil {
+                store.clearUnlockSession()
+            }
+            screenTime.clearShield()
+            return
+        }
+
+        let protectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
         screenTime.reconcileShieldState(
-            protectionShouldRemainActive: SharedAppGroup.desiredShieldActive || store.unlockSession != nil,
-            fallbackUnlockExpiration: store.unlockSession?.expiresAt
+            protectionShouldRemainActive: protectionSnapshot.desiredShieldActive
         )
+
+        let reconciledProtectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        let canonicalBreakIsActive = reconciledProtectionSnapshot.unlockExpiration.map {
+            $0 > Date()
+        } ?? false
+        if store.unlockSession != nil,
+           (!reconciledProtectionSnapshot.desiredShieldActive ||
+            !canonicalBreakIsActive ||
+            store.unlockSession?.isActive != true) {
+            store.clearUnlockSession()
+        }
     }
 
     @MainActor

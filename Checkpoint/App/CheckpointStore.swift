@@ -97,6 +97,7 @@ final class CheckpointStore {
         self.questionEngine = questionEngine
         self.defaults = defaults
         load()
+        reconcileLoadedUnlockSession()
         clearExpiredCheckpointRetryCooldown()
         recoverTransientQuestionGenerationState()
         isOnboardingPresented = goal == nil
@@ -1317,20 +1318,26 @@ final class CheckpointStore {
         return unlockMinutes
     }
 
-    func startUnlockSession(minutes: Int) {
+    func startUnlockSession(minutes: Int, expiresAt: Date? = nil) {
         let unlockMinutes = UnlockPolicy.normalizedCorrectAnswerUnlockMinutes(minutes)
         guard unlockMinutes > 0, let goalID = goal?.id else { return }
 
-        recordUnlockSession(minutes: unlockMinutes, goalID: goalID)
+        recordUnlockSession(minutes: unlockMinutes, goalID: goalID, expiresAt: expiresAt)
         save()
         publishShieldContext()
     }
 
-    private func recordUnlockSession(minutes: Int, goalID: Goal.ID) {
+    private func recordUnlockSession(
+        minutes: Int,
+        goalID: Goal.ID,
+        expiresAt: Date? = nil
+    ) {
         let now = Date()
         unlockSession = UnlockSession(
             startedAt: now,
-            expiresAt: Calendar.current.date(byAdding: .minute, value: minutes, to: now) ?? now
+            expiresAt: expiresAt ?? (
+                Calendar.current.date(byAdding: .minute, value: minutes, to: now) ?? now
+            )
         )
         unlockEvents.insert(UnlockEvent(goalID: goalID, minutes: minutes, createdAt: now), at: 0)
         SharedAppGroup.publishUnlockExpiration(unlockSession?.expiresAt)
@@ -1370,21 +1377,27 @@ final class CheckpointStore {
         isCreatingGoalProfile = false
         pendingMembershipFeature = nil
         isOnboardingPresented = true
+        SharedAppGroup.publishUnlockExpiration(nil)
         save()
         publishShieldContext()
     }
 
     // MARK: - Checkpoint sessions
 
-    func takePendingShieldSession() -> CheckpointSession? {
-        guard SharedAppGroup.pendingShieldAttemptDate != nil else { return nil }
+    func takePendingShieldSession(pendingAttemptID: String? = nil) -> CheckpointSession? {
+        guard let pendingAttempt = SharedAppGroup.currentPendingShieldAttempt else { return nil }
+        if let pendingAttemptID, pendingAttempt.id != pendingAttemptID {
+            return nil
+        }
         if let cooldownMessage = checkpointRetryCooldownMessage(source: .blockedApp) {
             checkpointNotice = cooldownMessage
             return nil
         }
 
         guard let session = checkpointSession(source: .blockedApp) else { return nil }
-        guard SharedAppGroup.consumePendingShieldAttempt() != nil else { return nil }
+        guard SharedAppGroup.consumePendingShieldAttempt(matchingID: pendingAttemptID) != nil else {
+            return nil
+        }
         return session
     }
 
@@ -1396,8 +1409,11 @@ final class CheckpointStore {
         checkpointSession(source: .manual, purpose: .preview)
     }
 
-    func preparePendingShieldSession() async -> CheckpointSession? {
-        guard SharedAppGroup.pendingShieldAttemptDate != nil else { return nil }
+    func preparePendingShieldSession(pendingAttemptID: String? = nil) async -> CheckpointSession? {
+        guard let pendingAttempt = SharedAppGroup.currentPendingShieldAttempt else { return nil }
+        if let pendingAttemptID, pendingAttempt.id != pendingAttemptID {
+            return nil
+        }
 
         if let cooldownMessage = checkpointRetryCooldownMessage(source: .blockedApp) {
             checkpointNotice = cooldownMessage
@@ -1408,19 +1424,19 @@ final class CheckpointStore {
             _ = await refreshQuestionBatchIfNeeded()
         }
 
-        if let session = takePendingShieldSession() {
+        if let session = takePendingShieldSession(pendingAttemptID: pendingAttemptID) {
             return session
         }
 
         if let goalID = goal?.id {
             await waitForQuestionBankTopOffIfNeeded(for: goalID)
-            if let session = takePendingShieldSession() {
+            if let session = takePendingShieldSession(pendingAttemptID: pendingAttemptID) {
                 return session
             }
         }
 
         guard await refreshQuestionBatchIfNeeded() else { return nil }
-        return takePendingShieldSession()
+        return takePendingShieldSession(pendingAttemptID: pendingAttemptID)
     }
 
     func prepareManualCheckpointSession() async -> CheckpointSession? {
@@ -2081,6 +2097,27 @@ final class CheckpointStore {
         }
 
         self.checkpointRetryCooldownUntil = nil
+        save()
+    }
+
+    private func reconcileLoadedUnlockSession(now: Date = Date()) {
+        guard let unlockSession else { return }
+
+        if SharedAppGroup.desiredShieldActive,
+           let sharedExpiration = SharedAppGroup.unlockExpiration,
+           sharedExpiration > now {
+            if unlockSession.expiresAt != sharedExpiration {
+                self.unlockSession?.expiresAt = sharedExpiration
+                save()
+            }
+            return
+        }
+
+        self.unlockSession = nil
+        if let sharedExpiration = SharedAppGroup.unlockExpiration,
+           (sharedExpiration <= now || !SharedAppGroup.desiredShieldActive) {
+            SharedAppGroup.publishUnlockExpiration(nil)
+        }
         save()
     }
 

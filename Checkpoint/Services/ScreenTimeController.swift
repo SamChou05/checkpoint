@@ -17,6 +17,8 @@ import ManagedSettings
 @Observable
 final class ScreenTimeController {
     static let unlockRelockMonitorLeadIn: TimeInterval = 30
+    static let minimumUnlockRelockMonitorDuration: TimeInterval = 15 * 60
+    static let unlockRelockMonitorDurationSafetyMargin: TimeInterval = 1
 
     enum SetupState: String {
         case notStarted = "Not set up"
@@ -40,22 +42,40 @@ final class ScreenTimeController {
     }
 
     var userFacingProtectionStatus: String {
-        switch setupState {
-        case .shieldActive:
+        if isShieldingEnabled {
             return "On"
+        }
+
+        switch setupState {
         case .temporarilyUnlocked:
             return "Break in progress"
         case .failed:
             return "Permission needed"
         case .unavailable:
             return "iPhone only"
-        case .notStarted, .authorized, .readyForSpike:
+        case .notStarted, .authorized, .readyForSpike, .shieldActive:
             return "Off"
         }
     }
 
     var userFacingErrorMessage: String? {
         guard lastErrorMessage != nil else { return nil }
+
+        #if os(iOS) && canImport(FamilyControls)
+        if selection.applicationTokens.count > SharedAppGroup.maximumShieldedApplicationCount ||
+            lastErrorMessage == "The selected apps exceed iPhone's protection limit." {
+            return "Choose no more than \(SharedAppGroup.maximumShieldedApplicationCount) apps so iPhone can apply the full protection list."
+        }
+
+        if selection.webDomainTokens.count > SharedAppGroup.maximumShieldedWebDomainCount ||
+            lastErrorMessage == "The selected websites exceed iPhone's protection limit." {
+            return "Choose no more than \(SharedAppGroup.maximumShieldedWebDomainCount) websites so iPhone can apply the full protection list."
+        }
+        #endif
+
+        if lastErrorMessage?.hasPrefix("The break could not start") == true {
+            return "The break couldn't start, so protection stayed on. Try again."
+        }
 
         switch setupState {
         case .failed:
@@ -86,11 +106,10 @@ final class ScreenTimeController {
     #if os(iOS) && canImport(FamilyControls)
     var selection = FamilyActivitySelection(includeEntireCategory: true) {
         didSet {
+            guard !isRestoringSelection else { return }
             persistSelection()
             updateSummary()
-            if isShieldingEnabled {
-                applyShield()
-            }
+            handleSelectionChange()
         }
     }
     #endif
@@ -102,6 +121,8 @@ final class ScreenTimeController {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var relockTask: Task<Void, Never>?
     @ObservationIgnored private var shieldRefreshTask: Task<Void, Never>?
+    @ObservationIgnored private var isRestoringSelection = false
+    @ObservationIgnored private var selectionSemanticsVersion = 0
     @ObservationIgnored private let initialAuthorizationRequestKey = "checkpoint.screenTime.initialAuthorizationRequested"
 
     #if os(iOS) && canImport(DeviceActivity)
@@ -145,9 +166,11 @@ final class ScreenTimeController {
         case .notDetermined:
             setupState = .notStarted
             lastErrorMessage = nil
+            invalidateSelectionAfterAuthorizationLoss()
         case .denied:
             setupState = .failed
             lastErrorMessage = "Screen Time access is denied. Allow Screen Time access before starting app protection."
+            invalidateSelectionAfterAuthorizationLoss()
         case .approved:
             if setupState != .shieldActive && setupState != .temporarilyUnlocked {
                 setupState = .authorized
@@ -176,45 +199,44 @@ final class ScreenTimeController {
             shieldRefreshTask = nil
         }
         relockTask?.cancel()
-        stopUnlockRelockMonitor()
 
         guard hasSelection else {
-            managedStore.clearAllSettings()
-            isShieldingEnabled = false
-            setupState = .authorized
-            lastErrorMessage = "Choose at least one protected app, category, or website before starting app protection."
-            SharedAppGroup.publishDesiredShieldActive(false)
-            SharedAppGroup.publishUnlockExpiration(nil)
-            updateSummary()
+            deactivateProtection(
+                errorMessage: "Choose at least one protected app, category, or website before starting app protection."
+            )
+            return
+        }
+
+        guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
+            deactivateProtection(
+                errorMessage: "The selected apps exceed iPhone's protection limit."
+            )
+            return
+        }
+
+        guard selection.webDomainTokens.count <= SharedAppGroup.maximumShieldedWebDomainCount else {
+            deactivateProtection(
+                errorMessage: "The selected websites exceed iPhone's protection limit."
+            )
             return
         }
 
         guard isScreenTimeAuthorized else {
-            isShieldingEnabled = false
+            deactivateProtection()
             setupState = .failed
             lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
-            SharedAppGroup.publishDesiredShieldActive(false)
-            SharedAppGroup.publishUnlockExpiration(nil)
-            updateSummary()
             return
         }
 
-        clearManagedShieldRestrictions()
-        managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
-        managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        applyCurrentSelectionToManagedStore()
+        stopUnlockRelockMonitor()
 
-        if selection.categoryTokens.isEmpty {
-            managedStore.shield.applicationCategories = nil
-        } else {
-            managedStore.shield.applicationCategories = .specific(selection.categoryTokens, except: [])
-        }
-
-        isShieldingEnabled = hasSelection
-        setupState = hasSelection ? .shieldActive : .authorized
+        isShieldingEnabled = true
+        setupState = .shieldActive
         lastErrorMessage = nil
-        SharedAppGroup.publishDesiredShieldActive(isShieldingEnabled)
-        SharedAppGroup.publishUnlockExpiration(nil)
         updateSummary()
+        scheduleManagedShieldReassertion()
         #else
         setupState = .unavailable
         restrictedAppsSummary = "App protection is available on iPhone."
@@ -224,74 +246,125 @@ final class ScreenTimeController {
     func refreshActiveShieldConfiguration() {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         guard isShieldingEnabled else { return }
-        shieldRefreshTask?.cancel()
-        clearManagedShieldRestrictions()
-        shieldRefreshTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 180_000_000)
-            guard !Task.isCancelled else { return }
-            self?.finishActiveShieldConfigurationRefresh()
-        }
+        applyShield()
         #endif
     }
 
     func clearShield() {
-        shieldRefreshTask?.cancel()
-        shieldRefreshTask = nil
-        relockTask?.cancel()
-        isShieldingEnabled = false
-        setupState = .authorized
-        lastErrorMessage = nil
-        SharedAppGroup.publishDesiredShieldActive(false)
-        SharedAppGroup.publishUnlockExpiration(nil)
-
-        #if os(iOS) && canImport(ManagedSettings)
-        stopUnlockRelockMonitor()
-        managedStore.clearAllSettings()
-        #endif
-
-        updateSummary()
+        deactivateProtection()
     }
 
-    func temporarilyUnshield(minutes: Int) {
-        guard minutes > 0 else { return }
+    @discardableResult
+    func temporarilyUnshield(until expiration: Date) -> Bool {
+        guard expiration > Date() else { return false }
 
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         shieldRefreshTask?.cancel()
         shieldRefreshTask = nil
 
         guard hasSelection else {
+            deactivateProtection()
             lastErrorMessage = "No protected apps are selected, so there is nothing to open."
-            return
+            return false
+        }
+
+        guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
+            deactivateProtection(
+                errorMessage: "The selected apps exceed iPhone's protection limit."
+            )
+            return false
+        }
+
+        guard selection.webDomainTokens.count <= SharedAppGroup.maximumShieldedWebDomainCount else {
+            deactivateProtection(
+                errorMessage: "The selected websites exceed iPhone's protection limit."
+            )
+            return false
+        }
+
+        guard SharedAppGroup.desiredShieldActive || isShieldingEnabled else {
+            lastErrorMessage = "Protection is already off."
+            return false
         }
 
         let now = Date()
-        let expiration = Calendar.current.date(byAdding: .minute, value: minutes, to: now) ?? now
+        guard scheduleUnlockRelockMonitor(from: now, until: expiration) else {
+            let schedulingError = lastErrorMessage
+            applyShield()
+            lastErrorMessage = schedulingError
+            return false
+        }
 
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: expiration)
         managedStore.clearAllSettings()
+        scheduleManagedShieldClearReassertion(while: .temporarilyUnlocked)
         isShieldingEnabled = false
         setupState = .temporarilyUnlocked
         lastErrorMessage = nil
-        SharedAppGroup.publishDesiredShieldActive(true)
-        SharedAppGroup.publishUnlockExpiration(expiration)
 
         scheduleForegroundRelock(until: expiration)
-        scheduleUnlockRelockMonitor(from: now, until: expiration)
+        return true
         #else
         setupState = .unavailable
+        return false
         #endif
     }
 
-    func reconcileShieldState(
-        protectionShouldRemainActive: Bool? = nil,
-        fallbackUnlockExpiration: Date? = nil
-    ) {
+    func reconcileShieldState(protectionShouldRemainActive: Bool? = nil) {
         let shouldRemainActive = protectionShouldRemainActive ?? SharedAppGroup.desiredShieldActive
-        guard shouldRemainActive else { return }
+        guard shouldRemainActive else {
+            deactivateProtection()
+            return
+        }
 
-        let unlockExpiration = SharedAppGroup.unlockExpiration ?? fallbackUnlockExpiration
+        guard hasSelection else {
+            deactivateProtection()
+            return
+        }
+
+        guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
+            deactivateProtection(
+                errorMessage: "The selected apps exceed iPhone's protection limit."
+            )
+            return
+        }
+
+        guard selection.webDomainTokens.count <= SharedAppGroup.maximumShieldedWebDomainCount else {
+            deactivateProtection(
+                errorMessage: "The selected websites exceed iPhone's protection limit."
+            )
+            return
+        }
+
+        guard isScreenTimeAuthorized else {
+            deactivateProtection()
+            setupState = .failed
+            lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
+            return
+        }
+
+        let unlockExpiration = SharedAppGroup.unlockExpiration
         if let unlockExpiration, unlockExpiration > Date() {
+            shieldRefreshTask?.cancel()
+            shieldRefreshTask = nil
+            relockTask?.cancel()
+            guard scheduleUnlockRelockMonitor(from: Date(), until: unlockExpiration) else {
+                let schedulingError = lastErrorMessage
+                applyShield()
+                lastErrorMessage = schedulingError
+                return
+            }
+
+            SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: unlockExpiration)
+
+            #if os(iOS) && canImport(ManagedSettings)
+            managedStore.clearAllSettings()
+            scheduleManagedShieldClearReassertion(while: .temporarilyUnlocked)
+            #endif
+
             setupState = .temporarilyUnlocked
             isShieldingEnabled = false
+            lastErrorMessage = nil
             scheduleForegroundRelock(until: unlockExpiration)
             return
         }
@@ -302,15 +375,50 @@ final class ScreenTimeController {
     #if os(iOS) && canImport(FamilyControls)
     var hasSelection: Bool {
         !selection.applicationTokens.isEmpty ||
-        !selection.categoryTokens.isEmpty ||
-        !selection.webDomainTokens.isEmpty
+        !selection.webDomainTokens.isEmpty ||
+        usesLegacyCategoryEnforcement
     }
 
-    func updateSelection(_ newSelection: FamilyActivitySelection) {
-        selection = SharedAppGroup.categoryInclusiveSelection(newSelection)
-        if hasSelection {
+    @discardableResult
+    func updateSelection(_ newSelection: FamilyActivitySelection) -> Bool {
+        let normalizedSelection = SharedAppGroup.categoryInclusiveSelection(newSelection)
+        let applicationCountIsAllowed = SharedAppGroup.canAcceptShieldTokenCount(
+            normalizedSelection.applicationTokens.count,
+            currentCount: selection.applicationTokens.count,
+            maximumCount: SharedAppGroup.maximumShieldedApplicationCount
+        )
+        guard applicationCountIsAllowed else {
+            lastErrorMessage = "The selected apps exceed iPhone's protection limit."
+            return false
+        }
+
+        let webDomainCountIsAllowed = SharedAppGroup.canAcceptShieldTokenCount(
+            normalizedSelection.webDomainTokens.count,
+            currentCount: selection.webDomainTokens.count,
+            maximumCount: SharedAppGroup.maximumShieldedWebDomainCount
+        )
+        guard webDomainCountIsAllowed else {
+            lastErrorMessage = "The selected websites exceed iPhone's protection limit."
+            return false
+        }
+
+        if normalizedSelection.applicationTokens.count > SharedAppGroup.maximumShieldedApplicationCount {
+            lastErrorMessage = "The selected apps exceed iPhone's protection limit."
+        } else if normalizedSelection.webDomainTokens.count > SharedAppGroup.maximumShieldedWebDomainCount {
+            lastErrorMessage = "The selected websites exceed iPhone's protection limit."
+        } else if lastErrorMessage == "The selected apps exceed iPhone's protection limit." ||
+                    lastErrorMessage == "The selected websites exceed iPhone's protection limit." {
+            lastErrorMessage = nil
+        } else if !normalizedSelection.applicationTokens.isEmpty ||
+                    !normalizedSelection.webDomainTokens.isEmpty ||
+                    !normalizedSelection.categoryTokens.isEmpty {
             lastErrorMessage = nil
         }
+
+        guard normalizedSelection != selection else { return true }
+
+        selection = normalizedSelection
+        return true
     }
     #else
     var hasSelection: Bool { false }
@@ -322,7 +430,7 @@ final class ScreenTimeController {
         let categoryCount = selection.categoryTokens.count
         let webCount = selection.webDomainTokens.count
 
-        if appCount + categoryCount + webCount == 0 {
+        if !hasSelection {
             restrictedAppsSummary = "No protected apps selected"
         } else {
             var parts: [String] = []
@@ -342,21 +450,54 @@ final class ScreenTimeController {
         #endif
     }
 
-    private func persistSelection() {
+    private func invalidateSelectionAfterAuthorizationLoss() {
+        #if os(iOS) && canImport(FamilyControls)
+        guard !selection.applicationTokens.isEmpty ||
+                !selection.categoryTokens.isEmpty ||
+                !selection.webDomainTokens.isEmpty
+        else { return }
+
+        // Apple voids all opaque FamilyActivitySelection tokens when Screen
+        // Time authorization is revoked. Keeping their counts would make the
+        // picker and status claim protection that iOS can no longer apply.
+        selection = FamilyActivitySelection(includeEntireCategory: true)
+        #endif
+    }
+
+    private func persistSelection(
+        semanticsVersion: Int = SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+    ) {
         #if os(iOS) && canImport(FamilyControls)
         guard let data = try? JSONEncoder().encode(selection) else { return }
-        SharedAppGroup.publishScreenTimeSelectionData(data)
+        selectionSemanticsVersion = semanticsVersion
+        SharedAppGroup.publishScreenTimeSelectionData(data, semanticsVersion: semanticsVersion)
         #endif
     }
 
     private func restoreSelection() {
         #if os(iOS) && canImport(FamilyControls)
+        let protectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
         guard
-            let data = SharedAppGroup.screenTimeSelectionData(),
+            let data = protectionSnapshot.screenTimeSelectionData,
             let restoredSelection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
         else { return }
 
-        selection = SharedAppGroup.categoryInclusiveSelection(restoredSelection)
+        let normalizedSelection = SharedAppGroup.categoryInclusiveSelection(restoredSelection)
+        let restoredSemanticsVersion = SharedAppGroup.resolvedScreenTimeSelectionSemanticsVersion(
+            storedVersion: protectionSnapshot.screenTimeSelectionSemanticsVersion,
+            applicationTokenCount: normalizedSelection.applicationTokens.count,
+            webDomainTokenCount: normalizedSelection.webDomainTokens.count
+        )
+        let shouldUpgradeConcreteLegacySelection =
+            restoredSemanticsVersion != protectionSnapshot.screenTimeSelectionSemanticsVersion
+        selectionSemanticsVersion = restoredSemanticsVersion
+        isRestoringSelection = true
+        selection = normalizedSelection
+        isRestoringSelection = false
+
+        if normalizedSelection != restoredSelection || shouldUpgradeConcreteLegacySelection {
+            persistSelection(semanticsVersion: restoredSemanticsVersion)
+        }
         #endif
     }
 
@@ -373,17 +514,110 @@ final class ScreenTimeController {
         #endif
     }
 
-    #if os(iOS) && canImport(ManagedSettings)
-    private func clearManagedShieldRestrictions() {
-        managedStore.shield.applications = nil
-        managedStore.shield.applicationCategories = nil
-        managedStore.shield.webDomains = nil
+    private func handleSelectionChange() {
+        #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        guard hasSelection else {
+            if isShieldingEnabled || setupState == .temporarilyUnlocked || SharedAppGroup.desiredShieldActive {
+                deactivateProtection()
+            }
+            return
+        }
+
+        if isShieldingEnabled {
+            applyShield()
+        }
+        #endif
     }
 
-    private func finishActiveShieldConfigurationRefresh() {
-        guard isShieldingEnabled else { return }
-        applyShield(cancelPendingRefresh: false)
+    private func deactivateProtection(errorMessage: String? = nil) {
+        shieldRefreshTask?.cancel()
         shieldRefreshTask = nil
+        relockTask?.cancel()
+        relockTask = nil
+        SharedAppGroup.publishProtectionState(isActive: false, unlockExpiration: nil)
+        _ = SharedAppGroup.consumePendingShieldAttempt()
+
+        #if os(iOS) && canImport(ManagedSettings)
+        stopUnlockRelockMonitor()
+        managedStore.clearAllSettings()
+        scheduleManagedShieldClearReassertion(while: .off)
+        #endif
+
+        isShieldingEnabled = false
+        setupState = .notStarted
+        refreshAuthorizationStatus()
+        if let errorMessage {
+            lastErrorMessage = errorMessage
+        }
+        updateSummary()
+    }
+
+    #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+    private var usesLegacyCategoryEnforcement: Bool {
+        SharedAppGroup.usesLegacyCategoryEnforcement(
+            semanticsVersion: selectionSemanticsVersion,
+            applicationTokenCount: selection.applicationTokens.count,
+            categoryTokenCount: selection.categoryTokens.count,
+            webDomainTokenCount: selection.webDomainTokens.count
+        )
+    }
+
+    private func applyCurrentSelectionToManagedStore() {
+        managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
+        managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
+        // `includeEntireCategory` expands category choices into application and
+        // web-domain tokens. Enforcing the category token as well would silently
+        // re-protect an app the user explicitly removed from that expanded list.
+        if usesLegacyCategoryEnforcement {
+            managedStore.shield.applicationCategories = .specific(selection.categoryTokens, except: [])
+        } else {
+            managedStore.shield.applicationCategories = nil
+        }
+    }
+
+    private func scheduleManagedShieldReassertion() {
+        shieldRefreshTask?.cancel()
+        shieldRefreshTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 250_000_000)
+            guard !Task.isCancelled else { return }
+            guard let self,
+                  self.isShieldingEnabled,
+                  SharedAppGroup.desiredShieldActive,
+                  SharedAppGroup.unlockExpiration == nil,
+                  self.hasSelection else { return }
+
+            self.applyCurrentSelectionToManagedStore()
+            self.shieldRefreshTask = nil
+        }
+    }
+
+    private enum ManagedShieldClearMode {
+        case off
+        case temporarilyUnlocked
+    }
+
+    private func scheduleManagedShieldClearReassertion(while mode: ManagedShieldClearMode) {
+        shieldRefreshTask?.cancel()
+        shieldRefreshTask = Task { [weak self] in
+            for delay in [UInt64(250_000_000), UInt64(750_000_000)] {
+                try? await Task.sleep(nanoseconds: delay)
+                guard !Task.isCancelled, let self else { return }
+
+                let shouldStayClear: Bool
+                switch mode {
+                case .off:
+                    shouldStayClear = !SharedAppGroup.desiredShieldActive
+                case .temporarilyUnlocked:
+                    shouldStayClear = SharedAppGroup.desiredShieldActive &&
+                        (SharedAppGroup.unlockExpiration ?? .distantPast) > Date()
+                }
+
+                guard shouldStayClear else { return }
+                self.managedStore.clearAllSettings()
+            }
+
+            self?.shieldRefreshTask = nil
+        }
     }
     #endif
 
@@ -398,28 +632,43 @@ final class ScreenTimeController {
         }
     }
 
-    private func scheduleUnlockRelockMonitor(from start: Date, until expiration: Date) {
+    @discardableResult
+    private func scheduleUnlockRelockMonitor(from start: Date, until expiration: Date) -> Bool {
         #if os(iOS) && canImport(DeviceActivity)
         let calendar = Calendar.current
+        let monitorEnd = Self.unlockRelockMonitorEnd(for: expiration)
+
+        if activityCenter.activities.contains(.checkpointUnlockWindow),
+           let existingSchedule = activityCenter.schedule(for: .checkpointUnlockWindow),
+           let existingEnd = calendar.date(from: existingSchedule.intervalEnd),
+           abs(existingEnd.timeIntervalSince(monitorEnd)) < 0.5 {
+            return true
+        }
+
         let intervalStart = Self.unlockRelockMonitorStart(for: start, expiration: expiration)
         let schedule = DeviceActivitySchedule(
             intervalStart: Self.dateComponents(for: intervalStart, calendar: calendar),
-            intervalEnd: Self.dateComponents(for: expiration, calendar: calendar),
+            intervalEnd: Self.dateComponents(for: monitorEnd, calendar: calendar),
             repeats: false
         )
 
         do {
             stopUnlockRelockMonitor()
             try activityCenter.startMonitoring(.checkpointUnlockWindow, during: schedule)
-            SharedAppGroup.markUnlockRelockMonitorScheduled(intervalStart: intervalStart, expectedEnd: expiration)
+            SharedAppGroup.markUnlockRelockMonitorScheduled(intervalStart: intervalStart, expectedEnd: monitorEnd)
+            return true
         } catch {
-            lastErrorMessage = "System re-lock timer could not start: \(error.localizedDescription). Checkpoint will re-lock when the app is active."
+            lastErrorMessage = "The break could not start because the system re-lock timer was unavailable: \(error.localizedDescription)"
+            return false
         }
+        #else
+        return false
         #endif
     }
 
     private func stopUnlockRelockMonitor() {
         #if os(iOS) && canImport(DeviceActivity)
+        guard activityCenter.activities.contains(.checkpointUnlockWindow) else { return }
         activityCenter.stopMonitoring([.checkpointUnlockWindow])
         #endif
     }
@@ -432,8 +681,14 @@ final class ScreenTimeController {
     }
 
     static func unlockRelockMonitorStart(for start: Date, expiration: Date) -> Date {
-        let latestSafeStart = expiration.addingTimeInterval(-1)
         let leadInStart = start.addingTimeInterval(-unlockRelockMonitorLeadIn)
-        return min(leadInStart, latestSafeStart)
+        let minimumDurationStart = expiration.addingTimeInterval(
+            -minimumUnlockRelockMonitorDuration - unlockRelockMonitorDurationSafetyMargin
+        )
+        return min(leadInStart, minimumDurationStart)
+    }
+
+    static func unlockRelockMonitorEnd(for expiration: Date) -> Date {
+        Date(timeIntervalSince1970: ceil(expiration.timeIntervalSince1970))
     }
 }

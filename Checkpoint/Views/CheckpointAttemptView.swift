@@ -12,6 +12,7 @@ struct CheckpointAttemptView: View {
     @State private var answer = ""
     @State private var result: AnswerResult = .correct
     @State private var checkedAnswer: CheckedCheckpointAnswer?
+    @State private var protectionActionErrorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -243,13 +244,28 @@ struct CheckpointAttemptView: View {
             if checkedAnswer.shouldPass {
                 switch session.purpose {
                 case .temporaryUnlock:
-                    store.startUnlockSession(minutes: checkedAnswer.unlockMinutes)
-                    screenTime.temporarilyUnshield(minutes: checkedAnswer.unlockMinutes)
+                    let now = Date()
+                    let expiration = Calendar.current.date(
+                        byAdding: .minute,
+                        value: checkedAnswer.unlockMinutes,
+                        to: now
+                    ) ?? now
+                    if screenTime.temporarilyUnshield(until: expiration) {
+                        protectionActionErrorMessage = nil
+                        store.startUnlockSession(
+                            minutes: checkedAnswer.unlockMinutes,
+                            expiresAt: expiration
+                        )
+                    } else {
+                        protectionActionErrorMessage = screenTime.userFacingErrorMessage
+                            ?? "The break could not start. Protection is still on; try again."
+                        return
+                    }
                 case .preview:
                     break
                 case .stopBlocking:
-                    store.clearUnlockSession()
                     screenTime.clearShield()
+                    store.clearUnlockSession()
                 }
             }
             dismiss()
@@ -312,6 +328,13 @@ struct CheckpointAttemptView: View {
                         Text(failedSessionFeedbackText)
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    if let protectionActionErrorMessage {
+                        Text(protectionActionErrorMessage)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.coral)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }

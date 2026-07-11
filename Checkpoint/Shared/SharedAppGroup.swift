@@ -16,9 +16,93 @@ enum SharedAppGroup {
         var updatedAt: Date
     }
 
+    struct ProtectionSnapshot: Codable, Equatable, Sendable {
+        static let currentSchemaVersion = 3
+
+        var schemaVersion: Int
+        var desiredShieldActive: Bool
+        var unlockExpiration: Date?
+        var screenTimeSelectionData: Data?
+        var screenTimeSelectionSemanticsVersion: Int
+        var configurationRevision: String
+        var revision: String
+        var updatedAt: Date
+
+        func acceptsPendingShieldAttempt(
+            configurationRevision pendingConfigurationRevision: String?,
+            hasSelection: Bool,
+            now: Date = Date()
+        ) -> Bool {
+            guard desiredShieldActive, hasSelection else { return false }
+            if let unlockExpiration, unlockExpiration > now { return false }
+
+            return pendingConfigurationRevision == nil ||
+                pendingConfigurationRevision == configurationRevision
+        }
+    }
+
+    struct PendingShieldAttempt: Codable, Equatable, Sendable {
+        var id: String
+        var createdAt: Date
+        var protectionConfigurationRevision: String?
+
+        init(
+            id: String = UUID().uuidString,
+            createdAt: Date,
+            protectionConfigurationRevision: String?
+        ) {
+            self.id = id
+            self.createdAt = createdAt
+            self.protectionConfigurationRevision = protectionConfigurationRevision
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case id
+            case createdAt
+            case protectionConfigurationRevision
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            createdAt = try container.decode(Date.self, forKey: .createdAt)
+            protectionConfigurationRevision = try container.decodeIfPresent(
+                String.self,
+                forKey: .protectionConfigurationRevision
+            )
+            id = try container.decodeIfPresent(String.self, forKey: .id)
+                ?? Self.legacyIdentifier(
+                    createdAt: createdAt,
+                    protectionConfigurationRevision: protectionConfigurationRevision
+                )
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(id, forKey: .id)
+            try container.encode(createdAt, forKey: .createdAt)
+            try container.encodeIfPresent(
+                protectionConfigurationRevision,
+                forKey: .protectionConfigurationRevision
+            )
+        }
+
+        static func legacyIdentifier(
+            createdAt: Date,
+            protectionConfigurationRevision: String?
+        ) -> String {
+            "legacy-\(createdAt.timeIntervalSinceReferenceDate)-\(protectionConfigurationRevision ?? "unbound")"
+        }
+    }
+
     static let identifier = "group.com.samchou.checkpoint"
+    static let maximumShieldedApplicationCount = 50
+    static let maximumShieldedWebDomainCount = 50
 
     static let pendingShieldAttemptDateKey = "pendingShieldAttemptDate"
+    static let pendingShieldAttemptProtectionRevisionKey = "pendingShieldAttemptProtectionRevision"
+    static let pendingShieldAttemptDataKey = "checkpoint.pendingShieldAttempt.v2"
+    static let pendingShieldAttemptCurrentIDKey = "checkpoint.pendingShieldAttempt.currentID"
+    private static let pendingShieldAttemptEventKeyPrefix = "checkpoint.pendingShieldAttempt.event."
     static let shieldGoalTitleKey = "shieldGoalTitle"
     static let shieldPromptPreviewKey = "shieldPromptPreview"
     static let shieldAttemptCountKey = "shieldAttemptCount"
@@ -27,6 +111,11 @@ enum SharedAppGroup {
     static let lastUnlockExpirationKey = "lastUnlockExpiration"
     static let desiredShieldActiveKey = "desiredShieldActive"
     static let screenTimeSelectionKey = "checkpoint.screenTime.selection.v1"
+    static let screenTimeSelectionSemanticsVersionKey = "checkpoint.screenTime.selectionSemanticsVersion"
+    static let protectionConfigurationRevisionKey = "checkpoint.protection.configurationRevision"
+    static let protectionRevisionKey = "checkpoint.protection.revision"
+    static let protectionUpdatedAtKey = "checkpoint.protection.updatedAt"
+    static let currentScreenTimeSelectionSemanticsVersion = 1
     static let unlockRelockMonitorScheduledAtKey = "unlockRelockMonitorScheduledAt"
     static let unlockRelockMonitorIntervalStartKey = "unlockRelockMonitorIntervalStart"
     static let unlockRelockMonitorExpectedEndKey = "unlockRelockMonitorExpectedEnd"
@@ -36,15 +125,65 @@ enum SharedAppGroup {
     static let unlockRelockExtensionLastResultKey = "unlockRelockExtensionLastResult"
     private static let shieldContextFileName = "shield-context.json"
     private static let screenTimeSelectionFileName = "screen-time-selection.json"
+    private static let protectionSnapshotFileName = "protection-snapshot.json"
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: identifier) ?? .standard
     }
 
+    static func canAcceptShieldTokenCount(
+        _ proposedCount: Int,
+        currentCount: Int,
+        maximumCount: Int
+    ) -> Bool {
+        proposedCount <= maximumCount ||
+            (currentCount > maximumCount && proposedCount <= currentCount)
+    }
+
+    static func resolvedScreenTimeSelectionSemanticsVersion(
+        storedVersion: Int,
+        applicationTokenCount: Int,
+        webDomainTokenCount: Int
+    ) -> Int {
+        guard storedVersion < currentScreenTimeSelectionSemanticsVersion,
+              applicationTokenCount > 0 || webDomainTokenCount > 0 else {
+            return storedVersion
+        }
+
+        return currentScreenTimeSelectionSemanticsVersion
+    }
+
+    static func usesLegacyCategoryEnforcement(
+        semanticsVersion: Int,
+        applicationTokenCount: Int,
+        categoryTokenCount: Int,
+        webDomainTokenCount: Int
+    ) -> Bool {
+        semanticsVersion < currentScreenTimeSelectionSemanticsVersion &&
+            categoryTokenCount > 0 &&
+            applicationTokenCount == 0 &&
+            webDomainTokenCount == 0
+    }
+
     static func markPendingShieldAttempt() {
         let defaults = defaults
-        defaults.set(Date(), forKey: pendingShieldAttemptDateKey)
+        let attempt = PendingShieldAttempt(
+            createdAt: Date(),
+            protectionConfigurationRevision: currentProtectionSnapshot().configurationRevision
+        )
+        if let data = try? JSONEncoder().encode(attempt) {
+            let previousAttemptID = defaults.string(forKey: pendingShieldAttemptCurrentIDKey)
+            defaults.set(data, forKey: pendingShieldAttemptEventKey(for: attempt.id))
+            defaults.set(attempt.id, forKey: pendingShieldAttemptCurrentIDKey)
+            if let previousAttemptID, previousAttemptID != attempt.id {
+                defaults.removeObject(forKey: pendingShieldAttemptEventKey(for: previousAttemptID))
+            }
+        }
+        defaults.removeObject(forKey: pendingShieldAttemptDataKey)
+        defaults.removeObject(forKey: pendingShieldAttemptDateKey)
+        defaults.removeObject(forKey: pendingShieldAttemptProtectionRevisionKey)
         defaults.set(defaults.integer(forKey: shieldAttemptCountKey) + 1, forKey: shieldAttemptCountKey)
+        defaults.synchronize()
     }
 
     static func markShieldConfigurationRendered() {
@@ -53,11 +192,37 @@ enum SharedAppGroup {
         defaults.set(defaults.integer(forKey: shieldConfigurationRenderCountKey) + 1, forKey: shieldConfigurationRenderCountKey)
     }
 
-    static func consumePendingShieldAttempt() -> Date? {
+    static func consumePendingShieldAttempt(matchingID: String? = nil) -> Date? {
         let defaults = defaults
-        let date = defaults.object(forKey: pendingShieldAttemptDateKey) as? Date
+        guard let attempt = currentPendingShieldAttempt else { return nil }
+        if let matchingID, attempt.id != matchingID {
+            return nil
+        }
+
+        let latestCurrentID = defaults.string(forKey: pendingShieldAttemptCurrentIDKey)
+        if let latestCurrentID, latestCurrentID != attempt.id {
+            return nil
+        }
+
+        defaults.removeObject(forKey: pendingShieldAttemptEventKey(for: attempt.id))
+        defaults.removeObject(forKey: pendingShieldAttemptDataKey)
         defaults.removeObject(forKey: pendingShieldAttemptDateKey)
-        return date
+        defaults.removeObject(forKey: pendingShieldAttemptProtectionRevisionKey)
+        defaults.synchronize()
+        return attempt.createdAt
+    }
+
+    static func removeAllPendingShieldAttempts() {
+        let defaults = defaults
+        for key in defaults.dictionaryRepresentation().keys
+        where key.hasPrefix(pendingShieldAttemptEventKeyPrefix) {
+            defaults.removeObject(forKey: key)
+        }
+        defaults.removeObject(forKey: pendingShieldAttemptCurrentIDKey)
+        defaults.removeObject(forKey: pendingShieldAttemptDataKey)
+        defaults.removeObject(forKey: pendingShieldAttemptDateKey)
+        defaults.removeObject(forKey: pendingShieldAttemptProtectionRevisionKey)
+        defaults.synchronize()
     }
 
     static func publishShieldContext(goalTitle: String?, promptPreview: String?) {
@@ -100,60 +265,62 @@ enum SharedAppGroup {
         try? FileManager.default.removeItem(at: url)
     }
 
-    static func publishUnlockExpiration(_ date: Date?) {
-        let defaults = defaults
-        if let date {
-            defaults.set(date, forKey: lastUnlockExpirationKey)
-        } else {
-            defaults.removeObject(forKey: lastUnlockExpirationKey)
+    static func publishProtectionState(isActive: Bool, unlockExpiration: Date?) {
+        updateProtectionSnapshot { snapshot in
+            snapshot.desiredShieldActive = isActive
+            snapshot.unlockExpiration = unlockExpiration
         }
-        defaults.synchronize()
+    }
+
+    static func publishUnlockExpiration(_ date: Date?) {
+        updateProtectionSnapshot { snapshot in
+            snapshot.unlockExpiration = date
+        }
     }
 
     static func publishDesiredShieldActive(_ isActive: Bool) {
-        let defaults = defaults
-        defaults.set(isActive, forKey: desiredShieldActiveKey)
-        defaults.synchronize()
-    }
-
-    static func markUnlockRelockNeedsAppReconciliation() {
-        publishDesiredShieldActive(true)
-        publishUnlockExpiration(nil)
+        updateProtectionSnapshot { snapshot in
+            snapshot.desiredShieldActive = isActive
+        }
     }
 
     static var desiredShieldActive: Bool {
-        defaults.bool(forKey: desiredShieldActiveKey)
+        currentProtectionSnapshot().desiredShieldActive
     }
 
     static var pendingShieldAttemptDate: Date? {
-        defaults.object(forKey: pendingShieldAttemptDateKey) as? Date
+        currentPendingShieldAttempt?.createdAt
+    }
+
+    static var pendingShieldAttemptProtectionRevision: String? {
+        currentPendingShieldAttempt?.protectionConfigurationRevision
     }
 
     static var unlockExpiration: Date? {
-        defaults.synchronize()
-        return defaults.object(forKey: lastUnlockExpirationKey) as? Date
+        currentProtectionSnapshot().unlockExpiration
     }
 
-    static func publishScreenTimeSelectionData(_ data: Data) {
-        let defaults = defaults
-        defaults.set(data, forKey: screenTimeSelectionKey)
-        writeScreenTimeSelectionData(data)
-        defaults.synchronize()
+    static func publishScreenTimeSelectionData(
+        _ data: Data,
+        semanticsVersion: Int = currentScreenTimeSelectionSemanticsVersion
+    ) {
+        updateProtectionSnapshot { snapshot in
+            snapshot.screenTimeSelectionData = data
+            snapshot.screenTimeSelectionSemanticsVersion = semanticsVersion
+        }
     }
 
     static func screenTimeSelectionData() -> Data? {
-        let defaults = defaults
-        defaults.synchronize()
-
-        if let data = defaults.data(forKey: screenTimeSelectionKey) {
-            return data
-        }
-
-        return readScreenTimeSelectionData()
+        currentProtectionSnapshot().screenTimeSelectionData
     }
 
     static func removeScreenTimeSelectionFile() {
         guard let url = screenTimeSelectionURL else { return }
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    static func removeProtectionSnapshotFile() {
+        guard let url = protectionSnapshotURL else { return }
         try? FileManager.default.removeItem(at: url)
     }
 
@@ -194,6 +361,46 @@ enum SharedAppGroup {
         defaults.integer(forKey: shieldAttemptCountKey)
     }
 
+    static func currentProtectionSnapshot() -> ProtectionSnapshot {
+        readProtectionSnapshot() ?? legacyProtectionSnapshot()
+    }
+
+    static var currentPendingShieldAttempt: PendingShieldAttempt? {
+        let defaults = defaults
+        if let currentID = defaults.string(forKey: pendingShieldAttemptCurrentIDKey) {
+            guard let data = defaults.data(forKey: pendingShieldAttemptEventKey(for: currentID)),
+                  let attempt = try? JSONDecoder().decode(PendingShieldAttempt.self, from: data),
+                  attempt.id == currentID else {
+                return nil
+            }
+            return attempt
+        }
+
+        if let data = defaults.data(forKey: pendingShieldAttemptDataKey),
+           let attempt = try? JSONDecoder().decode(PendingShieldAttempt.self, from: data) {
+            return attempt
+        }
+
+        guard let createdAt = defaults.object(forKey: pendingShieldAttemptDateKey) as? Date else {
+            return nil
+        }
+        let protectionConfigurationRevision = defaults.string(
+            forKey: pendingShieldAttemptProtectionRevisionKey
+        )
+        return PendingShieldAttempt(
+            id: PendingShieldAttempt.legacyIdentifier(
+                createdAt: createdAt,
+                protectionConfigurationRevision: protectionConfigurationRevision
+            ),
+            createdAt: createdAt,
+            protectionConfigurationRevision: protectionConfigurationRevision
+        )
+    }
+
+    private static func pendingShieldAttemptEventKey(for id: String) -> String {
+        pendingShieldAttemptEventKeyPrefix + id
+    }
+
     private static var shieldContextURL: URL? {
         FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
@@ -204,6 +411,12 @@ enum SharedAppGroup {
         FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
             .appendingPathComponent(screenTimeSelectionFileName)
+    }
+
+    private static var protectionSnapshotURL: URL? {
+        FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
+            .appendingPathComponent(protectionSnapshotFileName)
     }
 
     private static func readShieldContext() -> ShieldContext? {
@@ -225,9 +438,132 @@ enum SharedAppGroup {
         return try? Data(contentsOf: url)
     }
 
-    private static func writeScreenTimeSelectionData(_ data: Data) {
-        guard let url = screenTimeSelectionURL else { return }
-        try? data.write(to: url, options: [.atomic])
+    @discardableResult
+    private static func writeScreenTimeSelectionData(_ data: Data) -> Bool {
+        guard let url = screenTimeSelectionURL else { return false }
+
+        do {
+            try data.write(to: url, options: [.atomic])
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    private static func readProtectionSnapshot() -> ProtectionSnapshot? {
+        guard let url = protectionSnapshotURL,
+              let data = try? Data(contentsOf: url),
+              let snapshot = try? JSONDecoder().decode(ProtectionSnapshot.self, from: data),
+              snapshot.schemaVersion > 0
+        else { return nil }
+
+        return snapshot
+    }
+
+    private static func legacyProtectionSnapshot() -> ProtectionSnapshot {
+        let defaults = defaults
+        defaults.synchronize()
+
+        return ProtectionSnapshot(
+            schemaVersion: ProtectionSnapshot.currentSchemaVersion,
+            desiredShieldActive: defaults.bool(forKey: desiredShieldActiveKey),
+            unlockExpiration: defaults.object(forKey: lastUnlockExpirationKey) as? Date,
+            screenTimeSelectionData: defaults.data(forKey: screenTimeSelectionKey) ?? readScreenTimeSelectionData(),
+            screenTimeSelectionSemanticsVersion: defaults.integer(forKey: screenTimeSelectionSemanticsVersionKey),
+            configurationRevision: defaults.string(forKey: protectionConfigurationRevisionKey)
+                ?? "legacy-protection-configuration",
+            revision: defaults.string(forKey: protectionRevisionKey)
+                ?? "legacy-protection-state",
+            updatedAt: defaults.object(forKey: protectionUpdatedAtKey) as? Date ?? .distantPast
+        )
+    }
+
+    private static func updateProtectionSnapshot(
+        _ update: (inout ProtectionSnapshot) -> Void
+    ) {
+        let persistedSnapshot = readProtectionSnapshot()
+        let previousSnapshot = persistedSnapshot ?? legacyProtectionSnapshot()
+        var snapshot = previousSnapshot
+        update(&snapshot)
+
+        let payloadChanged =
+            snapshot.desiredShieldActive != previousSnapshot.desiredShieldActive ||
+            snapshot.unlockExpiration != previousSnapshot.unlockExpiration ||
+            snapshot.screenTimeSelectionData != previousSnapshot.screenTimeSelectionData ||
+            snapshot.screenTimeSelectionSemanticsVersion != previousSnapshot.screenTimeSelectionSemanticsVersion
+
+        let configurationChanged =
+            snapshot.desiredShieldActive != previousSnapshot.desiredShieldActive ||
+            snapshot.screenTimeSelectionData != previousSnapshot.screenTimeSelectionData ||
+            snapshot.screenTimeSelectionSemanticsVersion != previousSnapshot.screenTimeSelectionSemanticsVersion
+
+        guard payloadChanged else {
+            if persistedSnapshot == nil {
+                _ = writeProtectionSnapshot(snapshot)
+            }
+            mirrorLegacyProtectionState(snapshot)
+            return
+        }
+
+        snapshot.schemaVersion = ProtectionSnapshot.currentSchemaVersion
+        if configurationChanged {
+            snapshot.configurationRevision = UUID().uuidString
+        }
+        snapshot.revision = UUID().uuidString
+        snapshot.updatedAt = Date()
+
+        let snapshotWasWritten = writeProtectionSnapshot(snapshot)
+        mirrorLegacyProtectionState(snapshot)
+        if !snapshotWasWritten {
+            // Never let an older canonical file outrank the freshly mirrored
+            // fallback state after an atomic-file write failure.
+            removeProtectionSnapshotFile()
+        }
+    }
+
+    @discardableResult
+    private static func writeProtectionSnapshot(_ snapshot: ProtectionSnapshot) -> Bool {
+        guard let url = protectionSnapshotURL,
+              let data = try? JSONEncoder().encode(snapshot)
+        else { return false }
+
+        do {
+            try data.write(to: url, options: [.atomic])
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    private static func mirrorLegacyProtectionState(_ snapshot: ProtectionSnapshot) {
+        let defaults = defaults
+        defaults.set(snapshot.desiredShieldActive, forKey: desiredShieldActiveKey)
+        defaults.set(snapshot.configurationRevision, forKey: protectionConfigurationRevisionKey)
+        defaults.set(snapshot.revision, forKey: protectionRevisionKey)
+        defaults.set(snapshot.updatedAt, forKey: protectionUpdatedAtKey)
+
+        if let unlockExpiration = snapshot.unlockExpiration {
+            defaults.set(unlockExpiration, forKey: lastUnlockExpirationKey)
+        } else {
+            defaults.removeObject(forKey: lastUnlockExpirationKey)
+        }
+
+        if let selectionData = snapshot.screenTimeSelectionData {
+            defaults.set(selectionData, forKey: screenTimeSelectionKey)
+            defaults.set(
+                snapshot.screenTimeSelectionSemanticsVersion,
+                forKey: screenTimeSelectionSemanticsVersionKey
+            )
+            if !writeScreenTimeSelectionData(selectionData) {
+                removeScreenTimeSelectionFile()
+            }
+        } else {
+            defaults.removeObject(forKey: screenTimeSelectionKey)
+            defaults.removeObject(forKey: screenTimeSelectionSemanticsVersionKey)
+            removeScreenTimeSelectionFile()
+        }
+
+        defaults.synchronize()
     }
 
     #if os(iOS) && canImport(FamilyControls)

@@ -282,7 +282,9 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 if isTemporarilyUnblocked {
-                    BreakRemainingStat(expiresAt: store.unlockSession?.expiresAt)
+                    BreakRemainingStat(
+                        expiresAt: store.unlockSession?.expiresAt ?? SharedAppGroup.unlockExpiration
+                    )
 
                     HStack(spacing: 10) {
                         HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
@@ -301,6 +303,13 @@ struct HomeView: View {
                         }
 
                         StatusBadge(text: "Protection on", tint: CheckpointTheme.teal)
+                    }
+
+                    if let errorMessage = screenTime.userFacingErrorMessage {
+                        Text(errorMessage)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 } else {
                     if let errorMessage = screenTime.userFacingErrorMessage {
@@ -424,7 +433,8 @@ struct HomeView: View {
     }
 
     private var isTemporarilyUnblocked: Bool {
-        screenTime.setupState == .temporarilyUnlocked || store.activeUnlockMinutesRemaining > 0
+        SharedAppGroup.desiredShieldActive &&
+            (screenTime.setupState == .temporarilyUnlocked || store.activeUnlockMinutesRemaining > 0)
     }
 }
 

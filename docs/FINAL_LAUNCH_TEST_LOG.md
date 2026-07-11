@@ -2,12 +2,14 @@
 
 Use this as the source of truth for the final TestFlight and App Store readiness pass. Keep each entry dated, include the device/build, and link the follow-up commit when a test creates work.
 
-Last updated: June 4, 2026 PDT.
+Last updated: July 11, 2026 EDT.
 
 ## Latest Local Validation
 
 | Date | Area | Build or Device | Result | Notes |
 | --- | --- | --- | --- | --- |
+| July 11, 2026 | Protection state-sync XCTest suite | Xcode 26.4, iPhone 17 simulator | Pass | 152 passed, 0 failed after exact-selection, off/on reconciliation, break recovery, and shield-action race coverage was added. |
+| July 11, 2026 | Release simulator build and static analysis | Xcode 26.4, generic iOS simulator | Pass | App and all three Screen Time extensions built successfully; `xcodebuild analyze` completed successfully. |
 | June 4, 2026 | Simulator XCTest suite | XcodeBuildMCP, iPhone 17 simulator | Pass | 101 passed, 0 failed after StoreKit config checks were added. |
 | June 4, 2026 | Simulator app launch | XcodeBuildMCP, iPhone 17 simulator | Pass | Debug app built, installed, and launched without diagnostics. |
 | June 4, 2026 | Release simulator build | Xcode 26.4.1, iPhone 17 simulator | Pass | Release build completed successfully after launch-readiness changes. |
@@ -43,6 +45,13 @@ Run on a physical iPhone before TestFlight and again before App Store submission
 - [ ] Confirm Screen Time authorization is granted.
 - [ ] Choose at least one protected app and one category.
 - [ ] Start protection and verify selected targets are blocked.
+- [ ] Remove one protected app while protection stays on; confirm that app opens and the remaining targets stay blocked.
+- [ ] Remove an app that was added through a category; confirm the category does not add it back.
+- [ ] Confirm a newly installed app from a selected category stays unprotected until the selection is refreshed.
+- [ ] Confirm a selection over 50 websites fails visibly without partially enabling protection.
+- [ ] Confirm a selection over 50 apps fails visibly without partially enabling protection.
+- [ ] Remove the last protected app; confirm protection and any active break both end.
+- [ ] Turn protection off, force-quit/relaunch, and confirm all targets remain unblocked.
 - [ ] Open a protected app and confirm the custom Checkpoint shield appears.
 - [ ] Switch goals in Checkpoint and confirm the shield shows the new current goal.
 - [ ] Tap the shield action and confirm Checkpoint opens.
@@ -51,6 +60,8 @@ Run on a physical iPhone before TestFlight and again before App Store submission
 - [ ] Retry and confirm missed questions are prioritized.
 - [ ] Pass with the configured score and confirm protected apps unblock for the configured duration.
 - [ ] Confirm protected apps re-lock when the break expires.
+- [ ] Edit the protected list during a break and confirm only the newest list re-locks.
+- [ ] Force-quit immediately after starting each 5/10/15/30-minute break and confirm re-lock at expiration.
 - [ ] Force quit and relaunch Checkpoint during an unlock window and after expiration.
 - [ ] Restart the phone and confirm the intended protection state is recovered.
 

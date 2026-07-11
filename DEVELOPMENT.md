@@ -147,7 +147,7 @@ Important platform constraint:
 - Real Screen Time behavior must be verified on a physical iPhone.
 - Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and Screen Time extensions.
 - Family Controls distribution requires Apple approval before App Store submission.
-- Very short 5- and 10-minute unlocks rely primarily on the app-level re-lock task and foreground reconciliation; the Device Activity monitor remains an additional background re-lock path.
+- Device Activity requires a 15-minute monitoring interval, so 5- and 10-minute breaks schedule their monitor far enough in the past to meet that minimum while still ending at the requested time; verify this behavior on a physical iPhone.
 - App Store readiness steps are tracked in `docs/APP_STORE_READINESS.md`.
 - The AI layer has production backend batch generation plus guarded Apple Foundation Models support for explicit internal experiments.
 - Storage is still prototype-level UserDefaults/App Group defaults, not SwiftData or SQLite.

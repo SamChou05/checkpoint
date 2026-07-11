@@ -535,7 +535,13 @@ struct SettingsView: View {
 
     private func confirmGoalDeletion() {
         guard let pendingGoalDeletion else { return }
-        _ = store.deleteGoalProfile(pendingGoalDeletion.id)
+        if store.deleteGoalProfile(pendingGoalDeletion.id) {
+            if store.goal == nil {
+                screenTime.clearShield()
+            } else {
+                screenTime.reconcileShieldState()
+            }
+        }
         self.pendingGoalDeletion = nil
     }
 }

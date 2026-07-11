@@ -6,7 +6,7 @@ Use this checklist before TestFlight and again before App Store submission. Mark
 
 Started: June 4, 2026 PDT.
 
-- [x] Debug simulator tests passed: 101 passed, 0 failed.
+- [x] Debug simulator tests passed: 152 passed, 0 failed on July 11 after protection state-sync coverage was added.
 - [x] Bedrock question service unit tests passed: 15 passed, 0 failed.
 - [x] Release simulator build succeeded.
 - [x] `Checkpoint/Config/Secrets.xcconfig` is ignored and not tracked.
@@ -68,6 +68,13 @@ Findings:
 - [ ] Request Screen Time authorization on a physical iPhone.
 - [ ] Select protected apps/categories/websites.
 - [ ] Start protection and verify the selected targets are blocked.
+- [ ] While protection is on, remove one selected app and verify it opens immediately while the remaining selections stay blocked.
+- [ ] Select a category, remove one app from its expanded selection, and verify the category does not silently re-protect that app.
+- [ ] Install a new app from a previously selected category and confirm the documented snapshot behavior: it stays unprotected until the picker selection is refreshed.
+- [ ] Select more than 50 websites and verify protection stays off with a clear limit message instead of applying a partial list.
+- [ ] Select more than 50 apps and verify protection stays off with a clear limit message instead of applying a partial list.
+- [ ] Remove the final protected app and verify protection turns off, the break timer is canceled, and no stale checkpoint opens.
+- [ ] Turn protection off, force-quit and relaunch Checkpoint, and verify no previously selected app remains blocked.
 - [ ] Open a protected app and confirm the custom Checkpoint shield appears.
 - [ ] Confirm the shield shows the current goal after switching goals.
 - [ ] Tap the shield action and confirm Checkpoint opens.
@@ -75,6 +82,8 @@ Findings:
 - [ ] Fail a checkpoint and confirm protected apps remain locked.
 - [ ] Retake after failure and confirm missed questions are prioritized.
 - [ ] Pass a checkpoint and confirm selected apps unblock for the configured break.
+- [ ] Change the protected-app selection during a break and verify the newest list is the one re-locked at expiration.
+- [ ] Repeat 5-, 10-, 15-, and 30-minute breaks, force-quit Checkpoint immediately, and verify background re-lock at each expiration.
 - [ ] Confirm apps re-lock when the break expires.
 - [ ] Force quit and relaunch during a break and after a break to confirm reconciliation.
 - [ ] Restart the phone and confirm protection state is recovered correctly.

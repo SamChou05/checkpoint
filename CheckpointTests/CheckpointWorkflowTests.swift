@@ -1660,6 +1660,59 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testExpiredUnlockSessionIsPrunedOnRelaunch() {
+        let store = makeSeededStore(questionCount: 6)
+        let expiredAt = Date().addingTimeInterval(-300)
+        store.unlockSession = UnlockSession(
+            startedAt: Date().addingTimeInterval(-600),
+            expiresAt: expiredAt
+        )
+        store.updateUnlockMinutes(store.unlockPolicy.unlockMinutes)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: expiredAt)
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertNil(relaunchedStore.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
+    func testExpiredLocalUnlockDoesNotEraseNewerSharedBreak() {
+        let store = makeSeededStore(questionCount: 6)
+        store.unlockSession = UnlockSession(
+            startedAt: Date().addingTimeInterval(-600),
+            expiresAt: Date().addingTimeInterval(-300)
+        )
+        store.updateUnlockMinutes(store.unlockPolicy.unlockMinutes)
+        let newerSharedExpiration = Date().addingTimeInterval(300)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: newerSharedExpiration
+        )
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertEqual(relaunchedStore.unlockSession?.expiresAt, newerSharedExpiration)
+        XCTAssertEqual(SharedAppGroup.unlockExpiration, newerSharedExpiration)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
+    func testCanonicalEndedBreakClearsStaleFutureLocalUnlock() {
+        let store = makeSeededStore(questionCount: 6)
+        store.startUnlockSession(minutes: 5)
+        XCTAssertTrue(store.unlockSession?.isActive == true)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertNil(relaunchedStore.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
     func testPendingShieldAttemptCreatesOneCheckpointSessionThenClears() throws {
         let store = makeSeededStore(questionCount: 6)
 
@@ -1670,6 +1723,26 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(session.questions.count, 5)
         XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
         XCTAssertNil(store.takePendingShieldSession())
+    }
+
+    @MainActor
+    func testPendingSessionPreparationCannotConsumeReplacementShieldTap() throws {
+        let store = makeSeededStore(questionCount: 6)
+        SharedAppGroup.markPendingShieldAttempt()
+        let firstAttemptID = try XCTUnwrap(SharedAppGroup.currentPendingShieldAttempt?.id)
+
+        SharedAppGroup.markPendingShieldAttempt()
+        let replacementAttemptID = try XCTUnwrap(SharedAppGroup.currentPendingShieldAttempt?.id)
+
+        XCTAssertNotEqual(firstAttemptID, replacementAttemptID)
+        XCTAssertNil(store.takePendingShieldSession(pendingAttemptID: firstAttemptID))
+        XCTAssertEqual(SharedAppGroup.currentPendingShieldAttempt?.id, replacementAttemptID)
+
+        let session = try XCTUnwrap(
+            store.takePendingShieldSession(pendingAttemptID: replacementAttemptID)
+        )
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertNil(SharedAppGroup.currentPendingShieldAttempt)
     }
 
     @MainActor
@@ -1684,25 +1757,33 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testRelockReconciliationPreservesProtectionIntentWhenSelectionRestoreFails() {
-        SharedAppGroup.publishDesiredShieldActive(true)
-        SharedAppGroup.publishUnlockExpiration(Date().addingTimeInterval(-1))
+    func testUnlockRelockMonitorMeetsMinimumDurationForEveryBreakOption() {
+        let start = Date(timeIntervalSince1970: 1_780_000_000)
 
-        SharedAppGroup.markUnlockRelockNeedsAppReconciliation()
+        for minutes in UnlockPolicy.correctAnswerUnlockMinuteOptions {
+            let expiration = start.addingTimeInterval(TimeInterval(minutes * 60))
+            let monitorStart = ScreenTimeController.unlockRelockMonitorStart(
+                for: start,
+                expiration: expiration
+            )
 
-        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
-        XCTAssertNil(SharedAppGroup.unlockExpiration)
+            XCTAssertGreaterThanOrEqual(
+                expiration.timeIntervalSince(monitorStart),
+                ScreenTimeController.minimumUnlockRelockMonitorDuration +
+                    ScreenTimeController.unlockRelockMonitorDurationSafetyMargin
+            )
+            XCTAssertLessThan(monitorStart, expiration)
+        }
     }
 
     @MainActor
-    func testUnlockRelockMonitorStartsInsideCurrentBreakWindow() {
-        let start = Date(timeIntervalSince1970: 1_780_000_000)
-        let expiration = start.addingTimeInterval(300)
+    func testUnlockRelockMonitorRoundsFractionalExpirationUp() {
+        let expiration = Date(timeIntervalSince1970: 1_780_000_000.25)
 
-        let monitorStart = ScreenTimeController.unlockRelockMonitorStart(for: start, expiration: expiration)
+        let monitorEnd = ScreenTimeController.unlockRelockMonitorEnd(for: expiration)
 
-        XCTAssertEqual(monitorStart.timeIntervalSince(start), -ScreenTimeController.unlockRelockMonitorLeadIn, accuracy: 0.001)
-        XCTAssertLessThan(monitorStart, expiration)
+        XCTAssertEqual(monitorEnd.timeIntervalSince1970, 1_780_000_001, accuracy: 0.001)
+        XCTAssertGreaterThanOrEqual(monitorEnd, expiration)
     }
 
     @MainActor
@@ -1710,10 +1791,314 @@ final class CheckpointWorkflowTests: XCTestCase {
         let data = Data("encoded protected app selection".utf8)
 
         SharedAppGroup.publishScreenTimeSelectionData(data)
+        SharedAppGroup.removeProtectionSnapshotFile()
         SharedAppGroup.defaults.removeObject(forKey: SharedAppGroup.screenTimeSelectionKey)
         SharedAppGroup.defaults.synchronize()
 
         XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), data)
+    }
+
+    @MainActor
+    func testCanonicalProtectionSnapshotWinsOverDivergentLegacySelection() {
+        let currentSelection = Data("current protected app selection".utf8)
+        let staleSelection = Data("stale protected app selection".utf8)
+
+        SharedAppGroup.publishScreenTimeSelectionData(currentSelection)
+        SharedAppGroup.defaults.set(staleSelection, forKey: SharedAppGroup.screenTimeSelectionKey)
+        SharedAppGroup.defaults.synchronize()
+
+        XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), currentSelection)
+        XCTAssertEqual(
+            SharedAppGroup.currentProtectionSnapshot().screenTimeSelectionData,
+            currentSelection
+        )
+    }
+
+    @MainActor
+    func testLegacyMigrationPrefersNewerDefaultsSelectionOverStaleFile() {
+        let staleFileSelection = Data("stale file selection".utf8)
+        let newerDefaultsSelection = Data("newer defaults selection".utf8)
+
+        SharedAppGroup.publishScreenTimeSelectionData(staleFileSelection)
+        SharedAppGroup.removeProtectionSnapshotFile()
+        SharedAppGroup.defaults.set(newerDefaultsSelection, forKey: SharedAppGroup.screenTimeSelectionKey)
+        SharedAppGroup.defaults.synchronize()
+
+        XCTAssertEqual(
+            SharedAppGroup.currentProtectionSnapshot().screenTimeSelectionData,
+            newerDefaultsSelection
+        )
+    }
+
+    @MainActor
+    func testLegacyFallbackPreservesAndAdvancesProtectionRevisions() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection A".utf8))
+        let persistedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        SharedAppGroup.removeProtectionSnapshotFile()
+
+        let fallbackSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertEqual(fallbackSnapshot.revision, persistedSnapshot.revision)
+        XCTAssertEqual(
+            fallbackSnapshot.configurationRevision,
+            persistedSnapshot.configurationRevision
+        )
+
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection B".utf8))
+        let updatedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertNotEqual(updatedSnapshot.revision, fallbackSnapshot.revision)
+        XCTAssertNotEqual(
+            updatedSnapshot.configurationRevision,
+            fallbackSnapshot.configurationRevision
+        )
+    }
+
+    func testLegacyCategoryEnforcementOnlyAppliesWithoutConcreteTokens() {
+        XCTAssertTrue(
+            SharedAppGroup.usesLegacyCategoryEnforcement(
+                semanticsVersion: 0,
+                applicationTokenCount: 0,
+                categoryTokenCount: 1,
+                webDomainTokenCount: 0
+            )
+        )
+        XCTAssertFalse(
+            SharedAppGroup.usesLegacyCategoryEnforcement(
+                semanticsVersion: 0,
+                applicationTokenCount: 1,
+                categoryTokenCount: 1,
+                webDomainTokenCount: 0
+            ),
+            "Concrete legacy tokens must be authoritative so a category cannot restore a removed app."
+        )
+        XCTAssertEqual(
+            SharedAppGroup.resolvedScreenTimeSelectionSemanticsVersion(
+                storedVersion: 0,
+                applicationTokenCount: 1,
+                webDomainTokenCount: 0
+            ),
+            SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+        )
+        XCTAssertEqual(
+            SharedAppGroup.resolvedScreenTimeSelectionSemanticsVersion(
+                storedVersion: 0,
+                applicationTokenCount: 0,
+                webDomainTokenCount: 0
+            ),
+            0,
+            "Truly category-only legacy data must remain protected until the user makes a concrete selection."
+        )
+    }
+
+    func testOverLimitSelectionCanBeReducedButNotExpanded() {
+        let limit = SharedAppGroup.maximumShieldedApplicationCount
+
+        XCTAssertTrue(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit - 1,
+                currentCount: limit + 10,
+                maximumCount: limit
+            )
+        )
+        XCTAssertTrue(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit + 9,
+                currentCount: limit + 10,
+                maximumCount: limit
+            ),
+            "An upgraded user must be able to remove an oversized list one item at a time."
+        )
+        XCTAssertFalse(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit + 11,
+                currentCount: limit + 10,
+                maximumCount: limit
+            )
+        )
+        XCTAssertFalse(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit + 1,
+                currentCount: limit,
+                maximumCount: limit
+            )
+        )
+    }
+
+    @MainActor
+    func testExactPendingAttemptConsumptionPreservesNewerShieldTap() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("protected app selection".utf8))
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.markPendingShieldAttempt()
+        let firstAttempt = SharedAppGroup.currentPendingShieldAttempt
+
+        SharedAppGroup.markPendingShieldAttempt()
+        let newerAttempt = SharedAppGroup.currentPendingShieldAttempt
+
+        guard let firstAttempt, let newerAttempt else {
+            return XCTFail("Both pending shield attempts should be persisted.")
+        }
+        XCTAssertNotEqual(firstAttempt.id, newerAttempt.id)
+        XCTAssertNil(
+            SharedAppGroup.consumePendingShieldAttempt(matchingID: firstAttempt.id),
+            "Finishing older async preparation must not consume a newer shield tap."
+        )
+        XCTAssertEqual(SharedAppGroup.currentPendingShieldAttempt?.id, newerAttempt.id)
+        XCTAssertNotNil(SharedAppGroup.consumePendingShieldAttempt(matchingID: newerAttempt.id))
+        XCTAssertNil(SharedAppGroup.currentPendingShieldAttempt)
+    }
+
+    @MainActor
+    func testSelectionChangeInvalidatesPendingShieldAttemptConfiguration() {
+        let initialSelection = Data("protected apps A and B".utf8)
+        let updatedSelection = Data("protected app A".utf8)
+        SharedAppGroup.publishScreenTimeSelectionData(initialSelection)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.markPendingShieldAttempt()
+        let pendingRevision = SharedAppGroup.pendingShieldAttemptProtectionRevision
+
+        SharedAppGroup.publishScreenTimeSelectionData(updatedSelection)
+
+        let updatedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertEqual(updatedSnapshot.screenTimeSelectionData, updatedSelection)
+        XCTAssertNotEqual(pendingRevision, updatedSnapshot.configurationRevision)
+    }
+
+    @MainActor
+    func testSelectionSemanticsUpgradeInvalidatesLegacyCategoryConfiguration() {
+        let selection = Data("legacy category selection".utf8)
+        SharedAppGroup.publishScreenTimeSelectionData(selection, semanticsVersion: 0)
+        let legacyRevision = SharedAppGroup.currentProtectionSnapshot().configurationRevision
+
+        SharedAppGroup.publishScreenTimeSelectionData(
+            selection,
+            semanticsVersion: SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+        )
+
+        let upgradedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertEqual(
+            upgradedSnapshot.screenTimeSelectionSemanticsVersion,
+            SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+        )
+        XCTAssertNotEqual(upgradedSnapshot.configurationRevision, legacyRevision)
+    }
+
+    @MainActor
+    func testProtectionIntentAndBreakExpirationPublishAsOneRevision() {
+        let selection = Data("protected app selection".utf8)
+        let expiration = Date().addingTimeInterval(300)
+        SharedAppGroup.publishScreenTimeSelectionData(selection)
+
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: expiration)
+
+        let publishedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertTrue(publishedSnapshot.desiredShieldActive)
+        XCTAssertEqual(publishedSnapshot.unlockExpiration, expiration)
+        XCTAssertEqual(publishedSnapshot.screenTimeSelectionData, selection)
+
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: expiration)
+        XCTAssertEqual(
+            SharedAppGroup.currentProtectionSnapshot().revision,
+            publishedSnapshot.revision,
+            "Publishing the same state must not make an in-flight shield action stale."
+        )
+    }
+
+    @MainActor
+    func testPendingShieldAttemptIsBoundToProtectionRevision() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("protected app selection".utf8))
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let activeRevision = SharedAppGroup.currentProtectionSnapshot().configurationRevision
+
+        SharedAppGroup.markPendingShieldAttempt()
+
+        XCTAssertEqual(SharedAppGroup.pendingShieldAttemptProtectionRevision, activeRevision)
+
+        SharedAppGroup.publishUnlockExpiration(Date().addingTimeInterval(300))
+
+        XCTAssertEqual(
+            SharedAppGroup.pendingShieldAttemptProtectionRevision,
+            SharedAppGroup.currentProtectionSnapshot().configurationRevision
+        )
+        XCTAssertNotEqual(
+            SharedAppGroup.pendingShieldAttemptProtectionRevision,
+            SharedAppGroup.currentProtectionSnapshot().revision
+        )
+
+        _ = SharedAppGroup.consumePendingShieldAttempt()
+        XCTAssertNil(SharedAppGroup.pendingShieldAttemptProtectionRevision)
+    }
+
+    @MainActor
+    func testExpiredBreakNormalizationKeepsPendingShieldAttemptCurrent() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("protected app selection".utf8))
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: Date().addingTimeInterval(-1)
+        )
+        let expiredBreakRevision = SharedAppGroup.currentProtectionSnapshot().revision
+        SharedAppGroup.markPendingShieldAttempt()
+
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+
+        let normalizedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertNotEqual(normalizedSnapshot.revision, expiredBreakRevision)
+        XCTAssertEqual(
+            SharedAppGroup.pendingShieldAttemptProtectionRevision,
+            normalizedSnapshot.configurationRevision
+        )
+    }
+
+    @MainActor
+    func testPendingShieldAttemptPredicateRejectsOffBreakAndChangedSelection() {
+        let now = Date()
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection A".utf8))
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.markPendingShieldAttempt()
+        let pendingRevision = SharedAppGroup.pendingShieldAttemptProtectionRevision
+
+        let activeSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertTrue(
+            activeSnapshot.acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishUnlockExpiration(now.addingTimeInterval(300))
+        XCTAssertFalse(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishUnlockExpiration(now.addingTimeInterval(-1))
+        XCTAssertTrue(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection B".utf8))
+        XCTAssertFalse(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishProtectionState(isActive: false, unlockExpiration: nil)
+        XCTAssertFalse(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: nil,
+                hasSelection: true,
+                now: now
+            )
+        )
     }
 
     @MainActor
@@ -1768,6 +2153,58 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testOffReconciliationClearsStaleBreakAndPendingAttempt() {
+        SharedAppGroup.publishProtectionState(
+            isActive: false,
+            unlockExpiration: Date().addingTimeInterval(300)
+        )
+        SharedAppGroup.markPendingShieldAttempt()
+
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertFalse(SharedAppGroup.desiredShieldActive)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
+    }
+
+    @MainActor
+    func testMissingSelectionCannotKeepProtectionOrBreakIntentActive() {
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: Date().addingTimeInterval(300)
+        )
+
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        XCTAssertFalse(screenTime.hasSelection)
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertNotEqual(screenTime.setupState, .temporarilyUnlocked)
+        XCTAssertNotEqual(
+            screenTime.lastErrorMessage,
+            "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
+        )
+        XCTAssertFalse(SharedAppGroup.desiredShieldActive)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+    }
+
+    @MainActor
+    func testProtectionStatusUsesAppliedControllerState() {
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        screenTime.setupState = .shieldActive
+        screenTime.isShieldingEnabled = false
+        XCTAssertEqual(screenTime.userFacingProtectionStatus, "Off")
+
+        screenTime.isShieldingEnabled = true
+        XCTAssertEqual(screenTime.userFacingProtectionStatus, "On")
+
+        screenTime.isShieldingEnabled = false
+        screenTime.setupState = .temporarilyUnlocked
+        XCTAssertEqual(screenTime.userFacingProtectionStatus, "Break in progress")
+    }
+
+    @MainActor
     func testScreenTimeSelectionDefaultsToWholeCategoryMode() {
         #if os(iOS) && canImport(FamilyControls)
         let screenTime = ScreenTimeController(defaults: defaults)
@@ -1781,7 +2218,9 @@ final class CheckpointWorkflowTests: XCTestCase {
         #if os(iOS) && canImport(FamilyControls)
         let legacySelection = FamilyActivitySelection()
         let data = try? JSONEncoder().encode(legacySelection)
-        defaults.set(data, forKey: SharedAppGroup.screenTimeSelectionKey)
+        if let data {
+            SharedAppGroup.publishScreenTimeSelectionData(data, semanticsVersion: 0)
+        }
 
         let screenTime = ScreenTimeController(defaults: defaults)
 
@@ -3825,8 +4264,12 @@ private func makeRequest(
 
 private func resetSharedAppGroupState() {
     let defaults = SharedAppGroup.defaults
+    SharedAppGroup.removeAllPendingShieldAttempts()
     [
         SharedAppGroup.pendingShieldAttemptDateKey,
+        SharedAppGroup.pendingShieldAttemptProtectionRevisionKey,
+        SharedAppGroup.pendingShieldAttemptDataKey,
+        SharedAppGroup.pendingShieldAttemptCurrentIDKey,
         SharedAppGroup.shieldGoalTitleKey,
         SharedAppGroup.shieldPromptPreviewKey,
         SharedAppGroup.shieldAttemptCountKey,
@@ -3835,6 +4278,10 @@ private func resetSharedAppGroupState() {
         SharedAppGroup.lastUnlockExpirationKey,
         SharedAppGroup.desiredShieldActiveKey,
         SharedAppGroup.screenTimeSelectionKey,
+        SharedAppGroup.screenTimeSelectionSemanticsVersionKey,
+        SharedAppGroup.protectionConfigurationRevisionKey,
+        SharedAppGroup.protectionRevisionKey,
+        SharedAppGroup.protectionUpdatedAtKey,
         SharedAppGroup.unlockRelockMonitorScheduledAtKey,
         SharedAppGroup.unlockRelockMonitorIntervalStartKey,
         SharedAppGroup.unlockRelockMonitorExpectedEndKey,
@@ -3846,4 +4293,5 @@ private func resetSharedAppGroupState() {
     defaults.synchronize()
     SharedAppGroup.removeShieldContextFile()
     SharedAppGroup.removeScreenTimeSelectionFile()
+    SharedAppGroup.removeProtectionSnapshotFile()
 }
