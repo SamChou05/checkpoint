@@ -239,18 +239,21 @@ struct GoalQuestionContext: Equatable, Sendable {
     var questionDirective: String
     var allowsStudyStrategyQuestions: Bool
     var hasUserFocusAreas: Bool
+    var hasDerivedSkillMap: Bool
 
     var needsGeneratedSkillMap: Bool {
-        !hasUserFocusAreas
+        !hasUserFocusAreas && !hasDerivedSkillMap
     }
 
     init(goal: Goal) {
         let target = GoalQuestionContext.learningTarget(from: goal)
         let focusTopics = GoalQuestionContext.meaningfulFocusTopics(from: goal.focusAreas)
+        let derivedTopics = goal.derivedSkillMap?.topicNames ?? []
+        let resolvedTopics = focusTopics.isEmpty ? derivedTopics : focusTopics
         learningTarget = target
         contentTopics = GoalQuestionContext.contentTopics(
             learningTarget: target,
-            focusTopics: focusTopics
+            focusTopics: resolvedTopics
         )
         questionDirective = GoalQuestionContext.questionDirective(
             goal: goal,
@@ -262,6 +265,7 @@ struct GoalQuestionContext: Equatable, Sendable {
             learningTarget: target
         )
         hasUserFocusAreas = !focusTopics.isEmpty
+        hasDerivedSkillMap = focusTopics.isEmpty && !derivedTopics.isEmpty
     }
 
     private static func learningTarget(from goal: Goal) -> String {
