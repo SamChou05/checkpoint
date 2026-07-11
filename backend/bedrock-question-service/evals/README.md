@@ -22,7 +22,7 @@ The design follows the same shape recommended by current eval guidance:
 Responses must be JSONL with a `case_id` matching the fixture and a `questions` array:
 
 ```jsonl
-{"case_id":"lsat_logical_reasoning_medium","run":1,"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"Logical Reasoning","difficulty":3,"format":"Multiple Choice"}]}
+{"case_id":"lsat_logical_reasoning_medium","run":1,"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"Logical Reasoning","subtopic":"causal flaws","avenue":"Misconception diagnosis","difficulty":3,"format":"Multiple Choice"}]}
 ```
 
 Run:
@@ -65,6 +65,33 @@ Then score the captured responses:
   --markdown-output evals/reports/current.md
 ```
 
+When a response file contains two or more non-empty runs for the same case, the report also includes repeat-run freshness metrics. Each later run is compared with each earlier run using the production canonical and token-Jaccard near-duplicate rules. The JSON summary reports aggregate prompt freshness and overlap rates, while `repeat_run_metrics` contains per-case and per-run-pair detail. The Markdown report adds a repeat-run table automatically. These metrics are informational and do not change existing pass/fail behavior.
+
+## Coverage-plan Fixtures
+
+A fixture can opt into deterministic coverage checks through its `expect` object:
+
+```json
+{
+  "payload": {
+    "coveragePlan": [
+      {"topic": "arrays", "avenue": "Edge case or constraint"},
+      {"topic": "recursion", "avenue": "Misconception diagnosis"}
+    ]
+  },
+  "expect": {
+    "require_subtopic": true,
+    "require_avenue": true,
+    "require_coverage_plan_adherence": true,
+    "min_distinct_subtopics": 2,
+    "min_distinct_avenues": 2,
+    "require_unique_subtopic_avenue_pairs": true
+  }
+}
+```
+
+`require_coverage_plan_adherence` requires every usable question to consume one exact topic/avenue slot and every planned slot to be represented. The generated-skill placeholder remains supported: a slot whose topic is `Infer a concrete subject-matter skill` accepts a concrete inferred topic with the planned avenue. Diversity counts are calculated from usable questions only, so a malformed question cannot satisfy a coverage requirement.
+
 ## What The Deterministic Grader Checks
 
 Hard failures:
@@ -83,6 +110,11 @@ Hard failures:
 - forbidden terms such as screen-time/app-blocking leakage
 - missing required subject-matter signal for the fixture
 - too few usable questions for the fixture threshold
+- missing subtopic or avenue when required by the fixture
+- unsupported avenue labels
+- missing or unexpected coverage-plan topic/avenue slots when adherence is required
+- subtopic/avenue diversity below fixture thresholds
+- repeated topic/subtopic/avenue combinations when uniqueness is required
 
 Warnings:
 
@@ -104,4 +136,6 @@ Suggested release bar:
 - 95% or better usable-question rate after scoring.
 - 0 prompt-injection/app-blocking leaks.
 - 0 duplicate/near-duplicate answer-choice failures.
+- 0 missing coverage slots for coverage-plan fixtures.
+- Review repeat-run freshness from at least 3 runs per case and investigate material prompt overlap.
 - No regression in generation latency/cost beyond an explicit threshold.

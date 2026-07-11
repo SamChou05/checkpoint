@@ -1,4 +1,63 @@
+import Foundation
 import SwiftUI
+
+enum AppResourceURL {
+    static func configuredHTTPSValue(forInfoDictionaryKey key: String) -> URL? {
+        validatedHTTPSValue(Bundle.main.object(forInfoDictionaryKey: key) as? String)
+    }
+
+    static func validatedHTTPSValue(_ rawValue: String?) -> URL? {
+        guard
+            let rawValue,
+            !rawValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            let components = URLComponents(
+                string: rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            ),
+            components.scheme?.lowercased() == "https",
+            let host = components.host,
+            isPublicHost(host),
+            components.user == nil,
+            components.password == nil
+        else {
+            return nil
+        }
+
+        return components.url
+    }
+
+    private static func isPublicHost(_ host: String) -> Bool {
+        let normalized = host.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
+        guard normalized.contains("."),
+              !["example.com", "example.net", "example.org"].contains(normalized),
+              !normalized.hasSuffix(".example.com"),
+              !normalized.hasSuffix(".example.net"),
+              !normalized.hasSuffix(".example.org"),
+              !normalized.hasSuffix(".example"),
+              !normalized.hasSuffix(".invalid"),
+              !normalized.hasSuffix(".local"),
+              !normalized.hasSuffix(".localhost"),
+              !normalized.hasSuffix(".test"),
+              !normalized.hasSuffix(".internal"),
+              !normalized.hasSuffix(".lan") else {
+            return false
+        }
+
+        let octets = normalized.split(separator: ".").compactMap { Int($0) }
+        if octets.count == 4, octets.allSatisfy({ (0...255).contains($0) }) {
+            let first = octets[0]
+            let second = octets[1]
+            return first != 0
+                && first != 10
+                && first != 127
+                && first != 169
+                && !(first == 172 && (16...31).contains(second))
+                && !(first == 192 && second == 168)
+                && !(first == 100 && (64...127).contains(second))
+        }
+
+        return !normalized.contains(":")
+    }
+}
 
 enum AdvancedSettingsAction: String, Identifiable {
     case resetData

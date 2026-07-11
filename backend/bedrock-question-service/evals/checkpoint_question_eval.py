@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 import os
 import re
@@ -158,6 +159,20 @@ def score_response_file(fixtures_path: Path, responses_path: Path) -> dict[str, 
     failed_cases = len(case_results) - passed_cases
     total_questions = sum(result["question_count"] for result in case_results)
     total_usable = sum(result["usable_count"] for result in case_results)
+    repeat_run_metrics = []
+    for case_id in fixtures:
+        metrics = repeat_run_freshness_metrics(case_id, grouped_responses.get(case_id, []))
+        if metrics is not None:
+            repeat_run_metrics.append(metrics)
+
+    repeat_pair_count = sum(metric["run_pair_count"] for metric in repeat_run_metrics)
+    repeat_compared_prompts = sum(
+        metric["compared_prompt_count"] for metric in repeat_run_metrics
+    )
+    repeat_overlapping_prompts = sum(
+        metric["overlapping_prompt_count"] for metric in repeat_run_metrics
+    )
+    repeat_overlap_rate = ratio(repeat_overlapping_prompts, repeat_compared_prompts)
 
     return {
         "summary": {
@@ -168,12 +183,26 @@ def score_response_file(fixtures_path: Path, responses_path: Path) -> dict[str, 
             "total_questions": total_questions,
             "total_usable_questions": total_usable,
             "usable_question_rate": ratio(total_usable, total_questions),
+            "repeat_run_case_count": len(repeat_run_metrics),
+            "repeat_run_pair_count": repeat_pair_count,
+            "repeat_run_compared_prompt_count": repeat_compared_prompts,
+            "repeat_run_overlapping_prompt_count": repeat_overlapping_prompts,
+            "repeat_run_prompt_overlap_rate": repeat_overlap_rate,
+            "repeat_run_prompt_freshness_rate": (
+                1.0 - repeat_overlap_rate if repeat_compared_prompts else 0.0
+            ),
+            "repeat_run_max_pair_overlap_rate": max(
+                (metric["max_pair_overlap_rate"] for metric in repeat_run_metrics),
+                default=0.0,
+            ),
         },
         "cases": case_results,
+        "repeat_run_metrics": repeat_run_metrics,
     }
 
 
 def missing_case_result(fixture: dict[str, Any]) -> dict[str, Any]:
+    coverage, _ = score_coverage_expectations(fixture, [])
     return {
         "case_id": fixture["case_id"],
         "description": fixture.get("description", ""),
@@ -185,6 +214,7 @@ def missing_case_result(fixture: dict[str, Any]) -> dict[str, Any]:
         "failures": ["No response row found for this fixture."],
         "warnings": [],
         "questions": [],
+        "coverage": coverage,
     }
 
 
@@ -213,6 +243,9 @@ def score_case_response(fixture: dict[str, Any], response: dict[str, Any]) -> di
         seen_prompts.add(prompt_key)
         warnings.extend(f"Q{result['index'] + 1}: {warning}" for warning in result["warnings"])
 
+    coverage, coverage_failures = score_coverage_expectations(fixture, question_results)
+    failures.extend(coverage_failures)
+
     return {
         "case_id": fixture["case_id"],
         "description": fixture.get("description", ""),
@@ -224,6 +257,7 @@ def score_case_response(fixture: dict[str, Any], response: dict[str, Any]) -> di
         "failures": failures,
         "warnings": warnings,
         "questions": question_results,
+        "coverage": coverage,
     }
 
 
@@ -259,10 +293,14 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
     expected_answer = clean_text(question.get("expectedAnswer"))
     explanation = clean_text(question.get("explanation"))
     topic = clean_text(question.get("topic"))
+    subtopic = clean_text(question.get("subtopic"))
+    avenue = clean_text(question.get("avenue"))
     choices = [clean_text(choice) for choice in question.get("choices", []) if clean_text(choice)]
     difficulty = integer(question.get("difficulty"))
     format_value = clean_text(question.get("format")).lower()
-    combined_text = " ".join([prompt, expected_answer, explanation, topic, " ".join(choices)])
+    combined_text = " ".join(
+        [prompt, expected_answer, explanation, topic, subtopic, avenue, " ".join(choices)]
+    )
 
     failures: list[str] = []
     warnings: list[str] = []
@@ -296,6 +334,13 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
         failures.append("Missing explanation.")
     if not topic:
         failures.append("Missing topic.")
+    requires_coverage_metadata = bool(expected.get("require_coverage_plan_adherence"))
+    if (expected.get("require_subtopic") or requires_coverage_metadata) and not subtopic:
+        failures.append("Missing required subtopic.")
+    if (expected.get("require_avenue") or requires_coverage_metadata) and not avenue:
+        failures.append("Missing required avenue.")
+    if avenue and avenue not in lambda_function.ALLOWED_QUESTION_AVENUES:
+        failures.append(f"Unsupported avenue: {avenue!r}.")
     if format_value not in {"multiple choice", "multiplechoice", ""}:
         failures.append(f"Unexpected format: {question.get('format')!r}.")
     if len(choices) != 4:
@@ -353,10 +398,197 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
         "index": index,
         "prompt": prompt,
         "topic": topic,
+        "subtopic": subtopic,
+        "avenue": avenue,
         "difficulty": difficulty,
         "failures": failures,
         "warnings": warnings,
     }
+
+
+def score_coverage_expectations(
+    fixture: dict[str, Any],
+    question_results: list[dict[str, Any]],
+) -> tuple[dict[str, Any], list[str]]:
+    expected = fixture.get("expect", {})
+    coverage_plan = [
+        slot
+        for slot in fixture.get("payload", {}).get("coveragePlan", [])
+        if isinstance(slot, dict)
+    ]
+    usable_results = [result for result in question_results if not result["failures"]]
+    failures: list[str] = []
+    remaining_slots = [dict(slot) for slot in coverage_plan]
+    unexpected_slots: list[str] = []
+    matched_slot_count = 0
+
+    if expected.get("require_coverage_plan_adherence"):
+        if not coverage_plan:
+            failures.append("Coverage-plan adherence is required, but the fixture has no coveragePlan.")
+        else:
+            for result in usable_results:
+                slot_index = expected_coverage_slot_index(remaining_slots, result)
+                if slot_index is None:
+                    unexpected_slots.append(question_coverage_label(result))
+                    continue
+                matched_slot_count += 1
+                remaining_slots.pop(slot_index)
+
+            if remaining_slots:
+                missing = ", ".join(coverage_slot_label(slot) for slot in remaining_slots)
+                failures.append(f"Missing usable coverage-plan slots: {missing}.")
+            if unexpected_slots:
+                failures.append(
+                    "Usable questions included topic/avenue pairs outside the coverage plan: "
+                    + ", ".join(unexpected_slots)
+                    + "."
+                )
+
+    subtopic_keys = {
+        canonical(result["subtopic"])
+        for result in usable_results
+        if canonical(result["subtopic"])
+    }
+    avenues = {result["avenue"] for result in usable_results if result["avenue"]}
+    coverage_pair_counts = Counter(
+        (
+            canonical(result["topic"]),
+            canonical(result["subtopic"]),
+            result["avenue"],
+        )
+        for result in usable_results
+        if result["subtopic"] and result["avenue"]
+    )
+
+    minimum_subtopics = integer(expected.get("min_distinct_subtopics"))
+    if minimum_subtopics and len(subtopic_keys) < minimum_subtopics:
+        failures.append(
+            f"Only {len(subtopic_keys)} distinct usable subtopics; expected at least {minimum_subtopics}."
+        )
+
+    minimum_avenues = integer(expected.get("min_distinct_avenues"))
+    if minimum_avenues and len(avenues) < minimum_avenues:
+        failures.append(
+            f"Only {len(avenues)} distinct usable avenues; expected at least {minimum_avenues}."
+        )
+
+    duplicate_pairs = [pair for pair, count in coverage_pair_counts.items() if count > 1]
+    if expected.get("require_unique_subtopic_avenue_pairs") and duplicate_pairs:
+        failures.append(
+            f"Found {len(duplicate_pairs)} repeated usable topic/subtopic/avenue coverage pairs."
+        )
+
+    return (
+        {
+            "planned_slot_count": len(coverage_plan),
+            "matched_usable_slot_count": matched_slot_count,
+            "distinct_usable_subtopic_count": len(subtopic_keys),
+            "distinct_usable_avenue_count": len(avenues),
+            "unique_usable_topic_subtopic_avenue_count": len(coverage_pair_counts),
+        },
+        failures,
+    )
+
+
+def expected_coverage_slot_index(
+    remaining_slots: list[dict[str, Any]],
+    result: dict[str, Any],
+) -> int | None:
+    topic_key = canonical(result["topic"])
+    avenue = result["avenue"]
+    inferred_topic_key = canonical(lambda_function.INFERRED_SKILL_PLAN_TOPIC)
+
+    for permits_inferred_topic in [False, True]:
+        for index, slot in enumerate(remaining_slots):
+            slot_topic_key = canonical(clean_text(slot.get("topic")))
+            slot_infers_topic = slot_topic_key == inferred_topic_key
+            if slot_infers_topic != permits_inferred_topic:
+                continue
+            if clean_text(slot.get("avenue")) != avenue:
+                continue
+            if slot_infers_topic:
+                if topic_key and topic_key != inferred_topic_key:
+                    return index
+            elif topic_key == slot_topic_key:
+                return index
+    return None
+
+
+def coverage_slot_label(slot: dict[str, Any]) -> str:
+    return f"{clean_text(slot.get('topic'))} [{clean_text(slot.get('avenue'))}]"
+
+
+def question_coverage_label(result: dict[str, Any]) -> str:
+    return f"{result['topic']} [{result['avenue']}]"
+
+
+def repeat_run_freshness_metrics(
+    case_id: str,
+    responses: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    runs: list[tuple[Any, list[str]]] = []
+    for response in responses:
+        prompts = [
+            clean_text(question.get("prompt"))
+            for question in extract_questions(response)
+            if clean_text(question.get("prompt"))
+        ]
+        if prompts:
+            runs.append((response.get("run"), prompts))
+
+    if len(runs) < 2:
+        return None
+
+    pairs = []
+    compared_prompt_count = 0
+    overlapping_prompt_count = 0
+    for earlier_index, (earlier_run, earlier_prompts) in enumerate(runs[:-1]):
+        for later_run, later_prompts in runs[earlier_index + 1 :]:
+            overlap_count = sum(
+                1
+                for prompt in later_prompts
+                if any(prompts_overlap(prompt, earlier) for earlier in earlier_prompts)
+            )
+            comparison_count = len(later_prompts)
+            overlap_rate = ratio(overlap_count, comparison_count)
+            compared_prompt_count += comparison_count
+            overlapping_prompt_count += overlap_count
+            pairs.append(
+                {
+                    "earlier_run": earlier_run,
+                    "later_run": later_run,
+                    "compared_prompt_count": comparison_count,
+                    "overlapping_prompt_count": overlap_count,
+                    "prompt_overlap_rate": overlap_rate,
+                    "prompt_freshness_rate": 1.0 - overlap_rate,
+                }
+            )
+
+    overlap_rate = ratio(overlapping_prompt_count, compared_prompt_count)
+    return {
+        "case_id": case_id,
+        "eligible_run_count": len(runs),
+        "run_pair_count": len(pairs),
+        "compared_prompt_count": compared_prompt_count,
+        "overlapping_prompt_count": overlapping_prompt_count,
+        "prompt_overlap_rate": overlap_rate,
+        "prompt_freshness_rate": 1.0 - overlap_rate,
+        "max_pair_overlap_rate": max(
+            (pair["prompt_overlap_rate"] for pair in pairs),
+            default=0.0,
+        ),
+        "pairs": pairs,
+    }
+
+
+def prompts_overlap(left: str, right: str) -> bool:
+    if canonical(left) == canonical(right):
+        return True
+    left_duplicate_key = duplicate_prompt_key(left)
+    if left_duplicate_key and left_duplicate_key == duplicate_prompt_key(right):
+        return True
+    right_tokens = lambda_function._prompt_content_tokens(right)  # noqa: SLF001
+    return lambda_function._is_near_duplicate_prompt(left, [right_tokens])  # noqa: SLF001
 
 
 def minimum_usable_questions(fixture: dict[str, Any]) -> int:
@@ -367,11 +599,18 @@ def minimum_usable_questions(fixture: dict[str, Any]) -> int:
 
 
 def blocked_prompt_duplicate(prompt: str, payload: dict[str, Any]) -> str | None:
-    prompt_key = canonical(prompt)
+    blocked_prompts: list[str] = []
     for source_key in ["existingPrompts", "reportedPrompts"]:
         for blocked in payload.get(source_key, []):
-            if prompt_key == canonical(str(blocked)):
-                return str(blocked)
+            blocked_prompts.append(str(blocked))
+    for source_key in ["existingQuestionCoverage", "reportedQuestionFeedback"]:
+        for item in payload.get(source_key, []):
+            if isinstance(item, dict) and clean_text(item.get("prompt")):
+                blocked_prompts.append(clean_text(item.get("prompt")))
+
+    for blocked in blocked_prompts:
+        if prompts_overlap(prompt, blocked):
+            return blocked
     return None
 
 
@@ -450,14 +689,26 @@ def capture_generation_attempts(request: dict[str, Any]) -> tuple[list[dict[str,
     attempts = lambda_function._int_env(  # noqa: SLF001
         "GENERATION_ATTEMPTS",
         lambda_function.DEFAULT_GENERATION_ATTEMPTS,
-        maximum=5,
+        maximum=lambda_function.DEFAULT_GENERATION_ATTEMPTS,
+    )
+    call_budget = lambda_function.ProviderCallBudget(
+        lambda_function.MAX_PROVIDER_CALLS_PER_REQUEST
     )
     questions: list[dict[str, Any]] = []
     raw_attempts: list[dict[str, Any]] = []
     current_request = json.loads(json.dumps(request))
 
     for attempt_number in range(1, attempts + 1):
-        provider_payload = lambda_function._generate_provider_payload(current_request, None)  # noqa: SLF001
+        try:
+            provider_payload = lambda_function._generate_provider_payload(  # noqa: SLF001
+                current_request,
+                None,
+                call_budget,
+            )
+        except lambda_function.ProviderError:
+            if questions:
+                break
+            raise
         raw_questions = provider_payload.get("questions", [])
         if not isinstance(raw_questions, list):
             raw_questions = []
@@ -480,6 +731,14 @@ def capture_generation_attempts(request: dict[str, Any]) -> tuple[list[dict[str,
         current_request["existingPrompts"] = (
             request["existingPrompts"] + [question["prompt"] for question in questions]
         )
+        current_request["existingQuestionCoverage"] = (
+            request["existingQuestionCoverage"]
+            + [lambda_function._question_coverage_payload(question) for question in questions]  # noqa: SLF001
+        )
+        current_request["coveragePlan"] = lambda_function._remaining_coverage_plan(  # noqa: SLF001
+            request.get("coveragePlan", []),
+            questions,
+        )
 
     return questions[:target_count], raw_attempts
 
@@ -498,11 +757,18 @@ def write_report(report: dict[str, Any], output: str | None, markdown_output: st
 
 def summary_text(report: dict[str, Any]) -> str:
     summary = report["summary"]
-    return (
+    text = (
         f"Prompt eval: {summary['passed_cases']}/{summary['response_runs']} response runs passed; "
         f"{summary['total_usable_questions']}/{summary['total_questions']} questions usable "
         f"({summary['usable_question_rate']:.1%})."
     )
+    if summary.get("repeat_run_pair_count", 0):
+        text += (
+            f" Repeat-run prompt freshness: {summary['repeat_run_prompt_freshness_rate']:.1%} "
+            f"({summary['repeat_run_prompt_overlap_rate']:.1%} overlap across "
+            f"{summary['repeat_run_pair_count']} run pairs)."
+        )
+    return text
 
 
 def markdown_report(report: dict[str, Any]) -> str:
@@ -528,6 +794,31 @@ def markdown_report(report: dict[str, Any]) -> str:
                 warnings=escape_markdown_table(warnings),
             )
         )
+
+    repeat_run_metrics = report.get("repeat_run_metrics", [])
+    if repeat_run_metrics:
+        lines.extend(
+            [
+                "",
+                "## Repeat-run prompt freshness",
+                "",
+                "The overlap metric treats production-style canonical or token-Jaccard near-duplicates as repeats.",
+                "",
+                "| Case | Eligible runs | Run pairs | Freshness | Overlap | Max pair overlap |",
+                "| --- | ---: | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for metrics in repeat_run_metrics:
+            lines.append(
+                "| {case_id} | {runs} | {pairs} | {freshness:.1%} | {overlap:.1%} | {maximum:.1%} |".format(
+                    case_id=escape_markdown_table(metrics["case_id"]),
+                    runs=metrics["eligible_run_count"],
+                    pairs=metrics["run_pair_count"],
+                    freshness=metrics["prompt_freshness_rate"],
+                    overlap=metrics["prompt_overlap_rate"],
+                    maximum=metrics["max_pair_overlap_rate"],
+                )
+            )
     return "\n".join(lines) + "\n"
 
 

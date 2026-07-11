@@ -16,6 +16,10 @@ DerivedData/
 *.ipa
 *.dSYM.zip
 *.dSYM
+*.xcarchive/
+*.xcresult/
+*.resultbundle/
+ExportOptions*.plist
 
 # Swift Package Manager local state
 .build/
@@ -49,5 +53,6 @@ checkpoint.md
 
 # Logs and temporary files
 *.log
+__pycache__/
 tmp/
 temp/

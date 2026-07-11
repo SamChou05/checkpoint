@@ -2,12 +2,21 @@
 
 Use this as the source of truth for the final TestFlight and App Store readiness pass. Keep each entry dated, include the device/build, and link the follow-up commit when a test creates work.
 
-Last updated: June 4, 2026 PDT.
+Last updated: July 10, 2026 EDT.
 
 ## Latest Local Validation
 
 | Date | Area | Build or Device | Result | Notes |
 | --- | --- | --- | --- | --- |
+| July 10, 2026 | Simulator XCTest suite | Xcode 26.4.1, iPhone 17 Pro simulator | Pass | 212 passed, 0 failed after backend-consent, reserve deletion-ordering, legal-link, release configuration, async top-off synchronization, and level-up supersession changes. |
+| July 10, 2026 | Bedrock question service | Python 3.12 unittest + Ruff + SAM CLI | Pass | 106 passed, 0 failed; SAM lint and build passed. |
+| July 10, 2026 | AWS production deployment | `checkpoint-question-service-prod`, `us-east-1` | Pass | Authenticated generation and the complete reserve lifecycle passed against the live stack; unauthenticated requests returned 401. |
+| July 10, 2026 | AWS production controls | DynamoDB, SQS, EventBridge, Lambda | Pass | TTL and encryption enabled; DLQ redrive/visibility and recovery schedule verified; smoke invocations reported zero Lambda errors. |
+| July 10, 2026 | AWS production observability | CloudWatch Logs and alarms | Pass | Both Lambda functions use stack-managed 30-day log groups; endpoint 5xx, worker error, stale reserve queue, and DLQ alarms were deployed and reported `OK` after an authenticated one-question smoke test. |
+| July 10, 2026 | Physical-device Release archive | Checkpoint 1.0 (2) | Pass | Archive contains the live backend endpoint, rotated Keychain-backed credential, and all three extensions. |
+| July 10, 2026 | Release credential handling | Checkpoint 1.0 (2) | Pass | The exposed credential was rotated, the earlier archive was deleted, unauthenticated requests still return 401, and a fresh archive was rebuilt and verified against the replacement credential. |
+| July 10, 2026 | App Store export | Checkpoint 1.0 (2) | Blocked | Xcode reported `No Accounts` and no App Store profiles for the app and three extensions. Sign in and verify Family Controls distribution access before retrying. |
+| July 10, 2026 | Final release archive | Post-consent/legal-link candidate | Pending | Rebuild from the final commit after owner-approved Privacy and Support URLs are configured; the current development archive is retained only for technical validation. |
 | June 4, 2026 | Simulator XCTest suite | XcodeBuildMCP, iPhone 17 simulator | Pass | 101 passed, 0 failed after StoreKit config checks were added. |
 | June 4, 2026 | Simulator app launch | XcodeBuildMCP, iPhone 17 simulator | Pass | Debug app built, installed, and launched without diagnostics. |
 | June 4, 2026 | Release simulator build | Xcode 26.4.1, iPhone 17 simulator | Pass | Release build completed successfully after launch-readiness changes. |
@@ -21,14 +30,16 @@ Last updated: June 4, 2026 PDT.
 
 These must pass before broader TestFlight testing.
 
+- [x] Production backend credential was rotated after the July 10 archive-inspection exposure; the earlier archive was deleted and build 2 was rebuilt and verified.
+- [ ] Fresh archive and exported IPA have a write-once manifest and verified SHA-256 checksums from `docs/RELEASE_ARTIFACTS.md`.
 - [ ] Local StoreKit run from Xcode shared `Checkpoint` scheme loads Monthly and Annual products.
 - [ ] Local StoreKit Monthly purchase switches Free to Pro.
 - [ ] Local StoreKit Annual purchase switches Free to Pro.
 - [ ] Local StoreKit expired or cleared subscription returns Pro to Free on foreground refresh.
 - [ ] Restore purchases restores Pro only when a current local entitlement exists.
-- [ ] Release build uses the intended backend endpoint or intentionally falls back to Apple/local generation.
-- [ ] Exposed backend has `CHECKPOINT_BACKEND_TOKEN` configured and does not set `ALLOW_UNAUTHENTICATED_BACKEND=true`.
-- [ ] Backend endpoint rejects unauthenticated requests.
+- [x] Release build uses the intended backend endpoint or intentionally falls back to Apple/local generation.
+- [x] Exposed backend has `CHECKPOINT_BACKEND_TOKEN` configured and does not set `ALLOW_UNAUTHENTICATED_BACKEND=true`.
+- [x] Backend endpoint rejects unauthenticated requests.
 - [ ] Backend endpoint rate limits by install ID and IP before calling Bedrock.
 - [ ] Backend question batch generation returns valid, unique, on-target choices for LSAT, technical interview, and school exam goals.
 - [ ] Latest installed iPhone build is launched once while the iPhone is unlocked.

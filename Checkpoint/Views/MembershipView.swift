@@ -58,6 +58,7 @@ struct MembershipView: View {
                     ) {
                         PlanBenefitRow(title: "Up to 5 goals", detail: "Keep school, exams, interviews, and personal goals organized separately.")
                         PlanBenefitRow(title: "Practice stays ready", detail: "Get new checkpoints as your priorities and progress change.")
+                        PlanBenefitRow(title: "Cloud-generated questions", detail: "With your permission, Pro prepares varied questions in the cloud and falls back locally when needed.")
                         PlanBenefitRow(title: "More variety", detail: "Work through a broader range of questions so practice stays useful.")
                         PlanBenefitRow(title: "Guided review", detail: "Missed ideas come back at the right time so weak spots do not disappear.")
 
@@ -69,6 +70,7 @@ struct MembershipView: View {
                             priceContent
 
                             PlanFootnote(subscriptionDisclosureText)
+                            subscriptionLegalLinks
                         } else {
                             DisabledPlanButton(title: "Current plan", systemImage: "checkmark")
                         }
@@ -208,6 +210,30 @@ struct MembershipView: View {
 
     private var subscriptionDisclosureText: String {
         "Billing is handled by Apple. Subscriptions renew automatically until canceled in App Store account settings."
+    }
+
+    @ViewBuilder
+    private var subscriptionLegalLinks: some View {
+        let privacyPolicyURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointPrivacyPolicyURL"
+        )
+        let termsOfUseURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointTermsOfUseURL"
+        )
+
+        if privacyPolicyURL != nil || termsOfUseURL != nil {
+            HStack(spacing: 16) {
+                if let privacyPolicyURL {
+                    Link("Privacy Policy", destination: privacyPolicyURL)
+                }
+
+                if let termsOfUseURL {
+                    Link("Terms of Use", destination: termsOfUseURL)
+                }
+            }
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.teal)
+        }
     }
 
     private func loadEntitlements() async {

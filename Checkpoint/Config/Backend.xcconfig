@@ -1,7 +1,14 @@
 // Public defaults for Checkpoint's internal AI backend build settings.
-// Local and release secrets live in Secrets.xcconfig, which is ignored by git.
+// Automated release builds can provide the *_OVERRIDE values through their
+// environment. Local secrets can still live in the ignored Secrets.xcconfig.
 
-CHECKPOINT_AI_BACKEND_ENDPOINT =
-CHECKPOINT_AI_BACKEND_TOKEN =
+CHECKPOINT_AI_BACKEND_ENDPOINT = $(CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE)
+CHECKPOINT_AI_BACKEND_TOKEN = $(CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE)
+
+// Privacy and support stay empty until the release owner supplies HTTPS URLs.
+// Terms use Apple's standard EULA unless a release configuration overrides it.
+CHECKPOINT_PRIVACY_POLICY_URL = $(CHECKPOINT_PRIVACY_POLICY_URL_OVERRIDE)
+CHECKPOINT_SUPPORT_URL = $(CHECKPOINT_SUPPORT_URL_OVERRIDE)
+CHECKPOINT_TERMS_OF_USE_URL = https:/$()/www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
 #include? "Secrets.xcconfig"

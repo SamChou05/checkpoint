@@ -35,18 +35,18 @@ Important platform constraint:
 - Settings keeps user-facing controls focused on Goals, App blocking, and Checkpoint rules; shield diagnostics and reset now live in a collapsed Advanced area.
 - The app is currently modeled as a starter-membership product: the first goal and core blocker loop are included before payment, while membership unlocks goal switching and ongoing fresh generation.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
-- Question quality reporting is accessible from Settings instead of the checkpoint answer screen.
+- Question feedback is available directly after answer feedback and remains reviewable from Settings. Confusing, wrong-answer, and irrelevant reports invalidate long-term evidence and only void the live gate when a ready replacement is appended. Too Easy/Too Hard remain learning evidence and adjust the topic estimate. Starter quality replacement generation is persisted and capped at three one-for-one items per goal.
 - Screen Time authorization is requested once on first launch; Settings keeps a fallback access button only when permission is not ready.
 - Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 stop challenge from Home or Advanced.
 - Settings includes a compact Membership section without putting payment decisions in the core checkpoint flow.
-- Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh local questions when the current set can no longer fill the next checkpoint.
+- Question replenishment is abstracted away from users: Checkpoint maintains a fresh local reserve before the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
 - Natural-language goal profile onboarding flow.
 - Onboarding starts blank and rejects empty goal titles.
 - Goal category is inferred internally from the typed goal and optional focus areas instead of shown as a setup choice.
 - Question generation extracts an internal learning target from natural-language goals, so `Study for the LSAT` becomes LSAT content rather than questions about studying.
-- Existing profiles reopen prefilled for edits; users can create and switch multiple goal profiles.
+- Existing profiles reopen prefilled for in-place edits; the profile ID, attempts, reports, unlock history, and retired question audit records survive a content refresh.
 - Home lets users switch the active goal profile, and each profile keeps its own question difficulty, practice set, history, reports, and Skill Map.
 - Home focuses on the active profile and blocking state; the manual checkpoint preview is tucked into Advanced for testing and does not unlock apps.
 
@@ -55,19 +55,19 @@ Important platform constraint:
 - Goal intake captures title, deadline, focus areas, and the profile-specific minimum question level; internal category and topic inference keep fallback question generation useful.
 - The generation request derives a learning target, content topics, and a question directive before calling local, backend, or Apple Foundation providers.
 - If a goal has no usable focus areas, the initial 5-question provider batch is allowed to infer the first Skill Map; background bank top-off then uses those generated competencies.
-- Provider prompts intentionally stay simple: user goal, derived learning target, content topics, requested count, difficulty floor, a concise difficulty rubric, and multiple-choice requirements.
+- Provider prompts include a deterministic coverage plan that rotates under-covered topic and assessment-avenue pairs while weighting weaker competencies.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Local templates generate stored multiple-choice seed questions when AI providers are unavailable, including LSAT-style Logical Reasoning and Reading Comprehension fallbacks.
 - Backend and Apple Foundation Models providers are wired behind a shared generation interface.
 - A first AWS Bedrock Lambda backend is scaffolded in `backend/bedrock-question-service`; it matches the app contract, validates model output, and keeps provider credentials off-device.
-- AI generation should happen in batches and be cached locally, not live on every app-open attempt.
-- Questions store prompt, expected answer, answer choices, explanation, topic, difficulty, format, status, ask count, correctness count, and next review date.
+- AI generation happens in bounded provider-sized chunks and is cached locally, never live on every blocked-app attempt.
+- Questions store prompt, expected answer, answer choices, explanation, topic, subtopic, assessment avenue, difficulty, format, status, ask count, correctness count, and next review date.
 - Answer attempts are stored in history.
 - Multiple-choice checkpoint answers are locally graded for the MVP before the final unlock.
 - Multi-question checkpoint sessions ask 5 questions and require 4 correct answers by default before unlocking.
 - Missed questions from a failed checkpoint set become due immediately and are prioritized in the next set.
 - Each goal profile stores a 1-to-5 minimum question difficulty so users can skip material below their level for that subject.
-- Raising the active goal's question level retires below-level questions and triggers member question-bank regeneration at the new level; lowering the level keeps existing harder questions usable.
+- Raising the active goal's question level retires below-level questions; lowering it retires the harder ready bank so the next set actually begins at the requested foundation. Familiarity or level changes seed a fresh ready batch without resetting the profile history.
 - Revealing the expected answer before submission keeps the current attempt locked.
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
@@ -82,8 +82,24 @@ Important platform constraint:
 - Automatic tries Apple Foundation Models first, then a configured backend LLM, then Local Templates as the no-cost/offline fallback.
 - Provider routing is internal so users do not need to choose a question source.
 - The app stores the last provider used for diagnostics.
-- Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, oversized, and off-target study-strategy questions.
+- Generated batches pass through a shared sanitizer before storage to remove blank, exact or semantic duplicate, reported, invalid, oversized, and off-target study-strategy questions.
+- Freshness history includes the latest 120 structured topic/subtopic/avenue rows rather than only a short oldest-first prompt list.
+- New-question session selection rotates topics and assessment avenues when priorities are otherwise equal; urgent missed and due questions still win.
+- The app keeps separate total-ready and never-asked reserves so a bank made mostly of reviews does not look deceptively fresh.
 - XCTest coverage verifies question-bank generation, session selection, unlock gating, shield-triggered sessions, provider policy, and sanitizer behavior.
+
+### Background Question Readiness
+
+- The app owns one `CheckpointStore` shared by the SwiftUI scene and background handlers, preventing a background store from overwriting newer foreground state.
+- `BGAppRefreshTask` performs a short one-chunk maintenance pass; `BGProcessingTask` can fill several chunks while the device is idle and connected.
+- Both task identifiers and the `fetch`/`processing` background modes are declared in `Info.plist`. Requests are submitted only while a bank or persisted quality replacement needs work, cold background launches revalidate StoreKit entitlement, transient failures are re-requested, and work cancels on expiration.
+- Refill requests respect the backend's 20-question cap and loop until the 40-question Starter or 80-question Pro high-water mark, the task budget is used, or a provider makes no progress.
+- Maintenance checks every Pro goal profile, prioritizing the active and least-fresh banks. An interrupted first Starter-bank top-off resumes until its one-time provisioning marker is complete, even if the learner answered a warm-up question before relaunching.
+- Background scheduling on iOS is opportunistic and is not a force-quit guarantee. The local reserve remains the immediate-availability mechanism. The optional server reserve below removes generation's dependence on iOS execution after a sync; bringing its prepared batch back on-device still requires a foreground launch or an opportunistic iOS wake, and silent push would not be guaranteed either.
+- An opt-in Pro server reserve now implements that server-owned fallback without silent push: the app syncs one bounded revisioned goal request, SQS prepares at most 20 questions under a DynamoDB lease, EventBridge recovers stranded work, and the app durably merges an idempotent held delivery when the local usable or fresh reserve is low. The local bank remains the shield-path latency boundary.
+- Client-generated Keychain credentials, monotonic sync sequences, stale-revision rejection, daily worker quotas, bounded retry/backoff, authenticated deletion, and 30-day TTL keep the reserve private and cost-bounded. App Attest remains a public-scale abuse-hardening gate because an app-wide bootstrap bearer can be extracted.
+- Background diagnostics distinguish an iOS-accepted request from an executed task, and shared support exports redact learning prompts, answers, and explanations by default.
+- Local persistence uses a schema-tagged primary snapshot plus validated previous-save backup. Future-schema primary or backup data blocks writes during a downgrade instead of being replaced by stale or empty state.
 
 ### Adaptive Competency
 
@@ -155,8 +171,8 @@ Important platform constraint:
 While Apple entitlement/device setup is pending, useful local work is:
 
 - Replace prototype persistence with a production-ready local store.
-- Add onboarding diagnostics for better initial competency estimates.
-- Improve adaptive competency and diagnostic flows.
+- Validate the lightweight onboarding calibration against real learner sessions.
+- Continue improving adaptive competency signals without expanding setup friction.
 - Continue UI polish and error states.
 
 ## Current MVP Definition
@@ -189,15 +205,16 @@ The MVP is complete when:
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.
 - Replace prototype persistence with SwiftData or SQLite.
 - Deploy and verify the Bedrock backend against a real endpoint/model.
+- Deploy the reserve table/queue/worker/schedule resources, enable the cloud-reserve consent toggle on a physical Pro test account, and complete the reserve QA matrix in `docs/SERVER_QUESTION_RESERVE.md`.
 - Verify Apple Foundation Models generation with the iOS SDK and supported hardware.
 
 ### P1
 
-- Add a diagnostic quiz during onboarding.
+- Evaluate whether answer-driven calibration is sufficient before adding any onboarding quiz.
 - Explore open-ended AI grading after the multiple-choice MVP is stable.
 - Add stricter repeat-attempt escalation.
 - Add no-unlock Deep Focus windows.
-- Add bad-question reporting.
+- Add a support-side review/export workflow for aggregated question-quality reports.
 
 ### P2
 
@@ -226,7 +243,7 @@ The cheapest scalable architecture is hybrid:
 2. Cache generated questions locally.
 3. Track progress locally without AI.
 4. Use deterministic scheduling for missed, due, and weak-area questions.
-5. Use AI only when a goal is created or the current set can no longer fill the next checkpoint.
+5. Use AI only when a goal is created or a total/fresh reserve crosses its low-water mark.
 
 Avoid:
 
@@ -238,7 +255,7 @@ Recommended MVP path:
 
 - Start with local templates and deterministic tracking.
 - Add a backend endpoint for batch question generation.
-- Generate 20 to 40 questions per goal or topic batch while costs are being validated.
+- Generate at most 20 questions per backend call and fill larger 40/80-question banks through idempotent chunks while costs are being validated.
 - Store expected answer, explanation, topic, difficulty, and quality flags.
 - Use multiple choice for the MVP so grading is deterministic and cheap.
 - Revisit open-ended prompts only after the core blocker loop is reliable.

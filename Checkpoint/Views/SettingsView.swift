@@ -197,6 +197,56 @@ struct SettingsView: View {
                         practiceStandardContent
                     }
 
+                    if store.isBackendQuestionGenerationConfigured {
+                        SectionPanel("Cloud question generation") {
+                            if store.isMember {
+                                Toggle(
+                                    "Use Pro cloud questions",
+                                    isOn: Binding(
+                                        get: { store.backendQuestionGenerationConsentGranted },
+                                        set: { store.updateBackendQuestionGenerationConsent($0) }
+                                    )
+                                )
+                                .tint(CheckpointTheme.teal)
+
+                                Text(
+                                    store.isProCloudQuestionGenerationActive
+                                        ? "Cloud-first generation and the background question reserve are active. Local generation takes over automatically during an outage."
+                                        : "Pro is using local generation. Enable cloud questions for more variety and questions prepared while the app is closed."
+                                    )
+                                .font(.footnote)
+                                .foregroundStyle(CheckpointTheme.muted)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                                Text("When enabled, Checkpoint sends your goal details, focus areas, skill progress, recent question coverage, and question-report notes to its AWS service. Up to 20 prepared questions per goal may be retained for 30 days; turning this off requests deletion.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            } else {
+                                Label("Free questions are generated on this device", systemImage: "iphone")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text("Pro adds cloud-first generation and a background reserve. Free never sends question-generation data to the cloud.")
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                if store.backendQuestionGenerationConsentGranted {
+                                    Button("Clear saved cloud permission and data") {
+                                        store.updateBackendQuestionGenerationConsent(false)
+                                    }
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.coral)
+                                }
+                            }
+                        }
+                    }
+
+                    SectionPanel("Help & legal") {
+                        helpAndLegalContent
+                    }
+
                     SectionPanel("Advanced") {
                         DisclosureGroup(isExpanded: $isAdvancedExpanded) {
                             VStack(alignment: .leading, spacing: 14) {
@@ -488,6 +538,103 @@ struct SettingsView: View {
         }
     }
 
+    @ViewBuilder
+    private var helpAndLegalContent: some View {
+        let privacyPolicyURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointPrivacyPolicyURL"
+        )
+        let termsOfUseURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointTermsOfUseURL"
+        )
+        let supportURL = AppResourceURL.configuredHTTPSValue(
+            forInfoDictionaryKey: "CheckpointSupportURL"
+        )
+
+        VStack(alignment: .leading, spacing: 14) {
+            if let privacyPolicyURL {
+                legalResourceLink(
+                    title: "Privacy Policy",
+                    systemImage: "hand.raised",
+                    destination: privacyPolicyURL
+                )
+
+                Divider()
+            }
+
+            if let termsOfUseURL {
+                legalResourceLink(
+                    title: "Terms of Use",
+                    systemImage: "doc.text",
+                    destination: termsOfUseURL
+                )
+            }
+
+            if let supportURL {
+                if termsOfUseURL != nil {
+                    Divider()
+                }
+
+                legalResourceLink(
+                    title: "Support",
+                    systemImage: "questionmark.circle",
+                    destination: supportURL
+                )
+            }
+
+            let missingResources = [
+                privacyPolicyURL == nil ? "Privacy Policy" : nil,
+                termsOfUseURL == nil ? "Terms of Use" : nil,
+                supportURL == nil ? "Support" : nil
+            ].compactMap { $0 }
+
+            if !missingResources.isEmpty {
+                if privacyPolicyURL != nil || termsOfUseURL != nil || supportURL != nil {
+                    Divider()
+                }
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Label("Release setup needed", systemImage: "exclamationmark.triangle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.amber)
+
+                    Text("Configure valid HTTPS links for: \(missingResources.joined(separator: ", ")).")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+
+    private func legalResourceLink(
+        title: String,
+        systemImage: String,
+        destination: URL
+    ) -> some View {
+        Link(destination: destination) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 34, height: 34)
+                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Spacer(minLength: 0)
+
+                Image(systemName: "arrow.up.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens in your browser")
+    }
+
     private func prepareCheckpointPreview() {
         guard !isPreparingPreviewCheckpoint else { return }
         isPreparingPreviewCheckpoint = true
@@ -678,8 +825,28 @@ private struct QuestionGenerationDiagnosticsView: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Recent prompts, providers, and generated question previews.")
+                        Text("Recent prompts, providers, generated question previews, and background preparation status.")
                             .font(.subheadline)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    SectionPanel("Background preparation") {
+                        Text(QuestionBankBackgroundScheduler.diagnosticsSummary)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        ShareLink(item: QuestionBankBackgroundScheduler.diagnosticsSupportText) {
+                            Label("Share background details", systemImage: "square.and.arrow.up")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.teal)
+                        }
+                    }
+
+                    SectionPanel("Saved data") {
+                        Text(store.persistenceDiagnosticsSummary)
+                            .font(.footnote)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -712,7 +879,7 @@ private struct QuestionGenerationDiagnosticsView: View {
 
                 if !store.questionGenerationTraces.isEmpty {
                     ToolbarItemGroup(placement: .primaryAction) {
-                        ShareLink(item: store.questionGenerationDiagnosticsExportText) {
+                        ShareLink(item: store.questionGenerationDiagnosticsSupportText) {
                             Image(systemName: "square.and.arrow.up")
                         }
                         .foregroundStyle(CheckpointTheme.teal)

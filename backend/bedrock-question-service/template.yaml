@@ -22,6 +22,11 @@ Parameters:
     Type: Number
     Default: 400
     MinValue: 1
+  MaxReserveBatchesPerInstallPerDay:
+    Type: Number
+    Default: 4
+    MinValue: 1
+    MaxValue: 100
   BackendToken:
     Type: String
     Default: ""
@@ -32,12 +37,50 @@ Parameters:
     AllowedValues:
       - "true"
       - "false"
+  LogRetentionDays:
+    Type: Number
+    Default: 30
+    AllowedValues:
+      - 1
+      - 3
+      - 5
+      - 7
+      - 14
+      - 30
+      - 60
+      - 90
+      - 120
+      - 150
+      - 180
+      - 365
+      - 400
+      - 545
+      - 731
+      - 1827
+      - 2192
+      - 2557
+      - 2922
+      - 3288
+      - 3653
+    Description: CloudWatch Logs retention for both Lambda functions.
+  AlarmNotificationTopicArn:
+    Type: String
+    Default: ""
+    Description: Optional existing SNS topic ARN for operational alarm and recovery notifications.
+
+Conditions:
+  HasAlarmNotificationTopic: !Not
+    - !Equals
+      - !Ref AlarmNotificationTopicArn
+      - ""
 
 Resources:
   QuestionRateLimitTable:
     Type: AWS::DynamoDB::Table
     Properties:
       BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
       AttributeDefinitions:
         - AttributeName: rateKey
           AttributeType: S
@@ -48,6 +91,67 @@ Resources:
         AttributeName: expiresAt
         Enabled: true
 
+  QuestionReserveTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+        - AttributeName: duePartition
+          AttributeType: S
+        - AttributeName: nextAttemptAt
+          AttributeType: N
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: DueWorkIndex
+          KeySchema:
+            - AttributeName: duePartition
+              KeyType: HASH
+            - AttributeName: nextAttemptAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+  QuestionReserveDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600
+
+  QuestionReserveQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      VisibilityTimeout: 600
+      MessageRetentionPeriod: 345600
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt QuestionReserveDeadLetterQueue.Arn
+        maxReceiveCount: 5
+
+  CheckpointQuestionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}/question-http"
+      RetentionInDays: !Ref LogRetentionDays
+
+  CheckpointQuestionReserveWorkerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}/reserve-worker"
+      RetentionInDays: !Ref LogRetentionDays
+
   CheckpointQuestionFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -56,6 +160,8 @@ Resources:
       CodeUri: .
       Timeout: 30
       MemorySize: 256
+      LoggingConfig:
+        LogGroup: !Ref CheckpointQuestionLogGroup
       Environment:
         Variables:
           BEDROCK_MODEL_ID: !Ref BedrockModelId
@@ -64,8 +170,11 @@ Resources:
           CHECKPOINT_BACKEND_TOKEN: !Ref BackendToken
           ALLOW_UNAUTHENTICATED_BACKEND: !Ref AllowUnauthenticatedBackend
           RATE_LIMIT_TABLE_NAME: !Ref QuestionRateLimitTable
+          RESERVE_TABLE_NAME: !Ref QuestionReserveTable
+          RESERVE_QUEUE_URL: !Ref QuestionReserveQueue
           MAX_REQUESTS_PER_INSTALL_PER_DAY: !Ref MaxRequestsPerInstallPerDay
           MAX_REQUESTS_PER_IP_PER_DAY: !Ref MaxRequestsPerIPPerDay
+          MAX_RESERVE_BATCHES_PER_INSTALL_PER_DAY: !Ref MaxReserveBatchesPerInstallPerDay
       FunctionUrlConfig:
         AuthType: NONE
         Cors:
@@ -75,9 +184,9 @@ Resources:
             - authorization
             - content-type
             - x-checkpoint-install-id
+            - x-checkpoint-install-secret
           AllowMethods:
             - POST
-            - OPTIONS
       Policies:
         - Statement:
             - Effect: Allow
@@ -89,8 +198,202 @@ Resources:
               Action:
                 - dynamodb:UpdateItem
               Resource: !GetAtt QuestionRateLimitTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:DeleteItem
+                - dynamodb:Query
+              Resource:
+                - !GetAtt QuestionReserveTable.Arn
+                - !Sub "${QuestionReserveTable.Arn}/index/*"
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt QuestionReserveQueue.Arn
+
+  CheckpointQuestionReserveWorkerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.12
+      Handler: lambda_function.reserve_worker_handler
+      CodeUri: .
+      Timeout: 90
+      MemorySize: 256
+      LoggingConfig:
+        LogGroup: !Ref CheckpointQuestionReserveWorkerLogGroup
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelId
+          MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
+          RATE_LIMIT_TABLE_NAME: !Ref QuestionRateLimitTable
+          RESERVE_TABLE_NAME: !Ref QuestionReserveTable
+          RESERVE_QUEUE_URL: !Ref QuestionReserveQueue
+          MAX_RESERVE_BATCHES_PER_INSTALL_PER_DAY: !Ref MaxReserveBatchesPerInstallPerDay
+      Events:
+        ReserveQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt QuestionReserveQueue.Arn
+            BatchSize: 1
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            ScalingConfig:
+              MaximumConcurrency: 4
+        ReserveRecovery:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: rate(15 minutes)
+            FlexibleTimeWindow:
+              Mode: "OFF"
+            Input: '{"operation":"reserveRecovery"}'
+            RetryPolicy:
+              MaximumRetryAttempts: 2
+              MaximumEventAgeInSeconds: 900
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:Query
+              Resource:
+                - !GetAtt QuestionReserveTable.Arn
+                - !Sub "${QuestionReserveTable.Arn}/index/*"
+            - Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
+              Resource: !GetAtt QuestionRateLimitTable.Arn
+            - Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+                - sqs:SendMessage
+              Resource: !GetAtt QuestionReserveQueue.Arn
+
+  QuestionEndpointServerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: The public question endpoint returned at least three server errors in five minutes.
+      Namespace: AWS/Lambda
+      MetricName: Url5xxCount
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref CheckpointQuestionFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
+      OKActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
+
+  QuestionReserveQueueAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Reserve work has remained queued for at least 15 minutes across two checks.
+      Namespace: AWS/SQS
+      MetricName: ApproximateAgeOfOldestMessage
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt QuestionReserveQueue.QueueName
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 2
+      Threshold: 900
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
+      OKActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
+
+  QuestionReserveDeadLetterQueueAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A reserve-generation job exhausted retries and reached the dead-letter queue.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt QuestionReserveDeadLetterQueue.QueueName
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
+      OKActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
+
+  QuestionReserveWorkerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: The reserve worker or scheduled recovery invocation returned an unhandled error.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref CheckpointQuestionReserveWorkerFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
+      OKActions: !If
+        - HasAlarmNotificationTopic
+        - - !Ref AlarmNotificationTopicArn
+        - !Ref AWS::NoValue
 
 Outputs:
   QuestionEndpoint:
     Description: Function URL to use as Checkpoint's AI backend endpoint.
     Value: !GetAtt CheckpointQuestionFunctionUrl.FunctionUrl
+  QuestionLogGroup:
+    Description: CloudWatch log group for synchronous and reserve HTTP requests.
+    Value: !Ref CheckpointQuestionLogGroup
+  QuestionReserveWorkerLogGroup:
+    Description: CloudWatch log group for queued generation and recovery work.
+    Value: !Ref CheckpointQuestionReserveWorkerLogGroup
+  QuestionEndpointServerErrorAlarmName:
+    Description: Alarm for repeated Function URL server errors.
+    Value: !Ref QuestionEndpointServerErrorAlarm
+  QuestionReserveQueueAgeAlarmName:
+    Description: Alarm for stale reserve work.
+    Value: !Ref QuestionReserveQueueAgeAlarm
+  QuestionReserveDeadLetterQueueAlarmName:
+    Description: Alarm for exhausted reserve jobs.
+    Value: !Ref QuestionReserveDeadLetterQueueAlarm
+  QuestionReserveWorkerErrorAlarmName:
+    Description: Alarm for reserve worker or scheduled recovery invocation errors.
+    Value: !Ref QuestionReserveWorkerErrorAlarm

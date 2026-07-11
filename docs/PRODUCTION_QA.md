@@ -2,7 +2,26 @@
 
 Use this checklist before TestFlight and again before App Store submission. Mark items with the date, device/build, result, and any follow-up commit. The dated final validation log lives in `docs/FINAL_LAUNCH_TEST_LOG.md`.
 
-## Current QA Run
+## Latest Local Automated Validation
+
+Run: July 10, 2026 EDT.
+
+- [x] Complete Debug iOS simulator suite passed: 212 tests, 0 failures, including explicit backend consent, cancellation-insensitive reserve deletion ordering, public legal-URL validation, and level-up supersession of an in-flight question-bank top-off.
+- [x] Release iOS simulator build succeeded, including all three Screen Time extensions.
+- [x] Bedrock question service suite passed: 106 tests, 0 failures, including 22 server-reserve tests.
+- [x] Python compilation, `ruff`, plist validation, `git diff --check`, and CloudFormation-aware YAML parsing passed.
+- [x] Focused reserve tests cover opt-in, authentication recovery, stale revisions, durable save-before-ack and ACK retry across relaunch, duplicate delivery, partial-batch recovery, low-fresh pulls, fast shield delivery, background coalescing, downgrade purge, and interrupted-purge retry.
+- [x] AWS SAM lint/build passed and `checkpoint-question-service-prod` deployed in `us-east-1`; authenticated generation plus register/sync/worker/pull/ack/purge/delete smoke tests passed.
+- [x] Deployed DynamoDB TTL/SSE, SQS SSE/visibility/DLQ redrive, 15-minute recovery schedule, and zero-error Lambda smoke metrics were verified.
+- [x] Deployed 30-day stack-managed Lambda log retention plus endpoint 5xx, worker error, stale reserve queue, and reserve DLQ alarms; all four alarms reported `OK` after an authenticated live smoke test.
+- [x] A physical-device Release archive `1.0 (2)` succeeded with all extensions and the live backend configuration embedded.
+- [x] The production backend credential exposed during local archive inspection was rotated, the earlier archive was deleted, and `1.0 (2)` was rebuilt and verified with the replacement credential.
+- [ ] Rebuild the final archive from the final commit after owner-approved Privacy/Support URLs are configured and the backend-consent gate is included; the current archive remains a technical validation artifact.
+- [ ] App Store export is blocked: Xcode reports no signed-in account and no App Store distribution profiles for the app or its three extensions.
+- [ ] An owner-selected SNS notification destination and AWS Budget threshold still need to be configured; the alarms and worker-side generation quotas are active.
+- [ ] The latest changes still require physical-device background-task, shield-loop, and StoreKit verification.
+
+## Previous Device QA Run
 
 Started: June 4, 2026 PDT.
 
@@ -62,6 +81,27 @@ Findings:
 - [ ] Backend rejects malformed, duplicate, off-target, and below-difficulty questions.
 - [ ] App falls back gracefully when backend returns 401, 429, 502, or malformed data.
 - [ ] Goal title, focus areas, derived learning target, difficulty, and weak topics are present in backend requests.
+
+## Cloud Question Reserve
+
+- [ ] The reserve remains off until a Pro user explicitly enables its Settings toggle.
+- [ ] Registration sends a locally generated secret over HTTPS and DynamoDB stores only its SHA-256 hash.
+- [ ] Repeating registration with the same install/secret succeeds; a different secret cannot rotate that install.
+- [ ] A goal sync queues at most one 20-question deficit and does not generate again merely because time passes.
+- [ ] Duplicate SQS messages and a simultaneous recovery sweep result in one Bedrock worker lease/provider operation.
+- [ ] A delayed older sync cannot replace a newer goal revision.
+- [ ] Editing the goal or syncing desired count zero while Bedrock runs prevents the stale result from committing.
+- [ ] Pull returns the same stable delivery until acknowledgement.
+- [ ] Questions are persisted locally before acknowledgement; save failure sends no acknowledgement.
+- [ ] Relaunch after save-before-ack creates no duplicate questions and then acknowledges the delivery.
+- [ ] Stale acknowledgement cannot clear a newer held delivery.
+- [ ] Low never-asked inventory triggers a pull even when review questions keep total inventory above ten.
+- [ ] Provider failures honor backoff, stop after the configured attempt cap, and do not bypass the four-batch daily worker quota.
+- [ ] Downgrade syncs desired count zero; opt-out, goal deletion, and reset send authenticated deletion.
+- [ ] DynamoDB TTL, SQS DLQ/visibility, EventBridge recovery, CloudWatch errors, and AWS budget alarms are verified in the deployed stack.
+- [ ] Worst-case UTF-8 reserve state remains below its 360 KiB application cap and DynamoDB's 400 KiB item limit.
+- [ ] App Store privacy labels and the hosted policy disclose the opt-in retained goal/question data and 30-day TTL.
+- [ ] App Attest or an equivalent registration-abuse control is decided before unrestricted public scale.
 
 ## Real Shield Loop
 
