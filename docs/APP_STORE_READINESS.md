@@ -73,8 +73,8 @@ Last checked: July 11, 2026 EDT.
 - Local signing/provisioning now finds the paid team `RF8739P5MC` (`Cicada Labs LLC`) and generated development profiles.
 - Physical-device Debug build now succeeds using the project signing settings.
 - Signed build 4 verifies and is installed in place over build 3 on the physical test iPhone with bundle ID `com.samchou.checkpoint`; the device reports version 1.0, build 4.
-- Automated launch is still pending because the phone was locked at the launch attempt.
-- Next action: unlock and launch build 4, verify that build-3 progress and protection selection migrated, then complete the real shield/unshield/re-lock test plan below before any clean reset.
+- Build 4 launches successfully after the physical test iPhone is unlocked.
+- Next action: visually verify that build-3 progress and protection selection migrated, then complete the real shield/unshield/re-lock test plan below before any clean reset.
 
 ## Physical Device Test Plan
 
