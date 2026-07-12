@@ -36,6 +36,17 @@ final class StoreKitPaymentTests: XCTestCase {
         #endif
     }
 
+    func testCompiledQAProBuildOptInIsExplicit() {
+        #if DEBUG
+        XCTAssertTrue(
+            DebugMembershipEntitlement.isEnabled(
+                environment: [:],
+                compiledQABuild: true
+            )
+        )
+        #endif
+    }
+
     func testLegalLinksRejectMissingAndUnexpandedBuildSettings() {
         XCTAssertNil(LegalLinks.configuredURL(nil))
         XCTAssertNil(LegalLinks.configuredURL(""))

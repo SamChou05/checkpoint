@@ -17,6 +17,8 @@ The shared `Checkpoint` scheme points its Run action to that file, so local Xcod
 
 Debug builds now start from the real StoreKit entitlement state. To preview Pro without making a StoreKit transaction, explicitly add the environment variable `CHECKPOINT_DEBUG_PRO_ENTITLEMENT=1` to the Run action. Keep it absent or disabled for Free-to-Pro purchase, restore, expiration, and cancellation testing. Release builds ignore this override.
 
+For a persistent on-device QA build that remains Pro after a Home-screen relaunch, add `CHECKPOINT_DEBUG_PRO_BUILD` to `SWIFT_ACTIVE_COMPILATION_CONDITIONS` for that Debug build only. The condition is absent by default, and Release builds ignore it even if it is supplied.
+
 ## Local Xcode Testing
 
 1. Open `Checkpoint.xcodeproj`.
