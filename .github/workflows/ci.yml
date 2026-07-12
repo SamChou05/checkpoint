@@ -65,7 +65,9 @@ jobs:
 
   ios-quality:
     name: iOS tests, Release build, and analysis
-    runs-on: macos-15
+    # ShieldAction submenu cases require the iOS 26 SDK. macOS 15 runners
+    # default to Xcode 16.4 even when newer simulator runtimes are present.
+    runs-on: macos-26
     timeout-minutes: 45
     env:
       CI: "true"
@@ -75,8 +77,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - name: Report Xcode version
-        run: xcodebuild -version
+      - name: Require Xcode 26 or newer
+        shell: bash
+        run: |
+          xcodebuild -version
+          xcode_major="$(xcodebuild -version | awk '/^Xcode / { split($2, parts, "."); print parts[1] }')"
+          if [[ -z "$xcode_major" || "$xcode_major" -lt 26 ]]; then
+            echo "Checkpoint CI requires Xcode 26 or newer for the current Screen Time API." >&2
+            exit 1
+          fi
 
       - name: Select an available iPhone simulator
         id: simulator
