@@ -25,10 +25,11 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Home no longer offers one-tap pause or manual checkpoint entry while blocking is active; short breaks start from blocked-app attempts or emergency passes, while fully stopping blocking requires an 18-of-20 stop challenge.
 - Manual checkpoint preview lives in Debug-only Developer tools and does not unlock apps.
 - Checkpoint quietly prepares fresh questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
+- Question generation explicitly plans distinct tested objectives, and fresh quiz slots spread across available topics before repeating one.
 - Users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
 - Starter/membership product behavior: the first goal, app blocking, and checkpoint unlock loop are usable before payment; membership keeps fresh checkpoints ready, unlocks goal profiles, larger question banks, and adaptive Study Assist.
 - Privacy manifests for the app and Screen Time extensions.
-- Screen Time controller for Family Controls authorization, app selection, shielding, temporary unlocks, and re-lock reconciliation.
+- A required first-launch Screen Time authorization gate precedes goal setup, followed by app selection, shielding, temporary unlocks, and re-lock reconciliation.
 - Shield Configuration extension target for branded Screen Time shield UI.
 - Shield Action extension target that records a pending checkpoint and asks iOS to open Checkpoint when the shield primary button is tapped.
 - Device Activity Monitor extension target that re-applies shields when a temporary unlock expires.
@@ -84,17 +85,17 @@ For real Screen Time testing:
 1. Use a real iPhone when possible.
 2. In Xcode, add the Family Controls capability for the app target.
 3. Confirm the bundle ID is available in your Apple Developer account.
-4. Tap `Set up app protection` on Home, or open Settings -> `Allow Screen Time`, and approve access.
-5. Select apps/categories and tap `Start blocking` from Home.
+4. Launch Checkpoint and approve the required Screen Time request before goal setup appears.
+5. Select apps/categories and tap `Start protection` from Home.
 
 The current code includes the FamilyControls picker, selection persistence, ManagedSettings shielding, temporary unshielding after a successful checkpoint, automatic re-shielding after the unlock timer, a Device Activity monitor extension for background re-locking, shield configuration/action extensions, and App Group state sharing.
 
 ## Real-Device Loop To Verify
 
-1. Launch Checkpoint and create a goal.
-2. Tap `Set up app protection` and approve Screen Time access.
-3. Settings -> `Choose blocked apps`.
-4. Home -> `Start blocking`.
+1. Launch Checkpoint and approve Screen Time access from the required startup screen.
+2. Create a goal.
+3. Home -> `Choose apps`.
+4. Home -> `Start protection`.
 5. Open a selected blocked app.
 6. Confirm the Checkpoint shield appears with current goal/prompt copy.
 7. Tap `Open Checkpoint` on the shield.

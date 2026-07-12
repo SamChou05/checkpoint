@@ -80,16 +80,40 @@ private struct FamilyPickerContent: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 Label(selectionSummary, systemImage: "checklist")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.text)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                if !localSelection.categoryTokens.isEmpty {
+                    Text("Category shortcuts add their apps to this list. Your individual app changes take precedence.")
+                        .font(.caption)
+                        .foregroundStyle(CheckpointTheme.amber)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if let errorMessage = screenTime.userFacingErrorMessage {
+                    Text(errorMessage)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.coral)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .padding(16)
             .background(CheckpointTheme.panel)
 
             FamilyActivityPicker(selection: $localSelection)
                 .onChange(of: localSelection) { _, newSelection in
-                    screenTime.updateSelection(newSelection)
+                    if !screenTime.updateSelection(newSelection) {
+                        localSelection = screenTime.selection
+                    }
                 }
+        }
+        .onChange(of: screenTime.selection) { _, newSelection in
+            if localSelection != newSelection {
+                localSelection = newSelection
+            }
+        }
+        .onDisappear {
+            _ = screenTime.updateSelection(localSelection)
         }
     }
 

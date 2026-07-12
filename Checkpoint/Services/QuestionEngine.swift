@@ -1,10 +1,11 @@
 import Foundation
 
-enum QuestionGenerationError: LocalizedError, Sendable {
+enum QuestionGenerationError: LocalizedError, Equatable, Sendable {
     case providerUnavailable
     case backendNotConfigured
     case serviceUnavailable
     case rateLimited
+    case safetyIntervention
     case badResponse
     case noQuestionsGenerated
 
@@ -18,6 +19,8 @@ enum QuestionGenerationError: LocalizedError, Sendable {
             return "The AI question service is unavailable."
         case .rateLimited:
             return "The AI question service rate limit was reached."
+        case .safetyIntervention:
+            return "The AI question service could not process this goal safely."
         case .badResponse:
             return "The question provider returned an invalid response."
         case .noQuestionsGenerated:
@@ -30,6 +33,7 @@ enum QuestionGenerationFailureKind: String, Codable, Equatable, Sendable {
     case serviceUnavailable
     case transientProviderFailure
     case qualityRejected
+    case safetyIntervention
 
     var title: String {
         switch self {
@@ -39,6 +43,8 @@ enum QuestionGenerationFailureKind: String, Codable, Equatable, Sendable {
             return "Couldn't connect"
         case .qualityRejected:
             return "Add a little more direction"
+        case .safetyIntervention:
+            return "Choose a different topic"
         }
     }
 
@@ -50,11 +56,17 @@ enum QuestionGenerationFailureKind: String, Codable, Equatable, Sendable {
             return "Your goal is saved. Check your connection, then try again."
         case .qualityRejected:
             return "We couldn't prepare a focused checkpoint. Try again or add a few topics to your goal."
+        case .safetyIntervention:
+            return "Checkpoint can't create practice for this goal as written. Edit the goal or topics, then try again."
         }
     }
 
     var allowsEditingTopics: Bool {
-        self == .qualityRejected
+        self == .qualityRejected || self == .safetyIntervention
+    }
+
+    var allowsRetryWithoutChanges: Bool {
+        self != .safetyIntervention
     }
 }
 
@@ -129,6 +141,7 @@ struct QuestionGenerationRequest: Sendable {
         - Include all facts, source material, passages, examples, or constraints needed to answer each question without outside context.
         - Cover the focus topics as evenly as possible across the batch.
         - Expand the user's question bank: prefer new subskills, examples, stimulus shapes, edge cases, and misconception types that are not already represented in existing coverage.
+        - Make a diversity plan before writing: assign every item a distinct fact, rule, mechanism, or reasoning step, including when multiple items share a topic.
         - Do not paraphrase an existing stem or reuse the same correct-answer mechanism for the same topic when another useful angle is available.
         - Every question prompt and topic must visibly match \(context.learningTarget) and one of the focus topics or inferred skill-map topics.
         - For level 3 and above, use a short scenario, stimulus, code fragment, data point, constraint, or qualifier that requires application or reasoning.
@@ -239,18 +252,21 @@ struct GoalQuestionContext: Equatable, Sendable {
     var questionDirective: String
     var allowsStudyStrategyQuestions: Bool
     var hasUserFocusAreas: Bool
+    var hasDerivedSkillMap: Bool
 
     var needsGeneratedSkillMap: Bool {
-        !hasUserFocusAreas
+        !hasUserFocusAreas && !hasDerivedSkillMap
     }
 
     init(goal: Goal) {
         let target = GoalQuestionContext.learningTarget(from: goal)
         let focusTopics = GoalQuestionContext.meaningfulFocusTopics(from: goal.focusAreas)
+        let derivedTopics = goal.derivedSkillMap?.topicNames ?? []
+        let resolvedTopics = focusTopics.isEmpty ? derivedTopics : focusTopics
         learningTarget = target
         contentTopics = GoalQuestionContext.contentTopics(
             learningTarget: target,
-            focusTopics: focusTopics
+            focusTopics: resolvedTopics
         )
         questionDirective = GoalQuestionContext.questionDirective(
             goal: goal,
@@ -262,6 +278,7 @@ struct GoalQuestionContext: Equatable, Sendable {
             learningTarget: target
         )
         hasUserFocusAreas = !focusTopics.isEmpty
+        hasDerivedSkillMap = focusTopics.isEmpty && !derivedTopics.isEmpty
     }
 
     private static func learningTarget(from goal: Goal) -> String {
@@ -504,6 +521,8 @@ struct HybridQuestionEngine: Sendable {
             return .serviceUnavailable
         case .rateLimited:
             return .serviceUnavailable
+        case .safetyIntervention:
+            return .safetyIntervention
         case .badResponse, .noQuestionsGenerated:
             return .qualityRejected
         }
@@ -516,7 +535,8 @@ struct HybridQuestionEngine: Sendable {
         let priority: [QuestionGenerationFailureKind: Int] = [
             .serviceUnavailable: 0,
             .qualityRejected: 1,
-            .transientProviderFailure: 2
+            .transientProviderFailure: 2,
+            .safetyIntervention: 3
         ]
         return (priority[candidate] ?? 0) >= (priority[current] ?? 0) ? candidate : current
     }

@@ -1,17 +1,29 @@
+import Accessibility
 import SwiftUI
 
 struct HomeView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
 
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
     @State private var isWeeklyReviewPresented = false
     @State private var isAcceptingLevelIncrease = false
     @State private var isRetryingInitialQuestions = false
+    @State private var isQuestionsReadyConfirmationVisible = false
+    @State private var questionsReadyConfirmationDismissTask: Task<Void, Never>?
     @State private var lastActivationRefreshAt: Date?
 
     private static let activationRefreshDebounceInterval: TimeInterval = 20
+    private static let questionsReadyConfirmationText = "Your questions are ready."
+    private static let questionsReadyConfirmationDurationNanoseconds: UInt64 = 4_000_000_000
+
+    private struct QuestionPreparationSnapshot: Equatable {
+        let goalID: Goal.ID?
+        let isPreparing: Bool
+        let hasReadyCheckpointSet: Bool
+    }
 
     var body: some View {
         NavigationStack {
@@ -48,6 +60,21 @@ struct HomeView: View {
                 if phase == .active {
                     handleQuestionRefreshOnActivation()
                 }
+            }
+            .onChange(of: questionPreparationSnapshot) { previous, current in
+                guard previous.goalID == current.goalID else {
+                    hideQuestionsReadyConfirmation()
+                    return
+                }
+
+                if previous.isPreparing,
+                   !current.isPreparing,
+                   current.hasReadyCheckpointSet {
+                    showQuestionsReadyConfirmation()
+                }
+            }
+            .onDisappear {
+                hideQuestionsReadyConfirmation()
             }
         }
     }
@@ -112,13 +139,15 @@ struct HomeView: View {
                         }
 
                         HStack(spacing: 10) {
-                            SecondaryActionButton(
-                                title: isRetryingInitialQuestions ? "Trying again" : "Try again",
-                                systemImage: "arrow.clockwise"
-                            ) {
-                                retryInitialQuestionGeneration()
+                            if store.lastQuestionGenerationFailure?.allowsRetryWithoutChanges != false {
+                                SecondaryActionButton(
+                                    title: isRetryingInitialQuestions ? "Trying again" : "Try again",
+                                    systemImage: "arrow.clockwise"
+                                ) {
+                                    retryInitialQuestionGeneration()
+                                }
+                                .disabled(isRetryingInitialQuestions)
                             }
-                            .disabled(isRetryingInitialQuestions)
 
                             if store.lastQuestionGenerationFailure?.allowsEditingTopics == true {
                                 SecondaryActionButton(title: "Edit topics", systemImage: "pencil") {
@@ -129,6 +158,24 @@ struct HomeView: View {
                     }
                     .padding(12)
                     .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                } else if isQuestionsReadyConfirmationVisible {
+                    HStack(spacing: 10) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(CheckpointTheme.teal)
+                            .accessibilityHidden(true)
+
+                        Text(Self.questionsReadyConfirmationText)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+
+                        Spacer(minLength: 0)
+                    }
+                    .padding(12)
+                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(Self.questionsReadyConfirmationText)
+                    .transition(questionsReadyConfirmationTransition)
                 }
 
                 Text("Answer \(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correctly to start a break.")
@@ -137,6 +184,55 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+    }
+
+    private var questionPreparationSnapshot: QuestionPreparationSnapshot {
+        QuestionPreparationSnapshot(
+            goalID: store.goal?.id,
+            isPreparing: store.isPreparingActiveGoalQuestions,
+            hasReadyCheckpointSet: store.hasReadyCheckpointSet
+        )
+    }
+
+    private var questionsReadyConfirmationTransition: AnyTransition {
+        accessibilityReduceMotion
+            ? .identity
+            : .opacity.combined(with: .scale(scale: 0.98))
+    }
+
+    private func showQuestionsReadyConfirmation() {
+        questionsReadyConfirmationDismissTask?.cancel()
+
+        if accessibilityReduceMotion {
+            isQuestionsReadyConfirmationVisible = true
+        } else {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isQuestionsReadyConfirmationVisible = true
+            }
+        }
+        AccessibilityNotification.Announcement(Self.questionsReadyConfirmationText).post()
+
+        questionsReadyConfirmationDismissTask = Task { @MainActor in
+            try? await Task.sleep(
+                nanoseconds: Self.questionsReadyConfirmationDurationNanoseconds
+            )
+            guard !Task.isCancelled else { return }
+
+            if accessibilityReduceMotion {
+                isQuestionsReadyConfirmationVisible = false
+            } else {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isQuestionsReadyConfirmationVisible = false
+                }
+            }
+            questionsReadyConfirmationDismissTask = nil
+        }
+    }
+
+    private func hideQuestionsReadyConfirmation() {
+        questionsReadyConfirmationDismissTask?.cancel()
+        questionsReadyConfirmationDismissTask = nil
+        isQuestionsReadyConfirmationVisible = false
     }
 
     @ViewBuilder
@@ -282,7 +378,9 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 if isTemporarilyUnblocked {
-                    BreakRemainingStat(expiresAt: store.unlockSession?.expiresAt)
+                    BreakRemainingStat(
+                        expiresAt: store.unlockSession?.expiresAt ?? SharedAppGroup.unlockExpiration
+                    )
 
                     HStack(spacing: 10) {
                         HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
@@ -301,6 +399,13 @@ struct HomeView: View {
                         }
 
                         StatusBadge(text: "Protection on", tint: CheckpointTheme.teal)
+                    }
+
+                    if let errorMessage = screenTime.userFacingErrorMessage {
+                        Text(errorMessage)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 } else {
                     if let errorMessage = screenTime.userFacingErrorMessage {
@@ -424,7 +529,8 @@ struct HomeView: View {
     }
 
     private var isTemporarilyUnblocked: Bool {
-        screenTime.setupState == .temporarilyUnlocked || store.activeUnlockMinutesRemaining > 0
+        SharedAppGroup.desiredShieldActive &&
+            (screenTime.setupState == .temporarilyUnlocked || store.activeUnlockMinutesRemaining > 0)
     }
 }
 

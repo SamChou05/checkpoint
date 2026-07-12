@@ -12,9 +12,20 @@ final class PurchaseController {
 
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
     @ObservationIgnored var onMembershipEntitlementChange: ((Bool) -> Void)?
+    @ObservationIgnored private let grantsDebugTesterEntitlement: Bool
+
+    init(
+        grantsDebugTesterEntitlement: Bool = DebugMembershipEntitlement.isEnabled()
+    ) {
+        #if DEBUG
+        self.grantsDebugTesterEntitlement = grantsDebugTesterEntitlement
+        #else
+        self.grantsDebugTesterEntitlement = false
+        #endif
+    }
 
     var isMembershipUnlocked: Bool {
-        if Self.hasDebugTesterEntitlement {
+        if grantsDebugTesterEntitlement {
             return true
         }
 
@@ -48,7 +59,7 @@ final class PurchaseController {
 
     @discardableResult
     func refreshEntitlements() async -> Bool {
-        if Self.hasDebugTesterEntitlement {
+        if grantsDebugTesterEntitlement {
             purchasedProductIDs = [MembershipProductID.monthly]
             publishMembershipEntitlement()
             return true
@@ -149,8 +160,34 @@ final class PurchaseController {
         #endif
     }
 
-    private static var hasDebugTesterEntitlement: Bool {
+}
+
+enum DebugMembershipEntitlement {
+    static let environmentKey = "CHECKPOINT_DEBUG_PRO_ENTITLEMENT"
+
+    static func isEnabled(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        compiledQABuild: Bool = isCompiledQABuild
+    ) -> Bool {
         #if DEBUG
+        if compiledQABuild {
+            return true
+        }
+
+        guard let rawValue = environment[environmentKey]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() else {
+            return false
+        }
+
+        return ["1", "true", "yes", "on"].contains(rawValue)
+        #else
+        return false
+        #endif
+    }
+
+    private static var isCompiledQABuild: Bool {
+        #if DEBUG && CHECKPOINT_DEBUG_PRO_BUILD
         true
         #else
         false

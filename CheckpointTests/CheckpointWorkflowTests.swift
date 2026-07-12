@@ -419,11 +419,552 @@ final class CheckpointWorkflowTests: XCTestCase {
         let initialRequest = try XCTUnwrap(backendEngine.receivedRequests.first)
         XCTAssertTrue(initialRequest.questionContext.needsGeneratedSkillMap)
         XCTAssertEqual(initialRequest.targetCount, 5)
+        let storedGoal = try XCTUnwrap(store.goal)
+        let inferredMap = try XCTUnwrap(storedGoal.derivedSkillMap)
+        XCTAssertEqual(inferredMap.status, .suggested)
+        XCTAssertEqual(
+            Set(inferredMap.topicNames),
+            ["argument flaws", "conditional logic", "inference", "reading structure"]
+        )
+        XCTAssertFalse(GoalQuestionContext(goal: storedGoal).needsGeneratedSkillMap)
         XCTAssertEqual(
             Set(store.sortedCompetencies.map(\.topic)),
             ["argument flaws", "conditional logic", "inference", "reading structure"]
         )
+        XCTAssertEqual(
+            Set(store.sortedCompetencies.compactMap(\.skillID)),
+            Set(inferredMap.topics.map(\.id))
+        )
         XCTAssertEqual(store.activeGoalFocusText, "argument flaws")
+    }
+
+    @MainActor
+    func testReviewingInferredSkillMapPreservesIdentityMasteryAndTopOffProgress() async throws {
+        let backendEngine = SkillMapQuestionEngine(
+            provider: .backend,
+            topics: ["argument flaws", "conditional logic", "inference", "reading structure"],
+            largeRequestDelayNanoseconds: 250_000_000
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice,
+            waitForQuestionGeneration: true
+        )
+
+        let suggestedMap = try XCTUnwrap(store.goal?.derivedSkillMap)
+        let originalSkill = try XCTUnwrap(
+            suggestedMap.topics.first(where: { $0.name == "argument flaws" })
+        )
+        let firstQuestion = try XCTUnwrap(
+            store.activeQuestions.first(where: { $0.topic == originalSkill.name })
+        )
+        _ = store.submitAnswer(
+            question: firstQuestion,
+            answer: firstQuestion.expectedAnswer,
+            result: .correct
+        )
+
+        var reviewedTopics = suggestedMap.topics
+        let renamedIndex = try XCTUnwrap(
+            reviewedTopics.firstIndex(where: { $0.id == originalSkill.id })
+        )
+        reviewedTopics[renamedIndex].name = "causal argument analysis"
+
+        XCTAssertTrue(store.reviewActiveDerivedSkillMap(topics: reviewedTopics))
+
+        let reviewedGoal = try XCTUnwrap(store.goal)
+        let reviewedMap = try XCTUnwrap(reviewedGoal.derivedSkillMap)
+        let renamedSkill = try XCTUnwrap(
+            reviewedMap.topics.first(where: { $0.id == originalSkill.id })
+        )
+        XCTAssertEqual(reviewedMap.status, .reviewed)
+        XCTAssertEqual(renamedSkill.name, "causal argument analysis")
+        XCTAssertTrue(renamedSkill.aliases.contains("argument flaws"))
+        XCTAssertEqual(Set(reviewedMap.topics.map(\.id)), Set(suggestedMap.topics.map(\.id)))
+        XCTAssertEqual(
+            reviewedGoal.focusAreas,
+            reviewedMap.topicNames.joined(separator: ", ")
+        )
+        XCTAssertTrue(
+            store.activeQuestions
+                .filter { $0.id == firstQuestion.id }
+                .allSatisfy { $0.topic == renamedSkill.name }
+        )
+
+        var renamedCompetency = try XCTUnwrap(
+            store.sortedCompetencies.first(where: { $0.skillID == originalSkill.id })
+        )
+        XCTAssertEqual(renamedCompetency.topic, renamedSkill.name)
+        XCTAssertEqual(renamedCompetency.attempts, 1)
+        XCTAssertEqual(renamedCompetency.correct, 1)
+
+        try? await Task.sleep(nanoseconds: 500_000_000)
+
+        renamedCompetency = try XCTUnwrap(
+            store.sortedCompetencies.first(where: { $0.skillID == originalSkill.id })
+        )
+        XCTAssertEqual(renamedCompetency.attempts, 1)
+        XCTAssertEqual(renamedCompetency.correct, 1)
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
+        XCTAssertEqual(backendEngine.receivedRequests.count, 2)
+        XCTAssertGreaterThan(store.activeQuestions.count, UnlockPolicy.default.questionsPerSession)
+
+        let restoredStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        let restoredMap = try XCTUnwrap(restoredStore.goal?.derivedSkillMap)
+        let restoredCompetency = try XCTUnwrap(
+            restoredStore.sortedCompetencies.first(where: { $0.skillID == originalSkill.id })
+        )
+        XCTAssertEqual(restoredMap.status, .reviewed)
+        XCTAssertEqual(Set(restoredMap.topics.map(\.id)), Set(suggestedMap.topics.map(\.id)))
+        XCTAssertEqual(restoredCompetency.topic, renamedSkill.name)
+        XCTAssertEqual(restoredCompetency.attempts, 1)
+        XCTAssertEqual(restoredCompetency.correct, 1)
+    }
+
+    @MainActor
+    func testBroadInferenceFailureCreatesNoPlaceholderCompetency() async throws {
+        let backendEngine = SkillMapQuestionEngine(provider: .backend, topics: ["LSAT"])
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice,
+            waitForQuestionGeneration: true
+        )
+
+        try? await Task.sleep(nanoseconds: 50_000_000)
+
+        XCTAssertNil(store.goal?.derivedSkillMap)
+        XCTAssertTrue(store.sortedCompetencies.isEmpty)
+        XCTAssertNil(store.activeGoalFocusText)
+        XCTAssertTrue(store.activeSkillMapNeedsAttention)
+    }
+
+    @MainActor
+    func testLegacyBlankFocusGoalMigratesQuestionTopicsIntoStableSkillMap() throws {
+        let legacyGoal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let seededStore = CheckpointStore(defaults: defaults)
+        seededStore.goal = legacyGoal
+        seededStore.goalProfiles = [legacyGoal]
+        seededStore.questions = [
+            makeQuestion(goal: legacyGoal, index: 1, topic: "argument flaws"),
+            makeQuestion(goal: legacyGoal, index: 2, topic: "conditional logic"),
+            makeQuestion(goal: legacyGoal, index: 3, topic: "inference"),
+            makeQuestion(goal: legacyGoal, index: 4, topic: "reading structure")
+        ]
+        seededStore.competencies = [
+            TopicCompetency.initial(topic: legacyGoal.title, goalID: legacyGoal.id),
+            TopicCompetency(
+                goalID: legacyGoal.id,
+                topic: "argument flaws",
+                estimatedLevel: 2.5,
+                attempts: 2,
+                correct: 1,
+                partial: 0,
+                incorrect: 1,
+                currentStreak: 0,
+                lastResult: .incorrect,
+                lastPracticedAt: Date()
+            )
+        ]
+        seededStore.updateAIProviderPreference(.backend)
+
+        let restoredStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+
+        let migratedMap = try XCTUnwrap(restoredStore.goal?.derivedSkillMap)
+        XCTAssertEqual(
+            Set(migratedMap.topicNames),
+            ["argument flaws", "conditional logic", "inference", "reading structure"]
+        )
+        XCTAssertFalse(restoredStore.sortedCompetencies.contains { $0.topic == legacyGoal.title })
+        XCTAssertTrue(restoredStore.sortedCompetencies.allSatisfy { $0.skillID != nil })
+        let practicedCompetency = try XCTUnwrap(
+            restoredStore.sortedCompetencies.first(where: { $0.topic == "argument flaws" })
+        )
+        XCTAssertEqual(practicedCompetency.attempts, 2)
+        XCTAssertEqual(practicedCompetency.correct, 1)
+        XCTAssertEqual(practicedCompetency.incorrect, 1)
+    }
+
+    @MainActor
+    func testTopOffCommitsSkillMapAsSoonAsCombinedTopicsAreConcrete() async throws {
+        let backendEngine = PhasedSkillMapQuestionEngine(
+            provider: .backend,
+            topicsByRequest: [
+                ["LSAT"],
+                ["argument flaws", "conditional logic", "inference", "reading structure"]
+            ],
+            largeRequestDelayNanoseconds: 150_000_000
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice,
+            waitForQuestionGeneration: true
+        )
+
+        XCTAssertNil(store.goal?.derivedSkillMap)
+        XCTAssertTrue(store.isBuildingActiveSkillMap)
+
+        try? await Task.sleep(nanoseconds: 350_000_000)
+
+        let resolvedMap = try XCTUnwrap(store.goal?.derivedSkillMap)
+        XCTAssertEqual(
+            Set(resolvedMap.topicNames),
+            ["argument flaws", "conditional logic", "inference", "reading structure"]
+        )
+        XCTAssertFalse(store.isBuildingActiveSkillMap)
+        XCTAssertFalse(GoalQuestionContext(goal: try XCTUnwrap(store.goal)).needsGeneratedSkillMap)
+        XCTAssertEqual(
+            Set(store.sortedCompetencies.compactMap(\.skillID)),
+            Set(resolvedMap.topics.map(\.id))
+        )
+        XCTAssertFalse(store.activeQuestions.isEmpty)
+        XCTAssertTrue(
+            store.activeQuestions
+                .filter { $0.status != .retired }
+                .allSatisfy { resolvedMap.topicNames.contains($0.topic) }
+        )
+        XCTAssertTrue(
+            store.activeQuestions
+                .filter { $0.topic == "LSAT" }
+                .allSatisfy { $0.status == .retired }
+        )
+
+        let restoredStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        XCTAssertEqual(
+            Set(try XCTUnwrap(restoredStore.goal?.derivedSkillMap).topics.map(\.id)),
+            Set(resolvedMap.topics.map(\.id))
+        )
+    }
+
+    @MainActor
+    func testRepairingSkillMapKeepsGoalAndHistoryForStarter() async throws {
+        let backendEngine = SkillMapQuestionEngine(
+            provider: .backend,
+            topics: ["argument flaws", "conditional logic", "inference", "reading structure"]
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+        let originalGoal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let originalQuestion = makeQuestion(goal: originalGoal, index: 1, topic: "LSAT")
+        let originalAttempt = makeAttempt(
+            goal: originalGoal,
+            questionID: originalQuestion.id,
+            result: .incorrect,
+            createdAt: Date()
+        )
+        store.goal = originalGoal
+        store.goalProfiles = [originalGoal]
+        store.questions = [originalQuestion]
+        store.attempts = [originalAttempt]
+        store.competencies = [
+            TopicCompetency(
+                goalID: originalGoal.id,
+                topic: "General progress",
+                estimatedLevel: 2,
+                attempts: 1,
+                correct: 0,
+                partial: 0,
+                incorrect: 1,
+                currentStreak: 0,
+                lastResult: .incorrect,
+                lastPracticedAt: Date()
+            )
+        ]
+
+        XCTAssertTrue(
+            store.repairActiveSkillMap(
+                topicNames: ["argument flaws", "conditional logic", "inference", "reading structure"]
+            )
+        )
+        XCTAssertEqual(store.goal?.id, originalGoal.id)
+        XCTAssertEqual(store.attempts, [originalAttempt])
+        XCTAssertNil(store.pendingMembershipFeature)
+
+        try? await Task.sleep(nanoseconds: 200_000_000)
+
+        let repairedGoal = try XCTUnwrap(store.goal)
+        let repairedMap = try XCTUnwrap(repairedGoal.derivedSkillMap)
+        XCTAssertEqual(repairedGoal.id, originalGoal.id)
+        XCTAssertEqual(repairedMap.status, .reviewed)
+        XCTAssertEqual(repairedGoal.focusAreas, repairedMap.topicNames.joined(separator: ", "))
+        XCTAssertEqual(store.attempts, [originalAttempt])
+        let preservedHistory = try XCTUnwrap(
+            store.competencies.first(where: { $0.topic == "General progress" })
+        )
+        XCTAssertEqual(preservedHistory.attempts, 1)
+        XCTAssertEqual(preservedHistory.incorrect, 1)
+        XCTAssertTrue(
+            store.activeQuestions.allSatisfy { repairedMap.topicNames.contains($0.topic) }
+        )
+    }
+
+    @MainActor
+    func testSwappingSkillNamesCannotRouteAnswersThroughOldAliases() throws {
+        let firstSkill = SkillMapTopic(name: "argument flaws")
+        let secondSkill = SkillMapTopic(name: "conditional logic")
+        let thirdSkill = SkillMapTopic(name: "reading structure")
+        let initialMap = GoalSkillMap(topics: [firstSkill, secondSkill, thirdSkill])
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            derivedSkillMap: initialMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.competencies = initialMap.topics.map {
+            TopicCompetency.initial(topic: $0.name, goalID: goal.id, skillID: $0.id)
+        }
+
+        var swappedTopics = initialMap.topics
+        swappedTopics[0].name = secondSkill.name
+        swappedTopics[1].name = firstSkill.name
+        XCTAssertTrue(store.reviewActiveDerivedSkillMap(topics: swappedTopics))
+
+        let reviewedGoal = try XCTUnwrap(store.goal)
+        let reviewedMap = try XCTUnwrap(reviewedGoal.derivedSkillMap)
+        XCTAssertFalse(
+            reviewedMap.topics
+                .first(where: { $0.id == firstSkill.id })?
+                .aliases
+                .contains(firstSkill.name) ?? true
+        )
+        XCTAssertFalse(
+            reviewedMap.topics
+                .first(where: { $0.id == secondSkill.id })?
+                .aliases
+                .contains(secondSkill.name) ?? true
+        )
+
+        let question = makeQuestion(
+            goal: reviewedGoal,
+            index: 50,
+            topic: firstSkill.name
+        )
+        store.questions.append(question)
+        _ = store.submitAnswer(
+            question: question,
+            answer: question.expectedAnswer,
+            result: .correct
+        )
+
+        XCTAssertEqual(
+            store.competencies.first(where: { $0.skillID == firstSkill.id })?.attempts,
+            0
+        )
+        XCTAssertEqual(
+            store.competencies.first(where: { $0.skillID == secondSkill.id })?.attempts,
+            1
+        )
+    }
+
+    @MainActor
+    func testLegacyMigrationSplitsCompoundTopicsWithoutLosingMastery() throws {
+        let legacyGoal = Goal(
+            title: "Pass technical interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let seededStore = CheckpointStore(defaults: defaults)
+        seededStore.goal = legacyGoal
+        seededStore.goalProfiles = [legacyGoal]
+        seededStore.questions = [
+            makeQuestion(goal: legacyGoal, index: 1, topic: "arrays, recursion"),
+            makeQuestion(goal: legacyGoal, index: 2, topic: "graphs"),
+            makeQuestion(goal: legacyGoal, index: 3, topic: "hashing")
+        ]
+        var arrays = TopicCompetency.initial(topic: "arrays", goalID: legacyGoal.id)
+        arrays.attempts = 2
+        arrays.correct = 2
+        var recursion = TopicCompetency.initial(topic: "recursion", goalID: legacyGoal.id)
+        recursion.attempts = 1
+        recursion.incorrect = 1
+        seededStore.competencies = [arrays, recursion]
+        seededStore.updateAIProviderPreference(.backend)
+
+        let restoredStore = CheckpointStore(defaults: defaults)
+        let migratedMap = try XCTUnwrap(restoredStore.goal?.derivedSkillMap)
+        XCTAssertEqual(Set(migratedMap.topicNames), ["arrays", "recursion", "graphs", "hashing"])
+        XCTAssertTrue(migratedMap.topicNames.allSatisfy { !$0.contains(",") })
+        XCTAssertEqual(
+            restoredStore.competencies.first(where: { $0.topic == "arrays" })?.attempts,
+            2
+        )
+        XCTAssertEqual(
+            restoredStore.competencies.first(where: { $0.topic == "recursion" })?.incorrect,
+            1
+        )
+    }
+
+    @MainActor
+    func testLegacyMigrationWithMoreThanSixTopicsPreservesAllHistory() throws {
+        let legacyGoal = Goal(
+            title: "Learn computer science",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .custom,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let topicNames = [
+            "arrays", "recursion", "graphs", "hashing", "sorting", "trees", "dynamic programming"
+        ]
+        let seededStore = CheckpointStore(defaults: defaults)
+        seededStore.goal = legacyGoal
+        seededStore.goalProfiles = [legacyGoal]
+        seededStore.questions = topicNames.enumerated().map { index, topic in
+            makeQuestion(goal: legacyGoal, index: index + 1, topic: topic)
+        }
+        seededStore.competencies = topicNames.map { topic in
+            var competency = TopicCompetency.initial(topic: topic, goalID: legacyGoal.id)
+            competency.attempts = 1
+            competency.correct = 1
+            return competency
+        }
+        seededStore.updateAIProviderPreference(.backend)
+
+        let restoredStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertNil(restoredStore.goal?.derivedSkillMap)
+        XCTAssertEqual(Set(restoredStore.sortedCompetencies.map(\.topic)), Set(topicNames))
+        XCTAssertTrue(restoredStore.sortedCompetencies.allSatisfy { $0.attempts == 1 })
+        XCTAssertTrue(restoredStore.activeSkillMapNeedsAttention)
+    }
+
+    @MainActor
+    func testInitialGenerationRestartsAfterSameGoalDifficultyChanges() async throws {
+        let backendEngine = SkillMapQuestionEngine(
+            provider: .backend,
+            topics: ["argument flaws", "conditional logic", "inference", "reading structure"],
+            requestDelayNanoseconds: 150_000_000
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2,
+            waitForQuestionGeneration: false
+        )
+        let originalGoalID = try XCTUnwrap(store.goal?.id)
+        store.updateMinimumQuestionDifficulty(4)
+
+        try? await Task.sleep(nanoseconds: 650_000_000)
+
+        XCTAssertEqual(store.goal?.id, originalGoalID)
+        XCTAssertEqual(store.goal?.minimumQuestionDifficulty, 4)
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertTrue(store.activeQuestions.allSatisfy { $0.difficulty >= 4 })
+        XCTAssertTrue(
+            backendEngine.receivedRequests.contains {
+                $0.targetCount == UnlockPolicy.default.questionsPerSession && $0.minimumDifficulty == 2
+            }
+        )
+        XCTAssertTrue(
+            backendEngine.receivedRequests.contains {
+                $0.targetCount == UnlockPolicy.default.questionsPerSession && $0.minimumDifficulty == 4
+            }
+        )
+    }
+
+    func testSkillMapValidationUsesPersistedNameNormalization() {
+        XCTAssertNil(
+            SkillMapTopic.validatedNames(["Algebra", "Algebra.", "Geometry"])
+        )
     }
 
     @MainActor
@@ -452,9 +993,13 @@ final class CheckpointWorkflowTests: XCTestCase {
 
     @MainActor
     func testSkillMapIgnoresPlaceholderFocusAreas() async {
+        let backendEngine = SkillMapQuestionEngine(
+            provider: .backend,
+            topics: ["process scheduling", "virtual memory", "concurrency", "file systems"]
+        )
         let store = CheckpointStore(
             questionEngine: HybridQuestionEngine(
-                backendEngine: TargetCountQuestionEngine(provider: .backend),
+                backendEngine: backendEngine,
                 appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
             ),
             defaults: defaults
@@ -472,8 +1017,11 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         let topics = Set(store.sortedCompetencies.map(\.topic))
         XCTAssertFalse(topics.contains("asdf"))
-        XCTAssertFalse(topics.isEmpty)
-        XCTAssertTrue(topics.allSatisfy { $0.hasPrefix("operating systems") })
+        XCTAssertEqual(
+            topics,
+            ["process scheduling", "virtual memory", "concurrency", "file systems"]
+        )
+        XCTAssertTrue(backendEngine.receivedRequests.first?.questionContext.needsGeneratedSkillMap ?? false)
     }
 
     @MainActor
@@ -488,20 +1036,20 @@ final class CheckpointWorkflowTests: XCTestCase {
             focusAreas: "integrals",
             preferredQuestionStyle: .multipleChoice
         )
-        let lastWeek = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date.distantPast
-        let earlierToday = Date().addingTimeInterval(-60 * 60)
+        let now = Date()
+        let lastWeek = Calendar.current.date(byAdding: .day, value: -8, to: now) ?? Date.distantPast
 
         store.goal = goal
         store.goalProfiles = [goal, otherGoal]
         store.attempts = [
-            makeAttempt(goal: goal, result: .correct, createdAt: Date()),
-            makeAttempt(goal: goal, result: .incorrect, createdAt: earlierToday),
+            makeAttempt(goal: goal, result: .correct, createdAt: now),
+            makeAttempt(goal: goal, result: .incorrect, createdAt: now),
             makeAttempt(goal: goal, result: .correct, createdAt: lastWeek),
-            makeAttempt(goal: otherGoal, result: .correct, createdAt: Date())
+            makeAttempt(goal: otherGoal, result: .correct, createdAt: now)
         ]
         store.unlockEvents = [
-            UnlockEvent(goalID: goal.id, minutes: 30, createdAt: Date()),
-            UnlockEvent(goalID: otherGoal.id, minutes: 15, createdAt: Date()),
+            UnlockEvent(goalID: goal.id, minutes: 30, createdAt: now),
+            UnlockEvent(goalID: otherGoal.id, minutes: 15, createdAt: now),
             UnlockEvent(goalID: goal.id, minutes: 30, createdAt: lastWeek)
         ]
 
@@ -1067,6 +1615,26 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(session.unlockThreshold, 4)
         XCTAssertEqual(session.purpose, .temporaryUnlock)
         XCTAssertEqual(Set(session.questions.map(\.id)).count, 5)
+    }
+
+    @MainActor
+    func testCheckpointSessionSpreadsFreshQuestionsAcrossTopicsBeforeRepeatingOne() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+        store.questions = [
+            makeQuestion(goal: goal, index: 1, topic: "arrays"),
+            makeQuestion(goal: goal, index: 2, topic: "arrays"),
+            makeQuestion(goal: goal, index: 3, topic: "recursion"),
+            makeQuestion(goal: goal, index: 4, topic: "hash maps"),
+            makeQuestion(goal: goal, index: 5, topic: "trees")
+        ]
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(Set(session.questions.prefix(4).map(\.topic)).count, 4)
     }
 
     @MainActor
@@ -1660,6 +2228,59 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testExpiredUnlockSessionIsPrunedOnRelaunch() {
+        let store = makeSeededStore(questionCount: 6)
+        let expiredAt = Date().addingTimeInterval(-300)
+        store.unlockSession = UnlockSession(
+            startedAt: Date().addingTimeInterval(-600),
+            expiresAt: expiredAt
+        )
+        store.updateUnlockMinutes(store.unlockPolicy.unlockMinutes)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: expiredAt)
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertNil(relaunchedStore.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
+    func testExpiredLocalUnlockDoesNotEraseNewerSharedBreak() {
+        let store = makeSeededStore(questionCount: 6)
+        store.unlockSession = UnlockSession(
+            startedAt: Date().addingTimeInterval(-600),
+            expiresAt: Date().addingTimeInterval(-300)
+        )
+        store.updateUnlockMinutes(store.unlockPolicy.unlockMinutes)
+        let newerSharedExpiration = Date().addingTimeInterval(300)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: newerSharedExpiration
+        )
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertEqual(relaunchedStore.unlockSession?.expiresAt, newerSharedExpiration)
+        XCTAssertEqual(SharedAppGroup.unlockExpiration, newerSharedExpiration)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
+    func testCanonicalEndedBreakClearsStaleFutureLocalUnlock() {
+        let store = makeSeededStore(questionCount: 6)
+        store.startUnlockSession(minutes: 5)
+        XCTAssertTrue(store.unlockSession?.isActive == true)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertNil(relaunchedStore.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
     func testPendingShieldAttemptCreatesOneCheckpointSessionThenClears() throws {
         let store = makeSeededStore(questionCount: 6)
 
@@ -1670,6 +2291,26 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(session.questions.count, 5)
         XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
         XCTAssertNil(store.takePendingShieldSession())
+    }
+
+    @MainActor
+    func testPendingSessionPreparationCannotConsumeReplacementShieldTap() throws {
+        let store = makeSeededStore(questionCount: 6)
+        SharedAppGroup.markPendingShieldAttempt()
+        let firstAttemptID = try XCTUnwrap(SharedAppGroup.currentPendingShieldAttempt?.id)
+
+        SharedAppGroup.markPendingShieldAttempt()
+        let replacementAttemptID = try XCTUnwrap(SharedAppGroup.currentPendingShieldAttempt?.id)
+
+        XCTAssertNotEqual(firstAttemptID, replacementAttemptID)
+        XCTAssertNil(store.takePendingShieldSession(pendingAttemptID: firstAttemptID))
+        XCTAssertEqual(SharedAppGroup.currentPendingShieldAttempt?.id, replacementAttemptID)
+
+        let session = try XCTUnwrap(
+            store.takePendingShieldSession(pendingAttemptID: replacementAttemptID)
+        )
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertNil(SharedAppGroup.currentPendingShieldAttempt)
     }
 
     @MainActor
@@ -1684,25 +2325,33 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testRelockReconciliationPreservesProtectionIntentWhenSelectionRestoreFails() {
-        SharedAppGroup.publishDesiredShieldActive(true)
-        SharedAppGroup.publishUnlockExpiration(Date().addingTimeInterval(-1))
+    func testUnlockRelockMonitorMeetsMinimumDurationForEveryBreakOption() {
+        let start = Date(timeIntervalSince1970: 1_780_000_000)
 
-        SharedAppGroup.markUnlockRelockNeedsAppReconciliation()
+        for minutes in UnlockPolicy.correctAnswerUnlockMinuteOptions {
+            let expiration = start.addingTimeInterval(TimeInterval(minutes * 60))
+            let monitorStart = ScreenTimeController.unlockRelockMonitorStart(
+                for: start,
+                expiration: expiration
+            )
 
-        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
-        XCTAssertNil(SharedAppGroup.unlockExpiration)
+            XCTAssertGreaterThanOrEqual(
+                expiration.timeIntervalSince(monitorStart),
+                ScreenTimeController.minimumUnlockRelockMonitorDuration +
+                    ScreenTimeController.unlockRelockMonitorDurationSafetyMargin
+            )
+            XCTAssertLessThan(monitorStart, expiration)
+        }
     }
 
     @MainActor
-    func testUnlockRelockMonitorStartsInsideCurrentBreakWindow() {
-        let start = Date(timeIntervalSince1970: 1_780_000_000)
-        let expiration = start.addingTimeInterval(300)
+    func testUnlockRelockMonitorRoundsFractionalExpirationUp() {
+        let expiration = Date(timeIntervalSince1970: 1_780_000_000.25)
 
-        let monitorStart = ScreenTimeController.unlockRelockMonitorStart(for: start, expiration: expiration)
+        let monitorEnd = ScreenTimeController.unlockRelockMonitorEnd(for: expiration)
 
-        XCTAssertEqual(monitorStart.timeIntervalSince(start), -ScreenTimeController.unlockRelockMonitorLeadIn, accuracy: 0.001)
-        XCTAssertLessThan(monitorStart, expiration)
+        XCTAssertEqual(monitorEnd.timeIntervalSince1970, 1_780_000_001, accuracy: 0.001)
+        XCTAssertGreaterThanOrEqual(monitorEnd, expiration)
     }
 
     @MainActor
@@ -1710,10 +2359,314 @@ final class CheckpointWorkflowTests: XCTestCase {
         let data = Data("encoded protected app selection".utf8)
 
         SharedAppGroup.publishScreenTimeSelectionData(data)
+        SharedAppGroup.removeProtectionSnapshotFile()
         SharedAppGroup.defaults.removeObject(forKey: SharedAppGroup.screenTimeSelectionKey)
         SharedAppGroup.defaults.synchronize()
 
         XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), data)
+    }
+
+    @MainActor
+    func testCanonicalProtectionSnapshotWinsOverDivergentLegacySelection() {
+        let currentSelection = Data("current protected app selection".utf8)
+        let staleSelection = Data("stale protected app selection".utf8)
+
+        SharedAppGroup.publishScreenTimeSelectionData(currentSelection)
+        SharedAppGroup.defaults.set(staleSelection, forKey: SharedAppGroup.screenTimeSelectionKey)
+        SharedAppGroup.defaults.synchronize()
+
+        XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), currentSelection)
+        XCTAssertEqual(
+            SharedAppGroup.currentProtectionSnapshot().screenTimeSelectionData,
+            currentSelection
+        )
+    }
+
+    @MainActor
+    func testLegacyMigrationPrefersNewerDefaultsSelectionOverStaleFile() {
+        let staleFileSelection = Data("stale file selection".utf8)
+        let newerDefaultsSelection = Data("newer defaults selection".utf8)
+
+        SharedAppGroup.publishScreenTimeSelectionData(staleFileSelection)
+        SharedAppGroup.removeProtectionSnapshotFile()
+        SharedAppGroup.defaults.set(newerDefaultsSelection, forKey: SharedAppGroup.screenTimeSelectionKey)
+        SharedAppGroup.defaults.synchronize()
+
+        XCTAssertEqual(
+            SharedAppGroup.currentProtectionSnapshot().screenTimeSelectionData,
+            newerDefaultsSelection
+        )
+    }
+
+    @MainActor
+    func testLegacyFallbackPreservesAndAdvancesProtectionRevisions() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection A".utf8))
+        let persistedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        SharedAppGroup.removeProtectionSnapshotFile()
+
+        let fallbackSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertEqual(fallbackSnapshot.revision, persistedSnapshot.revision)
+        XCTAssertEqual(
+            fallbackSnapshot.configurationRevision,
+            persistedSnapshot.configurationRevision
+        )
+
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection B".utf8))
+        let updatedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertNotEqual(updatedSnapshot.revision, fallbackSnapshot.revision)
+        XCTAssertNotEqual(
+            updatedSnapshot.configurationRevision,
+            fallbackSnapshot.configurationRevision
+        )
+    }
+
+    func testLegacyCategoryEnforcementOnlyAppliesWithoutConcreteTokens() {
+        XCTAssertTrue(
+            SharedAppGroup.usesLegacyCategoryEnforcement(
+                semanticsVersion: 0,
+                applicationTokenCount: 0,
+                categoryTokenCount: 1,
+                webDomainTokenCount: 0
+            )
+        )
+        XCTAssertFalse(
+            SharedAppGroup.usesLegacyCategoryEnforcement(
+                semanticsVersion: 0,
+                applicationTokenCount: 1,
+                categoryTokenCount: 1,
+                webDomainTokenCount: 0
+            ),
+            "Concrete legacy tokens must be authoritative so a category cannot restore a removed app."
+        )
+        XCTAssertEqual(
+            SharedAppGroup.resolvedScreenTimeSelectionSemanticsVersion(
+                storedVersion: 0,
+                applicationTokenCount: 1,
+                webDomainTokenCount: 0
+            ),
+            SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+        )
+        XCTAssertEqual(
+            SharedAppGroup.resolvedScreenTimeSelectionSemanticsVersion(
+                storedVersion: 0,
+                applicationTokenCount: 0,
+                webDomainTokenCount: 0
+            ),
+            0,
+            "Truly category-only legacy data must remain protected until the user makes a concrete selection."
+        )
+    }
+
+    func testOverLimitSelectionCanBeReducedButNotExpanded() {
+        let limit = SharedAppGroup.maximumShieldedApplicationCount
+
+        XCTAssertTrue(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit - 1,
+                currentCount: limit + 10,
+                maximumCount: limit
+            )
+        )
+        XCTAssertTrue(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit + 9,
+                currentCount: limit + 10,
+                maximumCount: limit
+            ),
+            "An upgraded user must be able to remove an oversized list one item at a time."
+        )
+        XCTAssertFalse(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit + 11,
+                currentCount: limit + 10,
+                maximumCount: limit
+            )
+        )
+        XCTAssertFalse(
+            SharedAppGroup.canAcceptShieldTokenCount(
+                limit + 1,
+                currentCount: limit,
+                maximumCount: limit
+            )
+        )
+    }
+
+    @MainActor
+    func testExactPendingAttemptConsumptionPreservesNewerShieldTap() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("protected app selection".utf8))
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.markPendingShieldAttempt()
+        let firstAttempt = SharedAppGroup.currentPendingShieldAttempt
+
+        SharedAppGroup.markPendingShieldAttempt()
+        let newerAttempt = SharedAppGroup.currentPendingShieldAttempt
+
+        guard let firstAttempt, let newerAttempt else {
+            return XCTFail("Both pending shield attempts should be persisted.")
+        }
+        XCTAssertNotEqual(firstAttempt.id, newerAttempt.id)
+        XCTAssertNil(
+            SharedAppGroup.consumePendingShieldAttempt(matchingID: firstAttempt.id),
+            "Finishing older async preparation must not consume a newer shield tap."
+        )
+        XCTAssertEqual(SharedAppGroup.currentPendingShieldAttempt?.id, newerAttempt.id)
+        XCTAssertNotNil(SharedAppGroup.consumePendingShieldAttempt(matchingID: newerAttempt.id))
+        XCTAssertNil(SharedAppGroup.currentPendingShieldAttempt)
+    }
+
+    @MainActor
+    func testSelectionChangeInvalidatesPendingShieldAttemptConfiguration() {
+        let initialSelection = Data("protected apps A and B".utf8)
+        let updatedSelection = Data("protected app A".utf8)
+        SharedAppGroup.publishScreenTimeSelectionData(initialSelection)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.markPendingShieldAttempt()
+        let pendingRevision = SharedAppGroup.pendingShieldAttemptProtectionRevision
+
+        SharedAppGroup.publishScreenTimeSelectionData(updatedSelection)
+
+        let updatedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertEqual(updatedSnapshot.screenTimeSelectionData, updatedSelection)
+        XCTAssertNotEqual(pendingRevision, updatedSnapshot.configurationRevision)
+    }
+
+    @MainActor
+    func testSelectionSemanticsUpgradeInvalidatesLegacyCategoryConfiguration() {
+        let selection = Data("legacy category selection".utf8)
+        SharedAppGroup.publishScreenTimeSelectionData(selection, semanticsVersion: 0)
+        let legacyRevision = SharedAppGroup.currentProtectionSnapshot().configurationRevision
+
+        SharedAppGroup.publishScreenTimeSelectionData(
+            selection,
+            semanticsVersion: SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+        )
+
+        let upgradedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertEqual(
+            upgradedSnapshot.screenTimeSelectionSemanticsVersion,
+            SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+        )
+        XCTAssertNotEqual(upgradedSnapshot.configurationRevision, legacyRevision)
+    }
+
+    @MainActor
+    func testProtectionIntentAndBreakExpirationPublishAsOneRevision() {
+        let selection = Data("protected app selection".utf8)
+        let expiration = Date().addingTimeInterval(300)
+        SharedAppGroup.publishScreenTimeSelectionData(selection)
+
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: expiration)
+
+        let publishedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertTrue(publishedSnapshot.desiredShieldActive)
+        XCTAssertEqual(publishedSnapshot.unlockExpiration, expiration)
+        XCTAssertEqual(publishedSnapshot.screenTimeSelectionData, selection)
+
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: expiration)
+        XCTAssertEqual(
+            SharedAppGroup.currentProtectionSnapshot().revision,
+            publishedSnapshot.revision,
+            "Publishing the same state must not make an in-flight shield action stale."
+        )
+    }
+
+    @MainActor
+    func testPendingShieldAttemptIsBoundToProtectionRevision() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("protected app selection".utf8))
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let activeRevision = SharedAppGroup.currentProtectionSnapshot().configurationRevision
+
+        SharedAppGroup.markPendingShieldAttempt()
+
+        XCTAssertEqual(SharedAppGroup.pendingShieldAttemptProtectionRevision, activeRevision)
+
+        SharedAppGroup.publishUnlockExpiration(Date().addingTimeInterval(300))
+
+        XCTAssertEqual(
+            SharedAppGroup.pendingShieldAttemptProtectionRevision,
+            SharedAppGroup.currentProtectionSnapshot().configurationRevision
+        )
+        XCTAssertNotEqual(
+            SharedAppGroup.pendingShieldAttemptProtectionRevision,
+            SharedAppGroup.currentProtectionSnapshot().revision
+        )
+
+        _ = SharedAppGroup.consumePendingShieldAttempt()
+        XCTAssertNil(SharedAppGroup.pendingShieldAttemptProtectionRevision)
+    }
+
+    @MainActor
+    func testExpiredBreakNormalizationKeepsPendingShieldAttemptCurrent() {
+        SharedAppGroup.publishScreenTimeSelectionData(Data("protected app selection".utf8))
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: Date().addingTimeInterval(-1)
+        )
+        let expiredBreakRevision = SharedAppGroup.currentProtectionSnapshot().revision
+        SharedAppGroup.markPendingShieldAttempt()
+
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+
+        let normalizedSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertNotEqual(normalizedSnapshot.revision, expiredBreakRevision)
+        XCTAssertEqual(
+            SharedAppGroup.pendingShieldAttemptProtectionRevision,
+            normalizedSnapshot.configurationRevision
+        )
+    }
+
+    @MainActor
+    func testPendingShieldAttemptPredicateRejectsOffBreakAndChangedSelection() {
+        let now = Date()
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection A".utf8))
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.markPendingShieldAttempt()
+        let pendingRevision = SharedAppGroup.pendingShieldAttemptProtectionRevision
+
+        let activeSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        XCTAssertTrue(
+            activeSnapshot.acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishUnlockExpiration(now.addingTimeInterval(300))
+        XCTAssertFalse(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishUnlockExpiration(now.addingTimeInterval(-1))
+        XCTAssertTrue(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishScreenTimeSelectionData(Data("selection B".utf8))
+        XCTAssertFalse(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: pendingRevision,
+                hasSelection: true,
+                now: now
+            )
+        )
+
+        SharedAppGroup.publishProtectionState(isActive: false, unlockExpiration: nil)
+        XCTAssertFalse(
+            SharedAppGroup.currentProtectionSnapshot().acceptsPendingShieldAttempt(
+                configurationRevision: nil,
+                hasSelection: true,
+                now: now
+            )
+        )
     }
 
     @MainActor
@@ -1768,6 +2721,240 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testScreenTimeAuthorizationBootstrapWaitsForExplicitRequest() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .approved
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.bootstrapAuthorizationIfNeeded()
+
+        XCTAssertEqual(authorizer.requestCount, 0)
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .notDetermined)
+
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 1)
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testApprovedScreenTimeAuthorizationSkipsBootstrapRequest() async {
+        let authorizer = FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+
+        XCTAssertEqual(authorizer.requestCount, 0)
+        XCTAssertEqual(screenTime.authorizationState, .approved)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testCanceledScreenTimeAuthorizationStaysGatedAndCanRetry() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .approved,
+            requestError: FakeScreenTimeAuthorizationError.canceled
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 1)
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .failed)
+        XCTAssertEqual(screenTime.setupState, .failed)
+
+        authorizer.requestError = nil
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 2)
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testDeniedScreenTimeAuthorizationRemainsRequired() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .denied
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 1)
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .denied)
+        XCTAssertEqual(screenTime.setupState, .failed)
+    }
+
+    @MainActor
+    func testScreenTimeApprovalWithDataAccessSatisfiesRequiredGate() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .approvedWithDataAccess
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.requestAuthorization()
+
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .approvedWithDataAccess)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testFailedSharedEraseBlocksAuthorizationSelectionAndProtectionWrites() async {
+        UserDefaults.standard.set(
+            true,
+            forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+        )
+        defer {
+            UserDefaults.standard.removeObject(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        }
+
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .approved
+        )
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: authorizer,
+            sharedDataEraser: { throw FakeSharedDataEraseError.failed }
+        )
+
+        XCTAssertNotNil(screenTime.sharedDataEraseErrorMessage)
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertTrue(screenTime.requiresSharedDataEraseRecovery)
+
+        await screenTime.requestAuthorization()
+        screenTime.applyShield()
+
+        XCTAssertEqual(authorizer.requestCount, 0)
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertTrue(
+            UserDefaults.standard.bool(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        )
+
+        #if os(iOS) && canImport(FamilyControls)
+        XCTAssertFalse(
+            screenTime.updateSelection(
+                FamilyActivitySelection(includeEntireCategory: true)
+            )
+        )
+        #endif
+    }
+
+    @MainActor
+    func testClearingShieldPreservesPersistedSelection() {
+        let selectionData = Data("protected selection".utf8)
+        SharedAppGroup.publishScreenTimeSelectionData(selectionData)
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        screenTime.clearShield()
+
+        XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), selectionData)
+    }
+
+    @MainActor
+    func testEraseAllScreenTimeDataClearsSelectionStateAndDiagnostics() {
+        let selectionData = Data("protected selection".utf8)
+        SharedAppGroup.publishScreenTimeSelectionData(selectionData)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: Date().addingTimeInterval(300)
+        )
+        SharedAppGroup.markPendingShieldAttempt()
+        SharedAppGroup.markShieldConfigurationRendered()
+        SharedAppGroup.markUnlockRelockExtensionIntervalStarted()
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        screenTime.eraseAllData()
+
+        XCTAssertFalse(screenTime.hasSelection)
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "No protected apps selected")
+        XCTAssertNil(SharedAppGroup.screenTimeSelectionData())
+        XCTAssertFalse(SharedAppGroup.desiredShieldActive)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertNil(SharedAppGroup.currentPendingShieldAttempt)
+        XCTAssertEqual(SharedAppGroup.shieldConfigurationRenderCount, 0)
+        XCTAssertEqual(SharedAppGroup.defaults.integer(forKey: SharedAppGroup.unlockRelockExtensionIntervalStartCountKey), 0)
+    }
+
+    @MainActor
+    func testOffReconciliationClearsStaleBreakAndPendingAttempt() {
+        SharedAppGroup.publishProtectionState(
+            isActive: false,
+            unlockExpiration: Date().addingTimeInterval(300)
+        )
+        SharedAppGroup.markPendingShieldAttempt()
+
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertFalse(SharedAppGroup.desiredShieldActive)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
+    }
+
+    @MainActor
+    func testMissingSelectionCannotKeepProtectionOrBreakIntentActive() {
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: Date().addingTimeInterval(300)
+        )
+
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        XCTAssertFalse(screenTime.hasSelection)
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertNotEqual(screenTime.setupState, .temporarilyUnlocked)
+        XCTAssertNotEqual(
+            screenTime.lastErrorMessage,
+            "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
+        )
+        XCTAssertFalse(SharedAppGroup.desiredShieldActive)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+    }
+
+    @MainActor
+    func testProtectionStatusUsesAppliedControllerState() {
+        let screenTime = ScreenTimeController(defaults: defaults)
+
+        screenTime.setupState = .shieldActive
+        screenTime.isShieldingEnabled = false
+        XCTAssertEqual(screenTime.userFacingProtectionStatus, "Off")
+
+        screenTime.isShieldingEnabled = true
+        XCTAssertEqual(screenTime.userFacingProtectionStatus, "On")
+
+        screenTime.isShieldingEnabled = false
+        screenTime.setupState = .temporarilyUnlocked
+        XCTAssertEqual(screenTime.userFacingProtectionStatus, "Break in progress")
+    }
+
+    @MainActor
     func testScreenTimeSelectionDefaultsToWholeCategoryMode() {
         #if os(iOS) && canImport(FamilyControls)
         let screenTime = ScreenTimeController(defaults: defaults)
@@ -1781,7 +2968,9 @@ final class CheckpointWorkflowTests: XCTestCase {
         #if os(iOS) && canImport(FamilyControls)
         let legacySelection = FamilyActivitySelection()
         let data = try? JSONEncoder().encode(legacySelection)
-        defaults.set(data, forKey: SharedAppGroup.screenTimeSelectionKey)
+        if let data {
+            SharedAppGroup.publishScreenTimeSelectionData(data, semanticsVersion: 0)
+        }
 
         let screenTime = ScreenTimeController(defaults: defaults)
 
@@ -2350,6 +3539,583 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 }
 
+final class AppSnapshotPersistenceTests: XCTestCase {
+    private var defaults: UserDefaults!
+    private var suiteName: String!
+    private var persistenceDirectory: URL!
+
+    override func setUp() {
+        super.setUp()
+        suiteName = "AppSnapshotPersistenceTests.\(UUID().uuidString)"
+        defaults = UserDefaults(suiteName: suiteName)
+        persistenceDirectory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CheckpointPersistenceTests-\(UUID().uuidString)", isDirectory: true)
+        UserDefaults.standard.removeObject(forKey: ScreenTimeController.sharedDataEraseIncompleteKey)
+        resetSharedAppGroupState()
+    }
+
+    override func tearDown() {
+        defaults.removePersistentDomain(forName: suiteName)
+        try? FileManager.default.removeItem(at: persistenceDirectory)
+        UserDefaults.standard.removeObject(forKey: ScreenTimeController.sharedDataEraseIncompleteKey)
+        resetSharedAppGroupState()
+        defaults = nil
+        suiteName = nil
+        persistenceDirectory = nil
+        super.tearDown()
+    }
+
+    @MainActor
+    func testCorruptPrimaryRecoversFromAtomicBackup() throws {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        let primaryURL = persistenceDirectory.appendingPathComponent(AppSnapshotPersistence.primaryFileName)
+        let backupURL = persistenceDirectory.appendingPathComponent(AppSnapshotPersistence.backupFileName)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: primaryURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: backupURL.path))
+
+        try Data("corrupt primary".utf8).write(to: primaryURL, options: [.atomic])
+
+        let recoveredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertEqual(recoveredStore.goal?.id, goal.id)
+        XCTAssertNotNil(recoveredStore.persistenceRecoveryMessage)
+        let restoredData = try Data(contentsOf: primaryURL)
+        XCTAssertNoThrow(try JSONDecoder().decode(AppSnapshotEnvelope.self, from: restoredData))
+
+        store.eraseAllData(backendIdentityDefaults: defaults)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+    }
+
+    @MainActor
+    func testLegacyUserDefaultsSnapshotMigratesOnlyAfterVerifiedFileWrite() throws {
+        let goal = makeGoal()
+        let defaultsBackedStore = CheckpointStore(defaults: defaults)
+        defaultsBackedStore.goal = goal
+        defaultsBackedStore.goalProfiles = [goal]
+        defaultsBackedStore.updateUnlockMinutes(10)
+        let envelopeData = try XCTUnwrap(
+            defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey)
+        )
+        let envelope = try JSONDecoder().decode(AppSnapshotEnvelope.self, from: envelopeData)
+        var oversizedLegacySnapshot = envelope.snapshot
+        oversizedLegacySnapshot.questions = (0...CheckpointStore.maximumStoredQuestionCountPerGoal).map {
+            makeQuestion(
+                goal: goal,
+                index: $0,
+                status: .retired,
+                timesAsked: 2,
+                lastAskedAt: Date(timeIntervalSince1970: TimeInterval($0))
+            )
+        }
+        oversizedLegacySnapshot.questionGenerationTraces = (
+            0...CheckpointStore.maximumQuestionGenerationTraceCount
+        ).map { makeGenerationTrace(goal: goal, index: $0) }
+        defaults.removeObject(forKey: AppSnapshotPersistence.primaryDefaultsKey)
+        defaults.removeObject(forKey: AppSnapshotPersistence.backupDefaultsKey)
+        defaults.set(
+            try JSONEncoder().encode(oversizedLegacySnapshot),
+            forKey: AppSnapshotPersistence.legacySnapshotKey
+        )
+
+        let migratedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertEqual(migratedStore.goal?.id, goal.id)
+        XCTAssertNil(defaults.data(forKey: AppSnapshotPersistence.legacySnapshotKey))
+        let primaryURL = persistenceDirectory
+            .appendingPathComponent(AppSnapshotPersistence.primaryFileName)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: primaryURL.path))
+        let migratedEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: primaryURL)
+        )
+        XCTAssertEqual(
+            migratedEnvelope.snapshot.questions.count,
+            CheckpointStore.maximumStoredQuestionCountPerGoal
+        )
+        XCTAssertEqual(
+            migratedStore.questionGenerationTraces.count,
+            CheckpointStore.maximumQuestionGenerationTraceCount
+        )
+        XCTAssertEqual(
+            migratedEnvelope.snapshot.questionGenerationTraces?.count,
+            CheckpointStore.maximumQuestionGenerationTraceCount
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: persistenceDirectory
+                    .appendingPathComponent(AppSnapshotPersistence.backupFileName)
+                    .path
+            )
+        )
+    }
+
+    @MainActor
+    func testLegacySnapshotRemainsWhenMigrationWriteFails() throws {
+        let goal = makeGoal()
+        let defaultsBackedStore = CheckpointStore(defaults: defaults)
+        defaultsBackedStore.goal = goal
+        defaultsBackedStore.goalProfiles = [goal]
+        defaultsBackedStore.updateUnlockMinutes(10)
+        let envelopeData = try XCTUnwrap(
+            defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey)
+        )
+        let envelope = try JSONDecoder().decode(AppSnapshotEnvelope.self, from: envelopeData)
+        defaults.removeObject(forKey: AppSnapshotPersistence.primaryDefaultsKey)
+        defaults.removeObject(forKey: AppSnapshotPersistence.backupDefaultsKey)
+        defaults.set(
+            try JSONEncoder().encode(envelope.snapshot),
+            forKey: AppSnapshotPersistence.legacySnapshotKey
+        )
+
+        // A regular file at the requested directory path forces createDirectory
+        // and every subsequent atomic snapshot write to fail.
+        try Data("not a directory".utf8).write(to: persistenceDirectory)
+        let recoveredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertEqual(recoveredStore.goal?.id, goal.id)
+        XCTAssertNotNil(recoveredStore.persistenceRecoveryMessage)
+        XCTAssertNotNil(defaults.data(forKey: AppSnapshotPersistence.legacySnapshotKey))
+    }
+
+    @MainActor
+    func testCorruptPrimaryAndBackupShowsVisibleFailure() throws {
+        try FileManager.default.createDirectory(
+            at: persistenceDirectory,
+            withIntermediateDirectories: true
+        )
+        try Data("corrupt primary".utf8).write(
+            to: persistenceDirectory.appendingPathComponent(AppSnapshotPersistence.primaryFileName)
+        )
+        try Data("corrupt backup".utf8).write(
+            to: persistenceDirectory.appendingPathComponent(AppSnapshotPersistence.backupFileName)
+        )
+
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertNil(store.goal)
+        XCTAssertTrue(store.isOnboardingPresented)
+        XCTAssertTrue(store.persistenceRecoveryMessage?.contains("could not read") == true)
+        XCTAssertEqual(store.checkpointNotice, store.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testRetentionKeepsUsableQuestionsBeforeNewestRetiredQuestions() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let usableQuestions = (1...10).map {
+            makeQuestion(goal: goal, index: $0, status: .new)
+        }
+        let retiredQuestions = (0..<500).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index + 100,
+                status: .retired,
+                timesAsked: 2,
+                lastAskedAt: Date(timeIntervalSince1970: TimeInterval(index))
+            )
+        }
+        store.questions = retiredQuestions + usableQuestions
+
+        store.updateUnlockMinutes(10)
+
+        XCTAssertEqual(store.questions.count, CheckpointStore.maximumStoredQuestionCountPerGoal)
+        XCTAssertTrue(Set(usableQuestions.map(\.id)).isSubset(of: Set(store.questions.map(\.id))))
+        let retainedRetiredDates = store.questions
+            .filter { $0.status == .retired }
+            .compactMap(\.lastAskedAt)
+        XCTAssertEqual(retainedRetiredDates.count, 490)
+        XCTAssertEqual(retainedRetiredDates.min(), Date(timeIntervalSince1970: 10))
+    }
+
+    @MainActor
+    func testAttemptRetentionKeepsNewestRecordsPerGoal() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let attempts = (0...CheckpointStore.maximumStoredAttemptCountPerGoal).map { index in
+            makeAttempt(
+                goal: goal,
+                result: .correct,
+                createdAt: Date(timeIntervalSince1970: TimeInterval(index))
+            )
+        }.reversed()
+        store.attempts = Array(attempts)
+
+        store.updateUnlockMinutes(10)
+
+        XCTAssertEqual(store.attempts.count, CheckpointStore.maximumStoredAttemptCountPerGoal)
+        XCTAssertEqual(
+            store.attempts.last?.createdAt,
+            Date(timeIntervalSince1970: 1)
+        )
+    }
+
+    @MainActor
+    func testPostEraseReconciliationDoesNotRecreateLocalOrAppGroupState() {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        store.startUnlockSession(minutes: 10)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.publishShieldContext(goalTitle: goal.title, promptPreview: nil)
+        let screenTime = ScreenTimeController()
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+        XCTAssertTrue(SharedAppGroup.hasPersistedData)
+
+        screenTime.eraseAllData()
+        store.eraseAllData(backendIdentityDefaults: defaults)
+
+        // Equivalent to RootView's goal/selection reconciliation plus the
+        // entitlement refresh that can arrive immediately after a reset.
+        store.clearUnlockSession()
+        screenTime.clearShield()
+        store.updateMembershipTier(.member)
+
+        XCTAssertTrue(store.hasNoPersistedAppData)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+        XCTAssertFalse(SharedAppGroup.hasPersistedData)
+
+        let reloadedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        let reloadedScreenTime = ScreenTimeController()
+        reloadedStore.clearUnlockSession()
+        reloadedScreenTime.clearShield()
+
+        XCTAssertTrue(reloadedStore.hasNoPersistedAppData)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+        XCTAssertFalse(SharedAppGroup.hasPersistedData)
+    }
+
+    @MainActor
+    func testScreenTimeEraseClearsKnownStandardDefaultsFallbackValues() {
+        let standardDefaults = UserDefaults.standard
+        let keys = [
+            SharedAppGroup.shieldGoalTitleKey,
+            SharedAppGroup.desiredShieldActiveKey,
+            SharedAppGroup.screenTimeSelectionKey,
+            SharedAppGroup.pendingShieldAttemptDateKey
+        ]
+        defer {
+            for key in keys {
+                standardDefaults.removeObject(forKey: key)
+            }
+        }
+
+        standardDefaults.set("Fallback goal", forKey: SharedAppGroup.shieldGoalTitleKey)
+        standardDefaults.set(true, forKey: SharedAppGroup.desiredShieldActiveKey)
+        standardDefaults.set(Data("fallback selection".utf8), forKey: SharedAppGroup.screenTimeSelectionKey)
+        standardDefaults.set(Date(), forKey: SharedAppGroup.pendingShieldAttemptDateKey)
+
+        XCTAssertTrue(SharedAppGroup.hasPersistedData)
+
+        let screenTime = ScreenTimeController()
+        screenTime.eraseAllData()
+
+        for key in keys {
+            XCTAssertNil(standardDefaults.object(forKey: key))
+        }
+        XCTAssertNil(screenTime.sharedDataEraseErrorMessage)
+        XCTAssertFalse(
+            standardDefaults.bool(forKey: ScreenTimeController.sharedDataEraseIncompleteKey)
+        )
+        XCTAssertFalse(SharedAppGroup.hasPersistedData)
+    }
+
+    @MainActor
+    func testIncompleteSharedEraseMarkerRetriesBeforeRestoringScreenTimeState() {
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        SharedAppGroup.publishShieldContext(goalTitle: "Sensitive old goal", promptPreview: nil)
+        UserDefaults.standard.set(
+            true,
+            forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+        )
+
+        XCTAssertTrue(SharedAppGroup.hasPersistedData)
+
+        let screenTime = ScreenTimeController()
+
+        XCTAssertNil(screenTime.sharedDataEraseErrorMessage)
+        XCTAssertFalse(
+            UserDefaults.standard.bool(forKey: ScreenTimeController.sharedDataEraseIncompleteKey)
+        )
+        XCTAssertFalse(SharedAppGroup.hasPersistedData)
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertFalse(screenTime.hasSelection)
+    }
+
+    @MainActor
+    func testEraseDuringAutomaticRefillCannotRestartBackendWorkOrInstallIdentity() async throws {
+        let goal = makeGoal()
+        let backendEngine = DelayedInstallIdentityQuestionEngine(
+            provider: .backend,
+            delayNanoseconds: 200_000_000,
+            identityDefaults: defaults
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.updateBackendEndpoint("https://example.com/ai")
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = [makeQuestion(goal: goal, index: 1, status: .retired)]
+
+        let refresh = Task { @MainActor in
+            await store.refreshQuestionBatchIfNeeded()
+        }
+        for _ in 0..<20 where backendEngine.receivedRequests.isEmpty {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertEqual(backendEngine.receivedRequests.count, 1)
+        XCTAssertNotNil(defaults.string(forKey: BackendClientIdentity.installIDKey))
+
+        store.eraseAllData(backendIdentityDefaults: defaults)
+        let didRefresh = await refresh.value
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        XCTAssertFalse(didRefresh)
+        XCTAssertEqual(backendEngine.receivedRequests.count, 1)
+        XCTAssertNil(defaults.string(forKey: BackendClientIdentity.installIDKey))
+        XCTAssertNil(store.goal)
+        XCTAssertTrue(store.hasNoPersistedAppData)
+    }
+
+    @MainActor
+    func testEraseInvalidatesDelayedQuestionGenerationBeforeItCanRestoreData() async throws {
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: DelayedQuestionEngine(
+                    provider: .backend,
+                    delayNanoseconds: 200_000_000
+                ),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        let screenTime = ScreenTimeController()
+        let creation = Task { @MainActor in
+            await store.createGoal(
+                title: "Study safely",
+                deadline: Date().addingTimeInterval(86_400),
+                category: .custom,
+                currentLevel: "Beginner",
+                focusAreas: "fundamentals",
+                preferredQuestionStyle: .multipleChoice
+            )
+        }
+
+        for _ in 0..<20 where store.goal == nil {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertNotNil(store.goal)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+
+        screenTime.eraseAllData()
+        store.eraseAllData(backendIdentityDefaults: defaults)
+        await creation.value
+
+        store.clearUnlockSession()
+        screenTime.clearShield()
+
+        XCTAssertNil(store.goal)
+        XCTAssertTrue(store.questions.isEmpty)
+        XCTAssertTrue(store.questionGenerationTraces.isEmpty)
+        XCTAssertTrue(store.hasNoPersistedAppData)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+        XCTAssertFalse(SharedAppGroup.hasPersistedData)
+    }
+
+    @MainActor
+    func testFailedEraseMustPurgeOldSnapshotBeforeSavingNewGoal() throws {
+        let fileManager = ToggleFailingFileManager()
+        let oldGoal = makeGoal()
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        store.goal = oldGoal
+        store.goalProfiles = [oldGoal]
+        store.updateUnlockMinutes(10)
+        let primaryURL = persistenceDirectory
+            .appendingPathComponent(AppSnapshotPersistence.primaryFileName)
+        let backupURL = persistenceDirectory
+            .appendingPathComponent(AppSnapshotPersistence.backupFileName)
+
+        fileManager.shouldFailRemoval = true
+        store.eraseAllData(backendIdentityDefaults: defaults)
+
+        XCTAssertFalse(store.hasNoPersistedAppData)
+        XCTAssertTrue(store.requiresPersistenceEraseRecovery)
+        XCTAssertTrue(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: primaryURL.path))
+
+        let newGoal = Goal(
+            title: "A new goal after reset",
+            deadline: Date().addingTimeInterval(86_400),
+            category: .custom,
+            currentLevel: "Beginner",
+            focusAreas: "new material",
+            preferredQuestionStyle: .multipleChoice
+        )
+        store.goal = newGoal
+        store.updateUnlockMinutes(15)
+
+        let stillOldEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: primaryURL)
+        )
+        XCTAssertEqual(stillOldEnvelope.snapshot.goal?.id, oldGoal.id)
+
+        fileManager.shouldFailRemoval = false
+        store.updateUnlockMinutes(30)
+
+        let newPrimaryEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: primaryURL)
+        )
+        let newBackupEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: backupURL)
+        )
+        XCTAssertEqual(newPrimaryEnvelope.snapshot.goal?.id, newGoal.id)
+        XCTAssertEqual(newBackupEnvelope.snapshot.goal?.id, newGoal.id)
+        XCTAssertNotEqual(newBackupEnvelope.snapshot.goal?.id, oldGoal.id)
+        XCTAssertFalse(store.requiresPersistenceEraseRecovery)
+        XCTAssertFalse(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
+        XCTAssertNil(store.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testFailedSnapshotEraseCannotRestoreOldGoalAfterRelaunch() throws {
+        let fileManager = ToggleFailingFileManager()
+        let oldGoal = makeGoal()
+        let originalStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        originalStore.goal = oldGoal
+        originalStore.goalProfiles = [oldGoal]
+        originalStore.updateUnlockMinutes(10)
+
+        let primaryURL = persistenceDirectory
+            .appendingPathComponent(AppSnapshotPersistence.primaryFileName)
+        fileManager.shouldFailRemoval = true
+        originalStore.eraseAllData(backendIdentityDefaults: defaults)
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+
+        XCTAssertNil(relaunchedStore.goal)
+        XCTAssertFalse(relaunchedStore.isOnboardingPresented)
+        XCTAssertTrue(relaunchedStore.requiresPersistenceEraseRecovery)
+        XCTAssertNotNil(relaunchedStore.persistenceRecoveryMessage)
+        XCTAssertTrue(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
+
+        let newGoal = Goal(
+            title: "Goal created while cleanup is blocked",
+            deadline: Date().addingTimeInterval(86_400),
+            category: .custom,
+            currentLevel: "Beginner",
+            focusAreas: "new material",
+            preferredQuestionStyle: .multipleChoice
+        )
+        relaunchedStore.goal = newGoal
+        relaunchedStore.updateUnlockMinutes(15)
+
+        let stillOldEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: primaryURL)
+        )
+        XCTAssertEqual(stillOldEnvelope.snapshot.goal?.id, oldGoal.id)
+
+        fileManager.shouldFailRemoval = false
+        relaunchedStore.eraseAllData(backendIdentityDefaults: defaults)
+
+        XCTAssertFalse(relaunchedStore.requiresPersistenceEraseRecovery)
+        XCTAssertTrue(relaunchedStore.hasNoPersistedAppData)
+        XCTAssertTrue(relaunchedStore.isOnboardingPresented)
+        XCTAssertFalse(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+
+        let cleanRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        XCTAssertNil(cleanRelaunch.goal)
+        XCTAssertTrue(cleanRelaunch.isOnboardingPresented)
+        XCTAssertFalse(cleanRelaunch.requiresPersistenceEraseRecovery)
+    }
+
+    @MainActor
+    private func makeGenerationTrace(goal: Goal, index: Int) -> QuestionGenerationTrace {
+        QuestionGenerationTrace(
+            createdAt: Date(timeIntervalSince1970: TimeInterval(index)),
+            phase: "migration-\(index)",
+            goalID: goal.id,
+            goalTitle: goal.title,
+            providerPreference: .backend,
+            resolvedProvider: .backend,
+            usedFallback: false,
+            targetCount: 5,
+            existingQuestionCount: 0,
+            reportedQuestionCount: 0,
+            competencyCount: 0,
+            minimumDifficulty: 1,
+            generatedQuestionCount: 5,
+            addedQuestionCount: 5,
+            retiredQuestionCount: 0,
+            duration: 0.1,
+            sourcePrompt: "migration trace \(index)",
+            failure: nil,
+            errorMessage: nil,
+            questions: []
+        )
+    }
+
+    @MainActor
+    private func makeFileBackedStore(goal: Goal) -> CheckpointStore {
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateUnlockMinutes(10)
+        return store
+    }
+}
+
 final class AIProviderPolicyTests: XCTestCase {
     @MainActor
     func testPersistedApplePreferenceMigratesBackToBackendAutomatic() {
@@ -2424,6 +4190,47 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(batch.failure, .serviceUnavailable)
         XCTAssertFalse(batch.usedFallback)
         XCTAssertTrue(appleEngine.receivedRequests.isEmpty)
+    }
+
+    func testSafetyInterventionProducesCalmNonRetryingEditPath() async {
+        let goal = makeGoal()
+        let engine = HybridQuestionEngine(
+            backendEngine: SafetyInterventionQuestionEngine(provider: .backend),
+            appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+        )
+
+        let batch = await engine.generateQuestionBatch(
+            for: makeRequest(goal: goal, backendEndpoint: URL(string: "https://example.com/ai")),
+            preference: .automatic
+        )
+
+        XCTAssertTrue(batch.questions.isEmpty)
+        XCTAssertEqual(batch.failure, .safetyIntervention)
+        XCTAssertEqual(batch.failure?.title, "Choose a different topic")
+        XCTAssertTrue(batch.failure?.allowsEditingTopics == true)
+        XCTAssertFalse(batch.failure?.allowsRetryWithoutChanges == true)
+        XCTAssertTrue(batch.failure?.message.contains("Edit the goal or topics") == true)
+    }
+
+    func testBackendMapsControlled422ToSafetyIntervention() throws {
+        let controlledResponse = try JSONSerialization.data(
+            withJSONObject: [
+                "error": "This request could not be processed safely.",
+                "code": "safety_intervention"
+            ]
+        )
+
+        XCTAssertEqual(
+            BackendQuestionEngine.generationError(for: 422, responseBody: controlledResponse),
+            .safetyIntervention
+        )
+        XCTAssertEqual(
+            BackendQuestionEngine.generationError(
+                for: 422,
+                responseBody: Data(#"{"code":"different_error"}"#.utf8)
+            ),
+            .badResponse
+        )
     }
 
     func testExplicitBackendPreferenceCanUseBackendWhenConfigured() async {
@@ -3322,6 +5129,34 @@ final class AIProviderPolicyTests: XCTestCase {
     }
 
     @MainActor
+    func testEraseAllAppDataRemovesSnapshotAndBackendInstallID() throws {
+        let suiteName = "EraseAllAppDataTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateUnlockMinutes(10)
+        _ = BackendClientIdentity.installID(defaults: defaults)
+
+        XCTAssertNotNil(defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey))
+        XCTAssertNotNil(defaults.data(forKey: AppSnapshotPersistence.backupDefaultsKey))
+        XCTAssertNotNil(defaults.string(forKey: BackendClientIdentity.installIDKey))
+
+        store.eraseAllData(backendIdentityDefaults: defaults)
+
+        XCTAssertNil(defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey))
+        XCTAssertNil(defaults.data(forKey: AppSnapshotPersistence.backupDefaultsKey))
+        XCTAssertNil(defaults.data(forKey: AppSnapshotPersistence.legacySnapshotKey))
+        XCTAssertNil(defaults.string(forKey: BackendClientIdentity.installIDKey))
+        XCTAssertNil(store.goal)
+        XCTAssertTrue(store.questions.isEmpty)
+        XCTAssertTrue(store.attempts.isEmpty)
+        XCTAssertTrue(CheckpointStore(defaults: defaults).isOnboardingPresented)
+    }
+
+    @MainActor
     func testStoreUsesInternalBackendEnvironmentConfiguration() async throws {
         setenv("CHECKPOINT_AI_BACKEND_ENDPOINT", "https://example.com/questions", 1)
         setenv("CHECKPOINT_AI_BACKEND_TOKEN", "dev-token", 1)
@@ -3466,6 +5301,44 @@ private enum TestQuestionGenerationError: Error {
     case unavailable
 }
 
+private enum FakeScreenTimeAuthorizationError: Error {
+    case canceled
+}
+
+private enum FakeSharedDataEraseError: Error {
+    case failed
+}
+
+@MainActor
+private final class FakeScreenTimeAuthorizer: ScreenTimeAuthorizing {
+    var authorizationStatus: ScreenTimeAuthorizationStatus
+    var statusAfterRequest: ScreenTimeAuthorizationStatus?
+    var requestError: (any Error)?
+    private(set) var requestCount = 0
+
+    init(
+        authorizationStatus: ScreenTimeAuthorizationStatus,
+        statusAfterRequest: ScreenTimeAuthorizationStatus? = nil,
+        requestError: (any Error)? = nil
+    ) {
+        self.authorizationStatus = authorizationStatus
+        self.statusAfterRequest = statusAfterRequest
+        self.requestError = requestError
+    }
+
+    func requestAuthorization() async throws {
+        requestCount += 1
+
+        if let requestError {
+            throw requestError
+        }
+
+        if let statusAfterRequest {
+            authorizationStatus = statusAfterRequest
+        }
+    }
+}
+
 private struct StaticQuestionEngine: QuestionGenerating {
     let provider: AIProviderKind
     let questions: [CheckpointQuestion]
@@ -3497,15 +5370,31 @@ private struct GoalAwareQuestionEngine: QuestionGenerating {
 private final class SkillMapQuestionEngine: QuestionGenerating, @unchecked Sendable {
     let provider: AIProviderKind
     let topics: [String]
+    let requestDelayNanoseconds: UInt64
+    let largeRequestDelayNanoseconds: UInt64
     private(set) var receivedRequests: [QuestionGenerationRequest] = []
 
-    init(provider: AIProviderKind, topics: [String]) {
+    init(
+        provider: AIProviderKind,
+        topics: [String],
+        requestDelayNanoseconds: UInt64 = 0,
+        largeRequestDelayNanoseconds: UInt64 = 0
+    ) {
         self.provider = provider
         self.topics = topics
+        self.requestDelayNanoseconds = requestDelayNanoseconds
+        self.largeRequestDelayNanoseconds = largeRequestDelayNanoseconds
     }
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         receivedRequests.append(request)
+
+        if requestDelayNanoseconds > 0 {
+            try await Task.sleep(nanoseconds: requestDelayNanoseconds)
+        } else if request.targetCount > UnlockPolicy.default.questionsPerSession,
+           largeRequestDelayNanoseconds > 0 {
+            try await Task.sleep(nanoseconds: largeRequestDelayNanoseconds)
+        }
 
         return (1...max(request.targetCount, topics.count)).map { index in
             let topic = topics[(index - 1) % topics.count]
@@ -3514,6 +5403,49 @@ private final class SkillMapQuestionEngine: QuestionGenerating, @unchecked Senda
                 index: index,
                 topic: topic,
                 prompt: "\(request.goal.title) \(provider.rawValue) skill-map question \(index) for \(topic)",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+}
+
+private final class PhasedSkillMapQuestionEngine: QuestionGenerating, @unchecked Sendable {
+    let provider: AIProviderKind
+    let topicsByRequest: [[String]]
+    let largeRequestDelayNanoseconds: UInt64
+    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+
+    init(
+        provider: AIProviderKind,
+        topicsByRequest: [[String]],
+        largeRequestDelayNanoseconds: UInt64 = 0
+    ) {
+        self.provider = provider
+        self.topicsByRequest = topicsByRequest
+        self.largeRequestDelayNanoseconds = largeRequestDelayNanoseconds
+    }
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        receivedRequests.append(request)
+        let requestIndex = receivedRequests.count - 1
+        let topics = topicsByRequest.indices.contains(requestIndex)
+            ? topicsByRequest[requestIndex]
+            : (topicsByRequest.last ?? request.questionContext.contentTopics)
+
+        if request.targetCount > UnlockPolicy.default.questionsPerSession,
+           largeRequestDelayNanoseconds > 0 {
+            try await Task.sleep(nanoseconds: largeRequestDelayNanoseconds)
+        }
+
+        return (1...request.targetCount).map { index in
+            let topic = topics[(index - 1) % topics.count]
+            let uniqueIndex = (requestIndex + 1) * 1_000 + index
+            return makeQuestion(
+                goal: request.goal,
+                index: uniqueIndex,
+                topic: topic,
+                prompt: "\(request.goal.title) phased skill-map question \(uniqueIndex) for \(topic)",
                 difficulty: request.minimumDifficulty,
                 sourcePrompt: request.sourcePrompt(provider: provider)
             )
@@ -3610,6 +5542,39 @@ private struct DelayedQuestionEngine: QuestionGenerating {
     }
 }
 
+private final class DelayedInstallIdentityQuestionEngine: QuestionGenerating, @unchecked Sendable {
+    let provider: AIProviderKind
+    let delayNanoseconds: UInt64
+    let identityDefaults: UserDefaults
+    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+
+    init(
+        provider: AIProviderKind,
+        delayNanoseconds: UInt64,
+        identityDefaults: UserDefaults
+    ) {
+        self.provider = provider
+        self.delayNanoseconds = delayNanoseconds
+        self.identityDefaults = identityDefaults
+    }
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        receivedRequests.append(request)
+        _ = BackendClientIdentity.installID(defaults: identityDefaults)
+        try await Task.sleep(nanoseconds: delayNanoseconds)
+        return (1...request.targetCount).map { index in
+            makeQuestion(
+                goal: request.goal,
+                index: receivedRequests.count * 1_000 + index,
+                topic: "logical reasoning",
+                prompt: "\(request.goal.title) delayed identity question \(receivedRequests.count)-\(index)",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+}
+
 private struct ThrowingQuestionEngine: QuestionGenerating {
     let provider: AIProviderKind
 
@@ -3623,6 +5588,25 @@ private struct UnavailableQuestionEngine: QuestionGenerating {
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         throw QuestionGenerationError.providerUnavailable
+    }
+}
+
+private struct SafetyInterventionQuestionEngine: QuestionGenerating {
+    let provider: AIProviderKind
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        throw QuestionGenerationError.safetyIntervention
+    }
+}
+
+private final class ToggleFailingFileManager: FileManager, @unchecked Sendable {
+    var shouldFailRemoval = false
+
+    override func removeItem(at URL: URL) throws {
+        if shouldFailRemoval {
+            throw CocoaError(.fileWriteNoPermission)
+        }
+        try super.removeItem(at: URL)
     }
 }
 
@@ -3825,8 +5809,12 @@ private func makeRequest(
 
 private func resetSharedAppGroupState() {
     let defaults = SharedAppGroup.defaults
+    SharedAppGroup.removeAllPendingShieldAttempts()
     [
         SharedAppGroup.pendingShieldAttemptDateKey,
+        SharedAppGroup.pendingShieldAttemptProtectionRevisionKey,
+        SharedAppGroup.pendingShieldAttemptDataKey,
+        SharedAppGroup.pendingShieldAttemptCurrentIDKey,
         SharedAppGroup.shieldGoalTitleKey,
         SharedAppGroup.shieldPromptPreviewKey,
         SharedAppGroup.shieldAttemptCountKey,
@@ -3835,6 +5823,10 @@ private func resetSharedAppGroupState() {
         SharedAppGroup.lastUnlockExpirationKey,
         SharedAppGroup.desiredShieldActiveKey,
         SharedAppGroup.screenTimeSelectionKey,
+        SharedAppGroup.screenTimeSelectionSemanticsVersionKey,
+        SharedAppGroup.protectionConfigurationRevisionKey,
+        SharedAppGroup.protectionRevisionKey,
+        SharedAppGroup.protectionUpdatedAtKey,
         SharedAppGroup.unlockRelockMonitorScheduledAtKey,
         SharedAppGroup.unlockRelockMonitorIntervalStartKey,
         SharedAppGroup.unlockRelockMonitorExpectedEndKey,
@@ -3846,4 +5838,5 @@ private func resetSharedAppGroupState() {
     defaults.synchronize()
     SharedAppGroup.removeShieldContextFile()
     SharedAppGroup.removeScreenTimeSelectionFile()
+    SharedAppGroup.removeProtectionSnapshotFile()
 }

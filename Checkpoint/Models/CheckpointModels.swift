@@ -158,6 +158,78 @@ enum ProductLimits {
     static let autoRefreshCooldown: TimeInterval = 6 * 60 * 60
 }
 
+enum SkillMapStatus: String, Codable, Equatable, Sendable {
+    case suggested
+    case reviewed
+}
+
+struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
+    var id: UUID
+    var name: String
+    var aliases: [String]
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        aliases: [String] = []
+    ) {
+        self.id = id
+        self.name = name
+        self.aliases = aliases
+    }
+
+    static func normalizedName(_ rawName: String) -> String {
+        rawName
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+            .trimmingCharacters(in: CharacterSet(charactersIn: " .:-"))
+    }
+
+    static func validatedNames(
+        _ rawNames: [String],
+        allowedCount: ClosedRange<Int> = 3...6
+    ) -> [String]? {
+        guard allowedCount.contains(rawNames.count) else { return nil }
+
+        let unsupportedSeparators = CharacterSet(charactersIn: ",;\n")
+        let names = rawNames.map(normalizedName)
+        guard names.allSatisfy({ name in
+            (3...48).contains(name.count) &&
+                name.rangeOfCharacter(from: unsupportedSeparators) == nil
+        }) else {
+            return nil
+        }
+
+        let keys = names.map { $0.lowercased() }
+        guard Set(keys).count == keys.count else { return nil }
+        return names
+    }
+}
+
+struct GoalSkillMap: Codable, Equatable, Sendable {
+    var topics: [SkillMapTopic]
+    var status: SkillMapStatus
+    var createdAt: Date
+    var updatedAt: Date
+
+    init(
+        topics: [SkillMapTopic],
+        status: SkillMapStatus = .suggested,
+        createdAt: Date = Date(),
+        updatedAt: Date = Date()
+    ) {
+        self.topics = topics
+        self.status = status
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+
+    var topicNames: [String] {
+        topics.map(\.name)
+    }
+}
+
 struct Goal: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var title: String
@@ -165,6 +237,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
     var category: GoalCategory
     var currentLevel: String
     var focusAreas: String
+    var derivedSkillMap: GoalSkillMap?
     var preferredQuestionStyle: QuestionFormat
     var minimumQuestionDifficulty: Int
     var createdAt = Date()
@@ -176,6 +249,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         category: GoalCategory,
         currentLevel: String,
         focusAreas: String,
+        derivedSkillMap: GoalSkillMap? = nil,
         preferredQuestionStyle: QuestionFormat,
         minimumQuestionDifficulty: Int = UnlockPolicy.default.minimumQuestionDifficulty,
         createdAt: Date = Date()
@@ -186,6 +260,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         self.category = category
         self.currentLevel = currentLevel
         self.focusAreas = focusAreas
+        self.derivedSkillMap = derivedSkillMap
         self.preferredQuestionStyle = preferredQuestionStyle
         self.minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(minimumQuestionDifficulty)
         self.createdAt = createdAt
@@ -235,6 +310,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         case category
         case currentLevel
         case focusAreas
+        case derivedSkillMap
         case preferredQuestionStyle
         case minimumQuestionDifficulty
         case createdAt
@@ -248,6 +324,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         category = try container.decode(GoalCategory.self, forKey: .category)
         currentLevel = try container.decode(String.self, forKey: .currentLevel)
         focusAreas = try container.decode(String.self, forKey: .focusAreas)
+        derivedSkillMap = try container.decodeIfPresent(GoalSkillMap.self, forKey: .derivedSkillMap)
         preferredQuestionStyle = try container.decode(QuestionFormat.self, forKey: .preferredQuestionStyle)
         minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(
             try container.decodeIfPresent(Int.self, forKey: .minimumQuestionDifficulty)
@@ -587,6 +664,7 @@ struct UnlockPolicy: Codable, Equatable, Sendable {
 
 struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
     var goalID: Goal.ID?
+    var skillID: SkillMapTopic.ID? = nil
     var topic: String
     var estimatedLevel: Double
     var attempts: Int
@@ -598,7 +676,11 @@ struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
     var lastPracticedAt: Date?
 
     var id: String {
-        "\(goalID?.uuidString ?? "legacy")::\(topic)"
+        if let skillID {
+            return "\(goalID?.uuidString ?? "legacy")::skill::\(skillID.uuidString)"
+        }
+
+        return "\(goalID?.uuidString ?? "legacy")::topic::\(topic.lowercased())"
     }
 
     var masteryPercent: Int {
@@ -618,10 +700,12 @@ struct TopicCompetency: Identifiable, Codable, Equatable, Sendable {
     static func initial(
         topic: String,
         estimatedLevel: Double = 1.5,
-        goalID: Goal.ID? = nil
+        goalID: Goal.ID? = nil,
+        skillID: SkillMapTopic.ID? = nil
     ) -> TopicCompetency {
         TopicCompetency(
             goalID: goalID,
+            skillID: skillID,
             topic: topic,
             estimatedLevel: min(5.0, max(1.0, estimatedLevel)),
             attempts: 0,

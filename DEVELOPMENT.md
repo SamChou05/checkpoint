@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: July 11, 2026
+Last updated: July 12, 2026
 
 ## Current Product Direction
 
@@ -8,9 +8,9 @@ Checkpoint is an iOS app that lets a user pick restricted apps, set a goal, and 
 
 The App Store-safe workflow is:
 
-1. User creates a goal profile in Checkpoint.
-2. Checkpoint generates and caches a multiple-choice question bank for that active profile.
-3. User grants Family Controls permission.
+1. Checkpoint explains why Screen Time access is required, and the user explicitly grants Family Controls permission.
+2. User creates a goal profile in Checkpoint.
+3. Checkpoint generates and caches a multiple-choice question bank for that active profile.
 4. User picks restricted apps inside Checkpoint.
 5. Checkpoint shields those apps.
 6. User opens a restricted app.
@@ -36,7 +36,7 @@ Important platform constraint:
 - The app is currently modeled as a starter-membership product: the first goal and core blocker loop are included before payment, while membership unlocks goal switching and ongoing fresh generation.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Feedback notes are accessible from Settings, saved locally, and shareable through the system share sheet.
-- Screen Time authorization is requested only after the user chooses to set up app protection; Settings keeps a fallback access button when permission is not ready.
+- Screen Time authorization is a required startup phase shown before first-goal onboarding; denial or cancellation stays on a clear retry screen instead of hiding recovery in Settings.
 - Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 review from Settings.
 - Settings places a compact Plan section below the core goal and app-protection controls.
 - Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh AI-generated questions when the current set can no longer fill the next checkpoint.
@@ -85,6 +85,7 @@ Important platform constraint:
 - Provider routing is internal so users do not need to choose a question source.
 - The app stores the last provider used for diagnostics.
 - Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, oversized, and off-target study-strategy questions.
+- Provider prompts assign a distinct tested objective to every generated item, and checkpoint sessions spread fresh questions across available topics before repeating one.
 - XCTest coverage verifies question-bank generation, session selection, unlock gating, shield-triggered sessions, provider policy, and sanitizer behavior.
 
 ### Adaptive Competency
@@ -115,7 +116,7 @@ Important platform constraint:
 
 ### Screen Time / Blocking
 
-- Family Controls authorization request.
+- Required launch-time Family Controls authorization with retry and foreground status reconciliation.
 - FamilyActivityPicker-based blocked app/category/web selection.
 - New installs start with an empty blocked-app selection.
 - Selection persistence through shared App Group defaults.
@@ -147,16 +148,18 @@ Important platform constraint:
 - Real Screen Time behavior must be verified on a physical iPhone.
 - Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and Screen Time extensions.
 - Family Controls distribution requires Apple approval before App Store submission.
-- Very short 5- and 10-minute unlocks rely primarily on the app-level re-lock task and foreground reconciliation; the Device Activity monitor remains an additional background re-lock path.
+- Device Activity requires a 15-minute monitoring interval, so 5- and 10-minute breaks schedule their monitor far enough in the past to meet that minimum while still ending at the requested time; verify this behavior on a physical iPhone.
 - App Store readiness steps are tracked in `docs/APP_STORE_READINESS.md`.
 - The AI layer has production backend batch generation plus guarded Apple Foundation Models support for explicit internal experiments.
-- Storage is still prototype-level UserDefaults/App Group defaults, not SwiftData or SQLite.
+- Main app state uses a schema-versioned JSON envelope in Application Support with atomic primary and backup files, legacy UserDefaults migration, recovery reporting, file protection, and bounded history retention. App Group Screen Time coordination remains in its separate atomic snapshot/defaults store.
+- Snapshot encoding and full-file primary/backup writes currently run synchronously on the main actor. Profile physical devices with near-retention-limit histories and move that I/O behind an asynchronous persistence boundary if Instruments shows launch or interaction stalls.
+- Privacy Policy and Support links are read from `CHECKPOINT_PRIVACY_POLICY_URL` and `CHECKPOINT_SUPPORT_URL`. Configure real hosted URLs in ignored `Secrets.xcconfig` or through the corresponding `*_OVERRIDE` build settings; missing values are shown as diagnostics in Settings and the paywall.
 
 ## In-Progress Direction Before Device Setup
 
 While Apple entitlement/device setup is pending, useful local work is:
 
-- Replace prototype persistence with a production-ready local store.
+- Exercise primary/backup recovery and legacy migration again on the build-3 to build-4 physical-device upgrade path.
 - Add onboarding diagnostics for better initial competency estimates.
 - Improve adaptive competency and diagnostic flows.
 - Continue UI polish and error states.
@@ -189,7 +192,7 @@ The MVP is complete when:
 - Confirm Shield Action extension writes pending attempts.
 - Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.
-- Replace prototype persistence with SwiftData or SQLite.
+- Validate the versioned primary/backup persistence migration on the physical upgrade install and verify Erase all data removes both copies.
 - Deploy and verify the Bedrock backend against a real endpoint/model.
 - Configure Release with an HTTPS backend endpoint and token through `Checkpoint/Config/Secrets.xcconfig` or the `CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE` and `CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE` build settings.
 - Keep Apple Foundation Models validation separate as an internal experiment; it is not a release-readiness dependency.
@@ -243,7 +246,7 @@ Current provider policy:
 - Production `Automatic` routes directly to the configured cloud backend.
 - Apple Foundation Models is code-supported only as an explicit internal experiment and is excluded from production cost and availability assumptions.
 - Backend costs scale with batch creation and refreshes, so generation remains quota-limited, cooldown-protected, and cached.
-- A Release build must include a valid HTTPS backend endpoint and token because the cloud backend is the canonical production source.
+- A Release build must include a valid HTTPS backend endpoint, a non-placeholder token of at least 32 characters, and hosted HTTPS Privacy Policy and Support URLs. The cloud backend is the canonical production question source.
 
 Implementation status:
 

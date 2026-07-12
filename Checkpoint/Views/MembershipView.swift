@@ -5,6 +5,7 @@ struct MembershipView: View {
     let feature: MembershipFeature
     let store: CheckpointStore
     let purchaseController: PurchaseController
+    private let legalLinks = LegalLinks.current
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
@@ -80,6 +81,8 @@ struct MembershipView: View {
                         .disabled(purchaseController.isRestoringPurchases || purchasingProductID != nil)
                         .opacity(purchaseController.isRestoringPurchases || purchasingProductID != nil ? 0.64 : 1)
                     }
+
+                    paywallLegalLinks
                 }
                 .padding(20)
             }
@@ -187,6 +190,32 @@ struct MembershipView: View {
         "Billing is handled by Apple. Subscriptions renew automatically until canceled in App Store account settings."
     }
 
+    private var paywallLegalLinks: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 16) {
+                    CompactLegalLink(title: "Privacy Policy", url: legalLinks.privacyPolicyURL)
+                    CompactLegalLink(title: "Support", url: legalLinks.supportURL)
+                    CompactLegalLink(title: "Terms of Use", url: LegalLinks.termsOfUseURL)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    CompactLegalLink(title: "Privacy Policy", url: legalLinks.privacyPolicyURL)
+                    CompactLegalLink(title: "Support", url: legalLinks.supportURL)
+                    CompactLegalLink(title: "Terms of Use", url: LegalLinks.termsOfUseURL)
+                }
+            }
+
+            if let missingMessage = legalLinks.missingConfigurationMessage {
+                Text(missingMessage)
+                    .font(.caption)
+                    .foregroundStyle(CheckpointTheme.coral)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.top, 2)
+    }
+
     private func loadEntitlements() async {
         await purchaseController.loadProducts()
         let unlocked = await purchaseController.refreshEntitlements()
@@ -226,6 +255,24 @@ struct MembershipView: View {
     private func close() {
         store.dismissMembershipPrompt()
         dismiss()
+    }
+}
+
+private struct CompactLegalLink: View {
+    var title: String
+    var url: URL?
+
+    @ViewBuilder
+    var body: some View {
+        if let url {
+            Link(title, destination: url)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+        } else {
+            Text("\(title) — not configured")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.coral)
+        }
     }
 }
 

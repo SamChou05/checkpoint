@@ -2,6 +2,64 @@ import XCTest
 @testable import Checkpoint
 
 final class StoreKitPaymentTests: XCTestCase {
+    @MainActor
+    func testDebugMembershipEntitlementDefaultsOff() {
+        let controller = PurchaseController(grantsDebugTesterEntitlement: false)
+
+        XCTAssertFalse(controller.isMembershipUnlocked)
+    }
+
+    @MainActor
+    func testDebugMembershipEntitlementCanBeExplicitlyEnabled() async {
+        let controller = PurchaseController(grantsDebugTesterEntitlement: true)
+        let isUnlocked = await controller.refreshEntitlements()
+
+        XCTAssertTrue(isUnlocked)
+        XCTAssertTrue(controller.isMembershipUnlocked)
+        XCTAssertEqual(controller.purchasedProductIDs, [MembershipProductID.monthly])
+    }
+
+    func testDebugMembershipEnvironmentOptInIsExplicit() {
+        XCTAssertFalse(DebugMembershipEntitlement.isEnabled(environment: [:]))
+        XCTAssertFalse(
+            DebugMembershipEntitlement.isEnabled(
+                environment: [DebugMembershipEntitlement.environmentKey: "0"]
+            )
+        )
+
+        #if DEBUG
+        XCTAssertTrue(
+            DebugMembershipEntitlement.isEnabled(
+                environment: [DebugMembershipEntitlement.environmentKey: "true"]
+            )
+        )
+        #endif
+    }
+
+    func testCompiledQAProBuildOptInIsExplicit() {
+        #if DEBUG
+        XCTAssertTrue(
+            DebugMembershipEntitlement.isEnabled(
+                environment: [:],
+                compiledQABuild: true
+            )
+        )
+        #endif
+    }
+
+    func testLegalLinksRejectMissingAndUnexpandedBuildSettings() {
+        XCTAssertNil(LegalLinks.configuredURL(nil))
+        XCTAssertNil(LegalLinks.configuredURL(""))
+        XCTAssertNil(LegalLinks.configuredURL("$(CHECKPOINT_PRIVACY_POLICY_URL)"))
+        XCTAssertNil(LegalLinks.configuredURL("not a URL"))
+        XCTAssertNil(LegalLinks.configuredURL("http://checkpoint.example/privacy"))
+        XCTAssertEqual(
+            LegalLinks.configuredURL("https://checkpoint.example/privacy")?.absoluteString,
+            "https://checkpoint.example/privacy"
+        )
+        XCTAssertEqual(LegalLinks.termsOfUseURL.scheme, "https")
+    }
+
     func testLocalStoreKitConfigMatchesMembershipProductIDs() throws {
         let subscriptions = try localSubscriptions()
 

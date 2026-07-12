@@ -26,16 +26,10 @@ struct BackendQuestionEngine: QuestionGenerating {
         }
 
         guard (200..<300).contains(httpResponse.statusCode) else {
-            switch httpResponse.statusCode {
-            case 429:
-                throw QuestionGenerationError.rateLimited
-            case 400, 401, 403, 404:
-                throw QuestionGenerationError.serviceUnavailable
-            case 500..<600:
-                throw QuestionGenerationError.serviceUnavailable
-            default:
-                throw QuestionGenerationError.badResponse
-            }
+            throw Self.generationError(
+                for: httpResponse.statusCode,
+                responseBody: data
+            )
         }
 
         let payload: BackendQuestionResponse
@@ -54,10 +48,33 @@ struct BackendQuestionEngine: QuestionGenerating {
 
         return questions
     }
+
+    static func generationError(
+        for statusCode: Int,
+        responseBody: Data
+    ) -> QuestionGenerationError {
+        switch statusCode {
+        case 422:
+            let response = try? JSONDecoder().decode(BackendErrorResponse.self, from: responseBody)
+            return response?.code == "safety_intervention" ? .safetyIntervention : .badResponse
+        case 429:
+            return .rateLimited
+        case 400, 401, 403, 404:
+            return .serviceUnavailable
+        case 500..<600:
+            return .serviceUnavailable
+        default:
+            return .badResponse
+        }
+    }
+}
+
+private struct BackendErrorResponse: Decodable {
+    var code: String?
 }
 
 enum BackendClientIdentity {
-    private static let installIDKey = "checkpoint.backend.install.id.v1"
+    static let installIDKey = "checkpoint.backend.install.id.v1"
 
     static var installID: String {
         installID(defaults: .standard)
@@ -72,6 +89,10 @@ enum BackendClientIdentity {
         let newID = UUID().uuidString
         defaults.set(newID, forKey: installIDKey)
         return newID
+    }
+
+    static func clearInstallID(defaults: UserDefaults = .standard) {
+        defaults.removeObject(forKey: installIDKey)
     }
 }
 

@@ -24,6 +24,10 @@
 	<string>$(CHECKPOINT_AI_BACKEND_ENDPOINT)</string>
 	<key>CheckpointAIBackendToken</key>
 	<string>$(CHECKPOINT_AI_BACKEND_TOKEN)</string>
+	<key>CheckpointPrivacyPolicyURL</key>
+	<string>$(CHECKPOINT_PRIVACY_POLICY_URL)</string>
+	<key>CheckpointSupportURL</key>
+	<string>$(CHECKPOINT_SUPPORT_URL)</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSRequiresIPhoneOS</key>

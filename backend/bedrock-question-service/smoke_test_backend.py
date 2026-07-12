@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -36,6 +37,13 @@ def main() -> int:
     parser.add_argument("--xcconfig", type=Path, default=DEFAULT_XCCONFIG)
     parser.add_argument("--timeout", type=float, default=50.0)
     parser.add_argument(
+        "--target-count",
+        type=int,
+        choices=range(1, 21),
+        default=5,
+        help="Number of questions to request; defaults to a full five-question quality check.",
+    )
+    parser.add_argument(
         "--verbose",
         action="store_true",
         help="Print question prompts and item-level eval failures; never prints endpoint credentials.",
@@ -45,7 +53,7 @@ def main() -> int:
     endpoint, token = backend_configuration(args.xcconfig)
     fixture = load_fixture(args.fixtures, args.case_id)
     payload = fixture["payload"]
-    payload["targetCount"] = max(5, int(payload.get("targetCount", 5)))
+    payload["targetCount"] = args.target_count
 
     request = urllib.request.Request(
         endpoint,
@@ -81,7 +89,7 @@ def main() -> int:
         raw_questions,
         normalized_request,
     )
-    required_count = min(payload["targetCount"], 5)
+    required_count = min(args.target_count, 5)
     if len(accepted_questions) < required_count:
         print(
             f"Backend smoke failed quality validation: {len(accepted_questions)}/{required_count} accepted.",
@@ -130,18 +138,23 @@ def main() -> int:
 
 
 def backend_configuration(xcconfig: Path) -> tuple[str, str]:
-    if not xcconfig.exists():
-        raise SystemExit(f"Missing backend configuration: {xcconfig}")
+    endpoint = os.getenv("CHECKPOINT_SMOKE_ENDPOINT", "").strip()
+    token = os.getenv("CHECKPOINT_SMOKE_TOKEN", "").strip()
+    if bool(endpoint) != bool(token):
+        raise SystemExit("Both CHECKPOINT_SMOKE_ENDPOINT and CHECKPOINT_SMOKE_TOKEN are required.")
+    if not endpoint:
+        if not xcconfig.exists():
+            raise SystemExit(f"Missing backend configuration: {xcconfig}")
 
-    text = xcconfig.read_text(encoding="utf-8")
-    endpoint = xcconfig_value(text, "CHECKPOINT_AI_BACKEND_ENDPOINT").replace(
-        ":/$()/",
-        "://",
-        1,
-    )
-    token = xcconfig_value(text, "CHECKPOINT_AI_BACKEND_TOKEN")
+        text = xcconfig.read_text(encoding="utf-8")
+        endpoint = xcconfig_value(text, "CHECKPOINT_AI_BACKEND_ENDPOINT").replace(
+            ":/$()/",
+            "://",
+            1,
+        )
+        token = xcconfig_value(text, "CHECKPOINT_AI_BACKEND_TOKEN")
 
-    if not endpoint.startswith("https://") or len(token) < 24:
+    if not endpoint.startswith("https://") or len(token) < 32:
         raise SystemExit("Backend endpoint or token is not production-shaped.")
     return endpoint, token
 

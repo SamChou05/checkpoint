@@ -1,0 +1,257 @@
+name: Deploy backend
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Protected GitHub environment to use
+        required: true
+        type: choice
+        options:
+          - testflight
+          - production
+      confirm_deploy:
+        description: Deploy after validation (leave clear for validation only)
+        required: true
+        default: false
+        type: boolean
+      run_smoke_test:
+        description: After deployment, spend one Bedrock request on a redacted authenticated smoke test
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Test and validate SAM application
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend/bedrock-question-service
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@f84ec7d548307efafe33230528756de3c5841a17 # v2
+
+      - name: Install Ruff
+        run: python -m pip install ruff==0.12.2
+
+      - name: Lint backend Python
+        run: ruff check lambda_function.py smoke_test_backend.py tests evals/checkpoint_question_eval.py
+
+      - name: Run backend unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate SAM template
+        run: sam validate --lint --template-file template.yaml
+
+      - name: Build SAM application
+        run: sam build --template-file template.yaml
+
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    if: ${{ inputs.confirm_deploy }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: backend-${{ inputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: backend/bedrock-question-service
+    env:
+      AWS_DEPLOY_ROLE_ARN: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      SAM_STACK_NAME: ${{ vars.SAM_STACK_NAME }}
+      CHECKPOINT_BACKEND_TOKEN: ${{ secrets.CHECKPOINT_BACKEND_TOKEN }}
+      QUOTA_HASH_SECRET: ${{ secrets.QUOTA_HASH_SECRET }}
+      BEDROCK_MODEL_ARN: ${{ vars.BEDROCK_MODEL_ARN }}
+      BEDROCK_INVOKE_RESOURCE_ARNS: ${{ vars.BEDROCK_INVOKE_RESOURCE_ARNS }}
+      BEDROCK_FALLBACK_MODEL_ARN: ${{ vars.BEDROCK_FALLBACK_MODEL_ARN }}
+      BEDROCK_GUARDRAIL_IDENTIFIER: ${{ vars.BEDROCK_GUARDRAIL_IDENTIFIER }}
+      BEDROCK_GUARDRAIL_VERSION: ${{ vars.BEDROCK_GUARDRAIL_VERSION }}
+      BEDROCK_GUARDRAIL_ARN: ${{ vars.BEDROCK_GUARDRAIL_ARN }}
+      BEDROCK_MAX_TOKENS: ${{ vars.BEDROCK_MAX_TOKENS || '6000' }}
+      GENERATION_ATTEMPTS: ${{ vars.GENERATION_ATTEMPTS || '3' }}
+      MAX_PROVIDER_CALLS_PER_REQUEST: ${{ vars.MAX_PROVIDER_CALLS_PER_REQUEST || '6' }}
+      MAX_REQUEST_BODY_BYTES: ${{ vars.MAX_REQUEST_BODY_BYTES || '131072' }}
+      MAX_QUESTIONS_PER_BATCH: ${{ vars.MAX_QUESTIONS_PER_BATCH || '20' }}
+      MAX_REQUESTS_PER_INSTALL_PER_DAY: ${{ vars.MAX_REQUESTS_PER_INSTALL_PER_DAY || '40' }}
+      MAX_REQUESTS_PER_IP_PER_DAY: ${{ vars.MAX_REQUESTS_PER_IP_PER_DAY || '400' }}
+      RATE_LIMIT_TTL_SECONDS: ${{ vars.RATE_LIMIT_TTL_SECONDS || '172800' }}
+      DEPLOYMENT_ENVIRONMENT: ${{ inputs.environment }}
+      SERVICE_MODE: ${{ vars.SERVICE_MODE || 'enabled' }}
+      SERVICE_RETRY_AFTER_SECONDS: ${{ vars.SERVICE_RETRY_AFTER_SECONDS || '300' }}
+      API_STAGE_NAME: ${{ vars.API_STAGE_NAME || 'prod' }}
+      API_THROTTLE_RATE_LIMIT: ${{ vars.API_THROTTLE_RATE_LIMIT || '5' }}
+      API_THROTTLE_BURST_LIMIT: ${{ vars.API_THROTTLE_BURST_LIMIT || '10' }}
+      RESERVED_CONCURRENCY: ${{ vars.RESERVED_CONCURRENCY || '5' }}
+      LOG_RETENTION_DAYS: ${{ vars.LOG_RETENTION_DAYS || '14' }}
+      ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
+      BUDGET_ALERT_EMAIL: ${{ vars.BUDGET_ALERT_EMAIL }}
+      MONTHLY_BEDROCK_BUDGET_USD: ${{ vars.MONTHLY_BEDROCK_BUDGET_USD || '25' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Validate protected deployment configuration
+        shell: bash
+        run: |
+          missing=()
+          [[ -n "$AWS_DEPLOY_ROLE_ARN" ]] || missing+=(AWS_DEPLOY_ROLE_ARN)
+          [[ -n "$AWS_REGION" ]] || missing+=(AWS_REGION)
+          [[ -n "$SAM_STACK_NAME" ]] || missing+=(SAM_STACK_NAME)
+          [[ -n "$CHECKPOINT_BACKEND_TOKEN" ]] || missing+=(CHECKPOINT_BACKEND_TOKEN)
+          [[ -n "$QUOTA_HASH_SECRET" ]] || missing+=(QUOTA_HASH_SECRET)
+          [[ -n "$BEDROCK_MODEL_ARN" ]] || missing+=(BEDROCK_MODEL_ARN)
+          [[ -n "$BEDROCK_INVOKE_RESOURCE_ARNS" ]] || missing+=(BEDROCK_INVOKE_RESOURCE_ARNS)
+          if (( ${#missing[@]} > 0 )); then
+            printf 'Missing required environment secrets or variables: %s\n' "${missing[*]}" >&2
+            exit 1
+          fi
+          if (( ${#CHECKPOINT_BACKEND_TOKEN} < 32 )); then
+            echo "CHECKPOINT_BACKEND_TOKEN must contain at least 32 characters." >&2
+            exit 1
+          fi
+          if (( ${#QUOTA_HASH_SECRET} < 32 )); then
+            echo "QUOTA_HASH_SECRET must contain at least 32 characters." >&2
+            exit 1
+          fi
+
+          IFS=',' read -r -a invoke_resources <<< "$BEDROCK_INVOKE_RESOURCE_ARNS"
+          primary_is_allowed=false
+          fallback_is_allowed=false
+          for resource in "${invoke_resources[@]}"; do
+            resource="${resource#"${resource%%[![:space:]]*}"}"
+            resource="${resource%"${resource##*[![:space:]]}"}"
+            if [[ -z "$resource" || "$resource" == *'*'* || "$resource" != arn:*:bedrock:* ]]; then
+              echo "Every BEDROCK_INVOKE_RESOURCE_ARNS value must be a non-wildcard Bedrock ARN." >&2
+              exit 1
+            fi
+            [[ "$resource" == "$BEDROCK_MODEL_ARN" ]] && primary_is_allowed=true
+            [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$resource" == "$BEDROCK_FALLBACK_MODEL_ARN" ]] && fallback_is_allowed=true
+          done
+          if [[ "$primary_is_allowed" != true ]]; then
+            echo "BEDROCK_INVOKE_RESOURCE_ARNS must include BEDROCK_MODEL_ARN." >&2
+            exit 1
+          fi
+          if [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$fallback_is_allowed" != true ]]; then
+            echo "BEDROCK_INVOKE_RESOURCE_ARNS must include BEDROCK_FALLBACK_MODEL_ARN." >&2
+            exit 1
+          fi
+
+          guardrail_values=(
+            "$BEDROCK_GUARDRAIL_IDENTIFIER"
+            "$BEDROCK_GUARDRAIL_VERSION"
+            "$BEDROCK_GUARDRAIL_ARN"
+          )
+          configured_guardrail_values=0
+          for value in "${guardrail_values[@]}"; do
+            [[ -n "$value" ]] && ((configured_guardrail_values += 1))
+          done
+          if (( configured_guardrail_values != 0 && configured_guardrail_values != 3 )); then
+            echo "Guardrail identifier, version, and ARN must be set together." >&2
+            exit 1
+          fi
+          if [[ "$DEPLOYMENT_ENVIRONMENT" == production ]]; then
+            if (( configured_guardrail_values != 3 )); then
+              echo "Production requires a complete Bedrock Guardrail configuration." >&2
+              exit 1
+            fi
+            [[ -n "$ALERT_EMAIL" ]] || missing+=(ALERT_EMAIL)
+            [[ -n "$BUDGET_ALERT_EMAIL" ]] || missing+=(BUDGET_ALERT_EMAIL)
+            if (( ${#missing[@]} > 0 )); then
+              printf 'Production is missing required alert variables: %s\n' "${missing[*]}" >&2
+              exit 1
+            fi
+          fi
+
+      - name: Configure AWS credentials through OIDC
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: ${{ env.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@f84ec7d548307efafe33230528756de3c5841a17 # v2
+
+      - name: Build SAM application
+        run: sam build --template-file template.yaml
+
+      - name: Deploy SAM application
+        shell: bash
+        run: |
+          parameters=(
+            "BackendToken=$CHECKPOINT_BACKEND_TOKEN"
+            "QuotaHashSecret=$QUOTA_HASH_SECRET"
+            "AllowUnauthenticatedBackend=false"
+            "BedrockModelArn=$BEDROCK_MODEL_ARN"
+            "BedrockInvokeResourceArns=$BEDROCK_INVOKE_RESOURCE_ARNS"
+            "BedrockFallbackModelArn=$BEDROCK_FALLBACK_MODEL_ARN"
+            "BedrockGuardrailIdentifier=$BEDROCK_GUARDRAIL_IDENTIFIER"
+            "BedrockGuardrailVersion=$BEDROCK_GUARDRAIL_VERSION"
+            "BedrockGuardrailArn=$BEDROCK_GUARDRAIL_ARN"
+            "MaxQuestionsPerBatch=$MAX_QUESTIONS_PER_BATCH"
+            "BedrockMaxTokens=$BEDROCK_MAX_TOKENS"
+            "GenerationAttempts=$GENERATION_ATTEMPTS"
+            "MaxProviderCallsPerRequest=$MAX_PROVIDER_CALLS_PER_REQUEST"
+            "MaxRequestBodyBytes=$MAX_REQUEST_BODY_BYTES"
+            "MaxRequestsPerInstallPerDay=$MAX_REQUESTS_PER_INSTALL_PER_DAY"
+            "MaxRequestsPerIPPerDay=$MAX_REQUESTS_PER_IP_PER_DAY"
+            "RateLimitTTLSeconds=$RATE_LIMIT_TTL_SECONDS"
+            "DeploymentEnvironment=$DEPLOYMENT_ENVIRONMENT"
+            "ServiceMode=$SERVICE_MODE"
+            "ServiceRetryAfterSeconds=$SERVICE_RETRY_AFTER_SECONDS"
+            "ApiStageName=$API_STAGE_NAME"
+            "ApiThrottleRateLimit=$API_THROTTLE_RATE_LIMIT"
+            "ApiThrottleBurstLimit=$API_THROTTLE_BURST_LIMIT"
+            "ReservedConcurrency=$RESERVED_CONCURRENCY"
+            "LogRetentionDays=$LOG_RETENTION_DAYS"
+            "AlertEmail=$ALERT_EMAIL"
+            "BudgetAlertEmail=$BUDGET_ALERT_EMAIL"
+            "MonthlyBedrockBudgetUSD=$MONTHLY_BEDROCK_BUDGET_USD"
+          )
+
+          sam deploy \
+            --stack-name "$SAM_STACK_NAME" \
+            --region "$AWS_REGION" \
+            --resolve-s3 \
+            --capabilities CAPABILITY_IAM \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides "${parameters[@]}"
+
+      - name: Run opt-in authenticated smoke test
+        if: ${{ inputs.run_smoke_test }}
+        shell: bash
+        run: |
+          endpoint="$(
+            aws cloudformation describe-stacks \
+              --stack-name "$SAM_STACK_NAME" \
+              --region "$AWS_REGION" \
+              --query "Stacks[0].Outputs[?OutputKey=='QuestionEndpoint'].OutputValue | [0]" \
+              --output text
+          )"
+          if [[ "$endpoint" != https://* || "$endpoint" == None ]]; then
+            echo "The deployed stack did not return a valid QuestionEndpoint." >&2
+            exit 1
+          fi
+          echo "::add-mask::$endpoint"
+          CHECKPOINT_SMOKE_ENDPOINT="$endpoint" \
+          CHECKPOINT_SMOKE_TOKEN="$CHECKPOINT_BACKEND_TOKEN" \
+            python smoke_test_backend.py \
+              --case-id backyard_beekeeping_raw_goal \
+              --target-count 1
