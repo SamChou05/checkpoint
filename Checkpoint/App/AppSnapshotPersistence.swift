@@ -25,6 +25,7 @@ struct AppSnapshotPersistence {
     static let legacySnapshotKey = "checkpoint.snapshot.v1"
     static let primaryDefaultsKey = "checkpoint.snapshot.v2.primary"
     static let backupDefaultsKey = "checkpoint.snapshot.v2.backup"
+    static let eraseIncompleteKey = "checkpoint.snapshot.eraseIncomplete.v1"
     static let primaryFileName = "app-state.json"
     static let backupFileName = "app-state.backup.json"
 
@@ -44,6 +45,10 @@ struct AppSnapshotPersistence {
     private let defaults: UserDefaults
     private let fileManager: FileManager
     private let storage: Storage
+
+    var requiresEraseRecovery: Bool {
+        defaults.bool(forKey: Self.eraseIncompleteKey)
+    }
 
     init(
         defaults: UserDefaults,
@@ -66,6 +71,17 @@ struct AppSnapshotPersistence {
     }
 
     func load() -> AppSnapshotLoadResult {
+        if requiresEraseRecovery {
+            do {
+                try erase()
+                return .empty
+            } catch {
+                return .failed(
+                    message: "Checkpoint could not finish erasing its local backup. Retry data erasure before adding a new goal."
+                )
+            }
+        }
+
         let primaryData = readPrimaryData()
         if let primaryData,
            let snapshot = try? decodeEnvelope(primaryData) {
@@ -106,6 +122,10 @@ struct AppSnapshotPersistence {
     }
 
     func save(_ snapshot: AppSnapshot) throws {
+        guard !requiresEraseRecovery else {
+            throw PersistenceError.verificationFailed
+        }
+
         let encoded = try JSONEncoder().encode(AppSnapshotEnvelope(snapshot: snapshot))
 
         switch storage {
@@ -158,16 +178,25 @@ struct AppSnapshotPersistence {
     }
 
     func erase() throws {
+        defaults.set(true, forKey: Self.eraseIncompleteKey)
+        defaults.synchronize()
         defaults.removeObject(forKey: Self.legacySnapshotKey)
         defaults.removeObject(forKey: Self.primaryDefaultsKey)
         defaults.removeObject(forKey: Self.backupDefaultsKey)
 
-        guard case .files(let directory) = storage,
-              fileManager.fileExists(atPath: directory.path) else {
-            return
+        if case .files(let directory) = storage,
+           fileManager.fileExists(atPath: directory.path) {
+            try fileManager.removeItem(at: directory)
         }
 
-        try fileManager.removeItem(at: directory)
+        guard readPrimaryData() == nil,
+              readBackupData() == nil,
+              defaults.data(forKey: Self.legacySnapshotKey) == nil else {
+            throw PersistenceError.verificationFailed
+        }
+
+        defaults.removeObject(forKey: Self.eraseIncompleteKey)
+        defaults.synchronize()
     }
 
     private func readPrimaryData() -> Data? {

@@ -63,7 +63,6 @@ GENERIC_META_SCENARIOS = (
     "scaling decision",
     "evidence interpretation",
 )
-
 class BadRequestError(ValueError):
     pass
 
@@ -826,6 +825,8 @@ Coverage:
 - Keep questions answerable in 30 seconds to 3 minutes.
 - Generate exactly the requested number of usable questions. Do not stop early.
 - Cover supplied or inferred competencies evenly, prioritizing lower-mastery areas when competency history exists.
+- Before drafting, silently plan a distinct tested objective for every item. Two items are duplicates when recalling the same fact, rule, or mechanism answers both, even if their wording or scenarios differ.
+- When multiple items share a topic, make them test different facts, operations, reasoning paths, or misconceptions rather than paraphrases of one objective.
 - Treat existing and reported questions as an avoid list. Vary the tested objective, source material, reasoning path, correct-answer mechanism, and misconception—not just the wording.
 - Keep every item within the raw goal and optional focus. Use a supplied content topic or an inferred competency as its topic.
 

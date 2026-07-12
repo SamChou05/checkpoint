@@ -2,12 +2,15 @@
 
 Use this as the source of truth for the final TestFlight and App Store readiness pass. Keep each entry dated, include the device/build, and link the follow-up commit when a test creates work.
 
-Last updated: July 11, 2026 EDT.
+Last updated: July 12, 2026 EDT.
 
 ## Latest Local Validation
 
 | Date | Area | Build or Device | Result | Notes |
 | --- | --- | --- | --- | --- |
+| July 12, 2026 | Full simulator XCTest suite | Xcode 26.4.1, iPhone 17 simulator | Pass | 192 passed, 0 failed with normal simulator signing and parallel testing disabled, including explicit Screen Time authorization, approved-relaunch, failed-erasure write gates, and crash-safe snapshot-erasure recovery. |
+| July 12, 2026 | Bedrock question service unit tests | Python 3.12 `unittest` | Pass | 88 passed, 0 failed; Ruff, Python compilation, and SAM lint validation also passed. |
+| July 12, 2026 | Release simulator build, static analysis, and signed device compile | Xcode 26.4.1 | Pass | Release simulator build and analysis completed; the generic iPhone Debug bundle passed strict deep code-sign verification. |
 | July 11, 2026 | Full simulator XCTest suite | Xcode 26.4.1, iPhone 17 simulator | Pass | 183 passed, 0 failed with normal simulator signing and parallel testing disabled. Simulator signing must remain enabled because App Group file-fallback tests exercise the simulated entitlement path. |
 | July 11, 2026 | Bedrock question service unit tests | Python 3.12 `unittest` | Pass | 88 passed, 0 failed, including backend auth, HMAC quotas, Guardrail handling, deadline/call budgets, deployment-template contract, cross-domain prompt contract, and question-quality coverage. |
 | July 11, 2026 | Release simulator build and static analysis | Xcode 26.4, generic iOS simulator | Pass | App and all three Screen Time extensions built successfully; `xcodebuild analyze` completed successfully. |
@@ -56,8 +59,8 @@ These must pass before broader TestFlight testing.
 Run on a physical iPhone before TestFlight and again before App Store submission.
 
 - [ ] Install a signed build.
+- [ ] Review the required Screen Time explanation, tap Allow Screen Time, and approve the system request.
 - [ ] Create or select a goal.
-- [ ] Confirm Screen Time authorization is granted.
 - [ ] Choose at least one protected app and one category.
 - [ ] Start protection and verify selected targets are blocked.
 - [ ] Remove one protected app while protection stays on; confirm that app opens and the remaining targets stay blocked.

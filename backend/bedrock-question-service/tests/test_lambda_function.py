@@ -414,15 +414,43 @@ class BedrockQuestionServiceTests(unittest.TestCase):
                 json.dumps(
                     {
                         "questions": [
-                            _raw_question("LSAT Logical Reasoning: Which assumption lets the conclusion follow?"),
-                            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?"),
+                            _raw_question(
+                                "LSAT Logical Reasoning: Which assumption lets the conclusion follow?",
+                                expected_answer=(
+                                    "The conclusion requires an unstated bridge between the evidence "
+                                    "and the claimed result."
+                                ),
+                                explanation=(
+                                    "Without that bridge, the premises do not establish the claimed result."
+                                ),
+                            ),
+                            _raw_question(
+                                "LSAT Logical Reasoning: Which flaw best describes the argument?",
+                                expected_answer=(
+                                    "The argument treats a correlation as proof that one event caused the other."
+                                ),
+                                explanation=(
+                                    "The observed correlation does not rule out coincidence or a shared cause."
+                                ),
+                            ),
                         ]
                     }
                 ),
                 json.dumps(
                     {
                         "questions": [
-                            _raw_question("LSAT Reading Comprehension: Which answer captures the author's qualified view?")
+                            _raw_question(
+                                "LSAT Reading Comprehension: Which answer captures the author's qualified view?",
+                                expected_answer=(
+                                    "The author supports the proposal while reserving judgment about "
+                                    "its long-term effects."
+                                ),
+                                explanation=(
+                                    "The passage endorses the proposal but explicitly leaves its "
+                                    "long-term effects unresolved."
+                                ),
+                                topic="Reading Comprehension",
+                            )
                         ]
                     }
                 ),
@@ -689,6 +717,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertIn("exam, course, profession, language, or skill", system_prompt)
         self.assertIn("a topic label is not evidence or a scenario", system_prompt)
         self.assertIn("Make every choice a concrete possible answer within the requested subject", system_prompt)
+        self.assertIn("plan a distinct tested objective for every item", system_prompt)
         for overfit_term in ["LeetCode", "system-design", "Spanish", "subjunctive", "calculus"]:
             self.assertNotIn(overfit_term, system_prompt)
 
@@ -1351,9 +1380,32 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             json.dumps(
                 {
                     "questions": [
-                        _raw_question("Question one about LSAT assumptions?"),
-                        _raw_question("Question two about LSAT weaken answers?"),
-                        _raw_question("Question three about LSAT inference answers?"),
+                        _raw_question(
+                            "Question one about LSAT assumptions?",
+                            expected_answer=(
+                                "The conclusion requires an unstated bridge between the evidence "
+                                "and the claimed result."
+                            ),
+                            explanation=(
+                                "The missing bridge is required for the premises to support the conclusion."
+                            ),
+                        ),
+                        _raw_question(
+                            "Question two about LSAT weaken answers?",
+                            expected_answer=(
+                                "A shared outside cause could explain both events without the claimed link."
+                            ),
+                            explanation=(
+                                "An outside cause provides a competing explanation and weakens the inference."
+                            ),
+                        ),
+                        _raw_question(
+                            "Question three about LSAT inference answers?",
+                            expected_answer="Only the statement entailed by every stated premise can be inferred.",
+                            explanation=(
+                                "A valid inference cannot extend beyond what all of the premises establish."
+                            ),
+                        ),
                     ]
                 }
             )
@@ -1453,20 +1505,33 @@ def _request_payload(target_count=5, minimum_difficulty=3):
     }
 
 
-def _raw_question(prompt, difficulty=3):
+def _raw_question(
+    prompt,
+    difficulty=3,
+    *,
+    expected_answer=None,
+    explanation=None,
+    topic="Logical Reasoning",
+):
     scenario_id = sum((index + 1) * ord(character) for index, character in enumerate(prompt)) % 100_000
-    expected_answer = f"The argument requires assumption link {scenario_id} between its evidence and conclusion."
+    resolved_answer = expected_answer or (
+        f"The argument requires assumption link {scenario_id} between its evidence and conclusion."
+    )
+    resolved_explanation = explanation or (
+        f"Assumption link {scenario_id} supplies the missing connection between this argument's "
+        "evidence and conclusion."
+    )
     return {
         "prompt": prompt,
-        "expectedAnswer": expected_answer,
+        "expectedAnswer": resolved_answer,
         "choices": [
-            expected_answer,
+            resolved_answer,
             "The evidence proves a broader conclusion than the argument makes.",
             "The conclusion directly contradicts every stated premise.",
             "The argument depends only on an unrelated numerical calculation.",
         ],
-        "explanation": f"Assumption link {scenario_id} supplies the missing connection between this argument's evidence and conclusion.",
-        "topic": "Logical Reasoning",
+        "explanation": resolved_explanation,
+        "topic": topic,
         "difficulty": difficulty,
         "format": "Multiple Choice",
     }

@@ -73,11 +73,11 @@ final class CheckpointStore {
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
     private(set) var hasNoPersistedAppData = true
+    private(set) var requiresPersistenceEraseRecovery = false
 
     @ObservationIgnored private let questionEngine: HybridQuestionEngine
     @ObservationIgnored private let snapshotPersistence: AppSnapshotPersistence
     @ObservationIgnored private var permitsPersistenceWrites = false
-    @ObservationIgnored private var requiresPersistencePurge = false
     @ObservationIgnored private var dataLifecycleID = UUID()
     @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
@@ -112,11 +112,13 @@ final class CheckpointStore {
             persistenceDirectory: persistenceDirectory,
             fileManager: fileManager
         )
+        requiresPersistenceEraseRecovery = snapshotPersistence.requiresEraseRecovery
         load()
+        requiresPersistenceEraseRecovery = snapshotPersistence.requiresEraseRecovery
         reconcileLoadedUnlockSession()
         clearExpiredCheckpointRetryCooldown()
         recoverTransientQuestionGenerationState()
-        isOnboardingPresented = goal == nil
+        isOnboardingPresented = goal == nil && !requiresPersistenceEraseRecovery
         publishShieldContext()
         removeLegacyLocalQuestionBankIfNeeded()
         resumeQuestionBankMaintenanceIfNeeded()
@@ -1377,7 +1379,7 @@ final class CheckpointStore {
     // MARK: - Question selection
 
     func nextQuestion() -> CheckpointQuestion? {
-        nextQuestion(excluding: [])
+        nextQuestion(excluding: [], avoidingSimilarityTo: [])
     }
 
     func nextCheckpointSession() -> CheckpointSession? {
@@ -1408,6 +1410,7 @@ final class CheckpointStore {
         while selectedQuestions.count < targetCount,
               let question = nextQuestion(
                 excluding: excludedQuestionIDs,
+                avoidingSimilarityTo: selectedQuestions,
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
               ) {
             selectedQuestions.append(question)
@@ -1430,49 +1433,74 @@ final class CheckpointStore {
 
     private func nextQuestion(
         excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>,
+        avoidingSimilarityTo selectedQuestions: [CheckpointQuestion],
         allowsEarlyCorrectReuse: Bool = false
     ) -> CheckpointQuestion? {
         let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
-        return prioritizedNonCorrectQuestion(from: preferredQuestions)
-            ?? prioritizedNonCorrectQuestion(from: availableQuestions)
-            ?? prioritizedCorrectQuestion(from: preferredQuestions, allowsEarlyCorrectReuse: allowsEarlyCorrectReuse)
-            ?? prioritizedCorrectQuestion(from: availableQuestions, allowsEarlyCorrectReuse: allowsEarlyCorrectReuse)
+        return prioritizedNonCorrectQuestion(
+            from: preferredQuestions,
+            avoidingSimilarityTo: selectedQuestions
+        )
+            ?? prioritizedNonCorrectQuestion(
+                from: availableQuestions,
+                avoidingSimilarityTo: selectedQuestions
+            )
+            ?? prioritizedCorrectQuestion(
+                from: preferredQuestions,
+                avoidingSimilarityTo: selectedQuestions,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            )
+            ?? prioritizedCorrectQuestion(
+                from: availableQuestions,
+                avoidingSimilarityTo: selectedQuestions,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            )
     }
 
-    private func prioritizedNonCorrectQuestion(from availableQuestions: [CheckpointQuestion]) -> CheckpointQuestion? {
+    private func prioritizedNonCorrectQuestion(
+        from availableQuestions: [CheckpointQuestion],
+        avoidingSimilarityTo selectedQuestions: [CheckpointQuestion]
+    ) -> CheckpointQuestion? {
         let now = Date()
         let selectableQuestions = availableQuestions
             .filter(isSelectableQuestion)
             .filter { $0.status != .correct }
 
-        if let missed = selectableQuestions
-            .filter({ $0.status == .incorrect && ($0.nextReviewAt ?? .distantPast) <= now })
-            .sorted(by: sortByReviewPriority)
-            .first {
+        if let missed = preferredSessionQuestion(
+            from: selectableQuestions
+                .filter({ $0.status == .incorrect && ($0.nextReviewAt ?? .distantPast) <= now })
+                .sorted(by: sortByReviewPriority),
+            avoidingSimilarityTo: selectedQuestions
+        ) {
             return missed
         }
 
-        if let due = selectableQuestions
-            .filter({ ($0.nextReviewAt ?? .distantFuture) <= now })
-            .sorted(by: sortByReviewPriority)
-            .first {
+        if let due = preferredSessionQuestion(
+            from: selectableQuestions
+                .filter({ ($0.nextReviewAt ?? .distantFuture) <= now })
+                .sorted(by: sortByReviewPriority),
+            avoidingSimilarityTo: selectedQuestions
+        ) {
             return due
         }
 
-        let weakAreaQuestion = selectableQuestions
-            .filter { $0.status == .new }
-            .sorted(by: sortByAdaptivePriority)
-            .first
-
-        if let weakAreaQuestion {
+        if let weakAreaQuestion = preferredSessionQuestion(
+            from: selectableQuestions
+                .filter { $0.status == .new }
+                .sorted(by: sortByAdaptivePriority),
+            avoidingSimilarityTo: selectedQuestions,
+            preferringNewTopic: true
+        ) {
             return weakAreaQuestion
         }
 
-        if let reviewQuestion = selectableQuestions
-            .filter({ $0.status != .correct })
-            .sorted(by: sortByReviewPriority)
-            .first {
+        if let reviewQuestion = preferredSessionQuestion(
+            from: selectableQuestions
+                .filter({ $0.status != .correct })
+                .sorted(by: sortByReviewPriority),
+            avoidingSimilarityTo: selectedQuestions
+        ) {
             return reviewQuestion
         }
 
@@ -1481,6 +1509,7 @@ final class CheckpointStore {
 
     private func prioritizedCorrectQuestion(
         from availableQuestions: [CheckpointQuestion],
+        avoidingSimilarityTo selectedQuestions: [CheckpointQuestion],
         allowsEarlyCorrectReuse: Bool = false
     ) -> CheckpointQuestion? {
         let now = Date()
@@ -1488,10 +1517,12 @@ final class CheckpointStore {
             .filter(isSelectableQuestion)
             .filter { $0.status == .correct }
 
-        let reusableCorrectQuestions = selectableQuestions
-            .filter { canReuseCorrectQuestion($0, now: now) }
-            .sorted(by: sortByCorrectReusePriority)
-            .first
+        let reusableCorrectQuestions = preferredSessionQuestion(
+            from: selectableQuestions
+                .filter { canReuseCorrectQuestion($0, now: now) }
+                .sorted(by: sortByCorrectReusePriority),
+            avoidingSimilarityTo: selectedQuestions
+        )
 
         if let reusableCorrectQuestions {
             return reusableCorrectQuestions
@@ -1499,9 +1530,29 @@ final class CheckpointStore {
 
         guard allowsEarlyCorrectReuse else { return nil }
 
-        return selectableQuestions
-            .sorted(by: sortByCorrectReusePriority)
-            .first
+        return preferredSessionQuestion(
+            from: selectableQuestions.sorted(by: sortByCorrectReusePriority),
+            avoidingSimilarityTo: selectedQuestions
+        )
+    }
+
+    private func preferredSessionQuestion(
+        from orderedQuestions: [CheckpointQuestion],
+        avoidingSimilarityTo selectedQuestions: [CheckpointQuestion],
+        preferringNewTopic: Bool = false
+    ) -> CheckpointQuestion? {
+        guard !orderedQuestions.isEmpty else { return nil }
+
+        let selectedTopicKeys = Set(selectedQuestions.map { questionTopicKey($0.topic) })
+        let isNewTopic: (CheckpointQuestion) -> Bool = { question in
+            !selectedTopicKeys.contains(self.questionTopicKey(question.topic))
+        }
+        if preferringNewTopic,
+           let question = orderedQuestions.first(where: isNewTopic) {
+            return question
+        }
+
+        return orderedQuestions.first
     }
 
     // MARK: - Attempts and unlocks
@@ -1575,7 +1626,7 @@ final class CheckpointStore {
 
     func eraseAllData(backendIdentityDefaults: UserDefaults = .standard) {
         permitsPersistenceWrites = false
-        requiresPersistencePurge = true
+        requiresPersistenceEraseRecovery = true
         hasNoPersistedAppData = false
         dataLifecycleID = UUID()
         goal = nil
@@ -1612,10 +1663,12 @@ final class CheckpointStore {
         persistenceRecoveryMessage = nil
         do {
             try snapshotPersistence.erase()
-            requiresPersistencePurge = false
+            requiresPersistenceEraseRecovery = false
             hasNoPersistedAppData = true
         } catch {
+            requiresPersistenceEraseRecovery = snapshotPersistence.requiresEraseRecovery
             hasNoPersistedAppData = false
+            isOnboardingPresented = false
             reportPersistenceEraseFailure()
         }
         BackendClientIdentity.clearInstallID(defaults: backendIdentityDefaults)
@@ -2614,10 +2667,10 @@ final class CheckpointStore {
     private func activatePersistenceForAppDataIfNeeded() -> Bool {
         guard !permitsPersistenceWrites else { return true }
 
-        if requiresPersistencePurge {
+        if requiresPersistenceEraseRecovery {
             do {
                 try snapshotPersistence.erase()
-                requiresPersistencePurge = false
+                requiresPersistenceEraseRecovery = false
                 hasNoPersistedAppData = true
                 let eraseFailureMessage = persistenceEraseFailureMessage
                 if persistenceRecoveryMessage == eraseFailureMessage {
@@ -2627,6 +2680,7 @@ final class CheckpointStore {
                     checkpointNotice = nil
                 }
             } catch {
+                requiresPersistenceEraseRecovery = snapshotPersistence.requiresEraseRecovery
                 hasNoPersistedAppData = false
                 reportPersistenceEraseFailure()
                 return false

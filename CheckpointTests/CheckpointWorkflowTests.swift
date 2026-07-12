@@ -1036,20 +1036,20 @@ final class CheckpointWorkflowTests: XCTestCase {
             focusAreas: "integrals",
             preferredQuestionStyle: .multipleChoice
         )
-        let lastWeek = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date.distantPast
-        let earlierToday = Date().addingTimeInterval(-60 * 60)
+        let now = Date()
+        let lastWeek = Calendar.current.date(byAdding: .day, value: -8, to: now) ?? Date.distantPast
 
         store.goal = goal
         store.goalProfiles = [goal, otherGoal]
         store.attempts = [
-            makeAttempt(goal: goal, result: .correct, createdAt: Date()),
-            makeAttempt(goal: goal, result: .incorrect, createdAt: earlierToday),
+            makeAttempt(goal: goal, result: .correct, createdAt: now),
+            makeAttempt(goal: goal, result: .incorrect, createdAt: now),
             makeAttempt(goal: goal, result: .correct, createdAt: lastWeek),
-            makeAttempt(goal: otherGoal, result: .correct, createdAt: Date())
+            makeAttempt(goal: otherGoal, result: .correct, createdAt: now)
         ]
         store.unlockEvents = [
-            UnlockEvent(goalID: goal.id, minutes: 30, createdAt: Date()),
-            UnlockEvent(goalID: otherGoal.id, minutes: 15, createdAt: Date()),
+            UnlockEvent(goalID: goal.id, minutes: 30, createdAt: now),
+            UnlockEvent(goalID: otherGoal.id, minutes: 15, createdAt: now),
             UnlockEvent(goalID: goal.id, minutes: 30, createdAt: lastWeek)
         ]
 
@@ -1615,6 +1615,26 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(session.unlockThreshold, 4)
         XCTAssertEqual(session.purpose, .temporaryUnlock)
         XCTAssertEqual(Set(session.questions.map(\.id)).count, 5)
+    }
+
+    @MainActor
+    func testCheckpointSessionSpreadsFreshQuestionsAcrossTopicsBeforeRepeatingOne() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+        store.questions = [
+            makeQuestion(goal: goal, index: 1, topic: "arrays"),
+            makeQuestion(goal: goal, index: 2, topic: "arrays"),
+            makeQuestion(goal: goal, index: 3, topic: "recursion"),
+            makeQuestion(goal: goal, index: 4, topic: "hash maps"),
+            makeQuestion(goal: goal, index: 5, topic: "trees")
+        ]
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(Set(session.questions.prefix(4).map(\.topic)).count, 4)
     }
 
     @MainActor
@@ -2698,6 +2718,152 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertFalse(screenTime.hasSelection)
         XCTAssertEqual(screenTime.restrictedAppsSummary, "No protected apps selected")
+    }
+
+    @MainActor
+    func testScreenTimeAuthorizationBootstrapWaitsForExplicitRequest() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .approved
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.bootstrapAuthorizationIfNeeded()
+
+        XCTAssertEqual(authorizer.requestCount, 0)
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .notDetermined)
+
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 1)
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testApprovedScreenTimeAuthorizationSkipsBootstrapRequest() async {
+        let authorizer = FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+
+        XCTAssertEqual(authorizer.requestCount, 0)
+        XCTAssertEqual(screenTime.authorizationState, .approved)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testCanceledScreenTimeAuthorizationStaysGatedAndCanRetry() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .approved,
+            requestError: FakeScreenTimeAuthorizationError.canceled
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 1)
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .failed)
+        XCTAssertEqual(screenTime.setupState, .failed)
+
+        authorizer.requestError = nil
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 2)
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testDeniedScreenTimeAuthorizationRemainsRequired() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .denied
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.requestAuthorization()
+
+        XCTAssertEqual(authorizer.requestCount, 1)
+        XCTAssertTrue(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .denied)
+        XCTAssertEqual(screenTime.setupState, .failed)
+    }
+
+    @MainActor
+    func testScreenTimeApprovalWithDataAccessSatisfiesRequiredGate() async {
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .notDetermined,
+            statusAfterRequest: .approvedWithDataAccess
+        )
+        let screenTime = ScreenTimeController(defaults: defaults, authorizer: authorizer)
+
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        await screenTime.requestAuthorization()
+
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertEqual(screenTime.authorizationState, .approvedWithDataAccess)
+        XCTAssertEqual(screenTime.setupState, .authorized)
+    }
+
+    @MainActor
+    func testFailedSharedEraseBlocksAuthorizationSelectionAndProtectionWrites() async {
+        UserDefaults.standard.set(
+            true,
+            forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+        )
+        defer {
+            UserDefaults.standard.removeObject(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        }
+
+        let authorizer = FakeScreenTimeAuthorizer(
+            authorizationStatus: .approved
+        )
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: authorizer,
+            sharedDataEraser: { throw FakeSharedDataEraseError.failed }
+        )
+
+        XCTAssertNotNil(screenTime.sharedDataEraseErrorMessage)
+        XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(screenTime.requiresScreenTimeAuthorization)
+        XCTAssertTrue(screenTime.requiresSharedDataEraseRecovery)
+
+        await screenTime.requestAuthorization()
+        screenTime.applyShield()
+
+        XCTAssertEqual(authorizer.requestCount, 0)
+        XCTAssertFalse(screenTime.isShieldingEnabled)
+        XCTAssertTrue(
+            UserDefaults.standard.bool(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        )
+
+        #if os(iOS) && canImport(FamilyControls)
+        XCTAssertFalse(
+            screenTime.updateSelection(
+                FamilyActivitySelection(includeEntireCategory: true)
+            )
+        )
+        #endif
     }
 
     @MainActor
@@ -3804,6 +3970,8 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         store.eraseAllData(backendIdentityDefaults: defaults)
 
         XCTAssertFalse(store.hasNoPersistedAppData)
+        XCTAssertTrue(store.requiresPersistenceEraseRecovery)
+        XCTAssertTrue(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
         XCTAssertNotNil(store.persistenceRecoveryMessage)
         XCTAssertTrue(FileManager.default.fileExists(atPath: primaryURL.path))
 
@@ -3838,7 +4006,75 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         XCTAssertEqual(newPrimaryEnvelope.snapshot.goal?.id, newGoal.id)
         XCTAssertEqual(newBackupEnvelope.snapshot.goal?.id, newGoal.id)
         XCTAssertNotEqual(newBackupEnvelope.snapshot.goal?.id, oldGoal.id)
+        XCTAssertFalse(store.requiresPersistenceEraseRecovery)
+        XCTAssertFalse(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
         XCTAssertNil(store.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testFailedSnapshotEraseCannotRestoreOldGoalAfterRelaunch() throws {
+        let fileManager = ToggleFailingFileManager()
+        let oldGoal = makeGoal()
+        let originalStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        originalStore.goal = oldGoal
+        originalStore.goalProfiles = [oldGoal]
+        originalStore.updateUnlockMinutes(10)
+
+        let primaryURL = persistenceDirectory
+            .appendingPathComponent(AppSnapshotPersistence.primaryFileName)
+        fileManager.shouldFailRemoval = true
+        originalStore.eraseAllData(backendIdentityDefaults: defaults)
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+
+        XCTAssertNil(relaunchedStore.goal)
+        XCTAssertFalse(relaunchedStore.isOnboardingPresented)
+        XCTAssertTrue(relaunchedStore.requiresPersistenceEraseRecovery)
+        XCTAssertNotNil(relaunchedStore.persistenceRecoveryMessage)
+        XCTAssertTrue(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
+
+        let newGoal = Goal(
+            title: "Goal created while cleanup is blocked",
+            deadline: Date().addingTimeInterval(86_400),
+            category: .custom,
+            currentLevel: "Beginner",
+            focusAreas: "new material",
+            preferredQuestionStyle: .multipleChoice
+        )
+        relaunchedStore.goal = newGoal
+        relaunchedStore.updateUnlockMinutes(15)
+
+        let stillOldEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: primaryURL)
+        )
+        XCTAssertEqual(stillOldEnvelope.snapshot.goal?.id, oldGoal.id)
+
+        fileManager.shouldFailRemoval = false
+        relaunchedStore.eraseAllData(backendIdentityDefaults: defaults)
+
+        XCTAssertFalse(relaunchedStore.requiresPersistenceEraseRecovery)
+        XCTAssertTrue(relaunchedStore.hasNoPersistedAppData)
+        XCTAssertTrue(relaunchedStore.isOnboardingPresented)
+        XCTAssertFalse(defaults.bool(forKey: AppSnapshotPersistence.eraseIncompleteKey))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
+
+        let cleanRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        XCTAssertNil(cleanRelaunch.goal)
+        XCTAssertTrue(cleanRelaunch.isOnboardingPresented)
+        XCTAssertFalse(cleanRelaunch.requiresPersistenceEraseRecovery)
     }
 
     @MainActor
@@ -5063,6 +5299,44 @@ final class UnlockPolicyTests: XCTestCase {
 
 private enum TestQuestionGenerationError: Error {
     case unavailable
+}
+
+private enum FakeScreenTimeAuthorizationError: Error {
+    case canceled
+}
+
+private enum FakeSharedDataEraseError: Error {
+    case failed
+}
+
+@MainActor
+private final class FakeScreenTimeAuthorizer: ScreenTimeAuthorizing {
+    var authorizationStatus: ScreenTimeAuthorizationStatus
+    var statusAfterRequest: ScreenTimeAuthorizationStatus?
+    var requestError: (any Error)?
+    private(set) var requestCount = 0
+
+    init(
+        authorizationStatus: ScreenTimeAuthorizationStatus,
+        statusAfterRequest: ScreenTimeAuthorizationStatus? = nil,
+        requestError: (any Error)? = nil
+    ) {
+        self.authorizationStatus = authorizationStatus
+        self.statusAfterRequest = statusAfterRequest
+        self.requestError = requestError
+    }
+
+    func requestAuthorization() async throws {
+        requestCount += 1
+
+        if let requestError {
+            throw requestError
+        }
+
+        if let statusAfterRequest {
+            authorizationStatus = statusAfterRequest
+        }
+    }
 }
 
 private struct StaticQuestionEngine: QuestionGenerating {

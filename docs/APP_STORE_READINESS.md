@@ -16,8 +16,8 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - Settings includes shield-extension diagnostics to confirm whether the custom Checkpoint shield rendered or iOS fell back to the default Restricted page.
 - New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
 - Blocked-app launches with no available checkpoint questions surface a recovery notice.
-- The full simulator XCTest suite passes: 183 tests, 0 failures on July 11, 2026, using Xcode 26.4.1 with normal simulator signing and parallel testing disabled.
-- The Bedrock question service suite passes: 88 tests, 0 failures on Python 3.12 on July 11, 2026.
+- The full simulator XCTest suite passes: 192 tests, 0 failures on July 12, 2026, using Xcode 26.4.1 with normal simulator signing and parallel testing disabled.
+- The Bedrock question service suite passes: 88 tests, 0 failures on Python 3.12 on July 12, 2026.
 - GitHub Actions definitions now cover backend tests, secret scanning, iOS simulator tests, a Release simulator build, and Xcode static analysis. A separate backend workflow is manual-only and environment-gated.
 - Starter-membership product behavior is implemented. The first goal and blocker/checkpoint/unlock loop are usable before payment; membership unlocks goal switching, fresh ongoing generation, larger question banks, and adaptive Study Assist.
 
@@ -81,8 +81,8 @@ Last checked: July 11, 2026 EDT.
 Run this before TestFlight and again before App Store submission:
 
 1. Install a signed build on a real iPhone.
-2. Launch Checkpoint and create a goal. Confirm the app shows preparation until five validated questions are ready.
-3. Open Settings and request Screen Time setup.
+2. Launch Checkpoint, review the required Screen Time explanation, tap Allow Screen Time, and approve the system request.
+3. Create a goal. Confirm the app shows preparation until five validated questions are ready.
 4. Choose at least one restricted app and one category.
 5. Apply the shield from Home.
 6. Open a restricted app and confirm the Checkpoint shield appears.

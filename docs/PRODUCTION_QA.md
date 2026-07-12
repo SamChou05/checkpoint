@@ -6,8 +6,8 @@ Use this checklist before TestFlight and again before App Store submission. Mark
 
 Started: June 4, 2026 PDT.
 
-- [x] Debug simulator tests passed: 183 passed, 0 failed on July 11 after release-readiness, persistence, safety, and erase-race coverage was added.
-- [x] Bedrock question service unit tests passed: 88 passed, 0 failed.
+- [x] Debug simulator tests passed: 192 passed, 0 failed on July 12 after required Screen Time authorization, approved-relaunch, failed-erasure gating, crash-safe snapshot-erasure recovery, and question-session diversity coverage was added.
+- [x] Bedrock question service unit tests passed: 88 passed, 0 failed on July 12.
 - [x] Release simulator build succeeded.
 - [x] `Checkpoint/Config/Secrets.xcconfig` is ignored and not tracked.
 - [x] Backend endpoint is configured locally and returned authenticated, validated question sets across exam, language, history, and uncommon raw-goal fixtures.
@@ -66,7 +66,11 @@ Findings:
 
 ## Real Shield Loop
 
-- [ ] Request Screen Time authorization on a physical iPhone.
+- [ ] On a fresh install, confirm the required Screen Time explanation appears before goal onboarding and the system authorization flow starts only after tapping Allow Screen Time.
+- [ ] Cancel or deny once and confirm Checkpoint remains on a calm retry screen rather than revealing the tabs.
+- [ ] Retry, approve, and confirm goal onboarding appears without relaunching.
+- [ ] Force-quit and relaunch an approved install; confirm authorization resolves without another biometric sheet and the saved protected-app selection remains intact.
+- [ ] Revoke access in iPhone Screen Time settings, return to Checkpoint, and confirm the required access screen replaces the app until permission is restored.
 - [ ] Select protected apps/categories/websites.
 - [ ] Start protection and verify the selected targets are blocked.
 - [ ] While protection is on, remove one selected app and verify it opens immediately while the remaining selections stay blocked.

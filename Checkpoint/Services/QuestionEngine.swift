@@ -141,6 +141,7 @@ struct QuestionGenerationRequest: Sendable {
         - Include all facts, source material, passages, examples, or constraints needed to answer each question without outside context.
         - Cover the focus topics as evenly as possible across the batch.
         - Expand the user's question bank: prefer new subskills, examples, stimulus shapes, edge cases, and misconception types that are not already represented in existing coverage.
+        - Make a diversity plan before writing: assign every item a distinct fact, rule, mechanism, or reasoning step, including when multiple items share a topic.
         - Do not paraphrase an existing stem or reuse the same correct-answer mechanism for the same topic when another useful angle is available.
         - Every question prompt and topic must visibly match \(context.learningTarget) and one of the focus topics or inferred skill-map topics.
         - For level 3 and above, use a short scenario, stimulus, code fragment, data point, constraint, or qualifier that requires application or reasoning.

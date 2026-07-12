@@ -13,6 +13,63 @@ import FamilyControls
 import ManagedSettings
 #endif
 
+enum ScreenTimeAuthorizationStatus: Equatable, Sendable {
+    case notDetermined
+    case denied
+    case approved
+    case approvedWithDataAccess
+    case unavailable
+}
+
+@MainActor
+protocol ScreenTimeAuthorizing: AnyObject {
+    var authorizationStatus: ScreenTimeAuthorizationStatus { get }
+
+    func requestAuthorization() async throws
+}
+
+@MainActor
+final class SystemScreenTimeAuthorizer: ScreenTimeAuthorizing {
+    var authorizationStatus: ScreenTimeAuthorizationStatus {
+        #if os(iOS) && canImport(FamilyControls)
+        let status = AuthorizationCenter.shared.authorizationStatus
+
+        if #available(iOS 26.4, *), status == .approvedWithDataAccess {
+            return .approvedWithDataAccess
+        }
+
+        switch status {
+        case .notDetermined:
+            return .notDetermined
+        case .denied:
+            return .denied
+        case .approved:
+            return .approved
+        default:
+            return .unavailable
+        }
+        #else
+        return .unavailable
+        #endif
+    }
+
+    func requestAuthorization() async throws {
+        #if os(iOS) && canImport(FamilyControls)
+        try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+        #else
+        throw SystemScreenTimeAuthorizationError.unavailable
+        #endif
+    }
+}
+
+private enum SystemScreenTimeAuthorizationError: LocalizedError {
+    case unavailable
+
+    var errorDescription: String? {
+        "App protection is available on iPhone."
+    }
+}
+
 @MainActor
 @Observable
 final class ScreenTimeController {
@@ -31,11 +88,39 @@ final class ScreenTimeController {
         case unavailable = "Unavailable in this build"
     }
 
+    enum AuthorizationState: Equatable {
+        case unresolved
+        case requesting
+        case notDetermined
+        case denied
+        case approved
+        case approvedWithDataAccess
+        case failed
+        case unavailable
+    }
+
     var setupState: SetupState = .notStarted
+    private(set) var authorizationState: AuthorizationState = .unresolved
     var restrictedAppsSummary = "No protected apps selected"
     var lastErrorMessage: String?
     var sharedDataEraseErrorMessage: String?
     var isShieldingEnabled = false
+
+    var hasRequiredScreenTimeAuthorization: Bool {
+        authorizationState == .approved || authorizationState == .approvedWithDataAccess
+    }
+
+    var requiresScreenTimeAuthorization: Bool {
+        !hasRequiredScreenTimeAuthorization
+    }
+
+    var isRequestingAuthorization: Bool {
+        authorizationState == .requesting
+    }
+
+    var requiresSharedDataEraseRecovery: Bool {
+        isSharedDataErasePending
+    }
 
     var isReadyForShielding: Bool {
         setupState == .authorized ||
@@ -125,22 +210,35 @@ final class ScreenTimeController {
     #endif
 
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let authorizer: any ScreenTimeAuthorizing
+    @ObservationIgnored private let sharedDataEraser: () throws -> Void
     @ObservationIgnored private var relockTask: Task<Void, Never>?
     @ObservationIgnored private var shieldRefreshTask: Task<Void, Never>?
     @ObservationIgnored private var isRestoringSelection = false
     @ObservationIgnored private var selectionSemanticsVersion = 0
-    @ObservationIgnored private let initialAuthorizationRequestKey = "checkpoint.screenTime.initialAuthorizationRequested"
+    @ObservationIgnored private var hasStartedAuthorizationBootstrap = false
+    @ObservationIgnored private var shouldReconcileAfterAuthorization = false
     @ObservationIgnored private var hasErasedAllData = false
 
     #if os(iOS) && canImport(DeviceActivity)
     @ObservationIgnored private let activityCenter = DeviceActivityCenter()
     #endif
 
-    init(defaults: UserDefaults = SharedAppGroup.defaults) {
+    init(
+        defaults: UserDefaults = SharedAppGroup.defaults,
+        authorizer: any ScreenTimeAuthorizing = SystemScreenTimeAuthorizer(),
+        sharedDataEraser: @escaping () throws -> Void = { try SharedAppGroup.eraseAllData() }
+    ) {
         self.defaults = defaults
+        self.authorizer = authorizer
+        self.sharedDataEraser = sharedDataEraser
+        // This legacy key used to suppress authorization after the first
+        // attempt. The system status must instead be refreshed every process.
+        defaults.removeObject(forKey: "checkpoint.screenTime.initialAuthorizationRequested")
+
         if UserDefaults.standard.bool(forKey: Self.sharedDataEraseIncompleteKey) {
             do {
-                try SharedAppGroup.eraseAllData()
+                try sharedDataEraser()
                 UserDefaults.standard.removeObject(forKey: Self.sharedDataEraseIncompleteKey)
                 UserDefaults.standard.synchronize()
             } catch {
@@ -160,65 +258,115 @@ final class ScreenTimeController {
         hasErasedAllData = !hadPersistedData
         restoreSelection()
         updateSummary()
+        shouldReconcileAfterAuthorization = hadPersistedData
         refreshAuthorizationStatus()
-        if hadPersistedData {
+        if shouldReconcileAfterAuthorization {
             reconcileShieldState()
         }
     }
 
     func requestAuthorization() async {
-        #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        guard !blockForPendingSharedDataErase() else { return }
+        authorizationState = .requesting
+
         do {
             hasErasedAllData = false
-            defaults.set(true, forKey: initialAuthorizationRequestKey)
-            try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+            try await authorizer.requestAuthorization()
             refreshAuthorizationStatus()
             updateSummary()
         } catch {
-            setupState = .failed
-            lastErrorMessage = error.localizedDescription
+            handleAuthorizationRequestFailure(error)
         }
-        #else
-        setupState = .unavailable
-        restrictedAppsSummary = "App protection is available on iPhone."
-        #endif
     }
 
     func requestInitialAuthorizationIfNeeded() async {
-        guard setupState == .notStarted else { return }
-        guard !defaults.bool(forKey: initialAuthorizationRequestKey) else { return }
-        await requestAuthorization()
+        await bootstrapAuthorizationIfNeeded()
+    }
+
+    func bootstrapAuthorizationIfNeeded() async {
+        guard !hasStartedAuthorizationBootstrap else { return }
+        hasStartedAuthorizationBootstrap = true
+        refreshAuthorizationStatus()
     }
 
     func refreshAuthorizationStatus() {
-        #if os(iOS) && canImport(FamilyControls)
-        switch AuthorizationCenter.shared.authorizationStatus {
+        switch authorizer.authorizationStatus {
         case .notDetermined:
+            authorizationState = .notDetermined
             setupState = .notStarted
             lastErrorMessage = nil
-            invalidateSelectionAfterAuthorizationLoss()
         case .denied:
+            let shouldDeactivateProtection = isShieldingEnabled ||
+                setupState == .shieldActive ||
+                setupState == .temporarilyUnlocked ||
+                SharedAppGroup.desiredShieldActive ||
+                SharedAppGroup.currentPendingShieldAttempt != nil
+            authorizationState = .denied
+            shouldReconcileAfterAuthorization = false
+            invalidateSelectionAfterAuthorizationLoss()
+            if shouldDeactivateProtection &&
+                (isShieldingEnabled || SharedAppGroup.desiredShieldActive ||
+                 SharedAppGroup.currentPendingShieldAttempt != nil) {
+                deactivateProtection(refreshAuthorization: false)
+            }
             setupState = .failed
             lastErrorMessage = "Screen Time access is denied. Allow Screen Time access before starting app protection."
-            invalidateSelectionAfterAuthorizationLoss()
         case .approved:
+            authorizationState = .approved
             if setupState != .shieldActive && setupState != .temporarilyUnlocked {
                 setupState = .authorized
             }
             lastErrorMessage = nil
-        default:
+            reconcileAfterAuthorizationIfNeeded()
+        case .approvedWithDataAccess:
+            authorizationState = .approvedWithDataAccess
             if setupState != .shieldActive && setupState != .temporarilyUnlocked {
                 setupState = .authorized
             }
             lastErrorMessage = nil
+            reconcileAfterAuthorizationIfNeeded()
+        case .unavailable:
+            authorizationState = .unavailable
+            setupState = .unavailable
+            restrictedAppsSummary = "App protection is available on iPhone."
         }
-        #else
-        setupState = .unavailable
-        restrictedAppsSummary = "App protection is available on iPhone."
-        #endif
+    }
+
+    private func handleAuthorizationRequestFailure(_ error: any Error) {
+        switch authorizer.authorizationStatus {
+        case .denied, .approved, .approvedWithDataAccess:
+            // The system status is authoritative even if the async request
+            // also surfaced an error while completing.
+            refreshAuthorizationStatus()
+        case .notDetermined:
+            authorizationState = .failed
+            setupState = .failed
+            lastErrorMessage = error.localizedDescription
+        case .unavailable:
+            authorizationState = .unavailable
+            setupState = .unavailable
+            restrictedAppsSummary = "App protection is available on iPhone."
+            lastErrorMessage = error.localizedDescription
+        }
+
+        if authorizationState != .unavailable {
+            updateSummary()
+        }
+    }
+
+    private func reconcileAfterAuthorizationIfNeeded() {
+        guard shouldReconcileAfterAuthorization else { return }
+        guard hasRequiredScreenTimeAuthorization else { return }
+
+        shouldReconcileAfterAuthorization = false
+        reconcileShieldState()
     }
 
     func applyShield() {
+        guard !blockForPendingSharedDataErase() else {
+            isShieldingEnabled = false
+            return
+        }
         guard !hasErasedAllData || hasSelection else {
             isShieldingEnabled = false
             lastErrorMessage = "Choose at least one protected app, category, or website before starting app protection."
@@ -259,7 +407,9 @@ final class ScreenTimeController {
         }
 
         guard isScreenTimeAuthorized else {
-            deactivateProtection()
+            if authorizationState == .denied {
+                deactivateProtection(refreshAuthorization: false)
+            }
             setupState = .failed
             lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
             return
@@ -305,6 +455,7 @@ final class ScreenTimeController {
         UserDefaults.standard.set(true, forKey: Self.sharedDataEraseIncompleteKey)
         UserDefaults.standard.synchronize()
         hasErasedAllData = true
+        shouldReconcileAfterAuthorization = false
         deactivateProtection()
 
         #if os(iOS) && canImport(FamilyControls)
@@ -314,9 +465,8 @@ final class ScreenTimeController {
         selectionSemanticsVersion = SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
         #endif
 
-        defaults.removeObject(forKey: initialAuthorizationRequestKey)
         do {
-            try SharedAppGroup.eraseAllData()
+            try sharedDataEraser()
             UserDefaults.standard.removeObject(forKey: Self.sharedDataEraseIncompleteKey)
             UserDefaults.standard.synchronize()
             sharedDataEraseErrorMessage = nil
@@ -399,6 +549,24 @@ final class ScreenTimeController {
             return
         }
 
+        guard hasRequiredScreenTimeAuthorization else {
+            switch authorizationState {
+            case .denied:
+                deactivateProtection(refreshAuthorization: false)
+                setupState = .failed
+                lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
+            case .unavailable:
+                setupState = .unavailable
+            case .unresolved, .requesting, .notDetermined, .failed:
+                // Preserve the persisted intent and opaque selection until
+                // the launch authorization request resolves conclusively.
+                shouldReconcileAfterAuthorization = true
+            case .approved, .approvedWithDataAccess:
+                break
+            }
+            return
+        }
+
         guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
             deactivateProtection(
                 errorMessage: "The selected apps exceed iPhone's protection limit."
@@ -410,13 +578,6 @@ final class ScreenTimeController {
             deactivateProtection(
                 errorMessage: "The selected websites exceed iPhone's protection limit."
             )
-            return
-        }
-
-        guard isScreenTimeAuthorized else {
-            deactivateProtection()
-            setupState = .failed
-            lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
             return
         }
 
@@ -458,6 +619,7 @@ final class ScreenTimeController {
 
     @discardableResult
     func updateSelection(_ newSelection: FamilyActivitySelection) -> Bool {
+        guard !blockForPendingSharedDataErase() else { return false }
         let normalizedSelection = SharedAppGroup.categoryInclusiveSelection(newSelection)
         let applicationCountIsAllowed = SharedAppGroup.canAcceptShieldTokenCount(
             normalizedSelection.applicationTokens.count,
@@ -546,6 +708,7 @@ final class ScreenTimeController {
         semanticsVersion: Int = SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
     ) {
         #if os(iOS) && canImport(FamilyControls)
+        guard !isSharedDataErasePending else { return }
         guard let data = try? JSONEncoder().encode(selection) else { return }
         selectionSemanticsVersion = semanticsVersion
         SharedAppGroup.publishScreenTimeSelectionData(data, semanticsVersion: semanticsVersion)
@@ -580,20 +743,12 @@ final class ScreenTimeController {
     }
 
     private var isScreenTimeAuthorized: Bool {
-        #if os(iOS) && canImport(FamilyControls)
-        switch AuthorizationCenter.shared.authorizationStatus {
-        case .notDetermined, .denied:
-            return false
-        default:
-            return true
-        }
-        #else
-        return false
-        #endif
+        hasRequiredScreenTimeAuthorization
     }
 
     private func handleSelectionChange() {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
+        guard !isSharedDataErasePending else { return }
         guard hasSelection else {
             if isShieldingEnabled || setupState == .temporarilyUnlocked || SharedAppGroup.desiredShieldActive {
                 deactivateProtection()
@@ -607,7 +762,21 @@ final class ScreenTimeController {
         #endif
     }
 
-    private func deactivateProtection(errorMessage: String? = nil) {
+    private var isSharedDataErasePending: Bool {
+        UserDefaults.standard.bool(forKey: Self.sharedDataEraseIncompleteKey)
+    }
+
+    @discardableResult
+    private func blockForPendingSharedDataErase() -> Bool {
+        guard isSharedDataErasePending else { return false }
+        sharedDataEraseErrorMessage = "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
+        return true
+    }
+
+    private func deactivateProtection(
+        errorMessage: String? = nil,
+        refreshAuthorization: Bool = true
+    ) {
         shieldRefreshTask?.cancel()
         shieldRefreshTask = nil
         relockTask?.cancel()
@@ -623,7 +792,9 @@ final class ScreenTimeController {
 
         isShieldingEnabled = false
         setupState = .notStarted
-        refreshAuthorizationStatus()
+        if refreshAuthorization {
+            refreshAuthorizationStatus()
+        }
         if let errorMessage {
             lastErrorMessage = errorMessage
         }

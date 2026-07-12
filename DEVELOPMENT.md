@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: July 11, 2026
+Last updated: July 12, 2026
 
 ## Current Product Direction
 
@@ -8,9 +8,9 @@ Checkpoint is an iOS app that lets a user pick restricted apps, set a goal, and 
 
 The App Store-safe workflow is:
 
-1. User creates a goal profile in Checkpoint.
-2. Checkpoint generates and caches a multiple-choice question bank for that active profile.
-3. User grants Family Controls permission.
+1. Checkpoint explains why Screen Time access is required, and the user explicitly grants Family Controls permission.
+2. User creates a goal profile in Checkpoint.
+3. Checkpoint generates and caches a multiple-choice question bank for that active profile.
 4. User picks restricted apps inside Checkpoint.
 5. Checkpoint shields those apps.
 6. User opens a restricted app.
@@ -36,7 +36,7 @@ Important platform constraint:
 - The app is currently modeled as a starter-membership product: the first goal and core blocker loop are included before payment, while membership unlocks goal switching and ongoing fresh generation.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Feedback notes are accessible from Settings, saved locally, and shareable through the system share sheet.
-- Screen Time authorization is requested only after the user chooses to set up app protection; Settings keeps a fallback access button when permission is not ready.
+- Screen Time authorization is a required startup phase shown before first-goal onboarding; denial or cancellation stays on a clear retry screen instead of hiding recovery in Settings.
 - Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 review from Settings.
 - Settings places a compact Plan section below the core goal and app-protection controls.
 - Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh AI-generated questions when the current set can no longer fill the next checkpoint.
@@ -85,6 +85,7 @@ Important platform constraint:
 - Provider routing is internal so users do not need to choose a question source.
 - The app stores the last provider used for diagnostics.
 - Generated batches pass through a shared sanitizer before storage to remove blank, duplicate, reported, invalid, oversized, and off-target study-strategy questions.
+- Provider prompts assign a distinct tested objective to every generated item, and checkpoint sessions spread fresh questions across available topics before repeating one.
 - XCTest coverage verifies question-bank generation, session selection, unlock gating, shield-triggered sessions, provider policy, and sanitizer behavior.
 
 ### Adaptive Competency
@@ -115,7 +116,7 @@ Important platform constraint:
 
 ### Screen Time / Blocking
 
-- Family Controls authorization request.
+- Required launch-time Family Controls authorization with retry and foreground status reconciliation.
 - FamilyActivityPicker-based blocked app/category/web selection.
 - New installs start with an empty blocked-app selection.
 - Selection persistence through shared App Group defaults.
