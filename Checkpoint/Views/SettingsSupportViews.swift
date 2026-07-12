@@ -15,7 +15,7 @@ enum AdvancedSettingsAction: String, Identifiable {
     var detail: String {
         switch self {
         case .resetData:
-            return "This erases all goals and progress on this device and turns off app protection. This can't be undone."
+            return "This erases goals, progress, protected-app selections, local diagnostics, and the anonymous backend install ID, then turns off app protection. Your App Store subscription and iOS Screen Time permission are not canceled. This can't be undone."
         }
     }
 
@@ -111,8 +111,8 @@ struct AdvancedConfirmationView: View {
     private func performAction() {
         switch action {
         case .resetData:
-            screenTime.clearShield()
-            store.resetDemoData()
+            screenTime.eraseAllData()
+            store.eraseAllData()
         }
     }
 }
@@ -156,5 +156,58 @@ struct SettingsNavigationRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+struct LegalLinkRow: View {
+    var title: String
+    var detail: String
+    var systemImage: String
+    var url: URL?
+
+    @ViewBuilder
+    var body: some View {
+        if let url {
+            Link(destination: url) {
+                rowContent
+            }
+            .buttonStyle(.plain)
+        } else {
+            rowContent
+                .accessibilityHint("This URL is not configured in this build.")
+        }
+    }
+
+    private var rowContent: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 34, height: 34)
+                .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text(detail)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 8)
+
+            if url == nil {
+                StatusBadge(text: "Not configured", tint: CheckpointTheme.coral)
+            } else {
+                Image(systemName: "arrow.up.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+        }
+        .frame(minHeight: 44)
+        .contentShape(Rectangle())
     }
 }

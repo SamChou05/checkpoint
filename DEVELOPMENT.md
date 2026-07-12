@@ -150,13 +150,15 @@ Important platform constraint:
 - Device Activity requires a 15-minute monitoring interval, so 5- and 10-minute breaks schedule their monitor far enough in the past to meet that minimum while still ending at the requested time; verify this behavior on a physical iPhone.
 - App Store readiness steps are tracked in `docs/APP_STORE_READINESS.md`.
 - The AI layer has production backend batch generation plus guarded Apple Foundation Models support for explicit internal experiments.
-- Storage is still prototype-level UserDefaults/App Group defaults, not SwiftData or SQLite.
+- Main app state uses a schema-versioned JSON envelope in Application Support with atomic primary and backup files, legacy UserDefaults migration, recovery reporting, file protection, and bounded history retention. App Group Screen Time coordination remains in its separate atomic snapshot/defaults store.
+- Snapshot encoding and full-file primary/backup writes currently run synchronously on the main actor. Profile physical devices with near-retention-limit histories and move that I/O behind an asynchronous persistence boundary if Instruments shows launch or interaction stalls.
+- Privacy Policy and Support links are read from `CHECKPOINT_PRIVACY_POLICY_URL` and `CHECKPOINT_SUPPORT_URL`. Configure real hosted URLs in ignored `Secrets.xcconfig` or through the corresponding `*_OVERRIDE` build settings; missing values are shown as diagnostics in Settings and the paywall.
 
 ## In-Progress Direction Before Device Setup
 
 While Apple entitlement/device setup is pending, useful local work is:
 
-- Replace prototype persistence with a production-ready local store.
+- Exercise primary/backup recovery and legacy migration again on the build-3 to build-4 physical-device upgrade path.
 - Add onboarding diagnostics for better initial competency estimates.
 - Improve adaptive competency and diagnostic flows.
 - Continue UI polish and error states.
@@ -189,7 +191,7 @@ The MVP is complete when:
 - Confirm Shield Action extension writes pending attempts.
 - Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.
-- Replace prototype persistence with SwiftData or SQLite.
+- Validate the versioned primary/backup persistence migration on the physical upgrade install and verify Erase all data removes both copies.
 - Deploy and verify the Bedrock backend against a real endpoint/model.
 - Configure Release with an HTTPS backend endpoint and token through `Checkpoint/Config/Secrets.xcconfig` or the `CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE` and `CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE` build settings.
 - Keep Apple Foundation Models validation separate as an internal experiment; it is not a release-readiness dependency.
@@ -243,7 +245,7 @@ Current provider policy:
 - Production `Automatic` routes directly to the configured cloud backend.
 - Apple Foundation Models is code-supported only as an explicit internal experiment and is excluded from production cost and availability assumptions.
 - Backend costs scale with batch creation and refreshes, so generation remains quota-limited, cooldown-protected, and cached.
-- A Release build must include a valid HTTPS backend endpoint and token because the cloud backend is the canonical production source.
+- A Release build must include a valid HTTPS backend endpoint, a non-placeholder token of at least 32 characters, and hosted HTTPS Privacy Policy and Support URLs. The cloud backend is the canonical production question source.
 
 Implementation status:
 

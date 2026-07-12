@@ -6,8 +6,8 @@ Use this checklist before TestFlight and again before App Store submission. Mark
 
 Started: June 4, 2026 PDT.
 
-- [x] Debug simulator tests passed: 152 passed, 0 failed on July 11 after protection state-sync coverage was added.
-- [x] Bedrock question service unit tests passed: 15 passed, 0 failed.
+- [x] Debug simulator tests passed: 183 passed, 0 failed on July 11 after release-readiness, persistence, safety, and erase-race coverage was added.
+- [x] Bedrock question service unit tests passed: 88 passed, 0 failed.
 - [x] Release simulator build succeeded.
 - [x] `Checkpoint/Config/Secrets.xcconfig` is ignored and not tracked.
 - [x] Backend endpoint is configured locally and returned authenticated, validated question sets across exam, language, history, and uncommon raw-goal fixtures.
@@ -24,7 +24,7 @@ Started: June 4, 2026 PDT.
 Findings:
 
 - Release entitlement refresh now runs when the app returns to foreground, so expired or canceled Pro access can return to Free without requiring a full app restart.
-- The backend now fails closed when no bearer token is configured unless `ALLOW_UNAUTHENTICATED_BACKEND=true` is explicitly set. Keep rate limits enabled, rotate the token before broader testing, and consider App Attest or a stronger backend gate before a public scale-up.
+- The backend now fails closed when no bearer token is configured unless `ALLOW_UNAUTHENTICATED_BACKEND=true` is explicitly set. Keep rate limits enabled and rotate the token for controlled TestFlight testing. Before public release, replace the embedded shared bearer and caller-supplied install UUID with App Attest challenges/assertions, replay protection, and server-held key state.
 
 ## Automated Baseline
 
@@ -53,14 +53,15 @@ Findings:
 
 ## AI Backend
 
-- [ ] App build has a configured backend endpoint for TestFlight, or intentionally falls back to Apple/local generation.
+- [ ] App build has the intended API Gateway `/v1/questions` endpoint; production Automatic has no Apple/local or canned fallback.
 - [ ] Backend endpoint returns the documented JSON response, not placeholder Lambda text.
-- [ ] Backend enforces bearer auth or an equivalent production gate.
-- [ ] `ALLOW_UNAUTHENTICATED_BACKEND` is not enabled on exposed Function URLs.
+- [ ] Internal/TestFlight backend enforces its rotated bearer; public production enforces App Attest assertions and replay protection instead of trusting the embedded bearer or install UUID.
+- [ ] `ALLOW_UNAUTHENTICATED_BACKEND` is not enabled on any exposed API Gateway stage.
+- [ ] Backend verifies current StoreKit entitlement before assigning paid quotas or Pro-only access.
 - [ ] Backend rate limits by install ID and source IP before calling Bedrock.
 - [ ] Backend caps requested batch size.
 - [ ] Backend rejects malformed, duplicate, off-target, and below-difficulty questions.
-- [ ] App falls back gracefully when backend returns 401, 429, 502, or malformed data.
+- [ ] App surfaces calm, actionable states when backend returns 401, 422, 429, 502, 503, or malformed data.
 - [ ] Goal title, focus areas, derived learning target, difficulty, and weak topics are present in backend requests.
 
 ## Real Shield Loop

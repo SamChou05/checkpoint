@@ -41,6 +41,15 @@ struct OnboardingView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
+                    if let persistenceMessage = store.persistenceRecoveryMessage {
+                        Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(12)
+                            .background(CheckpointTheme.panel, in: RoundedRectangle(cornerRadius: 8))
+                    }
+
                     SectionPanel("Goal") {
                         TextField("Goal", text: $title, axis: .vertical)
                             .textFieldStyle(.plain)

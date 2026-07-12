@@ -13,6 +13,7 @@ struct CheckpointAttemptView: View {
     @State private var result: AnswerResult = .correct
     @State private var checkedAnswer: CheckedCheckpointAnswer?
     @State private var protectionActionErrorMessage: String?
+    @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
 
     var body: some View {
         NavigationStack {
@@ -42,6 +43,10 @@ struct CheckpointAttemptView: View {
                                 total: Double(max(session.questions.count, 1))
                             )
                             .tint(CheckpointTheme.teal)
+                            .accessibilityLabel("Checkpoint progress")
+                            .accessibilityValue(
+                                "\(completedQuestionCount) of \(session.questions.count) questions completed; \(correctAnswerCount) of \(session.unlockThreshold) correct"
+                            )
                         }
                         .padding(.top, 6)
                     }
@@ -56,6 +61,7 @@ struct CheckpointAttemptView: View {
                                 .font(.title3.weight(.semibold))
                                 .foregroundStyle(CheckpointTheme.text)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityFocused($accessibilityFocus, equals: .question)
 
                             if question.format == .multipleChoice, !question.choices.isEmpty {
                                 VStack(spacing: 10) {
@@ -235,6 +241,7 @@ struct CheckpointAttemptView: View {
             shouldPass: shouldPass,
             unlockMinutes: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : 0
         )
+        accessibilityFocus = .feedback
     }
 
     private func continueAfterCheckedAnswer() {
@@ -280,6 +287,7 @@ struct CheckpointAttemptView: View {
         answer = ""
         result = .correct
         checkedAnswer = nil
+        accessibilityFocus = .question
     }
 
     private func resultTint(for result: AnswerResult) -> Color {
@@ -303,6 +311,7 @@ struct CheckpointAttemptView: View {
                     Text(checkedAnswer.result == .correct ? "Correct" : "Not quite")
                         .font(.headline)
                         .foregroundStyle(resultTint(for: checkedAnswer.result))
+                        .accessibilityFocused($accessibilityFocus, equals: .feedback)
 
                     VStack(alignment: .leading, spacing: 8) {
                         if checkedAnswer.result != .correct {
@@ -372,6 +381,11 @@ private struct CheckedCheckpointAnswer {
     let unlockMinutes: Int
 }
 
+private enum AttemptAccessibilityFocus: Hashable {
+    case question
+    case feedback
+}
+
 private struct ChoiceButton: View {
     var title: String
     var isSelected: Bool
@@ -407,5 +421,9 @@ private struct ChoiceButton: View {
         .buttonStyle(.plain)
         .disabled(isLocked)
         .opacity(isLocked && !isSelected ? 0.62 : 1)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

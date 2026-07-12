@@ -3,17 +3,53 @@ Transform: AWS::Serverless-2016-10-31
 Description: Checkpoint Bedrock question-generation backend
 
 Parameters:
-  BedrockModelId:
+  BedrockModelArn:
     Type: String
-    Default: amazon.nova-lite-v1:0
-  BedrockFallbackModelId:
+    Description: Exact Bedrock foundation-model or inference-profile ARN used by Converse.
+  BedrockInvokeResourceArns:
+    Type: CommaDelimitedList
+    Description: Comma-delimited least-privilege invoke resources. Include the runtime profile/model ARN and every destination foundation-model ARN required by cross-region inference.
+  BedrockFallbackModelArn:
     Type: String
     Default: ""
+    Description: Optional fallback ARN. Leave empty until it passes the same eval suite.
+  BedrockGuardrailIdentifier:
+    Type: String
+    Default: ""
+    Description: Optional Bedrock Guardrail ID. Identifier and version must be set together.
+  BedrockGuardrailVersion:
+    Type: String
+    Default: ""
+    Description: Optional Bedrock Guardrail numeric version or DRAFT.
+  BedrockGuardrailArn:
+    Type: String
+    Default: ""
+    Description: Guardrail ARN used to grant bedrock:ApplyGuardrail when a guardrail is enabled.
   MaxQuestionsPerBatch:
     Type: Number
     Default: 20
     MinValue: 1
     MaxValue: 40
+  BedrockMaxTokens:
+    Type: Number
+    Default: 6000
+    MinValue: 256
+    MaxValue: 10000
+  GenerationAttempts:
+    Type: Number
+    Default: 3
+    MinValue: 1
+    MaxValue: 5
+  MaxProviderCallsPerRequest:
+    Type: Number
+    Default: 6
+    MinValue: 1
+    MaxValue: 20
+  MaxRequestBodyBytes:
+    Type: Number
+    Default: 131072
+    MinValue: 4096
+    MaxValue: 1048576
   MaxRequestsPerInstallPerDay:
     Type: Number
     Default: 40
@@ -22,16 +58,113 @@ Parameters:
     Type: Number
     Default: 400
     MinValue: 1
+  RateLimitTTLSeconds:
+    Type: Number
+    Default: 172800
+    MinValue: 86400
+    MaxValue: 1209600
+  QuotaHashSecret:
+    Type: String
+    NoEcho: true
+    MinLength: 32
+    Description: Server-only HMAC secret for pseudonymizing install and IP quota keys.
   BackendToken:
     Type: String
     Default: ""
     NoEcho: true
+    Description: Temporary shared bearer for internal/TestFlight only; replace with App Attest before public release.
   AllowUnauthenticatedBackend:
     Type: String
     Default: "false"
     AllowedValues:
       - "true"
       - "false"
+    Description: Development-only opt-in. TestFlight and production ignore unauthenticated access.
+  DeploymentEnvironment:
+    Type: String
+    Default: testflight
+    AllowedValues:
+      - development
+      - testflight
+      - production
+  ServiceMode:
+    Type: String
+    Default: enabled
+    AllowedValues:
+      - enabled
+      - drain
+      - disabled
+    Description: Kill switch. Drain and disabled reject generation before auth, quota, or Bedrock.
+  ServiceRetryAfterSeconds:
+    Type: Number
+    Default: 300
+    MinValue: 1
+    MaxValue: 86400
+  ApiStageName:
+    Type: String
+    Default: prod
+  ApiThrottleRateLimit:
+    Type: Number
+    Default: 5
+    MinValue: 1
+  ApiThrottleBurstLimit:
+    Type: Number
+    Default: 10
+    MinValue: 1
+  ReservedConcurrency:
+    Type: Number
+    Default: 5
+    MinValue: 1
+  LogRetentionDays:
+    Type: Number
+    Default: 14
+    AllowedValues:
+      - 7
+      - 14
+      - 30
+      - 60
+      - 90
+  AlertEmail:
+    Type: String
+    Default: ""
+    Description: Optional operations email. The SNS subscription must be confirmed.
+  BudgetAlertEmail:
+    Type: String
+    Default: ""
+    Description: Optional email for an account-wide Amazon Bedrock monthly budget.
+  MonthlyBedrockBudgetUSD:
+    Type: Number
+    Default: 25
+    MinValue: 1
+
+Rules:
+  GuardrailConfigurationAllOrNone:
+    Assertions:
+      - Assert: !Or
+          - !And
+            - !Equals [!Ref BedrockGuardrailIdentifier, ""]
+            - !Equals [!Ref BedrockGuardrailVersion, ""]
+            - !Equals [!Ref BedrockGuardrailArn, ""]
+          - !And
+            - !Not [!Equals [!Ref BedrockGuardrailIdentifier, ""]]
+            - !Not [!Equals [!Ref BedrockGuardrailVersion, ""]]
+            - !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
+        AssertDescription: BedrockGuardrailIdentifier, BedrockGuardrailVersion, and BedrockGuardrailArn must be provided together or all left empty.
+  ProductionRequiresSafetyAndNotifications:
+    RuleCondition: !Equals [!Ref DeploymentEnvironment, production]
+    Assertions:
+      - Assert: !And
+          - !Not [!Equals [!Ref BedrockGuardrailIdentifier, ""]]
+          - !Not [!Equals [!Ref BedrockGuardrailVersion, ""]]
+          - !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
+          - !Not [!Equals [!Ref AlertEmail, ""]]
+          - !Not [!Equals [!Ref BudgetAlertEmail, ""]]
+        AssertDescription: Production requires a complete Bedrock Guardrail configuration plus operations and budget alert emails.
+
+Conditions:
+  HasGuardrailArn: !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
+  HasAlertEmail: !Not [!Equals [!Ref AlertEmail, ""]]
+  HasBudgetEmail: !Not [!Equals [!Ref BudgetAlertEmail, ""]]
 
 Resources:
   QuestionRateLimitTable:
@@ -44,9 +177,19 @@ Resources:
       KeySchema:
         - AttributeName: rateKey
           KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
       TimeToLiveSpecification:
         AttributeName: expiresAt
         Enabled: true
+
+  BackendApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref ApiStageName
+      DefaultRouteSettings:
+        ThrottlingRateLimit: !Ref ApiThrottleRateLimit
+        ThrottlingBurstLimit: !Ref ApiThrottleBurstLimit
 
   CheckpointQuestionFunction:
     Type: AWS::Serverless::Function
@@ -56,40 +199,187 @@ Resources:
       CodeUri: .
       Timeout: 30
       MemorySize: 256
+      ReservedConcurrentExecutions: !Ref ReservedConcurrency
+      Tracing: Active
+      LoggingConfig:
+        LogGroup: !Ref CheckpointQuestionFunctionLogGroup
+        LogFormat: Text
       Environment:
         Variables:
-          BEDROCK_MODEL_ID: !Ref BedrockModelId
-          BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelId
+          BEDROCK_MODEL_ID: !Ref BedrockModelArn
+          BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
+          BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
+          BEDROCK_GUARDRAIL_IDENTIFIER: !Ref BedrockGuardrailIdentifier
+          BEDROCK_GUARDRAIL_VERSION: !Ref BedrockGuardrailVersion
           MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
+          GENERATION_ATTEMPTS: !Ref GenerationAttempts
+          MAX_PROVIDER_CALLS_PER_REQUEST: !Ref MaxProviderCallsPerRequest
+          MAX_REQUEST_BODY_BYTES: !Ref MaxRequestBodyBytes
           CHECKPOINT_BACKEND_TOKEN: !Ref BackendToken
           ALLOW_UNAUTHENTICATED_BACKEND: !Ref AllowUnauthenticatedBackend
+          DEPLOYMENT_ENVIRONMENT: !Ref DeploymentEnvironment
+          SERVICE_MODE: !Ref ServiceMode
+          SERVICE_RETRY_AFTER_SECONDS: !Ref ServiceRetryAfterSeconds
+          REQUIRE_RATE_LIMITING: "true"
           RATE_LIMIT_TABLE_NAME: !Ref QuestionRateLimitTable
+          QUOTA_HASH_SECRET: !Ref QuotaHashSecret
           MAX_REQUESTS_PER_INSTALL_PER_DAY: !Ref MaxRequestsPerInstallPerDay
           MAX_REQUESTS_PER_IP_PER_DAY: !Ref MaxRequestsPerIPPerDay
-      FunctionUrlConfig:
-        AuthType: NONE
-        Cors:
-          AllowOrigins:
-            - "*"
-          AllowHeaders:
-            - authorization
-            - content-type
-            - x-checkpoint-install-id
-          AllowMethods:
-            - POST
+          RATE_LIMIT_TTL_SECONDS: !Ref RateLimitTTLSeconds
+          EMIT_STRUCTURED_METRICS: "true"
+      Events:
+        QuestionGeneration:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BackendApi
+            Path: /v1/questions
+            Method: POST
       Policies:
         - Statement:
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
-                - bedrock:InvokeModelWithResponseStream
-              Resource: "*"
+              Resource: !Ref BedrockInvokeResourceArns
+            - !If
+              - HasGuardrailArn
+              - Effect: Allow
+                Action:
+                  - bedrock:ApplyGuardrail
+                Resource: !Ref BedrockGuardrailArn
+              - !Ref AWS::NoValue
             - Effect: Allow
               Action:
-                - dynamodb:UpdateItem
+                - dynamodb:TransactWriteItems
               Resource: !GetAtt QuestionRateLimitTable.Arn
+
+  CheckpointQuestionFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /checkpoint/${AWS::StackName}/question-service
+      RetentionInDays: !Ref LogRetentionDays
+
+  BackendAlertTopic:
+    Type: AWS::SNS::Topic
+
+  BackendAlertEmailSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasAlertEmail
+    Properties:
+      TopicArn: !Ref BackendAlertTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+
+  ApiServerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Checkpoint backend API returned repeated 5xx responses.
+      Namespace: AWS/ApiGateway
+      MetricName: 5xx
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref BackendApi
+        - Name: Stage
+          Value: !Ref ApiStageName
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref BackendAlertTopic
+
+  FunctionThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Reserved concurrency or account limits are throttling question generation.
+      Namespace: AWS/Lambda
+      MetricName: Throttles
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref CheckpointQuestionFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref BackendAlertTopic
+
+  ProviderFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Bedrock or response processing failed repeatedly.
+      Namespace: Checkpoint/Backend
+      MetricName: ProviderFailures
+      Dimensions:
+        - Name: Service
+          Value: QuestionGeneration
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref BackendAlertTopic
+
+  BackendLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Question-generation p95 latency is approaching the Lambda timeout.
+      Namespace: Checkpoint/Backend
+      MetricName: LatencyMilliseconds
+      Dimensions:
+        - Name: Service
+          Value: QuestionGeneration
+      ExtendedStatistic: p95
+      Period: 300
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 2
+      Threshold: 25000
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref BackendAlertTopic
+
+  MonthlyBedrockBudget:
+    Type: AWS::Budgets::Budget
+    Condition: HasBudgetEmail
+    Properties:
+      Budget:
+        BudgetName: !Sub ${AWS::StackName}-bedrock-monthly
+        BudgetLimit:
+          Amount: !Ref MonthlyBedrockBudgetUSD
+          Unit: USD
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        CostFilters:
+          Service:
+            - Amazon Bedrock
+      NotificationsWithSubscribers:
+        - Notification:
+            ComparisonOperator: GREATER_THAN
+            NotificationType: ACTUAL
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - Address: !Ref BudgetAlertEmail
+              SubscriptionType: EMAIL
+        - Notification:
+            ComparisonOperator: GREATER_THAN
+            NotificationType: FORECASTED
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - Address: !Ref BudgetAlertEmail
+              SubscriptionType: EMAIL
 
 Outputs:
   QuestionEndpoint:
-    Description: Function URL to use as Checkpoint's AI backend endpoint.
-    Value: !GetAtt CheckpointQuestionFunctionUrl.FunctionUrl
+    Description: API Gateway endpoint to configure as Checkpoint's AI backend endpoint.
+    Value: !Sub https://${BackendApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiStageName}/v1/questions
+  BackendAlertTopicArn:
+    Description: SNS topic used by backend operational alarms.
+    Value: !Ref BackendAlertTopic

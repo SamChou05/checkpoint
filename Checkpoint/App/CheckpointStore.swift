@@ -37,6 +37,7 @@ final class CheckpointStore {
     var goal: Goal? {
         didSet {
             if let goal {
+                activatePersistenceForAppDataIfNeeded()
                 upsertGoalProfile(goal)
             }
         }
@@ -62,6 +63,7 @@ final class CheckpointStore {
     var questionBankTopOffStartedAt: Date?
     var lastQuestionBankTopOffDuration: TimeInterval?
     var checkpointNotice: String?
+    var persistenceRecoveryMessage: String?
     var unlockSession: UnlockSession?
     var checkpointRetryCooldownUntil: Date?
     var isOnboardingPresented = false
@@ -70,16 +72,24 @@ final class CheckpointStore {
     var pendingMembershipFeature: MembershipFeature?
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
+    private(set) var hasNoPersistedAppData = true
 
     @ObservationIgnored private let questionEngine: HybridQuestionEngine
-    @ObservationIgnored private let defaults: UserDefaults
-    @ObservationIgnored private let snapshotKey = "checkpoint.snapshot.v1"
+    @ObservationIgnored private let snapshotPersistence: AppSnapshotPersistence
+    @ObservationIgnored private var permitsPersistenceWrites = false
+    @ObservationIgnored private var requiresPersistencePurge = false
+    @ObservationIgnored private var dataLifecycleID = UUID()
     @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
     @ObservationIgnored private static let urgentRefillTargetMultiplier = 2
-    @ObservationIgnored private static let maximumQuestionGenerationTraceCount = 20
+    @ObservationIgnored static let maximumQuestionGenerationTraceCount = 20
     @ObservationIgnored private static let maximumQuestionGenerationPreviewCount = 12
+    @ObservationIgnored static let maximumStoredQuestionCountPerGoal = 500
+    @ObservationIgnored static let maximumStoredAttemptCountPerGoal = 2_000
+    @ObservationIgnored static let maximumStoredUnlockEventCountPerGoal = 1_000
+    @ObservationIgnored static let maximumStoredQuestionReportCountPerGoal = 250
+    @ObservationIgnored static let maximumStoredIssueReportCount = 100
     @ObservationIgnored private static let levelUpRecentAttemptWindow = 10
     @ObservationIgnored private static let levelUpMinimumAttemptCount = 5
     @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
@@ -92,10 +102,16 @@ final class CheckpointStore {
 
     init(
         questionEngine: HybridQuestionEngine = HybridQuestionEngine(),
-        defaults: UserDefaults = .standard
+        defaults: UserDefaults = .standard,
+        persistenceDirectory: URL? = nil,
+        fileManager: FileManager = .default
     ) {
         self.questionEngine = questionEngine
-        self.defaults = defaults
+        self.snapshotPersistence = AppSnapshotPersistence(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
         load()
         reconcileLoadedUnlockSession()
         clearExpiredCheckpointRetryCooldown()
@@ -931,7 +947,9 @@ final class CheckpointStore {
         unlockSession = nil
         isOnboardingPresented = false
         isCreatingGoalProfile = false
-        SharedAppGroup.publishUnlockExpiration(nil)
+        if permitsPersistenceWrites {
+            SharedAppGroup.publishUnlockExpiration(nil)
+        }
         save()
         publishShieldContext()
 
@@ -949,6 +967,7 @@ final class CheckpointStore {
     }
 
     private func generateInitialQuestionBatch(for newGoal: Goal) async {
+        let lifecycleID = dataLifecycleID
         guard goalProfiles.contains(where: { $0.id == newGoal.id }) || goal?.id == newGoal.id else { return }
         guard !backgroundGenerationGoalIDs.contains(newGoal.id) else { return }
         backgroundGenerationGoalIDs.insert(newGoal.id)
@@ -973,6 +992,8 @@ final class CheckpointStore {
             for: checkpointReadyRequest,
             preference: providerPreference
         )
+
+        guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
 
         guard var resolvedGoal = storedGoalProfile(withID: newGoal.id) else {
             return
@@ -1090,6 +1111,7 @@ final class CheckpointStore {
         for targetGoal: Goal,
         starterQuestionIDs: Set<CheckpointQuestion.ID>
     ) async {
+        let lifecycleID = dataLifecycleID
         defer {
             questionBankTopOffGoalIDs.remove(targetGoal.id)
             if goal?.id == targetGoal.id {
@@ -1125,6 +1147,8 @@ final class CheckpointStore {
             for: topOffRequest,
             preference: aiProviderPreference
         )
+
+        guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
 
         guard var resolvedTargetGoal = availableGoalProfiles.first(where: { $0.id == targetGoal.id }) ?? (goal?.id == targetGoal.id ? goal : nil),
               resolvedTargetGoal.minimumQuestionDifficulty == targetGoal.minimumQuestionDifficulty else {
@@ -1196,6 +1220,7 @@ final class CheckpointStore {
     }
 
     private func refreshQuestionBatch(reason: QuestionRefreshReason, targetCount: Int? = nil) async {
+        let lifecycleID = dataLifecycleID
         guard let goal else { return }
         guard isMember else {
             checkpointNotice = starterQuestionLimitMessage
@@ -1224,6 +1249,7 @@ final class CheckpointStore {
             for: refreshRequest,
             preference: providerPreference
         )
+        guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
         guard var currentGoal = self.goal, currentGoal.id == goal.id else {
             if questionBatchState != .generating {
                 questionGenerationStartedAt = nil
@@ -1276,7 +1302,9 @@ final class CheckpointStore {
         minimumUsableQuestionCount: Int? = nil,
         allowsEarlyCorrectReuse: Bool = false
     ) async -> Bool {
-        guard let goal,
+        let lifecycleID = dataLifecycleID
+        guard permitsPersistenceWrites,
+              let goal,
               questionBatchState != .generating else {
             return false
         }
@@ -1320,6 +1348,11 @@ final class CheckpointStore {
                 reason: .automaticCoreRefill,
                 targetCount: urgentTargetCount
             )
+            guard lifecycleID == dataLifecycleID,
+                  permitsPersistenceWrites,
+                  self.goal?.id == goal.id else {
+                return false
+            }
             scheduleQuestionBankMaintenanceIfNeeded(for: goal)
         } else {
             lastAutomaticQuestionRefreshAt = Date()
@@ -1533,12 +1566,18 @@ final class CheckpointStore {
     }
 
     func clearUnlockSession() {
+        guard unlockSession != nil else { return }
         unlockSession = nil
+        guard permitsPersistenceWrites else { return }
         SharedAppGroup.publishUnlockExpiration(nil)
         save()
     }
 
-    func resetDemoData() {
+    func eraseAllData(backendIdentityDefaults: UserDefaults = .standard) {
+        permitsPersistenceWrites = false
+        requiresPersistencePurge = true
+        hasNoPersistedAppData = false
+        dataLifecycleID = UUID()
         goal = nil
         goalProfiles = []
         questions = []
@@ -1555,6 +1594,8 @@ final class CheckpointStore {
         backendEndpoint = ""
         lastAIErrorMessage = nil
         lastQuestionGenerationFailure = nil
+        questionGenerationStartedAt = nil
+        lastQuestionGenerationDuration = nil
         isQuestionBankTopOffInProgress = false
         questionBankTopOffStartedAt = nil
         lastQuestionBankTopOffDuration = nil
@@ -1565,10 +1606,19 @@ final class CheckpointStore {
         lastAutomaticQuestionRefreshAt = nil
         isCreatingGoalProfile = false
         pendingMembershipFeature = nil
+        backgroundGenerationGoalIDs = []
+        questionBankTopOffGoalIDs = []
         isOnboardingPresented = true
-        SharedAppGroup.publishUnlockExpiration(nil)
-        save()
-        publishShieldContext()
+        persistenceRecoveryMessage = nil
+        do {
+            try snapshotPersistence.erase()
+            requiresPersistencePurge = false
+            hasNoPersistedAppData = true
+        } catch {
+            hasNoPersistedAppData = false
+            reportPersistenceEraseFailure()
+        }
+        BackendClientIdentity.clearInstallID(defaults: backendIdentityDefaults)
     }
 
     // MARK: - Checkpoint sessions
@@ -2211,6 +2261,11 @@ final class CheckpointStore {
     // MARK: - Persistence and app group state
 
     private func save() {
+        if !permitsPersistenceWrites, goal != nil {
+            _ = activatePersistenceForAppDataIfNeeded()
+        }
+        guard permitsPersistenceWrites else { return }
+        _ = enforceRetentionLimits()
         let snapshot = AppSnapshot(
             goal: goal,
             goalProfiles: availableGoalProfiles,
@@ -2235,11 +2290,106 @@ final class CheckpointStore {
             lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt
         )
 
-        guard let data = try? JSONEncoder().encode(snapshot) else { return }
-        defaults.set(data, forKey: snapshotKey)
+        do {
+            try snapshotPersistence.save(snapshot)
+        } catch {
+            let message = "Checkpoint could not save the latest local changes. Keep the app open and try again after freeing device storage."
+            persistenceRecoveryMessage = message
+            if checkpointNotice == nil {
+                checkpointNotice = message
+            }
+        }
+    }
+
+    @discardableResult
+    private func enforceRetentionLimits() -> Bool {
+        let retainedQuestions = retainedQuestionsForPersistence(questions)
+        let retainedAttempts = retainingFirstPerGoal(
+            attempts,
+            limit: Self.maximumStoredAttemptCountPerGoal,
+            goalID: \CheckpointAttempt.goalID
+        )
+        let retainedUnlockEvents = retainingFirstPerGoal(
+            unlockEvents,
+            limit: Self.maximumStoredUnlockEventCountPerGoal,
+            goalID: \UnlockEvent.goalID
+        )
+        let retainedQuestionReports = retainingFirstPerGoal(
+            questionReports,
+            limit: Self.maximumStoredQuestionReportCountPerGoal,
+            goalID: \QuestionQualityReport.goalID
+        )
+        let retainedIssueReports = Array(issueReports.prefix(Self.maximumStoredIssueReportCount))
+        let retainedQuestionGenerationTraces = Array(
+            questionGenerationTraces.prefix(Self.maximumQuestionGenerationTraceCount)
+        )
+        let changed = retainedQuestions != questions ||
+            retainedAttempts != attempts ||
+            retainedUnlockEvents != unlockEvents ||
+            retainedQuestionReports != questionReports ||
+            retainedIssueReports != issueReports ||
+            retainedQuestionGenerationTraces != questionGenerationTraces
+
+        questions = retainedQuestions
+        attempts = retainedAttempts
+        unlockEvents = retainedUnlockEvents
+        questionReports = retainedQuestionReports
+        issueReports = retainedIssueReports
+        questionGenerationTraces = retainedQuestionGenerationTraces
+        return changed
+    }
+
+    private func retainedQuestionsForPersistence(
+        _ storedQuestions: [CheckpointQuestion]
+    ) -> [CheckpointQuestion] {
+        var seenGoalIDs: Set<Goal.ID> = []
+        let orderedGoalIDs = storedQuestions.compactMap { question -> Goal.ID? in
+            seenGoalIDs.insert(question.goalID).inserted ? question.goalID : nil
+        }
+
+        return orderedGoalIDs.flatMap { goalID in
+            let goalQuestions = storedQuestions.filter { $0.goalID == goalID }
+            let usableQuestions = goalQuestions.filter {
+                $0.status != .retired && $0.timesAsked < Self.maximumExactQuestionAskCount
+            }
+            let otherNonRetiredQuestions = goalQuestions.filter {
+                $0.status != .retired && $0.timesAsked >= Self.maximumExactQuestionAskCount
+            }
+            let newestRetiredQuestions = goalQuestions
+                .filter { $0.status == .retired }
+                .sorted { lhs, rhs in
+                    let lhsDate = lhs.lastAskedAt ?? .distantPast
+                    let rhsDate = rhs.lastAskedAt ?? .distantPast
+                    if lhsDate != rhsDate {
+                        return lhsDate > rhsDate
+                    }
+                    return lhs.id.uuidString < rhs.id.uuidString
+                }
+
+            return Array(
+                (usableQuestions + otherNonRetiredQuestions + newestRetiredQuestions)
+                    .prefix(Self.maximumStoredQuestionCountPerGoal)
+            )
+        }
+    }
+
+    private func retainingFirstPerGoal<Element>(
+        _ elements: [Element],
+        limit: Int,
+        goalID: KeyPath<Element, Goal.ID>
+    ) -> [Element] {
+        var retainedCounts: [Goal.ID: Int] = [:]
+        return elements.filter { element in
+            let id = element[keyPath: goalID]
+            let count = retainedCounts[id, default: 0]
+            guard count < limit else { return false }
+            retainedCounts[id] = count + 1
+            return true
+        }
     }
 
     private func publishShieldContext() {
+        guard permitsPersistenceWrites else { return }
         SharedAppGroup.publishShieldContext(
             goalTitle: goal?.title,
             promptPreview: nil
@@ -2392,10 +2542,27 @@ final class CheckpointStore {
     }
 
     private func load() {
-        guard
-            let data = defaults.data(forKey: snapshotKey),
-            let snapshot = try? JSONDecoder().decode(AppSnapshot.self, from: data)
-        else { return }
+        let snapshot: AppSnapshot
+        let recoveryMessage: String?
+        switch snapshotPersistence.load() {
+        case .empty:
+            return
+        case .loaded(let loadedSnapshot):
+            permitsPersistenceWrites = true
+            hasNoPersistedAppData = false
+            snapshot = loadedSnapshot
+            recoveryMessage = nil
+        case .recovered(let recoveredSnapshot, let message):
+            permitsPersistenceWrites = true
+            hasNoPersistedAppData = false
+            snapshot = recoveredSnapshot
+            recoveryMessage = message
+        case .failed(let message):
+            hasNoPersistedAppData = false
+            persistenceRecoveryMessage = message
+            checkpointNotice = message
+            return
+        }
 
         questions = snapshot.questions
         attempts = snapshot.attempts
@@ -2432,8 +2599,55 @@ final class CheckpointStore {
         }
 
         migrateLegacyCompetenciesToActiveGoal()
-        if migrateLegacyDerivedSkillMapsIfNeeded() {
+        let retentionChanged = enforceRetentionLimits()
+        if let recoveryMessage {
+            persistenceRecoveryMessage = recoveryMessage
+            checkpointNotice = recoveryMessage
+        }
+        let derivedSkillMapsChanged = migrateLegacyDerivedSkillMapsIfNeeded()
+        if retentionChanged || derivedSkillMapsChanged {
             save()
+        }
+    }
+
+    @discardableResult
+    private func activatePersistenceForAppDataIfNeeded() -> Bool {
+        guard !permitsPersistenceWrites else { return true }
+
+        if requiresPersistencePurge {
+            do {
+                try snapshotPersistence.erase()
+                requiresPersistencePurge = false
+                hasNoPersistedAppData = true
+                let eraseFailureMessage = persistenceEraseFailureMessage
+                if persistenceRecoveryMessage == eraseFailureMessage {
+                    persistenceRecoveryMessage = nil
+                }
+                if checkpointNotice == eraseFailureMessage {
+                    checkpointNotice = nil
+                }
+            } catch {
+                hasNoPersistedAppData = false
+                reportPersistenceEraseFailure()
+                return false
+            }
+        }
+
+        permitsPersistenceWrites = true
+        hasNoPersistedAppData = false
+        dataLifecycleID = UUID()
+        return true
+    }
+
+    private var persistenceEraseFailureMessage: String {
+        "Checkpoint could not finish erasing its local backup. Try Erase all data again before adding a new goal."
+    }
+
+    private func reportPersistenceEraseFailure() {
+        let message = persistenceEraseFailureMessage
+        persistenceRecoveryMessage = message
+        if checkpointNotice == nil {
+            checkpointNotice = message
         }
     }
 

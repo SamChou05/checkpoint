@@ -19,6 +19,7 @@ final class ScreenTimeController {
     static let unlockRelockMonitorLeadIn: TimeInterval = 30
     static let minimumUnlockRelockMonitorDuration: TimeInterval = 15 * 60
     static let unlockRelockMonitorDurationSafetyMargin: TimeInterval = 1
+    nonisolated static let sharedDataEraseIncompleteKey = "checkpoint.screenTime.eraseIncomplete.v1"
 
     enum SetupState: String {
         case notStarted = "Not set up"
@@ -33,6 +34,7 @@ final class ScreenTimeController {
     var setupState: SetupState = .notStarted
     var restrictedAppsSummary = "No protected apps selected"
     var lastErrorMessage: String?
+    var sharedDataEraseErrorMessage: String?
     var isShieldingEnabled = false
 
     var isReadyForShielding: Bool {
@@ -59,6 +61,10 @@ final class ScreenTimeController {
     }
 
     var userFacingErrorMessage: String? {
+        if let sharedDataEraseErrorMessage {
+            return sharedDataEraseErrorMessage
+        }
+
         guard lastErrorMessage != nil else { return nil }
 
         #if os(iOS) && canImport(FamilyControls)
@@ -124,6 +130,7 @@ final class ScreenTimeController {
     @ObservationIgnored private var isRestoringSelection = false
     @ObservationIgnored private var selectionSemanticsVersion = 0
     @ObservationIgnored private let initialAuthorizationRequestKey = "checkpoint.screenTime.initialAuthorizationRequested"
+    @ObservationIgnored private var hasErasedAllData = false
 
     #if os(iOS) && canImport(DeviceActivity)
     @ObservationIgnored private let activityCenter = DeviceActivityCenter()
@@ -131,15 +138,38 @@ final class ScreenTimeController {
 
     init(defaults: UserDefaults = SharedAppGroup.defaults) {
         self.defaults = defaults
+        if UserDefaults.standard.bool(forKey: Self.sharedDataEraseIncompleteKey) {
+            do {
+                try SharedAppGroup.eraseAllData()
+                UserDefaults.standard.removeObject(forKey: Self.sharedDataEraseIncompleteKey)
+                UserDefaults.standard.synchronize()
+            } catch {
+                hasErasedAllData = true
+                sharedDataEraseErrorMessage = "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
+                stopUnlockRelockMonitor()
+                #if os(iOS) && canImport(ManagedSettings)
+                managedStore.clearAllSettings()
+                #endif
+                updateSummary()
+                refreshAuthorizationStatus()
+                return
+            }
+        }
+
+        let hadPersistedData = SharedAppGroup.hasPersistedData
+        hasErasedAllData = !hadPersistedData
         restoreSelection()
         updateSummary()
         refreshAuthorizationStatus()
-        reconcileShieldState()
+        if hadPersistedData {
+            reconcileShieldState()
+        }
     }
 
     func requestAuthorization() async {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         do {
+            hasErasedAllData = false
             defaults.set(true, forKey: initialAuthorizationRequestKey)
             try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
             refreshAuthorizationStatus()
@@ -189,6 +219,13 @@ final class ScreenTimeController {
     }
 
     func applyShield() {
+        guard !hasErasedAllData || hasSelection else {
+            isShieldingEnabled = false
+            lastErrorMessage = "Choose at least one protected app, category, or website before starting app protection."
+            updateSummary()
+            return
+        }
+        hasErasedAllData = false
         applyShield(cancelPendingRefresh: true)
     }
 
@@ -251,11 +288,50 @@ final class ScreenTimeController {
     }
 
     func clearShield() {
+        guard !hasErasedAllData else { return }
+        guard isShieldingEnabled ||
+                setupState == .shieldActive ||
+                setupState == .temporarilyUnlocked ||
+                SharedAppGroup.desiredShieldActive ||
+                SharedAppGroup.currentPendingShieldAttempt != nil else {
+            return
+        }
         deactivateProtection()
+    }
+
+    func eraseAllData() {
+        // Write a crash-safe tombstone outside the App Group before deletion.
+        // A later launch retries cleanup before it can restore any selection.
+        UserDefaults.standard.set(true, forKey: Self.sharedDataEraseIncompleteKey)
+        UserDefaults.standard.synchronize()
+        hasErasedAllData = true
+        deactivateProtection()
+
+        #if os(iOS) && canImport(FamilyControls)
+        isRestoringSelection = true
+        selection = FamilyActivitySelection(includeEntireCategory: true)
+        isRestoringSelection = false
+        selectionSemanticsVersion = SharedAppGroup.currentScreenTimeSelectionSemanticsVersion
+        #endif
+
+        defaults.removeObject(forKey: initialAuthorizationRequestKey)
+        do {
+            try SharedAppGroup.eraseAllData()
+            UserDefaults.standard.removeObject(forKey: Self.sharedDataEraseIncompleteKey)
+            UserDefaults.standard.synchronize()
+            sharedDataEraseErrorMessage = nil
+        } catch {
+            sharedDataEraseErrorMessage = "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
+        }
+        lastErrorMessage = nil
+        isShieldingEnabled = false
+        refreshAuthorizationStatus()
+        updateSummary()
     }
 
     @discardableResult
     func temporarilyUnshield(until expiration: Date) -> Bool {
+        guard !hasErasedAllData else { return false }
         guard expiration > Date() else { return false }
 
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
@@ -311,6 +387,7 @@ final class ScreenTimeController {
     }
 
     func reconcileShieldState(protectionShouldRemainActive: Bool? = nil) {
+        guard !hasErasedAllData else { return }
         let shouldRemainActive = protectionShouldRemainActive ?? SharedAppGroup.desiredShieldActive
         guard shouldRemainActive else {
             deactivateProtection()
@@ -417,6 +494,7 @@ final class ScreenTimeController {
 
         guard normalizedSelection != selection else { return true }
 
+        hasErasedAllData = false
         selection = normalizedSelection
         return true
     }

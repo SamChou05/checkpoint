@@ -112,13 +112,15 @@ struct HomeView: View {
                         }
 
                         HStack(spacing: 10) {
-                            SecondaryActionButton(
-                                title: isRetryingInitialQuestions ? "Trying again" : "Try again",
-                                systemImage: "arrow.clockwise"
-                            ) {
-                                retryInitialQuestionGeneration()
+                            if store.lastQuestionGenerationFailure?.allowsRetryWithoutChanges != false {
+                                SecondaryActionButton(
+                                    title: isRetryingInitialQuestions ? "Trying again" : "Try again",
+                                    systemImage: "arrow.clockwise"
+                                ) {
+                                    retryInitialQuestionGeneration()
+                                }
+                                .disabled(isRetryingInitialQuestions)
                             }
-                            .disabled(isRetryingInitialQuestions)
 
                             if store.lastQuestionGenerationFailure?.allowsEditingTopics == true {
                                 SecondaryActionButton(title: "Edit topics", systemImage: "pencil") {

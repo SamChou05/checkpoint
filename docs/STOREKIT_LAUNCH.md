@@ -15,6 +15,8 @@ The local Xcode test configuration lives at:
 
 The shared `Checkpoint` scheme points its Run action to that file, so local Xcode runs can load test products before App Store Connect products exist.
 
+Debug builds now start from the real StoreKit entitlement state. To preview Pro without making a StoreKit transaction, explicitly add the environment variable `CHECKPOINT_DEBUG_PRO_ENTITLEMENT=1` to the Run action. Keep it absent or disabled for Free-to-Pro purchase, restore, expiration, and cancellation testing. Release builds ignore this override.
+
 ## Local Xcode Testing
 
 1. Open `Checkpoint.xcodeproj`.

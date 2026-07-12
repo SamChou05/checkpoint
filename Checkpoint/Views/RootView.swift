@@ -73,8 +73,7 @@ struct RootView: View {
         }
         .onChange(of: store.goal) { _, newGoal in
             if newGoal == nil {
-                store.clearUnlockSession()
-                screenTime.clearShield()
+                reconcileEmptyGoalState()
             } else {
                 reconcileProtectionState()
                 screenTime.refreshActiveShieldConfiguration()
@@ -141,10 +140,7 @@ struct RootView: View {
 
     private func reconcileProtectionState() {
         guard store.goal != nil else {
-            if store.unlockSession != nil {
-                store.clearUnlockSession()
-            }
-            screenTime.clearShield()
+            reconcileEmptyGoalState()
             return
         }
 
@@ -163,6 +159,15 @@ struct RootView: View {
             store.unlockSession?.isActive != true) {
             store.clearUnlockSession()
         }
+    }
+
+    private func reconcileEmptyGoalState() {
+        // Erase all data already clears both persistence domains and managed
+        // shields. Repeating the normal nil-goal cleanup would recreate empty
+        // primary/backup and App Group snapshot files.
+        guard !store.hasNoPersistedAppData else { return }
+        store.clearUnlockSession()
+        screenTime.clearShield()
     }
 
     @MainActor

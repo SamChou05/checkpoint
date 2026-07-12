@@ -1,7 +1,11 @@
 import base64
+import binascii
 import copy
+import hashlib
+import hmac
 import json
 import logging
+import math
 import os
 import re
 import time
@@ -18,7 +22,16 @@ DEFAULT_MAX_QUESTIONS = 20
 DEFAULT_MAX_TOKENS = 6000
 DEFAULT_TEMPERATURE = 0.2
 DEFAULT_GENERATION_ATTEMPTS = 5
+DEFAULT_MAX_PROVIDER_CALLS = 6
+DEFAULT_MAX_REQUEST_BODY_BYTES = 128 * 1024
+DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS = 3.0
+DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS = 20.0
+DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS = 2_000
+DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS = 26_000
+DEFAULT_SERVICE_RETRY_AFTER_SECONDS = 300
 MAX_PROVIDER_PROMPT_CHARS = 320
+METRIC_NAMESPACE = "Checkpoint/Backend"
+METRIC_SERVICE = "QuestionGeneration"
 
 GENERIC_META_EXPECTED_ANSWER_SIGNALS = (
     "The answer that follows from the stated facts and respects the topic's constraints.",
@@ -51,13 +64,6 @@ GENERIC_META_SCENARIOS = (
     "evidence interpretation",
 )
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": os.getenv("CORS_ALLOW_ORIGIN", "*"),
-    "Access-Control-Allow-Headers": "authorization,content-type,x-checkpoint-install-id",
-    "Access-Control-Allow-Methods": "OPTIONS,POST",
-}
-
-
 class BadRequestError(ValueError):
     pass
 
@@ -70,42 +76,148 @@ class RateLimitExceededError(RuntimeError):
     pass
 
 
+class ServiceConfigurationError(RuntimeError):
+    pass
+
+
+class ProviderCallBudgetExceededError(ProviderError):
+    pass
+
+
+class SafetyInterventionError(RuntimeError):
+    pass
+
+
+class ProviderCallBudget:
+    def __init__(self, maximum_calls: int, context: Any | None = None):
+        self.maximum_calls = maximum_calls
+        self.context = context
+        self.calls = 0
+
+    def consume(self) -> None:
+        if self.calls >= self.maximum_calls:
+            raise ProviderCallBudgetExceededError("Provider call budget exhausted.")
+
+        remaining_time = getattr(self.context, "get_remaining_time_in_millis", None)
+        if callable(remaining_time):
+            minimum_remaining = _minimum_provider_remaining_milliseconds()
+            if remaining_time() < minimum_remaining:
+                raise ProviderCallBudgetExceededError("Insufficient request time for another provider call.")
+
+        self.calls += 1
+
+
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
-    return handle_http_request(event)
+    return handle_http_request(event, context=context)
 
 
 def handle_http_request(
     event: dict[str, Any],
     bedrock_client: Any | None = None,
     dynamodb_client: Any | None = None,
+    context: Any | None = None,
 ) -> dict[str, Any]:
-    method = _http_method(event)
-    if method == "OPTIONS":
-        return _response(204, "")
-
-    if method != "POST":
-        return _error(405, "Method not allowed")
-
-    if not _is_authorized(event):
-        return _error(401, "Unauthorized")
-
+    started_at = time.monotonic()
+    request_metrics = _new_request_metrics(context)
+    outcome = "unknown"
+    response: dict[str, Any]
     try:
-        _check_rate_limits(event, dynamodb_client)
-        payload = _decode_body(event)
-        normalized = _normalize_request(payload)
-        questions = _generate_sanitized_questions(normalized, bedrock_client)
+        method = _http_method(event)
+        if method == "OPTIONS":
+            outcome = "preflight"
+            response = _response(204, "")
+        elif method != "POST":
+            outcome = "method_not_allowed"
+            response = _error(405, "Method not allowed")
+        elif (service_mode := _service_mode()) != "enabled":
+            outcome = f"service_{service_mode}"
+            response = _error(
+                503,
+                "Question generation is temporarily unavailable.",
+                code="service_unavailable",
+                headers={"Retry-After": str(_service_retry_after_seconds())},
+            )
+        elif not _is_authorized(event):
+            outcome = "unauthorized"
+            response = _error(401, "Unauthorized")
+        else:
+            # Decode and validate every client-controlled field before quota is charged.
+            payload = _decode_body(event)
+            normalized = _normalize_request(payload)
+            request_metrics["QuestionsRequested"] = normalized["targetCount"]
+            _check_rate_limits(event, dynamodb_client)
+            call_budget = ProviderCallBudget(
+                _int_env(
+                    "MAX_PROVIDER_CALLS_PER_REQUEST",
+                    DEFAULT_MAX_PROVIDER_CALLS,
+                    maximum=20,
+                ),
+                context=context,
+            )
+            questions = _generate_sanitized_questions(
+                normalized,
+                bedrock_client,
+                call_budget=call_budget,
+                request_metrics=request_metrics,
+            )
 
-        if not questions:
-            raise ProviderError("Provider returned no usable questions.")
+            if not questions:
+                raise ProviderError("Provider returned no usable questions.")
 
-        return _response(200, {"questions": questions})
+            request_metrics["QuestionsReturned"] = len(questions)
+            outcome = "success"
+            response = _response(200, {"questions": questions})
     except BadRequestError as error:
-        return _error(400, str(error))
+        outcome = "bad_request"
+        response = _error(400, str(error), code="invalid_request")
     except RateLimitExceededError:
-        return _error(429, "Daily AI generation limit reached. Try again later.")
+        outcome = "rate_limited"
+        response = _error(
+            429,
+            "Daily AI generation limit reached. Try again later.",
+            code="rate_limited",
+            headers={"Retry-After": str(_rate_limit_retry_after_seconds())},
+        )
+    except SafetyInterventionError:
+        outcome = "safety_intervention"
+        response = _error(
+            422,
+            "This request could not be processed safely.",
+            code="safety_intervention",
+        )
+    except ServiceConfigurationError:
+        outcome = "configuration_error"
+        LOGGER.error("Backend configuration failed closed")
+        response = _error(
+            503,
+            "Question generation is temporarily unavailable.",
+            code="service_unavailable",
+            headers={"Retry-After": str(_service_retry_after_seconds())},
+        )
+    except ProviderError:
+        outcome = "provider_failure"
+        LOGGER.error("Question provider failed")
+        response = _error(
+            502,
+            "Question generation failed",
+            code="provider_failure",
+            headers={"Retry-After": str(_provider_retry_after_seconds())},
+        )
     except Exception:
+        outcome = "system_failure"
         LOGGER.exception("Question generation failed")
-        return _error(502, "Question generation failed")
+        response = _error(
+            502,
+            "Question generation failed",
+            code="system_failure",
+            headers={"Retry-After": str(_provider_retry_after_seconds())},
+        )
+
+    request_metrics["StatusCode"] = response["statusCode"]
+    request_metrics["LatencyMilliseconds"] = round((time.monotonic() - started_at) * 1000, 2)
+    request_metrics["Outcome"] = outcome
+    _emit_request_metrics(request_metrics)
+    return response
 
 
 def _http_method(event: dict[str, Any]) -> str:
@@ -119,17 +231,26 @@ def _http_method(event: dict[str, Any]) -> str:
 def _is_authorized(event: dict[str, Any]) -> bool:
     expected_token = os.getenv("CHECKPOINT_BACKEND_TOKEN", "").strip()
     if not expected_token:
-        return _bool_env("ALLOW_UNAUTHENTICATED_BACKEND", False)
+        return (
+            _is_development_environment()
+            and _bool_env("ALLOW_UNAUTHENTICATED_BACKEND", False)
+        )
 
     headers = {str(key).lower(): value for key, value in (event.get("headers") or {}).items()}
     auth_header = str(headers.get("authorization", "")).strip()
-    return auth_header == f"Bearer {expected_token}"
+    return hmac.compare_digest(auth_header, f"Bearer {expected_token}")
 
 
 def _check_rate_limits(event: dict[str, Any], dynamodb_client: Any | None) -> None:
     table_name = os.getenv("RATE_LIMIT_TABLE_NAME", "").strip()
     if not table_name:
+        if _rate_limiting_required():
+            raise ServiceConfigurationError("Rate-limit table is required.")
         return
+
+    hash_secret = os.getenv("QUOTA_HASH_SECRET", "").strip()
+    if len(hash_secret) < 32:
+        raise ServiceConfigurationError("Quota hash secret must be at least 32 characters.")
 
     client = dynamodb_client or _dynamodb_client()
     headers = {str(key).lower(): value for key, value in (event.get("headers") or {}).items()}
@@ -143,46 +264,71 @@ def _check_rate_limits(event: dict[str, Any], dynamodb_client: Any | None) -> No
     )
 
     limits = [
-        (f"install#{install_id}#{day}", _int_env("MAX_REQUESTS_PER_INSTALL_PER_DAY", 40)),
-        (f"ip#{source_ip}#{day}", _int_env("MAX_REQUESTS_PER_IP_PER_DAY", 400)),
+        (
+            f"install#{_quota_identifier_digest(hash_secret, 'install', install_id)}#{day}",
+            _int_env("MAX_REQUESTS_PER_INSTALL_PER_DAY", 40),
+        ),
+        (
+            f"ip#{_quota_identifier_digest(hash_secret, 'ip', source_ip)}#{day}",
+            _int_env("MAX_REQUESTS_PER_IP_PER_DAY", 400),
+        ),
     ]
 
-    for key, limit in limits:
-        _increment_rate_limit(client, table_name, key, limit, expires_at)
+    _consume_rate_limits_atomically(client, table_name, limits, expires_at)
 
 
-def _increment_rate_limit(
+def _consume_rate_limits_atomically(
     client: Any,
     table_name: str,
-    key: str,
-    limit: int,
+    limits: list[tuple[str, int]],
     expires_at: int,
 ) -> None:
-    try:
-        client.update_item(
-            TableName=table_name,
-            Key={"rateKey": {"S": key}},
-            UpdateExpression="SET expiresAt = :expiresAt ADD #count :one",
-            ConditionExpression="attribute_not_exists(#count) OR #count < :limit",
-            ExpressionAttributeNames={"#count": "count"},
-            ExpressionAttributeValues={
-                ":one": {"N": "1"},
-                ":limit": {"N": str(limit)},
-                ":expiresAt": {"N": str(expires_at)},
-            },
+    transaction_items = []
+    for key, limit in limits:
+        transaction_items.append(
+            {
+                "Update": {
+                    "TableName": table_name,
+                    "Key": {"rateKey": {"S": key}},
+                    "UpdateExpression": "SET expiresAt = :expiresAt ADD #count :one",
+                    "ConditionExpression": "attribute_not_exists(#count) OR #count < :limit",
+                    "ExpressionAttributeNames": {"#count": "count"},
+                    "ExpressionAttributeValues": {
+                        ":one": {"N": "1"},
+                        ":limit": {"N": str(limit)},
+                        ":expiresAt": {"N": str(expires_at)},
+                    },
+                }
+            }
         )
+
+    try:
+        client.transact_write_items(TransactItems=transaction_items)
     except Exception as error:
-        if _is_conditional_check_failure(error):
+        if _is_quota_transaction_failure(error):
             raise RateLimitExceededError from error
         raise
 
 
-def _is_conditional_check_failure(error: Exception) -> bool:
-    return (
-        getattr(error, "response", {})
-        .get("Error", {})
-        .get("Code") == "ConditionalCheckFailedException"
-    )
+def _is_quota_transaction_failure(error: Exception) -> bool:
+    response = getattr(error, "response", {})
+    error_code = response.get("Error", {}).get("Code")
+    if error_code == "ConditionalCheckFailedException":
+        return True
+    if error_code != "TransactionCanceledException":
+        return False
+    if any(
+        reason.get("Code") == "ConditionalCheckFailed"
+        for reason in response.get("CancellationReasons", [])
+        if isinstance(reason, dict)
+    ):
+        return True
+    return "ConditionalCheckFailed" in str(response.get("Error", {}).get("Message", ""))
+
+
+def _quota_identifier_digest(secret: str, identifier_type: str, value: str) -> str:
+    message = f"checkpoint-quota-v1:{identifier_type}:{value}".encode()
+    return hmac.new(secret.encode(), message, hashlib.sha256).hexdigest()
 
 
 def _source_ip(event: dict[str, Any]) -> str:
@@ -205,11 +351,33 @@ def _decode_body(event: dict[str, Any]) -> dict[str, Any]:
     if body is None:
         raise BadRequestError("Missing JSON body.")
 
-    if event.get("isBase64Encoded"):
-        body = base64.b64decode(body).decode("utf-8")
+    try:
+        if event.get("isBase64Encoded"):
+            raw_body = base64.b64decode(body, validate=True)
+        elif isinstance(body, str):
+            raw_body = body.encode("utf-8")
+        elif isinstance(body, bytes):
+            raw_body = body
+        else:
+            raise BadRequestError("Body must be JSON text.")
+    except (binascii.Error, UnicodeEncodeError, ValueError) as error:
+        raise BadRequestError("Body encoding is invalid.") from error
+
+    maximum_body_bytes = _int_env(
+        "MAX_REQUEST_BODY_BYTES",
+        DEFAULT_MAX_REQUEST_BODY_BYTES,
+        maximum=1024 * 1024,
+    )
+    if len(raw_body) > maximum_body_bytes:
+        raise BadRequestError(f"Body exceeds the {maximum_body_bytes}-byte limit.")
 
     try:
-        payload = json.loads(body)
+        body_text = raw_body.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise BadRequestError("Body must be UTF-8 JSON.") from error
+
+    try:
+        payload = json.loads(body_text)
     except json.JSONDecodeError as error:
         raise BadRequestError("Body must be valid JSON.") from error
 
@@ -227,44 +395,78 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
     target_count = _clamped_int(payload.get("targetCount"), minimum=1, maximum=_max_questions())
     minimum_difficulty = _clamped_int(payload.get("minimumDifficulty"), minimum=1, maximum=5)
 
-    learning_target = _clean_text(goal.get("learningTarget")) or _clean_text(goal.get("title"))
+    title = _validated_text(goal.get("title"), "goal.title", 200)
+    learning_target = _validated_text(
+        goal.get("learningTarget"),
+        "goal.learningTarget",
+        240,
+    ) or title
     if not learning_target:
         raise BadRequestError("Missing goal learningTarget.")
 
-    focus_areas = _clean_text(goal.get("focusAreas"))
+    focus_areas = _validated_text(goal.get("focusAreas"), "goal.focusAreas", 1_000)
     content_topics = goal.get("contentTopics") or []
     if not isinstance(content_topics, list):
-        content_topics = []
+        raise BadRequestError("goal.contentTopics must be an array.")
 
-    normalized_topics = [_clean_text(topic) for topic in content_topics]
-    normalized_topics = [topic for topic in normalized_topics if topic]
+    normalized_topics = _validated_string_list(
+        content_topics,
+        "goal.contentTopics",
+        maximum_items=8,
+        maximum_characters=80,
+    )
     if not normalized_topics:
         normalized_topics = _topics_from_focus(goal.get("focusAreas"))
-    needs_skill_map = bool(goal.get("needsSkillMap")) or _topics_need_inference(
+    needs_skill_map_value = goal.get("needsSkillMap", False)
+    if not isinstance(needs_skill_map_value, bool):
+        raise BadRequestError("goal.needsSkillMap must be a boolean.")
+    needs_skill_map = needs_skill_map_value or _topics_need_inference(
         normalized_topics,
         learning_target,
-        _clean_text(goal.get("title")),
+        title,
     )
 
     return {
         "goal": {
-            "title": _clean_text(goal.get("title")),
-            "category": _clean_text(goal.get("category")),
+            "title": title,
+            "category": _validated_text(goal.get("category"), "goal.category", 80),
             "focusAreas": focus_areas,
-            "currentLevel": _clean_text(goal.get("currentLevel")),
+            "currentLevel": _validated_text(
+                goal.get("currentLevel"),
+                "goal.currentLevel",
+                200,
+            ),
             "learningTarget": learning_target,
             "contentTopics": normalized_topics or [learning_target],
-            "questionDirective": _clean_text(goal.get("questionDirective")),
+            "questionDirective": _validated_text(
+                goal.get("questionDirective"),
+                "goal.questionDirective",
+                1_000,
+            ),
             "needsSkillMap": needs_skill_map,
             "preferredQuestionStyle": "Multiple Choice",
         },
-        "competencies": _list_of_dicts(payload.get("competencies")),
-        "existingPrompts": _list_of_strings(payload.get("existingPrompts")),
+        "competencies": _normalized_competencies(payload.get("competencies")),
+        "existingPrompts": _validated_string_list(
+            payload.get("existingPrompts"),
+            "existingPrompts",
+            maximum_items=30,
+            maximum_characters=360,
+        ),
         "existingQuestionCoverage": _list_of_question_coverage(payload.get("existingQuestionCoverage")),
-        "reportedPrompts": _list_of_strings(payload.get("reportedPrompts")),
+        "reportedPrompts": _validated_string_list(
+            payload.get("reportedPrompts"),
+            "reportedPrompts",
+            maximum_items=30,
+            maximum_characters=360,
+        ),
         "targetCount": target_count,
         "minimumDifficulty": minimum_difficulty,
-        "difficultyGuidance": _clean_text(payload.get("difficultyGuidance"))
+        "difficultyGuidance": _validated_text(
+            payload.get("difficultyGuidance"),
+            "difficultyGuidance",
+            500,
+        )
         or _difficulty_guidance(minimum_difficulty),
     }
 
@@ -308,7 +510,12 @@ def _difficulty_guidance(level: int) -> str:
     return "Expert synthesis: combine multiple concepts in a dense exam-style scenario with subtle traps."
 
 
-def _generate_provider_payload(request: dict[str, Any], bedrock_client: Any | None) -> dict[str, Any]:
+def _generate_provider_payload(
+    request: dict[str, Any],
+    bedrock_client: Any | None,
+    call_budget: ProviderCallBudget | None = None,
+    request_metrics: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     errors: list[ProviderError] = []
     for model_id in _model_attempts():
         try:
@@ -316,7 +523,11 @@ def _generate_provider_payload(request: dict[str, Any], bedrock_client: Any | No
                 normalized_request=request,
                 bedrock_client=bedrock_client,
                 model_id=model_id,
+                call_budget=call_budget,
+                request_metrics=request_metrics,
             )
+        except (SafetyInterventionError, ProviderCallBudgetExceededError, ServiceConfigurationError):
+            raise
         except Exception as error:
             errors.append(ProviderError(f"Bedrock invocation failed for {model_id}: {error}"))
             continue
@@ -332,7 +543,11 @@ def _generate_provider_payload(request: dict[str, Any], bedrock_client: Any | No
                 bedrock_client=bedrock_client,
                 model_id=model_id,
                 user_prompt=_json_retry_prompt(request, raw_text),
+                call_budget=call_budget,
+                request_metrics=request_metrics,
             )
+        except (SafetyInterventionError, ProviderCallBudgetExceededError, ServiceConfigurationError):
+            raise
         except Exception as error:
             errors.append(ProviderError(f"Bedrock retry failed for {model_id}: {error}"))
             continue
@@ -345,14 +560,29 @@ def _generate_provider_payload(request: dict[str, Any], bedrock_client: Any | No
     raise errors[-1] if errors else ProviderError("Provider response was not valid JSON.")
 
 
-def _generate_sanitized_questions(request: dict[str, Any], bedrock_client: Any | None) -> list[dict[str, Any]]:
+def _generate_sanitized_questions(
+    request: dict[str, Any],
+    bedrock_client: Any | None,
+    call_budget: ProviderCallBudget | None = None,
+    request_metrics: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     target_count = request["targetCount"]
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
     current_request = copy.deepcopy(request)
 
     for _ in range(attempts):
-        provider_payload = _generate_provider_payload(current_request, bedrock_client)
+        try:
+            provider_payload = _generate_provider_payload(
+                current_request,
+                bedrock_client,
+                call_budget=call_budget,
+                request_metrics=request_metrics,
+            )
+        except ProviderCallBudgetExceededError:
+            if questions:
+                break
+            raise
         generated_questions = _sanitize_questions(provider_payload.get("questions", []), current_request)
         questions.extend(generated_questions)
 
@@ -376,7 +606,15 @@ def _generate_with_bedrock(
     bedrock_client: Any | None,
     model_id: str,
     user_prompt: str | None = None,
+    call_budget: ProviderCallBudget | None = None,
+    request_metrics: dict[str, Any] | None = None,
 ) -> str:
+    guardrail_config = _guardrail_config()
+    if call_budget is not None:
+        call_budget.consume()
+    if request_metrics is not None:
+        request_metrics["ProviderCalls"] += 1
+
     client = bedrock_client or _bedrock_client()
     prompt = user_prompt or _user_prompt(normalized_request)
     request = {
@@ -388,14 +626,27 @@ def _generate_with_bedrock(
             }
         ],
         "inferenceConfig": {
-            "maxTokens": _int_env("BEDROCK_MAX_TOKENS", DEFAULT_MAX_TOKENS),
-            "temperature": _float_env("BEDROCK_TEMPERATURE", DEFAULT_TEMPERATURE),
+            "maxTokens": _int_env("BEDROCK_MAX_TOKENS", DEFAULT_MAX_TOKENS, maximum=10_000),
+            "temperature": _bounded_float_env(
+                "BEDROCK_TEMPERATURE",
+                DEFAULT_TEMPERATURE,
+                0.0,
+                1.0,
+            ),
         },
     }
     if not _uses_inline_instructions(model_id):
         request["system"] = [{"text": _system_prompt()}]
+    if guardrail_config is not None:
+        request["guardrailConfig"] = guardrail_config
 
     response = client.converse(**request)
+    if request_metrics is not None:
+        usage = response.get("usage", {})
+        request_metrics["BedrockInputTokens"] += _nonnegative_int(usage.get("inputTokens"))
+        request_metrics["BedrockOutputTokens"] += _nonnegative_int(usage.get("outputTokens"))
+    if response.get("stopReason") == "guardrail_intervened":
+        raise SafetyInterventionError("Bedrock Guardrail intervened.")
 
     text_parts = []
     for block in response.get("output", {}).get("message", {}).get("content", []):
@@ -411,7 +662,10 @@ def _generate_with_bedrock(
 
 
 def _uses_inline_instructions(model_id: str) -> bool:
-    return model_id.strip().lower().startswith("google.gemma")
+    # Bedrock can receive a bare model ID, a foundation-model ARN, or a
+    # geographic inference-profile name/ARN such as us.google.gemma-*. The
+    # stable provider/model segment is present in each of those forms.
+    return "google.gemma" in model_id.strip().lower()
 
 
 def _conversation_prompt(user_prompt: str) -> str:
@@ -435,16 +689,92 @@ def _model_attempts() -> list[str]:
 
 def _bedrock_client() -> Any:
     import boto3
+    from botocore.config import Config
 
     region = os.getenv("BEDROCK_REGION") or os.getenv("AWS_REGION")
-    return boto3.client("bedrock-runtime", region_name=region)
+    return boto3.client(
+        "bedrock-runtime",
+        region_name=region,
+        config=Config(
+            connect_timeout=_bounded_float_env(
+                "BEDROCK_CONNECT_TIMEOUT_SECONDS",
+                DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS,
+                1.0,
+                10.0,
+            ),
+            read_timeout=_bounded_float_env(
+                "BEDROCK_READ_TIMEOUT_SECONDS",
+                DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
+                2.0,
+                25.0,
+            ),
+            retries={
+                # Each Converse network attempt must consume one explicit
+                # ProviderCallBudget slot. Hidden botocore retries would break
+                # that accounting and could overrun the Lambda deadline.
+                "total_max_attempts": 1,
+                "mode": "standard",
+            },
+        ),
+    )
+
+
+def _minimum_provider_remaining_milliseconds() -> int:
+    configured_floor = _int_env(
+        "MIN_PROVIDER_REMAINING_MILLISECONDS",
+        DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS,
+        maximum=120_000,
+    )
+    connect_timeout = _bounded_float_env(
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS",
+        DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS,
+        1.0,
+        10.0,
+    )
+    read_timeout = _bounded_float_env(
+        "BEDROCK_READ_TIMEOUT_SECONDS",
+        DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
+        2.0,
+        25.0,
+    )
+    hard_floor = (
+        math.ceil((connect_timeout + read_timeout) * 1_000)
+        + DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS
+        + 1
+    )
+    return max(configured_floor, hard_floor)
 
 
 def _dynamodb_client() -> Any:
     import boto3
+    from botocore.config import Config
 
     region = os.getenv("AWS_REGION") or os.getenv("BEDROCK_REGION")
-    return boto3.client("dynamodb", region_name=region)
+    return boto3.client(
+        "dynamodb",
+        region_name=region,
+        config=Config(
+            connect_timeout=2,
+            read_timeout=5,
+            retries={"total_max_attempts": 2, "mode": "standard"},
+        ),
+    )
+
+
+def _guardrail_config() -> dict[str, str] | None:
+    identifier = os.getenv("BEDROCK_GUARDRAIL_IDENTIFIER", "").strip()
+    version = os.getenv("BEDROCK_GUARDRAIL_VERSION", "").strip()
+    if not identifier and not version:
+        return None
+    if not identifier or not version:
+        raise ServiceConfigurationError(
+            "Both BEDROCK_GUARDRAIL_IDENTIFIER and BEDROCK_GUARDRAIL_VERSION are required."
+        )
+    return {
+        "guardrailIdentifier": identifier,
+        "guardrailVersion": version,
+        "trace": "disabled",
+    }
 
 
 def _system_prompt() -> str:
@@ -972,39 +1302,66 @@ def _explanation_supported_choice(explanation: str, choices: list[str]) -> str |
     return supported_choices[0]
 
 
-def _list_of_dicts(value: Any) -> list[dict[str, Any]]:
-    if not isinstance(value, list):
+def _normalized_competencies(value: Any) -> list[dict[str, Any]]:
+    if value is None:
         return []
-    return [item for item in value if isinstance(item, dict)][:20]
+    if not isinstance(value, list):
+        raise BadRequestError("competencies must be an array.")
+
+    competencies = []
+    for index, item in enumerate(value[:20]):
+        if not isinstance(item, dict):
+            raise BadRequestError(f"competencies[{index}] must be an object.")
+        competency: dict[str, Any] = {
+            "topic": _validated_text(item.get("topic"), f"competencies[{index}].topic", 80),
+        }
+        for key, minimum, maximum in [
+            ("estimatedLevel", 0, 5),
+            ("masteryPercent", 0, 100),
+            ("attempts", 0, 1_000_000),
+            ("correct", 0, 1_000_000),
+            ("partial", 0, 1_000_000),
+            ("incorrect", 0, 1_000_000),
+        ]:
+            raw_value = item.get(key)
+            if isinstance(raw_value, (int, float)) and not isinstance(raw_value, bool):
+                competency[key] = max(minimum, min(maximum, raw_value))
+        competencies.append(competency)
+    return competencies
 
 
 def _list_of_question_coverage(value: Any) -> list[dict[str, Any]]:
-    if not isinstance(value, list):
+    if value is None:
         return []
+    if not isinstance(value, list):
+        raise BadRequestError("existingQuestionCoverage must be an array.")
 
     coverage: list[dict[str, Any]] = []
-    for item in value:
-        if isinstance(item, dict):
-            prompt = _clip(_clean_text(item.get("prompt")), 360)
-            expected_answer = _clip(_clean_text(item.get("expectedAnswer")), 280)
-            topic = _clip(_clean_text(item.get("topic")), 48)
-            raw_choices = item.get("choices", [])
-            choices = (
-                [
-                    _clip(_clean_text(choice), 140)
-                    for choice in raw_choices
-                    if _clean_text(choice)
-                ][:4]
-                if isinstance(raw_choices, list)
-                else []
-            )
-            difficulty = _clamped_int(item.get("difficulty"), minimum=1, maximum=5)
-        else:
-            prompt = _clip(_clean_text(item), 360)
-            expected_answer = ""
-            topic = ""
-            choices = []
-            difficulty = 1
+    for index, item in enumerate(value[:30]):
+        if not isinstance(item, dict):
+            raise BadRequestError(f"existingQuestionCoverage[{index}] must be an object.")
+        prompt = _validated_text(
+            item.get("prompt"),
+            f"existingQuestionCoverage[{index}].prompt",
+            360,
+        )
+        expected_answer = _validated_text(
+            item.get("expectedAnswer"),
+            f"existingQuestionCoverage[{index}].expectedAnswer",
+            280,
+        )
+        topic = _validated_text(
+            item.get("topic"),
+            f"existingQuestionCoverage[{index}].topic",
+            80,
+        )
+        choices = _validated_string_list(
+            item.get("choices"),
+            f"existingQuestionCoverage[{index}].choices",
+            maximum_items=4,
+            maximum_characters=140,
+        )
+        difficulty = _clamped_int(item.get("difficulty"), minimum=1, maximum=5)
 
         if prompt or expected_answer or topic:
             coverage.append(
@@ -1017,16 +1374,43 @@ def _list_of_question_coverage(value: Any) -> list[dict[str, Any]]:
                 }
             )
 
-        if len(coverage) >= 30:
-            break
-
     return coverage
 
 
-def _list_of_strings(value: Any) -> list[str]:
-    if not isinstance(value, list):
+def _validated_text(value: Any, field_name: str, maximum_characters: int) -> str:
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        raise BadRequestError(f"{field_name} must be text.")
+    cleaned = _clean_text(value)
+    if len(cleaned) > maximum_characters:
+        raise BadRequestError(
+            f"{field_name} exceeds the {maximum_characters}-character limit."
+        )
+    return cleaned
+
+
+def _validated_string_list(
+    value: Any,
+    field_name: str,
+    maximum_items: int,
+    maximum_characters: int,
+) -> list[str]:
+    if value is None:
         return []
-    return [_clean_text(item) for item in value if _clean_text(item)][:30]
+    if not isinstance(value, list):
+        raise BadRequestError(f"{field_name} must be an array.")
+
+    strings = []
+    for index, item in enumerate(value[:maximum_items]):
+        cleaned = _validated_text(
+            item,
+            f"{field_name}[{index}]",
+            maximum_characters,
+        )
+        if cleaned:
+            strings.append(cleaned)
+    return strings
 
 
 def _clean_text(value: Any) -> str:
@@ -1108,6 +1492,15 @@ def _float_env(key: str, default: float) -> float:
         return default
 
 
+def _bounded_float_env(
+    key: str,
+    default: float,
+    minimum: float,
+    maximum: float,
+) -> float:
+    return max(minimum, min(maximum, _float_env(key, default)))
+
+
 def _bool_env(key: str, default: bool) -> bool:
     raw_value = os.getenv(key)
     if raw_value is None:
@@ -1116,7 +1509,123 @@ def _bool_env(key: str, default: bool) -> bool:
     return raw_value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
-def _response(status_code: int, body: Any) -> dict[str, Any]:
+def _nonnegative_int(value: Any) -> int:
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _deployment_environment() -> str:
+    return os.getenv("DEPLOYMENT_ENVIRONMENT", "development").strip().lower()
+
+
+def _is_development_environment() -> bool:
+    return _deployment_environment() in {"development", "dev", "local", "test"}
+
+
+def _is_production_environment() -> bool:
+    return _deployment_environment() in {"production", "prod"}
+
+
+def _rate_limiting_required() -> bool:
+    return _is_production_environment() or _bool_env("REQUIRE_RATE_LIMITING", False)
+
+
+def _service_mode() -> str:
+    mode = os.getenv("SERVICE_MODE", "enabled").strip().lower()
+    if mode in {"enabled", "drain", "disabled"}:
+        return mode
+    LOGGER.error("Invalid SERVICE_MODE; failing closed")
+    return "disabled"
+
+
+def _service_retry_after_seconds() -> int:
+    return _int_env(
+        "SERVICE_RETRY_AFTER_SECONDS",
+        DEFAULT_SERVICE_RETRY_AFTER_SECONDS,
+        maximum=86_400,
+    )
+
+
+def _provider_retry_after_seconds() -> int:
+    return _int_env("PROVIDER_RETRY_AFTER_SECONDS", 30, maximum=3_600)
+
+
+def _rate_limit_retry_after_seconds() -> int:
+    return _int_env("RATE_LIMIT_RETRY_AFTER_SECONDS", 3_600, maximum=86_400)
+
+
+def _new_request_metrics(context: Any | None) -> dict[str, Any]:
+    return {
+        "RequestId": str(getattr(context, "aws_request_id", "unavailable")),
+        "ProviderCalls": 0,
+        "BedrockInputTokens": 0,
+        "BedrockOutputTokens": 0,
+        "QuestionsRequested": 0,
+        "QuestionsReturned": 0,
+    }
+
+
+def _emit_request_metrics(metrics: dict[str, Any]) -> None:
+    emit_by_default = bool(os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+    if not _bool_env("EMIT_STRUCTURED_METRICS", emit_by_default):
+        return
+
+    status_code = _nonnegative_int(metrics.get("StatusCode"))
+    outcome = str(metrics.get("Outcome", "unknown"))
+    metric_values = {
+        "Requests": 1,
+        "Errors": int(status_code >= 500),
+        "ProviderFailures": int(outcome == "provider_failure"),
+        "SafetyInterventions": int(outcome == "safety_intervention"),
+        "RateLimitedRequests": int(outcome == "rate_limited"),
+        "ServiceUnavailableRequests": int(
+            outcome.startswith("service_") or outcome == "configuration_error"
+        ),
+        "ProviderCalls": _nonnegative_int(metrics.get("ProviderCalls")),
+        "BedrockInputTokens": _nonnegative_int(metrics.get("BedrockInputTokens")),
+        "BedrockOutputTokens": _nonnegative_int(metrics.get("BedrockOutputTokens")),
+        "QuestionsRequested": _nonnegative_int(metrics.get("QuestionsRequested")),
+        "QuestionsReturned": _nonnegative_int(metrics.get("QuestionsReturned")),
+        "LatencyMilliseconds": max(0.0, float(metrics.get("LatencyMilliseconds", 0.0))),
+    }
+    metric_definitions = [
+        {
+            "Name": name,
+            "Unit": "Milliseconds" if name == "LatencyMilliseconds" else "Count",
+        }
+        for name in metric_values
+    ]
+    payload = {
+        "_aws": {
+            "Timestamp": int(time.time() * 1_000),
+            "CloudWatchMetrics": [
+                {
+                    "Namespace": METRIC_NAMESPACE,
+                    "Dimensions": [["Service"]],
+                    "Metrics": metric_definitions,
+                }
+            ],
+        },
+        "Service": METRIC_SERVICE,
+        "Outcome": outcome,
+        "StatusCode": status_code,
+        "RequestId": str(metrics.get("RequestId", "unavailable")),
+        **metric_values,
+    }
+    try:
+        # Raw JSON on stdout is the Lambda-supported Embedded Metric Format transport.
+        print(json.dumps(payload, separators=(",", ":"), sort_keys=True))
+    except Exception:
+        LOGGER.exception("Failed to emit request metrics")
+
+
+def _response(
+    status_code: int,
+    body: Any,
+    headers: dict[str, str] | None = None,
+) -> dict[str, Any]:
     if body == "":
         serialized_body = ""
     else:
@@ -1126,11 +1635,20 @@ def _response(status_code: int, body: Any) -> dict[str, Any]:
         "statusCode": status_code,
         "headers": {
             "Content-Type": "application/json",
-            **CORS_HEADERS,
+            "Cache-Control": "no-store",
+            **(headers or {}),
         },
         "body": serialized_body,
     }
 
 
-def _error(status_code: int, message: str) -> dict[str, Any]:
-    return _response(status_code, {"error": message})
+def _error(
+    status_code: int,
+    message: str,
+    code: str | None = None,
+    headers: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    body = {"error": message}
+    if code:
+        body["code"] = code
+    return _response(status_code, body, headers=headers)

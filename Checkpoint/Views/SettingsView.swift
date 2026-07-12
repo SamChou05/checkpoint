@@ -4,6 +4,7 @@ struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
     let purchaseController: PurchaseController
+    private let legalLinks = LegalLinks.current
 
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
@@ -143,6 +144,7 @@ struct SettingsView: View {
 
                     activityPanel
                     planPanel
+                    privacyAndSupportPanel
                     appDataPanel
 
                     #if DEBUG
@@ -261,7 +263,7 @@ struct SettingsView: View {
                 Image(systemName: "trash")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(CheckpointTheme.coral)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 44, height: 44)
                     .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             }
             .buttonStyle(.plain)
@@ -419,11 +421,51 @@ struct SettingsView: View {
         }
     }
 
+    private var privacyAndSupportPanel: some View {
+        SectionPanel("Privacy & support") {
+            VStack(spacing: 0) {
+                LegalLinkRow(
+                    title: "Privacy Policy",
+                    detail: "How Checkpoint handles app, learning, and service data",
+                    systemImage: "hand.raised",
+                    url: legalLinks.privacyPolicyURL
+                )
+
+                Divider()
+                    .padding(.vertical, 10)
+
+                LegalLinkRow(
+                    title: "Support",
+                    detail: "Get help with Checkpoint",
+                    systemImage: "questionmark.circle",
+                    url: legalLinks.supportURL
+                )
+
+                Divider()
+                    .padding(.vertical, 10)
+
+                LegalLinkRow(
+                    title: "Terms of Use",
+                    detail: "Apple Standard End User License Agreement",
+                    systemImage: "doc.text",
+                    url: LegalLinks.termsOfUseURL
+                )
+            }
+        }
+    }
+
     private var appDataPanel: some View {
         SectionPanel("App data") {
             DisclosureGroup(isExpanded: $isAppDataExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Erase your goals and progress, and turn off app protection.")
+                    if let persistenceMessage = store.persistenceRecoveryMessage {
+                        Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Text("Erase goals, progress, protected-app selections, diagnostics, and the anonymous backend install ID, then turn off app protection.")
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -606,7 +648,7 @@ private struct PracticeStandardStepperRow: View {
             Image(systemName: systemImage)
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(isDisabled ? CheckpointTheme.muted.opacity(0.45) : CheckpointTheme.teal)
-                .frame(width: 34, height: 34)
+                .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

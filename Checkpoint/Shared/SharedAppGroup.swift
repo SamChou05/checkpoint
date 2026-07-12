@@ -126,6 +126,39 @@ enum SharedAppGroup {
     private static let shieldContextFileName = "shield-context.json"
     private static let screenTimeSelectionFileName = "screen-time-selection.json"
     private static let protectionSnapshotFileName = "protection-snapshot.json"
+    private static let knownDefaultsKeys = [
+        pendingShieldAttemptDateKey,
+        pendingShieldAttemptProtectionRevisionKey,
+        pendingShieldAttemptDataKey,
+        pendingShieldAttemptCurrentIDKey,
+        shieldGoalTitleKey,
+        shieldPromptPreviewKey,
+        shieldAttemptCountKey,
+        shieldConfigurationRenderDateKey,
+        shieldConfigurationRenderCountKey,
+        lastUnlockExpirationKey,
+        desiredShieldActiveKey,
+        screenTimeSelectionKey,
+        screenTimeSelectionSemanticsVersionKey,
+        protectionConfigurationRevisionKey,
+        protectionRevisionKey,
+        protectionUpdatedAtKey,
+        unlockRelockMonitorScheduledAtKey,
+        unlockRelockMonitorIntervalStartKey,
+        unlockRelockMonitorExpectedEndKey,
+        unlockRelockExtensionIntervalStartCountKey,
+        unlockRelockExtensionIntervalEndCountKey,
+        unlockRelockExtensionLastEventDateKey,
+        unlockRelockExtensionLastResultKey
+    ]
+
+    private enum DataEraseError: LocalizedError {
+        case incomplete
+
+        var errorDescription: String? {
+            "Checkpoint could not remove all shared Screen Time data."
+        }
+    }
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: identifier) ?? .standard
@@ -322,6 +355,63 @@ enum SharedAppGroup {
     static func removeProtectionSnapshotFile() {
         guard let url = protectionSnapshotURL else { return }
         try? FileManager.default.removeItem(at: url)
+    }
+
+    static var hasPersistedData: Bool {
+        if let domain = defaults.persistentDomain(forName: identifier), !domain.isEmpty {
+            return true
+        }
+
+        if containsKnownValues(in: defaults) || containsKnownValues(in: .standard) {
+            return true
+        }
+
+        return [shieldContextURL, screenTimeSelectionURL, protectionSnapshotURL]
+            .compactMap { $0 }
+            .contains { FileManager.default.fileExists(atPath: $0.path) }
+    }
+
+    static func eraseAllData() throws {
+        let sharedDefaults = defaults
+        sharedDefaults.removePersistentDomain(forName: identifier)
+        removeKnownValues(from: sharedDefaults)
+        sharedDefaults.synchronize()
+
+        // Older or entitlement-misconfigured builds can fall back to the app's
+        // standard defaults domain. Clear the same narrowly scoped keys there
+        // so an erase cannot leave a recoverable Screen Time selection behind.
+        removeKnownValues(from: .standard)
+        UserDefaults.standard.synchronize()
+
+        var fileDeletionFailed = false
+        for url in [shieldContextURL, screenTimeSelectionURL, protectionSnapshotURL].compactMap({ $0 })
+        where FileManager.default.fileExists(atPath: url.path) {
+            do {
+                try FileManager.default.removeItem(at: url)
+            } catch {
+                fileDeletionFailed = true
+            }
+        }
+
+        guard !fileDeletionFailed, !hasPersistedData else {
+            throw DataEraseError.incomplete
+        }
+    }
+
+    private static func removeKnownValues(from defaults: UserDefaults) {
+        for key in knownDefaultsKeys {
+            defaults.removeObject(forKey: key)
+        }
+        for key in defaults.dictionaryRepresentation().keys
+        where key.hasPrefix(pendingShieldAttemptEventKeyPrefix) {
+            defaults.removeObject(forKey: key)
+        }
+    }
+
+    private static func containsKnownValues(in defaults: UserDefaults) -> Bool {
+        defaults.dictionaryRepresentation().keys.contains { key in
+            knownDefaultsKeys.contains(key) || key.hasPrefix(pendingShieldAttemptEventKeyPrefix)
+        }
     }
 
     static func markUnlockRelockMonitorScheduled(intervalStart: Date, expectedEnd: Date) {
