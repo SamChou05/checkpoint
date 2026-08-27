@@ -49,6 +49,9 @@
 		AB0000000000000000000011 /* RequiredScreenTimeAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000011 /* RequiredScreenTimeAccessView.swift */; };
 		AB0000000000000000000012 /* SkillMapEditorViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000012 /* SkillMapEditorViews.swift */; };
 		AB0000000000000000000013 /* WeeklyReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000013 /* WeeklyReviewView.swift */; };
+		AB0000000000000000000014 /* WeeklyMetricsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000014 /* WeeklyMetricsCalculator.swift */; };
+		AB0000000000000000000015 /* CheckpointQuestionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* CheckpointQuestionSelector.swift */; };
+		AB0000000000000000000016 /* SkillMapReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000016 /* SkillMapReconciler.swift */; };
 		B10000000000000000000001 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
 		B10000000000000000000002 /* ShieldConfigurationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* ShieldConfigurationExtension.swift */; };
 		B10000000000000000000003 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
@@ -186,6 +189,9 @@
 		AA0000000000000000000011 /* RequiredScreenTimeAccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequiredScreenTimeAccessView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000012 /* SkillMapEditorViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillMapEditorViews.swift; sourceTree = "<group>"; };
 		AA0000000000000000000013 /* WeeklyReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyReviewView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000014 /* WeeklyMetricsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyMetricsCalculator.swift; sourceTree = "<group>"; };
+		AA0000000000000000000015 /* CheckpointQuestionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointQuestionSelector.swift; sourceTree = "<group>"; };
+		AA0000000000000000000016 /* SkillMapReconciler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillMapReconciler.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* SharedAppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedAppGroup.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* ShieldConfigurationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldConfigurationExtension.swift; sourceTree = "<group>"; };
 		B20000000000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -303,6 +309,9 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000002 /* CheckpointStore.swift */,
+				AA0000000000000000000014 /* WeeklyMetricsCalculator.swift */,
+				AA0000000000000000000015 /* CheckpointQuestionSelector.swift */,
+				AA0000000000000000000016 /* SkillMapReconciler.swift */,
 				A2000000000000000000001B /* AppSnapshotPersistence.swift */,
 				A2000000000000000000001E /* CheckpointWorkflowCoordinator.swift */,
 			);
@@ -690,6 +699,9 @@
 			files = (
 				A10000000000000000000001 /* CheckpointApp.swift in Sources */,
 				A10000000000000000000002 /* CheckpointStore.swift in Sources */,
+				AB0000000000000000000014 /* WeeklyMetricsCalculator.swift in Sources */,
+				AB0000000000000000000015 /* CheckpointQuestionSelector.swift in Sources */,
+				AB0000000000000000000016 /* SkillMapReconciler.swift in Sources */,
 				A10000000000000000000017 /* AppSnapshotPersistence.swift in Sources */,
 				A1000000000000000000001A /* CheckpointWorkflowCoordinator.swift in Sources */,
 				AB0000000000000000000004 /* GoalModels.swift in Sources */,
