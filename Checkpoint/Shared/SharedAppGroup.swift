@@ -329,12 +329,6 @@ enum SharedAppGroup {
         defaults.synchronize()
     }
 
-    static func publishDesiredShieldActive(_ isActive: Bool) {
-        updateProtectionSnapshot { snapshot in
-            snapshot.desiredShieldActive = isActive
-        }
-    }
-
     static var desiredShieldActive: Bool {
         currentProtectionSnapshot().desiredShieldActive
     }

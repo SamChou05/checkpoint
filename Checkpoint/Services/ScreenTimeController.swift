@@ -94,7 +94,6 @@ final class ScreenTimeController {
         case shieldActive = "Protection active"
         case temporarilyUnlocked = "Break in progress"
         case failed = "Needs attention"
-        case readyForSpike = "Ready"
         case unavailable = "Unavailable in this build"
     }
 
@@ -132,12 +131,6 @@ final class ScreenTimeController {
         isSharedDataErasePending
     }
 
-    var isReadyForShielding: Bool {
-        setupState == .authorized ||
-        setupState == .shieldActive ||
-        setupState == .temporarilyUnlocked
-    }
-
     var userFacingProtectionStatus: String {
         if isShieldingEnabled {
             return "On"
@@ -150,7 +143,7 @@ final class ScreenTimeController {
             return "Permission needed"
         case .unavailable:
             return "iPhone only"
-        case .notStarted, .authorized, .readyForSpike, .shieldActive:
+        case .notStarted, .authorized, .shieldActive:
             return "Off"
         }
     }
@@ -287,10 +280,6 @@ final class ScreenTimeController {
         } catch {
             handleAuthorizationRequestFailure(error)
         }
-    }
-
-    func requestInitialAuthorizationIfNeeded() async {
-        await bootstrapAuthorizationIfNeeded()
     }
 
     func bootstrapAuthorizationIfNeeded() async {

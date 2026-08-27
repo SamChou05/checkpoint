@@ -4,7 +4,6 @@ import Observation
 private enum QuestionRefreshReason {
     case manual
     case automaticCoreRefill
-    case automaticProactiveRefill
     case levelUpRefill
 
     var countsTowardRefreshUsage: Bool {
@@ -17,8 +16,6 @@ private enum QuestionRefreshReason {
             return "Manual refresh"
         case .automaticCoreRefill:
             return "Automatic core refill"
-        case .automaticProactiveRefill:
-            return "Automatic proactive refill"
         case .levelUpRefill:
             return "Question level increase"
         }
@@ -205,13 +202,6 @@ final class CheckpointStore {
                 isCurrentGoal: profile.id == goal?.id
             )
         }
-    }
-
-    var averageMasteryText: String {
-        let competencies = visibleActiveCompetencies
-        guard !competencies.isEmpty else { return "0%" }
-        let total = competencies.reduce(0) { $0 + $1.masteryPercent }
-        return "\(total / competencies.count)%"
     }
 
     var sortedCompetencies: [TopicCompetency] {
@@ -616,13 +606,6 @@ final class CheckpointStore {
 
     var canRefreshQuestionBatch: Bool {
         isMember
-    }
-
-    var shouldShowStarterMembershipPrompt: Bool {
-        !isMember
-            && goal != nil
-            && hasConsumedStarterPractice
-            && readyQuestionCount <= ProductLimits.autoRefreshThreshold
     }
 
     var usableQuestionCount: Int {
@@ -2558,11 +2541,6 @@ final class CheckpointStore {
 
     func updateUnlockMinutes(_ minutes: Int) {
         unlockPolicy.unlockMinutes = UnlockPolicy.normalizedCorrectAnswerUnlockMinutes(minutes)
-        save()
-    }
-
-    func updatePartialUnlockEnabled(_ isEnabled: Bool) {
-        unlockPolicy.unlockOnPartial = isEnabled
         save()
     }
 

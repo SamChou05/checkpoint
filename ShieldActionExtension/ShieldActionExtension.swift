@@ -1,5 +1,3 @@
-import Foundation
-
 #if os(iOS)
 import ManagedSettings
 
@@ -49,8 +47,8 @@ final class ShieldActionExtension: ShieldActionDelegate {
 
 private extension ShieldActionResponse {
     static var openCheckpoint: ShieldActionResponse {
-        // Raw value 3 opens the parental-controls app in newer SDKs. Until this
-        // SDK exposes that case, .defer keeps the shield up for a later app launch.
+        // iOS 26.5 uses raw value 3 for openParentalControlsApp, which this SDK
+        // predates. If unavailable, .defer keeps the shield active for manual handoff.
         ShieldActionResponse(rawValue: 3) ?? .defer
     }
 }

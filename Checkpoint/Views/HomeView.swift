@@ -540,7 +540,7 @@ struct HomeView: View {
                         PrimaryActionButton(title: "Set up app protection", systemImage: "shield") {
                             isRestrictedAppsPresented = true
                         }
-                    case .authorized, .readyForSpike:
+                    case .authorized:
                         if screenTime.hasSelection {
                             PrimaryActionButton(
                                 title: workflow.isStartingProtection ? "Checking checkpoint" : "Start protection",
