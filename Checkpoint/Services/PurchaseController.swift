@@ -25,11 +25,7 @@ final class PurchaseController {
     }
 
     var isMembershipUnlocked: Bool {
-        if grantsDebugTesterEntitlement {
-            return true
-        }
-
-        return purchasedProductIDs.contains { MembershipProductID.all.contains($0) }
+        grantsDebugTesterEntitlement || purchasedProductIDs.contains(where: Self.isMembershipProduct)
     }
 
     func startListeningForTransactions() {
@@ -69,8 +65,8 @@ final class PurchaseController {
 
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result,
-                  MembershipProductID.all.contains(transaction.productID),
-                  isActive(transaction) else {
+                  Self.isMembershipProduct(transaction.productID),
+                  Self.isActive(transaction) else {
                 continue
             }
 
@@ -130,7 +126,7 @@ final class PurchaseController {
 
     private func handle(transactionResult: VerificationResult<Transaction>) async {
         guard case .verified(let transaction) = transactionResult,
-              MembershipProductID.all.contains(transaction.productID) else {
+              Self.isMembershipProduct(transaction.productID) else {
             return
         }
 
@@ -138,7 +134,11 @@ final class PurchaseController {
         _ = await refreshEntitlements()
     }
 
-    private func isActive(_ transaction: Transaction) -> Bool {
+    private static func isMembershipProduct(_ productID: String) -> Bool {
+        MembershipProductID.all.contains(productID)
+    }
+
+    private static func isActive(_ transaction: Transaction) -> Bool {
         guard transaction.revocationDate == nil else { return false }
 
         if let expirationDate = transaction.expirationDate {
@@ -159,7 +159,6 @@ final class PurchaseController {
         "App Store plans are not available yet. Try again soon."
         #endif
     }
-
 }
 
 enum DebugMembershipEntitlement {

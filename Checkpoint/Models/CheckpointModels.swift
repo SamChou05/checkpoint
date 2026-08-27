@@ -1082,7 +1082,7 @@ enum AnswerGrader {
         return String(cleaned)
             .split(separator: " ")
             .map(String.init)
-            .filter { !$0.isEmpty && !stopWords.contains($0) }
+            .filter { !stopWords.contains($0) }
     }
 
     private static func compact(_ text: String) -> String {
