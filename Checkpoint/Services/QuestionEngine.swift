@@ -937,7 +937,11 @@ enum QuestionBatchSanitizer {
             }
         }
 
-        if let explicitlyCorrectChoice = correctChoiceFromExplanation(explanation, choices: choices) {
+        if let explicitlyCorrectChoice = MultipleChoiceAnswerNormalizer.choiceMentionedAsCorrect(
+            in: explanation,
+            choices: choices,
+            collapsingWhitespaceForPhraseMatching: true
+        ) {
             supportedChoices.append(explicitlyCorrectChoice)
         }
 
@@ -967,7 +971,7 @@ enum QuestionBatchSanitizer {
 
         guard uniqueChoices.count == 4 else { return nil }
 
-        let indexedChoice = expectedChoiceIndex(from: expectedAnswer).flatMap { index in
+        let indexedChoice = MultipleChoiceAnswerNormalizer.choiceIndex(from: expectedAnswer).flatMap { index in
             uniqueChoices.indices.contains(index) ? uniqueChoices[index] : nil
         }
         let expectedKey = answerKey(expectedAnswer)
@@ -978,7 +982,11 @@ enum QuestionBatchSanitizer {
 
         guard let matchedChoice else { return nil }
 
-        let explanationChoice = correctChoiceFromExplanation(explanation, choices: uniqueChoices)
+        let explanationChoice = MultipleChoiceAnswerNormalizer.choiceMentionedAsCorrect(
+            in: explanation,
+            choices: uniqueChoices,
+            collapsingWhitespaceForPhraseMatching: true
+        )
         let expectedChoice = explanationChoice ?? matchedChoice
         let finalExpectedKey = answerKey(expectedChoice)
         let distractors = uniqueChoices.filter { answerKey($0) != finalExpectedKey }
@@ -1002,61 +1010,8 @@ enum QuestionBatchSanitizer {
         return true
     }
 
-    private static func correctChoiceFromExplanation(_ explanation: String, choices: [String]) -> String? {
-        let normalizedExplanation = answerKey(explanation)
-        let explanationWords = QuestionText.collapsedWhitespace(explanation)
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
-            .lowercased()
-
-        guard explanationWords.contains("correct")
-            || explanationWords.contains("best answer")
-            || explanationWords.contains("right answer") else {
-            return nil
-        }
-
-        let mentionedChoices = choices.filter { choice in
-            let key = answerKey(choice)
-            return key.count >= 12 && normalizedExplanation.contains(key)
-        }
-
-        guard mentionedChoices.count == 1 else { return nil }
-        return mentionedChoices[0]
-    }
-
-    private static func expectedChoiceIndex(from expectedAnswer: String) -> Int? {
-        var normalized = expectedAnswer
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        normalized = strippedAnswerPrefix(from: normalized)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let strippedLabel = strippedChoiceLabel(from: normalized)
-        guard strippedLabel != normalized || normalized.count == 1 else { return nil }
-
-        let characters = Array(normalized)
-        let first = characters.count >= 3 && (characters[0] == "(" || characters[0] == "[")
-            ? characters[1]
-            : characters[0]
-
-        switch first {
-        case "a", "1": return 0
-        case "b", "2": return 1
-        case "c", "3": return 2
-        case "d", "4": return 3
-        default: return nil
-        }
-    }
-
     private static func answerKey(_ text: String) -> String {
-        var normalized = text
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        normalized = strippedAnswerPrefix(from: normalized)
-        normalized = strippedChoiceLabel(from: normalized)
-        return normalized.filter { $0.isLetter || $0.isNumber }
+        MultipleChoiceAnswerNormalizer.key(for: text)
     }
 
     private static func choiceUniquenessKey(_ text: String) -> String {
@@ -1070,8 +1025,8 @@ enum QuestionBatchSanitizer {
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
-        normalized = strippedAnswerPrefix(from: normalized)
-        normalized = strippedChoiceLabel(from: normalized)
+        normalized = MultipleChoiceAnswerNormalizer.strippingAnswerPrefix(from: normalized)
+        normalized = MultipleChoiceAnswerNormalizer.strippingChoiceLabel(from: normalized)
 
         let tokens = normalized
             .split { !$0.isLetter && !$0.isNumber }
@@ -1118,47 +1073,6 @@ enum QuestionBatchSanitizer {
         }
 
         return token
-    }
-
-    private static func strippedAnswerPrefix(from text: String) -> String {
-        let prefixes = [
-            "correct answer",
-            "correct choice",
-            "correct option",
-            "answer",
-            "choice",
-            "option"
-        ]
-
-        for prefix in prefixes where text.hasPrefix(prefix) {
-            let remainder = String(text.dropFirst(prefix.count))
-                .trimmingCharacters(in: CharacterSet(charactersIn: " \t\n:-."))
-            guard !remainder.isEmpty else { return text }
-            return remainder
-        }
-
-        return text
-    }
-
-    private static func strippedChoiceLabel(from text: String) -> String {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let characters = Array(trimmed)
-        let labels = Set("abcd1234")
-
-        if characters.count >= 3,
-           (characters[0] == "(" || characters[0] == "["),
-           labels.contains(characters[1]),
-           (characters[2] == ")" || characters[2] == "]") {
-            return String(characters.dropFirst(3)).trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-
-        if characters.count >= 2,
-           labels.contains(characters[0]),
-           [".", ")", ":", "]"].contains(String(characters[1])) {
-            return String(characters.dropFirst(2)).trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-
-        return trimmed
     }
 
     private static func canonicalPrompt(_ prompt: String) -> String {

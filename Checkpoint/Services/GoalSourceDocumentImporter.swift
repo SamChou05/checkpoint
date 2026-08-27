@@ -70,19 +70,24 @@ enum GoalSourceDocumentImporter {
             }
         }
 
-        let resourceValues = try? url.resourceValues(forKeys: [.contentTypeKey, .fileSizeKey])
-        let fallbackFileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size]) as? NSNumber
+        let resourceValues = try? url.resourceValues(
+            forKeys: [.contentTypeKey, .fileSizeKey]
+        )
+        let fallbackFileSize = (
+            try? FileManager.default.attributesOfItem(atPath: url.path)[.size]
+        ) as? NSNumber
         if let fileSize = resourceValues?.fileSize ?? fallbackFileSize?.intValue,
            fileSize > GoalContextLimits.maximumImportFileBytes {
             throw GoalSourceImportError.fileTooLarge
         }
 
         let contentType = resourceValues?.contentType
+        let fileExtension = url.pathExtension.lowercased()
         let text: String
-        if contentType?.conforms(to: .pdf) == true || url.pathExtension.lowercased() == "pdf" {
+        if contentType?.conforms(to: .pdf) == true || fileExtension == "pdf" {
             text = try extractedPDFText(from: url)
         } else if contentType?.conforms(to: .text) == true
-            || knownTextExtensions.contains(url.pathExtension.lowercased()) {
+            || knownTextExtensions.contains(fileExtension) {
             text = try extractedPlainText(from: url)
         } else {
             throw GoalSourceImportError.unsupportedType

@@ -5744,6 +5744,29 @@ final class AIProviderPolicyTests: XCTestCase {
         )
     }
 
+    func testSanitizerCollapsesWhitespaceWhenReadingExplanationAnswerCue() throws {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which answer matches the explanation?",
+            expectedAnswer: "The tempting but wrong answer",
+            choices: [
+                "The tempting but wrong answer",
+                "The answer supported by the argument",
+                "An unrelated answer",
+                "A too-broad answer"
+            ],
+            explanation: "The answer supported by the argument is the best\nanswer because it follows from the evidence.",
+            difficulty: 2
+        )
+
+        let sanitizedQuestion = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: request).first)
+
+        XCTAssertEqual(sanitizedQuestion.expectedAnswer, "The answer supported by the argument")
+    }
+
     func testMultipleChoiceGraderUsesExplanationForPersistedAnswerMismatch() {
         let goal = makeGoal()
         let question = makeQuestion(
@@ -5767,6 +5790,33 @@ final class AIProviderPolicyTests: XCTestCase {
         )
         XCTAssertEqual(
             AnswerGrader.evaluate(answer: "The tempting but wrong answer", question: question).result,
+            .incorrect
+        )
+    }
+
+    func testMultipleChoiceGraderKeepsStrictAnswerCueWhitespaceMatching() {
+        let goal = makeGoal()
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which persisted answer should the grader trust?",
+            expectedAnswer: "The persisted expected answer",
+            choices: [
+                "The persisted expected answer",
+                "The answer supported by the argument",
+                "An unrelated answer",
+                "A too-broad answer"
+            ],
+            explanation: "The answer supported by the argument is the best\nanswer because it follows from the evidence.",
+            difficulty: 2
+        )
+
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "The persisted expected answer", question: question).result,
+            .correct
+        )
+        XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "The answer supported by the argument", question: question).result,
             .incorrect
         )
     }

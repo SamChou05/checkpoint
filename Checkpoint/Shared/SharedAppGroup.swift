@@ -124,6 +124,9 @@ enum SharedAppGroup {
     static let unlockRelockExtensionIntervalEndCountKey = "unlockRelockExtensionIntervalEndCount"
     static let unlockRelockExtensionLastEventDateKey = "unlockRelockExtensionLastEventDate"
     static let unlockRelockExtensionLastResultKey = "unlockRelockExtensionLastResult"
+    private static let defaultShieldGoalTitle = "Checkpoint"
+    private static let defaultShieldPromptPreview =
+        "Open Checkpoint to complete a practice set for your current goal."
     private static let shieldContextFileName = "shield-context.json"
     private static let screenTimeSelectionFileName = "screen-time-selection.json"
     private static let protectionSnapshotFileName = "protection-snapshot.json"
@@ -268,8 +271,8 @@ enum SharedAppGroup {
 
     static func publishShieldContext(goalTitle: String?, promptPreview: String?) {
         let context = ShieldContext(
-            goalTitle: goalTitle ?? "Checkpoint",
-            promptPreview: promptPreview ?? "Open Checkpoint to complete a practice set for your current goal.",
+            goalTitle: goalTitle ?? defaultShieldGoalTitle,
+            promptPreview: promptPreview ?? defaultShieldPromptPreview,
             revision: UUID().uuidString,
             updatedAt: Date()
         )
@@ -294,8 +297,8 @@ enum SharedAppGroup {
         let defaults = defaults
         defaults.synchronize()
         return ShieldContext(
-            goalTitle: defaults.string(forKey: shieldGoalTitleKey) ?? "Checkpoint",
-            promptPreview: defaults.string(forKey: shieldPromptPreviewKey) ?? "Open Checkpoint to complete a practice set for your current goal.",
+            goalTitle: defaults.string(forKey: shieldGoalTitleKey) ?? defaultShieldGoalTitle,
+            promptPreview: defaults.string(forKey: shieldPromptPreviewKey) ?? defaultShieldPromptPreview,
             revision: "legacy-defaults",
             updatedAt: .distantPast
         )
@@ -385,9 +388,9 @@ enum SharedAppGroup {
             return true
         }
 
-        return [shieldContextURL, screenTimeSelectionURL, protectionSnapshotURL]
-            .compactMap { $0 }
-            .contains { FileManager.default.fileExists(atPath: $0.path) }
+        return persistedFileURLs.contains {
+            FileManager.default.fileExists(atPath: $0.path)
+        }
     }
 
     static func eraseAllData() throws {
@@ -396,14 +399,12 @@ enum SharedAppGroup {
         removeKnownValues(from: sharedDefaults)
         sharedDefaults.synchronize()
 
-        // Older or entitlement-misconfigured builds can fall back to the app's
-        // standard defaults domain. Clear the same narrowly scoped keys there
-        // so an erase cannot leave a recoverable Screen Time selection behind.
+        // Clear scoped fallback keys used by legacy or entitlement-misconfigured builds.
         removeKnownValues(from: .standard)
         UserDefaults.standard.synchronize()
 
         var fileDeletionFailed = false
-        for url in [shieldContextURL, screenTimeSelectionURL, protectionSnapshotURL].compactMap({ $0 })
+        for url in persistedFileURLs
         where FileManager.default.fileExists(atPath: url.path) {
             do {
                 try FileManager.default.removeItem(at: url)
@@ -511,21 +512,25 @@ enum SharedAppGroup {
     }
 
     private static var shieldContextURL: URL? {
-        FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
-            .appendingPathComponent(shieldContextFileName)
+        sharedFileURL(named: shieldContextFileName)
     }
 
     private static var screenTimeSelectionURL: URL? {
-        FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
-            .appendingPathComponent(screenTimeSelectionFileName)
+        sharedFileURL(named: screenTimeSelectionFileName)
     }
 
     private static var protectionSnapshotURL: URL? {
+        sharedFileURL(named: protectionSnapshotFileName)
+    }
+
+    private static var persistedFileURLs: [URL] {
+        [shieldContextURL, screenTimeSelectionURL, protectionSnapshotURL].compactMap { $0 }
+    }
+
+    private static func sharedFileURL(named fileName: String) -> URL? {
         FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: identifier)?
-            .appendingPathComponent(protectionSnapshotFileName)
+            .appendingPathComponent(fileName)
     }
 
     private static func readShieldContext() -> ShieldContext? {
@@ -624,8 +629,7 @@ enum SharedAppGroup {
         let snapshotWasWritten = writeProtectionSnapshot(snapshot)
         mirrorLegacyProtectionState(snapshot)
         if !snapshotWasWritten {
-            // Never let an older canonical file outrank the freshly mirrored
-            // fallback state after an atomic-file write failure.
+            // Prevent a stale canonical file from outranking the freshly mirrored fallback.
             removeProtectionSnapshotFile()
         }
     }

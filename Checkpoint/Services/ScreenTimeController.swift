@@ -78,6 +78,16 @@ final class ScreenTimeController {
     static let unlockRelockMonitorDurationSafetyMargin: TimeInterval = 1
     nonisolated static let sharedDataEraseIncompleteKey = "checkpoint.screenTime.eraseIncomplete.v1"
 
+    private enum Message {
+        static let screenTimeUnavailable = "App protection is available on iPhone."
+        static let sharedDataEraseFailed =
+            "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
+        static let applicationLimitExceeded = "The selected apps exceed iPhone's protection limit."
+        static let webDomainLimitExceeded = "The selected websites exceed iPhone's protection limit."
+        static let authorizationRequired =
+            "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
+    }
+
     enum SetupState: String {
         case notStarted = "Not set up"
         case authorized = "Authorized"
@@ -153,13 +163,14 @@ final class ScreenTimeController {
         guard lastErrorMessage != nil else { return nil }
 
         #if os(iOS) && canImport(FamilyControls)
-        if selection.applicationTokens.count > SharedAppGroup.maximumShieldedApplicationCount ||
-            lastErrorMessage == "The selected apps exceed iPhone's protection limit." {
+        let selectionLimitError = Self.selectionLimitError(for: selection)
+        if selectionLimitError == Message.applicationLimitExceeded ||
+            lastErrorMessage == Message.applicationLimitExceeded {
             return "Choose no more than \(SharedAppGroup.maximumShieldedApplicationCount) apps so iPhone can apply the full protection list."
         }
 
-        if selection.webDomainTokens.count > SharedAppGroup.maximumShieldedWebDomainCount ||
-            lastErrorMessage == "The selected websites exceed iPhone's protection limit." {
+        if selectionLimitError == Message.webDomainLimitExceeded ||
+            lastErrorMessage == Message.webDomainLimitExceeded {
             return "Choose no more than \(SharedAppGroup.maximumShieldedWebDomainCount) websites so iPhone can apply the full protection list."
         }
         #endif
@@ -232,8 +243,7 @@ final class ScreenTimeController {
         self.defaults = defaults
         self.authorizer = authorizer
         self.sharedDataEraser = sharedDataEraser
-        // This legacy key used to suppress authorization after the first
-        // attempt. The system status must instead be refreshed every process.
+        // The system status supersedes this legacy one-time authorization flag.
         defaults.removeObject(forKey: "checkpoint.screenTime.initialAuthorizationRequested")
 
         if UserDefaults.standard.bool(forKey: Self.sharedDataEraseIncompleteKey) {
@@ -243,7 +253,7 @@ final class ScreenTimeController {
                 UserDefaults.standard.synchronize()
             } catch {
                 hasErasedAllData = true
-                sharedDataEraseErrorMessage = "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
+                sharedDataEraseErrorMessage = Message.sharedDataEraseFailed
                 stopUnlockRelockMonitor()
                 #if os(iOS) && canImport(ManagedSettings)
                 managedStore.clearAllSettings()
@@ -328,15 +338,14 @@ final class ScreenTimeController {
         case .unavailable:
             authorizationState = .unavailable
             setupState = .unavailable
-            restrictedAppsSummary = "App protection is available on iPhone."
+            restrictedAppsSummary = Message.screenTimeUnavailable
         }
     }
 
     private func handleAuthorizationRequestFailure(_ error: any Error) {
         switch authorizer.authorizationStatus {
         case .denied, .approved, .approvedWithDataAccess:
-            // The system status is authoritative even if the async request
-            // also surfaced an error while completing.
+            // The completed system status outranks an accompanying request error.
             refreshAuthorizationStatus()
         case .notDetermined:
             authorizationState = .failed
@@ -345,7 +354,7 @@ final class ScreenTimeController {
         case .unavailable:
             authorizationState = .unavailable
             setupState = .unavailable
-            restrictedAppsSummary = "App protection is available on iPhone."
+            restrictedAppsSummary = Message.screenTimeUnavailable
             lastErrorMessage = error.localizedDescription
         }
 
@@ -406,26 +415,17 @@ final class ScreenTimeController {
             return
         }
 
-        guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
-            deactivateProtection(
-                errorMessage: "The selected apps exceed iPhone's protection limit."
-            )
+        if let selectionLimitError = Self.selectionLimitError(for: selection) {
+            deactivateProtection(errorMessage: selectionLimitError)
             return
         }
 
-        guard selection.webDomainTokens.count <= SharedAppGroup.maximumShieldedWebDomainCount else {
-            deactivateProtection(
-                errorMessage: "The selected websites exceed iPhone's protection limit."
-            )
-            return
-        }
-
-        guard isScreenTimeAuthorized else {
+        guard hasRequiredScreenTimeAuthorization else {
             if authorizationState == .denied {
                 deactivateProtection(refreshAuthorization: false)
             }
             setupState = .failed
-            lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
+            lastErrorMessage = Message.authorizationRequired
             return
         }
 
@@ -440,7 +440,7 @@ final class ScreenTimeController {
         scheduleManagedShieldReassertion()
         #else
         setupState = .unavailable
-        restrictedAppsSummary = "App protection is available on iPhone."
+        restrictedAppsSummary = Message.screenTimeUnavailable
         #endif
     }
 
@@ -464,8 +464,7 @@ final class ScreenTimeController {
     }
 
     func eraseAllData() {
-        // Write a crash-safe tombstone outside the App Group before deletion.
-        // A later launch retries cleanup before it can restore any selection.
+        // Persist a tombstone outside the App Group so launch can retry an interrupted erase.
         UserDefaults.standard.set(true, forKey: Self.sharedDataEraseIncompleteKey)
         UserDefaults.standard.synchronize()
         hasErasedAllData = true
@@ -485,7 +484,7 @@ final class ScreenTimeController {
             UserDefaults.standard.synchronize()
             sharedDataEraseErrorMessage = nil
         } catch {
-            sharedDataEraseErrorMessage = "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
+            sharedDataEraseErrorMessage = Message.sharedDataEraseFailed
         }
         lastErrorMessage = nil
         isShieldingEnabled = false
@@ -508,17 +507,8 @@ final class ScreenTimeController {
             return false
         }
 
-        guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
-            deactivateProtection(
-                errorMessage: "The selected apps exceed iPhone's protection limit."
-            )
-            return false
-        }
-
-        guard selection.webDomainTokens.count <= SharedAppGroup.maximumShieldedWebDomainCount else {
-            deactivateProtection(
-                errorMessage: "The selected websites exceed iPhone's protection limit."
-            )
+        if let selectionLimitError = Self.selectionLimitError(for: selection) {
+            deactivateProtection(errorMessage: selectionLimitError)
             return false
         }
 
@@ -568,7 +558,7 @@ final class ScreenTimeController {
             case .denied:
                 deactivateProtection(refreshAuthorization: false)
                 setupState = .failed
-                lastErrorMessage = "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
+                lastErrorMessage = Message.authorizationRequired
             case .unavailable:
                 setupState = .unavailable
             case .unresolved, .requesting, .notDetermined, .failed:
@@ -581,17 +571,8 @@ final class ScreenTimeController {
             return
         }
 
-        guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
-            deactivateProtection(
-                errorMessage: "The selected apps exceed iPhone's protection limit."
-            )
-            return
-        }
-
-        guard selection.webDomainTokens.count <= SharedAppGroup.maximumShieldedWebDomainCount else {
-            deactivateProtection(
-                errorMessage: "The selected websites exceed iPhone's protection limit."
-            )
+        if let selectionLimitError = Self.selectionLimitError(for: selection) {
+            deactivateProtection(errorMessage: selectionLimitError)
             return
         }
 
@@ -625,6 +606,18 @@ final class ScreenTimeController {
     }
 
     #if os(iOS) && canImport(FamilyControls)
+    private static func selectionLimitError(
+        for selection: FamilyActivitySelection
+    ) -> String? {
+        if selection.applicationTokens.count > SharedAppGroup.maximumShieldedApplicationCount {
+            return Message.applicationLimitExceeded
+        }
+        if selection.webDomainTokens.count > SharedAppGroup.maximumShieldedWebDomainCount {
+            return Message.webDomainLimitExceeded
+        }
+        return nil
+    }
+
     var hasSelection: Bool {
         !selection.applicationTokens.isEmpty ||
         !selection.webDomainTokens.isEmpty ||
@@ -641,7 +634,7 @@ final class ScreenTimeController {
             maximumCount: SharedAppGroup.maximumShieldedApplicationCount
         )
         guard applicationCountIsAllowed else {
-            lastErrorMessage = "The selected apps exceed iPhone's protection limit."
+            lastErrorMessage = Message.applicationLimitExceeded
             return false
         }
 
@@ -651,16 +644,14 @@ final class ScreenTimeController {
             maximumCount: SharedAppGroup.maximumShieldedWebDomainCount
         )
         guard webDomainCountIsAllowed else {
-            lastErrorMessage = "The selected websites exceed iPhone's protection limit."
+            lastErrorMessage = Message.webDomainLimitExceeded
             return false
         }
 
-        if normalizedSelection.applicationTokens.count > SharedAppGroup.maximumShieldedApplicationCount {
-            lastErrorMessage = "The selected apps exceed iPhone's protection limit."
-        } else if normalizedSelection.webDomainTokens.count > SharedAppGroup.maximumShieldedWebDomainCount {
-            lastErrorMessage = "The selected websites exceed iPhone's protection limit."
-        } else if lastErrorMessage == "The selected apps exceed iPhone's protection limit." ||
-                    lastErrorMessage == "The selected websites exceed iPhone's protection limit." {
+        if let selectionLimitError = Self.selectionLimitError(for: normalizedSelection) {
+            lastErrorMessage = selectionLimitError
+        } else if lastErrorMessage == Message.applicationLimitExceeded ||
+                    lastErrorMessage == Message.webDomainLimitExceeded {
             lastErrorMessage = nil
         } else if !normalizedSelection.applicationTokens.isEmpty ||
                     !normalizedSelection.webDomainTokens.isEmpty ||
@@ -700,7 +691,7 @@ final class ScreenTimeController {
             restrictedAppsSummary = parts.joined(separator: ", ") + " selected"
         }
         #else
-        restrictedAppsSummary = "App protection is available on iPhone."
+        restrictedAppsSummary = Message.screenTimeUnavailable
         #endif
     }
 
@@ -711,9 +702,7 @@ final class ScreenTimeController {
                 !selection.webDomainTokens.isEmpty
         else { return }
 
-        // Apple voids all opaque FamilyActivitySelection tokens when Screen
-        // Time authorization is revoked. Keeping their counts would make the
-        // picker and status claim protection that iOS can no longer apply.
+        // Revoked authorization invalidates every opaque FamilyActivitySelection token.
         selection = FamilyActivitySelection(includeEntireCategory: true)
         #endif
     }
@@ -756,10 +745,6 @@ final class ScreenTimeController {
         #endif
     }
 
-    private var isScreenTimeAuthorized: Bool {
-        hasRequiredScreenTimeAuthorization
-    }
-
     private func handleSelectionChange() {
         #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
         guard !isSharedDataErasePending else { return }
@@ -783,7 +768,7 @@ final class ScreenTimeController {
     @discardableResult
     private func blockForPendingSharedDataErase() -> Bool {
         guard isSharedDataErasePending else { return false }
-        sharedDataEraseErrorMessage = "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
+        sharedDataEraseErrorMessage = Message.sharedDataEraseFailed
         return true
     }
 
@@ -828,9 +813,7 @@ final class ScreenTimeController {
     private func applyCurrentSelectionToManagedStore() {
         managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
         managedStore.shield.webDomains = selection.webDomainTokens.isEmpty ? nil : selection.webDomainTokens
-        // `includeEntireCategory` expands category choices into application and
-        // web-domain tokens. Enforcing the category token as well would silently
-        // re-protect an app the user explicitly removed from that expanded list.
+        // Expanded category tokens must not re-protect apps removed from that expansion.
         if usesLegacyCategoryEnforcement {
             managedStore.shield.applicationCategories = .specific(selection.categoryTokens, except: [])
         } else {

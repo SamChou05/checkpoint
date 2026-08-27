@@ -1,5 +1,27 @@
 import Foundation
 
+private enum BackendRequestFactory {
+    static func post(
+        to url: URL,
+        authorizationToken: String?,
+        timeout: TimeInterval
+    ) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(
+            BackendClientIdentity.installID,
+            forHTTPHeaderField: "X-Checkpoint-Install-ID"
+        )
+        if let token = authorizationToken?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !token.isEmpty {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        request.timeoutInterval = timeout
+        return request
+    }
+}
+
 struct BackendQuestionEngine: QuestionGenerating, SkillMapInferring, @unchecked Sendable {
     let provider: AIProviderKind = .backend
     private let session: URLSession
@@ -13,15 +35,11 @@ struct BackendQuestionEngine: QuestionGenerating, SkillMapInferring, @unchecked 
             throw QuestionGenerationError.backendNotConfigured
         }
 
-        var urlRequest = URLRequest(url: endpoint)
-        urlRequest.httpMethod = "POST"
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.setValue(BackendClientIdentity.installID, forHTTPHeaderField: "X-Checkpoint-Install-ID")
-        if let token = request.backendAuthorizationToken?.trimmingCharacters(in: .whitespacesAndNewlines),
-           !token.isEmpty {
-            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        urlRequest.timeoutInterval = 45
+        var urlRequest = BackendRequestFactory.post(
+            to: endpoint,
+            authorizationToken: request.backendAuthorizationToken,
+            timeout: 45
+        )
         urlRequest.httpBody = try JSONEncoder().encode(BackendQuestionRequest(request: request))
 
         let (data, response) = try await session.data(for: urlRequest)
@@ -60,15 +78,11 @@ struct BackendQuestionEngine: QuestionGenerating, SkillMapInferring, @unchecked 
             throw QuestionGenerationError.backendNotConfigured
         }
 
-        var urlRequest = URLRequest(url: Self.skillMapEndpoint(generationEndpoint: endpoint))
-        urlRequest.httpMethod = "POST"
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.setValue(BackendClientIdentity.installID, forHTTPHeaderField: "X-Checkpoint-Install-ID")
-        if let token = request.backendAuthorizationToken?.trimmingCharacters(in: .whitespacesAndNewlines),
-           !token.isEmpty {
-            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        urlRequest.timeoutInterval = 30
+        var urlRequest = BackendRequestFactory.post(
+            to: Self.skillMapEndpoint(generationEndpoint: endpoint),
+            authorizationToken: request.backendAuthorizationToken,
+            timeout: 30
+        )
         urlRequest.httpBody = try JSONEncoder().encode(
             BackendSkillMapInferenceRequest(request: request)
         )
@@ -220,9 +234,10 @@ struct BackendQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
             operation: "ensure",
             generationEndpoint: endpoint
         )
-        var urlRequest = Self.authorizedRequest(
-            url: ensureEndpoint,
-            authorizationToken: request.backendAuthorizationToken
+        var urlRequest = BackendRequestFactory.post(
+            to: ensureEndpoint,
+            authorizationToken: request.backendAuthorizationToken,
+            timeout: 15
         )
         urlRequest.httpBody = try JSONEncoder().encode(
             BackendQuestionRequest(
@@ -280,9 +295,10 @@ struct BackendQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
             operation: "claim",
             generationEndpoint: endpoint
         )
-        var urlRequest = Self.authorizedRequest(
-            url: claimEndpoint,
-            authorizationToken: request.backendAuthorizationToken
+        var urlRequest = BackendRequestFactory.post(
+            to: claimEndpoint,
+            authorizationToken: request.backendAuthorizationToken,
+            timeout: 15
         )
         urlRequest.httpBody = try JSONEncoder().encode(
             BackendQuestionBankClaimRequest(
@@ -327,22 +343,6 @@ struct BackendQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
             .deletingLastPathComponent()
             .appendingPathComponent("question-banks", isDirectory: true)
             .appendingPathComponent(operation, isDirectory: false)
-    }
-
-    private static func authorizedRequest(
-        url: URL,
-        authorizationToken: String?
-    ) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue(BackendClientIdentity.installID, forHTTPHeaderField: "X-Checkpoint-Install-ID")
-        if let token = authorizationToken?.trimmingCharacters(in: .whitespacesAndNewlines),
-           !token.isEmpty {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        request.timeoutInterval = 15
-        return request
     }
 
     private static func validate(response: URLResponse, data: Data) throws {

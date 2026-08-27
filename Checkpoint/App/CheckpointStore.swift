@@ -7,12 +7,8 @@ private enum QuestionRefreshReason {
     case automaticProactiveRefill
     case levelUpRefill
 
-    func countsAsRefresh(isMember: Bool) -> Bool {
-        self == .manual || self == .automaticProactiveRefill || (self == .automaticCoreRefill && isMember)
-    }
-
-    func providerPreference(defaultPreference: AIProviderKind) -> AIProviderKind {
-        return defaultPreference
+    var countsTowardRefreshUsage: Bool {
+        self != .levelUpRefill
     }
 
     var diagnosticsTitle: String {
@@ -249,11 +245,6 @@ final class CheckpointStore {
         return attempts.filter { $0.goalID == goalID }
     }
 
-    private var activeAttemptsThisWeek: [CheckpointAttempt] {
-        guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
-        return activeAttempts.filter { week.contains($0.createdAt) }
-    }
-
     private var attemptsThisWeek: [CheckpointAttempt] {
         guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
         return attempts.filter { week.contains($0.createdAt) }
@@ -353,12 +344,6 @@ final class CheckpointStore {
         return mergedCompetenciesForDisplay(
             competencies.filter { $0.goalID == goalID || $0.goalID == nil }
         )
-    }
-
-    private func averageMasteryPercent(for competencies: [TopicCompetency]) -> Int {
-        guard !competencies.isEmpty else { return 0 }
-        let total = competencies.reduce(0) { $0 + $1.masteryPercent }
-        return total / competencies.count
     }
 
     var activeQuestionReports: [QuestionQualityReport] {
@@ -485,12 +470,9 @@ final class CheckpointStore {
             )
         )
         invalidateQuestionBankSynchronization(for: updatedGoal.id)
-        guard isMember || !starterPracticeWasConsumed else {
-            questionBatchState = hasReadyCheckpointSet ? .ready : .idle
-            checkpointNotice = starterQuestionLimitMessage
-            requestMembership(for: .freshQuestionGeneration)
-            save()
-            publishShieldContext()
+        if applyStarterGenerationLimitIfNeeded(
+            starterPracticeWasConsumed: starterPracticeWasConsumed
+        ) {
             return true
         }
         save()
@@ -546,12 +528,9 @@ final class CheckpointStore {
         )
         invalidateQuestionBankSynchronization(for: updatedGoal.id)
 
-        guard isMember || !starterPracticeWasConsumed else {
-            questionBatchState = hasReadyCheckpointSet ? .ready : .idle
-            checkpointNotice = starterQuestionLimitMessage
-            requestMembership(for: .freshQuestionGeneration)
-            save()
-            publishShieldContext()
+        if applyStarterGenerationLimitIfNeeded(
+            starterPracticeWasConsumed: starterPracticeWasConsumed
+        ) {
             return true
         }
 
@@ -562,6 +541,19 @@ final class CheckpointStore {
         save()
         publishShieldContext()
         prepareInitialQuestionsInBackground(for: updatedGoal)
+        return true
+    }
+
+    private func applyStarterGenerationLimitIfNeeded(
+        starterPracticeWasConsumed: Bool
+    ) -> Bool {
+        guard !isMember, starterPracticeWasConsumed else { return false }
+
+        questionBatchState = hasReadyCheckpointSet ? .ready : .idle
+        checkpointNotice = starterQuestionLimitMessage
+        requestMembership(for: .freshQuestionGeneration)
+        save()
+        publishShieldContext()
         return true
     }
 
@@ -943,7 +935,7 @@ final class CheckpointStore {
 
     // MARK: - Plan access
 
-    func canUse(_ feature: MembershipFeature) -> Bool {
+    func canUse(_: MembershipFeature) -> Bool {
         isMember
     }
 
@@ -997,9 +989,7 @@ final class CheckpointStore {
         let normalizedSourceDocuments = GoalSourceDocument.normalizedDocuments(sourceDocuments)
 
         guard !normalizedTitle.isEmpty else {
-            questionBatchState = .failed
-            lastAIErrorMessage = "Enter a goal before generating questions."
-            save()
+            reportBlankGoalTitle()
             return
         }
 
@@ -1089,9 +1079,7 @@ final class CheckpointStore {
 
         let normalizedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !normalizedTitle.isEmpty else {
-            questionBatchState = .failed
-            lastAIErrorMessage = "Enter a goal before generating questions."
-            save()
+            reportBlankGoalTitle()
             return
         }
 
@@ -1182,6 +1170,12 @@ final class CheckpointStore {
         }
     }
 
+    private func reportBlankGoalTitle() {
+        questionBatchState = .failed
+        lastAIErrorMessage = "Enter a goal before generating questions."
+        save()
+    }
+
     private func generateInitialQuestionBatch(for newGoal: Goal) async {
         let lifecycleID = dataLifecycleID
         guard goalProfiles.contains(where: { $0.id == newGoal.id }) || goal?.id == newGoal.id else { return }
@@ -1242,8 +1236,8 @@ final class CheckpointStore {
         )
 
         let startedAt = Date()
-        let providerPreference = initialBatchProviderPreference(for: checkpointReadyRequest)
-        let batch = await generateCheckpointReadyBatch(
+        let providerPreference = aiProviderPreference
+        let batch = await questionEngine.generateQuestionBatch(
             for: checkpointReadyRequest,
             preference: providerPreference
         )
@@ -1287,15 +1281,10 @@ final class CheckpointStore {
             )
             committedQuestions = acceptedQuestions
         }
-        lastQuestionProvider = batch.provider
-        if !hasReadyInitialSet {
-            let failure = batch.failure ?? .qualityRejected
-            lastQuestionGenerationFailure = failure
-            lastAIErrorMessage = failure.message
-        } else {
-            lastQuestionGenerationFailure = nil
-            lastAIErrorMessage = nil
-        }
+        applyQuestionGenerationOutcome(
+            batch,
+            didAcceptQuestions: hasReadyInitialSet
+        )
         recordQuestionGenerationTrace(
             phase: "Initial ready batch",
             request: checkpointReadyRequest,
@@ -1318,6 +1307,22 @@ final class CheckpointStore {
                 starterQuestionIDs: Set(committedQuestions.map(\.id))
             )
         }
+    }
+
+    private func applyQuestionGenerationOutcome(
+        _ batch: QuestionBatch,
+        didAcceptQuestions: Bool
+    ) {
+        lastQuestionProvider = batch.provider
+        if didAcceptQuestions {
+            lastQuestionGenerationFailure = nil
+            lastAIErrorMessage = nil
+            return
+        }
+
+        let failure = batch.failure ?? .qualityRejected
+        lastQuestionGenerationFailure = failure
+        lastAIErrorMessage = failure.message
     }
 
     private func goalByPreparingSkillMapIfNeeded(
@@ -1432,20 +1437,6 @@ final class CheckpointStore {
         }
         .sorted()
         .joined(separator: "|")
-    }
-
-    private func initialBatchProviderPreference(for _: QuestionGenerationRequest) -> AIProviderKind {
-        aiProviderPreference
-    }
-
-    private func generateCheckpointReadyBatch(
-        for request: QuestionGenerationRequest,
-        preference: AIProviderKind
-    ) async -> QuestionBatch {
-        await questionEngine.generateQuestionBatch(
-            for: request,
-            preference: preference
-        )
     }
 
     func retryInitialQuestionGeneration() async {
@@ -1670,9 +1661,7 @@ final class CheckpointStore {
                 ? .ready
                 : .failed
         }
-        // A fallback map inferred from this same batch is part of the accepted
-        // result, not an external edit that should immediately duplicate the
-        // top-off. Genuine concurrent edits still differ from this revision.
+        // Treat this batch's inferred map as accepted; only later edits trigger another top-off.
         expectedContextRevision = questionBankContextRevision(for: resolvedTargetGoal)
         save()
         publishShieldContext()
@@ -1714,7 +1703,7 @@ final class CheckpointStore {
             }
 
             if syncOutcome.serviceSupported {
-                if reason.countsAsRefresh(isMember: isMember) {
+                if reason.countsTowardRefreshUsage {
                     questionRefreshesUsed += 1
                 }
                 questionBatchState = hasReadyCheckpointSet
@@ -1731,7 +1720,7 @@ final class CheckpointStore {
 
         questionBatchState = .generating
         beginQuestionGeneration(for: goal.id)
-        if reason.countsAsRefresh(isMember: isMember) {
+        if reason.countsTowardRefreshUsage {
             questionRefreshesUsed += 1
         }
 
@@ -1742,7 +1731,7 @@ final class CheckpointStore {
             reportedQuestions: activeQuestionReports,
             targetCount: targetCount
         )
-        let providerPreference = reason.providerPreference(defaultPreference: aiProviderPreference)
+        let providerPreference = aiProviderPreference
         let startedAt = Date()
         let batch = await questionEngine.generateQuestionBatch(
             for: refreshRequest,
@@ -1772,15 +1761,10 @@ final class CheckpointStore {
                 questions: activeQuestions
             )
         )
-        lastQuestionProvider = batch.provider
-        if newQuestions.isEmpty {
-            let failure = batch.failure ?? .qualityRejected
-            lastQuestionGenerationFailure = failure
-            lastAIErrorMessage = failure.message
-        } else {
-            lastQuestionGenerationFailure = nil
-            lastAIErrorMessage = nil
-        }
+        applyQuestionGenerationOutcome(
+            batch,
+            didAcceptQuestions: !newQuestions.isEmpty
+        )
         recordQuestionGenerationTrace(
             phase: reason.diagnosticsTitle,
             request: refreshRequest,
@@ -1881,9 +1865,7 @@ final class CheckpointStore {
             scheduleQuestionBankMaintenanceIfNeeded(for: goal)
         } else {
             lastAutomaticQuestionRefreshAt = Date()
-            if QuestionRefreshReason.automaticProactiveRefill.countsAsRefresh(isMember: isMember) {
-                questionRefreshesUsed += 1
-            }
+            questionRefreshesUsed += 1
             save()
             topOffQuestionBankInBackground(for: goal)
         }
@@ -2347,8 +2329,7 @@ final class CheckpointStore {
             return session
         }
 
-        // A blocked-app handoff must be deterministic and immediate. Generation
-        // belongs in goal setup and proactive maintenance, never on this path.
+        // Blocked-app handoffs consume cached questions; generation never runs on this path.
         checkpointNotice = "A full cached checkpoint was not ready, so protection cannot continue yet. Open Checkpoint to prepare questions, then start protection again."
         save()
         return nil
@@ -2890,9 +2871,7 @@ final class CheckpointStore {
 
     private static func correctAnswerReviewDelayDays(for correctStreak: Int) -> Int {
         switch correctStreak {
-        case ..<1:
-            return 3
-        case 1:
+        case ...1:
             return 3
         case 2:
             return 7
@@ -4202,10 +4181,7 @@ final class CheckpointStore {
 
         let lifecycleID = dataLifecycleID
         let desiredCount = min(100, max(questionBankTargetCount, minimumLocalQuestionCount ?? 0))
-        // Skill weights are part of the context revision, so each bank is a
-        // finite snapshot of the learner's current needs. Replenishing that
-        // old revision would generate a second reserve that is usually
-        // superseded before the local cache needs it.
+        // Skill weights make each bank revision finite; do not replenish stale weights.
         let lowWatermark = 0
         let contextRevision = questionBankContextRevision(for: targetGoal)
         var intent = upsertQuestionBankSyncIntent(
@@ -4292,10 +4268,7 @@ final class CheckpointStore {
 
         guard preparation.readyCount > 0 else {
             if preparation.status == .empty {
-                // A finite bank can legitimately end below the nominal local
-                // target when a claimed item is rejected by the app sanitizer.
-                // The server uses queued for delayed/retryable work, so empty
-                // means there is no remaining inventory to poll for.
+                // Sanitizer rejections can leave a finite bank below target; empty ends polling.
                 removeQuestionBankSyncIntent(for: targetGoal.id)
                 save()
             }
@@ -4309,7 +4282,6 @@ final class CheckpointStore {
                   questionBankContextRevision(for: latestGoal) == intent.contextRevision else {
                 _ = upsertQuestionBankSyncIntent(
                     for: currentGoal,
-                    contextRevision: questionBankContextRevision(for: currentGoal),
                     desiredCount: desiredCount,
                     lowWatermark: lowWatermark
                 )
@@ -4366,7 +4338,6 @@ final class CheckpointStore {
             guard resolvedContextRevision == intent.contextRevision else {
                 _ = upsertQuestionBankSyncIntent(
                     for: resolvedGoal,
-                    contextRevision: resolvedContextRevision,
                     desiredCount: desiredCount,
                     lowWatermark: lowWatermark
                 )
@@ -4431,8 +4402,7 @@ final class CheckpointStore {
                     lowWatermark: lowWatermark
                 )
             } else {
-                // The old claim ID remains persisted until the claimed questions and the
-                // replacement ID are committed together in this snapshot.
+                // Keep the old claim ID until its questions and replacement share one snapshot.
                 intent.claimID = UUID().uuidString
                 intent.lastAttemptAt = Date()
                 replaceQuestionBankSyncIntent(intent)
@@ -4550,6 +4520,19 @@ final class CheckpointStore {
         guard questionBankPollingTokens[goalID] == token else { return }
         questionBankPollingTokens.removeValue(forKey: goalID)
         questionBankPollingGoalIDs.remove(goalID)
+    }
+
+    private func upsertQuestionBankSyncIntent(
+        for targetGoal: Goal,
+        desiredCount: Int,
+        lowWatermark: Int
+    ) -> QuestionBankSyncIntent {
+        upsertQuestionBankSyncIntent(
+            for: targetGoal,
+            contextRevision: questionBankContextRevision(for: targetGoal),
+            desiredCount: desiredCount,
+            lowWatermark: lowWatermark
+        )
     }
 
     private func upsertQuestionBankSyncIntent(
@@ -4694,8 +4677,7 @@ final class CheckpointStore {
             let competency = competencyBySkillID[skill.id]
                 ?? .initial(topic: skill.name, goalID: targetGoal.id, skillID: skill.id)
             if competency.attempts == 0 {
-                // New skills receive a strong exploration prior without depending on
-                // how many questions happen to be cached on this device.
+                // Give new skills a strong exploration prior independent of the local cache.
                 allocation[skill.id] = 12
                 continue
             }

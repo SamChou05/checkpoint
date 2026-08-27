@@ -83,14 +83,13 @@ struct AppSnapshotPersistence {
         }
 
         let primaryData = readPrimaryData()
-        if let primaryData,
-           let snapshot = try? decodeEnvelope(primaryData) {
+        if let snapshot = decodedSnapshot(from: primaryData) {
             return .loaded(snapshot)
         }
 
         let backupData = readBackupData()
         if let backupData,
-           let snapshot = try? decodeEnvelope(backupData) {
+           let snapshot = decodedSnapshot(from: backupData) {
             try? restorePrimary(from: backupData)
             return .recovered(
                 snapshot,
@@ -138,42 +137,41 @@ struct AppSnapshotPersistence {
             let backupURL = directory.appendingPathComponent(Self.backupFileName)
 
             if let currentPrimary = try? Data(contentsOf: primaryURL),
-               (try? decodeEnvelope(currentPrimary)) != nil {
+               decodedSnapshot(from: currentPrimary) != nil {
                 try currentPrimary.write(to: backupURL, options: [.atomic])
                 applyFileProtection(to: backupURL)
             }
 
             try encoded.write(to: primaryURL, options: [.atomic])
             applyFileProtection(to: primaryURL)
-            guard let verifiedPrimary = try? Data(contentsOf: primaryURL),
-                  (try? decodeEnvelope(verifiedPrimary)) != nil else {
+            guard decodedSnapshot(from: try? Data(contentsOf: primaryURL)) != nil else {
                 throw PersistenceError.verificationFailed
             }
 
-            if (try? Data(contentsOf: backupURL)).flatMap({ try? decodeEnvelope($0) }) == nil {
+            if decodedSnapshot(from: try? Data(contentsOf: backupURL)) == nil {
                 try encoded.write(to: backupURL, options: [.atomic])
                 applyFileProtection(to: backupURL)
             }
 
         case .defaults:
             if let currentPrimary = defaults.data(forKey: Self.primaryDefaultsKey),
-               (try? decodeEnvelope(currentPrimary)) != nil {
+               decodedSnapshot(from: currentPrimary) != nil {
                 defaults.set(currentPrimary, forKey: Self.backupDefaultsKey)
             }
 
             defaults.set(encoded, forKey: Self.primaryDefaultsKey)
-            guard let verifiedPrimary = defaults.data(forKey: Self.primaryDefaultsKey),
-                  (try? decodeEnvelope(verifiedPrimary)) != nil else {
+            guard decodedSnapshot(
+                from: defaults.data(forKey: Self.primaryDefaultsKey)
+            ) != nil else {
                 throw PersistenceError.verificationFailed
             }
 
-            if defaults.data(forKey: Self.backupDefaultsKey).flatMap({ try? decodeEnvelope($0) }) == nil {
+            if decodedSnapshot(from: defaults.data(forKey: Self.backupDefaultsKey)) == nil {
                 defaults.set(encoded, forKey: Self.backupDefaultsKey)
             }
         }
 
-        // The legacy value is retained until the new primary has been written and
-        // decoded successfully, making an interrupted migration non-destructive.
+        // Retain the legacy value until the new primary verifies successfully.
         defaults.removeObject(forKey: Self.legacySnapshotKey)
     }
 
@@ -242,6 +240,11 @@ struct AppSnapshotPersistence {
             throw PersistenceError.verificationFailed
         }
         return envelope.snapshot
+    }
+
+    private func decodedSnapshot(from data: Data?) -> AppSnapshot? {
+        guard let data else { return nil }
+        return try? decodeEnvelope(data)
     }
 
     private static func defaultPersistenceDirectory(fileManager: FileManager) -> URL {
