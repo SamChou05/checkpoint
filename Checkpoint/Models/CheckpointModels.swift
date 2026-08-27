@@ -679,6 +679,7 @@ struct ActiveCheckpointRun: Codable, Equatable, Sendable {
     var sessionID: CheckpointSession.ID
     var goalID: Goal.ID
     var questionIDs: [CheckpointQuestion.ID]
+    var missedQuestionIDs: Set<CheckpointQuestion.ID>?
     var purpose: CheckpointSessionPurpose
     var startedAt: Date
 
@@ -687,6 +688,7 @@ struct ActiveCheckpointRun: Codable, Equatable, Sendable {
         sessionID = session.id
         self.goalID = goalID
         questionIDs = session.questions.map(\.id)
+        missedQuestionIDs = []
         purpose = session.purpose
         self.startedAt = startedAt
     }

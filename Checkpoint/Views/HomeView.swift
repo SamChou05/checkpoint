@@ -4,6 +4,7 @@ import SwiftUI
 struct HomeView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
+    let workflow: CheckpointWorkflowCoordinator
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -15,7 +16,6 @@ struct HomeView: View {
     @State private var isQuestionsReadyConfirmationVisible = false
     @State private var questionsReadyConfirmationDismissTask: Task<Void, Never>?
     @State private var lastActivationRefreshAt: Date?
-    @State private var isPreparingProtectionStart = false
 
     private static let activationRefreshDebounceInterval: TimeInterval = 20
     private static let questionsReadyConfirmationText = "Your questions are ready."
@@ -520,8 +520,7 @@ struct HomeView: View {
                         }
 
                         HomeProtectionActionButton(title: "End break early", systemImage: "shield") {
-                            store.clearUnlockSession()
-                            screenTime.applyShield()
+                            workflow.endBreakEarly()
                         }
                     }
                 } else if screenTime.isShieldingEnabled {
@@ -555,13 +554,13 @@ struct HomeView: View {
                     case .authorized, .readyForSpike:
                         if screenTime.hasSelection {
                             PrimaryActionButton(
-                                title: isPreparingProtectionStart ? "Checking checkpoint" : "Start protection",
+                                title: workflow.isStartingProtection ? "Checking checkpoint" : "Start protection",
                                 systemImage: "shield",
-                                isLoading: isPreparingProtectionStart
+                                isLoading: workflow.isStartingProtection
                             ) {
                                 prepareAndStartProtection()
                             }
-                            .disabled(isPreparingProtectionStart || store.isPreparingActiveGoalQuestions)
+                            .disabled(workflow.isStartingProtection || store.isPreparingActiveGoalQuestions)
 
                             if !store.hasReadyCheckpointSet {
                                 Text("Protection turns on only after a full checkpoint is ready, so you can always earn access to your apps.")
@@ -716,13 +715,7 @@ struct HomeView: View {
 
     private func prepareAndStartProtection() {
         Task {
-            guard !isPreparingProtectionStart else { return }
-            isPreparingProtectionStart = true
-            let isReady = await store.prepareQuestionsForProtectionStart()
-            if isReady {
-                screenTime.applyShield()
-            }
-            isPreparingProtectionStart = false
+            await workflow.startProtection()
         }
     }
 

@@ -110,6 +110,7 @@ enum SharedAppGroup {
     static let shieldConfigurationRenderCountKey = "shieldConfigurationRenderCount"
     static let lastUnlockExpirationKey = "lastUnlockExpiration"
     static let desiredShieldActiveKey = "desiredShieldActive"
+    static let checkpointReadyKey = "checkpoint.protection.checkpointReady"
     static let screenTimeSelectionKey = "checkpoint.screenTime.selection.v1"
     static let screenTimeSelectionSemanticsVersionKey = "checkpoint.screenTime.selectionSemanticsVersion"
     static let protectionConfigurationRevisionKey = "checkpoint.protection.configurationRevision"
@@ -138,6 +139,7 @@ enum SharedAppGroup {
         shieldConfigurationRenderCountKey,
         lastUnlockExpirationKey,
         desiredShieldActiveKey,
+        checkpointReadyKey,
         screenTimeSelectionKey,
         screenTimeSelectionSemanticsVersionKey,
         protectionConfigurationRevisionKey,
@@ -162,6 +164,12 @@ enum SharedAppGroup {
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: identifier) ?? .standard
+    }
+
+    static var isAvailable: Bool {
+        FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: identifier
+        ) != nil
     }
 
     static func canAcceptShieldTokenCount(
@@ -311,6 +319,13 @@ enum SharedAppGroup {
         }
     }
 
+    static func publishCheckpointReadiness(_ isReady: Bool) {
+        let defaults = defaults
+        guard defaults.object(forKey: checkpointReadyKey) as? Bool != isReady else { return }
+        defaults.set(isReady, forKey: checkpointReadyKey)
+        defaults.synchronize()
+    }
+
     static func publishDesiredShieldActive(_ isActive: Bool) {
         updateProtectionSnapshot { snapshot in
             snapshot.desiredShieldActive = isActive
@@ -331,6 +346,10 @@ enum SharedAppGroup {
 
     static var unlockExpiration: Date? {
         currentProtectionSnapshot().unlockExpiration
+    }
+
+    static var checkpointReady: Bool? {
+        defaults.object(forKey: checkpointReadyKey) as? Bool
     }
 
     static func publishScreenTimeSelectionData(

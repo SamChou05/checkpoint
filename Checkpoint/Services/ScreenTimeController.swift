@@ -385,9 +385,23 @@ final class ScreenTimeController {
         }
         relockTask?.cancel()
 
+        guard SharedAppGroup.isAvailable else {
+            deactivateProtection(
+                errorMessage: "Checkpoint's shared Screen Time storage is unavailable. Reinstall the app before starting protection."
+            )
+            return
+        }
+
         guard hasSelection else {
             deactivateProtection(
                 errorMessage: "Choose at least one protected app, category, or website before starting app protection."
+            )
+            return
+        }
+
+        guard SharedAppGroup.checkpointReady != false else {
+            deactivateProtection(
+                errorMessage: "Prepare a full checkpoint before starting app protection."
             )
             return
         }
@@ -832,6 +846,7 @@ final class ScreenTimeController {
             guard let self,
                   self.isShieldingEnabled,
                   SharedAppGroup.desiredShieldActive,
+                  SharedAppGroup.checkpointReady != false,
                   SharedAppGroup.unlockExpiration == nil,
                   self.hasSelection else { return }
 

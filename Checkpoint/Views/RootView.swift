@@ -4,17 +4,20 @@ import UIKit
 #endif
 
 struct RootView: View {
-    @State private var store = CheckpointStore()
-    @State private var screenTime = ScreenTimeController()
-    @State private var purchaseController = PurchaseController()
+    @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
-    @State private var activeShieldSession: CheckpointSession?
-    @State private var isPreparingShieldSession = false
+    @State private var activeCheckpointSession: CheckpointSession?
+    @State private var pendingShieldRetryTask: Task<Void, Never>?
     @Environment(\.scenePhase) private var scenePhase
+
+    private var store: CheckpointStore { appModel.store }
+    private var screenTime: ScreenTimeController { appModel.screenTime }
+    private var purchaseController: PurchaseController { appModel.purchaseController }
+    private var workflow: CheckpointWorkflowCoordinator { appModel.workflow }
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView(store: store, screenTime: screenTime)
+            HomeView(store: store, screenTime: screenTime, workflow: workflow)
                 .tabItem {
                     Label("Home", systemImage: "target")
                 }
@@ -26,7 +29,13 @@ struct RootView: View {
                 }
                 .tag(AppTab.skill)
 
-            SettingsView(store: store, screenTime: screenTime, purchaseController: purchaseController)
+            SettingsView(
+                store: store,
+                screenTime: screenTime,
+                purchaseController: purchaseController,
+                workflow: workflow,
+                presentCheckpoint: presentCheckpoint
+            )
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
@@ -38,8 +47,8 @@ struct RootView: View {
             RequiredScreenTimeAccessView(store: store, screenTime: screenTime)
                 .interactiveDismissDisabled()
         }
-        .sheet(item: $activeShieldSession) { session in
-            CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
+        .sheet(item: $activeCheckpointSession, onDismiss: handlePendingShieldActivation) { session in
+            CheckpointAttemptView(store: store, workflow: workflow, session: session)
         }
         .sheet(item: membershipFeatureBinding) { feature in
             MembershipView(feature: feature, store: store, purchaseController: purchaseController)
@@ -63,7 +72,7 @@ struct RootView: View {
         }
         .task {
             await screenTime.bootstrapAuthorizationIfNeeded()
-            reconcileProtectionState()
+            workflow.reconcileProtectionState()
             handlePendingShieldActivation()
             purchaseController.onMembershipEntitlementChange = { unlocked in
                 store.updateMembershipTier(unlocked ? .member : .starter)
@@ -71,13 +80,13 @@ struct RootView: View {
             purchaseController.startListeningForTransactions()
             await refreshPlanAccessFromEntitlements()
             await purchaseController.loadProducts()
-            reconcileProtectionState()
+            workflow.reconcileProtectionState()
             handlePendingShieldActivation()
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             screenTime.refreshAuthorizationStatus()
-            reconcileProtectionState()
+            workflow.reconcileProtectionState()
             Task {
                 await refreshPlanAccessFromEntitlements()
             }
@@ -85,115 +94,76 @@ struct RootView: View {
         }
         .onChange(of: screenTime.hasRequiredScreenTimeAuthorization) { _, isAuthorized in
             guard isAuthorized else { return }
-            reconcileProtectionState()
+            workflow.reconcileProtectionState()
             handlePendingShieldActivation()
         }
         .onChange(of: store.goal) { _, newGoal in
-            if newGoal == nil {
-                reconcileEmptyGoalState()
-            } else {
-                reconcileProtectionState()
-                screenTime.refreshActiveShieldConfiguration()
-            }
+            workflow.goalDidChange()
         }
         .onChange(of: screenTime.hasSelection) { _, hasSelection in
-            if !hasSelection {
-                store.clearUnlockSession()
-            }
+            workflow.selectionDidChange(hasSelection: hasSelection)
         }
         .onChange(of: screenTime.setupState) { _, setupState in
-            if setupState == .shieldActive,
-               store.unlockSession != nil,
-               store.unlockSession?.isActive != true {
-                store.clearUnlockSession()
+            if setupState == .shieldActive {
+                workflow.protectionDidRelock()
             }
         }
+        .onChange(of: store.hasReadyCheckpointSet) { _, _ in
+            guard activeCheckpointSession == nil else { return }
+            workflow.reconcileProtectionState()
+            handlePendingShieldActivation()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .checkpointShieldContextDidChange)) { _ in
-            screenTime.refreshActiveShieldConfiguration()
+            workflow.refreshProtectionConfiguration()
         }
     }
 
     private func handlePendingShieldActivation() {
-        guard activeShieldSession == nil else { return }
-        guard !isPreparingShieldSession else { return }
-        guard let pendingAttempt = SharedAppGroup.currentPendingShieldAttempt else { return }
-        let protectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
-        guard protectionSnapshot.acceptsPendingShieldAttempt(
-            configurationRevision: pendingAttempt.protectionConfigurationRevision,
-            hasSelection: screenTime.hasSelection
-        )
-        else {
-            _ = SharedAppGroup.consumePendingShieldAttempt(matchingID: pendingAttempt.id)
+        guard activeCheckpointSession == nil else { return }
+        guard workflow.operation == nil else { return }
+        guard SharedAppGroup.currentPendingShieldAttempt != nil else {
+            pendingShieldRetryTask?.cancel()
+            pendingShieldRetryTask = nil
             return
         }
-        let pendingProtectionRevision = pendingAttempt.protectionConfigurationRevision
-            ?? protectionSnapshot.configurationRevision
 
         selectedTab = .home
-        isPreparingShieldSession = true
 
         Task {
-            let preparedSession = await store.preparePendingShieldSession(
-                pendingAttemptID: pendingAttempt.id
-            )
-            let latestProtectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
-            let pendingAttemptAfterPreparation = SharedAppGroup.currentPendingShieldAttempt
-            let newerPendingAttemptExists = pendingAttemptAfterPreparation.map {
-                $0.id != pendingAttempt.id
-            } ?? false
-            if pendingAttemptAfterPreparation == nil,
-               latestProtectionSnapshot.acceptsPendingShieldAttempt(
-                configurationRevision: pendingProtectionRevision,
-                hasSelection: screenTime.hasSelection
-            ) {
-                activeShieldSession = preparedSession
-            }
-            isPreparingShieldSession = false
-            if newerPendingAttemptExists {
-                handlePendingShieldActivation()
+            if let session = await workflow.preparePendingShieldSession(),
+               presentCheckpoint(session) {
+                pendingShieldRetryTask?.cancel()
+                pendingShieldRetryTask = nil
+            } else {
+                schedulePendingShieldRetryIfNeeded()
             }
         }
     }
 
-    private func reconcileProtectionState() {
-        guard store.goal != nil else {
-            reconcileEmptyGoalState()
+    private func schedulePendingShieldRetryIfNeeded() {
+        guard pendingShieldRetryTask == nil,
+              SharedAppGroup.currentPendingShieldAttempt != nil,
+              let retryAt = store.checkpointRetryCooldownUntil else {
             return
         }
 
-        if SharedAppGroup.desiredShieldActive,
-           !store.hasReadyCheckpointSet,
-           store.activeCheckpointRun == nil,
-           store.unlockSession?.isActive != true {
-            screenTime.clearShield()
-            store.checkpointNotice = "Protection was turned off because a full checkpoint is not ready. Prepare your questions, then start protection again."
-            return
-        }
-
-        let protectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
-        screenTime.reconcileShieldState(
-            protectionShouldRemainActive: protectionSnapshot.desiredShieldActive
-        )
-
-        let reconciledProtectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
-        let canonicalBreakIsActive = reconciledProtectionSnapshot.unlockExpiration.map {
-            $0 > Date()
-        } ?? false
-        if store.unlockSession != nil,
-           (!reconciledProtectionSnapshot.desiredShieldActive ||
-            !canonicalBreakIsActive ||
-            store.unlockSession?.isActive != true) {
-            store.clearUnlockSession()
+        let delay = min(60, max(1, retryAt.timeIntervalSinceNow))
+        pendingShieldRetryTask = Task {
+            try? await Task.sleep(for: .seconds(delay))
+            guard !Task.isCancelled else { return }
+            pendingShieldRetryTask = nil
+            handlePendingShieldActivation()
         }
     }
 
-    private func reconcileEmptyGoalState() {
-        // Erase all data already clears both persistence domains and managed
-        // shields. Repeating the normal nil-goal cleanup would recreate empty
-        // primary/backup and App Group snapshot files.
-        guard !store.hasNoPersistedAppData else { return }
-        store.clearUnlockSession()
-        screenTime.clearShield()
+    @discardableResult
+    private func presentCheckpoint(_ session: CheckpointSession) -> Bool {
+        guard activeCheckpointSession == nil, workflow.operation == nil else {
+            store.discardCheckpointRunBeforePresentation(sessionID: session.id)
+            return false
+        }
+        activeCheckpointSession = session
+        return true
     }
 
     @MainActor

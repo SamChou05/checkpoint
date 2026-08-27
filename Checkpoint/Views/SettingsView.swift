@@ -4,6 +4,8 @@ struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
     let purchaseController: PurchaseController
+    let workflow: CheckpointWorkflowCoordinator
+    let presentCheckpoint: (CheckpointSession) -> Bool
     private let legalLinks = LegalLinks.current
 
     @State private var isRestrictedAppsPresented = false
@@ -15,13 +17,12 @@ struct SettingsView: View {
     @State private var isAppDataExpanded = false
     @State private var isDeveloperToolsExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
-    @State private var previewCheckpointSession: CheckpointSession?
     @State private var previewCheckpointMessage: String?
     @State private var isPreparingPreviewCheckpoint = false
-    @State private var stopBlockingSession: CheckpointSession?
     @State private var stopBlockingMessage: String?
     @State private var isPreparingStopChallenge = false
     @State private var isStopProtectionConfirmationPresented = false
+    @State private var isStopWithoutReviewConfirmationPresented = false
     @State private var pendingGoalDeletion: Goal?
 
     var body: some View {
@@ -126,6 +127,13 @@ struct SettingsView: View {
                                         .font(.footnote)
                                         .foregroundStyle(CheckpointTheme.amber)
                                         .fixedSize(horizontal: false, vertical: true)
+
+                                    SecondaryActionButton(
+                                        title: "Turn off without review",
+                                        systemImage: "lock.open"
+                                    ) {
+                                        isStopWithoutReviewConfirmationPresented = true
+                                    }
                                 }
                             }
 
@@ -176,12 +184,6 @@ struct SettingsView: View {
             .sheet(item: $advancedAction) { action in
                 AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
             }
-            .sheet(item: $previewCheckpointSession) { session in
-                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
-            }
-            .sheet(item: $stopBlockingSession) { session in
-                CheckpointAttemptView(store: store, screenTime: screenTime, session: session)
-            }
             .alert("Turn off protection?", isPresented: $isStopProtectionConfirmationPresented) {
                 Button("Start 20-question review") {
                     prepareStopBlockingChallenge()
@@ -190,6 +192,16 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("You will need to answer 18 of 20 questions correctly before protection turns off.")
+            }
+            .alert("Turn off without review?", isPresented: $isStopWithoutReviewConfirmationPresented) {
+                Button("Turn off protection", role: .destructive) {
+                    workflow.stopProtectionWithoutReview()
+                    stopBlockingMessage = nil
+                }
+
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("The review could not be prepared. You can turn protection off now and restart it after a full checkpoint is ready.")
             }
             .alert("Delete goal?", isPresented: goalDeletionConfirmationBinding) {
                 Button("Delete goal", role: .destructive) {
@@ -533,8 +545,9 @@ struct SettingsView: View {
 
         Task {
             if let session = await store.preparePreviewCheckpointSession() {
-                previewCheckpointMessage = nil
-                previewCheckpointSession = session
+                previewCheckpointMessage = presentCheckpoint(session)
+                    ? nil
+                    : "Finish the current checkpoint before opening a preview."
             } else {
                 previewCheckpointMessage = store.checkpointNotice
             }
@@ -548,8 +561,9 @@ struct SettingsView: View {
 
         Task {
             if let session = await store.prepareStopBlockingSession() {
-                stopBlockingMessage = nil
-                stopBlockingSession = session
+                stopBlockingMessage = presentCheckpoint(session)
+                    ? nil
+                    : "Finish the current checkpoint before turning off protection."
             } else {
                 stopBlockingMessage = store.checkpointNotice
             }

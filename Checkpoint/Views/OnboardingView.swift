@@ -171,17 +171,30 @@ struct OnboardingView: View {
                         Task {
                             guard !isCreating else { return }
                             isCreating = true
-                            await store.createGoal(
-                                title: title,
-                                deadline: deadline,
-                                currentLevel: currentLevel,
-                                focusAreas: focusAreas,
-                                sourceDocuments: sourceDocuments,
-                                preferredQuestionStyle: .multipleChoice,
-                                minimumQuestionDifficulty: minimumQuestionDifficulty,
-                                createsNewProfile: isNewProfile,
-                                waitForQuestionGeneration: false
-                            )
+                            if isNewProfile {
+                                await store.createGoal(
+                                    title: title,
+                                    deadline: deadline,
+                                    currentLevel: currentLevel,
+                                    focusAreas: focusAreas,
+                                    sourceDocuments: sourceDocuments,
+                                    preferredQuestionStyle: .multipleChoice,
+                                    minimumQuestionDifficulty: minimumQuestionDifficulty,
+                                    createsNewProfile: true,
+                                    waitForQuestionGeneration: false
+                                )
+                            } else {
+                                await store.updateActiveGoal(
+                                    title: title,
+                                    deadline: deadline,
+                                    currentLevel: currentLevel,
+                                    focusAreas: focusAreas,
+                                    sourceDocuments: sourceDocuments,
+                                    preferredQuestionStyle: .multipleChoice,
+                                    minimumQuestionDifficulty: minimumQuestionDifficulty,
+                                    waitForQuestionGeneration: false
+                                )
+                            }
                             isCreating = false
                             if !store.isOnboardingPresented {
                                 dismiss()

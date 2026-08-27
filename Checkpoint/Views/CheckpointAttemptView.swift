@@ -2,13 +2,12 @@ import SwiftUI
 
 struct CheckpointAttemptView: View {
     let store: CheckpointStore
-    let screenTime: ScreenTimeController
+    let workflow: CheckpointWorkflowCoordinator
     let session: CheckpointSession
 
     @Environment(\.dismiss) private var dismiss
     @State private var currentQuestionIndex = 0
     @State private var correctAnswerCount = 0
-    @State private var missedQuestionIDs: Set<CheckpointQuestion.ID> = []
     @State private var answer = ""
     @State private var result: AnswerResult = .correct
     @State private var checkedAnswer: CheckedCheckpointAnswer?
@@ -115,11 +114,7 @@ struct CheckpointAttemptView: View {
         .preferredColorScheme(.light)
         .interactiveDismissDisabled(session.purpose != .preview)
         .onDisappear {
-            guard session.purpose != .preview else { return }
-            store.abandonCheckpointRun(
-                sessionID: session.id,
-                missedQuestionIDs: missedQuestionIDs
-            )
+            workflow.abandon(session)
         }
     }
 
@@ -215,10 +210,6 @@ struct CheckpointAttemptView: View {
     private func checkCurrentAnswer() {
         let result = submissionResult
         let updatedCorrectCount = correctAnswerCount + (result == .correct ? 1 : 0)
-        var updatedMissedQuestionIDs = missedQuestionIDs
-        if result != .correct {
-            updatedMissedQuestionIDs.insert(question.id)
-        }
 
         let answeredQuestionCount = currentQuestionIndex + 1
         let shouldFinish = isFinalQuestion || !session.canStillMeetUnlockThreshold(
@@ -236,21 +227,15 @@ struct CheckpointAttemptView: View {
             )
 
             if shouldFinish && !shouldPass {
-                store.resolveCheckpointRun(
-                    sessionID: session.id,
-                    didPass: false,
-                    missedQuestionIDs: updatedMissedQuestionIDs
-                )
+                workflow.resolveFailed(session)
             }
         }
 
         correctAnswerCount = updatedCorrectCount
-        missedQuestionIDs = updatedMissedQuestionIDs
         checkedAnswer = CheckedCheckpointAnswer(
             result: result,
             shouldFinish: shouldFinish,
-            shouldPass: shouldPass,
-            unlockMinutes: shouldPass && session.purpose == .temporaryUnlock ? store.unlockPolicy.unlockMinutes : 0
+            shouldPass: shouldPass
         )
         accessibilityFocus = .feedback
     }
@@ -260,34 +245,11 @@ struct CheckpointAttemptView: View {
 
         guard !checkedAnswer.shouldFinish else {
             if checkedAnswer.shouldPass {
-                switch session.purpose {
-                case .temporaryUnlock:
-                    let now = Date()
-                    let expiration = Calendar.current.date(
-                        byAdding: .minute,
-                        value: checkedAnswer.unlockMinutes,
-                        to: now
-                    ) ?? now
-                    if screenTime.temporarilyUnshield(until: expiration) {
-                        protectionActionErrorMessage = nil
-                        store.startUnlockSession(
-                            minutes: checkedAnswer.unlockMinutes,
-                            expiresAt: expiration,
-                            goalID: session.questions.first?.goalID
-                        )
-                        store.resolveCheckpointRun(sessionID: session.id, didPass: true)
-                    } else {
-                        protectionActionErrorMessage = screenTime.userFacingErrorMessage
-                            ?? "The break could not start. Protection is still on; try again."
-                        return
-                    }
-                case .preview:
-                    break
-                case .stopBlocking:
-                    screenTime.clearShield()
-                    store.clearUnlockSession()
-                    store.resolveCheckpointRun(sessionID: session.id, didPass: true)
+                if let errorMessage = workflow.finishPassed(session) {
+                    protectionActionErrorMessage = errorMessage
+                    return
                 }
+                protectionActionErrorMessage = nil
             }
             dismiss()
             return
@@ -305,12 +267,6 @@ struct CheckpointAttemptView: View {
     }
 
     private func closeCheckpoint() {
-        if session.purpose != .preview {
-            store.abandonCheckpointRun(
-                sessionID: session.id,
-                missedQuestionIDs: missedQuestionIDs
-            )
-        }
         dismiss()
     }
 
@@ -323,7 +279,10 @@ struct CheckpointAttemptView: View {
         case .preview:
             return "We'll revisit what you missed."
         case .temporaryUnlock, .stopBlocking:
-            return "Protection stays on. Try again in 5 minutes, and we'll revisit what you missed."
+            if store.hasReadyCheckpointSet {
+                return "Protection stays on. Try again in 5 minutes, and we'll revisit what you missed."
+            }
+            return "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
         }
     }
 
@@ -402,7 +361,6 @@ private struct CheckedCheckpointAnswer {
     let result: AnswerResult
     let shouldFinish: Bool
     let shouldPass: Bool
-    let unlockMinutes: Int
 }
 
 private enum AttemptAccessibilityFocus: Hashable {

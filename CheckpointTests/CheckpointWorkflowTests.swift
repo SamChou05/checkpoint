@@ -3724,6 +3724,47 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testFailedSnapshotWriteNeverPublishesVolatileQuestionReadiness() throws {
+        try Data("not a directory".utf8).write(to: persistenceDirectory)
+        let goal = makeGoal()
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
+
+        store.updateRequiredCorrectAnswers(4)
+
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertNotEqual(SharedAppGroup.checkpointReady, true)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testSuccessfulSnapshotLoadSeedsSharedQuestionReadiness() {
+        let goal = makeGoal()
+        let originalStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        originalStore.goal = goal
+        originalStore.goalProfiles = [goal]
+        originalStore.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
+        originalStore.updateRequiredCorrectAnswers(4)
+        SharedAppGroup.defaults.removeObject(forKey: SharedAppGroup.checkpointReadyKey)
+
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertTrue(restoredStore.hasReadyCheckpointSet)
+        XCTAssertEqual(SharedAppGroup.checkpointReady, true)
+    }
+
+    @MainActor
     func testCorruptPrimaryRecoversFromAtomicBackup() throws {
         let goal = makeGoal()
         let store = makeFileBackedStore(goal: goal)
@@ -6052,6 +6093,7 @@ private func resetSharedAppGroupState() {
         SharedAppGroup.shieldConfigurationRenderCountKey,
         SharedAppGroup.lastUnlockExpirationKey,
         SharedAppGroup.desiredShieldActiveKey,
+        SharedAppGroup.checkpointReadyKey,
         SharedAppGroup.screenTimeSelectionKey,
         SharedAppGroup.screenTimeSelectionSemanticsVersionKey,
         SharedAppGroup.protectionConfigurationRevisionKey,
@@ -6359,6 +6401,85 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
     }
 
     @MainActor
+    func testPollingContinuesPastInitialBackoffWindowUntilBankIsReady() async throws {
+        let suiteName = "QuestionBankLongPollingTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let remoteQuestions = (1...ProductLimits.starterQuestionBankTargetCount).map { index -> CheckpointQuestion in
+            let remoteID = UUID()
+            var question = makeQuestion(goal: goal, index: index)
+            question.id = remoteID
+            question.remoteID = remoteID.uuidString
+            return question
+        }
+        let bankClient = DelayedReadyQuestionBankClient(
+            readyAfterEnsureCall: 7,
+            questions: remoteQuestions
+        )
+        let store = CheckpointStore(
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        for _ in 0..<500 where store.activeQuestions.count < remoteQuestions.count {
+            await Task.yield()
+        }
+
+        XCTAssertGreaterThanOrEqual(bankClient.ensureCallCount, 7)
+        XCTAssertEqual(store.activeQuestions.count, remoteQuestions.count)
+        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+    }
+
+    @MainActor
+    func testExhaustedFiniteBankStopsPollingBelowNominalLocalTarget() async throws {
+        let suiteName = "QuestionBankFiniteExhaustionTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "bank-exhausted",
+                status: .empty,
+                readyCount: 0,
+                targetCount: ProductLimits.starterQuestionBankTargetCount
+            )
+        )
+        let store = CheckpointStore(
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        XCTAssertEqual(bankClient.ensureRequests.count, 1)
+        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+        XCTAssertTrue(bankClient.claimIDs.isEmpty)
+    }
+
+    @MainActor
     func testCachedSessionIsServedWithoutAnyQuestionBankNetworkCall() throws {
         let suiteName = "QuestionBankCacheFirstTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
@@ -6387,6 +6508,49 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         XCTAssertEqual(session.questions.count, UnlockPolicy.default.questionsPerSession)
         XCTAssertTrue(bankClient.ensureRequests.isEmpty)
         XCTAssertTrue(bankClient.claimIDs.isEmpty)
+    }
+}
+
+private final class DelayedReadyQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
+    private let readyAfterEnsureCall: Int
+    private var questions: [CheckpointQuestion]
+    private(set) var ensureCallCount = 0
+
+    init(readyAfterEnsureCall: Int, questions: [CheckpointQuestion]) {
+        self.readyAfterEnsureCall = readyAfterEnsureCall
+        self.questions = questions
+    }
+
+    func ensureQuestionBank(
+        for request: QuestionGenerationRequest,
+        contextRevision: String,
+        desiredCount: Int,
+        lowWatermark: Int
+    ) async throws -> QuestionBankPreparationReceipt {
+        ensureCallCount += 1
+        let isReady = ensureCallCount >= readyAfterEnsureCall
+        return QuestionBankPreparationReceipt(
+            bankID: "bank-delayed",
+            status: isReady ? .ready : .queued,
+            readyCount: isReady ? questions.count : 0,
+            targetCount: desiredCount
+        )
+    }
+
+    func claimQuestions(
+        from bankID: String,
+        claimID: String,
+        limit: Int,
+        for request: QuestionGenerationRequest
+    ) async throws -> QuestionBankClaimReceipt {
+        let claimedQuestions = Array(questions.prefix(limit))
+        questions.removeFirst(claimedQuestions.count)
+        return QuestionBankClaimReceipt(
+            questions: claimedQuestions,
+            status: questions.isEmpty ? .empty : .ready,
+            readyCount: questions.count,
+            targetCount: ProductLimits.starterQuestionBankTargetCount
+        )
     }
 }
 

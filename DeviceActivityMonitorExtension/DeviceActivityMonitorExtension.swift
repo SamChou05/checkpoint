@@ -36,9 +36,20 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     private func reconcileManagedSettings(
         with snapshot: SharedAppGroup.ProtectionSnapshot
     ) -> String {
+        guard SharedAppGroup.isAvailable else {
+            managedStore.clearAllSettings()
+            return "cleared: shared storage unavailable"
+        }
+
         guard snapshot.desiredShieldActive else {
             managedStore.clearAllSettings()
             return "cleared: protection inactive"
+        }
+
+        guard SharedAppGroup.checkpointReady != false else {
+            managedStore.clearAllSettings()
+            SharedAppGroup.publishProtectionState(isActive: false, unlockExpiration: nil)
+            return "cleared: checkpoint unavailable"
         }
 
         if let unlockExpiration = snapshot.unlockExpiration,
