@@ -166,14 +166,6 @@ final class CheckpointStore {
         checkpointRetryCooldownRemainingSeconds > 0
     }
 
-    var questionsAnsweredThisWeekCount: Int {
-        weeklyTotalMetrics.questionsAnswered
-    }
-
-    var questionAccuracyThisWeekText: String {
-        weeklyTotalMetrics.accuracyText
-    }
-
     var weeklyTotalMetrics: WeeklyMetricsSummary {
         weeklyMetricsSummary(
             id: WeeklyMetricsSummary.allGoalsID,
@@ -576,10 +568,6 @@ final class CheckpointStore {
         membershipTier == .member
     }
 
-    var hasFullProductAccess: Bool {
-        isMember
-    }
-
     var questionBankTargetCount: Int {
         isMember ? ProductLimits.memberQuestionBankTargetCount : ProductLimits.starterQuestionBankTargetCount
     }
@@ -602,10 +590,6 @@ final class CheckpointStore {
 
     var goalProfileLimitMessage: String {
         "You can keep up to \(goalProfileLimit) active goals. Edit an existing goal before adding another."
-    }
-
-    var canRefreshQuestionBatch: Bool {
-        isMember
     }
 
     var usableQuestionCount: Int {
@@ -721,18 +705,6 @@ final class CheckpointStore {
     private var hasPendingActiveQuestionBankSync: Bool {
         guard let goalID = goal?.id else { return false }
         return questionBankSyncIntents.contains { $0.goalID == goalID }
-    }
-
-    var studyAssistSummary: String {
-        guard isMember else {
-            return "Free includes your first goal. Pro keeps new checkpoints available as you keep practicing."
-        }
-
-        if let focus = studyFocusRecommendation {
-            return focus
-        }
-
-        return "Your practice rhythm is steady. Keep completing sets and missed topics will surface automatically."
     }
 
     var studyFocusRecommendation: String? {
@@ -2402,29 +2374,6 @@ final class CheckpointStore {
 
     func clearCheckpointNotice() {
         checkpointNotice = nil
-    }
-
-    // MARK: - Question reporting
-
-    func reportQuestion(_ question: CheckpointQuestion, reason: QuestionReportReason, note: String) {
-        guard let goal else { return }
-
-        let report = QuestionQualityReport(
-            questionID: question.id,
-            goalID: goal.id,
-            prompt: question.prompt,
-            reason: reason,
-            note: note
-        )
-
-        questionReports.insert(report, at: 0)
-
-        if let index = questions.firstIndex(where: { $0.id == question.id }) {
-            questions[index].status = .retired
-        }
-
-        save()
-        publishShieldContext()
     }
 
     @discardableResult

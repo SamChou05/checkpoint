@@ -179,8 +179,6 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         XCTAssertEqual(store.membershipTier, .starter)
         XCTAssertFalse(store.isMember)
-        XCTAssertFalse(store.hasFullProductAccess)
-        XCTAssertFalse(store.canRefreshQuestionBatch)
         XCTAssertEqual(store.questionBankTargetCount, ProductLimits.starterQuestionBankTargetCount)
         XCTAssertNotNil(store.goal)
         XCTAssertGreaterThanOrEqual(store.activeQuestions.count, 5)
@@ -2011,8 +2009,6 @@ final class CheckpointWorkflowTests: XCTestCase {
             UnlockEvent(goalID: goal.id, minutes: 30, createdAt: lastWeek)
         ]
 
-        XCTAssertEqual(store.questionsAnsweredThisWeekCount, 3)
-        XCTAssertEqual(store.questionAccuracyThisWeekText, "66%")
         XCTAssertEqual(store.weeklyTotalMetrics.questionsAnswered, 3)
         XCTAssertEqual(store.weeklyTotalMetrics.accuracyText, "66%")
         XCTAssertEqual(store.weeklyTotalMetrics.missedAnswers, 1)
@@ -2156,7 +2152,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(Set(store.competencies.map(\.topic)), ["arrays", "recursion", "hash maps"])
 
         _ = store.submitAnswer(question: firstQuestion, answer: firstQuestion.expectedAnswer, result: .correct)
-        store.reportQuestion(firstQuestion, reason: .confusing, note: "stale")
+        store.questionReports = [makeQuestionReport(for: firstQuestion, note: "stale")]
 
         XCTAssertFalse(store.attempts.isEmpty)
         XCTAssertFalse(store.questionReports.isEmpty)
@@ -2214,7 +2210,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         let firstGoal = try XCTUnwrap(store.goal)
         let firstQuestion = try XCTUnwrap(store.activeQuestions.first)
         _ = store.submitAnswer(question: firstQuestion, answer: firstQuestion.expectedAnswer, result: .correct)
-        store.reportQuestion(firstQuestion, reason: .confusing, note: "too vague")
+        store.questionReports = [makeQuestionReport(for: firstQuestion, note: "too vague")]
 
         await store.createGoal(
             title: "Prepare for calculus final",
@@ -2700,10 +2696,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         let store = makeSeededStore(questionCount: 6)
 
         let session = try XCTUnwrap(store.nextCheckpointSession())
-        XCTAssertFalse(store.hasFullProductAccess)
         XCTAssertEqual(session.questions.count, 5)
         XCTAssertEqual(session.unlockThreshold, 4)
-        XCTAssertFalse(store.canRefreshQuestionBatch)
     }
 
     @MainActor
@@ -4375,7 +4369,7 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testStudyAssistRecommendationUsesWeakestTopic() {
+    func testStudyAssistRecommendationUsesWeakestTopic() throws {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.updateMembershipTier(.member)
@@ -4389,9 +4383,10 @@ final class CheckpointWorkflowTests: XCTestCase {
         recursion.correct = 4
         store.competencies = [recursion, arrays]
 
-        XCTAssertTrue(store.studyAssistSummary.contains("arrays"))
-        XCTAssertTrue(store.studyAssistSummary.contains("another pass"))
-        XCTAssertFalse(store.studyAssistSummary.contains("%"))
+        let recommendation = try XCTUnwrap(store.studyFocusRecommendation)
+        XCTAssertTrue(recommendation.contains("arrays"))
+        XCTAssertTrue(recommendation.contains("another pass"))
+        XCTAssertFalse(recommendation.contains("%"))
     }
 
     @MainActor
@@ -7029,6 +7024,19 @@ private func makeQuestion(
         lastAskedAt: lastAskedAt,
         nextReviewAt: nextReviewAt,
         sourcePrompt: sourcePrompt
+    )
+}
+
+private func makeQuestionReport(
+    for question: CheckpointQuestion,
+    note: String
+) -> QuestionQualityReport {
+    QuestionQualityReport(
+        questionID: question.id,
+        goalID: question.goalID,
+        prompt: question.prompt,
+        reason: .confusing,
+        note: note
     )
 }
 
