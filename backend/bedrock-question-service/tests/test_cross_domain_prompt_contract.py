@@ -90,6 +90,16 @@ class CrossDomainPromptContractTests(unittest.TestCase):
         )
         cls.fixtures = {fixture["case_id"]: fixture for fixture in fixtures}
 
+    def score_single_question(self, case_id, question):
+        fixture = self.fixtures[case_id]
+        return checkpoint_question_eval.score_case_response(
+            {
+                **fixture,
+                "expect": {**fixture["expect"], "min_usable_questions": 1},
+            },
+            {"case_id": case_id, "run": 1, "questions": [question]},
+        )
+
     def test_default_release_suite_covers_cross_domain_and_raw_goals(self):
         for case_id in CROSS_DOMAIN_CASE_IDS:
             with self.subTest(case_id=case_id):
@@ -145,27 +155,11 @@ class CrossDomainPromptContractTests(unittest.TestCase):
     def test_representative_items_from_each_domain_pass_the_same_quality_gate(self):
         for case_id, question in REPRESENTATIVE_QUESTIONS.items():
             with self.subTest(case_id=case_id):
-                result = checkpoint_question_eval.score_case_response(
-                    {
-                        **self.fixtures[case_id],
-                        "expect": {
-                            **self.fixtures[case_id]["expect"],
-                            "min_usable_questions": 1,
-                        },
-                    },
-                    {"case_id": case_id, "run": 1, "questions": [question]},
-                )
+                result = self.score_single_question(case_id, question)
 
                 self.assertTrue(result["passed"], result)
 
     def test_mcat_grounding_accepts_valid_variation_across_supplied_focus_areas(self):
-        fixture = {
-            **self.fixtures["mcat_science_passage_reasoning"],
-            "expect": {
-                **self.fixtures["mcat_science_passage_reasoning"]["expect"],
-                "min_usable_questions": 1,
-            },
-        }
         questions = [
             {
                 "prompt": "A researcher disrupts the mitotic spindle in a dividing cell. Which process is most directly prevented?",
@@ -213,24 +207,12 @@ class CrossDomainPromptContractTests(unittest.TestCase):
 
         for question in questions:
             with self.subTest(topic=question["topic"]):
-                result = checkpoint_question_eval.score_case_response(
-                    fixture,
-                    {
-                        "case_id": "mcat_science_passage_reasoning",
-                        "run": 1,
-                        "questions": [question],
-                    },
+                result = self.score_single_question(
+                    "mcat_science_passage_reasoning", question
                 )
                 self.assertTrue(result["passed"], result)
 
     def test_spanish_grounding_accepts_travel_vocabulary_variation(self):
-        fixture = {
-            **self.fixtures["spanish_subjunctive_easy_application"],
-            "expect": {
-                **self.fixtures["spanish_subjunctive_easy_application"]["expect"],
-                "min_usable_questions": 1,
-            },
-        }
         question = {
             "prompt": "Before an international flight, Ana says: 'Necesito _____ para mostrarlo en inmigración.' Which Spanish word completes the sentence?",
             "expectedAnswer": "el pasaporte",
@@ -241,25 +223,13 @@ class CrossDomainPromptContractTests(unittest.TestCase):
             "format": "Multiple Choice",
         }
 
-        result = checkpoint_question_eval.score_case_response(
-            fixture,
-            {
-                "case_id": "spanish_subjunctive_easy_application",
-                "run": 1,
-                "questions": [question],
-            },
+        result = self.score_single_question(
+            "spanish_subjunctive_easy_application", question
         )
 
         self.assertTrue(result["passed"], result)
 
     def test_history_grounding_accepts_valid_variation_across_supplied_focus_areas(self):
-        fixture = {
-            **self.fixtures["modern_world_history_source_reasoning"],
-            "expect": {
-                **self.fixtures["modern_world_history_source_reasoning"]["expect"],
-                "min_usable_questions": 1,
-            },
-        }
         questions = [
             {
                 "prompt": "A factory replaces skilled hand production with steam-powered machinery. Which social change is most directly associated with this industrial shift?",
@@ -293,13 +263,8 @@ class CrossDomainPromptContractTests(unittest.TestCase):
 
         for question in questions:
             with self.subTest(topic=question["topic"]):
-                result = checkpoint_question_eval.score_case_response(
-                    fixture,
-                    {
-                        "case_id": "modern_world_history_source_reasoning",
-                        "run": 1,
-                        "questions": [question],
-                    },
+                result = self.score_single_question(
+                    "modern_world_history_source_reasoning", question
                 )
                 self.assertTrue(result["passed"], result)
 
@@ -323,13 +288,7 @@ class CrossDomainPromptContractTests(unittest.TestCase):
                     "format": "Multiple Choice",
                 }
 
-                result = checkpoint_question_eval.score_case_response(
-                    {
-                        **fixture,
-                        "expect": {**fixture["expect"], "min_usable_questions": 1},
-                    },
-                    {"case_id": case_id, "run": 1, "questions": [generic_question]},
-                )
+                result = self.score_single_question(case_id, generic_question)
 
                 self.assertFalse(result["passed"])
                 self.assertTrue(
