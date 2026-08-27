@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkpoint UI Screen Inventory</title>
+  <style>
+    :root { color-scheme: light; --ink:#102e28; --muted:#60736d; --paper:#f7f5ed; --line:#c9d2cc; --wash:#e9efe9; --teal:#155d50; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); font:16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; }
+    header { padding:48px clamp(22px,5vw,72px) 30px; background:linear-gradient(135deg,#f7f5ed,#dceae2); border-bottom:1px solid var(--line); }
+    h1 { margin:0 0 10px; font-size:clamp(34px,5vw,64px); letter-spacing:-.035em; }
+    header p { max-width:760px; margin:0; color:var(--muted); font-size:18px; }
+    nav { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+    nav a { color:var(--teal); text-decoration:none; background:#fff9; border:1px solid var(--line); border-radius:999px; padding:8px 13px; font-weight:650; }
+    main { padding:34px clamp(18px,4vw,64px) 80px; }
+    section { margin:0 auto 54px; max-width:1500px; }
+    h2 { margin:0 0 18px; font-size:clamp(25px,3vw,38px); letter-spacing:-.025em; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:22px; }
+    figure { margin:0; min-width:0; }
+    figure a { display:block; border:1px solid var(--line); border-radius:22px; overflow:hidden; background:white; box-shadow:0 9px 30px #18392f12; transition:.18s ease; }
+    figure a:hover { transform:translateY(-3px); box-shadow:0 14px 36px #18392f20; }
+    img { display:block; width:100%; height:auto; }
+    figcaption { padding:10px 4px 0; font-weight:680; }
+    figcaption small { display:block; color:var(--muted); font-weight:500; }
+    .note { max-width:1500px; margin:0 auto 36px; padding:18px 20px; border:1px solid #d3b76e; border-radius:14px; background:#fff7dc; color:#584718; }
+    footer { padding:24px clamp(18px,4vw,64px) 50px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Checkpoint UI Screen Inventory</h1>
+    <p>Forty simulator-rendered states for a focused UI review session. Select any screen to open the full-resolution capture.</p>
+    <nav>
+      <a href="#access">Access &amp; goals</a><a href="#home">Home</a><a href="#progress">Progress</a><a href="#settings">Settings &amp; support</a><a href="#checkpoint">Checkpoint</a>
+    </nav>
+  </header>
+  <main>
+    <div class="note">Physical-device pass still required: the branded iOS shield, real Family Controls selection/enforcement, and shield-to-app transition. Apple-owned purchase, authorization, and share sheets are also intentionally excluded.</div>
+
+    <section id="access"><h2>Access &amp; goals</h2><div class="grid">
+      <figure><a href="screens/authorization-initial.png"><img src="screens/authorization-initial.png"></a><figcaption>Screen Time access<small>First launch</small></figcaption></figure>
+      <figure><a href="screens/authorization-denied.png"><img src="screens/authorization-denied.png"></a><figcaption>Screen Time access<small>Denied</small></figcaption></figure>
+      <figure><a href="screens/authorization-recovery.png"><img src="screens/authorization-recovery.png"></a><figcaption>Data erasure recovery</figcaption></figure>
+      <figure><a href="screens/onboarding-new.png"><img src="screens/onboarding-new.png"></a><figcaption>Goal setup<small>New goal</small></figcaption></figure>
+      <figure><a href="screens/onboarding-edit.png"><img src="screens/onboarding-edit.png"></a><figcaption>Goal setup<small>Edit goal</small></figcaption></figure>
+    </div></section>
+
+    <section id="home"><h2>Home &amp; weekly review</h2><div class="grid">
+      <figure><a href="screens/home-empty.png"><img src="screens/home-empty.png"></a><figcaption>Home<small>No goal</small></figcaption></figure>
+      <figure><a href="screens/home-ready.png"><img src="screens/home-ready.png"></a><figcaption>Home<small>Questions ready</small></figcaption></figure>
+      <figure><a href="screens/home-generating.png"><img src="screens/home-generating.png"></a><figcaption>Home<small>Generating questions</small></figcaption></figure>
+      <figure><a href="screens/home-failed.png"><img src="screens/home-failed.png"></a><figcaption>Home<small>Generation failed</small></figcaption></figure>
+      <figure><a href="screens/home-protection.png"><img src="screens/home-protection.png"></a><figcaption>Home<small>Protection on</small></figcaption></figure>
+      <figure><a href="screens/home-break.png"><img src="screens/home-break.png"></a><figcaption>Home<small>Break active</small></figcaption></figure>
+      <figure><a href="screens/home-weekly.png"><img src="screens/home-weekly.png"></a><figcaption>Home<small>Weekly activity</small></figcaption></figure>
+      <figure><a href="screens/weekly-review.png"><img src="screens/weekly-review.png"></a><figcaption>Weekly review</figcaption></figure>
+    </div></section>
+
+    <section id="progress"><h2>Progress &amp; Skill Map</h2><div class="grid">
+      <figure><a href="screens/progress-empty.png"><img src="screens/progress-empty.png"></a><figcaption>Progress<small>No progress yet</small></figcaption></figure>
+      <figure><a href="screens/progress-building.png"><img src="screens/progress-building.png"></a><figcaption>Progress<small>Building Skill Map</small></figcaption></figure>
+      <figure><a href="screens/progress-attention.png"><img src="screens/progress-attention.png"></a><figcaption>Progress<small>Skill Map needs detail</small></figcaption></figure>
+      <figure><a href="screens/progress-suggested.png"><img src="screens/progress-suggested.png"></a><figcaption>Progress<small>Suggested Skill Map</small></figcaption></figure>
+      <figure><a href="screens/progress-reviewed.png"><img src="screens/progress-reviewed.png"></a><figcaption>Progress<small>Reviewed Skill Map</small></figcaption></figure>
+      <figure><a href="screens/skill-map-review.png"><img src="screens/skill-map-review.png"></a><figcaption>Skill Map<small>Review names</small></figcaption></figure>
+      <figure><a href="screens/skill-map-repair.png"><img src="screens/skill-map-repair.png"></a><figcaption>Skill Map<small>Repair invalid map</small></figcaption></figure>
+    </div></section>
+
+    <section id="settings"><h2>Settings, support &amp; plan</h2><div class="grid">
+      <figure><a href="screens/settings-free.png"><img src="screens/settings-free.png"></a><figcaption>Settings<small>Free</small></figcaption></figure>
+      <figure><a href="screens/settings-pro.png"><img src="screens/settings-pro.png"></a><figcaption>Settings<small>Pro + protection on</small></figcaption></figure>
+      <figure><a href="screens/history-empty.png"><img src="screens/history-empty.png"></a><figcaption>History<small>Empty</small></figcaption></figure>
+      <figure><a href="screens/history-populated.png"><img src="screens/history-populated.png"></a><figcaption>History<small>Populated</small></figcaption></figure>
+      <figure><a href="screens/feedback-empty.png"><img src="screens/feedback-empty.png"></a><figcaption>Help &amp; Feedback<small>Empty</small></figcaption></figure>
+      <figure><a href="screens/feedback-saved.png"><img src="screens/feedback-saved.png"></a><figcaption>Help &amp; Feedback<small>Saved notes</small></figcaption></figure>
+      <figure><a href="screens/protected-apps.png"><img src="screens/protected-apps.png"></a><figcaption>Protected Apps<small>Apple picker</small></figcaption></figure>
+      <figure><a href="screens/membership-free.png"><img src="screens/membership-free.png"></a><figcaption>Plan<small>Free paywall</small></figcaption></figure>
+      <figure><a href="screens/membership-pro.png"><img src="screens/membership-pro.png"></a><figcaption>Plan<small>Pro active</small></figcaption></figure>
+      <figure><a href="screens/reset-confirmation.png"><img src="screens/reset-confirmation.png"></a><figcaption>Reset confirmation</figcaption></figure>
+    </div></section>
+
+    <section id="checkpoint"><h2>Checkpoint &amp; diagnostics</h2><div class="grid">
+      <figure><a href="screens/checkpoint-question.png"><img src="screens/checkpoint-question.png"></a><figcaption>Checkpoint<small>Unanswered</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-selected.png"><img src="screens/checkpoint-selected.png"></a><figcaption>Checkpoint<small>Choice selected</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-correct.png"><img src="screens/checkpoint-correct.png"></a><figcaption>Checkpoint<small>Correct feedback</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-incorrect.png"><img src="screens/checkpoint-incorrect.png"></a><figcaption>Checkpoint<small>Missed feedback</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-passed.png"><img src="screens/checkpoint-passed.png"></a><figcaption>Checkpoint<small>Passed</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-passed-bottom.png"><img src="screens/checkpoint-passed-bottom.png"></a><figcaption>Checkpoint<small>Passed · completion action</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-failed.png"><img src="screens/checkpoint-failed.png"></a><figcaption>Checkpoint<small>Failed</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-failed-bottom.png"><img src="screens/checkpoint-failed-bottom.png"></a><figcaption>Checkpoint<small>Failed · completion action</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-reflection.png"><img src="screens/checkpoint-reflection.png"></a><figcaption>Checkpoint<small>Reflection</small></figcaption></figure>
+      <figure><a href="screens/checkpoint-stop.png"><img src="screens/checkpoint-stop.png"></a><figcaption>Checkpoint<small>Stop-protection challenge</small></figcaption></figure>
+      <figure><a href="screens/diagnostics-empty.png"><img src="screens/diagnostics-empty.png"></a><figcaption>Diagnostics<small>Empty</small></figcaption></figure>
+      <figure><a href="screens/diagnostics-populated.png"><img src="screens/diagnostics-populated.png"></a><figcaption>Diagnostics<small>Populated</small></figcaption></figure>
+    </div></section>
+  </main>
+  <footer>Rendered on iPhone 17 Simulator · iOS 26.4 · 9:41 status bar override</footer>
+</body>
+</html>
