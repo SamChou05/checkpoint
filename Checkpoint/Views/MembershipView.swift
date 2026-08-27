@@ -78,8 +78,8 @@ struct MembershipView: View {
                         SecondaryActionButton(title: purchaseController.isRestoringPurchases ? "Restoring" : "Restore purchases", systemImage: "arrow.clockwise.circle") {
                             restorePurchases()
                         }
-                        .disabled(purchaseController.isRestoringPurchases || purchasingProductID != nil)
-                        .opacity(purchaseController.isRestoringPurchases || purchasingProductID != nil ? 0.64 : 1)
+                        .disabled(isPurchaseActionInProgress)
+                        .opacity(isPurchaseActionInProgress ? 0.64 : 1)
                     }
 
                     paywallLegalLinks
@@ -170,6 +170,10 @@ struct MembershipView: View {
 
     private var subscriptionDisclosureText: String {
         "Billing is handled by Apple. Subscriptions renew automatically until canceled in App Store account settings."
+    }
+
+    private var isPurchaseActionInProgress: Bool {
+        purchaseController.isRestoringPurchases || purchasingProductID != nil
     }
 
     private var paywallLegalLinks: some View {

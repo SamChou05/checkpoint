@@ -127,11 +127,7 @@ struct SettingsNavigationRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
-                    .frame(width: 34, height: 34)
-                    .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                SettingsRowIcon(systemImage: systemImage)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
@@ -180,11 +176,7 @@ struct LegalLinkRow: View {
 
     private var rowContent: some View {
         HStack(spacing: 12) {
-            Image(systemName: systemImage)
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 34, height: 34)
-                .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+            SettingsRowIcon(systemImage: systemImage)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -209,5 +201,17 @@ struct LegalLinkRow: View {
         }
         .frame(minHeight: 44)
         .contentShape(Rectangle())
+    }
+}
+
+private struct SettingsRowIcon: View {
+    let systemImage: String
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .frame(width: 34, height: 34)
+            .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
     }
 }

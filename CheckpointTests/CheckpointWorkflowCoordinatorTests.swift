@@ -371,7 +371,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
 
 @MainActor
 private final class FakeAppProtectionController: AppProtectionControlling {
-    var hasSelection = true
+    let hasSelection = true
     var isShieldingEnabled = false
     var userFacingErrorMessage: String?
     var shouldBeginBreak = true
