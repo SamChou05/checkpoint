@@ -187,19 +187,7 @@ class QuestionBankTests(unittest.TestCase):
 
     def test_claim_is_owner_bound_atomic_and_idempotent(self):
         bank_id, meta, pointer, question = _claim_records(low=0)
-        questions = []
-        for integer in range(1, 4):
-            item = copy.deepcopy(question)
-            remote_id = str(uuid.UUID(int=integer))
-            item["sk"] = {"S": f"QUESTION#{remote_id}"}
-            stored = json.loads(item["questionJSON"]["S"])
-            stored["remoteID"] = remote_id
-            item["remoteID"] = {"S": remote_id}
-            item["questionJSON"] = {
-                "S": json.dumps(stored, separators=(",", ":"))
-            }
-            questions.append(item)
-        dynamo = ClaimDynamo(meta, pointer, questions)
+        dynamo = ClaimDynamo(meta, pointer, [question])
         queue = FakeQueue()
         payload = {"bankID": bank_id, "claimID": "claim-1", "limit": 5}
 
@@ -292,7 +280,19 @@ class QuestionBankTests(unittest.TestCase):
         meta["readyCount"] = {"N": "3"}
         meta["generatedCount"] = {"N": "3"}
         meta["initialFillComplete"] = {"BOOL": True}
-        dynamo = ClaimDynamo(meta, pointer, [question])
+        questions = []
+        for integer in range(1, 4):
+            item = copy.deepcopy(question)
+            remote_id = str(uuid.UUID(int=integer))
+            item["sk"] = {"S": f"QUESTION#{remote_id}"}
+            stored = json.loads(item["questionJSON"]["S"])
+            stored["remoteID"] = remote_id
+            item["remoteID"] = {"S": remote_id}
+            item["questionJSON"] = {
+                "S": json.dumps(stored, separators=(",", ":"))
+            }
+            questions.append(item)
+        dynamo = ClaimDynamo(meta, pointer, questions)
 
         claimed = question_bank.claim_questions(
             {"bankID": bank_id, "claimID": "after-initial-fill", "limit": 1},
