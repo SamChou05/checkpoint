@@ -2,6 +2,8 @@ import XCTest
 @testable import Checkpoint
 
 final class BackendQuestionEngineContractTests: XCTestCase {
+    // MARK: - Persistence and request contracts
+
     func testLegacySkillMapAndQuestionDecodeWithMigrationDefaults() throws {
         let goalID = UUID()
         let skillID = UUID()
@@ -181,6 +183,8 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertFalse(context.needsGeneratedSkillMap)
     }
 
+    // MARK: - Response decoding
+
     func testInferenceResponseBuildsStableSkillAndObjectiveModels() throws {
         let skills = makeSkills()
         let responseData = try JSONEncoder().encode(
@@ -263,6 +267,8 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertNil(question.objectiveID)
         XCTAssertEqual(question.objective, "Solve equations")
     }
+
+    // MARK: - Provider routing
 
     func testSkillMapInferenceEndpointIsSiblingOfQuestionEndpoint() throws {
         let endpoint = try XCTUnwrap(URL(string: "https://api.example.com/prod/v1/questions"))
@@ -355,6 +361,8 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         )
     }
 }
+
+// MARK: - Test support
 
 private struct TestInferenceEnvelope: Encodable {
     var skillMap: BackendSkillMapPayload

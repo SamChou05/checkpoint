@@ -2,6 +2,8 @@ import XCTest
 @testable import Checkpoint
 
 final class StoreKitPaymentTests: XCTestCase {
+    // MARK: - Entitlement configuration
+
     @MainActor
     func testDebugMembershipEntitlementDefaultsOff() {
         let controller = PurchaseController(grantsDebugTesterEntitlement: false)
@@ -60,6 +62,8 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertEqual(LegalLinks.termsOfUseURL.scheme, "https")
     }
 
+    // MARK: - StoreKit configuration
+
     func testLocalStoreKitConfigMatchesMembershipProductIDs() throws {
         let subscriptions = try localSubscriptions()
 
@@ -87,6 +91,8 @@ final class StoreKitPaymentTests: XCTestCase {
         return config.subscriptionGroups.flatMap(\.subscriptions)
     }
 }
+
+// MARK: - StoreKit decoding fixtures
 
 private struct StoreKitConfiguration: Decodable {
     var subscriptionGroups: [StoreKitSubscriptionGroup]

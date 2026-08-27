@@ -9,6 +9,8 @@ final class CheckpointWorkflowTests: XCTestCase {
     private var defaults: UserDefaults!
     private var defaultsSuiteName: String!
 
+    // MARK: - Test lifecycle
+
     override func setUp() {
         super.setUp()
         defaultsSuiteName = "CheckpointTests.\(UUID().uuidString)"
@@ -23,6 +25,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         defaultsSuiteName = nil
         super.tearDown()
     }
+
+    // MARK: - Goal creation and initial question generation
 
     @MainActor
     func testInitialAvailabilityFailureCanRetryWithoutPresentingPaywall() async {
@@ -522,6 +526,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         XCTAssertEqual(store.activeGoalFocusText, "argument flaws")
     }
+
+    // MARK: - Skill maps and adaptive scheduling
 
     @MainActor
     func testInitialGenerationPersistsFirstClassSkillMapBeforeRequestingQuestions() async throws {
@@ -1974,6 +1980,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertTrue(backendEngine.receivedRequests.first?.questionContext.needsGeneratedSkillMap ?? false)
     }
 
+    // MARK: - Progress metrics and issue reports
+
     @MainActor
     func testWeeklyMetricsAggregateAcrossGoalsThisWeek() {
         let store = CheckpointStore(defaults: defaults)
@@ -2118,6 +2126,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         let reloadedStore = CheckpointStore(defaults: defaults)
         XCTAssertEqual(reloadedStore.issueReports, store.issueReports)
     }
+
+    // MARK: - Goal profiles
 
     @MainActor
     func testSwitchingActiveGoalRebuildsPracticeSetAndSkillMap() async throws {
@@ -2554,6 +2564,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertTrue(store.isOnboardingPresented)
         XCTAssertEqual(SharedAppGroup.currentShieldContext().goalTitle, "Checkpoint")
     }
+
+    // MARK: - Checkpoint selection, grading, and cooldowns
 
     @MainActor
     func testCheckpointSessionUsesFiveDistinctQuestionsByDefault() throws {
@@ -3304,6 +3316,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertTrue(SharedAppGroup.desiredShieldActive)
     }
 
+    // MARK: - Screen Time and shield coordination
+
     @MainActor
     func testPendingShieldAttemptCreatesOneCheckpointSessionThenClears() throws {
         let store = makeSeededStore(questionCount: 6)
@@ -4027,6 +4041,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(store.unlockPolicy.requiredCorrectAnswers, 7)
     }
 
+    // MARK: - Refill, Study Assist, and difficulty
+
     @MainActor
     func testMemberRefreshesAfterOldRefreshCounter() async throws {
         let goal = makeGoal()
@@ -4561,6 +4577,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         return store
     }
 }
+
+// MARK: - Snapshot persistence
 
 final class AppSnapshotPersistenceTests: XCTestCase {
     private var defaults: UserDefaults!
@@ -5179,6 +5197,8 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         return store
     }
 }
+
+// MARK: - AI provider policy and question validation
 
 final class AIProviderPolicyTests: XCTestCase {
     @MainActor
@@ -6387,6 +6407,8 @@ final class AIProviderPolicyTests: XCTestCase {
     }
 }
 
+// MARK: - Unlock policy
+
 final class UnlockPolicyTests: XCTestCase {
     func testCorrectAnswerUnlockOptionsUsePracticalShortBreaks() {
         XCTAssertEqual(UnlockPolicy.default.unlockMinutes, 30)
@@ -6432,6 +6454,8 @@ final class UnlockPolicyTests: XCTestCase {
         XCTAssertEqual(policy.requiredCorrectAnswers, 4)
     }
 }
+
+// MARK: - Test doubles and fixtures
 
 private enum TestQuestionGenerationError: Error {
     case unavailable
@@ -7029,6 +7053,8 @@ private func resetSharedAppGroupState() {
     SharedAppGroup.removeScreenTimeSelectionFile()
     SharedAppGroup.removeProtectionSnapshotFile()
 }
+
+// MARK: - Asynchronous question bank flow
 
 final class QuestionBankAsyncFlowTests: XCTestCase {
     func testQuestionBankEndpointsAreSiblingsOfGenerationEndpoint() throws {

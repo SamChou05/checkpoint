@@ -20,6 +20,8 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Protection and break transitions
+
     @MainActor
     func testReadyProtectionStartAppliesShieldOnce() async {
         let store = makeStore(questionCount: 5)
@@ -241,6 +243,8 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertTrue(restoredStore.isCheckpointRetryCooldownActive)
     }
 
+    // MARK: - Goal edits
+
     @MainActor
     func testNoOpGoalEditPreservesIdentityHistoryAndQuestionBank() async throws {
         let store = makeStore(questionCount: 5)
@@ -368,6 +372,8 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         return store
     }
 }
+
+// MARK: - Test support
 
 @MainActor
 private final class FakeAppProtectionController: AppProtectionControlling {
