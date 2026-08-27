@@ -6,13 +6,13 @@ This is a working draft, not the published policy. It describes the current impl
 
 ## Overview
 
-Checkpoint helps users protect selected apps and complete goal-aligned practice before taking timed app breaks. Most learning, progress, and Screen Time data is stored on the user's device. Checkpoint uses an AWS-hosted service and Amazon Bedrock when it needs to generate new practice questions.
+Checkpoint helps users protect selected apps and complete goal-aligned practice before taking timed app breaks. Most learning, progress, and Screen Time data is stored on the user's device. Checkpoint uses an AWS-hosted service and Amazon Bedrock to prepare new practice questions asynchronously, temporarily store server-side question-bank content, and deliver already-prepared questions to the app.
 
 ## Information Stored On Device
 
 Checkpoint may store the following information locally:
 
-- Goals, deadlines, categories, current level, focus areas, and difficulty preferences.
+- Goals, deadlines, categories, current level, focus areas, difficulty preferences, and text extracted from optional study-material files.
 - Generated questions, choices, expected answers, explanations, topics, and question status.
 - Competency estimates, attempts, answer history, accuracy, progress, and app-break history.
 - Question and issue reports plus limited question-generation diagnostics.
@@ -53,24 +53,37 @@ When cloud question generation is used, Checkpoint sends its backend the informa
 - Competency topic, estimated level, mastery percentage, and attempt count.
 - Existing question prompts and limited question coverage, including topic, expected answer, choices, and difficulty, to reduce repetition.
 - Reported question prompts, requested question count, and difficulty guidance.
+- Filenames and extracted text from optional study materials attached to the goal.
 
 The request also includes the random installation identifier in a header. AWS infrastructure observes the request's source IP address as part of delivering the network request.
 
-The Checkpoint backend validates the request and sends a generation prompt containing the relevant goal and question context to Amazon Bedrock. Amazon Bedrock returns generated question content to the backend, which validates it before returning it to the app. The Checkpoint application database does not intentionally store request bodies, goal text, or generated questions. Operational metrics intentionally contain counts, status, latency, token usage, and a request identifier rather than goal or question text.
+The Checkpoint backend validates the request and stores the normalized generation context in an encrypted, expiring DynamoDB question bank. An asynchronous worker later sends the relevant goal and question context to Amazon Bedrock. Amazon Bedrock returns generated question content to the worker, which validates and stores accepted questions until the app claims them or they expire. This lets preparation continue when the app is suspended or closed and keeps model latency out of the checkpoint-serving request. Operational metrics intentionally contain counts, status, latency, token usage, and a request identifier rather than goal or question text.
+
+The current small-document feature extracts selectable text from supported text and PDF files on the device. It does not upload the original binary file. Extracted text is retained with the local goal until that goal or all app data is erased, and is transmitted again when it is needed to generate questions for that goal. Scanned PDFs without selectable text are not processed in the current implementation.
 
 The deployed AWS region, Amazon Bedrock model, optional Bedrock Guardrail configuration, AWS service-processing retention, subprocessors, and any contractual data-use settings must be confirmed before this draft is published.
 
 An Apple Foundation Models path remains code-supported only for explicit internal experiments. It is not selected by production Automatic mode and is not a production fallback or question source.
 
-## Backend Quotas And Operational Data
+## Server Question Banks, Queues, Quotas, And Operational Data
 
-The backend currently applies daily limits by installation identifier and source IP address. Before quota rows are written, each identifier is transformed with a server-secret keyed hash. The quota table stores the resulting pseudonymous key, the UTC day, a request count, and an expiration timestamp; it does not intentionally store the raw installation identifier or raw IP address in those quota rows.
+For asynchronous preparation, the backend stores a temporary bank containing the normalized goal and learner context described above, optional extracted source text, prior-question coverage used to avoid repetition, accepted generated questions, processing status, context revision, and idempotent claim-response records. Stable remote question identifiers and client-provided claim UUIDs are used to prevent the same prepared questions from being delivered twice during a network retry. The claim UUID is stored only as a SHA-256-derived key; its response content is retained with the bank for repeat delivery.
+
+Question-bank partitions are scoped using server-secret keyed hashes of the caller's installation and bank/goal context. This reduces direct exposure but does not make the content anonymous: the bank itself can contain user-entered goals, learner context, questions, and extracted study-material text. The DynamoDB table is encrypted at rest.
+
+Question-bank records have a nominal 30-day Time to Live by default. The expiration is refreshed by ongoing bank activity such as ensure/configuration updates, generation, and claims, so the period runs from recent activity rather than necessarily from initial creation. Stale context revisions may be made eligible for deletion sooner. DynamoDB Time to Live deletion is asynchronous, so records can remain after their expiration timestamp. The production retention value must be confirmed before publication.
+
+The encrypted SQS generation queue carries only an opaque pseudonymous bank key, a job identifier, and a context revision—not raw installation IDs, IP addresses, goal text, study-material text, or generated questions. Unprocessed source-queue messages can remain for up to 4 days. Jobs that fail five receives move to an encrypted dead-letter queue and can remain there for up to 14 days pending operational review or expiry. Operators must not copy dead-letter payloads into longer-lived tickets or logs without a documented need and retention rule.
+
+For synchronous generation, the backend applies daily limits by installation identifier and source IP address. Before quota rows are written, each identifier is transformed with a server-secret keyed hash. For asynchronous generation, each worker generation pass uses a separate keyed-hash installation counter; the SQS job does not retain source IP. The quota table stores a pseudonymous key, the UTC day, a request count, and an expiration timestamp; it does not intentionally store the raw installation identifier or raw IP address in those quota rows.
 
 The configured default makes quota rows eligible for automatic deletion after 48 hours, and the current infrastructure permits a configured period of up to 14 days. AWS Time to Live deletion is asynchronous, so removal can occur after the eligibility time rather than at an exact moment. Lambda operational logs currently have a configurable retention period of 7 to 90 days, with a 14-day default. The production values and treatment of network metadata in AWS service logs must be verified before launch.
 
 ## Purchases
 
 Checkpoint uses Apple StoreKit for subscriptions. Purchases, billing, refunds, cancellation, and subscription management are handled by Apple. Checkpoint receives subscription entitlement information from StoreKit so the app can determine whether Free or Pro features should be available. Apple's handling of purchase information is governed by Apple's policies.
+
+The current backend does not independently verify StoreKit entitlement before accepting caller-supplied question-bank targets or Pro-style replenishment thresholds. Public production must verify current entitlement on the server and bind it to authenticated App Attest-backed requests; an app-reported plan or installation UUID is not sufficient proof.
 
 ## Tracking, Advertising, And Sale
 
@@ -80,13 +93,13 @@ Checkpoint does not use third-party advertising or Apple's advertising identifie
 
 Using **Erase all data** in Checkpoint removes the local primary and backup learning snapshots, any legacy snapshot, goals and progress in memory, the App Group's Screen Time selection and coordination files, protection diagnostics, and the locally stored installation identifier. It also turns off Checkpoint-managed shields.
 
-Erase all data does not cancel an Apple subscription and does not revoke the Screen Time permission granted in iOS Settings. Existing pseudonymous backend quota rows are not actively deleted by the app; they remain until their AWS Time to Live expiration and asynchronous deletion. Data already processed by AWS or Amazon Bedrock is subject to the production service-processing terms and retention settings that still need to be finalized.
+Erase all data does not cancel an Apple subscription and does not revoke the Screen Time permission granted in iOS Settings. It also does not currently call an authenticated backend deletion endpoint. Existing server-side question banks, generated questions, source context, idempotent claim records, pseudonymous quota rows, and already queued generation jobs can therefore remain and queued work can finish after local erasure. Question-bank records rely on their nominal 30-day Time to Live, quota rows rely on their shorter configured Time to Live, and both are deleted asynchronously by AWS after becoming eligible. Queue and dead-letter messages rely on their configured 4-day and 14-day maximum retention periods. Data already processed by AWS or Amazon Bedrock is subject to the production service-processing terms and retention settings that still need to be finalized.
 
-The final policy and support process must state whether users can request deletion of any production backend or operational records beyond the in-app erase flow.
+Before the product claims that **Erase all data** erases remote data, implement an authenticated, ownership-checked backend deletion route; have the app call it before rotating/removing its installation credential; define retry behavior for offline erasure; and decide how failed deletion requests are surfaced and completed. The final policy and support process must also state whether users can request deletion of production backend or operational records beyond the in-app flow.
 
 ## Security
 
-Checkpoint uses HTTPS for its configured backend and public legal links. Local state uses iOS file protection as described above, and the backend quota table uses encryption at rest. No security measure can guarantee absolute protection. Production authentication and abuse controls, including App Attest-backed requests, must be completed and reflected in the final security review before public release.
+Checkpoint uses HTTPS for its configured backend and public legal links. Local state uses iOS file protection as described above. The backend quota and question-bank tables use encryption at rest, and the generation and dead-letter queues use server-side encryption. No security measure can guarantee absolute protection. Production authentication and abuse controls, including App Attest-backed requests, replay protection, server-held identity state, and server-side StoreKit verification, must be completed and reflected in the final security review before public release.
 
 ## Children's Privacy And Age Rating
 

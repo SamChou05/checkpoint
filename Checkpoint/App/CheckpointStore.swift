@@ -65,6 +65,7 @@ final class CheckpointStore {
     var checkpointNotice: String?
     var persistenceRecoveryMessage: String?
     var unlockSession: UnlockSession?
+    var activeCheckpointRun: ActiveCheckpointRun?
     var checkpointRetryCooldownUntil: Date?
     var isOnboardingPresented = false
     var isCreatingGoalProfile = false
@@ -72,15 +73,21 @@ final class CheckpointStore {
     var pendingMembershipFeature: MembershipFeature?
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
+    var questionBankSyncIntents: [QuestionBankSyncIntent] = []
     private(set) var hasNoPersistedAppData = true
     private(set) var requiresPersistenceEraseRecovery = false
 
     @ObservationIgnored private let questionEngine: HybridQuestionEngine
+    @ObservationIgnored private let questionBankClient: any QuestionBankSyncing
+    @ObservationIgnored private let durableQuestionBankEnabled: Bool
     @ObservationIgnored private let snapshotPersistence: AppSnapshotPersistence
     @ObservationIgnored private var permitsPersistenceWrites = false
     @ObservationIgnored private var dataLifecycleID = UUID()
     @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
+    @ObservationIgnored private var questionBankPollingGoalIDs: Set<Goal.ID> = []
+    @ObservationIgnored private var questionBankSynchronizationGoalIDs: Set<Goal.ID> = []
+    @ObservationIgnored private var durableQuestionBankUnavailableForLifecycle = false
     @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
     @ObservationIgnored private static let urgentRefillTargetMultiplier = 2
     @ObservationIgnored static let maximumQuestionGenerationTraceCount = 20
@@ -97,16 +104,21 @@ final class CheckpointStore {
     @ObservationIgnored private static let failedCheckpointCooldown: TimeInterval = 5 * 60
     @ObservationIgnored private static let questionBankTopOffWaitIntervalNanoseconds: UInt64 = 100_000_000
     @ObservationIgnored private static let questionBankTopOffWaitAttemptCount = 10
+    @ObservationIgnored private static let maximumClaimsPerSync = 4
 
     // MARK: - Lifecycle
 
     init(
         questionEngine: HybridQuestionEngine = HybridQuestionEngine(),
+        questionBankClient: (any QuestionBankSyncing)? = nil,
         defaults: UserDefaults = .standard,
         persistenceDirectory: URL? = nil,
         fileManager: FileManager = .default
     ) {
         self.questionEngine = questionEngine
+        self.questionBankClient = questionBankClient ?? BackendQuestionBankClient()
+        self.durableQuestionBankEnabled = questionBankClient != nil
+            || questionEngine.supportsDurableQuestionBanks
         self.snapshotPersistence = AppSnapshotPersistence(
             defaults: defaults,
             persistenceDirectory: persistenceDirectory,
@@ -116,6 +128,7 @@ final class CheckpointStore {
         load()
         requiresPersistenceEraseRecovery = snapshotPersistence.requiresEraseRecovery
         reconcileLoadedUnlockSession()
+        recoverInterruptedCheckpointRun()
         clearExpiredCheckpointRetryCooldown()
         recoverTransientQuestionGenerationState()
         isOnboardingPresented = goal == nil && !requiresPersistenceEraseRecovery
@@ -362,7 +375,8 @@ final class CheckpointStore {
 
         return questionBatchState == .generating ||
             backgroundGenerationGoalIDs.contains(goal.id) ||
-            questionBankTopOffGoalIDs.contains(goal.id)
+            questionBankTopOffGoalIDs.contains(goal.id) ||
+            questionBankSyncIntents.contains { $0.goalID == goal.id }
     }
 
     var activeSkillMapNeedsAttention: Bool {
@@ -598,7 +612,9 @@ final class CheckpointStore {
 
         guard readyCount < unlockPolicy.questionsPerSession else { return nil }
 
-        if backgroundGenerationGoalIDs.contains(profile.id) || questionBankTopOffGoalIDs.contains(profile.id) {
+        if backgroundGenerationGoalIDs.contains(profile.id)
+            || questionBankTopOffGoalIDs.contains(profile.id)
+            || questionBankSyncIntents.contains(where: { $0.goalID == profile.id }) {
             return readyCount > 0 ? "Preparing more practice" : "Preparing practice"
         }
 
@@ -608,7 +624,9 @@ final class CheckpointStore {
     var isPreparingActiveGoalQuestions: Bool {
         goal != nil
             && !hasReadyCheckpointSet
-            && (questionBatchState == .generating || isQuestionBankTopOffInProgress)
+            && (questionBatchState == .generating
+                || isQuestionBankTopOffInProgress
+                || hasPendingActiveQuestionBankSync)
     }
 
     var isQuestionGenerationBlockingPractice: Bool {
@@ -616,7 +634,7 @@ final class CheckpointStore {
     }
 
     var questionGenerationStatusText: String {
-        if isQuestionBankTopOffInProgress {
+        if isQuestionBankTopOffInProgress || hasPendingActiveQuestionBankSync {
             if hasReadyCheckpointSet {
                 return "Practice is ready."
             }
@@ -642,6 +660,11 @@ final class CheckpointStore {
         case .idle:
             return usableQuestionCount > 0 ? "Practice is ready." : "Your first checkpoint isn't ready yet."
         }
+    }
+
+    private var hasPendingActiveQuestionBankSync: Bool {
+        guard let goalID = goal?.id else { return false }
+        return questionBankSyncIntents.contains { $0.goalID == goalID }
     }
 
     var studyAssistSummary: String {
@@ -725,11 +748,6 @@ final class CheckpointStore {
     }
 
     func presentActiveGoalEditor() {
-        guard goal == nil || canUse(.goalProfiles) else {
-            requestMembership(for: .goalProfiles)
-            return
-        }
-
         isCreatingGoalProfile = false
         isOnboardingPresented = true
     }
@@ -886,6 +904,7 @@ final class CheckpointStore {
         category: GoalCategory? = nil,
         currentLevel: String,
         focusAreas: String,
+        sourceDocuments: [GoalSourceDocument] = [],
         preferredQuestionStyle: QuestionFormat,
         minimumQuestionDifficulty: Int? = nil,
         createsNewProfile: Bool? = nil,
@@ -894,6 +913,7 @@ final class CheckpointStore {
         let normalizedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedCurrentLevel = currentLevel.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedFocusAreas = focusAreas.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedSourceDocuments = GoalSourceDocument.normalizedDocuments(sourceDocuments)
 
         guard !normalizedTitle.isEmpty else {
             questionBatchState = .failed
@@ -902,7 +922,7 @@ final class CheckpointStore {
             return
         }
 
-        if goal != nil && !isMember {
+        if goal != nil && !isMember && createsNewProfile != false {
             checkpointNotice = "Free includes one goal. Pro unlocks up to 5 goals with separate progress for each."
             requestMembership(for: .goalProfiles)
             save()
@@ -915,6 +935,7 @@ final class CheckpointStore {
             category: category ?? .custom,
             currentLevel: normalizedCurrentLevel,
             focusAreas: normalizedFocusAreas,
+            sourceDocuments: normalizedSourceDocuments,
             preferredQuestionStyle: preferredQuestionStyle,
             minimumQuestionDifficulty: minimumQuestionDifficulty ?? activeQuestionDifficulty
         )
@@ -980,6 +1001,27 @@ final class CheckpointStore {
             beginQuestionGeneration(for: newGoal.id)
         }
 
+        if shouldUseDurableQuestionBank {
+            let syncOutcome = await synchronizeDurableQuestionBank(
+                for: newGoal,
+                minimumLocalQuestionCount: questionBankTargetCount
+            )
+            guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
+
+            if syncOutcome.serviceSupported {
+                if goal?.id == newGoal.id {
+                    questionBatchState = readyQuestionCount(for: newGoal) >= unlockPolicy.questionsPerSession
+                        ? .ready
+                        : .idle
+                    finishQuestionGeneration(for: newGoal.id)
+                }
+                save()
+                publishShieldContext()
+                schedulePendingQuestionBankPolling(for: newGoal)
+                return
+            }
+        }
+
         let checkpointReadyRequest = generationRequest(
             goal: newGoal,
             existingQuestions: [],
@@ -1004,6 +1046,7 @@ final class CheckpointStore {
         guard resolvedGoal.title == newGoal.title,
               resolvedGoal.currentLevel == newGoal.currentLevel,
               resolvedGoal.focusAreas == newGoal.focusAreas,
+              resolvedGoal.sourceDocuments == newGoal.sourceDocuments,
               resolvedGoal.minimumQuestionDifficulty == newGoal.minimumQuestionDifficulty else {
             backgroundGenerationGoalIDs.remove(newGoal.id)
             if goal?.id == newGoal.id {
@@ -1082,6 +1125,47 @@ final class CheckpointStore {
         await generateInitialQuestionBatch(for: goal)
     }
 
+    @discardableResult
+    func prepareQuestionsForProtectionStart() async -> Bool {
+        guard let goal else {
+            checkpointNotice = "Create a goal before starting app protection."
+            return false
+        }
+
+        if hasReadyCheckpointSet {
+            checkpointNotice = nil
+            return true
+        }
+
+        guard !backgroundGenerationGoalIDs.contains(goal.id),
+              questionBatchState != .generating else {
+            checkpointNotice = "Your first checkpoint is still being prepared. Protection will stay off until it is ready."
+            return false
+        }
+
+        if !hasConsumedStarterPractice {
+            await generateInitialQuestionBatch(for: goal)
+        } else if isMember {
+            _ = await refreshQuestionBatchIfNeeded()
+        } else {
+            checkpointNotice = starterQuestionLimitMessage
+            requestMembership(for: .freshQuestionGeneration)
+        }
+
+        guard hasReadyCheckpointSet else {
+            let detail = lastQuestionGenerationFailure?.message
+                ?? lastAIErrorMessage
+                ?? "Try preparing your questions again."
+            checkpointNotice = "Protection stayed off because a full checkpoint is not ready. \(detail)"
+            save()
+            return false
+        }
+
+        checkpointNotice = nil
+        save()
+        return true
+    }
+
     private func topOffQuestionBankInBackground(
         for goal: Goal,
         starterQuestionIDs: Set<CheckpointQuestion.ID> = []
@@ -1122,13 +1206,34 @@ final class CheckpointStore {
         }
 
         guard goalProfiles.contains(where: { $0.id == targetGoal.id }) || goal?.id == targetGoal.id else { return }
-        guard isMember || !starterQuestionIDs.isEmpty else {
+        guard isMember
+                || !starterQuestionIDs.isEmpty
+                || questionBankSyncIntents.contains(where: { $0.goalID == targetGoal.id }) else {
             if goal?.id == targetGoal.id {
                 checkpointNotice = starterQuestionLimitMessage
                 requestMembership(for: .freshQuestionGeneration)
                 save()
             }
             return
+        }
+
+        if shouldUseDurableQuestionBank {
+            let syncOutcome = await synchronizeDurableQuestionBank(
+                for: targetGoal,
+                minimumLocalQuestionCount: questionBankTargetCount
+            )
+            if syncOutcome.serviceSupported {
+                if goal?.id == targetGoal.id,
+                   !backgroundGenerationGoalIDs.contains(targetGoal.id) {
+                    questionBatchState = readyQuestionCount(for: targetGoal) >= unlockPolicy.questionsPerSession
+                        ? .ready
+                        : .idle
+                }
+                save()
+                publishShieldContext()
+                schedulePendingQuestionBankPolling(for: targetGoal)
+                return
+            }
         }
 
         let existingQuestions = questions.filter { $0.goalID == targetGoal.id }
@@ -1232,6 +1337,42 @@ final class CheckpointStore {
             return
         }
 
+        if shouldUseDurableQuestionBank {
+            let readyBeforeSync = readyQuestionCount(for: goal)
+            if !hasReadyCheckpointSet {
+                questionBatchState = .generating
+            }
+            beginQuestionGeneration(for: goal.id)
+
+            let minimumLocalQuestionCount = targetCount.map {
+                min(questionBankTargetCount, readyBeforeSync + max(1, $0))
+            } ?? questionBankTargetCount
+            let syncOutcome = await synchronizeDurableQuestionBank(
+                for: goal,
+                minimumLocalQuestionCount: minimumLocalQuestionCount
+            )
+            guard lifecycleID == dataLifecycleID,
+                  permitsPersistenceWrites,
+                  self.goal?.id == goal.id else {
+                return
+            }
+
+            if syncOutcome.serviceSupported {
+                if reason.countsAsRefresh(isMember: isMember) {
+                    questionRefreshesUsed += 1
+                }
+                questionBatchState = hasReadyCheckpointSet
+                    ? .ready
+                    : (hasPendingActiveQuestionBankSync ? .idle : .failed)
+                finishQuestionGeneration(for: goal.id)
+                save()
+                publishShieldContext()
+                schedulePendingQuestionBankPolling(for: goal)
+                return
+            }
+            finishQuestionGeneration(for: goal.id)
+        }
+
         questionBatchState = .generating
         beginQuestionGeneration(for: goal.id)
         if reason.countsAsRefresh(isMember: isMember) {
@@ -1309,6 +1450,30 @@ final class CheckpointStore {
               let goal,
               questionBatchState != .generating else {
             return false
+        }
+
+        if shouldUseDurableQuestionBank,
+           questionBankSyncIntents.contains(where: { $0.goalID == goal.id }) {
+            let syncOutcome = await synchronizeDurableQuestionBank(
+                for: goal,
+                minimumLocalQuestionCount: questionBankTargetCount
+            )
+            guard lifecycleID == dataLifecycleID,
+                  permitsPersistenceWrites,
+                  self.goal?.id == goal.id else {
+                return false
+            }
+            if syncOutcome.serviceSupported {
+                questionBatchState = hasReadyCheckpointSet ? .ready : .idle
+                save()
+                publishShieldContext()
+                schedulePendingQuestionBankPolling(for: goal)
+                return true
+            }
+            if !isMember, !hasConsumedStarterPractice, activeQuestions.isEmpty {
+                await generateInitialQuestionBatch(for: goal)
+                return hasReadyCheckpointSet
+            }
         }
 
         let refillMinimum = minimumUsableQuestionCount ?? unlockPolicy.questionsPerSession
@@ -1565,12 +1730,15 @@ final class CheckpointStore {
         grantsUnlock: Bool = true,
         unlockMinutesOverride: Int? = nil
     ) -> Int {
-        guard let goal else { return 0 }
+        guard let questionGoal = storedGoalProfile(withID: question.goalID)
+                ?? (goal?.id == question.goalID ? goal : nil) else {
+            return 0
+        }
 
         let unlockMinutes = unlockMinutesOverride ?? (grantsUnlock ? unlockMinutes(for: result) : 0)
         let attempt = CheckpointAttempt(
             questionID: question.id,
-            goalID: goal.id,
+            goalID: question.goalID,
             prompt: question.prompt,
             answer: answer,
             result: result,
@@ -1582,18 +1750,22 @@ final class CheckpointStore {
         updateCompetency(for: question, result: result)
 
         if unlockMinutes > 0 {
-            recordUnlockSession(minutes: unlockMinutes, goalID: goal.id)
+            recordUnlockSession(minutes: unlockMinutes, goalID: question.goalID)
         }
 
-        scheduleQuestionBankMaintenanceIfNeeded(for: goal)
+        scheduleQuestionBankMaintenanceIfNeeded(for: questionGoal)
         save()
         publishShieldContext()
         return unlockMinutes
     }
 
-    func startUnlockSession(minutes: Int, expiresAt: Date? = nil) {
+    func startUnlockSession(
+        minutes: Int,
+        expiresAt: Date? = nil,
+        goalID: Goal.ID? = nil
+    ) {
         let unlockMinutes = UnlockPolicy.normalizedCorrectAnswerUnlockMinutes(minutes)
-        guard unlockMinutes > 0, let goalID = goal?.id else { return }
+        guard unlockMinutes > 0, let goalID = goalID ?? goal?.id else { return }
 
         recordUnlockSession(minutes: unlockMinutes, goalID: goalID, expiresAt: expiresAt)
         save()
@@ -1652,6 +1824,7 @@ final class CheckpointStore {
         lastQuestionBankTopOffDuration = nil
         checkpointNotice = nil
         unlockSession = nil
+        activeCheckpointRun = nil
         checkpointRetryCooldownUntil = nil
         questionRefreshesUsed = 0
         lastAutomaticQuestionRefreshAt = nil
@@ -1659,6 +1832,10 @@ final class CheckpointStore {
         pendingMembershipFeature = nil
         backgroundGenerationGoalIDs = []
         questionBankTopOffGoalIDs = []
+        questionBankPollingGoalIDs = []
+        questionBankSynchronizationGoalIDs = []
+        durableQuestionBankUnavailableForLifecycle = false
+        questionBankSyncIntents = []
         isOnboardingPresented = true
         persistenceRecoveryMessage = nil
         do {
@@ -1690,11 +1867,14 @@ final class CheckpointStore {
         guard SharedAppGroup.consumePendingShieldAttempt(matchingID: pendingAttemptID) != nil else {
             return nil
         }
+        beginCheckpointRun(session)
         return session
     }
 
     func startManualCheckpointSession() -> CheckpointSession? {
-        checkpointSession(source: .manual)
+        guard let session = checkpointSession(source: .manual) else { return nil }
+        beginCheckpointRun(session)
+        return session
     }
 
     func startPreviewCheckpointSession() -> CheckpointSession? {
@@ -1712,23 +1892,15 @@ final class CheckpointStore {
             return nil
         }
 
-        if goal != nil && needsQuestionRefill(minimumQuestionCount: unlockPolicy.questionsPerSession) {
-            _ = await refreshQuestionBatchIfNeeded()
-        }
-
         if let session = takePendingShieldSession(pendingAttemptID: pendingAttemptID) {
             return session
         }
 
-        if let goalID = goal?.id {
-            await waitForQuestionBankTopOffIfNeeded(for: goalID)
-            if let session = takePendingShieldSession(pendingAttemptID: pendingAttemptID) {
-                return session
-            }
-        }
-
-        guard await refreshQuestionBatchIfNeeded() else { return nil }
-        return takePendingShieldSession(pendingAttemptID: pendingAttemptID)
+        // A blocked-app handoff must be deterministic and immediate. Generation
+        // belongs in goal setup and proactive maintenance, never on this path.
+        checkpointNotice = "A full cached checkpoint was not ready, so protection cannot continue yet. Open Checkpoint to prepare questions, then start protection again."
+        save()
+        return nil
     }
 
     func prepareManualCheckpointSession() async -> CheckpointSession? {
@@ -1746,7 +1918,7 @@ final class CheckpointStore {
         }
 
         guard await refreshQuestionBatchIfNeeded() else { return nil }
-        return checkpointSession(source: .manual)
+        return startManualCheckpointSession()
     }
 
     func preparePreviewCheckpointSession() async -> CheckpointSession? {
@@ -1759,7 +1931,7 @@ final class CheckpointStore {
         }
 
         guard await refreshQuestionBatchIfNeeded() else { return nil }
-        return checkpointSession(source: .manual, purpose: .preview)
+        return startPreviewCheckpointSession()
     }
 
     func prepareStopBlockingSession() async -> CheckpointSession? {
@@ -1803,11 +1975,13 @@ final class CheckpointStore {
         }
 
         checkpointNotice = nil
-        return CheckpointSession(
+        let session = CheckpointSession(
             questions: selectedQuestions,
             requiredCorrectAnswers: StopBlockingPolicy.requiredCorrectAnswers,
             purpose: .stopBlocking
         )
+        beginCheckpointRun(session)
+        return session
     }
 
     func clearCheckpointNotice() {
@@ -1879,6 +2053,43 @@ final class CheckpointStore {
         checkpointNotice = "Checkpoint stays protected. Take a short reset, then try again in \(checkpointRetryCooldownRemainingText)."
         save()
         publishShieldContext()
+    }
+
+    func resolveCheckpointRun(
+        sessionID: CheckpointSession.ID,
+        didPass: Bool,
+        missedQuestionIDs: Set<CheckpointQuestion.ID> = []
+    ) {
+        guard activeCheckpointRun?.sessionID == sessionID else { return }
+        activeCheckpointRun = nil
+
+        if didPass {
+            checkpointRetryCooldownUntil = nil
+            checkpointNotice = nil
+            save()
+            publishShieldContext()
+            return
+        }
+
+        makeMissedQuestionsDueNow(missedQuestionIDs)
+        startCheckpointRetryCooldown()
+    }
+
+    func abandonCheckpointRun(
+        sessionID: CheckpointSession.ID,
+        missedQuestionIDs: Set<CheckpointQuestion.ID> = []
+    ) {
+        resolveCheckpointRun(
+            sessionID: sessionID,
+            didPass: false,
+            missedQuestionIDs: missedQuestionIDs
+        )
+    }
+
+    private func beginCheckpointRun(_ session: CheckpointSession) {
+        guard session.purpose != .preview else { return }
+        activeCheckpointRun = ActiveCheckpointRun(session: session)
+        save()
     }
 
     // MARK: - Settings updates
@@ -1994,6 +2205,7 @@ final class CheckpointStore {
 
     func updateBackendEndpoint(_ endpoint: String) {
         backendEndpoint = endpoint
+        durableQuestionBankUnavailableForLifecycle = false
         save()
     }
 
@@ -2248,6 +2460,9 @@ final class CheckpointStore {
         competencies.removeAll { $0.goalID == goalID || (includeLegacyCompetencies && $0.goalID == nil) }
         questionReports.removeAll { $0.goalID == goalID }
         unlockEvents.removeAll { $0.goalID == goalID }
+        questionBankSyncIntents.removeAll { $0.goalID == goalID }
+        questionBankPollingGoalIDs.remove(goalID)
+        questionBankSynchronizationGoalIDs.remove(goalID)
     }
 
     private func beginQuestionGeneration(for goalID: Goal.ID) {
@@ -2337,10 +2552,12 @@ final class CheckpointStore {
             lastQuestionProvider: lastQuestionProvider,
             backendEndpoint: backendEndpoint,
             unlockSession: unlockSession,
+            activeCheckpointRun: activeCheckpointRun,
             checkpointRetryCooldownUntil: checkpointRetryCooldownUntil,
             membershipTier: membershipTier,
             questionRefreshesUsed: questionRefreshesUsed,
-            lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt
+            lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt,
+            questionBankSyncIntents: questionBankSyncIntents
         )
 
         do {
@@ -2555,6 +2772,20 @@ final class CheckpointStore {
         save()
     }
 
+    private func recoverInterruptedCheckpointRun(now: Date = Date()) {
+        guard activeCheckpointRun != nil else { return }
+        activeCheckpointRun = nil
+
+        if unlockSession?.isActive == true || !SharedAppGroup.desiredShieldActive {
+            save()
+            return
+        }
+
+        checkpointRetryCooldownUntil = now.addingTimeInterval(Self.failedCheckpointCooldown)
+        checkpointNotice = "The previous checkpoint was interrupted. Protection stayed on; try again in \(checkpointRetryCooldownRemainingText)."
+        save()
+    }
+
     private func recoverTransientQuestionGenerationState() {
         if questionBatchState == .generating {
             questionGenerationStartedAt = nil
@@ -2562,7 +2793,9 @@ final class CheckpointStore {
             questionBatchState = activeQuestions.isEmpty ? .idle : .ready
             save()
 
-            if activeQuestions.isEmpty, let goal {
+            if activeQuestions.isEmpty,
+               let goal,
+               !questionBankSyncIntents.contains(where: { $0.goalID == goal.id }) {
                 prepareInitialQuestionsInBackground(for: goal)
             }
         } else if questionBatchState == .failed, hasReadyCheckpointSet {
@@ -2572,8 +2805,18 @@ final class CheckpointStore {
     }
 
     private func resumeQuestionBankMaintenanceIfNeeded() {
+        let pendingGoalIDs = Set(questionBankSyncIntents.map(\.goalID))
+        for pendingGoal in availableGoalProfiles where pendingGoalIDs.contains(pendingGoal.id) {
+            guard !backgroundGenerationGoalIDs.contains(pendingGoal.id),
+                  !questionBankTopOffGoalIDs.contains(pendingGoal.id) else {
+                continue
+            }
+            topOffQuestionBankInBackground(for: pendingGoal)
+        }
+
         guard let goal,
               isMember,
+              !pendingGoalIDs.contains(goal.id),
               questionBatchState != .generating,
               !backgroundGenerationGoalIDs.contains(goal.id),
               !questionBankTopOffGoalIDs.contains(goal.id),
@@ -2635,11 +2878,13 @@ final class CheckpointStore {
         lastQuestionProvider = snapshot.lastQuestionProvider ?? .automatic
         backendEndpoint = snapshot.backendEndpoint ?? ""
         unlockSession = snapshot.unlockSession
+        activeCheckpointRun = snapshot.activeCheckpointRun
         checkpointRetryCooldownUntil = snapshot.checkpointRetryCooldownUntil
         membershipTier = snapshot.membershipTier ?? .starter
         pendingMembershipFeature = nil
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
         lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
+        questionBankSyncIntents = snapshot.questionBankSyncIntents ?? []
         goalProfiles = snapshot.goalProfiles ?? snapshot.goal.map { [$0] } ?? []
         goal = snapshot.goal
 
@@ -3282,6 +3527,380 @@ final class CheckpointStore {
             .components(separatedBy: CharacterSet(charactersIn: ".,;"))
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+    }
+
+    private struct DurableQuestionBankSyncOutcome {
+        var serviceSupported: Bool
+        var addedQuestionCount: Int
+    }
+
+    private var shouldUseDurableQuestionBank: Bool {
+        durableQuestionBankEnabled
+            && !durableQuestionBankUnavailableForLifecycle
+            && resolvedBackendEndpoint != nil
+            && aiProviderPreference != .appleFoundation
+            && aiProviderPreference != .localTemplates
+    }
+
+    private func synchronizeDurableQuestionBank(
+        for targetGoal: Goal,
+        minimumLocalQuestionCount: Int? = nil
+    ) async -> DurableQuestionBankSyncOutcome {
+        guard !questionBankSynchronizationGoalIDs.contains(targetGoal.id) else {
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
+        }
+        questionBankSynchronizationGoalIDs.insert(targetGoal.id)
+        defer { questionBankSynchronizationGoalIDs.remove(targetGoal.id) }
+
+        let lifecycleID = dataLifecycleID
+        let desiredCount = min(100, max(questionBankTargetCount, minimumLocalQuestionCount ?? 0))
+        let lowWatermark = isMember
+            ? min(max(20, StopBlockingPolicy.questionsPerSession), max(0, desiredCount - 1))
+            : 0
+        let contextRevision = questionBankContextRevision(for: targetGoal)
+        var intent = upsertQuestionBankSyncIntent(
+            for: targetGoal,
+            contextRevision: contextRevision,
+            desiredCount: desiredCount,
+            lowWatermark: lowWatermark
+        )
+
+        let initialDeficit = questionBankDeficit(
+            for: targetGoal,
+            targetCount: minimumLocalQuestionCount ?? questionBankTargetCount
+        )
+        guard initialDeficit > 0 else {
+            removeQuestionBankSyncIntent(for: targetGoal.id)
+            save()
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
+        }
+
+        let ensureRequest = generationRequest(
+            goal: targetGoal,
+            existingQuestions: questions.filter { $0.goalID == targetGoal.id },
+            competencies: competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id },
+            reportedQuestions: questionReports.filter { $0.goalID == targetGoal.id },
+            targetCount: min(BackendQuestionBankClient.maximumClaimCount, max(1, initialDeficit))
+        )
+
+        let preparation: QuestionBankPreparationReceipt
+        do {
+            preparation = try await questionBankClient.ensureQuestionBank(
+                for: ensureRequest,
+                contextRevision: contextRevision,
+                desiredCount: desiredCount,
+                lowWatermark: lowWatermark
+            )
+        } catch QuestionBankAPIError.bankNotFound {
+            durableQuestionBankUnavailableForLifecycle = true
+            removeQuestionBankSyncIntent(for: targetGoal.id)
+            save()
+            return DurableQuestionBankSyncOutcome(serviceSupported: false, addedQuestionCount: 0)
+        } catch {
+            markQuestionBankSyncAttempt(for: targetGoal.id)
+            lastAIErrorMessage = error.localizedDescription
+            save()
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
+        }
+
+        guard lifecycleID == dataLifecycleID,
+              permitsPersistenceWrites,
+              let currentGoal = storedGoalProfile(withID: targetGoal.id),
+              questionBankContextRevision(for: currentGoal) == contextRevision else {
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
+        }
+
+        if intent.bankID != preparation.bankID {
+            intent.bankID = preparation.bankID
+            intent.claimID = UUID().uuidString
+        }
+        intent.lastAttemptAt = Date()
+        replaceQuestionBankSyncIntent(intent)
+        save()
+
+        guard preparation.readyCount > 0 else {
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
+        }
+
+        var totalAdded = 0
+        var claimAttemptCount = 0
+        while claimAttemptCount < Self.maximumClaimsPerSync {
+            guard let latestGoal = storedGoalProfile(withID: targetGoal.id),
+                  questionBankContextRevision(for: latestGoal) == intent.contextRevision else {
+                _ = upsertQuestionBankSyncIntent(
+                    for: currentGoal,
+                    contextRevision: questionBankContextRevision(for: currentGoal),
+                    desiredCount: desiredCount,
+                    lowWatermark: lowWatermark
+                )
+                save()
+                break
+            }
+
+            let localTarget = minimumLocalQuestionCount ?? questionBankTargetCount
+            let deficit = questionBankDeficit(for: latestGoal, targetCount: localTarget)
+            guard deficit > 0 else {
+                removeQuestionBankSyncIntent(for: targetGoal.id)
+                save()
+                break
+            }
+
+            guard let bankID = intent.bankID else { break }
+            let claimLimit = min(BackendQuestionBankClient.maximumClaimCount, deficit)
+            let claimRequest = generationRequest(
+                goal: latestGoal,
+                existingQuestions: questions.filter { $0.goalID == latestGoal.id },
+                competencies: competencies.filter { ($0.goalID ?? latestGoal.id) == latestGoal.id },
+                reportedQuestions: questionReports.filter { $0.goalID == latestGoal.id },
+                targetCount: claimLimit
+            )
+
+            let claim: QuestionBankClaimReceipt
+            do {
+                claim = try await questionBankClient.claimQuestions(
+                    from: bankID,
+                    claimID: intent.claimID,
+                    limit: claimLimit,
+                    for: claimRequest
+                )
+            } catch let error as QuestionBankAPIError where error == .bankNotFound || error == .contextConflict {
+                intent.bankID = nil
+                intent.claimID = UUID().uuidString
+                intent.lastAttemptAt = Date()
+                replaceQuestionBankSyncIntent(intent)
+                save()
+                break
+            } catch {
+                markQuestionBankSyncAttempt(for: targetGoal.id)
+                lastAIErrorMessage = error.localizedDescription
+                save()
+                break
+            }
+
+            guard lifecycleID == dataLifecycleID,
+                  permitsPersistenceWrites,
+                  var resolvedGoal = storedGoalProfile(withID: targetGoal.id),
+                  questionBankContextRevision(for: resolvedGoal) == intent.contextRevision else {
+                break
+            }
+
+            let claimedQuestions = claim.questions.map { question -> CheckpointQuestion in
+                var scopedQuestion = question
+                scopedQuestion.goalID = targetGoal.id
+                return scopedQuestion
+            }
+            let sanitizedClaimedQuestions = QuestionBatchSanitizer.sanitize(
+                claimedQuestions,
+                for: claimRequest
+            )
+            resolvedGoal = commitInferredSkillMapIfNeeded(
+                for: resolvedGoal,
+                questions: questions.filter { $0.goalID == targetGoal.id } + sanitizedClaimedQuestions,
+                requiresAllCandidateTopicsToFit: competencies.contains {
+                    ($0.goalID ?? targetGoal.id) == targetGoal.id && $0.attempts > 0
+                }
+            )
+            canonicalizeStoredQuestions(for: resolvedGoal)
+            let canonicalClaimQuestions = canonicalizedQuestions(sanitizedClaimedQuestions, for: resolvedGoal)
+            let currentQuestions = questions.filter { $0.goalID == targetGoal.id }
+            let existingIDs = Set(currentQuestions.map(\.id))
+            let existingRemoteIDs = Set(currentQuestions.compactMap(\.remoteID))
+            let existingKeys = Set(currentQuestions.map { questionKey($0) })
+            let newQuestions = canonicalClaimQuestions.filter { question in
+                !existingIDs.contains(question.id)
+                    && question.remoteID.map { !existingRemoteIDs.contains($0) } != false
+                    && !existingKeys.contains(questionKey(question))
+            }
+            questions.append(contentsOf: newQuestions)
+            let goalQuestions = questions.filter { $0.goalID == targetGoal.id }
+            let currentCompetencies = competencies.filter {
+                ($0.goalID ?? resolvedGoal.id) == resolvedGoal.id
+            }
+            replaceCompetencies(
+                for: resolvedGoal.id,
+                with: reconciledCompetencies(
+                    existing: currentCompetencies,
+                    goal: resolvedGoal,
+                    questions: goalQuestions
+                )
+            )
+
+            totalAdded += newQuestions.count
+            if !newQuestions.isEmpty {
+                lastQuestionProvider = .backend
+                lastQuestionGenerationFailure = nil
+                lastAIErrorMessage = nil
+            }
+
+            let updatedRevision = questionBankContextRevision(for: resolvedGoal)
+            if updatedRevision != intent.contextRevision {
+                intent = upsertQuestionBankSyncIntent(
+                    for: resolvedGoal,
+                    contextRevision: updatedRevision,
+                    desiredCount: desiredCount,
+                    lowWatermark: lowWatermark
+                )
+            } else {
+                // The old claim ID remains persisted until the claimed questions and the
+                // replacement ID are committed together in this snapshot.
+                intent.claimID = UUID().uuidString
+                intent.lastAttemptAt = Date()
+                replaceQuestionBankSyncIntent(intent)
+            }
+
+            if questionBankDeficit(for: resolvedGoal, targetCount: localTarget) == 0 {
+                removeQuestionBankSyncIntent(for: targetGoal.id)
+            }
+            save()
+            publishShieldContext()
+
+            claimAttemptCount += 1
+            guard !claim.questions.isEmpty,
+                  questionBankSyncIntents.contains(where: { $0.goalID == targetGoal.id }),
+                  updatedRevision == contextRevision else {
+                break
+            }
+        }
+
+        return DurableQuestionBankSyncOutcome(
+            serviceSupported: true,
+            addedQuestionCount: totalAdded
+        )
+    }
+
+    private func schedulePendingQuestionBankPolling(for targetGoal: Goal) {
+        guard shouldUseDurableQuestionBank,
+              questionBankSyncIntents.contains(where: { $0.goalID == targetGoal.id }),
+              !questionBankPollingGoalIDs.contains(targetGoal.id) else {
+            return
+        }
+
+        questionBankPollingGoalIDs.insert(targetGoal.id)
+        let lifecycleID = dataLifecycleID
+        Task { [weak self] in
+            let delays: [UInt64] = [1, 2, 4, 8, 16].map { $0 * 1_000_000_000 }
+            for delay in delays {
+                do {
+                    try await Task.sleep(nanoseconds: delay)
+                } catch {
+                    self?.questionBankPollingGoalIDs.remove(targetGoal.id)
+                    return
+                }
+                guard let self else { return }
+                guard lifecycleID == self.dataLifecycleID,
+                      self.permitsPersistenceWrites,
+                      let currentGoal = self.storedGoalProfile(withID: targetGoal.id),
+                      self.questionBankSyncIntents.contains(where: { $0.goalID == targetGoal.id }) else {
+                    self.questionBankPollingGoalIDs.remove(targetGoal.id)
+                    return
+                }
+
+                let outcome = await self.synchronizeDurableQuestionBank(
+                    for: currentGoal,
+                    minimumLocalQuestionCount: self.questionBankTargetCount
+                )
+                guard outcome.serviceSupported else {
+                    if !self.hasConsumedStarterPractice {
+                        await self.generateInitialQuestionBatch(for: currentGoal)
+                    } else if self.isMember {
+                        await self.refreshQuestionBatch(reason: .automaticCoreRefill)
+                    }
+                    self.questionBankPollingGoalIDs.remove(targetGoal.id)
+                    return
+                }
+
+                if self.goal?.id == currentGoal.id {
+                    self.questionBatchState = self.readyQuestionCount(for: currentGoal) >= self.unlockPolicy.questionsPerSession
+                        ? .ready
+                        : .idle
+                }
+                self.save()
+                self.publishShieldContext()
+
+                if !self.questionBankSyncIntents.contains(where: { $0.goalID == currentGoal.id }) {
+                    self.questionBankPollingGoalIDs.remove(targetGoal.id)
+                    return
+                }
+            }
+            self?.questionBankPollingGoalIDs.remove(targetGoal.id)
+        }
+    }
+
+    private func upsertQuestionBankSyncIntent(
+        for targetGoal: Goal,
+        contextRevision: String,
+        desiredCount: Int,
+        lowWatermark: Int
+    ) -> QuestionBankSyncIntent {
+        if let index = questionBankSyncIntents.firstIndex(where: { $0.goalID == targetGoal.id }) {
+            var intent = questionBankSyncIntents[index]
+            if intent.contextRevision != contextRevision {
+                intent.contextRevision = contextRevision
+                intent.bankID = nil
+                intent.claimID = UUID().uuidString
+                intent.createdAt = Date()
+            }
+            intent.desiredCount = desiredCount
+            intent.lowWatermark = lowWatermark
+            questionBankSyncIntents[index] = intent
+            save()
+            return intent
+        }
+
+        let intent = QuestionBankSyncIntent(
+            goalID: targetGoal.id,
+            contextRevision: contextRevision,
+            desiredCount: desiredCount,
+            lowWatermark: lowWatermark
+        )
+        questionBankSyncIntents.append(intent)
+        save()
+        return intent
+    }
+
+    private func replaceQuestionBankSyncIntent(_ intent: QuestionBankSyncIntent) {
+        if let index = questionBankSyncIntents.firstIndex(where: { $0.goalID == intent.goalID }) {
+            questionBankSyncIntents[index] = intent
+        } else {
+            questionBankSyncIntents.append(intent)
+        }
+    }
+
+    private func markQuestionBankSyncAttempt(for goalID: Goal.ID) {
+        guard let index = questionBankSyncIntents.firstIndex(where: { $0.goalID == goalID }) else { return }
+        questionBankSyncIntents[index].lastAttemptAt = Date()
+    }
+
+    private func removeQuestionBankSyncIntent(for goalID: Goal.ID) {
+        questionBankSyncIntents.removeAll { $0.goalID == goalID }
+    }
+
+    private func questionBankContextRevision(for goal: Goal) -> String {
+        var hash: UInt64 = 14_695_981_039_346_656_037
+        let reviewedSkillMap = goal.derivedSkillMap?.status == .reviewed
+            ? goal.derivedSkillMap
+            : nil
+        let components = [
+            goal.title,
+            goal.currentLevel,
+            goal.focusAreas,
+            String(goal.minimumQuestionDifficulty),
+            goal.preferredQuestionStyle.rawValue,
+            reviewedSkillMap?.status.rawValue ?? "",
+            reviewedSkillMap?.topics.map { "\($0.id.uuidString):\($0.name)" }.joined(separator: "|") ?? ""
+        ] + goal.sourceDocuments.flatMap { document in
+            [document.id.uuidString, document.name, document.text]
+        }
+
+        for component in components {
+            for byte in component.utf8 {
+                hash ^= UInt64(byte)
+                hash &*= 1_099_511_628_211
+            }
+            hash ^= 255
+            hash &*= 1_099_511_628_211
+        }
+        return String(format: "%016llx", hash)
     }
 
     // MARK: - Question generation requests

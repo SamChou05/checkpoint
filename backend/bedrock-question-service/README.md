@@ -1,6 +1,6 @@
 # Bedrock Question Service
 
-AWS Lambda backend for Checkpoint's AI question-generation contract. The iOS app sends goal context and question constraints; the service calls Amazon Bedrock, validates the output, and returns the JSON shape documented in `../../docs/AI_BACKEND_CONTRACT.md`.
+AWS Lambda backend for Checkpoint's AI question-generation contract. The iOS app sends goal context and question constraints; the service can either return a synchronous batch from `POST /v1/questions` or enqueue an expiring server-side bank through `POST /v1/question-banks/ensure`. A separate SQS-triggered worker calls Amazon Bedrock, validates the output, and stores ready inventory for `POST /v1/question-banks/claim`. The JSON contract is documented in `../../docs/AI_BACKEND_CONTRACT.md`.
 
 Generation is domain-general. Named-domain examples belong only to eval fixtures; production code has no LSAT, MCAT, language, coding, or other subject-specific question branches.
 
@@ -10,17 +10,19 @@ The checked-in bearer gate is for controlled development and TestFlight only. A 
 
 Before public App Store release:
 
-- replace the shared bearer and install UUID identity with per-request App Attest assertions, server challenges, replay protection, and server-held key state
-- validate StoreKit subscription status on the server before assigning paid quotas
+- replace the shared bearer and install UUID identity on every synchronous and question-bank route with per-request App Attest assertions, server challenges, replay protection, and server-held key state
+- validate StoreKit subscription status on the server before accepting caller-selected bank sizes, assigning paid quotas, or enabling Pro replenishment watermarks
 - keep server quotas, API Gateway throttles, reserved concurrency, alarms, and budgets enabled as independent cost controls
 
-This service does not claim to implement App Attest or server-side StoreKit verification yet.
+This service does not claim to implement App Attest or server-side StoreKit verification yet. The asynchronous routes therefore do not make the current bearer/install-ID boundary safe for public production and must remain behind the same controlled-development/TestFlight gate.
 
 ## Runtime and edge
 
 - Python 3.12 Lambda
 - Amazon Bedrock Converse through a least-privilege Lambda execution role
 - DynamoDB atomic daily quota counters
+- encrypted DynamoDB storage for expiring generation context, prepared questions, and idempotent claim state
+- an encrypted SQS generation queue, encrypted dead-letter queue, and a separately concurrency-limited worker
 - API Gateway HTTP API with stage-level rate and burst throttles
 - Lambda reserved concurrency as a cost and account-concurrency fuse
 - CloudWatch Embedded Metric Format, alarms, explicit log retention, SNS alerts, and an optional Bedrock budget
@@ -52,6 +54,9 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `MAX_REQUESTS_PER_INSTALL_PER_DAY` | `40` | Daily generation requests per pseudonymized install value. |
 | `MAX_REQUESTS_PER_IP_PER_DAY` | `400` | Daily generation requests per pseudonymized source IP. |
 | `RATE_LIMIT_TTL_SECONDS` | `172800` | Nominal quota-record TTL. DynamoDB deletion after expiry is asynchronous. |
+| `QUESTION_BANK_TABLE_NAME` | none locally | DynamoDB table containing expiring question-bank metadata, validated generation context, ready questions, and claim records. SAM configures it for both functions. |
+| `QUESTION_BANK_QUEUE_URL` | none locally | SQS queue used by `ensure` and by the worker when more inventory is needed. SAM configures it for both functions. |
+| `QUESTION_BANK_TTL_SECONDS` | `2592000` | Nominal 30-day lifetime for question-bank records. DynamoDB TTL deletion is asynchronous and is not an exact deletion deadline. |
 | `EMIT_STRUCTURED_METRICS` | on in Lambda | Emits privacy-safe request and provider metrics in CloudWatch EMF. |
 
 ## Request hardening
@@ -60,12 +65,33 @@ The service authenticates first, then fully decodes and validates the request be
 
 - UTF-8 JSON and a configurable byte ceiling
 - explicit limits for goal, focus, level, directive, topic, prompt, answer, choice, and competency fields
+- an optional top-level `sourceDocuments` array of `{ "name": "...", "text": "..." }` objects; existing clients may omit it
+- at most 5 source documents, 160 characters per normalized name, and 24,000 normalized source-text characters across the request
+- deterministic source truncation that shares the context budget across documents and samples the beginning, middle, and end of over-budget text
 - bounded list sizes and a server-side question-count cap
 - a provider-call budget shared by initial, repair, top-off, and fallback attempts
 - remaining-Lambda-time checks before another provider invocation
 - bounded botocore timeouts and exactly one total SDK attempt, so every network attempt consumes one provider-call budget slot
 
-Install and IP limits are consumed in one DynamoDB transaction. A rejected transaction cannot consume one counter without the other. Deployments configured with `REQUIRE_RATE_LIMITING=true`, or marked `production`, fail closed if the table or HMAC secret is missing.
+Source documents are accepted as extracted UTF-8 text, not binary uploads or base64 file bodies. Empty text, malformed objects, oversized names, non-array input, and more than five documents return `400` before quota consumption. Document text is whitespace/control-character normalized and then truncated within the fixed context budget rather than rejecting an otherwise usable upload.
+
+When source context is present, the assessment prompt treats it as the primary content scope, requires source-supported answers and self-contained question stems, and explicitly treats document names and contents as untrusted evidence rather than instructions. Outlines and syllabi may scope reliable subject knowledge, but the model is told not to claim unsupported details came from a source or infer content omitted by truncation.
+
+Synchronous `/v1/questions` install and IP limits are consumed in one DynamoDB transaction. A rejected transaction cannot consume one counter without the other. Asynchronous worker passes consume a separate pseudonymous install-only counter before Bedrock; the compact SQS job deliberately does not retain the request IP. API Gateway throttling remains the edge control for `ensure` and `claim`. Deployments configured with `REQUIRE_RATE_LIMITING=true`, or marked `production`, fail closed if the table or HMAC secret is missing.
+
+## Durable asynchronous question banks
+
+`POST /v1/question-banks/ensure` accepts the normal generation request plus the client-computed `contextRevision`, `desiredCount`, and `lowWatermark`. It authenticates and validates the request, derives an opaque bank identifier scoped to the pseudonymized installation and goal context, persists the validated generation context, and sends a compact SQS job when inventory needs replenishment. It returns `202` with `bankID`, `status`, `readyCount`, and `targetCount`; it does not wait for Bedrock.
+
+`lowWatermark=0` means a finite starter bank: the server tracks cumulative accepted generation and stops permanently for that bank revision once it reaches `desiredCount`. Claims reduce ready inventory but do not reset that cumulative ceiling, and repeated `ensure` polling cannot replenish it. A positive watermark enables ongoing replenishment toward `desiredCount`; claiming down to or below the watermark schedules another refill. The current client requests 40 finite questions for Free and an 80-question bank with a 20-question refill watermark for Pro. Those tier inputs are still caller-supplied today, so public production must derive or authorize them from server-verified StoreKit entitlement rather than trusting the app.
+
+The queue body contains only an opaque pseudonymous bank partition key, job ID, and context version. The complete generation context stays in the encrypted DynamoDB table. The worker reads one message per invocation, generates at most the configured model batch size, validates and stores accepted questions, and can enqueue another job until the target is satisfied. A failed message is retried and moves to the dead-letter queue after five receives. The 120-second worker timeout is paired with a 720-second queue visibility timeout, meeting the six-times-timeout safety margin.
+
+`POST /v1/question-banks/claim` accepts `bankID`, `claimID`, and a limit of at most 20. It returns `200` with already-prepared questions and the current status/counts without invoking Bedrock in the HTTP request path. Clients should persist a claim ID until its response is durably written locally, then use a new claim ID for the next claim. The server stores a SHA-256-derived claim key and the exact response so retrying that claim is idempotent. Status is one of `queued`, `processing`, `ready`, or `empty`.
+
+The server queue removes app-lifecycle dependence, but it does not promise a fixed completion time: Lambda throttling, SQS retries, Bedrock capacity, the kill switch, or a dead-lettered job can delay replenishment. The app must keep a local ready reserve, poll with backoff, and continue serving accepted local questions while a refill is pending.
+
+Only `POST ensure` and `POST claim` are deployed in this increment. There is no authenticated remote-bank deletion route yet. Add one before claiming that in-app **Erase all data** immediately removes server-side question-bank records.
 
 ## Safety behavior
 
@@ -98,32 +124,37 @@ Important guided values:
 - `BackendToken`: a separate long random value for internal/TestFlight only
 - `AllowUnauthenticatedBackend`: keep `false` for every exposed stack
 - `DeploymentEnvironment`: use `testflight` for internal distribution; selecting `production` does not make bearer auth App Store-safe
+- `QuestionBankTTLSeconds`: defaults to 30 days; choose and publish the production retention period before launch
+- `QuestionBankWorkerReservedConcurrency`: defaults to 2 and independently caps asynchronous Bedrock work
 - throttle, reserved-concurrency, request, provider-call, and daily-quota values: begin with the template defaults and adjust from observed metrics
 - `AlertEmail`: optional outside production and required in production; confirm the SNS subscription email after deployment
 - `BudgetAlertEmail`: optional outside production and required in production; receives account-wide Amazon Bedrock budget notifications
 
-The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with the full HTTPS URL. Moving from the previous Function URL changes the endpoint, so update the app configuration only after the API Gateway deployment succeeds.
+The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with that full HTTPS URL. The app derives the sibling `/v1/question-banks/ensure` and `/v1/question-banks/claim` URLs, which are also emitted as stack outputs. Moving from the previous Function URL changes the endpoint, so update the app configuration only after the API Gateway deployment succeeds.
 
 ## Operations
 
-`SERVICE_MODE=drain` and `SERVICE_MODE=disabled` return `503` with `Retry-After` and make no DynamoDB or Bedrock calls. Change the CloudFormation parameter and deploy the configuration update to operate the switch. Reserved concurrency and API throttling remain separate emergency fuses.
+`SERVICE_MODE=drain` and `SERVICE_MODE=disabled` return `503` with `Retry-After` on API generation entry points. Change the CloudFormation parameter and deploy the configuration update to operate the switch. Reserved concurrency, worker concurrency, API throttling, and the SQS event-source mapping remain separate emergency fuses.
 
 Structured metrics contain only bounded operational fields: outcome, status, request ID, latency, question counts, provider calls, and Bedrock token counts. They never include goal text, focus areas, prompts, answers, bearer tokens, raw install IDs, or raw IP addresses.
 
-The template alarms on repeated API 5xx responses, Lambda throttles, provider failures, and high p95 latency. Alarm actions publish to the stack SNS topic. If an email was configured, AWS requires the recipient to confirm it before alerts are delivered. The optional budget filters the AWS account's Amazon Bedrock service cost; it is not limited to this stack.
+The template alarms on repeated API 5xx responses, Lambda throttles, provider failures, high p95 latency, repeated structured backend errors (including partial-batch worker failures), a generation job older than 15 minutes, and any message visible in the dead-letter queue. Alarm actions publish to the stack SNS topic. If an email was configured, AWS requires the recipient to confirm it before alerts are delivered. The optional budget filters the AWS account's Amazon Bedrock service cost; it is not limited to this stack.
 
 ## Privacy and retention
 
-- The service receives goal text, focus areas, learner context, prior-question coverage, an app-generated install UUID, and the network source IP.
-- Goal and question content is sent to the configured Amazon Bedrock model for generation. It is not emitted in application metrics or normal logs.
-- Install UUID and source IP are HMAC-pseudonymized before DynamoDB storage. HMAC values remain personal-data-adjacent identifiers and are not anonymous.
+- The service receives goal text, focus areas, learner context, prior-question coverage, optional extracted source-document names and text, an app-generated install UUID, and the network source IP.
+- Goal, question, and optional source-document content is sent to the configured Amazon Bedrock model for generation. It is not emitted in application metrics or normal logs.
+- When used for quota rows, the install UUID and source IP are HMAC-pseudonymized before DynamoDB storage. Asynchronous generation stores a pseudonymous install counter but not the source IP in its queue job. HMAC values remain personal-data-adjacent identifiers and are not anonymous.
+- The asynchronous bank table stores the validated generation context, optional extracted source text, generated questions, status, and claim-delivery state. It uses DynamoDB encryption at rest and a nominal 30-day TTL by default.
+- SQS and its dead-letter queue use server-side encryption. Queue jobs contain opaque pseudonymous keys and coordination values, not raw goal text, source documents, generated questions, raw install IDs, or raw IP addresses. The source queue retains unprocessed messages for up to 4 days; the dead-letter queue retains failed jobs for up to 14 days.
 - Quota rows have a nominal 48-hour TTL by default. DynamoDB TTL removal is eventual, so the privacy policy must not promise deletion at the exact expiry second.
+- Question-bank TTL removal is also eventual. **Erase all data** currently deletes the local bank and installation ID but does not call a server deletion endpoint; remote bank and queued work can remain until expiry and asynchronous service deletion.
 - Lambda logs default to 14-day retention in the SAM template. Change that parameter only alongside the published retention policy.
 - Unexpected system exceptions may still produce AWS SDK diagnostic stack traces; provider and configuration failures deliberately log only a category, not client content.
 
 ## IAM
 
-The runtime model ARN and the IAM invoke resources are intentionally separate parameters. `BedrockModelArn` is passed to Converse; `BedrockInvokeResourceArns` is the complete allowlist attached to `bedrock:InvokeModel`. The function can optionally apply the supplied Guardrail ARN and transact against only the generated quota table. Streaming invoke permission is not granted because this service uses non-streaming Converse.
+The runtime model ARN and the IAM invoke resources are intentionally separate parameters. `BedrockModelArn` is passed to Converse; `BedrockInvokeResourceArns` is the complete allowlist attached to `bedrock:InvokeModel`. Both functions can optionally apply the supplied Guardrail ARN. The API function has only the question-bank table operations and `sqs:SendMessage` needed to ensure and claim banks; the worker has table operations, queue poll/requeue operations, and model invocation. Resources are restricted to this stack's tables and queue. Streaming invoke permission is not granted because this service uses non-streaming Converse.
 
 Cross-region inference profiles require permissions for the inference profile and can require every destination foundation-model ARN. Put all of them in `BedrockInvokeResourceArns`, keep the list free of wildcards, and review the chosen profile's documented destinations whenever AWS changes the profile.
 
@@ -155,8 +186,13 @@ The manual deployment workflow has a separate `run_smoke_test` checkbox. When se
 ## Response statuses
 
 - `200`: sanitized question batch
+- `200`: question-bank claim response
+- `202`: question-bank ensure accepted or already in progress
 - `400`: malformed or oversized request
 - `401`: missing/incorrect internal bearer
+- `404`: requested question bank is absent or expired
+- `409`: the bank no longer matches the submitted goal context
+- `410`: the requested bank was deleted or superseded
 - `422`: Bedrock Guardrail intervention; do not retry unchanged content
 - `429`: daily quota or API/Lambda throttle; honor `Retry-After` when supplied
 - `502`: provider or response-processing failure; retry after the supplied delay

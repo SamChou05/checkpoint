@@ -29,6 +29,7 @@
 		A10000000000000000000016 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* MembershipView.swift */; };
 		A10000000000000000000017 /* AppSnapshotPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001B /* AppSnapshotPersistence.swift */; };
 		A10000000000000000000018 /* LegalLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001C /* LegalLinks.swift */; };
+		A10000000000000000000019 /* GoalSourceDocumentImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001D /* GoalSourceDocumentImporter.swift */; };
 		B10000000000000000000001 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
 		B10000000000000000000002 /* ShieldConfigurationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* ShieldConfigurationExtension.swift */; };
 		B10000000000000000000003 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
@@ -126,6 +127,7 @@
 		A2000000000000000000001A /* CheckpointProducts.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = CheckpointProducts.storekit; sourceTree = "<group>"; };
 		A2000000000000000000001B /* AppSnapshotPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSnapshotPersistence.swift; sourceTree = "<group>"; };
 		A2000000000000000000001C /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
+		A2000000000000000000001D /* GoalSourceDocumentImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalSourceDocumentImporter.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* SharedAppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedAppGroup.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* ShieldConfigurationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldConfigurationExtension.swift; sourceTree = "<group>"; };
 		B20000000000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 				A20000000000000000000005 /* ScreenTimeController.swift */,
 				A20000000000000000000015 /* PurchaseController.swift */,
 				A2000000000000000000001C /* LegalLinks.swift */,
+				A2000000000000000000001D /* GoalSourceDocumentImporter.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -567,6 +570,7 @@
 				A10000000000000000000004 /* QuestionEngine.swift in Sources */,
 				A10000000000000000000011 /* BackendQuestionEngine.swift in Sources */,
 				A10000000000000000000012 /* AppleFoundationQuestionEngine.swift in Sources */,
+				A10000000000000000000019 /* GoalSourceDocumentImporter.swift in Sources */,
 				A10000000000000000000005 /* ScreenTimeController.swift in Sources */,
 				A10000000000000000000015 /* PurchaseController.swift in Sources */,
 				A10000000000000000000018 /* LegalLinks.swift in Sources */,

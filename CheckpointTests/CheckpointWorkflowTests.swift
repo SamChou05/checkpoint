@@ -93,6 +93,48 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testProtectionPreflightGeneratesAFullCheckpointBeforeAllowingStart() async {
+        let appleEngine = TargetCountQuestionEngine(provider: .appleFoundation)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: appleEngine
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.appleFoundation)
+        store.goal = makeGoal()
+
+        let isReady = await store.prepareQuestionsForProtectionStart()
+
+        XCTAssertTrue(isReady)
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertEqual(store.questionBatchState, .ready)
+        XCTAssertNil(store.checkpointNotice)
+    }
+
+    @MainActor
+    func testProtectionPreflightKeepsProtectionOffWhenGenerationFails() async {
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.appleFoundation)
+        store.goal = makeGoal()
+
+        let isReady = await store.prepareQuestionsForProtectionStart()
+
+        XCTAssertFalse(isReady)
+        XCTAssertFalse(store.hasReadyCheckpointSet)
+        XCTAssertEqual(store.questionBatchState, .failed)
+        XCTAssertTrue(store.checkpointNotice?.contains("Protection stayed off") ?? false)
+        XCTAssertFalse(SharedAppGroup.desiredShieldActive)
+    }
+
+    @MainActor
     func testCreateGoalRejectsBlankTitle() async {
         let store = CheckpointStore(defaults: defaults)
 
@@ -175,6 +217,49 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(store.availableGoalProfiles.count, 1)
         XCTAssertEqual(store.pendingMembershipFeature, .goalProfiles)
         XCTAssertTrue(store.checkpointNotice?.contains("Free includes one goal") ?? false)
+    }
+
+    @MainActor
+    func testStarterCanEditItsExistingGoalWithSourceDocuments() async throws {
+        let appleEngine = TargetCountQuestionEngine(provider: .appleFoundation)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: appleEngine
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.appleFoundation)
+
+        await store.createGoal(
+            title: "Pass technical interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "arrays",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        let source = GoalSourceDocument(
+            name: "Course notes.txt",
+            text: "The interview rubric emphasizes recursion, graph traversal, complexity analysis, and explaining tradeoffs aloud."
+        )
+        await store.createGoal(
+            title: "Pass technical interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Comfortable with arrays; new to graph traversal",
+            focusAreas: "recursion, graph traversal",
+            sourceDocuments: [source],
+            preferredQuestionStyle: .multipleChoice,
+            createsNewProfile: false
+        )
+
+        XCTAssertEqual(store.availableGoalProfiles.count, 1)
+        XCTAssertEqual(store.goal?.currentLevel, "Comfortable with arrays; new to graph traversal")
+        XCTAssertEqual(store.goal?.sourceDocuments.map(\.name), ["Course notes.txt"])
+        XCTAssertNil(store.pendingMembershipFeature)
+        XCTAssertTrue(store.hasReadyCheckpointSet)
     }
 
     @MainActor
@@ -2187,6 +2272,35 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testAnswerRemainsAttributedToTheQuestionGoalAfterActiveGoalChanges() throws {
+        let firstGoal = makeGoal()
+        let secondGoal = Goal(
+            title: "Pass the calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 20),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let question = makeQuestion(goal: firstGoal, index: 1)
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = firstGoal
+        store.questions = [question]
+        store.goal = secondGoal
+
+        let unlockMinutes = store.submitAnswer(
+            question: question,
+            answer: question.expectedAnswer,
+            result: .correct
+        )
+
+        XCTAssertGreaterThan(unlockMinutes, 0)
+        XCTAssertEqual(store.attempts.first?.goalID, firstGoal.id)
+        XCTAssertEqual(store.unlockEvents.first?.goalID, firstGoal.id)
+        XCTAssertEqual(store.goal?.id, secondGoal.id)
+    }
+
+    @MainActor
     func testFailedCheckpointCooldownBlocksImmediateRetryButNotPreview() throws {
         let store = makeSeededStore(questionCount: 6)
 
@@ -2213,6 +2327,51 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(session.questions.count, 5)
         XCTAssertNil(store.checkpointRetryCooldownUntil)
         XCTAssertFalse(store.isCheckpointRetryCooldownActive)
+    }
+
+    @MainActor
+    func testAbandoningCheckpointRunStartsCooldownAndClearsPersistedRun() throws {
+        let store = makeSeededStore(questionCount: 6)
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+
+        XCTAssertEqual(store.activeCheckpointRun?.sessionID, session.id)
+
+        store.abandonCheckpointRun(
+            sessionID: session.id,
+            missedQuestionIDs: [session.questions[0].id]
+        )
+
+        XCTAssertNil(store.activeCheckpointRun)
+        XCTAssertTrue(store.isCheckpointRetryCooldownActive)
+        XCTAssertEqual(
+            store.questions.first(where: { $0.id == session.questions[0].id })?.status,
+            .incorrect
+        )
+    }
+
+    @MainActor
+    func testInterruptedCheckpointRunStartsCooldownOnRelaunchWhenProtectionIsActive() throws {
+        let store = makeSeededStore(questionCount: 6)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+        XCTAssertEqual(store.activeCheckpointRun?.sessionID, session.id)
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertNil(relaunchedStore.activeCheckpointRun)
+        XCTAssertTrue(relaunchedStore.isCheckpointRetryCooldownActive)
+        XCTAssertTrue(relaunchedStore.checkpointNotice?.contains("interrupted") ?? false)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+    }
+
+    func testEmptyCheckpointSessionCannotBecomeActiveRun() {
+        let session = CheckpointSession(
+            questions: [],
+            requiredCorrectAnswers: 4,
+            purpose: .temporaryUnlock
+        )
+
+        XCTAssertNil(ActiveCheckpointRun(session: session))
     }
 
     @MainActor
@@ -3104,7 +3263,7 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testPendingShieldAttemptAfterFirstBreakGetsUrgentRefillInsteadOfWaitingForLargeBank() async throws {
+    func testPendingShieldAttemptWithExhaustedCacheNeverWaitsForNetworkGeneration() async throws {
         let goal = makeGoal()
         let backendEngine = TargetCountQuestionEngine(provider: .backend)
         let engine = HybridQuestionEngine(
@@ -3116,16 +3275,14 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.updateBackendEndpoint("https://example.com/ai")
         store.updateMembershipTier(.member)
         store.goal = goal
-        store.questions = (1...store.unlockPolicy.questionsPerSession).map {
-            makeQuestion(goal: goal, index: $0)
-        }
-
-        for question in store.questions {
-            store.submitAnswer(
-                question: question,
-                answer: question.expectedAnswer,
-                result: .correct,
-                grantsUnlock: false
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                status: .correct,
+                timesCorrect: 1,
+                lastAskedAt: Date(),
+                nextReviewAt: Date().addingTimeInterval(60 * 60 * 24 * 3)
             )
         }
 
@@ -3133,12 +3290,11 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         SharedAppGroup.markPendingShieldAttempt()
         let preparedSession = await store.preparePendingShieldSession()
-        let session = try XCTUnwrap(preparedSession)
 
-        XCTAssertEqual(session.questions.count, store.unlockPolicy.questionsPerSession)
-        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, store.unlockPolicy.questionsPerSession * 2)
-        XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
-        XCTAssertNil(store.checkpointNotice)
+        XCTAssertNil(preparedSession)
+        XCTAssertTrue(backendEngine.receivedRequests.isEmpty)
+        XCTAssertNotNil(SharedAppGroup.pendingShieldAttemptDate)
+        XCTAssertTrue(store.checkpointNotice?.contains("cached checkpoint") ?? false)
     }
 
     @MainActor
@@ -3161,11 +3317,11 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNil(preparedSession)
         XCTAssertNotNil(SharedAppGroup.pendingShieldAttemptDate)
         XCTAssertFalse(store.checkpointNotice?.contains("3") ?? false)
-        XCTAssertGreaterThanOrEqual(appleEngine.receivedRequests.first?.targetCount ?? 0, store.unlockPolicy.questionsPerSession * 2)
+        XCTAssertTrue(appleEngine.receivedRequests.isEmpty)
     }
 
     @MainActor
-    func testPendingShieldAttemptConsumesAfterSecondRefillCompletesFullSet() async throws {
+    func testPendingShieldAttemptUsesReadyCacheWithoutProviderRequest() async throws {
         let goal = makeGoal()
         let appleEngine = CountSequenceQuestionEngine(provider: .appleFoundation, counts: [1, 10])
         let engine = HybridQuestionEngine(
@@ -3176,19 +3332,21 @@ final class CheckpointWorkflowTests: XCTestCase {
         store.updateAIProviderPreference(.appleFoundation)
         store.updateMembershipTier(.member)
         store.goal = goal
-        store.questions = (1...3).map { makeQuestion(goal: goal, index: $0) }
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
 
         SharedAppGroup.markPendingShieldAttempt()
         let preparedSession = await store.preparePendingShieldSession()
         let session = try XCTUnwrap(preparedSession)
 
         XCTAssertEqual(session.questions.count, store.unlockPolicy.questionsPerSession)
-        XCTAssertEqual(appleEngine.receivedRequests.count, 2)
+        XCTAssertTrue(appleEngine.receivedRequests.isEmpty)
         XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
     }
 
     @MainActor
-    func testRelaunchRecoversPersistedGeneratingStateAndAllowsShieldRefill() async throws {
+    func testRelaunchRecoversPersistedGeneratingStateWithoutNetworkOnShieldPath() async throws {
         let goal = makeGoal()
         let seededStore = CheckpointStore(defaults: defaults)
         seededStore.updateAIProviderPreference(.backend)
@@ -3223,11 +3381,11 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         SharedAppGroup.markPendingShieldAttempt()
         let preparedSession = await relaunchedStore.preparePendingShieldSession()
-        let session = try XCTUnwrap(preparedSession)
 
-        XCTAssertEqual(session.questions.count, UnlockPolicy.default.questionsPerSession)
-        XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, UnlockPolicy.default.questionsPerSession * 2)
-        XCTAssertNil(SharedAppGroup.pendingShieldAttemptDate)
+        XCTAssertNil(preparedSession)
+        XCTAssertTrue(backendEngine.receivedRequests.isEmpty)
+        XCTAssertNotNil(SharedAppGroup.pendingShieldAttemptDate)
+        XCTAssertTrue(relaunchedStore.checkpointNotice?.contains("cached checkpoint") ?? false)
     }
 
     @MainActor
@@ -5048,8 +5206,74 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(clearedStore.questionGenerationTraces.isEmpty)
     }
 
+    func testGoalSourceDocumentsNormalizeDeduplicateAndShareTheContextBudget() throws {
+        let longText: (String, Character) -> String = { label, fill in
+            "\(label) beginning. " + String(repeating: fill, count: 12_500) + " \(label) ending."
+        }
+        let duplicateText = "A concise source with enough substantive content to support several useful questions about recursion."
+        let documents = [
+            GoalSourceDocument(name: "<Lecture \"one\">.txt", text: longText("One", "A")),
+            GoalSourceDocument(name: "Lecture two.txt", text: longText("Two", "B")),
+            GoalSourceDocument(name: "Lecture three.txt", text: longText("Three", "C")),
+            GoalSourceDocument(name: "Duplicate A.txt", text: duplicateText),
+            GoalSourceDocument(name: "Duplicate B.txt", text: duplicateText),
+            GoalSourceDocument(name: "Fifth source.txt", text: "This fifth distinct source is long enough to be useful context for the learner's goal."),
+            GoalSourceDocument(name: "Ignored sixth.txt", text: "This sixth distinct source is long enough to be useful but exceeds the five-document limit.")
+        ]
+
+        let normalized = GoalSourceDocument.normalizedDocuments(documents)
+
+        XCTAssertEqual(normalized.count, GoalContextLimits.maximumDocumentCount)
+        XCTAssertLessThanOrEqual(
+            normalized.map(\.characterCount).reduce(0, +),
+            GoalContextLimits.maximumTotalDocumentCharacters
+        )
+        XCTAssertTrue(normalized.prefix(3).allSatisfy { $0.text.contains("[…truncated…]") })
+        XCTAssertTrue(normalized[0].text.hasSuffix("One ending."))
+        XCTAssertFalse(normalized[0].name.contains("<"))
+        XCTAssertFalse(normalized[0].name.contains("\""))
+        XCTAssertEqual(normalized.filter { $0.text == duplicateText }.count, 1)
+        XCTAssertFalse(normalized.map(\.name).contains("Ignored sixth.txt"))
+
+        var goal = makeGoal()
+        goal.sourceDocuments = normalized
+        let encoded = try JSONEncoder().encode(goal)
+        var legacyPayload = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        legacyPayload.removeValue(forKey: "sourceDocuments")
+        let legacyData = try JSONSerialization.data(withJSONObject: legacyPayload)
+        XCTAssertTrue(try JSONDecoder().decode(Goal.self, from: legacyData).sourceDocuments.isEmpty)
+    }
+
+    func testGoalSourceDocumentImporterReadsPlainTextAndRejectsEmptyMaterial() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CheckpointSourceImport-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let usefulURL = directory.appendingPathComponent("lecture-notes.txt")
+        let usefulText = "Recursion needs a base case and a recursive step. A call stack stores each pending frame until the base case returns."
+        try Data(usefulText.utf8).write(to: usefulURL)
+
+        let document = try GoalSourceDocumentImporter.loadDocument(from: usefulURL)
+
+        XCTAssertEqual(document.name, "lecture-notes.txt")
+        XCTAssertEqual(document.text, usefulText)
+
+        let emptyURL = directory.appendingPathComponent("empty.txt")
+        try Data("too short".utf8).write(to: emptyURL)
+        XCTAssertThrowsError(try GoalSourceDocumentImporter.loadDocument(from: emptyURL)) { error in
+            XCTAssertEqual(error as? GoalSourceImportError, .tooLittleText)
+        }
+    }
+
     func testBackendRequestEncodesGoalContextCompetenciesAndDifficulty() throws {
-        let goal = makeGoal()
+        var goal = makeGoal()
+        goal.sourceDocuments = [
+            GoalSourceDocument(
+                name: "Interview rubric.txt",
+                text: "The rubric tests recursion, graph traversal, complexity analysis, and clear explanations of engineering tradeoffs."
+            )
+        ]
         let existingQuestion = makeQuestion(goal: goal, index: 1, prompt: "Existing prompt")
         let report = QuestionQualityReport(
             questionID: UUID(),
@@ -5075,6 +5299,7 @@ final class AIProviderPolicyTests: XCTestCase {
         let existingPrompts = try XCTUnwrap(payload["existingPrompts"] as? [String])
         let existingQuestionCoverage = try XCTUnwrap(payload["existingQuestionCoverage"] as? [[String: Any]])
         let reportedPrompts = try XCTUnwrap(payload["reportedPrompts"] as? [String])
+        let sourceDocuments = try XCTUnwrap(payload["sourceDocuments"] as? [[String: Any]])
 
         XCTAssertEqual(goalPayload["title"] as? String, goal.title)
         XCTAssertEqual(goalPayload["category"] as? String, goal.category.rawValue)
@@ -5094,6 +5319,8 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertEqual(existingQuestionCoverage.first?["expectedAnswer"] as? String, "Correct answer 1")
         XCTAssertEqual(existingQuestionCoverage.first?["choices"] as? [String], existingQuestion.choices)
         XCTAssertEqual(reportedPrompts, ["Reported prompt"])
+        XCTAssertEqual(sourceDocuments.first?["name"] as? String, "Interview rubric.txt")
+        XCTAssertTrue((sourceDocuments.first?["text"] as? String)?.contains("graph traversal") ?? false)
 
         let sourcePrompt = request.sourcePrompt(provider: .backend)
         XCTAssertTrue(sourcePrompt.contains("User goal title: \(goal.title)"))
@@ -5109,6 +5336,9 @@ final class AIProviderPolicyTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("Avoid these existing prompts: Existing prompt"))
         XCTAssertTrue(sourcePrompt.contains("Avoid these reported prompts: Reported prompt"))
         XCTAssertTrue(sourcePrompt.contains("Choices must be parallel in grammar"))
+        XCTAssertTrue(sourcePrompt.contains("Interview rubric.txt"))
+        XCTAssertTrue(sourcePrompt.contains("untrusted reference data"))
+        XCTAssertTrue(sourcePrompt.contains("ground every tested fact and correct answer in those materials"))
     }
 
     func testBackendClientIdentityPersistsAnonymousInstallID() throws {
@@ -5839,4 +6069,383 @@ private func resetSharedAppGroupState() {
     SharedAppGroup.removeShieldContextFile()
     SharedAppGroup.removeScreenTimeSelectionFile()
     SharedAppGroup.removeProtectionSnapshotFile()
+}
+
+final class QuestionBankAsyncFlowTests: XCTestCase {
+    func testQuestionBankEndpointsAreSiblingsOfGenerationEndpoint() throws {
+        let generationEndpoint = try XCTUnwrap(
+            URL(string: "https://api.example.com/prod/v1/questions")
+        )
+
+        XCTAssertEqual(
+            BackendQuestionBankClient.questionBankEndpoint(
+                operation: "ensure",
+                generationEndpoint: generationEndpoint
+            ).absoluteString,
+            "https://api.example.com/prod/v1/question-banks/ensure"
+        )
+        XCTAssertEqual(
+            BackendQuestionBankClient.questionBankEndpoint(
+                operation: "claim",
+                generationEndpoint: generationEndpoint
+            ).absoluteString,
+            "https://api.example.com/prod/v1/question-banks/claim"
+        )
+    }
+
+    func testEnsurePayloadIncludesStableGoalIdentityAndWatermarks() throws {
+        let goal = makeGoal()
+        let request = makeRequest(
+            goal: goal,
+            targetCount: 80,
+            backendEndpoint: URL(string: "https://api.example.com/prod/v1/questions")
+        )
+        let data = try JSONEncoder().encode(
+            BackendQuestionRequest(
+                request: request,
+                targetCountOverride: 20,
+                contextRevision: "0123456789abcdef",
+                desiredCount: 80,
+                lowWatermark: 10
+            )
+        )
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let goalPayload = try XCTUnwrap(payload["goal"] as? [String: Any])
+
+        XCTAssertEqual(goalPayload["id"] as? String, goal.id.uuidString)
+        XCTAssertEqual(payload["targetCount"] as? Int, 20)
+        XCTAssertEqual(payload["contextRevision"] as? String, "0123456789abcdef")
+        XCTAssertEqual(payload["desiredCount"] as? Int, 80)
+        XCTAssertEqual(payload["lowWatermark"] as? Int, 10)
+    }
+
+    func testClaimedRemoteIDBecomesStableLocalQuestionID() throws {
+        let goal = makeGoal()
+        let remoteID = UUID()
+        let data = Data(
+            """
+            {"questions":[{"remoteID":"\(remoteID.uuidString)","prompt":"Which option is correct?","expectedAnswer":"Correct","choices":["Correct","Wrong 1","Wrong 2","Wrong 3"],"explanation":"Because it is correct.","topic":"arrays","difficulty":2,"format":"Multiple Choice"}]}
+            """.utf8
+        )
+
+        let response = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+        let question = try XCTUnwrap(response.questions.first?.makeQuestion(
+            goalID: goal.id,
+            sourcePrompt: "server bank"
+        ))
+
+        XCTAssertEqual(question.id, remoteID)
+        XCTAssertEqual(question.remoteID, remoteID.uuidString)
+    }
+
+    func testClaimPayloadCarriesPersistedIdempotencyKey() throws {
+        let claimID = UUID().uuidString
+        let data = try JSONEncoder().encode(
+            BackendQuestionBankClaimRequest(
+                bankID: "bank-123",
+                claimID: claimID,
+                limit: BackendQuestionBankClient.maximumClaimCount
+            )
+        )
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+
+        XCTAssertEqual(payload["bankID"] as? String, "bank-123")
+        XCTAssertEqual(payload["claimID"] as? String, claimID)
+        XCTAssertEqual(payload["limit"] as? Int, BackendQuestionBankClient.maximumClaimCount)
+    }
+
+    @MainActor
+    func testQueuedInitialBankPersistsIntentWithoutInvokingSynchronousGeneration() async throws {
+        let suiteName = "QuestionBankQueuedTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "bank-queued",
+                status: .queued,
+                readyCount: 0,
+                targetCount: ProductLimits.starterQuestionBankTargetCount
+            )
+        )
+        let synchronousEngine = CapturingQuestionEngine(provider: .backend)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: synchronousEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        let goal = makeGoal()
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        XCTAssertTrue(store.activeQuestions.isEmpty)
+        XCTAssertTrue(synchronousEngine.receivedRequests.isEmpty)
+        let intent = try XCTUnwrap(store.questionBankSyncIntents.first)
+        XCTAssertEqual(intent.bankID, "bank-queued")
+        XCTAssertFalse(intent.claimID.isEmpty)
+        XCTAssertEqual(intent.contextRevision.count, 16)
+        XCTAssertEqual(bankClient.ensureRequests.first?.contextRevision, intent.contextRevision)
+        XCTAssertEqual(bankClient.ensureRequests.first?.desiredCount, ProductLimits.starterQuestionBankTargetCount)
+        XCTAssertEqual(bankClient.ensureRequests.first?.lowWatermark, 0)
+
+        let snapshotData = try XCTUnwrap(defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey))
+        let snapshot = try JSONDecoder().decode(AppSnapshotEnvelope.self, from: snapshotData).snapshot
+        XCTAssertEqual(snapshot.questionBankSyncIntents?.first, intent)
+    }
+
+    @MainActor
+    func testReadyClaimMergesByRemoteIDAndNeverCallsSynchronousEngine() async throws {
+        let suiteName = "QuestionBankReadyTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let remoteQuestions = (1...5).map { index -> CheckpointQuestion in
+            let remoteID = UUID()
+            var question = makeQuestion(goal: goal, index: index)
+            question.id = remoteID
+            question.remoteID = remoteID.uuidString
+            return question
+        }
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "bank-ready",
+                status: .ready,
+                readyCount: remoteQuestions.count,
+                targetCount: ProductLimits.starterQuestionBankTargetCount
+            ),
+            defaultClaim: QuestionBankClaimReceipt(
+                questions: remoteQuestions,
+                status: .empty,
+                readyCount: 0,
+                targetCount: ProductLimits.starterQuestionBankTargetCount
+            )
+        )
+        let synchronousEngine = CapturingQuestionEngine(provider: .backend)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: synchronousEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        XCTAssertEqual(Set(store.activeQuestions.map(\.id)), Set(remoteQuestions.map(\.id)))
+        XCTAssertEqual(store.activeQuestions.count, remoteQuestions.count)
+        XCTAssertTrue(synchronousEngine.receivedRequests.isEmpty)
+        XCTAssertFalse(bankClient.claimIDs.isEmpty)
+        XCTAssertEqual(Set(bankClient.claimIDs).count, bankClient.claimIDs.count)
+    }
+
+    @MainActor
+    func testMissingAsyncRouteFallsBackToSynchronousInitialCompatibilityPath() async throws {
+        let suiteName = "QuestionBankRolloutFallbackTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "unused-bank",
+                status: .empty,
+                readyCount: 0,
+                targetCount: ProductLimits.starterQuestionBankTargetCount
+            ),
+            ensureError: QuestionBankAPIError.bankNotFound
+        )
+        let synchronousEngine = TargetCountQuestionEngine(provider: .backend)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: synchronousEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        let goal = makeGoal()
+
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        XCTAssertGreaterThanOrEqual(store.activeQuestions.count, UnlockPolicy.default.questionsPerSession)
+        XCTAssertEqual(synchronousEngine.receivedRequests.first?.targetCount, UnlockPolicy.default.questionsPerSession)
+        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+    }
+
+    @MainActor
+    func testSuggestedSkillMapDoesNotAbandonTheActiveRemoteBankRevision() async throws {
+        let suiteName = "QuestionBankSuggestedMapTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let broadGoal = Goal(
+            title: "Prepare for systems interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let topics = ["process scheduling", "virtual memory", "concurrency"]
+        let remoteQuestions = (1...5).map { index -> CheckpointQuestion in
+            let remoteID = UUID()
+            var question = makeQuestion(
+                goal: broadGoal,
+                index: index,
+                topic: topics[(index - 1) % topics.count]
+            )
+            question.id = remoteID
+            question.remoteID = remoteID.uuidString
+            return question
+        }
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "bank-skill-map",
+                status: .ready,
+                readyCount: remoteQuestions.count,
+                targetCount: ProductLimits.starterQuestionBankTargetCount
+            ),
+            defaultClaim: QuestionBankClaimReceipt(
+                questions: remoteQuestions,
+                status: .empty,
+                readyCount: 0,
+                targetCount: ProductLimits.starterQuestionBankTargetCount
+            )
+        )
+        let store = CheckpointStore(questionBankClient: bankClient, defaults: defaults)
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        await store.createGoal(
+            title: broadGoal.title,
+            deadline: broadGoal.deadline,
+            category: broadGoal.category,
+            currentLevel: broadGoal.currentLevel,
+            focusAreas: broadGoal.focusAreas,
+            preferredQuestionStyle: broadGoal.preferredQuestionStyle
+        )
+
+        XCTAssertEqual(store.goal?.derivedSkillMap?.status, .suggested)
+        XCTAssertGreaterThan(bankClient.claimIDs.count, 1)
+        XCTAssertEqual(Set(bankClient.ensureRequests.map(\.contextRevision)).count, 1)
+        XCTAssertEqual(store.questionBankSyncIntents.first?.bankID, "bank-skill-map")
+    }
+
+    @MainActor
+    func testCachedSessionIsServedWithoutAnyQuestionBankNetworkCall() throws {
+        let suiteName = "QuestionBankCacheFirstTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "unused-bank",
+                status: .queued,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount
+            )
+        )
+        let store = CheckpointStore(questionBankClient: bankClient, defaults: defaults)
+        store.updateMembershipTier(.member)
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...UnlockPolicy.default.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
+
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, UnlockPolicy.default.questionsPerSession)
+        XCTAssertTrue(bankClient.ensureRequests.isEmpty)
+        XCTAssertTrue(bankClient.claimIDs.isEmpty)
+    }
+}
+
+private final class ScriptedQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
+    struct EnsureRequest {
+        var goalID: Goal.ID
+        var contextRevision: String
+        var desiredCount: Int
+        var lowWatermark: Int
+    }
+
+    private let preparation: QuestionBankPreparationReceipt
+    private let defaultClaim: QuestionBankClaimReceipt
+    private let ensureError: (any Error)?
+    private(set) var ensureRequests: [EnsureRequest] = []
+    private(set) var claimIDs: [String] = []
+
+    init(
+        preparation: QuestionBankPreparationReceipt,
+        defaultClaim: QuestionBankClaimReceipt? = nil,
+        ensureError: (any Error)? = nil
+    ) {
+        self.preparation = preparation
+        self.ensureError = ensureError
+        self.defaultClaim = defaultClaim ?? QuestionBankClaimReceipt(
+            questions: [],
+            status: .empty,
+            readyCount: 0,
+            targetCount: preparation.targetCount
+        )
+    }
+
+    func ensureQuestionBank(
+        for request: QuestionGenerationRequest,
+        contextRevision: String,
+        desiredCount: Int,
+        lowWatermark: Int
+    ) async throws -> QuestionBankPreparationReceipt {
+        ensureRequests.append(
+            EnsureRequest(
+                goalID: request.goal.id,
+                contextRevision: contextRevision,
+                desiredCount: desiredCount,
+                lowWatermark: lowWatermark
+            )
+        )
+        if let ensureError {
+            throw ensureError
+        }
+        return preparation
+    }
+
+    func claimQuestions(
+        from bankID: String,
+        claimID: String,
+        limit: Int,
+        for request: QuestionGenerationRequest
+    ) async throws -> QuestionBankClaimReceipt {
+        claimIDs.append(claimID)
+        return defaultClaim
+    }
 }

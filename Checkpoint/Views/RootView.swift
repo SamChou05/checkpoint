@@ -161,6 +161,15 @@ struct RootView: View {
             return
         }
 
+        if SharedAppGroup.desiredShieldActive,
+           !store.hasReadyCheckpointSet,
+           store.activeCheckpointRun == nil,
+           store.unlockSession?.isActive != true {
+            screenTime.clearShield()
+            store.checkpointNotice = "Protection was turned off because a full checkpoint is not ready. Prepare your questions, then start protection again."
+            return
+        }
+
         let protectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
         screenTime.reconcileShieldState(
             protectionShouldRemainActive: protectionSnapshot.desiredShieldActive

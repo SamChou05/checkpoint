@@ -8,6 +8,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 
 - Native SwiftUI app shell.
 - Natural-language goal onboarding flow with the first goal included and membership unlocking goal switching plus fresh ongoing question generation.
+- Optional text and text-based PDF study materials can be attached to a goal; their extracted text is bounded, stored with the goal, and used to ground generated questions.
 - The raw typed goal is authoritative. Legacy goal category remains compatibility metadata and new goals default to `Custom` instead of being classified by subject keywords.
 - Provider-based multiple-choice question generation extracts a learning target from typed goals, so phrases like `Study for the LSAT` produce LSAT questions rather than study-habit prompts.
 - Goals without focus areas ask the active AI provider to infer a subject-matter Skill Map from the user's exact learning target; Checkpoint does not seed it with canned topic lists.
@@ -31,7 +32,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Privacy manifests for the app and Screen Time extensions.
 - A required first-launch Screen Time authorization gate precedes goal setup, followed by app selection, shielding, temporary unlocks, and re-lock reconciliation.
 - Shield Configuration extension target for branded Screen Time shield UI.
-- Shield Action extension target that records a pending checkpoint and asks iOS to open Checkpoint when the shield primary button is tapped.
+- Shield Action extension target that records a pending checkpoint and, on iOS 26.5 or newer, asks iOS to open Checkpoint when the shield primary button is tapped. Older systems show an explicit manual-open instruction.
 - Device Activity Monitor extension target that re-applies shields when a temporary unlock expires.
 - Shared App Group state for passing the current goal/prompt and pending shield attempts between app and extensions.
 
@@ -46,12 +47,13 @@ The MVP uses one canonical production AI route:
 - Provider prompts receive the raw goal plus optional focus, current level, derived topics, and competency history through one domain-general assessment contract.
 - Named subjects such as LSAT, MCAT, language learning, and beekeeping live only in evaluation fixtures; production prompts and validators do not branch by subject or contain authored question banks.
 - A set is not ready until at least five questions survive the app's relevance, completeness, difficulty, and duplicate checks.
+- Protection cannot start until a complete cached checkpoint is ready, and abandoning or interrupting a live checkpoint produces the same retry cooldown as a failed set.
 - Pending generation and retryable service, connection, or quality failures are visible in the app instead of being replaced silently.
 - Release builds require an HTTPS endpoint and token through `Checkpoint/Config/Secrets.xcconfig` or the `CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE` and `CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE` build settings. Provider configuration is not exposed in user-facing Settings, and AWS credentials must never ship in the app.
 - Backend calls include an anonymous install ID and the Bedrock service can enforce DynamoDB-backed install/IP daily quotas before model invocation.
 - The Bedrock service retries malformed output against one pinned production model and fails visibly if it cannot produce a validated batch; alternate models are disabled by default.
 
-The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
+The backend request/response shape is documented in `docs/AI_BACKEND_CONTRACT.md`, and the context/friction tradeoffs are documented in `docs/QUESTION_CONTEXT_STRATEGY.md`. The app intentionally generates and caches question batches instead of exposing model/source choices or calling AI on every blocked-app attempt.
 
 ## App Store Readiness
 
@@ -98,8 +100,8 @@ The current code includes the FamilyControls picker, selection persistence, Mana
 4. Home -> `Start protection`.
 5. Open a selected blocked app.
 6. Confirm the Checkpoint shield appears with current goal/prompt copy.
-7. Tap `Open Checkpoint` on the shield.
-8. Confirm Checkpoint opens and shows the checkpoint answer sheet.
+7. Tap `Open Checkpoint` on iOS 26.5 or newer; on an older system, tap `Start checkpoint` and open Checkpoint from the Home Screen.
+8. Confirm Checkpoint shows the checkpoint answer sheet after the automatic or manual handoff.
 9. Answer the checkpoint set correctly.
 10. Confirm the selected app is temporarily unshielded.
 11. Confirm the app re-locks after the unlock expires or after Checkpoint returns active.

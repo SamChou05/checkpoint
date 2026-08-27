@@ -106,13 +106,21 @@ struct CheckpointAttemptView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") {
-                        dismiss()
+                        closeCheckpoint()
                     }
                     .foregroundStyle(CheckpointTheme.muted)
                 }
             }
         }
         .preferredColorScheme(.light)
+        .interactiveDismissDisabled(session.purpose != .preview)
+        .onDisappear {
+            guard session.purpose != .preview else { return }
+            store.abandonCheckpointRun(
+                sessionID: session.id,
+                missedQuestionIDs: missedQuestionIDs
+            )
+        }
     }
 
     private var question: CheckpointQuestion {
@@ -228,8 +236,11 @@ struct CheckpointAttemptView: View {
             )
 
             if shouldFinish && !shouldPass {
-                store.makeMissedQuestionsDueNow(updatedMissedQuestionIDs)
-                store.startCheckpointRetryCooldown()
+                store.resolveCheckpointRun(
+                    sessionID: session.id,
+                    didPass: false,
+                    missedQuestionIDs: updatedMissedQuestionIDs
+                )
             }
         }
 
@@ -261,8 +272,10 @@ struct CheckpointAttemptView: View {
                         protectionActionErrorMessage = nil
                         store.startUnlockSession(
                             minutes: checkedAnswer.unlockMinutes,
-                            expiresAt: expiration
+                            expiresAt: expiration,
+                            goalID: session.questions.first?.goalID
                         )
+                        store.resolveCheckpointRun(sessionID: session.id, didPass: true)
                     } else {
                         protectionActionErrorMessage = screenTime.userFacingErrorMessage
                             ?? "The break could not start. Protection is still on; try again."
@@ -273,6 +286,7 @@ struct CheckpointAttemptView: View {
                 case .stopBlocking:
                     screenTime.clearShield()
                     store.clearUnlockSession()
+                    store.resolveCheckpointRun(sessionID: session.id, didPass: true)
                 }
             }
             dismiss()
@@ -288,6 +302,16 @@ struct CheckpointAttemptView: View {
         result = .correct
         checkedAnswer = nil
         accessibilityFocus = .question
+    }
+
+    private func closeCheckpoint() {
+        if session.purpose != .preview {
+            store.abandonCheckpointRun(
+                sessionID: session.id,
+                missedQuestionIDs: missedQuestionIDs
+            )
+        }
+        dismiss()
     }
 
     private func resultTint(for result: AnswerResult) -> Color {

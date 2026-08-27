@@ -70,7 +70,7 @@ enum CheckpointSessionSource: Sendable {
     case blockedApp
 }
 
-enum CheckpointSessionPurpose: String, Sendable {
+enum CheckpointSessionPurpose: String, Codable, Sendable {
     case temporaryUnlock
     case preview
     case stopBlocking
@@ -230,6 +230,154 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
     }
 }
 
+enum GoalContextLimits {
+    static let maximumDocumentCount = 5
+    static let maximumDocumentNameLength = 80
+    static let maximumCharactersPerDocument = 12_000
+    static let maximumTotalDocumentCharacters = 24_000
+    static let minimumUsefulDocumentCharacters = 40
+    static let maximumImportFileBytes = 20 * 1_024 * 1_024
+}
+
+struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
+    var id: UUID
+    var name: String
+    var text: String
+    var importedAt: Date
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        text: String,
+        importedAt: Date = Date()
+    ) {
+        self.id = id
+        self.name = Self.normalizedName(name)
+        self.text = Self.normalizedText(text, limit: GoalContextLimits.maximumCharactersPerDocument)
+        self.importedAt = importedAt
+    }
+
+    var characterCount: Int {
+        text.count
+    }
+
+    static func normalizedDocuments(_ documents: [GoalSourceDocument]) -> [GoalSourceDocument] {
+        var seenText: Set<String> = []
+        var candidates: [GoalSourceDocument] = []
+
+        for document in documents {
+            let normalized = GoalSourceDocument(
+                id: document.id,
+                name: document.name,
+                text: document.text,
+                importedAt: document.importedAt
+            )
+            guard normalized.text.count >= GoalContextLimits.minimumUsefulDocumentCharacters else { continue }
+
+            let duplicateKey = normalized.text.lowercased()
+            guard seenText.insert(duplicateKey).inserted else { continue }
+            candidates.append(normalized)
+            if candidates.count >= GoalContextLimits.maximumDocumentCount { break }
+        }
+
+        let allocations = fairCharacterAllocations(
+            for: candidates.map(\.characterCount),
+            totalLimit: GoalContextLimits.maximumTotalDocumentCharacters
+        )
+        return zip(candidates, allocations).compactMap { document, allocation in
+            let text = normalizedText(document.text, limit: allocation)
+            guard text.count >= GoalContextLimits.minimumUsefulDocumentCharacters else { return nil }
+            return GoalSourceDocument(
+                id: document.id,
+                name: document.name,
+                text: text,
+                importedAt: document.importedAt
+            )
+        }
+    }
+
+    private static func normalizedName(_ rawName: String) -> String {
+        let collapsed = rawName
+            .split(whereSeparator: { $0.isWhitespace })
+            .joined(separator: " ")
+            .replacingOccurrences(of: "<", with: "")
+            .replacingOccurrences(of: ">", with: "")
+            .replacingOccurrences(of: "\"", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let resolved = collapsed.isEmpty ? "Study material" : collapsed
+        return String(resolved.prefix(GoalContextLimits.maximumDocumentNameLength))
+    }
+
+    private static func normalizedText(_ rawText: String, limit: Int) -> String {
+        guard limit > 0 else { return "" }
+
+        let normalizedLineEndings = rawText
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+        var lines: [String] = []
+        var previousLineWasEmpty = false
+
+        for rawLine in normalizedLineEndings.components(separatedBy: "\n") {
+            let line = rawLine
+                .split(whereSeparator: { $0.isWhitespace })
+                .joined(separator: " ")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let isEmpty = line.isEmpty
+            if isEmpty && previousLineWasEmpty {
+                continue
+            }
+            lines.append(line)
+            previousLineWasEmpty = isEmpty
+        }
+
+        let normalized = lines
+            .joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard normalized.count > limit else { return normalized }
+
+        let marker = "\n[…truncated…]\n"
+        guard limit > marker.count + 2 else {
+            return String(normalized.prefix(limit)).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        let availableCharacters = limit - marker.count
+        let prefixCount = (availableCharacters * 3) / 5
+        let suffixCount = availableCharacters - prefixCount
+        return String(normalized.prefix(prefixCount)).trimmingCharacters(in: .whitespacesAndNewlines)
+            + marker
+            + String(normalized.suffix(suffixCount)).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func fairCharacterAllocations(for lengths: [Int], totalLimit: Int) -> [Int] {
+        guard !lengths.isEmpty else { return [] }
+        guard lengths.reduce(0, +) > totalLimit else { return lengths }
+
+        var allocations = Array(repeating: 0, count: lengths.count)
+        var unresolved = Set(lengths.indices)
+        var remaining = totalLimit
+
+        while !unresolved.isEmpty {
+            let share = remaining / unresolved.count
+            let smallDocuments = unresolved.filter { lengths[$0] <= share }
+            if smallDocuments.isEmpty {
+                let orderedIndices = unresolved.sorted()
+                let remainder = remaining % orderedIndices.count
+                for (offset, index) in orderedIndices.enumerated() {
+                    allocations[index] = share + (offset < remainder ? 1 : 0)
+                }
+                break
+            }
+
+            for index in smallDocuments {
+                allocations[index] = lengths[index]
+                remaining -= lengths[index]
+                unresolved.remove(index)
+            }
+        }
+
+        return allocations
+    }
+}
+
 struct Goal: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var title: String
@@ -237,6 +385,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
     var category: GoalCategory
     var currentLevel: String
     var focusAreas: String
+    var sourceDocuments: [GoalSourceDocument]
     var derivedSkillMap: GoalSkillMap?
     var preferredQuestionStyle: QuestionFormat
     var minimumQuestionDifficulty: Int
@@ -249,6 +398,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         category: GoalCategory,
         currentLevel: String,
         focusAreas: String,
+        sourceDocuments: [GoalSourceDocument] = [],
         derivedSkillMap: GoalSkillMap? = nil,
         preferredQuestionStyle: QuestionFormat,
         minimumQuestionDifficulty: Int = UnlockPolicy.default.minimumQuestionDifficulty,
@@ -260,6 +410,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         self.category = category
         self.currentLevel = currentLevel
         self.focusAreas = focusAreas
+        self.sourceDocuments = GoalSourceDocument.normalizedDocuments(sourceDocuments)
         self.derivedSkillMap = derivedSkillMap
         self.preferredQuestionStyle = preferredQuestionStyle
         self.minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(minimumQuestionDifficulty)
@@ -310,6 +461,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         case category
         case currentLevel
         case focusAreas
+        case sourceDocuments
         case derivedSkillMap
         case preferredQuestionStyle
         case minimumQuestionDifficulty
@@ -324,6 +476,9 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         category = try container.decode(GoalCategory.self, forKey: .category)
         currentLevel = try container.decode(String.self, forKey: .currentLevel)
         focusAreas = try container.decode(String.self, forKey: .focusAreas)
+        sourceDocuments = GoalSourceDocument.normalizedDocuments(
+            try container.decodeIfPresent([GoalSourceDocument].self, forKey: .sourceDocuments) ?? []
+        )
         derivedSkillMap = try container.decodeIfPresent(GoalSkillMap.self, forKey: .derivedSkillMap)
         preferredQuestionStyle = try container.decode(QuestionFormat.self, forKey: .preferredQuestionStyle)
         minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(
@@ -336,6 +491,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
 
 struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
+    var remoteID: String?
     var goalID: Goal.ID
     var prompt: String
     var expectedAnswer: String
@@ -353,6 +509,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
 
     init(
         id: UUID = UUID(),
+        remoteID: String? = nil,
         goalID: Goal.ID,
         prompt: String,
         expectedAnswer: String,
@@ -369,6 +526,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         sourcePrompt: String
     ) {
         self.id = id
+        self.remoteID = remoteID
         self.goalID = goalID
         self.prompt = prompt
         self.expectedAnswer = expectedAnswer
@@ -387,6 +545,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
 
     enum CodingKeys: String, CodingKey {
         case id
+        case remoteID
         case goalID
         case prompt
         case expectedAnswer
@@ -406,6 +565,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        remoteID = try container.decodeIfPresent(String.self, forKey: .remoteID)
         goalID = try container.decode(UUID.self, forKey: .goalID)
         prompt = try container.decode(String.self, forKey: .prompt)
         expectedAnswer = try container.decode(String.self, forKey: .expectedAnswer)
@@ -420,6 +580,39 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         lastAskedAt = try container.decodeIfPresent(Date.self, forKey: .lastAskedAt)
         nextReviewAt = try container.decodeIfPresent(Date.self, forKey: .nextReviewAt)
         sourcePrompt = try container.decodeIfPresent(String.self, forKey: .sourcePrompt) ?? ""
+    }
+}
+
+struct QuestionBankSyncIntent: Identifiable, Codable, Equatable, Sendable {
+    var goalID: Goal.ID
+    var contextRevision: String
+    var bankID: String?
+    var claimID: String
+    var desiredCount: Int
+    var lowWatermark: Int
+    var createdAt: Date
+    var lastAttemptAt: Date?
+
+    var id: Goal.ID { goalID }
+
+    init(
+        goalID: Goal.ID,
+        contextRevision: String,
+        bankID: String? = nil,
+        claimID: String = UUID().uuidString,
+        desiredCount: Int,
+        lowWatermark: Int,
+        createdAt: Date = Date(),
+        lastAttemptAt: Date? = nil
+    ) {
+        self.goalID = goalID
+        self.contextRevision = contextRevision
+        self.bankID = bankID
+        self.claimID = claimID
+        self.desiredCount = desiredCount
+        self.lowWatermark = lowWatermark
+        self.createdAt = createdAt
+        self.lastAttemptAt = lastAttemptAt
     }
 }
 
@@ -479,6 +672,23 @@ struct CheckpointSession: Identifiable, Equatable, Sendable {
     func canStillMeetUnlockThreshold(correctAnswerCount: Int, answeredQuestionCount: Int) -> Bool {
         let remainingQuestions = max(0, questions.count - answeredQuestionCount)
         return correctAnswerCount + remainingQuestions >= unlockThreshold
+    }
+}
+
+struct ActiveCheckpointRun: Codable, Equatable, Sendable {
+    var sessionID: CheckpointSession.ID
+    var goalID: Goal.ID
+    var questionIDs: [CheckpointQuestion.ID]
+    var purpose: CheckpointSessionPurpose
+    var startedAt: Date
+
+    init?(session: CheckpointSession, startedAt: Date = Date()) {
+        guard let goalID = session.questions.first?.goalID else { return nil }
+        sessionID = session.id
+        self.goalID = goalID
+        questionIDs = session.questions.map(\.id)
+        purpose = session.purpose
+        self.startedAt = startedAt
     }
 }
 
@@ -765,10 +975,12 @@ struct AppSnapshot: Codable, Sendable {
     var lastQuestionProvider: AIProviderKind?
     var backendEndpoint: String?
     var unlockSession: UnlockSession?
+    var activeCheckpointRun: ActiveCheckpointRun?
     var checkpointRetryCooldownUntil: Date?
     var membershipTier: MembershipTier?
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?
+    var questionBankSyncIntents: [QuestionBankSyncIntent]?
 }
 
 struct AnswerEvaluation: Equatable, Sendable {

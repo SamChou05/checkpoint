@@ -92,6 +92,7 @@ jobs:
       MAX_REQUESTS_PER_INSTALL_PER_DAY: ${{ vars.MAX_REQUESTS_PER_INSTALL_PER_DAY || '40' }}
       MAX_REQUESTS_PER_IP_PER_DAY: ${{ vars.MAX_REQUESTS_PER_IP_PER_DAY || '400' }}
       RATE_LIMIT_TTL_SECONDS: ${{ vars.RATE_LIMIT_TTL_SECONDS || '172800' }}
+      QUESTION_BANK_TTL_SECONDS: ${{ vars.QUESTION_BANK_TTL_SECONDS || '2592000' }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.environment }}
       SERVICE_MODE: ${{ vars.SERVICE_MODE || 'enabled' }}
       SERVICE_RETRY_AFTER_SECONDS: ${{ vars.SERVICE_RETRY_AFTER_SECONDS || '300' }}
@@ -99,6 +100,7 @@ jobs:
       API_THROTTLE_RATE_LIMIT: ${{ vars.API_THROTTLE_RATE_LIMIT || '5' }}
       API_THROTTLE_BURST_LIMIT: ${{ vars.API_THROTTLE_BURST_LIMIT || '10' }}
       RESERVED_CONCURRENCY: ${{ vars.RESERVED_CONCURRENCY || '5' }}
+      QUESTION_BANK_WORKER_RESERVED_CONCURRENCY: ${{ vars.QUESTION_BANK_WORKER_RESERVED_CONCURRENCY || '2' }}
       LOG_RETENTION_DAYS: ${{ vars.LOG_RETENTION_DAYS || '14' }}
       ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
       BUDGET_ALERT_EMAIL: ${{ vars.BUDGET_ALERT_EMAIL }}
@@ -212,6 +214,7 @@ jobs:
             "MaxRequestsPerInstallPerDay=$MAX_REQUESTS_PER_INSTALL_PER_DAY"
             "MaxRequestsPerIPPerDay=$MAX_REQUESTS_PER_IP_PER_DAY"
             "RateLimitTTLSeconds=$RATE_LIMIT_TTL_SECONDS"
+            "QuestionBankTTLSeconds=$QUESTION_BANK_TTL_SECONDS"
             "DeploymentEnvironment=$DEPLOYMENT_ENVIRONMENT"
             "ServiceMode=$SERVICE_MODE"
             "ServiceRetryAfterSeconds=$SERVICE_RETRY_AFTER_SECONDS"
@@ -219,6 +222,7 @@ jobs:
             "ApiThrottleRateLimit=$API_THROTTLE_RATE_LIMIT"
             "ApiThrottleBurstLimit=$API_THROTTLE_BURST_LIMIT"
             "ReservedConcurrency=$RESERVED_CONCURRENCY"
+            "QuestionBankWorkerReservedConcurrency=$QUESTION_BANK_WORKER_RESERVED_CONCURRENCY"
             "LogRetentionDays=$LOG_RETENTION_DAYS"
             "AlertEmail=$ALERT_EMAIL"
             "BudgetAlertEmail=$BUDGET_ALERT_EMAIL"

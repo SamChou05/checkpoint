@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: July 12, 2026
+Last updated: August 26, 2026
 
 ## Current Product Direction
 
@@ -43,6 +43,7 @@ Important platform constraint:
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
 - Natural-language goal profile onboarding with sensible defaults and optional topic/starting-level customization.
+- Optional text and text-based PDF study materials can be attached to a goal. The app extracts and bounds their text locally, persists it with the profile, and uses it as untrusted grounding data for generation.
 - Onboarding starts blank and rejects empty goal titles.
 - The raw typed goal is authoritative. Legacy category is compatibility metadata only, and new goals default to `Custom` instead of being classified by subject keywords.
 - Question generation extracts an internal learning target from natural-language goals, so `Study for the LSAT` becomes LSAT content rather than questions about studying.
@@ -72,6 +73,7 @@ Important platform constraint:
 - Blocked-app launches with no available checkpoint questions now show a recovery notice instead of failing silently.
 - Question batch state is tracked as idle, generating, ready, or failed.
 - Checkpoint requires at least five validated questions before marking the first practice set ready. It does not substitute canned questions when AI output is missing or rejected.
+- Starting protection is gated on a complete cached checkpoint. A blocked-app handoff never waits for network generation, and abandoned or force-quit checkpoint runs receive a persisted retry cooldown.
 - The user sees pending generation and retryable service, connection, or quality failures, with goal-editing offered only when more specific subject context could help.
 - Question refresh is abstracted away from users. Starter users get the first generated bank; membership keeps fresh questions flowing after that set runs low.
 - Debug and Release builds both use StoreKit entitlements for Free/Pro access; local development uses `Checkpoint/Config/CheckpointProducts.storekit` through the shared Xcode scheme.
@@ -146,6 +148,7 @@ Important platform constraint:
 
 - Simulator XCTest verification passes locally through XcodeBuildMCP.
 - Real Screen Time behavior must be verified on a physical iPhone.
+- Apple's public [`openParentalControlsApp`](https://developer.apple.com/documentation/managedsettings/shieldactionresponse/openparentalcontrolsapp) shield response is documented as available starting in iOS 26.5. The project still targets iOS 17 and currently compiles against an iOS 26.4 SDK, where it must fall back to recording the attempt and deferring. Automatic shield-to-app launch is therefore an explicit iOS-version and physical-device release gate; the UI must not promise an automatic handoff on older systems.
 - Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and Screen Time extensions.
 - Family Controls distribution requires Apple approval before App Store submission.
 - Device Activity requires a 15-minute monitoring interval, so 5- and 10-minute breaks schedule their monitor far enough in the past to meet that minimum while still ending at the requested time; verify this behavior on a physical iPhone.
@@ -160,7 +163,7 @@ Important platform constraint:
 While Apple entitlement/device setup is pending, useful local work is:
 
 - Exercise primary/backup recovery and legacy migration again on the build-3 to build-4 physical-device upgrade path.
-- Add onboarding diagnostics for better initial competency estimates.
+- Evaluate the one-question calibration and goal-classification flow described in `docs/QUESTION_CONTEXT_STRATEGY.md`.
 - Improve adaptive competency and diagnostic flows.
 - Continue UI polish and error states.
 
@@ -208,7 +211,7 @@ The MVP is complete when:
 ### P2
 
 - Per-app routing to a chosen goal profile.
-- User-provided materials such as notes, PDFs, links, or flashcards.
+- Retrieval, citations, and server-side source versioning for material larger than the current five-file/24,000-character text bridge.
 - Integrations with Anki, Quizlet, LeetCode, Notion, or Google Sheets.
 - Server-side analytics and TestFlight instrumentation.
 - Membership pricing experiments after retention is validated.
