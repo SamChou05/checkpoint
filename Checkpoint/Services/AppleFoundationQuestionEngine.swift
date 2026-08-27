@@ -60,22 +60,16 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         - Return JSON only.
         """
 
-        let prompt = providerRequest.sourcePrompt(provider: provider)
+        let sourcePrompt = providerRequest.sourcePrompt(provider: provider)
 
         let session = LanguageModelSession(instructions: instructions)
         let options = GenerationOptions(temperature: 0.4, maximumResponseTokens: 4000)
-        let response = try await session.respond(to: Prompt(prompt), options: options)
-        let data = try extractJSONData(from: response.content)
-        let payload: BackendQuestionResponse
-        do {
-            payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
-        } catch {
-            throw QuestionGenerationError.badResponse
-        }
+        let response = try await session.respond(to: Prompt(sourcePrompt), options: options)
+        let payload = try extractResponse(from: response.content)
         let questions = payload.questions.map {
             $0.makeQuestion(
                 goalID: providerRequest.goal.id,
-                sourcePrompt: providerRequest.sourcePrompt(provider: provider)
+                sourcePrompt: sourcePrompt
             )
         }
 
@@ -86,12 +80,12 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         return questions
     }
 
-    private func extractJSONData(from text: String) throws -> Data {
+    private func extractResponse(from text: String) throws -> BackendQuestionResponse {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if let data = trimmed.data(using: .utf8),
-           (try? JSONDecoder().decode(BackendQuestionResponse.self, from: data)) != nil {
-            return data
+           let payload = try? JSONDecoder().decode(BackendQuestionResponse.self, from: data) {
+            return payload
         }
 
         guard
@@ -106,7 +100,11 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
             throw QuestionGenerationError.badResponse
         }
 
-        return data
+        do {
+            return try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+        } catch {
+            throw QuestionGenerationError.badResponse
+        }
     }
 }
 #endif

@@ -38,8 +38,9 @@ struct BackendQuestionEngine: QuestionGenerating {
         } catch {
             throw QuestionGenerationError.badResponse
         }
+        let sourcePrompt = request.sourcePrompt(provider: provider)
         let questions = payload.questions.map {
-            $0.makeQuestion(goalID: request.goal.id, sourcePrompt: request.sourcePrompt(provider: provider))
+            $0.makeQuestion(goalID: request.goal.id, sourcePrompt: sourcePrompt)
         }
 
         guard !questions.isEmpty else {

@@ -72,7 +72,10 @@ private struct AttemptRow: View {
             } label: {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        StatusBadge(text: resultLabel, tint: tint)
+                        StatusBadge(
+                            text: resultPresentation.label,
+                            tint: resultPresentation.tint
+                        )
                         Spacer()
                         Text(attempt.createdAt.formatted(date: .abbreviated, time: .shortened))
                             .font(.caption.weight(.semibold))
@@ -90,27 +93,16 @@ private struct AttemptRow: View {
         }
     }
 
-    private var resultLabel: String {
+    private var resultPresentation: (label: String, tint: Color) {
         switch attempt.result {
         case .correct:
-            return "Correct"
+            return ("Correct", CheckpointTheme.teal)
         case .partial:
-            return "Almost"
+            return ("Almost", CheckpointTheme.amber)
         case .incorrect:
-            return "Missed"
+            return ("Missed", CheckpointTheme.coral)
         case .unclear:
-            return "Not sure"
-        }
-    }
-
-    private var tint: Color {
-        switch attempt.result {
-        case .correct:
-            return CheckpointTheme.teal
-        case .partial:
-            return CheckpointTheme.amber
-        case .incorrect, .unclear:
-            return CheckpointTheme.coral
+            return ("Not sure", CheckpointTheme.coral)
         }
     }
 }

@@ -84,6 +84,13 @@ class PromptEvalTests(unittest.TestCase):
     def question_failures(self, question, fixture=None):
         return self.score(question, fixture)["questions"][0]["failures"]
 
+    def assert_question_rejected_for(self, question, expected_failure, fixture=None):
+        failures = self.question_failures(question, fixture)
+        self.assertTrue(
+            any(expected_failure in failure for failure in failures),
+            f"Expected a failure containing {expected_failure!r}; got {failures!r}",
+        )
+
     def test_accepts_usable_question(self):
         result = self.score(_good_question())
 
@@ -97,9 +104,7 @@ class PromptEvalTests(unittest.TestCase):
             "topic": "screen time",
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("Forbidden terms appeared" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "Forbidden terms appeared")
 
     def test_rejects_generic_meta_filler_question(self):
         question = {
@@ -117,9 +122,7 @@ class PromptEvalTests(unittest.TestCase):
             "format": "Multiple Choice",
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("generic meta-reasoning filler" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "generic meta-reasoning filler")
 
     def test_rejects_free_response_artifact(self):
         question = {
@@ -127,9 +130,7 @@ class PromptEvalTests(unittest.TestCase):
             "prompt": "Write a program that demonstrates the target concept for this subject fact.",
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("free-response artifact" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "free-response artifact")
 
     def test_rejects_answer_labels_instead_of_answer_text(self):
         question = {
@@ -138,9 +139,7 @@ class PromptEvalTests(unittest.TestCase):
             "choices": ["A", "B", "C", "D"],
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("answer label" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "answer label")
 
     def test_rejects_embedded_answer_options(self):
         question = {
@@ -148,9 +147,7 @@ class PromptEvalTests(unittest.TestCase):
             "prompt": "Apply the target concept. Options: 1. first 2. second 3. third 4. fourth",
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("embeds answer options" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "embeds answer options")
 
     def test_rejects_duplicate_choices_after_generic_normalization(self):
         question = {
@@ -164,9 +161,7 @@ class PromptEvalTests(unittest.TestCase):
             ],
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("duplicates after case" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "duplicates after case")
 
     def test_rejects_disallowed_all_or_none_choices(self):
         question = {
@@ -179,9 +174,7 @@ class PromptEvalTests(unittest.TestCase):
             ],
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("Disallowed choice text" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "Disallowed choice text")
 
     def test_rejects_expected_answer_missing_from_choices(self):
         question = {
@@ -189,26 +182,28 @@ class PromptEvalTests(unittest.TestCase):
             "expectedAnswer": "A result not listed in the choices.",
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("exactly match one choice" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "exactly match one choice")
 
     def test_rejects_question_below_requested_difficulty(self):
         fixture = _fixture()
         fixture["payload"]["minimumDifficulty"] = 4
         question = {**_good_question(), "difficulty": 2}
 
-        failures = self.question_failures(question, fixture)
-
-        self.assertTrue(any("below requested minimum" in failure for failure in failures))
+        self.assert_question_rejected_for(
+            question,
+            "below requested minimum",
+            fixture,
+        )
 
     def test_rejects_existing_or_reported_prompt(self):
         fixture = _fixture()
         fixture["payload"]["reportedPrompts"] = [_good_question()["prompt"]]
 
-        failures = self.question_failures(_good_question(), fixture)
-
-        self.assertTrue(any("duplicates existing/reported prompt" in failure for failure in failures))
+        self.assert_question_rejected_for(
+            _good_question(),
+            "duplicates existing/reported prompt",
+            fixture,
+        )
 
     def test_rejects_missing_fixture_subject_signal(self):
         question = {
@@ -225,9 +220,7 @@ class PromptEvalTests(unittest.TestCase):
             "topic": "unrelated material",
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("No required subject signal" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "No required subject signal")
 
     def test_rejects_repeated_prompt_within_batch(self):
         fixture = _fixture()
@@ -254,9 +247,7 @@ class PromptEvalTests(unittest.TestCase):
             "explanation": "The measured result is -1, which is negative.",
         }
 
-        failures = self.question_failures(question)
-
-        self.assertTrue(any("different answer choice" in failure for failure in failures))
+        self.assert_question_rejected_for(question, "different answer choice")
 
     def test_allows_study_schedule_when_study_skills_are_the_goal(self):
         question = {

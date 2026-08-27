@@ -126,39 +126,6 @@ struct SectionPanel<Content: View>: View {
     }
 }
 
-struct MetricTile: View {
-    var title: String
-    var value: String
-    var tint: Color
-    var systemImage: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Image(systemName: systemImage)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(tint)
-
-            Text(value)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .foregroundStyle(CheckpointTheme.text)
-                .monospacedDigit()
-
-            Text(title)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(CheckpointTheme.muted)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, minHeight: 126, alignment: .leading)
-        .background(CheckpointTheme.panel, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(CheckpointTheme.hairline, lineWidth: 1)
-        )
-    }
-}
-
 struct StatusBadge: View {
     var text: String
     var tint: Color

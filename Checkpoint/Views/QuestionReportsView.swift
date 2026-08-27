@@ -111,10 +111,10 @@ private struct SubmittedIssueReportRow: View {
                     .foregroundStyle(CheckpointTheme.muted)
 
                 ShareLink(item: shareText) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(CheckpointTheme.teal)
-                            .frame(width: 44, height: 44)
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(CheckpointTheme.teal)
+                        .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("Share feedback note")
             }
@@ -123,7 +123,6 @@ private struct SubmittedIssueReportRow: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
-
         }
         .padding(12)
         .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
