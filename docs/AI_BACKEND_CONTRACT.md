@@ -100,13 +100,20 @@ Checkpoint does not mark the first practice set ready unless at least five quest
 
 ## Asynchronous Question Bank
 
-The asynchronous path separates user-facing reads from model latency:
+The asynchronous path separates user-facing reads from model latency and makes queue publication recoverable:
 
-1. `ensure` authenticates and validates the normal generation payload, stores the expiring bank context, and queues durable background work if the bank is below its refill threshold.
-2. An SQS-triggered Lambda reads that context, calls Bedrock, validates accepted questions, and stores ready inventory. It continues independently if the iOS app is suspended or terminated.
-3. `claim` atomically returns already-prepared inventory. It never calls Bedrock in the HTTP request path.
+1. `ensure` authenticates and validates the normal generation payload, stores the expiring bank context, then atomically links that bank to a pending outbox job if it is below its refill threshold.
+2. A DynamoDB Streams consumer and the API's immediate best-effort sender can both publish the stable job ID to SQS. Each re-checks the durable job and conditionally marks it sent; the stream path recovers if the API process stops after the database commit but before queue publication.
+3. An SQS-triggered Lambda reads that context, calls Bedrock, validates accepted questions, and stores ready inventory. It continues independently if the iOS app is suspended or terminated.
+4. `claim` atomically marks already-prepared inventory claimed and returns it. Claimed question rows remain as deduplication history until bank expiry; the route never calls Bedrock in the HTTP request path.
 
 The queue provides retryable, app-independent work, not a completion-time guarantee. The app must maintain a local reserve and poll pending banks with backoff. Queue delay, Lambda throttling, provider failure, safety intervention, or a dead-lettered job can still postpone new inventory.
+
+DynamoDB Streams and SQS deliver at least once, so duplicate stream events and queue messages are part of the normal contract. A pending job's stable ID, conditional worker processing lease, bank context revision, and active-job pointer must make every replay duplicate-safe. A duplicate must not create a second generation pass, exceed a finite bank's cumulative ceiling, or deliver stale-context questions.
+
+The stream mapping filters for pending coordination jobs, reports per-record failures, bisects failed batches, and retries a record at most five times while it is no older than 24 hours. For an exhausted invocation, the separate encrypted outbox failure queue receives only Lambda invocation metadata, including `DDBStreamBatchInfo`; it does not receive the original DynamoDB record or job key. The SQS generation queue independently retries a failed worker message and redrives it to its generation dead-letter queue after the configured receive threshold (five by default). The same limit caps provider calls across duplicate deliveries; logical-cap exhaustion terminally fails the bank, acknowledges remaining duplicates, and emits provider-failure/error metrics. These queues are deliberately separate because stream invocation metadata and a Bedrock generation job require different diagnosis and replay procedures. Both raise alarms and retain their respective messages for at most 14 days in the default stack.
+
+An operator should retain the outbox failure message and act before the source stream's 24-hour expiry: use its stream ARN, shard ID, and sequence range to retrieve the original record, then inspect the referenced JOB and META items. Confirm the job remains queued with pending enqueue status and that META still names that job and context as active. After fixing the cause, conditionally change only `updatedAt` while requiring the queued/pending job state so DynamoDB Streams retries delivery. Delete the failure metadata only after `enqueueStatus=sent` is observed. If the source record expired, the metadata cannot identify the job; scan the bank table for queued/pending JOB items and apply the same active-job validation and conditional re-touch.
 
 ### Ensure
 
@@ -132,7 +139,7 @@ The example is abridged; `ensure` still requires the normal goal, context, cover
 - `desiredCount` is the inventory target and must be 1 through 100.
 - `lowWatermark` must be nonnegative and less than `desiredCount`. A value of `0` creates a finite starter bank: cumulative accepted generation stops at `desiredCount`, and claims or repeated ensure polling do not replenish it. A positive value enables ongoing refill toward `desiredCount` when ready inventory falls to or below the watermark.
 - `targetCount` remains the maximum size of one model-generation batch and is capped by the backend.
-- Repeating `ensure` for the same installation, goal, and normalized generation context reuses the same bank and does not intentionally create duplicate in-flight work.
+- Repeating `ensure` for the same installation, goal, and normalized generation context reuses the same bank and does not intentionally create duplicate in-flight work. The bank's active-job update and pending outbox record are committed atomically; the database never relies only on a non-transactional SQS send to remember that generation is needed.
 - Material goal/source/difficulty context changes resolve to a different context version so stale questions are not delivered into the edited goal.
 - The current app asks for a 40-question finite Free bank (`lowWatermark=0`) and an 80-question replenishing Pro bank (`lowWatermark=20`). The server must verify StoreKit entitlement and choose/authorize these values before public production; caller-supplied tier fields are not proof of purchase.
 
@@ -147,7 +154,7 @@ The accepted response is `202`:
 }
 ```
 
-`status` is `queued`, `processing`, `ready`, or `empty`. `readyCount` is current claimable inventory; it can be less than the target while work is queued or processing. An opaque `bankID` must not be interpreted or constructed by the client.
+`status` is `queued`, `processing`, `ready`, or `empty`. `readyCount` is current claimable inventory; it can be less than the target while work is queued or processing. Retry and rate-limit cooldowns remain `queued`; `empty` means a finite bank has no claimable inventory or delayed generation remaining, allowing the client to stop polling if local validation accepted fewer than the nominal target. An opaque `bankID` must not be interpreted or constructed by the client.
 
 ### Claim
 
@@ -187,7 +194,7 @@ The `200` response uses the normal question fields, adds a stable `remoteID` to 
 
 An empty `questions` array is valid while the status is `queued`, `processing`, or `empty`; it is not permission to generate synchronously in the checkpoint-serving path. A missing/expired bank returns `404`, a context mismatch or concurrent claim conflict returns `409`, and a deleted or superseded bank can return `410`.
 
-There is no deployed remote-bank deletion route in this increment. An authenticated, ownership-checked deletion endpoint and client call are required before **Erase all data** can claim immediate deletion of server-side bank content. Until then, records rely on the configured nominal 30-day DynamoDB TTL and asynchronous deletion.
+There is no deployed remote-bank deletion route in this increment. An authenticated, ownership-checked deletion endpoint and client call are required before **Erase all data** can claim immediate deletion of server-side bank content. Until then, ready and claimed question rows, exact idempotent claim responses, and other bank records rely on the configured nominal 30-day DynamoDB TTL and asynchronous deletion.
 
 ## Client Readiness And Recovery
 
@@ -208,7 +215,7 @@ There is no deployed remote-bank deletion route in this increment. An authentica
 - Do not substitute canned or template questions for short, failed, or rejected AI batches.
 - Keep cloud calls behind the backend service; the iOS app must never contain Bedrock, AWS, or other model-provider secrets.
 - Exposed backend URLs should fail closed without `CHECKPOINT_BACKEND_TOKEN`; only set `ALLOW_UNAUTHENTICATED_BACKEND=true` for controlled local/private testing.
-- Cap batch size in the backend. The Bedrock Lambda defaults to 20 questions per call even if the app requests a larger bank.
+- Cap batch size in the backend. The synchronous endpoint accepts at most 20 questions, while the durable bank worker defaults to five-question generation chunks and chains jobs until the larger bank target is full.
 - Rate-limit synchronous generation by anonymous app install ID and source IP; charge asynchronous worker passes to a pseudonymous install quota before Bedrock and retain API Gateway throttling on the enqueue/claim routes.
 - Retry malformed model output against the pinned production model before returning a generation error. Alternate models remain disabled unless they pass the same eval suite and quality thresholds.
 - Use backend generation when:

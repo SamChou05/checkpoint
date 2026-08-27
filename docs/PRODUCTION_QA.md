@@ -68,14 +68,21 @@ Findings:
 - [ ] `ensure` returns `202` promptly without waiting for Bedrock and repeated identical ensures reuse the same bank without duplicate in-flight jobs.
 - [ ] A Free-style bank with `lowWatermark=0` never exceeds `desiredCount` cumulative generated questions across claims, relaunches, and repeated ensure polling.
 - [ ] A server-entitled bank with a positive watermark schedules refill after a claim reaches the watermark and returns toward `desiredCount`; an unverified caller cannot opt itself into that tier.
+- [ ] If refill scheduling fails after a claim commits, replaying that same queued `claimID` returns the exact response and retries best-effort scheduling without claiming a second set.
 - [ ] Editing goal, source-document, or difficulty context produces a new context revision and never claims stale questions into the edited goal.
-- [ ] The SQS worker continues preparing inventory after the app is force-quit, processes one message per invocation, and refills toward the configured target in chunks no larger than 20.
-- [ ] Worker timeout is 120 seconds and source-queue visibility is at least 720 seconds; a failed job retries and reaches the dead-letter queue after five receives.
+- [ ] The bank table has a `NEW_IMAGE` DynamoDB Stream, and `ensure` atomically commits the bank's active-job update with its pending outbox record before either the direct sender or stream consumer publishes it to SQS.
+- [ ] Simulating API termination after the DynamoDB transaction but before `SendMessage` still results in the stream outbox publishing that job; the bank does not remain permanently queued without an SQS message.
+- [ ] Replaying the same DynamoDB stream record and SQS message is duplicate-safe: only the active job enters generation, finite-bank counts do not overshoot, and stale/finished jobs are ignored.
+- [ ] The SQS worker continues preparing inventory after the app is force-quit, processes one message per invocation, and refills toward the configured target in the configured five-question chunks (never larger than 20).
+- [ ] Worker timeout is 120 seconds and source-queue visibility is at least 720 seconds; the worker's terminal-failure threshold exactly matches the source queue's redrive threshold (five receives by default), and duplicate-driven logical-cap exhaustion emits provider-failure/error metrics even though remaining duplicates are acknowledged.
+- [ ] The outbox stream mapping uses per-record failure reporting and batch bisection, limits retries to five and record age to 24 hours, and routes exhausted-invocation metadata—not the original DynamoDB record—to its separate encrypted outbox failure queue without blocking the stream shard indefinitely.
+- [ ] Outbox recovery is exercised operationally before stream expiry: its alarm fires for visible failure metadata, `DDBStreamBatchInfo` resolves the original record, the referenced queued/pending JOB is confirmed as META's active job and conditionally re-touched after remediation, `enqueueStatus=sent` is verified, and only then is the metadata message removed. The expired-record fallback scans and performs the same active-job validation because metadata alone does not contain the job key.
 - [ ] Reusing the same persisted `claimID` returns the exact same questions after a simulated lost HTTP response; a new claim ID does not redeliver already-claimed remote IDs.
+- [ ] Claimed QUESTION rows remain non-claimable deduplication history through their nominal bank TTL, and pre-upgrade QUESTION rows without a `state` attribute remain claimable exactly once.
 - [ ] Claiming an empty/processing bank returns quickly without making a synchronous Bedrock call, and client polling uses bounded backoff.
-- [ ] The DynamoDB question-bank table uses `pk`/`sk`, encryption at rest, and enabled `expiresAt` TTL; the source queue and dead-letter queue both use server-side encryption.
-- [ ] CloudWatch alarms are connected and exercised for repeated structured backend errors (including partial-batch worker failures), a source job older than 15 minutes, and any visible dead-letter message.
-- [ ] Nominal question-bank TTL, queue retention, dead-letter retention, and Lambda log retention match the published privacy policy and App Store privacy labels.
+- [ ] The DynamoDB question-bank table uses `pk`/`sk`, encryption at rest, enabled `expiresAt` TTL, and `NEW_IMAGE` streaming; the source queue, generation dead-letter queue, and outbox failure queue all use server-side encryption.
+- [ ] CloudWatch alarms are connected and exercised for repeated structured backend errors (including partial-batch worker failures and terminal logical-attempt exhaustion), a source job older than 15 minutes, any visible generation dead-letter message, and any visible outbox failure-metadata message.
+- [ ] Nominal question-bank TTL, claimed-question retention, DynamoDB Stream availability, source-queue retention, generation dead-letter retention, outbox-metadata retention, and Lambda log retention match the published privacy policy and App Store privacy labels.
 - [ ] An authenticated, ownership-checked remote deletion API and offline retry flow ship before **Erase all data** claims immediate server erasure; until then, product/support copy accurately discloses TTL-based removal.
 
 ## Real Shield Loop

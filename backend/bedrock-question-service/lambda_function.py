@@ -23,6 +23,14 @@ DEFAULT_FALLBACK_MODEL_ID = ""
 DEFAULT_MAX_QUESTIONS = 20
 DEFAULT_MAX_TOKENS = 6000
 DEFAULT_TEMPERATURE = 0.2
+SUPPORTED_OPENAI_REASONING_EFFORTS = {
+    "none",
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max",
+}
 DEFAULT_GENERATION_ATTEMPTS = 5
 DEFAULT_MAX_PROVIDER_CALLS = 6
 DEFAULT_MAX_REQUEST_BODY_BYTES = 128 * 1024
@@ -39,6 +47,11 @@ MAX_SOURCE_CONTEXT_CHARS = 24_000
 SOURCE_TRUNCATION_MARKER = "\n\n[... source truncated ...]\n\n"
 METRIC_NAMESPACE = "Checkpoint/Backend"
 METRIC_SERVICE = "QuestionGeneration"
+HTTP_ROUTE_PATHS = {
+    "/v1/questions",
+    "/v1/question-banks/ensure",
+    "/v1/question-banks/claim",
+}
 
 GENERIC_META_EXPECTED_ANSWER_SIGNALS = (
     "The answer that follows from the stated facts and respects the topic's constraints.",
@@ -129,6 +142,8 @@ def question_bank_worker_handler(event: dict[str, Any], context: Any) -> dict[st
         }
 
     request_metrics = _new_request_metrics(context)
+    safety_intervened = False
+    terminal_failure = False
     call_budget = ProviderCallBudget(
         _int_env(
             "MAX_PROVIDER_CALLS_PER_REQUEST",
@@ -139,31 +154,55 @@ def question_bank_worker_handler(event: dict[str, Any], context: Any) -> dict[st
     )
 
     def generate_questions(request: dict[str, Any]) -> list[dict[str, Any]]:
+        nonlocal safety_intervened
         request_metrics["QuestionsRequested"] += request["targetCount"]
-        questions = _generate_sanitized_questions(
-            request,
-            None,
-            call_budget=call_budget,
-            request_metrics=request_metrics,
-        )
+        try:
+            questions = _generate_sanitized_questions(
+                request,
+                None,
+                call_budget=call_budget,
+                request_metrics=request_metrics,
+            )
+        except SafetyInterventionError as error:
+            safety_intervened = True
+            raise question_bank.NonRetryableGenerationError(
+                "safety_intervention"
+            ) from error
         request_metrics["QuestionsReturned"] += len(questions)
         return questions
+
+    def record_terminal_failure(_: str) -> None:
+        nonlocal terminal_failure
+        terminal_failure = True
 
     result = question_bank.handle_worker_event(
         event,
         context,
         generate_questions,
+        on_terminal_failure=record_terminal_failure,
     )
-    request_metrics["StatusCode"] = 200 if not result["batchItemFailures"] else 502
-    request_metrics["Outcome"] = (
-        "async_success" if not result["batchItemFailures"] else "async_failure"
+    request_metrics["StatusCode"] = (
+        502 if result["batchItemFailures"] or terminal_failure else 200
     )
+    if terminal_failure:
+        request_metrics["Outcome"] = "provider_failure"
+    elif safety_intervened:
+        request_metrics["Outcome"] = "safety_intervention"
+    else:
+        request_metrics["Outcome"] = (
+            "async_success" if not result["batchItemFailures"] else "async_failure"
+        )
     request_metrics["LatencyMilliseconds"] = round(
         (time.monotonic() - started_at) * 1000,
         2,
     )
     _emit_request_metrics(request_metrics)
     return result
+
+
+def question_bank_outbox_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
+    """Forward durable pending job records from DynamoDB Streams to SQS."""
+    return question_bank.handle_outbox_event(event, context)
 
 
 def handle_http_request(
@@ -313,12 +352,20 @@ def _http_method(event: dict[str, Any]) -> str:
 
 
 def _request_path(event: dict[str, Any]) -> str:
-    return str(
-        event.get("rawPath")
-        or event.get("requestContext", {}).get("http", {}).get("path")
-        or event.get("path")
-        or ""
-    ).rstrip("/")
+    gateway_path = event.get("rawPath") or event.get("requestContext", {}).get(
+        "http", {}
+    ).get("path")
+    path = str(gateway_path or event.get("path") or "").rstrip("/")
+    if path in HTTP_ROUTE_PATHS:
+        return path
+
+    stage = str(event.get("requestContext", {}).get("stage") or "").strip("/")
+    stage_prefix = f"/{stage}"
+    if stage and (path == stage_prefix or path.startswith(f"{stage_prefix}/")):
+        candidate = path[len(stage_prefix) :]
+        if candidate in HTTP_ROUTE_PATHS:
+            return candidate
+    return path
 
 
 def _is_authorized(event: dict[str, Any]) -> bool:
@@ -835,6 +882,21 @@ def _generate_with_bedrock(
 
     client = bedrock_client or _bedrock_client()
     prompt = user_prompt or _user_prompt(normalized_request)
+    inference_config = {
+        "maxTokens": _int_env("BEDROCK_MAX_TOKENS", DEFAULT_MAX_TOKENS, maximum=10_000),
+    }
+    reasoning_effort = _openai_reasoning_effort(model_id)
+    # GPT-5.6 accepts sampling controls only when reasoning is disabled. At
+    # low and higher effort, sending temperature makes the provider reject an
+    # otherwise valid request.
+    if reasoning_effort in {None, "none"}:
+        inference_config["temperature"] = _bounded_float_env(
+            "BEDROCK_TEMPERATURE",
+            DEFAULT_TEMPERATURE,
+            0.0,
+            1.0,
+        )
+
     request = {
         "modelId": model_id,
         "messages": [
@@ -843,16 +905,14 @@ def _generate_with_bedrock(
                 "content": [{"text": _conversation_prompt(prompt) if _uses_inline_instructions(model_id) else prompt}],
             }
         ],
-        "inferenceConfig": {
-            "maxTokens": _int_env("BEDROCK_MAX_TOKENS", DEFAULT_MAX_TOKENS, maximum=10_000),
-            "temperature": _bounded_float_env(
-                "BEDROCK_TEMPERATURE",
-                DEFAULT_TEMPERATURE,
-                0.0,
-                1.0,
-            ),
-        },
+        "inferenceConfig": inference_config,
     }
+    additional_model_request_fields = _additional_model_request_fields(
+        model_id,
+        reasoning_effort=reasoning_effort,
+    )
+    if additional_model_request_fields is not None:
+        request["additionalModelRequestFields"] = additional_model_request_fields
     if not _uses_inline_instructions(model_id):
         request["system"] = [{"text": _system_prompt()}]
     if guardrail_config is not None:
@@ -884,6 +944,38 @@ def _uses_inline_instructions(model_id: str) -> bool:
     # geographic inference-profile name/ARN such as us.google.gemma-*. The
     # stable provider/model segment is present in each of those forms.
     return "google.gemma" in model_id.strip().lower()
+
+
+def _openai_reasoning_effort(model_id: str) -> str | None:
+    if "openai.gpt-5.6-" not in model_id.strip().lower():
+        return None
+
+    effort = os.getenv("BEDROCK_REASONING_EFFORT", "").strip().lower()
+    if not effort:
+        return None
+    if effort not in SUPPORTED_OPENAI_REASONING_EFFORTS:
+        raise ServiceConfigurationError("BEDROCK_REASONING_EFFORT is invalid for GPT-5.6.")
+    return effort
+
+
+def _additional_model_request_fields(
+    model_id: str,
+    *,
+    reasoning_effort: str | None,
+) -> dict[str, Any] | None:
+    normalized_model_id = model_id.strip().lower()
+    if any(
+        model_name in normalized_model_id
+        for model_name in ("deepseek.v3.2", "moonshotai.kimi-k2.5")
+    ):
+        # Question generation does not need the model's long-form thinking
+        # mode. Disabling it keeps latency and token cost predictable while
+        # retaining normal sampling controls such as temperature.
+        return {"thinking": {"type": "disabled"}}
+    if reasoning_effort is not None:
+        # This maps to OpenAI Chat Completions' reasoning_effort field.
+        return {"reasoning_effort": reasoning_effort}
+    return None
 
 
 def _conversation_prompt(user_prompt: str) -> str:
@@ -924,7 +1016,7 @@ def _bedrock_client() -> Any:
                 "BEDROCK_READ_TIMEOUT_SECONDS",
                 DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
                 2.0,
-                25.0,
+                100.0,
             ),
             retries={
                 # Each Converse network attempt must consume one explicit
@@ -953,7 +1045,7 @@ def _minimum_provider_remaining_milliseconds() -> int:
         "BEDROCK_READ_TIMEOUT_SECONDS",
         DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
         2.0,
-        25.0,
+        100.0,
     )
     hard_floor = (
         math.ceil((connect_timeout + read_timeout) * 1_000)

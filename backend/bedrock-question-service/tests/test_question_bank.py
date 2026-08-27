@@ -22,6 +22,30 @@ class FakeQueue:
         return {"MessageId": "message-1"}
 
 
+class ConditionalFailure(RuntimeError):
+    response = {"Error": {"Code": "ConditionalCheckFailedException"}}
+
+
+class OutboxDynamo:
+    def __init__(self, job, *, failed_marks=0):
+        self.job = job
+        self.failed_marks = failed_marks
+        self.mark_attempts = 0
+
+    def get_item(self, **kwargs):
+        return {"Item": self.job}
+
+    def update_item(self, **kwargs):
+        self.mark_attempts += 1
+        if self.failed_marks:
+            self.failed_marks -= 1
+            raise RuntimeError("simulated crash after SQS accepted the message")
+        if self.job["status"]["S"] != "queued" or self.job["enqueueStatus"]["S"] == "sent":
+            raise ConditionalFailure()
+        self.job["enqueueStatus"] = kwargs["ExpressionAttributeValues"][":sent"]
+        return {}
+
+
 class ClaimDynamo:
     def __init__(self, meta, pointer, questions):
         self.meta = meta
@@ -51,11 +75,17 @@ class ClaimDynamo:
             if "Delete" in operation:
                 sk = operation["Delete"]["Key"]["sk"]["S"]
                 self.questions = [item for item in self.questions if item["sk"]["S"] != sk]
-            elif "Update" in operation and operation["Update"]["Key"]["sk"]["S"] == "META":
-                values = operation["Update"]["ExpressionAttributeValues"]
-                if ":after" in values:
+            elif "Update" in operation:
+                update = operation["Update"]
+                sk = update["Key"]["sk"]["S"]
+                values = update["ExpressionAttributeValues"]
+                if sk == "META" and ":after" in values:
                     self.meta["readyCount"] = values[":after"]
                     self.meta["state"] = values[":state"]
+                elif sk.startswith("QUESTION#"):
+                    for item in self.questions:
+                        if item["sk"]["S"] == sk:
+                            item["state"] = values[":claimed"]
             elif "Put" in operation:
                 item = operation["Put"]["Item"]
                 if item["sk"]["S"].startswith("CLAIM#"):
@@ -80,6 +110,9 @@ class QuestionBankTests(unittest.TestCase):
             "QUESTION_BANK_TABLE_NAME",
             "QUESTION_BANK_QUEUE_URL",
             "QUESTION_BANK_TTL_SECONDS",
+            "QUESTION_BANK_FAILURE_COOLDOWN_SECONDS",
+            "QUESTION_BANK_GENERATION_CHUNK_SIZE",
+            "QUESTION_BANK_MAX_RECEIVE_COUNT",
             "QUOTA_HASH_SECRET",
         ]:
             os.environ.pop(key, None)
@@ -173,6 +206,13 @@ class QuestionBankTests(unittest.TestCase):
             )
         self.assertEqual(raised.exception.status_code, 400)
 
+    def test_generation_chunks_default_to_one_session_and_cap_at_claim_limit(self):
+        self.assertEqual(question_bank._generation_chunk_count(), 5)  # noqa: SLF001
+        os.environ["QUESTION_BANK_GENERATION_CHUNK_SIZE"] = "12"
+        self.assertEqual(question_bank._generation_chunk_count(), 12)  # noqa: SLF001
+        os.environ["QUESTION_BANK_GENERATION_CHUNK_SIZE"] = "100"
+        self.assertEqual(question_bank._generation_chunk_count(), 20)  # noqa: SLF001
+
     def test_superseded_revision_can_be_reactivated_after_goal_revert(self):
         client = mock.Mock()
         bank_id = "a" * 64
@@ -227,6 +267,8 @@ class QuestionBankTests(unittest.TestCase):
 
     def test_claim_is_owner_bound_atomic_and_idempotent(self):
         bank_id, meta, pointer, question = _claim_records(low=0)
+        meta["generatedCount"] = meta["desiredCount"]
+        meta["initialFillComplete"] = {"BOOL": True}
         dynamo = ClaimDynamo(meta, pointer, [question])
         queue = FakeQueue()
         payload = {"bankID": bank_id, "claimID": "claim-1", "limit": 5}
@@ -249,6 +291,65 @@ class QuestionBankTests(unittest.TestCase):
         self.assertEqual(first["questions"][0]["remoteID"], str(uuid.UUID(int=1)))
         self.assertEqual(len(dynamo.transactions), 1)
         self.assertEqual(queue.messages, [])
+
+    def test_claim_treats_legacy_question_without_state_as_ready(self):
+        bank_id, meta, pointer, question = _claim_records(low=0)
+        meta["generatedCount"] = meta["desiredCount"]
+        meta["initialFillComplete"] = {"BOOL": True}
+        question.pop("state")
+        dynamo = ClaimDynamo(meta, pointer, [question])
+
+        response = question_bank.claim_questions(
+            {"bankID": bank_id, "claimID": "legacy-claim", "limit": 1},
+            _event(),
+            dynamodb_client=dynamo,
+            sqs_client=FakeQueue(),
+        )
+
+        self.assertEqual(len(response["questions"]), 1)
+        question_update = next(
+            item["Update"]
+            for item in dynamo.transactions[0]["TransactItems"]
+            if "Update" in item
+            and item["Update"]["Key"]["sk"]["S"].startswith("QUESTION#")
+        )
+        self.assertEqual(
+            question_update["ConditionExpression"],
+            "attribute_not_exists(#state) OR #state = :ready",
+        )
+
+    def test_retrying_queued_idempotent_claim_recovers_refill_scheduling(self):
+        bank_id, meta, pointer, question = _claim_records(low=1)
+        dynamo = ClaimDynamo(meta, pointer, [question])
+        payload = {"bankID": bank_id, "claimID": "recover-refill", "limit": 1}
+
+        with (
+            mock.patch.object(
+                question_bank,
+                "_ensure_refill",
+                side_effect=RuntimeError("temporary DynamoDB failure"),
+            ),
+            mock.patch.object(question_bank.LOGGER, "exception"),
+        ):
+            first = question_bank.claim_questions(
+                payload,
+                _event(),
+                dynamodb_client=dynamo,
+                sqs_client=FakeQueue(),
+            )
+
+        with mock.patch.object(question_bank, "_ensure_refill") as refill:
+            second = question_bank.claim_questions(
+                payload,
+                _event(),
+                dynamodb_client=dynamo,
+                sqs_client=FakeQueue(),
+            )
+
+        self.assertEqual(first, second)
+        self.assertEqual(second["status"], "queued")
+        self.assertEqual(len(dynamo.transactions), 1)
+        refill.assert_called_once()
 
     def test_claim_rejects_meta_owned_by_a_different_principal(self):
         bank_id, meta, pointer, question = _claim_records(low=0)
@@ -283,15 +384,42 @@ class QuestionBankTests(unittest.TestCase):
         meta_update = next(
             item["Update"]
             for item in dynamo.transactions[0]["TransactItems"]
-            if "Update" in item
+            if "Update" in item and item["Update"]["Key"]["sk"]["S"] == "META"
         )
         self.assertEqual(
             meta_update["ExpressionAttributeValues"][":observed"],
             {"N": "5"},
         )
 
+    def test_claim_from_safety_blocked_context_does_not_schedule_refill(self):
+        bank_id, meta, pointer, question = _claim_records(low=1)
+        meta["generationBlockedReason"] = {"S": "safety_intervention"}
+        dynamo = ClaimDynamo(meta, pointer, [question])
+
+        with mock.patch.object(question_bank, "_ensure_refill") as refill:
+            response = question_bank.claim_questions(
+                {"bankID": bank_id, "claimID": "blocked-claim", "limit": 1},
+                _event(),
+                dynamodb_client=dynamo,
+                sqs_client=FakeQueue(),
+            )
+
+        self.assertEqual(response["status"], "empty")
+        refill.assert_not_called()
+        meta_update = next(
+            item["Update"]
+            for item in dynamo.transactions[0]["TransactItems"]
+            if "Update" in item and item["Update"]["Key"]["sk"]["S"] == "META"
+        )
+        self.assertIn(
+            "generationBlockedReason = :blockedReason",
+            meta_update["ConditionExpression"],
+        )
+
     def test_zero_watermark_is_finite_but_positive_watermark_refills(self):
         bank_id, meta, pointer, question = _claim_records(low=0)
+        meta["generatedCount"] = meta["desiredCount"]
+        meta["initialFillComplete"] = {"BOOL": True}
         finite = ClaimDynamo(meta, pointer, [question])
         with mock.patch.object(question_bank, "_ensure_refill") as refill:
             question_bank.claim_questions(
@@ -301,6 +429,18 @@ class QuestionBankTests(unittest.TestCase):
                 sqs_client=FakeQueue(),
             )
         refill.assert_not_called()
+
+        bank_id, meta, pointer, question = _claim_records(low=0)
+        partial_finite = ClaimDynamo(meta, pointer, [question])
+        with mock.patch.object(question_bank, "_ensure_refill") as refill:
+            response = question_bank.claim_questions(
+                {"bankID": bank_id, "claimID": "partial-finite-claim", "limit": 1},
+                _event(),
+                dynamodb_client=partial_finite,
+                sqs_client=FakeQueue(),
+            )
+        self.assertEqual(response["status"], "queued")
+        refill.assert_called_once()
 
         bank_id, meta, pointer, question = _claim_records(low=1)
         replenishing = ClaimDynamo(meta, pointer, [question])
@@ -365,7 +505,7 @@ class QuestionBankTests(unittest.TestCase):
         self.assertEqual(ensured["readyCount"], 2)
         refill.assert_not_called()
 
-    def test_worker_failure_reopens_enqueue_lease_for_dlq_recovery(self):
+    def test_worker_failure_preserves_original_sqs_delivery_boundary(self):
         class CaptureDynamo:
             def __init__(self):
                 self.transaction = None
@@ -382,11 +522,452 @@ class QuestionBankTests(unittest.TestCase):
             "lease-token",
         )
         job_update = dynamo.transaction[0]["Update"]
-        self.assertIn("enqueueStatus = :pending", job_update["UpdateExpression"])
+        self.assertNotIn("enqueueStatus", job_update["UpdateExpression"])
+        self.assertNotIn("enqueueLeaseUntil", job_update["UpdateExpression"])
         self.assertEqual(
-            job_update["ExpressionAttributeValues"][":pending"], {"S": "pending"}
+            job_update["ExpressionAttributeValues"][":queued"],
+            {"S": "queued"},
         )
-        self.assertEqual(job_update["ExpressionAttributeValues"][":zero"], {"N": "0"})
+
+    def test_ensure_does_not_redeliver_a_processing_job_after_lease_expiry(self):
+        client = mock.Mock()
+        meta = {
+            "readyCount": {"N": "0"},
+            "generatedCount": {"N": "0"},
+            "desiredCount": {"N": "40"},
+            "lowWatermark": {"N": "10"},
+            "activeJobID": {"S": "job-1"},
+        }
+        processing = {
+            "status": {"S": "processing"},
+            "leaseUntil": {"N": "1"},
+            "enqueueStatus": {"S": "sent"},
+        }
+        with (
+            mock.patch.object(question_bank, "_get_item", return_value=processing),
+            mock.patch.object(question_bank, "_deliver_job") as delivery,
+        ):
+            scheduled = question_bank._ensure_refill(  # noqa: SLF001
+                client,
+                FakeQueue(),
+                "question-banks",
+                "https://sqs.example/question-banks",
+                {"pk": {"S": "BANK#owner#bank"}, "sk": {"S": "META"}},
+                {"pk": {"S": "OWNER#owner"}, "sk": {"S": "GOAL#goal"}},
+                meta,
+                100,
+            )
+        self.assertFalse(scheduled)
+        delivery.assert_not_called()
+        client.update_item.assert_not_called()
+
+    def test_completed_job_replay_repairs_a_missing_refill_chain(self):
+        client = mock.Mock()
+        client.update_item.side_effect = ConditionalFailure()
+        generator = mock.Mock()
+        bank_pk = "BANK#owner#bank"
+        revision = "revision-1"
+        job = {"status": {"S": "complete"}}
+        meta = {
+            "contextRevision": {"S": revision},
+            "goalKey": {"S": "goal"},
+            "bankID": {"S": "bank"},
+            "readyCount": {"N": "20"},
+            "generatedCount": {"N": "20"},
+            "desiredCount": {"N": "40"},
+            "lowWatermark": {"N": "0"},
+        }
+        pointer = {"currentBankID": {"S": "bank"}}
+
+        with (
+            mock.patch.object(
+                question_bank,
+                "_get_item",
+                side_effect=[job, meta, pointer],
+            ),
+            mock.patch.object(question_bank, "_ensure_refill") as refill,
+        ):
+            question_bank._process_job(  # noqa: SLF001
+                {
+                    "bankPK": bank_pk,
+                    "jobID": "job-1",
+                    "contextRevision": revision,
+                },
+                object(),
+                generator,
+                client,
+                FakeQueue(),
+            )
+
+        generator.assert_not_called()
+        refill.assert_called_once()
+
+    def test_safety_intervention_blocks_only_the_current_bank_context(self):
+        client = mock.Mock()
+        client.update_item.return_value = {
+            "Attributes": {"generationPass": {"N": "0"}}
+        }
+        bank_pk = "BANK#owner#bank"
+        revision = "revision-1"
+        meta = {
+            "contextRevision": {"S": revision},
+            "goalKey": {"S": "goal"},
+            "readyCount": {"N": "0"},
+            "generatedCount": {"N": "0"},
+            "desiredCount": {"N": "20"},
+            "lowWatermark": {"N": "0"},
+            "generationRequest": {"S": json.dumps(_normalized_request())},
+            "activeJobID": {"S": "job-1"},
+        }
+        pointer = {"currentBankID": {"S": "bank"}}
+        reset = mock.Mock()
+
+        with (
+            mock.patch.object(
+                question_bank,
+                "_get_item",
+                side_effect=[meta, pointer],
+            ),
+            mock.patch.object(question_bank, "_query_question_history", return_value=[]),
+            mock.patch.object(question_bank, "_consume_worker_quota"),
+            mock.patch.object(question_bank, "_reserve_provider_attempt", return_value=True),
+            mock.patch.object(question_bank, "_reset_job_for_retry", reset),
+        ):
+            question_bank._process_job(  # noqa: SLF001
+                {
+                    "bankPK": bank_pk,
+                    "jobID": "job-1",
+                    "contextRevision": revision,
+                },
+                object(),
+                mock.Mock(
+                    side_effect=question_bank.NonRetryableGenerationError(
+                        "safety_intervention"
+                    )
+                ),
+                client,
+                FakeQueue(),
+            )
+
+        reset.assert_not_called()
+        transaction = client.transact_write_items.call_args.kwargs["TransactItems"]
+        job_update = transaction[0]["Update"]
+        meta_update = transaction[1]["Update"]
+        self.assertEqual(
+            job_update["ExpressionAttributeValues"][":blocked"],
+            {"S": "blocked"},
+        )
+        self.assertIn("generationBlockedReason", meta_update["UpdateExpression"])
+        self.assertIn("REMOVE activeJobID, refillAfter", meta_update["UpdateExpression"])
+
+        blocked_meta = {**meta, "generationBlockedReason": {"S": "safety_intervention"}}
+        refill_client = mock.Mock()
+        scheduled = question_bank._ensure_refill(  # noqa: SLF001
+            refill_client,
+            FakeQueue(),
+            "question-banks",
+            "https://sqs.example/question-banks",
+            {"pk": {"S": bank_pk}, "sk": {"S": "META"}},
+            {"pk": {"S": "OWNER#owner"}, "sk": {"S": "GOAL#goal"}},
+            blocked_meta,
+            100,
+        )
+        self.assertFalse(scheduled)
+        self.assertEqual(refill_client.method_calls, [])
+
+    def test_provider_attempt_reservation_caps_duplicate_deliveries(self):
+        os.environ["QUESTION_BANK_MAX_RECEIVE_COUNT"] = "2"
+        client = mock.Mock()
+        client.update_item.side_effect = [{}, {}, ConditionalFailure()]
+        client.get_item.return_value = {
+            "Item": {"providerAttemptCount": {"N": "2"}}
+        }
+        job_key = {
+            "pk": {"S": "BANK#owner#bank"},
+            "sk": {"S": "JOB#job-1"},
+        }
+
+        self.assertTrue(
+            question_bank._reserve_provider_attempt(  # noqa: SLF001
+                client, "question-banks", job_key, "lease-token"
+            )
+        )
+        self.assertTrue(
+            question_bank._reserve_provider_attempt(  # noqa: SLF001
+                client, "question-banks", job_key, "lease-token"
+            )
+        )
+        self.assertFalse(
+            question_bank._reserve_provider_attempt(  # noqa: SLF001
+                client, "question-banks", job_key, "lease-token"
+            )
+        )
+        condition = client.update_item.call_args.kwargs["ConditionExpression"]
+        self.assertIn("providerAttemptCount < :limit", condition)
+
+    def test_provider_attempt_exhaustion_terminally_acks_the_message(self):
+        os.environ["QUESTION_BANK_MAX_RECEIVE_COUNT"] = "2"
+        message = {
+            "bankPK": "BANK#owner#bank",
+            "jobID": "job-1",
+            "contextRevision": "revision-1",
+        }
+        event = {
+            "Records": [
+                {
+                    "messageId": "duplicate",
+                    "body": json.dumps(message),
+                    "attributes": {"ApproximateReceiveCount": "1"},
+                }
+            ]
+        }
+        terminal_notice = mock.Mock()
+        with (
+            mock.patch.object(
+                question_bank,
+                "_process_job",
+                side_effect=question_bank.ProviderAttemptLimitError,
+            ),
+            mock.patch.object(question_bank, "_mark_job_terminal_failure") as terminal,
+        ):
+            result = question_bank.handle_worker_event(
+                event,
+                object(),
+                lambda _: [],
+                dynamodb_client=object(),
+                sqs_client=object(),
+                on_terminal_failure=terminal_notice,
+            )
+
+        self.assertEqual(result, {"batchItemFailures": []})
+        terminal.assert_called_once_with(mock.ANY, message, 2)
+        terminal_notice.assert_called_once_with("provider_attempt_limit")
+
+    def test_worker_maps_safety_intervention_to_non_retryable_generation(self):
+        captured = []
+
+        def run_callback(_event, _context, generate_questions, **_kwargs):
+            try:
+                generate_questions({"targetCount": 1})
+            except Exception as error:  # noqa: BLE001 - asserting callback contract
+                captured.append(error)
+            return {"batchItemFailures": []}
+
+        with (
+            mock.patch.object(
+                lambda_function,
+                "_generate_sanitized_questions",
+                side_effect=lambda_function.SafetyInterventionError,
+            ),
+            mock.patch.object(
+                lambda_function.question_bank,
+                "handle_worker_event",
+                side_effect=run_callback,
+            ),
+            mock.patch.object(lambda_function, "_emit_request_metrics") as emit_metrics,
+        ):
+            result = lambda_function.question_bank_worker_handler({}, object())
+
+        self.assertEqual(result, {"batchItemFailures": []})
+        self.assertEqual(len(captured), 1)
+        self.assertIsInstance(captured[0], question_bank.NonRetryableGenerationError)
+        self.assertEqual(captured[0].code, "safety_intervention")
+        self.assertEqual(
+            emit_metrics.call_args.args[0]["Outcome"],
+            "safety_intervention",
+        )
+
+    def test_worker_reports_terminal_provider_attempt_exhaustion_in_metrics(self):
+        def run_callback(
+            _event,
+            _context,
+            _generate_questions,
+            *,
+            on_terminal_failure,
+            **_kwargs,
+        ):
+            on_terminal_failure("provider_attempt_limit")
+            return {"batchItemFailures": []}
+
+        with (
+            mock.patch.object(
+                lambda_function.question_bank,
+                "handle_worker_event",
+                side_effect=run_callback,
+            ),
+            mock.patch.object(lambda_function, "_emit_request_metrics") as emit_metrics,
+        ):
+            result = lambda_function.question_bank_worker_handler({}, object())
+
+        self.assertEqual(result, {"batchItemFailures": []})
+        metrics = emit_metrics.call_args.args[0]
+        self.assertEqual(metrics["StatusCode"], 502)
+        self.assertEqual(metrics["Outcome"], "provider_failure")
+
+    def test_duplicate_outbox_record_is_idempotent_after_delivery_is_marked(self):
+        job = _pending_job()
+        dynamo = OutboxDynamo(job)
+        queue = FakeQueue()
+        event = _stream_job_event(job)
+
+        first = question_bank.handle_outbox_event(
+            event,
+            object(),
+            dynamodb_client=dynamo,
+            sqs_client=queue,
+        )
+        second = question_bank.handle_outbox_event(
+            event,
+            object(),
+            dynamodb_client=dynamo,
+            sqs_client=queue,
+        )
+
+        self.assertEqual(first, {"batchItemFailures": []})
+        self.assertEqual(second, {"batchItemFailures": []})
+        self.assertEqual(len(queue.messages), 1)
+        self.assertEqual(job["enqueueStatus"], {"S": "sent"})
+
+    def test_outbox_retries_after_crash_between_send_and_mark(self):
+        job = _pending_job()
+        dynamo = OutboxDynamo(job, failed_marks=1)
+        queue = FakeQueue()
+        event = _stream_job_event(job, sequence_number="42")
+        with mock.patch.object(question_bank.LOGGER, "exception"):
+            first = question_bank.handle_outbox_event(
+                event,
+                object(),
+                dynamodb_client=dynamo,
+                sqs_client=queue,
+            )
+        second = question_bank.handle_outbox_event(
+            event,
+            object(),
+            dynamodb_client=dynamo,
+            sqs_client=queue,
+        )
+
+        self.assertEqual(
+            first,
+            {"batchItemFailures": [{"itemIdentifier": "42"}]},
+        )
+        self.assertEqual(second, {"batchItemFailures": []})
+        self.assertEqual(len(queue.messages), 2)
+        self.assertEqual(queue.messages[0]["MessageBody"], queue.messages[1]["MessageBody"])
+        self.assertEqual(job["enqueueStatus"], {"S": "sent"})
+
+    def test_final_poison_receive_marks_job_failed_and_starts_cooldown(self):
+        class CaptureDynamo:
+            def __init__(self):
+                self.transactions = []
+
+            def transact_write_items(self, **kwargs):
+                self.transactions.append(kwargs["TransactItems"])
+
+        os.environ["QUESTION_BANK_MAX_RECEIVE_COUNT"] = "5"
+        os.environ["QUESTION_BANK_FAILURE_COOLDOWN_SECONDS"] = "600"
+        dynamo = CaptureDynamo()
+        message = {
+            "bankPK": "BANK#owner#bank",
+            "jobID": "job-1",
+            "contextRevision": "revision-1",
+        }
+        event = {
+            "Records": [
+                {
+                    "messageId": "poison",
+                    "body": json.dumps(message),
+                    "attributes": {"ApproximateReceiveCount": "5"},
+                }
+            ]
+        }
+        with (
+            mock.patch.object(
+                question_bank,
+                "_process_job",
+                side_effect=RuntimeError("provider unavailable"),
+            ),
+            mock.patch.object(question_bank.LOGGER, "exception"),
+            mock.patch.object(question_bank.time, "time", return_value=1_700_000_000),
+        ):
+            result = question_bank.handle_worker_event(
+                event,
+                object(),
+                lambda _: [],
+                dynamodb_client=dynamo,
+                sqs_client=object(),
+            )
+
+        self.assertEqual(result, {"batchItemFailures": [{"itemIdentifier": "poison"}]})
+        self.assertEqual(len(dynamo.transactions), 1)
+        job_update = dynamo.transactions[0][0]["Update"]
+        meta_update = dynamo.transactions[0][1]["Update"]
+        self.assertEqual(job_update["ExpressionAttributeValues"][":failed"], {"S": "failed"})
+        self.assertEqual(job_update["ExpressionAttributeValues"][":receives"], {"N": "5"})
+        self.assertIn("REMOVE activeJobID", meta_update["UpdateExpression"])
+        self.assertEqual(meta_update["ExpressionAttributeValues"][":retry"], {"N": "1700000600"})
+
+    def test_worker_commit_is_conditioned_against_pro_to_finite_downgrade(self):
+        class PolicyDynamo:
+            def __init__(self):
+                self.transaction = None
+
+            def transact_write_items(self, **kwargs):
+                self.transaction = kwargs["TransactItems"]
+                meta_update = self.transaction[-3]["Update"]
+                values = meta_update["ExpressionAttributeValues"]
+                latest_policy = {
+                    ":observedDesired": {"N": "40"},
+                    ":observedLow": {"N": "0"},
+                    ":observedReady": {"N": "35"},
+                    ":observedGenerated": {"N": "80"},
+                }
+                if any(values[name] != value for name, value in latest_policy.items()):
+                    raise ConditionalFailure()
+
+        dynamo = PolicyDynamo()
+        question = {
+            "remoteID": str(uuid.UUID(int=99)),
+            "prompt": "Which statement follows?",
+        }
+        with self.assertRaises(ConditionalFailure):
+            question_bank._commit_generated_questions(  # noqa: SLF001
+                dynamo,
+                "question-banks",
+                {"pk": {"S": "BANK#owner#bank"}, "sk": {"S": "META"}},
+                {"pk": {"S": "BANK#owner#bank"}, "sk": {"S": "JOB#job-1"}},
+                {"pk": {"S": "OWNER#owner"}, "sk": {"S": "GOAL#goal"}},
+                "bank",
+                "revision-1",
+                "lease-token",
+                [question],
+                observed_desired_count=80,
+                observed_low_watermark=20,
+                observed_ready_count=35,
+                observed_generated_count=80,
+            )
+        condition = dynamo.transaction[-3]["Update"]["ConditionExpression"]
+        self.assertIn("desiredCount = :observedDesired", condition)
+        self.assertIn("lowWatermark = :observedLow", condition)
+        self.assertIn("readyCount <= :observedReady", condition)
+        self.assertIn("generatedCount = :observedGenerated", condition)
+
+    def test_bank_response_distinguishes_retry_cooldown_from_finite_exhaustion(self):
+        retrying = {
+            "bankID": {"S": "a" * 64},
+            "desiredCount": {"N": "40"},
+            "readyCount": {"N": "0"},
+            "state": {"S": "failed"},
+            "refillAfter": {"N": str(int(question_bank.time.time()) + 60)},
+        }
+        exhausted = {
+            **retrying,
+            "state": {"S": "empty"},
+            "initialFillComplete": {"BOOL": True},
+        }
+
+        self.assertEqual(question_bank._bank_response(retrying)["status"], "queued")  # noqa: SLF001
+        self.assertEqual(question_bank._bank_response(exhausted)["status"], "empty")  # noqa: SLF001
 
     def test_prepared_question_ids_are_stable_uuid_and_deduplicated(self):
         raw = {
@@ -403,6 +984,19 @@ class QuestionBankTests(unittest.TestCase):
         self.assertEqual(len(first), 1)
         self.assertEqual(first, second)
         uuid.UUID(first[0]["remoteID"])
+
+        claimed_history = [
+            {
+                "remoteID": {"S": first[0]["remoteID"]},
+                "state": {"S": "claimed"},
+            }
+        ]
+        regenerated = question_bank._prepare_questions(  # noqa: SLF001
+            "a" * 64,
+            [raw],
+            claimed_history,
+        )
+        self.assertEqual(regenerated, [])
 
     def test_worker_reports_only_failed_sqs_records(self):
         event = {
@@ -431,6 +1025,7 @@ class QuestionBankTests(unittest.TestCase):
     def test_http_routes_ensure_without_synchronous_generation_or_quota(self):
         event = _event()
         event["rawPath"] = "/v1/question-banks/ensure"
+        event["requestContext"]["stage"] = "prod"
         event["body"] = json.dumps(_ensure_payload())
         with (
             mock.patch.object(
@@ -487,6 +1082,33 @@ def _normalized_request():
     }
 
 
+def _pending_job():
+    return {
+        "pk": {"S": "BANK#owner#bank"},
+        "sk": {"S": "JOB#job-1"},
+        "itemType": {"S": "job"},
+        "jobID": {"S": "job-1"},
+        "contextRevision": {"S": "revision-1"},
+        "status": {"S": "queued"},
+        "enqueueStatus": {"S": "pending"},
+    }
+
+
+def _stream_job_event(job, *, sequence_number="1"):
+    return {
+        "Records": [
+            {
+                "eventID": f"event-{sequence_number}",
+                "eventName": "INSERT",
+                "dynamodb": {
+                    "SequenceNumber": sequence_number,
+                    "NewImage": copy.deepcopy(job),
+                },
+            }
+        ]
+    }
+
+
 def _meta(pk, bank_id, revision, *, desired, low, ready):
     owner_hash = pk.split("#")[1]
     goal_key = question_bank._secret_digest("goal", "goal-123")  # noqa: SLF001
@@ -530,6 +1152,7 @@ def _claim_records(*, low):
         "pk": {"S": pk},
         "sk": {"S": f"QUESTION#{remote_id}"},
         "remoteID": {"S": remote_id},
+        "state": {"S": "ready"},
         "questionJSON": {
             "S": json.dumps(
                 {

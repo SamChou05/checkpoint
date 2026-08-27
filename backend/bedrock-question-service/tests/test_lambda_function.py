@@ -75,6 +75,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         for key in [
             "BEDROCK_MODEL_ID",
             "BEDROCK_FALLBACK_MODEL_ID",
+            "BEDROCK_REASONING_EFFORT",
             "CHECKPOINT_BACKEND_TOKEN",
             "ALLOW_UNAUTHENTICATED_BACKEND",
             "MAX_QUESTIONS_PER_BATCH",
@@ -235,6 +236,151 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertIn("Security and instruction priority", system_prompt)
         self.assertIn("Make choices parallel, mutually exclusive", system_prompt)
         self.assertNotIn("Security and instruction priority", user_prompt)
+
+    def test_gpt_56_luna_uses_low_reasoning_without_sampling_controls(self):
+        os.environ["BEDROCK_MODEL_ID"] = (
+            "arn:aws:bedrock:us-east-1:123456789012:"
+            "inference-profile/us.openai.gpt-5.6-luna"
+        )
+        os.environ["BEDROCK_REASONING_EFFORT"] = "low"
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=1, minimum_difficulty=3)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        request = client.calls[0]
+        self.assertEqual(
+            request["additionalModelRequestFields"],
+            {"reasoning_effort": "low"},
+        )
+        self.assertEqual(request["inferenceConfig"]["maxTokens"], 6000)
+        self.assertNotIn("temperature", request["inferenceConfig"])
+        self.assertNotIn("topP", request["inferenceConfig"])
+
+    def test_gpt_56_none_reasoning_keeps_temperature(self):
+        os.environ["BEDROCK_MODEL_ID"] = "us.openai.gpt-5.6-luna"
+        os.environ["BEDROCK_REASONING_EFFORT"] = "none"
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=1, minimum_difficulty=3)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        request = client.calls[0]
+        self.assertEqual(
+            request["additionalModelRequestFields"],
+            {"reasoning_effort": "none"},
+        )
+        self.assertEqual(request["inferenceConfig"]["temperature"], 0.2)
+
+    def test_deepseek_v32_disables_thinking_and_keeps_temperature(self):
+        os.environ["BEDROCK_MODEL_ID"] = (
+            "arn:aws:bedrock:us-east-1::foundation-model/deepseek.v3.2"
+        )
+        os.environ["BEDROCK_REASONING_EFFORT"] = "low"
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=1, minimum_difficulty=3)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        request = client.calls[0]
+        self.assertEqual(
+            request["additionalModelRequestFields"],
+            {"thinking": {"type": "disabled"}},
+        )
+        self.assertEqual(request["inferenceConfig"]["temperature"], 0.2)
+
+    def test_kimi_k25_disables_thinking_and_keeps_temperature(self):
+        os.environ["BEDROCK_MODEL_ID"] = (
+            "arn:aws:bedrock:us-east-1::foundation-model/moonshotai.kimi-k2.5"
+        )
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=1, minimum_difficulty=3)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        request = client.calls[0]
+        self.assertEqual(
+            request["additionalModelRequestFields"],
+            {"thinking": {"type": "disabled"}},
+        )
+        self.assertEqual(request["inferenceConfig"]["temperature"], 0.2)
+
+    def test_reasoning_effort_is_not_sent_to_non_gpt_56_models(self):
+        os.environ["BEDROCK_MODEL_ID"] = "amazon.nova-lite-v1:0"
+        os.environ["BEDROCK_REASONING_EFFORT"] = "low"
+        client = FakeBedrockClient(
+            json.dumps(
+                {
+                    "questions": [
+                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
+                    ]
+                }
+            )
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=1, minimum_difficulty=3)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        self.assertNotIn("additionalModelRequestFields", client.calls[0])
+        self.assertEqual(client.calls[0]["inferenceConfig"]["temperature"], 0.2)
+
+    def test_invalid_gpt_56_reasoning_effort_fails_closed(self):
+        os.environ["BEDROCK_REASONING_EFFORT"] = "cheap-and-smart"
+
+        with self.assertRaises(lambda_function.ServiceConfigurationError):
+            lambda_function._generate_with_bedrock(
+                normalized_request=_request_payload(target_count=1, minimum_difficulty=3),
+                bedrock_client=FakeBedrockClient("{}"),
+                model_id="us.openai.gpt-5.6-luna",
+                user_prompt="Generate one question.",
+            )
 
     def test_skill_map_mode_is_prompted_when_requested(self):
         payload = _request_payload(target_count=3, minimum_difficulty=3)
@@ -1226,6 +1372,63 @@ class BedrockQuestionServiceTests(unittest.TestCase):
 
         self.assertEqual(authorized_response["statusCode"], 200)
 
+    def test_request_path_normalizes_staged_http_api_v2_paths(self):
+        self.assertEqual(
+            lambda_function._request_path(  # noqa: SLF001
+                {
+                    "rawPath": "/prod/v1/question-banks/ensure",
+                    "requestContext": {"stage": "prod"},
+                }
+            ),
+            "/v1/question-banks/ensure",
+        )
+        self.assertEqual(
+            lambda_function._request_path(  # noqa: SLF001
+                {
+                    "rawPath": "/v1/questions",
+                    "requestContext": {"stage": "v1"},
+                }
+            ),
+            "/v1/questions",
+        )
+        self.assertEqual(
+            lambda_function._request_path(  # noqa: SLF001
+                {
+                    "requestContext": {
+                        "stage": "v1",
+                        "http": {"path": "/v1/question-banks/claim"},
+                    }
+                }
+            ),
+            "/v1/question-banks/claim",
+        )
+        self.assertEqual(
+            lambda_function._request_path(  # noqa: SLF001
+                {
+                    "rawPath": "/production/v1/questions",
+                    "requestContext": {"stage": "prod"},
+                }
+            ),
+            "/production/v1/questions",
+        )
+
+    def test_request_path_preserves_lambda_url_and_legacy_proxy_paths(self):
+        self.assertEqual(
+            lambda_function._request_path(  # noqa: SLF001
+                {"rawPath": "/v1/question-banks/ensure", "requestContext": {}}
+            ),
+            "/v1/question-banks/ensure",
+        )
+        self.assertEqual(
+            lambda_function._request_path(  # noqa: SLF001
+                {
+                    "path": "/prod/v1/questions",
+                    "requestContext": {"stage": "prod"},
+                }
+            ),
+            "/v1/questions",
+        )
+
     def test_backend_auth_fails_closed_without_token_or_explicit_opt_in(self):
         os.environ.pop("ALLOW_UNAUTHENTICATED_BACKEND", None)
         bedrock_client = FakeBedrockClient(json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]}))
@@ -1395,6 +1598,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
 
     def test_bedrock_sdk_has_exactly_one_total_attempt(self):
         os.environ["BEDROCK_SDK_MAX_ATTEMPTS"] = "3"
+        os.environ["BEDROCK_READ_TIMEOUT_SECONDS"] = "125"
         captured = {}
         fake_boto3 = types.ModuleType("boto3")
         fake_botocore = types.ModuleType("botocore")
@@ -1424,6 +1628,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
 
         self.assertEqual(captured["service_name"], "bedrock-runtime")
         self.assertEqual(captured["config"]["retries"]["total_max_attempts"], 1)
+        self.assertEqual(captured["config"]["read_timeout"], 100.0)
 
     def test_guardrail_configuration_is_passed_to_bedrock(self):
         os.environ["BEDROCK_GUARDRAIL_IDENTIFIER"] = "guardrail-123"

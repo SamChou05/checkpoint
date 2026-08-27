@@ -9,10 +9,28 @@ Parameters:
   BedrockInvokeResourceArns:
     Type: CommaDelimitedList
     Description: Comma-delimited least-privilege invoke resources. Include the runtime profile/model ARN and every destination foundation-model ARN required by cross-region inference.
+  QuestionBankWorkerModelArn:
+    Type: String
+    Description: Exact Bedrock foundation-model or inference-profile ARN used by the asynchronous question-bank worker.
+  QuestionBankWorkerInvokeResourceArns:
+    Type: CommaDelimitedList
+    Description: Comma-delimited least-privilege invoke resources for the asynchronous worker model and its cross-region destinations.
   BedrockFallbackModelArn:
     Type: String
     Default: ""
     Description: Optional fallback ARN. Leave empty until it passes the same eval suite.
+  BedrockReasoningEffort:
+    Type: String
+    Default: ""
+    AllowedValues:
+      - ""
+      - "none"
+      - "low"
+      - "medium"
+      - "high"
+      - "xhigh"
+      - "max"
+    Description: Optional OpenAI GPT-5.6 reasoning effort. Leave empty for model defaults.
   BedrockGuardrailIdentifier:
     Type: String
     Default: ""
@@ -126,6 +144,24 @@ Parameters:
     Default: 2
     MinValue: 1
     Description: Cost and concurrency limit for asynchronous question-bank generation.
+  QuestionBankWorkerReadTimeoutSeconds:
+    Type: Number
+    Default: 75
+    MinValue: 20
+    MaxValue: 100
+    Description: Bedrock SDK read timeout for the asynchronous worker only; the synchronous API retains its 20-second runtime default.
+  QuestionBankGenerationChunkSize:
+    Type: Number
+    Default: 5
+    MinValue: 1
+    MaxValue: 20
+    Description: Maximum questions requested by each asynchronous worker job; smaller chunks improve latency and item quality while the durable chain fills the full bank.
+  QuestionBankMaxReceiveCount:
+    Type: Number
+    Default: 5
+    MinValue: 2
+    MaxValue: 10
+    Description: Shared SQS redrive, job provider-attempt, and terminal-failure threshold.
   LogRetentionDays:
     Type: Number
     Default: 14
@@ -214,8 +250,16 @@ Resources:
       TimeToLiveSpecification:
         AttributeName: expiresAt
         Enabled: true
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
   QuestionBankDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 1209600
+      SqsManagedSseEnabled: true
+
+  QuestionBankOutboxFailureQueue:
     Type: AWS::SQS::Queue
     Properties:
       MessageRetentionPeriod: 1209600
@@ -229,7 +273,7 @@ Resources:
       SqsManagedSseEnabled: true
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt QuestionBankDeadLetterQueue.Arn
-        maxReceiveCount: 5
+        maxReceiveCount: !Ref QuestionBankMaxReceiveCount
 
   BackendApi:
     Type: AWS::Serverless::HttpApi
@@ -256,6 +300,7 @@ Resources:
         Variables:
           BEDROCK_MODEL_ID: !Ref BedrockModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
+          BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_GUARDRAIL_IDENTIFIER: !Ref BedrockGuardrailIdentifier
           BEDROCK_GUARDRAIL_VERSION: !Ref BedrockGuardrailVersion
@@ -313,12 +358,14 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:TransactWriteItems
+                - dynamodb:UpdateItem
               Resource: !GetAtt QuestionRateLimitTable.Arn
             - Effect: Allow
               Action:
                 - dynamodb:GetItem
                 - dynamodb:PutItem
                 - dynamodb:Query
+                - dynamodb:ConditionCheckItem
                 - dynamodb:TransactWriteItems
                 - dynamodb:UpdateItem
               Resource: !GetAtt QuestionBankTable.Arn
@@ -348,9 +395,12 @@ Resources:
         LogFormat: Text
       Environment:
         Variables:
-          BEDROCK_MODEL_ID: !Ref BedrockModelArn
+          BEDROCK_MODEL_ID: !Ref QuestionBankWorkerModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
+          BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
+          BEDROCK_READ_TIMEOUT_SECONDS: !Ref QuestionBankWorkerReadTimeoutSeconds
+          QUESTION_BANK_GENERATION_CHUNK_SIZE: !Ref QuestionBankGenerationChunkSize
           BEDROCK_GUARDRAIL_IDENTIFIER: !Ref BedrockGuardrailIdentifier
           BEDROCK_GUARDRAIL_VERSION: !Ref BedrockGuardrailVersion
           MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
@@ -368,6 +418,7 @@ Resources:
           QUESTION_BANK_TABLE_NAME: !Ref QuestionBankTable
           QUESTION_BANK_QUEUE_URL: !Ref QuestionBankQueue
           QUESTION_BANK_TTL_SECONDS: !Ref QuestionBankTTLSeconds
+          QUESTION_BANK_MAX_RECEIVE_COUNT: !Ref QuestionBankMaxReceiveCount
           EMIT_STRUCTURED_METRICS: "true"
       Events:
         QuestionBankJobs:
@@ -382,7 +433,7 @@ Resources:
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
-              Resource: !Ref BedrockInvokeResourceArns
+              Resource: !Ref QuestionBankWorkerInvokeResourceArns
             - !If
               - HasGuardrailArn
               - Effect: Allow
@@ -395,6 +446,7 @@ Resources:
                 - dynamodb:GetItem
                 - dynamodb:PutItem
                 - dynamodb:Query
+                - dynamodb:ConditionCheckItem
                 - dynamodb:TransactWriteItems
                 - dynamodb:UpdateItem
               Resource: !GetAtt QuestionBankTable.Arn
@@ -416,6 +468,75 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /checkpoint/${AWS::StackName}/question-bank-worker
+      RetentionInDays: !Ref LogRetentionDays
+
+  QuestionBankOutboxFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.12
+      Handler: lambda_function.question_bank_outbox_handler
+      CodeUri: .
+      Timeout: 30
+      MemorySize: 128
+      ReservedConcurrentExecutions: 2
+      Tracing: Active
+      LoggingConfig:
+        LogGroup: !Ref QuestionBankOutboxFunctionLogGroup
+        LogFormat: Text
+      Environment:
+        Variables:
+          QUESTION_BANK_TABLE_NAME: !Ref QuestionBankTable
+          QUESTION_BANK_QUEUE_URL: !Ref QuestionBankQueue
+          QUOTA_HASH_SECRET: !Ref QuotaHashSecret
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+              Resource: !GetAtt QuestionBankTable.StreamArn
+            - Effect: Allow
+              Action:
+                - dynamodb:ListStreams
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt QuestionBankTable.Arn
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource:
+                - !GetAtt QuestionBankQueue.Arn
+                - !GetAtt QuestionBankOutboxFailureQueue.Arn
+
+  QuestionBankOutboxEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn: !GetAtt QuestionBankTable.StreamArn
+      FunctionName: !Ref QuestionBankOutboxFunction
+      StartingPosition: TRIM_HORIZON
+      BatchSize: 10
+      MaximumBatchingWindowInSeconds: 1
+      BisectBatchOnFunctionError: true
+      FunctionResponseTypes:
+        - ReportBatchItemFailures
+      FilterCriteria:
+        Filters:
+          - Pattern: >-
+              {"eventName":["INSERT","MODIFY"],"dynamodb":{"NewImage":{"itemType":{"S":["job"]},"status":{"S":["queued"]},"enqueueStatus":{"S":["pending"]}}}}
+      MaximumRetryAttempts: 5
+      MaximumRecordAgeInSeconds: 86400
+      DestinationConfig:
+        OnFailure:
+          Destination: !GetAtt QuestionBankOutboxFailureQueue.Arn
+
+  QuestionBankOutboxFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /checkpoint/${AWS::StackName}/question-bank-outbox
       RetentionInDays: !Ref LogRetentionDays
 
   BackendAlertTopic:
@@ -558,6 +679,24 @@ Resources:
       AlarmActions:
         - !Ref BackendAlertTopic
 
+  QuestionBankOutboxFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: DynamoDB Streams invocation metadata indicates exhausted outbox delivery retries.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt QuestionBankOutboxFailureQueue.QueueName
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref BackendAlertTopic
+
   MonthlyBedrockBudget:
     Type: AWS::Budgets::Budget
     Condition: HasBudgetEmail
@@ -609,9 +748,15 @@ Outputs:
   QuestionBankDeadLetterQueueUrl:
     Description: Encrypted dead-letter queue for jobs that exhaust their retries.
     Value: !Ref QuestionBankDeadLetterQueue
+  QuestionBankOutboxFailureQueueUrl:
+    Description: Encrypted destination for metadata about DynamoDB Streams invocations that exhaust their retries.
+    Value: !Ref QuestionBankOutboxFailureQueue
   QuestionBankWorkerFunctionName:
     Description: Lambda function that generates queued question-bank inventory.
     Value: !Ref QuestionBankWorkerFunction
+  QuestionBankOutboxFunctionName:
+    Description: Lambda function that recovers pending question-bank queue deliveries from DynamoDB Streams.
+    Value: !Ref QuestionBankOutboxFunction
   BackendAlertTopicArn:
     Description: SNS topic used by backend operational alarms.
     Value: !Ref BackendAlertTopic

@@ -48,10 +48,13 @@ jobs:
         run: python -m pip install ruff==0.12.2
 
       - name: Lint backend Python
-        run: ruff check lambda_function.py smoke_test_backend.py tests evals/checkpoint_question_eval.py
+        run: ruff check lambda_function.py question_bank.py smoke_test_backend.py tests evals/checkpoint_question_eval.py
 
       - name: Run backend unit tests
         run: python -m unittest discover -s tests -v
+
+      - name: Compile backend Python modules
+        run: python -m compileall -q lambda_function.py question_bank.py evals tests
 
       - name: Validate SAM template
         run: sam validate --lint --template-file template.yaml
@@ -80,7 +83,10 @@ jobs:
       QUOTA_HASH_SECRET: ${{ secrets.QUOTA_HASH_SECRET }}
       BEDROCK_MODEL_ARN: ${{ vars.BEDROCK_MODEL_ARN }}
       BEDROCK_INVOKE_RESOURCE_ARNS: ${{ vars.BEDROCK_INVOKE_RESOURCE_ARNS }}
+      QUESTION_BANK_WORKER_MODEL_ARN: ${{ vars.QUESTION_BANK_WORKER_MODEL_ARN || vars.BEDROCK_MODEL_ARN }}
+      QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS: ${{ vars.QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS || vars.BEDROCK_INVOKE_RESOURCE_ARNS }}
       BEDROCK_FALLBACK_MODEL_ARN: ${{ vars.BEDROCK_FALLBACK_MODEL_ARN }}
+      BEDROCK_REASONING_EFFORT: ${{ vars.BEDROCK_REASONING_EFFORT || 'low' }}
       BEDROCK_GUARDRAIL_IDENTIFIER: ${{ vars.BEDROCK_GUARDRAIL_IDENTIFIER }}
       BEDROCK_GUARDRAIL_VERSION: ${{ vars.BEDROCK_GUARDRAIL_VERSION }}
       BEDROCK_GUARDRAIL_ARN: ${{ vars.BEDROCK_GUARDRAIL_ARN }}
@@ -93,6 +99,7 @@ jobs:
       MAX_REQUESTS_PER_IP_PER_DAY: ${{ vars.MAX_REQUESTS_PER_IP_PER_DAY || '400' }}
       RATE_LIMIT_TTL_SECONDS: ${{ vars.RATE_LIMIT_TTL_SECONDS || '172800' }}
       QUESTION_BANK_TTL_SECONDS: ${{ vars.QUESTION_BANK_TTL_SECONDS || '2592000' }}
+      QUESTION_BANK_MAX_RECEIVE_COUNT: ${{ vars.QUESTION_BANK_MAX_RECEIVE_COUNT || '5' }}
       DEPLOYMENT_ENVIRONMENT: ${{ inputs.environment }}
       SERVICE_MODE: ${{ vars.SERVICE_MODE || 'enabled' }}
       SERVICE_RETRY_AFTER_SECONDS: ${{ vars.SERVICE_RETRY_AFTER_SECONDS || '300' }}
@@ -101,6 +108,8 @@ jobs:
       API_THROTTLE_BURST_LIMIT: ${{ vars.API_THROTTLE_BURST_LIMIT || '10' }}
       RESERVED_CONCURRENCY: ${{ vars.RESERVED_CONCURRENCY || '5' }}
       QUESTION_BANK_WORKER_RESERVED_CONCURRENCY: ${{ vars.QUESTION_BANK_WORKER_RESERVED_CONCURRENCY || '2' }}
+      QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS: ${{ vars.QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS || '75' }}
+      QUESTION_BANK_GENERATION_CHUNK_SIZE: ${{ vars.QUESTION_BANK_GENERATION_CHUNK_SIZE || '5' }}
       LOG_RETENTION_DAYS: ${{ vars.LOG_RETENTION_DAYS || '14' }}
       ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
       BUDGET_ALERT_EMAIL: ${{ vars.BUDGET_ALERT_EMAIL }}
@@ -120,6 +129,8 @@ jobs:
           [[ -n "$QUOTA_HASH_SECRET" ]] || missing+=(QUOTA_HASH_SECRET)
           [[ -n "$BEDROCK_MODEL_ARN" ]] || missing+=(BEDROCK_MODEL_ARN)
           [[ -n "$BEDROCK_INVOKE_RESOURCE_ARNS" ]] || missing+=(BEDROCK_INVOKE_RESOURCE_ARNS)
+          [[ -n "$QUESTION_BANK_WORKER_MODEL_ARN" ]] || missing+=(QUESTION_BANK_WORKER_MODEL_ARN)
+          [[ -n "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS" ]] || missing+=(QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS)
           if (( ${#missing[@]} > 0 )); then
             printf 'Missing required environment secrets or variables: %s\n' "${missing[*]}" >&2
             exit 1
@@ -154,6 +165,35 @@ jobs:
             echo "BEDROCK_INVOKE_RESOURCE_ARNS must include BEDROCK_FALLBACK_MODEL_ARN." >&2
             exit 1
           fi
+
+          IFS=',' read -r -a worker_invoke_resources <<< "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS"
+          worker_primary_is_allowed=false
+          worker_fallback_is_allowed=false
+          for resource in "${worker_invoke_resources[@]}"; do
+            resource="${resource#"${resource%%[![:space:]]*}"}"
+            resource="${resource%"${resource##*[![:space:]]}"}"
+            if [[ -z "$resource" || "$resource" == *'*'* || "$resource" != arn:*:bedrock:* ]]; then
+              echo "Every QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS value must be a non-wildcard Bedrock ARN." >&2
+              exit 1
+            fi
+            [[ "$resource" == "$QUESTION_BANK_WORKER_MODEL_ARN" ]] && worker_primary_is_allowed=true
+            [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$resource" == "$BEDROCK_FALLBACK_MODEL_ARN" ]] && worker_fallback_is_allowed=true
+          done
+          if [[ "$worker_primary_is_allowed" != true ]]; then
+            echo "QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS must include QUESTION_BANK_WORKER_MODEL_ARN." >&2
+            exit 1
+          fi
+          if [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$worker_fallback_is_allowed" != true ]]; then
+            echo "QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS must include BEDROCK_FALLBACK_MODEL_ARN." >&2
+            exit 1
+          fi
+          case "$BEDROCK_REASONING_EFFORT" in
+            none|low|medium|high|xhigh|max) ;;
+            *)
+              echo "BEDROCK_REASONING_EFFORT must be none, low, medium, high, xhigh, or max." >&2
+              exit 1
+              ;;
+          esac
 
           guardrail_values=(
             "$BEDROCK_GUARDRAIL_IDENTIFIER"
@@ -202,7 +242,10 @@ jobs:
             "AllowUnauthenticatedBackend=false"
             "BedrockModelArn=$BEDROCK_MODEL_ARN"
             "BedrockInvokeResourceArns=$BEDROCK_INVOKE_RESOURCE_ARNS"
+            "QuestionBankWorkerModelArn=$QUESTION_BANK_WORKER_MODEL_ARN"
+            "QuestionBankWorkerInvokeResourceArns=$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS"
             "BedrockFallbackModelArn=$BEDROCK_FALLBACK_MODEL_ARN"
+            "BedrockReasoningEffort=$BEDROCK_REASONING_EFFORT"
             "BedrockGuardrailIdentifier=$BEDROCK_GUARDRAIL_IDENTIFIER"
             "BedrockGuardrailVersion=$BEDROCK_GUARDRAIL_VERSION"
             "BedrockGuardrailArn=$BEDROCK_GUARDRAIL_ARN"
@@ -215,6 +258,7 @@ jobs:
             "MaxRequestsPerIPPerDay=$MAX_REQUESTS_PER_IP_PER_DAY"
             "RateLimitTTLSeconds=$RATE_LIMIT_TTL_SECONDS"
             "QuestionBankTTLSeconds=$QUESTION_BANK_TTL_SECONDS"
+            "QuestionBankMaxReceiveCount=$QUESTION_BANK_MAX_RECEIVE_COUNT"
             "DeploymentEnvironment=$DEPLOYMENT_ENVIRONMENT"
             "ServiceMode=$SERVICE_MODE"
             "ServiceRetryAfterSeconds=$SERVICE_RETRY_AFTER_SECONDS"
@@ -223,6 +267,8 @@ jobs:
             "ApiThrottleBurstLimit=$API_THROTTLE_BURST_LIMIT"
             "ReservedConcurrency=$RESERVED_CONCURRENCY"
             "QuestionBankWorkerReservedConcurrency=$QUESTION_BANK_WORKER_RESERVED_CONCURRENCY"
+            "QuestionBankWorkerReadTimeoutSeconds=$QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS"
+            "QuestionBankGenerationChunkSize=$QUESTION_BANK_GENERATION_CHUNK_SIZE"
             "LogRetentionDays=$LOG_RETENTION_DAYS"
             "AlertEmail=$ALERT_EMAIL"
             "BudgetAlertEmail=$BUDGET_ALERT_EMAIL"

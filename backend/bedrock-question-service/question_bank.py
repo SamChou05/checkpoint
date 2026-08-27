@@ -18,10 +18,12 @@ LOGGER = logging.getLogger(__name__)
 
 MAX_DESIRED_COUNT = 100
 MAX_CLAIM_COUNT = 20
+DEFAULT_GENERATION_CHUNK_COUNT = 5
 DEFAULT_BANK_TTL_SECONDS = 30 * 24 * 60 * 60
 TOMBSTONE_TTL_SECONDS = 24 * 60 * 60
-ENQUEUE_LEASE_SECONDS = 30
 WORKER_LEASE_SECONDS = 180
+DEFAULT_MAX_RECEIVE_COUNT = 5
+DEFAULT_FAILURE_COOLDOWN_SECONDS = 5 * 60
 
 
 class QuestionBankError(RuntimeError):
@@ -31,8 +33,16 @@ class QuestionBankError(RuntimeError):
         self.code = code
 
 
-class StaleBankError(RuntimeError):
-    pass
+class NonRetryableGenerationError(RuntimeError):
+    """A validated generation refusal that must remain terminal for this bank."""
+
+    def __init__(self, code: str):
+        super().__init__(code)
+        self.code = code
+
+
+class ProviderAttemptLimitError(RuntimeError):
+    """The logical job has exhausted its provider-call allowance."""
 
 
 def ensure_bank(
@@ -63,7 +73,7 @@ def ensure_bank(
     )
 
     generation_payload = dict(payload)
-    generation_payload["targetCount"] = min(desired_count, MAX_CLAIM_COUNT)
+    generation_payload["targetCount"] = min(desired_count, _generation_chunk_count())
     normalized = normalize_request(generation_payload)
     context_revision = _required_revision(payload.get("contextRevision"))
     goal_key = _secret_digest("goal", goal_id)
@@ -130,7 +140,7 @@ def claim_questions(
     dynamodb_client: Any | None = None,
     sqs_client: Any | None = None,
 ) -> dict[str, Any]:
-    """Atomically remove ready questions and persist the response by claim ID."""
+    """Atomically claim ready questions and persist the response by claim ID."""
     table_name, queue_url = _configuration()
     client = dynamodb_client or _dynamodb_client()
     queue = sqs_client or _sqs_client()
@@ -148,18 +158,30 @@ def claim_questions(
 
     existing_claim = _get_item(client, table_name, claim_key, consistent=True)
     if existing_claim:
-        return _stored_claim(existing_claim)
+        response = _stored_claim(existing_claim)
+        _recover_refill_after_claim(
+            client,
+            queue,
+            table_name,
+            queue_url,
+            bank_key,
+            pointer_key,
+            response,
+        )
+        return response
 
     for _ in range(4):
         meta = _get_item(client, table_name, bank_key, consistent=True)
         _require_active_meta(meta, owner_digest)
         observed_ready = _number(meta, "readyCount")
-        all_ready_items = _query_questions(
-            client,
-            table_name,
-            bank_key,
-            MAX_DESIRED_COUNT,
-        )
+        history_items = _query_question_history(client, table_name, bank_key)
+        all_ready_items = [
+            item
+            for item in history_items
+            # Before claimed-question history was introduced, claiming deleted
+            # the row. A legacy row without state is therefore still ready.
+            if _string(item, "state") in {"", "ready"}
+        ]
         question_items = all_ready_items[:limit]
         questions = [_question_from_item(item) for item in question_items]
         # QUESTION records have their own TTL. Reconcile the cached counter to
@@ -167,10 +189,18 @@ def claim_questions(
         after_count = len(all_ready_items) - len(question_items)
         desired_count = _number(meta, "desiredCount")
         low_watermark = _number(meta, "lowWatermark")
-        needs_refill = (
-            low_watermark > 0
-            and after_count <= low_watermark
-            and after_count < desired_count
+        blocked_reason = _string(meta, "generationBlockedReason")
+        finite_fill_pending = (
+            low_watermark == 0
+            and _number(meta, "generatedCount") < desired_count
+        )
+        needs_refill = not blocked_reason and (
+            finite_fill_pending
+            or (
+                low_watermark > 0
+                and after_count <= low_watermark
+                and after_count < desired_count
+            )
         )
         response = {
             "bankID": bank_id,
@@ -180,14 +210,39 @@ def claim_questions(
             "questions": questions,
         }
         now = int(time.time())
+        meta_condition = "readyCount = :observed AND attribute_not_exists(tombstonedAt)"
+        meta_values = {
+            ":after": _n(after_count),
+            ":observed": _n(observed_ready),
+            ":state": _s(response["status"]),
+            ":now": _n(now),
+            ":ttl": _n(now + _bank_ttl_seconds()),
+        }
+        if blocked_reason:
+            meta_condition += " AND generationBlockedReason = :blockedReason"
+            meta_values[":blockedReason"] = _s(blocked_reason)
+        else:
+            meta_condition += " AND attribute_not_exists(generationBlockedReason)"
         transaction: list[dict[str, Any]] = []
         for item in question_items:
             transaction.append(
                 {
-                    "Delete": {
+                    "Update": {
                         "TableName": table_name,
                         "Key": {"pk": item["pk"], "sk": item["sk"]},
-                        "ConditionExpression": "attribute_exists(pk)",
+                        "UpdateExpression": (
+                            "SET #state = :claimed, claimedAt = :now, expiresAt = :ttl"
+                        ),
+                        "ConditionExpression": (
+                            "attribute_not_exists(#state) OR #state = :ready"
+                        ),
+                        "ExpressionAttributeNames": {"#state": "state"},
+                        "ExpressionAttributeValues": {
+                            ":claimed": _s("claimed"),
+                            ":ready": _s("ready"),
+                            ":now": _n(now),
+                            ":ttl": _n(now + _bank_ttl_seconds()),
+                        },
                     }
                 }
             )
@@ -198,15 +253,9 @@ def claim_questions(
                         "TableName": table_name,
                         "Key": bank_key,
                         "UpdateExpression": "SET readyCount = :after, #state = :state, updatedAt = :now, expiresAt = :ttl",
-                        "ConditionExpression": "readyCount = :observed AND attribute_not_exists(tombstonedAt)",
+                        "ConditionExpression": meta_condition,
                         "ExpressionAttributeNames": {"#state": "state"},
-                        "ExpressionAttributeValues": {
-                            ":after": _n(after_count),
-                            ":observed": _n(observed_ready),
-                            ":state": _s(response["status"]),
-                            ":now": _n(now),
-                            ":ttl": _n(now + _bank_ttl_seconds()),
-                        },
+                        "ExpressionAttributeValues": meta_values,
                     }
                 },
                 {
@@ -237,31 +286,63 @@ def claim_questions(
         except Exception as error:
             existing_claim = _get_item(client, table_name, claim_key, consistent=True)
             if existing_claim:
-                return _stored_claim(existing_claim)
+                response = _stored_claim(existing_claim)
+                _recover_refill_after_claim(
+                    client,
+                    queue,
+                    table_name,
+                    queue_url,
+                    bank_key,
+                    pointer_key,
+                    response,
+                )
+                return response
             if _is_conditional_failure(error):
                 continue
             raise
 
-        if needs_refill:
-            refreshed = _get_item(client, table_name, bank_key, consistent=True)
-            if refreshed:
-                try:
-                    _ensure_refill(
-                        client,
-                        queue,
-                        table_name,
-                        queue_url,
-                        bank_key,
-                        pointer_key,
-                        refreshed,
-                        now,
-                    )
-                except Exception:
-                    # The claim is already committed and must not become an error.
-                    LOGGER.exception("Question-bank refill scheduling failed after claim")
+        _recover_refill_after_claim(
+            client,
+            queue,
+            table_name,
+            queue_url,
+            bank_key,
+            pointer_key,
+            response,
+        )
         return response
 
     raise QuestionBankError(409, "Question inventory changed; retry the claim.", "claim_conflict")
+
+
+def _recover_refill_after_claim(
+    client: Any,
+    queue: Any,
+    table_name: str,
+    queue_url: str,
+    bank_key: dict[str, Any],
+    pointer_key: dict[str, Any],
+    response: dict[str, Any],
+) -> None:
+    """Best-effort refill recovery for new and idempotently replayed claims."""
+    if response.get("status") != "queued":
+        return
+    try:
+        refreshed = _get_item(client, table_name, bank_key, consistent=True)
+        if refreshed:
+            _ensure_refill(
+                client,
+                queue,
+                table_name,
+                queue_url,
+                bank_key,
+                pointer_key,
+                refreshed,
+                int(time.time()),
+            )
+    except Exception:
+        # The claim is already committed and must remain exactly replayable.
+        LOGGER.exception("Question-bank refill recovery failed after claim")
 
 
 def delete_bank(
@@ -322,6 +403,7 @@ def handle_worker_event(
     *,
     dynamodb_client: Any | None = None,
     sqs_client: Any | None = None,
+    on_terminal_failure: Callable[[str], None] | None = None,
 ) -> dict[str, list[dict[str, str]]]:
     """SQS partial-batch handler; failed records remain visible for retry/DLQ."""
     failures: list[dict[str, str]] = []
@@ -329,12 +411,74 @@ def handle_worker_event(
     queue = sqs_client or _sqs_client()
     for record in event.get("Records", []):
         message_id = str(record.get("messageId", "unknown"))
+        message: dict[str, Any] | None = None
         try:
             message = json.loads(record.get("body", ""))
             _process_job(message, context, generate_questions, client, queue)
+        except ProviderAttemptLimitError:
+            if not isinstance(message, dict) or not message:
+                failures.append({"itemIdentifier": message_id})
+                continue
+            _mark_job_terminal_failure(
+                client,
+                message,
+                _max_receive_count(),
+            )
+            LOGGER.error("Question-bank job exhausted its provider-attempt allowance")
+            if on_terminal_failure:
+                on_terminal_failure("provider_attempt_limit")
         except Exception:
             LOGGER.exception("Asynchronous question-bank worker failed")
+            if (
+                isinstance(message, dict)
+                and message
+                and _receive_count(record) >= _max_receive_count()
+            ):
+                _mark_job_terminal_failure(
+                    client,
+                    message,
+                    _receive_count(record),
+                )
             failures.append({"itemIdentifier": message_id})
+    return {"batchItemFailures": failures}
+
+
+def handle_outbox_event(
+    event: dict[str, Any],
+    context: Any,
+    *,
+    dynamodb_client: Any | None = None,
+    sqs_client: Any | None = None,
+) -> dict[str, list[dict[str, str]]]:
+    """Dispatch pending JOB records emitted by DynamoDB Streams to SQS."""
+    del context
+    table_name, queue_url = _configuration()
+    client = dynamodb_client or _dynamodb_client()
+    queue = sqs_client or _sqs_client()
+    failures: list[dict[str, str]] = []
+    for record in event.get("Records", []):
+        sequence_number = str(
+            record.get("dynamodb", {}).get("SequenceNumber")
+            or record.get("eventID")
+            or "unknown"
+        )
+        image = record.get("dynamodb", {}).get("NewImage")
+        if not _is_pending_job_image(record.get("eventName"), image):
+            continue
+        job_key = {"pk": image["pk"], "sk": image["sk"]}
+        try:
+            _deliver_job(
+                client,
+                queue,
+                table_name,
+                queue_url,
+                job_key,
+                image,
+                int(time.time()),
+            )
+        except Exception:
+            LOGGER.exception("Question-bank outbox delivery failed")
+            failures.append({"itemIdentifier": sequence_number})
     return {"batchItemFailures": failures}
 
 
@@ -361,7 +505,8 @@ def _process_job(
             TableName=table_name,
             Key=job_key,
             UpdateExpression=(
-                "SET #status = :processing, leaseToken = :token, leaseUntil = :lease, updatedAt = :now"
+                "SET #status = :processing, enqueueStatus = :sent, "
+                "leaseToken = :token, leaseUntil = :lease, updatedAt = :now"
             ),
             ConditionExpression=(
                 "#status = :queued OR (#status = :processing AND leaseUntil < :now)"
@@ -370,6 +515,7 @@ def _process_job(
             ExpressionAttributeValues={
                 ":queued": _s("queued"),
                 ":processing": _s("processing"),
+                ":sent": _s("sent"),
                 ":token": _s(lease_token),
                 ":lease": _n(now + WORKER_LEASE_SECONDS),
                 ":now": _n(now),
@@ -380,7 +526,25 @@ def _process_job(
         if not _is_conditional_failure(error):
             raise
         job = _get_item(client, table_name, job_key, consistent=True)
-        if not job or _string(job, "status") in {"complete", "superseded", "rate_limited"}:
+        status = _string(job, "status") if job else ""
+        if status == "complete":
+            _repair_completed_job_chain(
+                client,
+                queue,
+                table_name,
+                queue_url,
+                bank_key,
+                bank_pk,
+                context_revision,
+                now,
+            )
+            return
+        if not job or status in {
+            "blocked",
+            "failed",
+            "superseded",
+            "rate_limited",
+        }:
             return
         raise
 
@@ -411,9 +575,9 @@ def _process_job(
 
     _consume_worker_quota(client, table_name, job_key, acquired, owner_digest)
     generation_request = json.loads(_string(meta, "generationRequest"))
-    existing_items = _query_questions(client, table_name, bank_key, MAX_DESIRED_COUNT)
+    existing_items = _query_question_history(client, table_name, bank_key)
     existing_questions = [_question_from_item(item) for item in existing_items]
-    generation_request["targetCount"] = min(MAX_CLAIM_COUNT, deficit)
+    generation_request["targetCount"] = min(_generation_chunk_count(), deficit)
     generation_request["existingPrompts"] = list(
         dict.fromkeys(
             generation_request.get("existingPrompts", [])
@@ -427,6 +591,7 @@ def _process_job(
                 "topic": question.get("topic", ""),
                 "prompt": question.get("prompt", ""),
                 "expectedAnswer": question.get("expectedAnswer", ""),
+                "choices": question.get("choices", []),
                 "difficulty": question.get("difficulty", 1),
             }
             for question in existing_questions
@@ -434,6 +599,13 @@ def _process_job(
     )[-30:]
 
     try:
+        if not _reserve_provider_attempt(
+            client,
+            table_name,
+            job_key,
+            lease_token,
+        ):
+            raise ProviderAttemptLimitError
         generated = generate_questions(generation_request)
         prepared = _prepare_questions(bank_id, generated, existing_items)
         if not prepared:
@@ -447,8 +619,24 @@ def _process_job(
             bank_id,
             context_revision,
             lease_token,
-            prepared,
+            prepared[:deficit],
+            observed_desired_count=desired_count,
+            observed_low_watermark=low_watermark,
+            observed_ready_count=ready_count,
+            observed_generated_count=generated_count,
         )
+    except NonRetryableGenerationError as error:
+        _mark_generation_blocked(
+            client,
+            table_name,
+            bank_key,
+            job_key,
+            lease_token,
+            error.code,
+        )
+        return
+    except ProviderAttemptLimitError:
+        raise
     except Exception:
         _reset_job_for_retry(client, table_name, bank_key, job_key, lease_token)
         raise
@@ -464,6 +652,40 @@ def _process_job(
             pointer_key,
             refreshed,
             int(time.time()),
+        )
+
+
+def _repair_completed_job_chain(
+    client: Any,
+    queue: Any,
+    table_name: str,
+    queue_url: str,
+    bank_key: dict[str, Any],
+    bank_pk: str,
+    context_revision: str,
+    now: int,
+) -> None:
+    """Resume refill chaining when a completed message is delivered again."""
+    meta = _get_item(client, table_name, bank_key, consistent=True)
+    if (
+        not meta
+        or meta.get("tombstonedAt")
+        or _string(meta, "contextRevision") != context_revision
+    ):
+        return
+    owner_digest, bank_id = _parse_bank_pk(bank_pk)
+    pointer_key = _pointer_key(owner_digest, _string(meta, "goalKey"))
+    pointer = _get_item(client, table_name, pointer_key, consistent=True)
+    if pointer and _string(pointer, "currentBankID") == bank_id:
+        _ensure_refill(
+            client,
+            queue,
+            table_name,
+            queue_url,
+            bank_key,
+            pointer_key,
+            meta,
+            now,
         )
 
 
@@ -609,7 +831,7 @@ def _ensure_refill(
     meta: dict[str, Any],
     now: int,
 ) -> bool:
-    if meta.get("tombstonedAt"):
+    if meta.get("tombstonedAt") or _string(meta, "generationBlockedReason"):
         return False
     low_watermark = _number(meta, "lowWatermark")
     inventory_progress = (
@@ -628,47 +850,16 @@ def _ensure_refill(
         job_key = {"pk": bank_key["pk"], "sk": _s(f"JOB#{active_job_id}")}
         job = _get_item(client, table_name, job_key, consistent=True)
         if job and _string(job, "status") == "queued":
-            _deliver_job(client, queue, table_name, queue_url, job_key, job, now)
-            return False
-        if (
-            job
-            and _string(job, "status") == "processing"
-            and _number(job, "leaseUntil") < now
-        ):
             try:
-                recovered = client.update_item(
-                    TableName=table_name,
-                    Key=job_key,
-                    UpdateExpression=(
-                        "SET #status = :queued, enqueueStatus = :pending, "
-                        "enqueueLeaseUntil = :zero, updatedAt = :now "
-                        "REMOVE leaseToken, leaseUntil, enqueueToken"
-                    ),
-                    ConditionExpression="#status = :processing AND leaseUntil < :now",
-                    ExpressionAttributeNames={"#status": "status"},
-                    ExpressionAttributeValues={
-                        ":queued": _s("queued"),
-                        ":pending": _s("pending"),
-                        ":processing": _s("processing"),
-                        ":zero": _n(0),
-                        ":now": _n(now),
-                    },
-                    ReturnValues="ALL_NEW",
-                )["Attributes"]
-                _deliver_job(
-                    client,
-                    queue,
-                    table_name,
-                    queue_url,
-                    job_key,
-                    recovered,
-                    now,
-                )
-            except Exception as error:
-                if not _is_conditional_failure(error):
-                    raise
+                _deliver_job(client, queue, table_name, queue_url, job_key, job, now)
+            except Exception:
+                # The pending JOB record is the durable outbox. Its stream
+                # consumer will retry independently of this HTTP request.
+                LOGGER.exception("Direct question-bank job delivery failed")
             return False
         if job and _string(job, "status") == "processing":
+            # The original SQS message owns retry timing. Re-enqueueing from an
+            # ensure poll would bypass visibility timeout and redrive counting.
             return False
 
         # A job can expire, be DLQ-resolved, or be superseded between the META
@@ -718,7 +909,9 @@ def _ensure_refill(
                 "UpdateExpression": "SET activeJobID = :job, #state = :queued, updatedAt = :now, expiresAt = :ttl",
                 "ConditionExpression": (
                     f"attribute_not_exists(activeJobID) AND {inventory_condition} "
-                    "AND contextRevision = :revision AND attribute_not_exists(tombstonedAt)"
+                    "AND contextRevision = :revision "
+                    "AND attribute_not_exists(generationBlockedReason) "
+                    "AND attribute_not_exists(tombstonedAt)"
                 ),
                 "ExpressionAttributeNames": {"#state": "state"},
                 "ExpressionAttributeValues": {
@@ -741,8 +934,8 @@ def _ensure_refill(
                     "contextRevision": _s(context_revision),
                     "status": _s("queued"),
                     "enqueueStatus": _s("pending"),
-                    "enqueueLeaseUntil": _n(0),
                     "generationPass": _n(0),
+                    "providerAttemptCount": _n(0),
                     "createdAt": _n(now),
                     "updatedAt": _n(now),
                     "expiresAt": _n(now + _bank_ttl_seconds()),
@@ -769,11 +962,25 @@ def _ensure_refill(
                 active_key = {"pk": bank_key["pk"], "sk": _s(f"JOB#{active_id}")}
                 active = _get_item(client, table_name, active_key, consistent=True)
                 if active and _string(active, "status") == "queued":
-                    _deliver_job(client, queue, table_name, queue_url, active_key, active, now)
+                    try:
+                        _deliver_job(
+                            client,
+                            queue,
+                            table_name,
+                            queue_url,
+                            active_key,
+                            active,
+                            now,
+                        )
+                    except Exception:
+                        LOGGER.exception("Direct question-bank job delivery failed")
             return False
         raise
     job = _get_item(client, table_name, job_key, consistent=True) or transaction[1]["Put"]["Item"]
-    _deliver_job(client, queue, table_name, queue_url, job_key, job, now)
+    try:
+        _deliver_job(client, queue, table_name, queue_url, job_key, job, now)
+    except Exception:
+        LOGGER.exception("Direct question-bank job delivery failed")
     return True
 
 
@@ -786,53 +993,52 @@ def _deliver_job(
     job: dict[str, Any],
     now: int,
 ) -> None:
-    if _string(job, "enqueueStatus") == "sent":
+    del now
+    current = _get_item(client, table_name, job_key, consistent=True) or job
+    if (
+        _string(current, "status") != "queued"
+        or _string(current, "enqueueStatus") == "sent"
+    ):
         return
-    lease_token = str(uuid.uuid4())
-    try:
-        leased = client.update_item(
-            TableName=table_name,
-            Key=job_key,
-            UpdateExpression="SET enqueueStatus = :sending, enqueueToken = :token, enqueueLeaseUntil = :lease, updatedAt = :now",
-            ConditionExpression=(
-                "#status = :queued AND (enqueueStatus = :pending OR enqueueLeaseUntil < :now)"
-            ),
-            ExpressionAttributeNames={"#status": "status"},
-            ExpressionAttributeValues={
-                ":queued": _s("queued"),
-                ":pending": _s("pending"),
-                ":sending": _s("sending"),
-                ":token": _s(lease_token),
-                ":lease": _n(now + ENQUEUE_LEASE_SECONDS),
-                ":now": _n(now),
-            },
-            ReturnValues="ALL_NEW",
-        )["Attributes"]
-    except Exception as error:
-        if _is_conditional_failure(error):
-            return
-        raise
+    bank_pk = _required_internal_string(_string(current, "pk"), "bankPK")
+    job_id = _required_internal_string(_string(current, "jobID"), "jobID")
+    context_revision = _required_internal_string(
+        _string(current, "contextRevision"), "contextRevision"
+    )
     queue.send_message(
         QueueUrl=queue_url,
         MessageBody=_json(
             {
-                "bankPK": _string(leased, "pk"),
-                "jobID": _string(leased, "jobID"),
-                "contextRevision": _string(leased, "contextRevision"),
+                "bankPK": bank_pk,
+                "jobID": job_id,
+                "contextRevision": context_revision,
             }
         ),
     )
-    client.update_item(
-        TableName=table_name,
-        Key=job_key,
-        UpdateExpression="SET enqueueStatus = :sent, enqueuedAt = :now, updatedAt = :now REMOVE enqueueToken",
-        ConditionExpression="enqueueToken = :token",
-        ExpressionAttributeValues={
-            ":sent": _s("sent"),
-            ":now": _n(int(time.time())),
-            ":token": _s(lease_token),
-        },
-    )
+    try:
+        client.update_item(
+            TableName=table_name,
+            Key=job_key,
+            UpdateExpression=(
+                "SET enqueueStatus = :sent, enqueuedAt = :now, updatedAt = :now "
+                "REMOVE enqueueToken, enqueueLeaseUntil"
+            ),
+            ConditionExpression=(
+                "#status = :queued AND "
+                "(attribute_not_exists(enqueueStatus) OR enqueueStatus <> :sent)"
+            ),
+            ExpressionAttributeNames={"#status": "status"},
+            ExpressionAttributeValues={
+                ":queued": _s("queued"),
+                ":sent": _s("sent"),
+                ":now": _n(int(time.time())),
+            },
+        )
+    except Exception as error:
+        # A concurrent direct/stream dispatcher can win after both sends, and
+        # a worker can acquire the message before this bookkeeping update.
+        if not _is_conditional_failure(error):
+            raise
 
 
 def _mark_initial_fill_complete(
@@ -919,6 +1125,44 @@ def _consume_worker_quota(
         raise
 
 
+def _reserve_provider_attempt(
+    client: Any,
+    table_name: str,
+    job_key: dict[str, Any],
+    lease_token: str,
+) -> bool:
+    """Atomically reserve one provider call across all duplicate deliveries."""
+    limit = _max_receive_count()
+    try:
+        client.update_item(
+            TableName=table_name,
+            Key=job_key,
+            UpdateExpression=(
+                "SET providerAttemptCount = "
+                "if_not_exists(providerAttemptCount, :zero) + :one, updatedAt = :now"
+            ),
+            ConditionExpression=(
+                "leaseToken = :token AND "
+                "(attribute_not_exists(providerAttemptCount) OR providerAttemptCount < :limit)"
+            ),
+            ExpressionAttributeValues={
+                ":zero": _n(0),
+                ":one": _n(1),
+                ":limit": _n(limit),
+                ":token": _s(lease_token),
+                ":now": _n(int(time.time())),
+            },
+        )
+        return True
+    except Exception as error:
+        if not _is_conditional_failure(error):
+            raise
+        job = _get_item(client, table_name, job_key, consistent=True)
+        if job and _number(job, "providerAttemptCount") >= limit:
+            return False
+        raise
+
+
 def _prepare_questions(
     bank_id: str,
     generated: list[dict[str, Any]],
@@ -949,6 +1193,11 @@ def _commit_generated_questions(
     context_revision: str,
     lease_token: str,
     questions: list[dict[str, Any]],
+    *,
+    observed_desired_count: int,
+    observed_low_watermark: int,
+    observed_ready_count: int,
+    observed_generated_count: int,
 ) -> None:
     now = int(time.time())
     transaction: list[dict[str, Any]] = []
@@ -961,6 +1210,7 @@ def _commit_generated_questions(
                         "pk": bank_key["pk"],
                         "sk": _s(f"QUESTION#{question['remoteID']}"),
                         "itemType": _s("question"),
+                        "state": _s("ready"),
                         "remoteID": _s(question["remoteID"]),
                         "questionJSON": _s(_json(question)),
                         "createdAt": _n(now),
@@ -983,6 +1233,10 @@ def _commit_generated_questions(
                     ),
                     "ConditionExpression": (
                         "activeJobID = :job AND contextRevision = :revision "
+                        "AND desiredCount = :observedDesired "
+                        "AND lowWatermark = :observedLow "
+                        "AND readyCount <= :observedReady "
+                        "AND generatedCount = :observedGenerated "
                         "AND attribute_not_exists(tombstonedAt)"
                     ),
                     "ExpressionAttributeNames": {"#state": "state"},
@@ -993,6 +1247,10 @@ def _commit_generated_questions(
                         ":ttl": _n(now + _bank_ttl_seconds()),
                         ":job": _s(_string_from_key(job_key["sk"]).removeprefix("JOB#")),
                         ":revision": _s(context_revision),
+                        ":observedDesired": _n(observed_desired_count),
+                        ":observedLow": _n(observed_low_watermark),
+                        ":observedReady": _n(observed_ready_count),
+                        ":observedGenerated": _n(observed_generated_count),
                     },
                 }
             },
@@ -1091,16 +1349,13 @@ def _reset_job_for_retry(
                         "TableName": table_name,
                         "Key": job_key,
                         "UpdateExpression": (
-                            "SET #status = :queued, enqueueStatus = :pending, "
-                            "enqueueLeaseUntil = :zero, updatedAt = :now "
-                            "REMOVE leaseToken, leaseUntil, enqueueToken"
+                            "SET #status = :queued, updatedAt = :now "
+                            "REMOVE leaseToken, leaseUntil"
                         ),
                         "ConditionExpression": "leaseToken = :token",
                         "ExpressionAttributeNames": {"#status": "status"},
                         "ExpressionAttributeValues": {
                             ":queued": _s("queued"),
-                            ":pending": _s("pending"),
-                            ":zero": _n(0),
                             ":now": _n(now),
                             ":token": _s(lease_token),
                         },
@@ -1119,6 +1374,122 @@ def _reset_job_for_retry(
         )
     except Exception:
         LOGGER.exception("Failed to release question-bank worker lease")
+
+
+def _mark_generation_blocked(
+    client: Any,
+    table_name: str,
+    bank_key: dict[str, Any],
+    job_key: dict[str, Any],
+    lease_token: str,
+    reason: str,
+) -> None:
+    """Stop automatic generation for this exact bank context."""
+    now = int(time.time())
+    job_id = _string_from_key(job_key["sk"]).removeprefix("JOB#")
+    client.transact_write_items(
+        TransactItems=[
+            {
+                "Update": {
+                    "TableName": table_name,
+                    "Key": job_key,
+                    "UpdateExpression": (
+                        "SET #status = :blocked, failureCode = :reason, "
+                        "failedAt = :now, updatedAt = :now REMOVE leaseToken, leaseUntil"
+                    ),
+                    "ConditionExpression": "leaseToken = :token",
+                    "ExpressionAttributeNames": {"#status": "status"},
+                    "ExpressionAttributeValues": {
+                        ":blocked": _s("blocked"),
+                        ":reason": _s(reason),
+                        ":now": _n(now),
+                        ":token": _s(lease_token),
+                    },
+                }
+            },
+            {
+                "Update": {
+                    "TableName": table_name,
+                    "Key": bank_key,
+                    "UpdateExpression": (
+                        "SET #state = :blocked, generationBlockedReason = :reason, "
+                        "updatedAt = :now REMOVE activeJobID, refillAfter"
+                    ),
+                    "ConditionExpression": "activeJobID = :job",
+                    "ExpressionAttributeNames": {"#state": "state"},
+                    "ExpressionAttributeValues": {
+                        ":blocked": _s("blocked"),
+                        ":reason": _s(reason),
+                        ":now": _n(now),
+                        ":job": _s(job_id),
+                    },
+                }
+            },
+        ]
+    )
+
+
+def _mark_job_terminal_failure(
+    client: Any,
+    message: dict[str, Any],
+    receive_count: int,
+) -> None:
+    """Terminally fail a poison job while preserving SQS redrive to the DLQ."""
+    table_name, _ = _configuration()
+    bank_pk = _required_internal_string(message.get("bankPK"), "bankPK")
+    job_id = _required_internal_string(message.get("jobID"), "jobID")
+    job_key = {"pk": _s(bank_pk), "sk": _s(f"JOB#{job_id}")}
+    bank_key = {"pk": _s(bank_pk), "sk": _s("META")}
+    now = int(time.time())
+    retry_at = now + _failure_cooldown_seconds()
+    try:
+        client.transact_write_items(
+            TransactItems=[
+                {
+                    "Update": {
+                        "TableName": table_name,
+                        "Key": job_key,
+                        "UpdateExpression": (
+                            "SET #status = :failed, failedAt = :now, "
+                            "failureReceiveCount = :receives, updatedAt = :now "
+                            "REMOVE leaseToken, leaseUntil"
+                        ),
+                        "ConditionExpression": (
+                            "#status = :queued OR #status = :processing"
+                        ),
+                        "ExpressionAttributeNames": {"#status": "status"},
+                        "ExpressionAttributeValues": {
+                            ":failed": _s("failed"),
+                            ":queued": _s("queued"),
+                            ":processing": _s("processing"),
+                            ":receives": _n(receive_count),
+                            ":now": _n(now),
+                        },
+                    }
+                },
+                {
+                    "Update": {
+                        "TableName": table_name,
+                        "Key": bank_key,
+                        "UpdateExpression": (
+                            "SET #state = :failed, refillAfter = :retry, updatedAt = :now "
+                            "REMOVE activeJobID"
+                        ),
+                        "ConditionExpression": "activeJobID = :job",
+                        "ExpressionAttributeNames": {"#state": "state"},
+                        "ExpressionAttributeValues": {
+                            ":failed": _s("failed"),
+                            ":retry": _n(retry_at),
+                            ":now": _n(now),
+                            ":job": _s(job_id),
+                        },
+                    }
+                },
+            ]
+        )
+    except Exception as error:
+        if not _is_conditional_failure(error):
+            raise
 
 
 def _finish_stale_job(
@@ -1221,20 +1592,30 @@ def _purge_bank_children(client: Any, table_name: str, bank_key: dict[str, Any])
             client.batch_write_item(RequestItems={table_name: requests})
 
 
-def _query_questions(
+def _query_question_history(
     client: Any,
     table_name: str,
     bank_key: dict[str, Any],
-    limit: int,
 ) -> list[dict[str, Any]]:
-    response = client.query(
-        TableName=table_name,
-        KeyConditionExpression="pk = :pk AND begins_with(sk, :prefix)",
-        ExpressionAttributeValues={":pk": bank_key["pk"], ":prefix": _s("QUESTION#")},
-        ConsistentRead=True,
-        Limit=limit,
-    )
-    return response.get("Items", [])
+    items: list[dict[str, Any]] = []
+    last_key = None
+    while True:
+        request: dict[str, Any] = {
+            "TableName": table_name,
+            "KeyConditionExpression": "pk = :pk AND begins_with(sk, :prefix)",
+            "ExpressionAttributeValues": {
+                ":pk": bank_key["pk"],
+                ":prefix": _s("QUESTION#"),
+            },
+            "ConsistentRead": True,
+        }
+        if last_key:
+            request["ExclusiveStartKey"] = last_key
+        response = client.query(**request)
+        items.extend(response.get("Items", []))
+        last_key = response.get("LastEvaluatedKey")
+        if not last_key:
+            return items
 
 
 def _query_all(client: Any, table_name: str, bank_key: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1260,7 +1641,18 @@ def _bank_response(meta: dict[str, Any]) -> dict[str, Any]:
     ready = _number(meta, "readyCount")
     target = _number(meta, "desiredCount")
     state = _string(meta, "state")
-    if state not in {"queued", "processing", "ready", "empty"}:
+    retry_is_pending = (
+        _number(meta, "refillAfter") > int(time.time())
+        and not _boolean(meta, "initialFillComplete")
+    )
+    if _string(meta, "generationBlockedReason"):
+        state = "ready" if ready else "empty"
+    elif state == "failed" or retry_is_pending:
+        # A cooldown is delayed work, not terminal exhaustion. Keeping it
+        # queued lets finite-bank clients distinguish a retryable empty bank
+        # from one that has generated and served its full lifetime allowance.
+        state = "queued"
+    elif state not in {"queued", "processing", "ready", "empty"}:
         state = "ready" if ready else "empty"
     return {
         "bankID": _string(meta, "bankID"),
@@ -1435,6 +1827,51 @@ def _is_conditional_failure(error: Exception) -> bool:
         reasons = response.get("CancellationReasons", [])
         return any(reason.get("Code") == "ConditionalCheckFailed" for reason in reasons if isinstance(reason, dict)) or "ConditionalCheckFailed" in str(response)
     return False
+
+
+def _is_pending_job_image(event_name: Any, image: Any) -> bool:
+    if event_name not in {"INSERT", "MODIFY"} or not isinstance(image, dict):
+        return False
+    return (
+        _string(image, "itemType") == "job"
+        and _string(image, "status") == "queued"
+        and _string(image, "enqueueStatus") == "pending"
+        and _string(image, "sk").startswith("JOB#")
+    )
+
+
+def _receive_count(record: dict[str, Any]) -> int:
+    try:
+        return max(
+            1,
+            int(record.get("attributes", {}).get("ApproximateReceiveCount", "1")),
+        )
+    except (TypeError, ValueError, AttributeError):
+        return 1
+
+
+def _max_receive_count() -> int:
+    return _integer_env(
+        "QUESTION_BANK_MAX_RECEIVE_COUNT",
+        DEFAULT_MAX_RECEIVE_COUNT,
+    )
+
+
+def _generation_chunk_count() -> int:
+    return min(
+        MAX_CLAIM_COUNT,
+        _integer_env(
+            "QUESTION_BANK_GENERATION_CHUNK_SIZE",
+            DEFAULT_GENERATION_CHUNK_COUNT,
+        ),
+    )
+
+
+def _failure_cooldown_seconds() -> int:
+    return _integer_env(
+        "QUESTION_BANK_FAILURE_COOLDOWN_SECONDS",
+        DEFAULT_FAILURE_COOLDOWN_SECONDS,
+    )
 
 
 def _integer_env(name: str, default: int) -> int:
