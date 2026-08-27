@@ -402,22 +402,6 @@ def _minimum_provider_remaining_milliseconds() -> int:
     return max(configured_floor, hard_floor)
 
 
-def _dynamodb_client() -> Any:
-    import boto3
-    from botocore.config import Config
-
-    region = os.getenv("AWS_REGION") or os.getenv("BEDROCK_REGION")
-    return boto3.client(
-        "dynamodb",
-        region_name=region,
-        config=Config(
-            connect_timeout=2,
-            read_timeout=5,
-            retries={"total_max_attempts": 2, "mode": "standard"},
-        ),
-    )
-
-
 def _guardrail_config() -> dict[str, str] | None:
     identifier = os.getenv("BEDROCK_GUARDRAIL_IDENTIFIER", "").strip()
     version = os.getenv("BEDROCK_GUARDRAIL_VERSION", "").strip()

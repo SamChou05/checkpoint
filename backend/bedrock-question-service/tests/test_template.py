@@ -6,6 +6,7 @@ from pathlib import Path
 TEMPLATE = Path(__file__).resolve().parents[1] / "template.yaml"
 DEPLOY_WORKFLOW = Path(__file__).resolve().parents[3] / ".github" / "workflows" / "deploy-backend.yml"
 CI_WORKFLOW = Path(__file__).resolve().parents[3] / ".github" / "workflows" / "ci.yml"
+DEPLOY_SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "deploy-sam.sh"
 
 
 def _indented_block(document: str, heading: str) -> str:
@@ -25,6 +26,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         cls.template = TEMPLATE.read_text(encoding="utf-8")
         cls.deploy_workflow = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
         cls.ci_workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        cls.deploy_script = DEPLOY_SCRIPT.read_text(encoding="utf-8")
 
     def test_uses_throttled_http_api_instead_of_public_function_url(self):
         self.assertIn("Type: AWS::Serverless::HttpApi", self.template)
@@ -96,7 +98,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         )
         self.assertIn(
             '"BedrockReasoningEffort=$BEDROCK_REASONING_EFFORT"',
-            self.deploy_workflow,
+            self.deploy_script,
         )
 
     def test_worker_read_timeout_is_bounded_and_not_applied_to_api(self):
@@ -125,7 +127,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertIn(
             '"QuestionBankWorkerReadTimeoutSeconds='
             '$QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS"',
-            self.deploy_workflow,
+            self.deploy_script,
         )
 
     def test_worker_generation_chunk_size_defaults_to_one_checkpoint(self):
@@ -148,7 +150,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         )
         self.assertIn(
             '"QuestionBankGenerationChunkSize=$QUESTION_BANK_GENERATION_CHUNK_SIZE"',
-            self.deploy_workflow,
+            self.deploy_script,
         )
 
     def test_list_streams_uses_its_required_wildcard_resource(self):
@@ -218,21 +220,27 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         template_parameters = set(
             re.findall(r"^  ([A-Z][A-Za-z0-9]+):$", parameter_section, flags=re.MULTILINE)
         )
-        workflow_overrides = set(
+        deploy_overrides = set(
             re.findall(
                 r'^\s+"([A-Z][A-Za-z0-9]+)=',
-                self.deploy_workflow,
+                self.deploy_script,
                 flags=re.MULTILINE,
             )
         )
 
-        self.assertEqual(workflow_overrides, template_parameters)
-        self.assertIn("BedrockModelArn", workflow_overrides)
-        self.assertIn("BedrockInvokeResourceArns", workflow_overrides)
-        self.assertIn("QuestionBankWorkerModelArn", workflow_overrides)
-        self.assertIn("QuestionBankWorkerInvokeResourceArns", workflow_overrides)
-        self.assertIn("BedrockReasoningEffort", workflow_overrides)
-        self.assertNotIn("BedrockModelId", workflow_overrides)
+        self.assertEqual(deploy_overrides, template_parameters)
+        self.assertIn("BedrockModelArn", deploy_overrides)
+        self.assertIn("BedrockInvokeResourceArns", deploy_overrides)
+        self.assertIn("QuestionBankWorkerModelArn", deploy_overrides)
+        self.assertIn("QuestionBankWorkerInvokeResourceArns", deploy_overrides)
+        self.assertIn("BedrockReasoningEffort", deploy_overrides)
+        self.assertNotIn("BedrockModelId", deploy_overrides)
+        for script in [
+            "validate-deployment-config.sh",
+            "deploy-sam.sh",
+            "run-deployment-smoke-test.sh",
+        ]:
+            self.assertIn(f"run: scripts/{script}", self.deploy_workflow)
 
     def test_ci_and_deploy_compile_all_backend_modules(self):
         compile_command = "run: python -m compileall -q ./*.py tests evals"

@@ -53,6 +53,9 @@ jobs:
       - name: Run backend unit tests
         run: python -m unittest discover -s tests -v
 
+      - name: Test deployment scripts
+        run: scripts/test-deployment-scripts.sh
+
       - name: Compile backend Python modules
         run: python -m compileall -q ./*.py tests evals
 
@@ -120,104 +123,7 @@ jobs:
 
       - name: Validate protected deployment configuration
         shell: bash
-        run: |
-          missing=()
-          [[ -n "$AWS_DEPLOY_ROLE_ARN" ]] || missing+=(AWS_DEPLOY_ROLE_ARN)
-          [[ -n "$AWS_REGION" ]] || missing+=(AWS_REGION)
-          [[ -n "$SAM_STACK_NAME" ]] || missing+=(SAM_STACK_NAME)
-          [[ -n "$CHECKPOINT_BACKEND_TOKEN" ]] || missing+=(CHECKPOINT_BACKEND_TOKEN)
-          [[ -n "$QUOTA_HASH_SECRET" ]] || missing+=(QUOTA_HASH_SECRET)
-          [[ -n "$BEDROCK_MODEL_ARN" ]] || missing+=(BEDROCK_MODEL_ARN)
-          [[ -n "$BEDROCK_INVOKE_RESOURCE_ARNS" ]] || missing+=(BEDROCK_INVOKE_RESOURCE_ARNS)
-          [[ -n "$QUESTION_BANK_WORKER_MODEL_ARN" ]] || missing+=(QUESTION_BANK_WORKER_MODEL_ARN)
-          [[ -n "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS" ]] || missing+=(QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS)
-          if (( ${#missing[@]} > 0 )); then
-            printf 'Missing required environment secrets or variables: %s\n' "${missing[*]}" >&2
-            exit 1
-          fi
-          if (( ${#CHECKPOINT_BACKEND_TOKEN} < 32 )); then
-            echo "CHECKPOINT_BACKEND_TOKEN must contain at least 32 characters." >&2
-            exit 1
-          fi
-          if (( ${#QUOTA_HASH_SECRET} < 32 )); then
-            echo "QUOTA_HASH_SECRET must contain at least 32 characters." >&2
-            exit 1
-          fi
-
-          validate_invoke_resources() {
-            local resource_list="$1"
-            local primary_model="$2"
-            local resource_list_name="$3"
-            local primary_model_name="$4"
-            local primary_is_allowed=false
-            local fallback_is_allowed=false
-            local resource
-            local -a resources
-
-            IFS=',' read -r -a resources <<< "$resource_list"
-            for resource in "${resources[@]}"; do
-              resource="${resource#"${resource%%[![:space:]]*}"}"
-              resource="${resource%"${resource##*[![:space:]]}"}"
-              if [[ -z "$resource" || "$resource" == *'*'* || "$resource" != arn:*:bedrock:* ]]; then
-                echo "Every $resource_list_name value must be a non-wildcard Bedrock ARN." >&2
-                exit 1
-              fi
-              [[ "$resource" == "$primary_model" ]] && primary_is_allowed=true
-              [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$resource" == "$BEDROCK_FALLBACK_MODEL_ARN" ]] && fallback_is_allowed=true
-            done
-            if [[ "$primary_is_allowed" != true ]]; then
-              echo "$resource_list_name must include $primary_model_name." >&2
-              exit 1
-            fi
-            if [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$fallback_is_allowed" != true ]]; then
-              echo "$resource_list_name must include BEDROCK_FALLBACK_MODEL_ARN." >&2
-              exit 1
-            fi
-          }
-
-          validate_invoke_resources \
-            "$BEDROCK_INVOKE_RESOURCE_ARNS" \
-            "$BEDROCK_MODEL_ARN" \
-            BEDROCK_INVOKE_RESOURCE_ARNS \
-            BEDROCK_MODEL_ARN
-          validate_invoke_resources \
-            "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS" \
-            "$QUESTION_BANK_WORKER_MODEL_ARN" \
-            QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS \
-            QUESTION_BANK_WORKER_MODEL_ARN
-          case "$BEDROCK_REASONING_EFFORT" in
-            none|low|medium|high|xhigh|max) ;;
-            *)
-              echo "BEDROCK_REASONING_EFFORT must be none, low, medium, high, xhigh, or max." >&2
-              exit 1
-              ;;
-          esac
-
-          guardrail_values=(
-            "$BEDROCK_GUARDRAIL_IDENTIFIER"
-            "$BEDROCK_GUARDRAIL_VERSION"
-            "$BEDROCK_GUARDRAIL_ARN"
-          )
-          configured_guardrail_values=0
-          for value in "${guardrail_values[@]}"; do
-            [[ -n "$value" ]] && ((configured_guardrail_values += 1))
-          done
-          if (( configured_guardrail_values != 0 && configured_guardrail_values != 3 )); then
-            echo "Guardrail identifier, version, and ARN must be set together." >&2
-            exit 1
-          fi
-          if [[ "$DEPLOYMENT_ENVIRONMENT" == production ]]; then
-            if (( configured_guardrail_values != 3 )); then
-              echo "Production requires a complete Bedrock Guardrail configuration." >&2
-              exit 1
-            fi
-            [[ -n "$ALERT_EMAIL" ]] || missing+=(ALERT_EMAIL)
-            [[ -n "$BUDGET_ALERT_EMAIL" ]] || missing+=(BUDGET_ALERT_EMAIL)
-            if (( ${#missing[@]} > 0 )); then
-              printf 'Production is missing required alert variables: %s\n' "${missing[*]}" >&2
-              exit 1
-            fi
-          fi
+        run: scripts/validate-deployment-config.sh
 
       - name: Configure AWS credentials through OIDC
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
@@ -233,73 +139,9 @@ jobs:
 
       - name: Deploy SAM application
         shell: bash
-        run: |
-          parameters=(
-            "BackendToken=$CHECKPOINT_BACKEND_TOKEN"
-            "QuotaHashSecret=$QUOTA_HASH_SECRET"
-            "AllowUnauthenticatedBackend=false"
-            "BedrockModelArn=$BEDROCK_MODEL_ARN"
-            "BedrockInvokeResourceArns=$BEDROCK_INVOKE_RESOURCE_ARNS"
-            "QuestionBankWorkerModelArn=$QUESTION_BANK_WORKER_MODEL_ARN"
-            "QuestionBankWorkerInvokeResourceArns=$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS"
-            "BedrockFallbackModelArn=$BEDROCK_FALLBACK_MODEL_ARN"
-            "BedrockReasoningEffort=$BEDROCK_REASONING_EFFORT"
-            "BedrockGuardrailIdentifier=$BEDROCK_GUARDRAIL_IDENTIFIER"
-            "BedrockGuardrailVersion=$BEDROCK_GUARDRAIL_VERSION"
-            "BedrockGuardrailArn=$BEDROCK_GUARDRAIL_ARN"
-            "MaxQuestionsPerBatch=$MAX_QUESTIONS_PER_BATCH"
-            "BedrockMaxTokens=$BEDROCK_MAX_TOKENS"
-            "GenerationAttempts=$GENERATION_ATTEMPTS"
-            "MaxProviderCallsPerRequest=$MAX_PROVIDER_CALLS_PER_REQUEST"
-            "MaxRequestBodyBytes=$MAX_REQUEST_BODY_BYTES"
-            "MaxRequestsPerInstallPerDay=$MAX_REQUESTS_PER_INSTALL_PER_DAY"
-            "MaxRequestsPerIPPerDay=$MAX_REQUESTS_PER_IP_PER_DAY"
-            "RateLimitTTLSeconds=$RATE_LIMIT_TTL_SECONDS"
-            "QuestionBankTTLSeconds=$QUESTION_BANK_TTL_SECONDS"
-            "QuestionBankMaxReceiveCount=$QUESTION_BANK_MAX_RECEIVE_COUNT"
-            "DeploymentEnvironment=$DEPLOYMENT_ENVIRONMENT"
-            "ServiceMode=$SERVICE_MODE"
-            "ServiceRetryAfterSeconds=$SERVICE_RETRY_AFTER_SECONDS"
-            "ApiStageName=$API_STAGE_NAME"
-            "ApiThrottleRateLimit=$API_THROTTLE_RATE_LIMIT"
-            "ApiThrottleBurstLimit=$API_THROTTLE_BURST_LIMIT"
-            "ReservedConcurrency=$RESERVED_CONCURRENCY"
-            "QuestionBankWorkerReservedConcurrency=$QUESTION_BANK_WORKER_RESERVED_CONCURRENCY"
-            "QuestionBankWorkerReadTimeoutSeconds=$QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS"
-            "QuestionBankGenerationChunkSize=$QUESTION_BANK_GENERATION_CHUNK_SIZE"
-            "LogRetentionDays=$LOG_RETENTION_DAYS"
-            "AlertEmail=$ALERT_EMAIL"
-            "BudgetAlertEmail=$BUDGET_ALERT_EMAIL"
-            "MonthlyBedrockBudgetUSD=$MONTHLY_BEDROCK_BUDGET_USD"
-          )
-
-          sam deploy \
-            --stack-name "$SAM_STACK_NAME" \
-            --region "$AWS_REGION" \
-            --resolve-s3 \
-            --capabilities CAPABILITY_IAM \
-            --no-confirm-changeset \
-            --no-fail-on-empty-changeset \
-            --parameter-overrides "${parameters[@]}"
+        run: scripts/deploy-sam.sh
 
       - name: Run opt-in authenticated smoke test
         if: ${{ inputs.run_smoke_test }}
         shell: bash
-        run: |
-          endpoint="$(
-            aws cloudformation describe-stacks \
-              --stack-name "$SAM_STACK_NAME" \
-              --region "$AWS_REGION" \
-              --query "Stacks[0].Outputs[?OutputKey=='QuestionEndpoint'].OutputValue | [0]" \
-              --output text
-          )"
-          if [[ "$endpoint" != https://* || "$endpoint" == None ]]; then
-            echo "The deployed stack did not return a valid QuestionEndpoint." >&2
-            exit 1
-          fi
-          echo "::add-mask::$endpoint"
-          CHECKPOINT_SMOKE_ENDPOINT="$endpoint" \
-          CHECKPOINT_SMOKE_TOKEN="$CHECKPOINT_BACKEND_TOKEN" \
-            python smoke_test_backend.py \
-              --case-id backyard_beekeeping_raw_goal \
-              --target-count 1
+        run: scripts/run-deployment-smoke-test.sh

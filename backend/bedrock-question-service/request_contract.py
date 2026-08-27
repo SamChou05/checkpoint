@@ -3,7 +3,6 @@
 import base64
 import binascii
 import json
-import logging
 import math
 import os
 import re
@@ -13,8 +12,6 @@ from typing import Any
 import question_bank
 from service_errors import BadRequestError
 
-
-LOGGER = logging.getLogger("lambda_function")
 
 DEFAULT_MAX_QUESTIONS = 20
 DEFAULT_MAX_REQUEST_BODY_BYTES = 128 * 1024
@@ -898,11 +895,3 @@ def _is_production_environment() -> bool:
 
 def _rate_limiting_required() -> bool:
     return _is_production_environment() or _bool_env("REQUIRE_RATE_LIMITING", False)
-
-
-def _service_mode() -> str:
-    mode = os.getenv("SERVICE_MODE", "enabled").strip().lower()
-    if mode in {"enabled", "drain", "disabled"}:
-        return mode
-    LOGGER.error("Invalid SERVICE_MODE; failing closed")
-    return "disabled"
