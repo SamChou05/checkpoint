@@ -20,7 +20,6 @@ MAX_DESIRED_COUNT = 100
 MAX_CLAIM_COUNT = 20
 DEFAULT_GENERATION_CHUNK_COUNT = 5
 DEFAULT_BANK_TTL_SECONDS = 30 * 24 * 60 * 60
-TOMBSTONE_TTL_SECONDS = 24 * 60 * 60
 WORKER_LEASE_SECONDS = 180
 DEFAULT_MAX_RECEIVE_COUNT = 5
 DEFAULT_FAILURE_COOLDOWN_SECONDS = 5 * 60
@@ -386,57 +385,6 @@ def _recover_refill_after_claim(
         LOGGER.exception("Question-bank refill recovery failed after claim")
 
 
-def delete_bank(
-    bank_id: str,
-    event: dict[str, Any],
-    *,
-    dynamodb_client: Any | None = None,
-) -> None:
-    """Tombstone a bank immediately and best-effort purge its child records."""
-    table_name, _ = _configuration()
-    client = dynamodb_client or _dynamodb_client()
-    owner_digest = _owner_digest(event)
-    bank_id = _required_hex_identifier(bank_id, "bankID")
-    bank_key = _bank_key(owner_digest, bank_id)
-    meta = _get_item(client, table_name, bank_key, consistent=True)
-    if not meta:
-        return
-    now = int(time.time())
-    client.update_item(
-        TableName=table_name,
-        Key=bank_key,
-        UpdateExpression=(
-            "SET #state = :deleted, tombstonedAt = :now, updatedAt = :now, expiresAt = :ttl "
-            "REMOVE generationRequest, activeJobID"
-        ),
-        ExpressionAttributeNames={"#state": "state"},
-        ExpressionAttributeValues={
-            ":deleted": _s("deleted"),
-            ":now": _n(now),
-            ":ttl": _n(now + TOMBSTONE_TTL_SECONDS),
-        },
-    )
-    goal_key = _string(meta, "goalKey")
-    if goal_key:
-        pointer_key = _pointer_key(owner_digest, goal_key)
-        try:
-            client.update_item(
-                TableName=table_name,
-                Key=pointer_key,
-                UpdateExpression="SET updatedAt = :now, expiresAt = :ttl REMOVE currentBankID, contextRevision",
-                ConditionExpression="currentBankID = :bank",
-                ExpressionAttributeValues={
-                    ":now": _n(now),
-                    ":ttl": _n(now + TOMBSTONE_TTL_SECONDS),
-                    ":bank": _s(bank_id),
-                },
-            )
-        except Exception as error:
-            if not _is_conditional_failure(error):
-                raise
-    _purge_bank_children(client, table_name, bank_key)
-
-
 def handle_worker_event(
     event: dict[str, Any],
     context: Any,
@@ -447,6 +395,7 @@ def handle_worker_event(
     on_terminal_failure: Callable[[str], None] | None = None,
 ) -> dict[str, list[dict[str, str]]]:
     """SQS partial-batch handler; failed records remain visible for retry/DLQ."""
+    del context  # The generation callback owns deadline enforcement.
     failures: list[dict[str, str]] = []
     client = dynamodb_client or _dynamodb_client()
     queue = sqs_client or _sqs_client()
@@ -455,7 +404,7 @@ def handle_worker_event(
         message: dict[str, Any] | None = None
         try:
             message = json.loads(record.get("body", ""))
-            _process_job(message, context, generate_questions, client, queue)
+            _process_job(message, generate_questions, client, queue)
         except ProviderAttemptLimitError:
             if not isinstance(message, dict) or not message:
                 failures.append({"itemIdentifier": message_id})
@@ -524,13 +473,11 @@ def handle_outbox_event(
 
 def _process_job(
     message: dict[str, Any],
-    context: Any,
     generate_questions: Callable[[dict[str, Any]], list[dict[str, Any]]],
     client: Any,
     queue: Any,
 ) -> None:
     """Lease one queued job, generate its deficit, and continue its refill chain."""
-    del context  # Generation deadline enforcement is supplied by the caller callback.
     table_name, queue_url = _configuration()
     bank_pk = _required_internal_string(message.get("bankPK"), "bankPK")
     job_id = _required_internal_string(message.get("jobID"), "jobID")
@@ -907,17 +854,14 @@ def _ensure_refill(
             try:
                 _deliver_job(client, queue, table_name, queue_url, job_key, job)
             except Exception:
-                # The pending JOB record is the durable outbox. Its stream
-                # consumer will retry independently of this HTTP request.
+                # The pending JOB is the durable outbox; its stream consumer retries.
                 LOGGER.exception("Direct question-bank job delivery failed")
             return False
         if job and _string(job, "status") == "processing":
-            # The original SQS message owns retry timing. Re-enqueueing from an
-            # ensure poll would bypass visibility timeout and redrive counting.
+            # Re-enqueueing bypasses the original message's visibility and redrive timing.
             return False
 
-        # A job can expire, be DLQ-resolved, or be superseded between the META
-        # update and a later ensure. Release only the exact orphaned pointer.
+        # Release only a pointer orphaned by expiry, DLQ handling, or supersession.
         try:
             client.update_item(
                 TableName=table_name,
@@ -1770,28 +1714,12 @@ def _mark_bank_superseded(
             LOGGER.exception("Failed to mark superseded question bank")
 
 
-def _purge_bank_children(client: Any, table_name: str, bank_key: dict[str, Any]) -> None:
-    items = _query_all(client, table_name, bank_key)
-    children = [item for item in items if _string_from_key(item["sk"]) != "META"]
-    for offset in range(0, len(children), 25):
-        requests = [
-            {"DeleteRequest": {"Key": {"pk": item["pk"], "sk": item["sk"]}}}
-            for item in children[offset : offset + 25]
-        ]
-        if requests:
-            client.batch_write_item(RequestItems={table_name: requests})
-
-
 def _query_question_history(
     client: Any,
     table_name: str,
     bank_key: dict[str, Any],
 ) -> list[dict[str, Any]]:
     return _query_bank_items(client, table_name, bank_key, sort_key_prefix="QUESTION#")
-
-
-def _query_all(client: Any, table_name: str, bank_key: dict[str, Any]) -> list[dict[str, Any]]:
-    return _query_bank_items(client, table_name, bank_key)
 
 
 def _query_bank_items(

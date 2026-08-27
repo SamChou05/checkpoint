@@ -32,7 +32,7 @@ class OutboxDynamo:
         self.failed_marks = failed_marks
         self.mark_attempts = 0
 
-    def get_item(self, **kwargs):
+    def get_item(self, **_kwargs):
         return {"Item": self.job}
 
     def update_item(self, **kwargs):
@@ -72,10 +72,7 @@ class ClaimDynamo:
     def transact_write_items(self, **kwargs):
         self.transactions.append(kwargs)
         for operation in kwargs["TransactItems"]:
-            if "Delete" in operation:
-                sk = operation["Delete"]["Key"]["sk"]["S"]
-                self.questions = [item for item in self.questions if item["sk"]["S"] != sk]
-            elif "Update" in operation:
+            if "Update" in operation:
                 update = operation["Update"]
                 sk = update["Key"]["sk"]["S"]
                 values = update["ExpressionAttributeValues"]
@@ -628,7 +625,6 @@ class QuestionBankTests(unittest.TestCase):
                     "jobID": "job-1",
                     "contextRevision": revision,
                 },
-                object(),
                 generator,
                 client,
                 FakeQueue(),
@@ -674,7 +670,6 @@ class QuestionBankTests(unittest.TestCase):
                     "jobID": "job-1",
                     "contextRevision": revision,
                 },
-                object(),
                 mock.Mock(
                     side_effect=question_bank.NonRetryableGenerationError(
                         "safety_intervention"

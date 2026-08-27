@@ -54,7 +54,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertNotIn('bedrock:InvokeModel\n              Resource: "*"', self.template)
         self.assertNotIn("bedrock:InvokeModelWithResponseStream", self.template)
 
-    def test_api_uses_legacy_model_for_questions_and_worker_model_for_skill_maps(self):
+    def test_api_uses_synchronous_model_for_questions_and_worker_model_for_skill_maps(self):
         api = _indented_block(self.template, "CheckpointQuestionFunction")
         worker = _indented_block(self.template, "QuestionBankWorkerFunction")
         self.assertIn("BEDROCK_MODEL_ID: !Ref BedrockModelArn", api)

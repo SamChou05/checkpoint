@@ -89,18 +89,15 @@ def main() -> int:
         print(summary_text(report))
         return 0 if args.no_fail or report["summary"]["failed_cases"] == 0 else 1
 
-    if args.command == "capture-bedrock":
-        error_count = capture_bedrock_responses(
-            fixtures_path=Path(args.fixtures),
-            responses_path=Path(args.responses),
-            runs_per_case=args.runs_per_case,
-            prompt_variant=args.prompt_variant,
-            sleep_seconds=args.sleep_seconds,
-            stop_on_error=args.stop_on_error,
-        )
-        return 0 if args.no_fail or error_count == 0 else 1
-
-    return 2
+    error_count = capture_bedrock_responses(
+        fixtures_path=Path(args.fixtures),
+        responses_path=Path(args.responses),
+        runs_per_case=args.runs_per_case,
+        prompt_variant=args.prompt_variant,
+        sleep_seconds=args.sleep_seconds,
+        stop_on_error=args.stop_on_error,
+    )
+    return 0 if args.no_fail or error_count == 0 else 1
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
