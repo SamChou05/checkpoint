@@ -50,7 +50,7 @@ struct HomeView: View {
                             }
                         }
 
-                        studyAssistPanel
+                        levelRecommendationPanel
                     } else {
                         emptyState
                     }
@@ -321,14 +321,7 @@ struct HomeView: View {
 
     private func showQuestionsReadyConfirmation() {
         questionsReadyConfirmationDismissTask?.cancel()
-
-        if accessibilityReduceMotion {
-            isQuestionsReadyConfirmationVisible = true
-        } else {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isQuestionsReadyConfirmationVisible = true
-            }
-        }
+        setQuestionsReadyConfirmationVisible(true)
         AccessibilityNotification.Announcement(Self.questionsReadyConfirmationText).post()
 
         questionsReadyConfirmationDismissTask = Task { @MainActor in
@@ -337,14 +330,18 @@ struct HomeView: View {
             )
             guard !Task.isCancelled else { return }
 
-            if accessibilityReduceMotion {
-                isQuestionsReadyConfirmationVisible = false
-            } else {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isQuestionsReadyConfirmationVisible = false
-                }
-            }
+            setQuestionsReadyConfirmationVisible(false)
             questionsReadyConfirmationDismissTask = nil
+        }
+    }
+
+    private func setQuestionsReadyConfirmationVisible(_ isVisible: Bool) {
+        if accessibilityReduceMotion {
+            isQuestionsReadyConfirmationVisible = isVisible
+        } else {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isQuestionsReadyConfirmationVisible = isVisible
+            }
         }
     }
 
@@ -355,17 +352,10 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private var studyAssistPanel: some View {
-        let levelRecommendation = store.questionLevelRecommendation
-
-        if levelRecommendation != nil {
+    private var levelRecommendationPanel: some View {
+        if store.questionLevelRecommendation != nil {
             Button {
-                Task {
-                    guard !isAcceptingLevelIncrease else { return }
-                    isAcceptingLevelIncrease = true
-                    await store.acceptQuestionLevelRecommendation()
-                    isAcceptingLevelIncrease = false
-                }
+                acceptLevelRecommendation()
             } label: {
                 HStack(spacing: 12) {
                     Group {
@@ -403,6 +393,15 @@ struct HomeView: View {
             .buttonStyle(.plain)
             .disabled(isAcceptingLevelIncrease)
             .accessibilityHint("Updates the current goal to use harder questions")
+        }
+    }
+
+    private func acceptLevelRecommendation() {
+        Task {
+            guard !isAcceptingLevelIncrease else { return }
+            isAcceptingLevelIncrease = true
+            await store.acceptQuestionLevelRecommendation()
+            isAcceptingLevelIncrease = false
         }
     }
 
@@ -532,19 +531,9 @@ struct HomeView: View {
                         StatusBadge(text: "Protection on", tint: CheckpointTheme.teal)
                     }
 
-                    if let errorMessage = screenTime.userFacingErrorMessage {
-                        Text(errorMessage)
-                            .font(.footnote)
-                            .foregroundStyle(CheckpointTheme.amber)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    screenTimeErrorMessage
                 } else {
-                    if let errorMessage = screenTime.userFacingErrorMessage {
-                        Text(errorMessage)
-                            .font(.footnote)
-                            .foregroundStyle(CheckpointTheme.amber)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    screenTimeErrorMessage
 
                     switch screenTime.setupState {
                     case .notStarted, .failed:
@@ -580,6 +569,16 @@ struct HomeView: View {
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var screenTimeErrorMessage: some View {
+        if let errorMessage = screenTime.userFacingErrorMessage {
+            Text(errorMessage)
+                .font(.footnote)
+                .foregroundStyle(CheckpointTheme.amber)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

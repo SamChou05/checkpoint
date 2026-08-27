@@ -37,42 +37,36 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         with snapshot: SharedAppGroup.ProtectionSnapshot
     ) -> String {
         guard SharedAppGroup.isAvailable else {
-            managedStore.clearAllSettings()
-            return "cleared: shared storage unavailable"
+            return clearManagedSettings(reason: "shared storage unavailable")
         }
 
         guard snapshot.desiredShieldActive else {
-            managedStore.clearAllSettings()
-            return "cleared: protection inactive"
+            return clearManagedSettings(reason: "protection inactive")
         }
 
         guard SharedAppGroup.checkpointReady != false else {
-            managedStore.clearAllSettings()
+            let result = clearManagedSettings(reason: "checkpoint unavailable")
             SharedAppGroup.publishProtectionState(isActive: false, unlockExpiration: nil)
-            return "cleared: checkpoint unavailable"
+            return result
         }
 
         if let unlockExpiration = snapshot.unlockExpiration,
            unlockExpiration > Date() {
-            managedStore.clearAllSettings()
-            return "cleared: break still active"
+            return clearManagedSettings(reason: "break still active")
         }
 
         guard let selection = restoredSelection(from: snapshot),
               hasRestrictedItems(in: selection, snapshot: snapshot)
         else {
-            managedStore.clearAllSettings()
-            return "cleared: missing protected app selection"
+            return clearManagedSettings(reason: "missing protected app selection")
         }
 
         guard selection.webDomainTokens.count <= SharedAppGroup.maximumShieldedWebDomainCount else {
-            managedStore.clearAllSettings()
-            return "cleared: protected website limit exceeded"
+            return clearManagedSettings(reason: "protected website limit exceeded")
         }
 
         guard selection.applicationTokens.count <= SharedAppGroup.maximumShieldedApplicationCount else {
-            managedStore.clearAllSettings()
-            return "cleared: protected app limit exceeded"
+            return clearManagedSettings(reason: "protected app limit exceeded")
         }
 
         managedStore.shield.applications = selection.applicationTokens.isEmpty ? nil : selection.applicationTokens
@@ -81,12 +75,16 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         if usesLegacyCategoryEnforcement(selection: selection, snapshot: snapshot) {
             managedStore.shield.applicationCategories = .specific(selection.categoryTokens, except: [])
         } else {
-            // Once the user has edited the new expanded selection, app tokens
-            // are authoritative so a category cannot add a removed app back.
+            // Expanded app tokens take precedence; categories must not restore removed apps.
             managedStore.shield.applicationCategories = nil
         }
 
         return "relocked"
+    }
+
+    private func clearManagedSettings(reason: String) -> String {
+        managedStore.clearAllSettings()
+        return "cleared: \(reason)"
     }
 
     private func restoredSelection(

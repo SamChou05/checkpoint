@@ -15,7 +15,7 @@ enum CheckpointTheme {
 
     static let background = LinearGradient(
         colors: [
-            Color(red: 0.95, green: 0.96, blue: 0.93),
+            paper,
             Color(red: 0.90, green: 0.94, blue: 0.91),
             Color(red: 0.94, green: 0.92, blue: 0.86)
         ],

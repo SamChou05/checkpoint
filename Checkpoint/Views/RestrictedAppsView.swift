@@ -118,23 +118,23 @@ private struct FamilyPickerContent: View {
     }
 
     private var selectionSummary: String {
-        var parts: [String] = []
-        appendSelectionCount(localSelection.applicationTokens.count, singular: "app", plural: "apps", to: &parts)
-        appendSelectionCount(localSelection.categoryTokens.count, singular: "category", plural: "categories", to: &parts)
-        appendSelectionCount(localSelection.webDomainTokens.count, singular: "site", plural: "sites", to: &parts)
+        let parts = [
+            selectionCountText(localSelection.applicationTokens.count, singular: "app", plural: "apps"),
+            selectionCountText(localSelection.categoryTokens.count, singular: "category", plural: "categories"),
+            selectionCountText(localSelection.webDomainTokens.count, singular: "site", plural: "sites")
+        ].compactMap { $0 }
 
         guard !parts.isEmpty else { return "Nothing selected yet" }
         return parts.joined(separator: ", ") + " selected"
     }
 
-    private func appendSelectionCount(
+    private func selectionCountText(
         _ count: Int,
         singular: String,
-        plural: String,
-        to parts: inout [String]
-    ) {
-        guard count > 0 else { return }
-        parts.append("\(count) \(count == 1 ? singular : plural)")
+        plural: String
+    ) -> String? {
+        guard count > 0 else { return nil }
+        return "\(count) \(count == 1 ? singular : plural)"
     }
 }
 #endif

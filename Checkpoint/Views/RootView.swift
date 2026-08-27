@@ -55,20 +55,7 @@ struct RootView: View {
         .sheet(item: membershipFeatureBinding) { feature in
             MembershipView(feature: feature, store: store, purchaseController: purchaseController)
         }
-        .sheet(
-            isPresented: Binding(
-                get: {
-                    store.isOnboardingPresented
-                        && screenTime.hasRequiredScreenTimeAuthorization
-                },
-                set: { isPresented in
-                    store.isOnboardingPresented = isPresented
-                    if !isPresented {
-                        store.isCreatingGoalProfile = false
-                    }
-                }
-            )
-        ) {
+        .sheet(isPresented: onboardingPresentationBinding) {
             OnboardingView(store: store)
                 .interactiveDismissDisabled(store.goal == nil)
         }
@@ -76,34 +63,17 @@ struct RootView: View {
             SkillMapReviewView(store: store)
         }
         .task {
-            await screenTime.bootstrapAuthorizationIfNeeded()
-            workflow.reconcileProtectionState()
-            handlePendingShieldActivation()
-            purchaseController.onMembershipEntitlementChange = { unlocked in
-                store.updateMembershipTier(unlocked ? .member : .starter)
-            }
-            purchaseController.startListeningForTransactions()
-            await refreshPlanAccessFromEntitlements()
-            await purchaseController.loadProducts()
-            workflow.reconcileProtectionState()
-            handlePendingShieldActivation()
-            presentSuggestedSkillMapReviewIfNeeded()
+            await bootstrap()
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
-            screenTime.refreshAuthorizationStatus()
-            workflow.reconcileProtectionState()
-            Task {
-                await refreshPlanAccessFromEntitlements()
-            }
-            handlePendingShieldActivation()
+            handleAppActivation()
         }
         .onChange(of: screenTime.hasRequiredScreenTimeAuthorization) { _, isAuthorized in
             guard isAuthorized else { return }
-            workflow.reconcileProtectionState()
-            handlePendingShieldActivation()
+            reconcileProtectionAndHandlePendingAttempt()
         }
-        .onChange(of: store.goal) { _, newGoal in
+        .onChange(of: store.goal) { _, _ in
             workflow.goalDidChange()
             presentSuggestedSkillMapReviewIfNeeded()
         }
@@ -123,12 +93,40 @@ struct RootView: View {
         }
         .onChange(of: store.hasReadyCheckpointSet) { _, _ in
             guard activeCheckpointSession == nil else { return }
-            workflow.reconcileProtectionState()
-            handlePendingShieldActivation()
+            reconcileProtectionAndHandlePendingAttempt()
         }
         .onReceive(NotificationCenter.default.publisher(for: .checkpointShieldContextDidChange)) { _ in
             workflow.refreshProtectionConfiguration()
         }
+    }
+
+    private func bootstrap() async {
+        await screenTime.bootstrapAuthorizationIfNeeded()
+        reconcileProtectionAndHandlePendingAttempt()
+
+        purchaseController.onMembershipEntitlementChange = { unlocked in
+            store.updateMembershipTier(unlocked ? .member : .starter)
+        }
+        purchaseController.startListeningForTransactions()
+        await refreshPlanAccessFromEntitlements()
+        await purchaseController.loadProducts()
+
+        reconcileProtectionAndHandlePendingAttempt()
+        presentSuggestedSkillMapReviewIfNeeded()
+    }
+
+    private func handleAppActivation() {
+        screenTime.refreshAuthorizationStatus()
+        workflow.reconcileProtectionState()
+        Task {
+            await refreshPlanAccessFromEntitlements()
+        }
+        handlePendingShieldActivation()
+    }
+
+    private func reconcileProtectionAndHandlePendingAttempt() {
+        workflow.reconcileProtectionState()
+        handlePendingShieldActivation()
     }
 
     private func handlePendingShieldActivation() {
@@ -209,6 +207,21 @@ struct RootView: View {
                     store.pendingMembershipFeature = feature
                 } else {
                     store.dismissMembershipPrompt()
+                }
+            }
+        )
+    }
+
+    private var onboardingPresentationBinding: Binding<Bool> {
+        Binding(
+            get: {
+                store.isOnboardingPresented
+                    && screenTime.hasRequiredScreenTimeAuthorization
+            },
+            set: { isPresented in
+                store.isOnboardingPresented = isPresented
+                if !isPresented {
+                    store.isCreatingGoalProfile = false
                 }
             }
         )

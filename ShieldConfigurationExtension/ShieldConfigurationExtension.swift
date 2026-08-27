@@ -13,19 +13,19 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
         static let teal = UIColor(red: 0.11, green: 0.31, blue: 0.28, alpha: 1.0)
     }
 
-    override func configuration(shielding application: Application) -> ShieldConfiguration {
+    override func configuration(shielding _: Application) -> ShieldConfiguration {
         configuration()
     }
 
-    override func configuration(shielding application: Application, in category: ActivityCategory) -> ShieldConfiguration {
+    override func configuration(shielding _: Application, in _: ActivityCategory) -> ShieldConfiguration {
         configuration()
     }
 
-    override func configuration(shielding webDomain: WebDomain) -> ShieldConfiguration {
+    override func configuration(shielding _: WebDomain) -> ShieldConfiguration {
         configuration()
     }
 
-    override func configuration(shielding webDomain: WebDomain, in category: ActivityCategory) -> ShieldConfiguration {
+    override func configuration(shielding _: WebDomain, in _: ActivityCategory) -> ShieldConfiguration {
         configuration()
     }
 

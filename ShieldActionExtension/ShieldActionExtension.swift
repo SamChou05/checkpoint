@@ -6,7 +6,7 @@ import ManagedSettings
 final class ShieldActionExtension: ShieldActionDelegate {
     override func handle(
         action: ShieldAction,
-        for application: ApplicationToken,
+        for _: ApplicationToken,
         completionHandler: @escaping (ShieldActionResponse) -> Void
     ) {
         handle(action: action, completionHandler: completionHandler)
@@ -14,7 +14,7 @@ final class ShieldActionExtension: ShieldActionDelegate {
 
     override func handle(
         action: ShieldAction,
-        for webDomain: WebDomainToken,
+        for _: WebDomainToken,
         completionHandler: @escaping (ShieldActionResponse) -> Void
     ) {
         handle(action: action, completionHandler: completionHandler)
@@ -22,7 +22,7 @@ final class ShieldActionExtension: ShieldActionDelegate {
 
     override func handle(
         action: ShieldAction,
-        for category: ActivityCategoryToken,
+        for _: ActivityCategoryToken,
         completionHandler: @escaping (ShieldActionResponse) -> Void
     ) {
         handle(action: action, completionHandler: completionHandler)
@@ -49,9 +49,8 @@ final class ShieldActionExtension: ShieldActionDelegate {
 
 private extension ShieldActionResponse {
     static var openCheckpoint: ShieldActionResponse {
-        // Newer SDKs document .openParentalControlsApp. Until the Swift case is
-        // exposed locally, .defer keeps the shield alive after recording the
-        // pending attempt so Checkpoint can present it when opened.
+        // Raw value 3 opens the parental-controls app in newer SDKs. Until this
+        // SDK exposes that case, .defer keeps the shield up for a later app launch.
         ShieldActionResponse(rawValue: 3) ?? .defer
     }
 }

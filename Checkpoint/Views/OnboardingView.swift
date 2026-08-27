@@ -27,12 +27,11 @@ struct OnboardingView: View {
             _currentLevel = State(initialValue: goal.currentLevel)
             _sourceDocuments = State(initialValue: goal.sourceDocuments)
             _minimumQuestionDifficulty = State(initialValue: goal.minimumQuestionDifficulty)
-            _isCustomizationExpanded = State(
-                initialValue: !goal.focusAreas.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    || !goal.currentLevel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    || !goal.sourceDocuments.isEmpty
-                    || goal.minimumQuestionDifficulty != UnlockPolicy.default.minimumQuestionDifficulty
-            )
+            let hasCustomizations = !goal.focusAreas.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                || !goal.currentLevel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                || !goal.sourceDocuments.isEmpty
+                || goal.minimumQuestionDifficulty != UnlockPolicy.default.minimumQuestionDifficulty
+            _isCustomizationExpanded = State(initialValue: hasCustomizations)
         }
     }
 
@@ -168,43 +167,9 @@ struct OnboardingView: View {
                         systemImage: "book.closed",
                         isLoading: isCreating
                     ) {
-                        Task {
-                            guard !isCreating else { return }
-                            isCreating = true
-                            if isNewProfile {
-                                await store.createGoal(
-                                    title: title,
-                                    deadline: deadline,
-                                    currentLevel: currentLevel,
-                                    focusAreas: focusAreas,
-                                    sourceDocuments: sourceDocuments,
-                                    preferredQuestionStyle: .multipleChoice,
-                                    minimumQuestionDifficulty: minimumQuestionDifficulty,
-                                    createsNewProfile: true,
-                                    waitForQuestionGeneration: false
-                                )
-                            } else {
-                                await store.updateActiveGoal(
-                                    title: title,
-                                    deadline: deadline,
-                                    currentLevel: currentLevel,
-                                    focusAreas: focusAreas,
-                                    sourceDocuments: sourceDocuments,
-                                    preferredQuestionStyle: .multipleChoice,
-                                    minimumQuestionDifficulty: minimumQuestionDifficulty,
-                                    waitForQuestionGeneration: false
-                                )
-                            }
-                            isCreating = false
-                            if !store.isOnboardingPresented {
-                                dismiss()
-                            }
-                        }
+                        saveGoal()
                     }
-                    .disabled(
-                        isCreating
-                            || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    )
+                    .disabled(isCreating || isTitleEmpty)
                 }
                 .padding(20)
             }
@@ -246,11 +211,15 @@ struct OnboardingView: View {
     }
 
     private var primaryButtonTitle: String {
-        return isNewProfile ? "Create goal" : "Save changes"
+        isNewProfile ? "Create goal" : "Save changes"
     }
 
     private var isNewProfile: Bool {
         store.goal == nil || store.isCreatingGoalProfile
+    }
+
+    private var isTitleEmpty: Bool {
+        title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private var setupGuidance: GoalSetupGuidance {
@@ -266,6 +235,43 @@ struct OnboardingView: View {
             .components(separatedBy: CharacterSet(charactersIn: ",;\n"))
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+    }
+
+    private func saveGoal() {
+        Task {
+            guard !isCreating else { return }
+            isCreating = true
+
+            if isNewProfile {
+                await store.createGoal(
+                    title: title,
+                    deadline: deadline,
+                    currentLevel: currentLevel,
+                    focusAreas: focusAreas,
+                    sourceDocuments: sourceDocuments,
+                    preferredQuestionStyle: .multipleChoice,
+                    minimumQuestionDifficulty: minimumQuestionDifficulty,
+                    createsNewProfile: true,
+                    waitForQuestionGeneration: false
+                )
+            } else {
+                await store.updateActiveGoal(
+                    title: title,
+                    deadline: deadline,
+                    currentLevel: currentLevel,
+                    focusAreas: focusAreas,
+                    sourceDocuments: sourceDocuments,
+                    preferredQuestionStyle: .multipleChoice,
+                    minimumQuestionDifficulty: minimumQuestionDifficulty,
+                    waitForQuestionGeneration: false
+                )
+            }
+
+            isCreating = false
+            if !store.isOnboardingPresented {
+                dismiss()
+            }
+        }
     }
 
     private var studyMaterialsSection: some View {

@@ -242,29 +242,12 @@ struct SkillMapReviewView: View {
                     SectionPanel("Skill names") {
                         VStack(spacing: 12) {
                             ForEach(Array(topics.indices), id: \.self) { index in
-                                HStack(spacing: 10) {
-                                    TextField("Skill \(index + 1)", text: $topics[index].name)
-                                        .textFieldStyle(.plain)
-                                        .foregroundStyle(CheckpointTheme.text)
-                                        .padding(12)
-                                        .background(
-                                            CheckpointTheme.panelRaised,
-                                            in: RoundedRectangle(cornerRadius: 8)
-                                        )
-                                        .accessibilityLabel("Skill \(index + 1) name")
-
-                                    if topics.count > 3 {
-                                        Button {
-                                            topics.remove(at: index)
-                                        } label: {
-                                            Image(systemName: "minus.circle.fill")
-                                                .font(.title3)
-                                                .foregroundStyle(CheckpointTheme.coral)
-                                                .frame(width: 44, height: 44)
-                                        }
-                                        .buttonStyle(.plain)
-                                        .accessibilityLabel("Remove skill \(index + 1)")
-                                    }
+                                EditableSkillNameRow(
+                                    index: index,
+                                    name: $topics[index].name,
+                                    canRemove: topics.count > 3
+                                ) {
+                                    topics.remove(at: index)
                                 }
 
                                 if !topics[index].objectives.isEmpty {
@@ -290,23 +273,14 @@ struct SkillMapReviewView: View {
                             }
 
                             if topics.count < 6 {
-                                Button {
+                                AddSkillNameButton {
                                     topics.append(SkillMapTopic(name: ""))
-                                } label: {
-                                    Label("Add another skill", systemImage: "plus")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.teal)
-                                        .frame(maxWidth: .infinity, minHeight: 44)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
 
                         if !isValid {
-                            Text("Use a unique name up to 48 characters for every skill. Commas and semicolons aren’t supported in skill names.")
-                                .font(.footnote.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.coral)
-                                .fixedSize(horizontal: false, vertical: true)
+                            SkillNameValidationMessage()
                         }
                     }
                 }
@@ -393,50 +367,24 @@ private struct SkillMapRepairView: View {
                     SectionPanel("Skill names") {
                         VStack(spacing: 12) {
                             ForEach(Array(topicNames.indices), id: \.self) { index in
-                                HStack(spacing: 10) {
-                                    TextField("Skill \(index + 1)", text: $topicNames[index])
-                                        .textFieldStyle(.plain)
-                                        .foregroundStyle(CheckpointTheme.text)
-                                        .padding(12)
-                                        .background(
-                                            CheckpointTheme.panelRaised,
-                                            in: RoundedRectangle(cornerRadius: 8)
-                                        )
-                                        .accessibilityLabel("Skill \(index + 1) name")
-
-                                    if topicNames.count > 3 {
-                                        Button {
-                                            topicNames.remove(at: index)
-                                        } label: {
-                                            Image(systemName: "minus.circle.fill")
-                                                .font(.title3)
-                                                .foregroundStyle(CheckpointTheme.coral)
-                                                .frame(width: 44, height: 44)
-                                        }
-                                        .buttonStyle(.plain)
-                                        .accessibilityLabel("Remove skill \(index + 1)")
-                                    }
+                                EditableSkillNameRow(
+                                    index: index,
+                                    name: $topicNames[index],
+                                    canRemove: topicNames.count > 3
+                                ) {
+                                    topicNames.remove(at: index)
                                 }
                             }
                         }
 
                         if topicNames.count < 6 {
-                            Button {
+                            AddSkillNameButton {
                                 topicNames.append("")
-                            } label: {
-                                Label("Add another skill", systemImage: "plus")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.teal)
-                                    .frame(maxWidth: .infinity, minHeight: 44)
                             }
-                            .buttonStyle(.plain)
                         }
 
                         if !isValid {
-                            Text("Use a unique name up to 48 characters for every skill. Commas and semicolons aren’t supported in skill names.")
-                                .font(.footnote.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.coral)
-                                .fixedSize(horizontal: false, vertical: true)
+                            SkillNameValidationMessage()
                         }
                     }
                 }
@@ -471,6 +419,61 @@ private struct SkillMapRepairView: View {
 
     private var isValid: Bool {
         SkillMapTopic.validatedNames(topicNames) != nil
+    }
+}
+
+private struct EditableSkillNameRow: View {
+    let index: Int
+    @Binding var name: String
+    let canRemove: Bool
+    let remove: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            TextField("Skill \(index + 1)", text: $name)
+                .textFieldStyle(.plain)
+                .foregroundStyle(CheckpointTheme.text)
+                .padding(12)
+                .background(
+                    CheckpointTheme.panelRaised,
+                    in: RoundedRectangle(cornerRadius: 8)
+                )
+                .accessibilityLabel("Skill \(index + 1) name")
+
+            if canRemove {
+                Button(action: remove) {
+                    Image(systemName: "minus.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(CheckpointTheme.coral)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Remove skill \(index + 1)")
+            }
+        }
+    }
+}
+
+private struct AddSkillNameButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label("Add another skill", systemImage: "plus")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(maxWidth: .infinity, minHeight: 44)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct SkillNameValidationMessage: View {
+    var body: some View {
+        Text("Use a unique name up to 48 characters for every skill. Commas and semicolons aren’t supported in skill names.")
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.coral)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
 
