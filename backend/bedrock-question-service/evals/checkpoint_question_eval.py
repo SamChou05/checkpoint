@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Capture and score cross-domain question-generation evaluations."""
+
 from __future__ import annotations
 
 import argparse
@@ -249,7 +251,11 @@ def score_question(question: dict[str, Any], fixture: dict[str, Any], index: int
     expected_answer = clean_text(question.get("expectedAnswer"))
     explanation = clean_text(question.get("explanation"))
     topic = clean_text(question.get("topic"))
-    choices = [clean_text(choice) for choice in question.get("choices", []) if clean_text(choice)]
+    choices = [
+        cleaned
+        for choice in question.get("choices", [])
+        if (cleaned := clean_text(choice))
+    ]
     difficulty = integer(question.get("difficulty"))
     format_value = clean_text(question.get("format")).lower()
     combined_text = " ".join([prompt, expected_answer, explanation, topic, " ".join(choices)])
@@ -381,14 +387,12 @@ def capture_bedrock_responses(
                     try:
                         normalized = lambda_function._normalize_request(fixture["payload"])  # noqa: SLF001
                         questions, raw_attempts = capture_generation_attempts(normalized)
-                        record = {
-                            "case_id": fixture["case_id"],
-                            "run": run,
-                            "captured_at": int(time.time()),
-                            "prompt_variant": active_variant,
-                            "model_attempts": lambda_function._model_attempts(),  # noqa: SLF001
+                        result_fields = {
                             "questions": questions,
-                            "raw_question_count": sum(len(attempt["raw_questions"]) for attempt in raw_attempts),
+                            "raw_question_count": sum(
+                                len(attempt["raw_questions"])
+                                for attempt in raw_attempts
+                            ),
                             "raw_attempts": raw_attempts,
                             "raw_questions": [
                                 question
@@ -398,18 +402,21 @@ def capture_bedrock_responses(
                         }
                     except Exception as error:  # pragma: no cover - exact provider failures vary by environment.
                         error_count += 1
-                        record = {
-                            "case_id": fixture["case_id"],
-                            "run": run,
-                            "captured_at": int(time.time()),
-                            "prompt_variant": active_variant,
-                            "model_attempts": lambda_function._model_attempts(),  # noqa: SLF001
+                        result_fields = {
                             "questions": [],
                             "provider_error": {
                                 "type": type(error).__name__,
                                 "message": clean_text(str(error)),
                             },
                         }
+                    record = {
+                        "case_id": fixture["case_id"],
+                        "run": run,
+                        "captured_at": int(time.time()),
+                        "prompt_variant": active_variant,
+                        "model_attempts": lambda_function._model_attempts(),  # noqa: SLF001
+                        **result_fields,
+                    }
                     file.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
                     file.flush()
                     if record.get("provider_error") and stop_on_error:
@@ -515,9 +522,7 @@ def markdown_report(report: dict[str, Any]) -> str:
 
 
 def clean_text(value: Any) -> str:
-    if value is None:
-        return ""
-    return " ".join(str(value).split()).strip()
+    return lambda_function._clean_text(value)  # noqa: SLF001
 
 
 def integer(value: Any) -> int:
@@ -528,7 +533,7 @@ def integer(value: Any) -> int:
 
 
 def canonical(value: str) -> str:
-    return "".join(character.lower() for character in value if character.isalnum())
+    return lambda_function._canonical(value)  # noqa: SLF001
 
 
 def duplicate_prompt_key(prompt: str) -> str:

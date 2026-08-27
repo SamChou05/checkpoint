@@ -83,6 +83,12 @@ def _skill_allocation_key(normalized_request: dict[str, Any]) -> str:
     return _plain_digest(_json(entries))
 
 
+def _inventory_progress(meta: dict[str, Any]) -> int:
+    """Use lifetime generation for finite banks and ready stock for refillable banks."""
+    counter = "generatedCount" if _number(meta, "lowWatermark") == 0 else "readyCount"
+    return _number(meta, counter)
+
+
 def ensure_bank(
     payload: dict[str, Any],
     event: dict[str, Any],
@@ -147,15 +153,11 @@ def ensure_bank(
         low_watermark,
         now,
     )
-    ready_count = _number(meta, "readyCount")
-    generated_count = _number(meta, "generatedCount")
-    finite_fill_complete = low_watermark == 0 and generated_count >= desired_count
-    inventory_progress = generated_count if low_watermark == 0 else ready_count
-    if inventory_progress >= desired_count:
+    if _inventory_progress(meta) >= desired_count:
         if low_watermark == 0 and not _boolean(meta, "initialFillComplete"):
             _mark_initial_fill_complete(client, table_name, bank_key, now)
             meta = _get_item(client, table_name, bank_key, consistent=True) or meta
-    elif not finite_fill_complete:
+    else:
         _ensure_refill(
             client,
             queue,
@@ -513,7 +515,6 @@ def handle_outbox_event(
                 queue_url,
                 job_key,
                 image,
-                int(time.time()),
             )
         except Exception:
             LOGGER.exception("Question-bank outbox delivery failed")
@@ -528,6 +529,7 @@ def _process_job(
     client: Any,
     queue: Any,
 ) -> None:
+    """Lease one queued job, generate its deficit, and continue its refill chain."""
     del context  # Generation deadline enforcement is supplied by the caller callback.
     table_name, queue_url = _configuration()
     bank_pk = _required_internal_string(message.get("bankPK"), "bankPK")
@@ -606,8 +608,7 @@ def _process_job(
     generated_count = _number(meta, "generatedCount")
     desired_count = _number(meta, "desiredCount")
     low_watermark = _number(meta, "lowWatermark")
-    inventory_progress = generated_count if low_watermark == 0 else ready_count
-    deficit = max(0, desired_count - inventory_progress)
+    deficit = max(0, desired_count - _inventory_progress(meta))
     if deficit == 0:
         _complete_job_without_questions(client, table_name, bank_key, job_key, lease_token, now)
         return
@@ -888,15 +889,11 @@ def _ensure_refill(
     meta: dict[str, Any],
     now: int,
 ) -> bool:
+    """Ensure at most one durable refill job exists for the bank's current deficit."""
     if meta.get("tombstonedAt") or _string(meta, "generationBlockedReason"):
         return False
     low_watermark = _number(meta, "lowWatermark")
-    inventory_progress = (
-        _number(meta, "generatedCount")
-        if low_watermark == 0
-        else _number(meta, "readyCount")
-    )
-    if inventory_progress >= _number(meta, "desiredCount"):
+    if _inventory_progress(meta) >= _number(meta, "desiredCount"):
         if low_watermark == 0 and not _boolean(
             meta, "initialFillComplete"
         ):
@@ -908,7 +905,7 @@ def _ensure_refill(
         job = _get_item(client, table_name, job_key, consistent=True)
         if job and _string(job, "status") == "queued":
             try:
-                _deliver_job(client, queue, table_name, queue_url, job_key, job, now)
+                _deliver_job(client, queue, table_name, queue_url, job_key, job)
             except Exception:
                 # The pending JOB record is the durable outbox. Its stream
                 # consumer will retry independently of this HTTP request.
@@ -1027,7 +1024,6 @@ def _ensure_refill(
                             queue_url,
                             active_key,
                             active,
-                            now,
                         )
                     except Exception:
                         LOGGER.exception("Direct question-bank job delivery failed")
@@ -1035,7 +1031,7 @@ def _ensure_refill(
         raise
     job = _get_item(client, table_name, job_key, consistent=True) or transaction[1]["Put"]["Item"]
     try:
-        _deliver_job(client, queue, table_name, queue_url, job_key, job, now)
+        _deliver_job(client, queue, table_name, queue_url, job_key, job)
     except Exception:
         LOGGER.exception("Direct question-bank job delivery failed")
     return True
@@ -1048,9 +1044,7 @@ def _deliver_job(
     queue_url: str,
     job_key: dict[str, Any],
     job: dict[str, Any],
-    now: int,
 ) -> None:
-    del now
     current = _get_item(client, table_name, job_key, consistent=True) or job
     if (
         _string(current, "status") != "queued"
@@ -1235,7 +1229,7 @@ def _worker_skill_allocation(
         return {}
 
     desired_allocation = generation_request.get("desiredSkillAllocation", {})
-    targets = _resolved_skill_targets(
+    targets = _apportion_skill_counts(
         skill_ids,
         desired_allocation if isinstance(desired_allocation, dict) else {},
         desired_count,
@@ -1262,12 +1256,12 @@ def _worker_skill_allocation(
     return _allocate_deficit_chunk(deficits, min(target_count, sum(deficits.values())))
 
 
-def _resolved_skill_targets(
+def _apportion_skill_counts(
     skill_ids: list[str],
     desired_allocation: dict[str, int],
     desired_count: int,
 ) -> dict[str, int]:
-    """Resolve durable weights to inventory targets with positive-skill maintenance."""
+    """Apportion a total while reserving one slot for every positive-weight skill."""
     if desired_count <= 0 or not skill_ids:
         return {}
     weights = {
@@ -1327,10 +1321,8 @@ def _allocate_deficit_chunk(
     allocation = {skill_id: 0 for skill_id in deficits}
     remaining_deficits = dict(deficits)
     remaining_slots = target_count
-    # A generation chunk can be smaller than the skill map. Prioritize the
-    # most-underfilled skills before applying the one-per-skill breadth pass so
-    # a later map entry is not skipped on every consecutive chunk. Python's
-    # stable sort preserves map order as the deterministic tie-breaker.
+    # Prioritize the largest deficits so chunks smaller than the skill map do
+    # not starve later entries; stable sort keeps map order as the tie-breaker.
     ordered_skill_ids = sorted(
         remaining_deficits,
         key=lambda skill_id: remaining_deficits[skill_id],
@@ -1443,7 +1435,7 @@ def _commit_generated_questions(
                         ":state": _s("ready"),
                         ":now": _n(now),
                         ":ttl": _n(now + _bank_ttl_seconds()),
-                        ":job": _s(_string_from_key(job_key["sk"]).removeprefix("JOB#")),
+                        ":job": _s(_job_id_from_key(job_key)),
                         ":revision": _s(context_revision),
                         ":observedDesired": _n(observed_desired_count),
                         ":observedLow": _n(observed_low_watermark),
@@ -1509,7 +1501,7 @@ def _complete_job_without_questions(
                     "ExpressionAttributeValues": {
                         ":ready": _s("ready"),
                         ":now": _n(now),
-                        ":job": _s(_string_from_key(job_key["sk"]).removeprefix("JOB#")),
+                        ":job": _s(_job_id_from_key(job_key)),
                     },
                 }
             },
@@ -1584,7 +1576,7 @@ def _mark_generation_blocked(
 ) -> None:
     """Stop automatic generation for this exact bank context."""
     now = int(time.time())
-    job_id = _string_from_key(job_key["sk"]).removeprefix("JOB#")
+    job_id = _job_id_from_key(job_key)
     client.transact_write_items(
         TransactItems=[
             {
@@ -1717,7 +1709,7 @@ def _mark_rate_limited(client: Any, table_name: str, job_key: dict[str, Any]) ->
     bank_key = {"pk": job_key["pk"], "sk": _s("META")}
     now = datetime.now(timezone.utc)
     retry_at = int((datetime.combine(now.date() + timedelta(days=1), datetime.min.time(), tzinfo=timezone.utc)).timestamp())
-    job_id = _string_from_key(job_key["sk"]).removeprefix("JOB#")
+    job_id = _job_id_from_key(job_key)
     try:
         client.transact_write_items(
             TransactItems=[
@@ -1795,28 +1787,20 @@ def _query_question_history(
     table_name: str,
     bank_key: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    items: list[dict[str, Any]] = []
-    last_key = None
-    while True:
-        request: dict[str, Any] = {
-            "TableName": table_name,
-            "KeyConditionExpression": "pk = :pk AND begins_with(sk, :prefix)",
-            "ExpressionAttributeValues": {
-                ":pk": bank_key["pk"],
-                ":prefix": _s("QUESTION#"),
-            },
-            "ConsistentRead": True,
-        }
-        if last_key:
-            request["ExclusiveStartKey"] = last_key
-        response = client.query(**request)
-        items.extend(response.get("Items", []))
-        last_key = response.get("LastEvaluatedKey")
-        if not last_key:
-            return items
+    return _query_bank_items(client, table_name, bank_key, sort_key_prefix="QUESTION#")
 
 
 def _query_all(client: Any, table_name: str, bank_key: dict[str, Any]) -> list[dict[str, Any]]:
+    return _query_bank_items(client, table_name, bank_key)
+
+
+def _query_bank_items(
+    client: Any,
+    table_name: str,
+    bank_key: dict[str, Any],
+    *,
+    sort_key_prefix: str | None = None,
+) -> list[dict[str, Any]]:
     items: list[dict[str, Any]] = []
     last_key = None
     while True:
@@ -1826,6 +1810,9 @@ def _query_all(client: Any, table_name: str, bank_key: dict[str, Any]) -> list[d
             "ExpressionAttributeValues": {":pk": bank_key["pk"]},
             "ConsistentRead": True,
         }
+        if sort_key_prefix is not None:
+            request["KeyConditionExpression"] += " AND begins_with(sk, :prefix)"
+            request["ExpressionAttributeValues"][":prefix"] = _s(sort_key_prefix)
         if last_key:
             request["ExclusiveStartKey"] = last_key
         response = client.query(**request)
@@ -2014,6 +2001,10 @@ def _boolean(item: dict[str, Any] | None, name: str) -> bool:
 
 def _string_from_key(value: dict[str, str]) -> str:
     return value.get("S", "")
+
+
+def _job_id_from_key(job_key: dict[str, Any]) -> str:
+    return _string_from_key(job_key["sk"]).removeprefix("JOB#")
 
 
 def _is_conditional_failure(error: Exception) -> bool:

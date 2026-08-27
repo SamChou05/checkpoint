@@ -1155,7 +1155,7 @@ class QuestionBankTests(unittest.TestCase):
             "desiredSkillAllocation": {major_skill: 99, maintenance_skill: 1},
         }
 
-        targets = question_bank._resolved_skill_targets(  # noqa: SLF001
+        targets = question_bank._apportion_skill_counts(  # noqa: SLF001
             [major_skill, maintenance_skill],
             request["desiredSkillAllocation"],
             40,

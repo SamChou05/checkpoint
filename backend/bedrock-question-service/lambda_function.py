@@ -53,6 +53,7 @@ MAX_SKILL_NAME_CHARS = 48
 MAX_OBJECTIVE_NAME_CHARS = 80
 MAX_SKILL_ALLOCATION_WEIGHT = 100
 UNSUPPORTED_SKILL_NAME_SEPARATORS = frozenset(",;")
+SKILL_MAP_ID_PREFIX = "checkpoint:skill-map:v1"
 SOURCE_TRUNCATION_MARKER = "\n\n[... source truncated ...]\n\n"
 METRIC_NAMESPACE = "Checkpoint/Backend"
 METRIC_SERVICE = "QuestionGeneration"
@@ -93,6 +94,8 @@ GENERIC_META_SCENARIOS = (
     "scaling decision",
     "evidence interpretation",
 )
+
+
 class BadRequestError(ValueError):
     pass
 
@@ -136,6 +139,17 @@ class ProviderCallBudget:
         self.calls += 1
 
 
+def _new_provider_call_budget(context: Any | None) -> ProviderCallBudget:
+    return ProviderCallBudget(
+        _int_env(
+            "MAX_PROVIDER_CALLS_PER_REQUEST",
+            DEFAULT_MAX_PROVIDER_CALLS,
+            maximum=20,
+        ),
+        context=context,
+    )
+
+
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     return handle_http_request(event, context=context)
 
@@ -158,14 +172,7 @@ def question_bank_worker_handler(event: dict[str, Any], context: Any) -> dict[st
     request_metrics = _new_request_metrics(context)
     safety_intervened = False
     terminal_failure = False
-    call_budget = ProviderCallBudget(
-        _int_env(
-            "MAX_PROVIDER_CALLS_PER_REQUEST",
-            DEFAULT_MAX_PROVIDER_CALLS,
-            maximum=20,
-        ),
-        context=context,
-    )
+    call_budget = _new_provider_call_budget(context)
 
     def generate_questions(request: dict[str, Any]) -> list[dict[str, Any]]:
         nonlocal safety_intervened
@@ -256,14 +263,7 @@ def handle_http_request(
             if path == "/v1/skill-maps/infer":
                 normalized = _normalize_skill_map_inference_request(payload)
                 _check_rate_limits(event, dynamodb_client)
-                call_budget = ProviderCallBudget(
-                    _int_env(
-                        "MAX_PROVIDER_CALLS_PER_REQUEST",
-                        DEFAULT_MAX_PROVIDER_CALLS,
-                        maximum=20,
-                    ),
-                    context=context,
-                )
+                call_budget = _new_provider_call_budget(context)
                 skill_map = _infer_skill_map(
                     normalized,
                     bedrock_client,
@@ -299,14 +299,7 @@ def handle_http_request(
                 normalized = _normalize_request(payload)
                 request_metrics["QuestionsRequested"] = normalized["targetCount"]
                 _check_rate_limits(event, dynamodb_client)
-                call_budget = ProviderCallBudget(
-                    _int_env(
-                        "MAX_PROVIDER_CALLS_PER_REQUEST",
-                        DEFAULT_MAX_PROVIDER_CALLS,
-                        maximum=20,
-                    ),
-                    context=context,
-                )
+                call_budget = _new_provider_call_budget(context)
                 questions = _generate_sanitized_questions(
                     normalized,
                     bedrock_client,
@@ -401,6 +394,13 @@ def _request_path(event: dict[str, Any]) -> str:
     return path
 
 
+def _request_headers(event: dict[str, Any]) -> dict[str, Any]:
+    return {
+        str(key).lower(): value
+        for key, value in (event.get("headers") or {}).items()
+    }
+
+
 def _is_authorized(event: dict[str, Any]) -> bool:
     expected_token = os.getenv("CHECKPOINT_BACKEND_TOKEN", "").strip()
     if not expected_token:
@@ -409,7 +409,7 @@ def _is_authorized(event: dict[str, Any]) -> bool:
             and _bool_env("ALLOW_UNAUTHENTICATED_BACKEND", False)
         )
 
-    headers = {str(key).lower(): value for key, value in (event.get("headers") or {}).items()}
+    headers = _request_headers(event)
     auth_header = str(headers.get("authorization", "")).strip()
     return hmac.compare_digest(auth_header, f"Bearer {expected_token}")
 
@@ -426,7 +426,7 @@ def _check_rate_limits(event: dict[str, Any], dynamodb_client: Any | None) -> No
         raise ServiceConfigurationError("Quota hash secret must be at least 32 characters.")
 
     client = dynamodb_client or _dynamodb_client()
-    headers = {str(key).lower(): value for key, value in (event.get("headers") or {}).items()}
+    headers = _request_headers(event)
     install_id = _rate_limit_component(headers.get("x-checkpoint-install-id"), fallback="missing-install")
     source_ip = _rate_limit_component(_source_ip(event), fallback="missing-ip")
     day = datetime.now(timezone.utc).strftime("%Y%m%d")
@@ -912,54 +912,39 @@ def _uuid_key(value: str) -> str:
     return str(uuid.UUID(value))
 
 
+def _deterministic_skill_id(name: str) -> str:
+    return str(
+        uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            f"{SKILL_MAP_ID_PREFIX}:skill:{_canonical(name)}",
+        )
+    )
+
+
+def _deterministic_objective_id(skill_id: str, name: str) -> str:
+    return str(
+        uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            (
+                f"{SKILL_MAP_ID_PREFIX}:objective:"
+                f"{_uuid_key(skill_id)}:{_canonical(name)}"
+            ),
+        )
+    )
+
+
 def _apportion_skill_allocation(
     skill_ids: list[str],
     desired_allocation: dict[str, int],
     total_count: int,
 ) -> dict[str, int]:
-    if not skill_ids or total_count <= 0:
-        return {}
-    weights = [desired_allocation.get(skill_id, 0) for skill_id in skill_ids]
-    if not any(weights):
-        weights = [1] * len(skill_ids)
-    positive_indexes = [index for index, weight in enumerate(weights) if weight > 0]
-    counts = [0] * len(skill_ids)
-    if total_count < len(positive_indexes):
-        ranked_indexes = sorted(
-            positive_indexes,
-            key=lambda index: (weights[index], -index),
-            reverse=True,
-        )
-        for index in ranked_indexes[:total_count]:
-            counts[index] = 1
-        return {
-            skill_id: count
-            for skill_id, count in zip(skill_ids, counts, strict=True)
-            if count > 0
-        }
-
-    for index in positive_indexes:
-        counts[index] = 1
-    remaining_count = total_count - len(positive_indexes)
-    weight_total = sum(weights)
-    exact = [remaining_count * weight / weight_total for weight in weights]
-    additions = [math.floor(value) for value in exact]
-    counts = [
-        count + addition
-        for count, addition in zip(counts, additions, strict=True)
-    ]
-    remainder = total_count - sum(counts)
-    ranked_indexes = sorted(
-        range(len(skill_ids)),
-        key=lambda index: (exact[index] - additions[index], -index),
-        reverse=True,
+    counts = question_bank._apportion_skill_counts(
+        skill_ids,
+        desired_allocation,
+        total_count,
     )
-    for index in ranked_indexes[:remainder]:
-        counts[index] += 1
     return {
-        skill_id: count
-        for skill_id, count in zip(skill_ids, counts, strict=True)
-        if count > 0
+        skill_id: count for skill_id, count in counts.items() if count > 0
     }
 
 
@@ -1198,11 +1183,7 @@ def _skill_map_model_attempts() -> list[str]:
         or os.getenv("BEDROCK_MODEL_ID", DEFAULT_MODEL_ID).strip()
         or DEFAULT_MODEL_ID
     )
-    fallback = os.getenv("BEDROCK_FALLBACK_MODEL_ID", DEFAULT_FALLBACK_MODEL_ID).strip()
-    models = [primary]
-    if fallback and fallback not in models:
-        models.append(fallback)
-    return models
+    return _model_attempts_with_fallback(primary)
 
 
 def _skill_map_from_provider_text(
@@ -1301,23 +1282,10 @@ def _sanitize_inferred_skill_map(
         if name_key in normalized_name_keys:
             return None
         normalized_name_keys.add(name_key)
-        skill_id = str(
-            uuid.uuid5(
-                uuid.NAMESPACE_URL,
-                f"checkpoint:skill-map:v1:skill:{name_key}",
-            )
-        )
+        skill_id = _deterministic_skill_id(name)
         objectives = [
             {
-                "id": str(
-                    uuid.uuid5(
-                        uuid.NAMESPACE_URL,
-                        (
-                            "checkpoint:skill-map:v1:objective:"
-                            f"{skill_id}:{_canonical(objective_name)}"
-                        ),
-                    )
-                ),
+                "id": _deterministic_objective_id(skill_id, objective_name),
                 "name": objective_name,
             }
             for objective_name in candidate["objectives"]
@@ -1629,6 +1597,10 @@ def _conversation_prompt(user_prompt: str, system_prompt: str | None = None) -> 
 
 def _model_attempts() -> list[str]:
     primary = os.getenv("BEDROCK_MODEL_ID", DEFAULT_MODEL_ID).strip() or DEFAULT_MODEL_ID
+    return _model_attempts_with_fallback(primary)
+
+
+def _model_attempts_with_fallback(primary: str) -> list[str]:
     fallback = os.getenv("BEDROCK_FALLBACK_MODEL_ID", DEFAULT_FALLBACK_MODEL_ID).strip()
     models = [primary]
     if fallback and fallback not in models:
@@ -2035,7 +2007,6 @@ def _sanitize_questions(raw_questions: Any, request: dict[str, Any]) -> list[dic
     for coverage in request["existingQuestionCoverage"]:
         seen_coverage.update(
             _question_coverage_keys(
-                coverage.get("prompt", ""),
                 coverage.get("expectedAnswer", ""),
                 coverage.get("topic", ""),
             )
@@ -2073,7 +2044,7 @@ def _sanitize_questions(raw_questions: Any, request: dict[str, Any]) -> list[dic
             topic = request["goal"]["contentTopics"][0]
 
         prompt_keys = {_canonical(prompt), _duplicate_prompt_key(prompt)}
-        coverage_keys = _question_coverage_keys(prompt, expected_answer, topic)
+        coverage_keys = _question_coverage_keys(expected_answer, topic)
         if (
             len(prompt) < 12
             or not expected_answer
@@ -2138,28 +2109,12 @@ def _normalized_question_skill_tag(
     if not skill_map:
         return None
 
-    raw_skill_id = _clean_text(raw_question.get("skillID"))
-    skills_by_id = {
-        _uuid_key(skill["id"]): skill for skill in skill_map.get("skills", [])
-    }
     raw_topic = _clean_text(raw_question.get("topic"))
-    skills_by_name = {
-        _canonical(skill["name"]): skill for skill in skill_map.get("skills", [])
-    }
-    skill_from_id = None
-    if raw_skill_id:
-        try:
-            skill_from_id = skills_by_id.get(_uuid_key(raw_skill_id))
-        except (ValueError, AttributeError):
-            return None
-        if not skill_from_id:
-            return None
-    skill_from_topic = skills_by_name.get(_canonical(raw_topic)) if raw_topic else None
-    if raw_topic and not skill_from_topic:
-        return None
-    if skill_from_id and skill_from_topic and skill_from_id is not skill_from_topic:
-        return None
-    skill = skill_from_id or skill_from_topic
+    skill = _matching_skill_map_entry(
+        skill_map.get("skills", []),
+        _clean_text(raw_question.get("skillID")),
+        raw_topic,
+    )
     if not skill:
         return None
 
@@ -2169,34 +2124,11 @@ def _normalized_question_skill_tag(
     )
     raw_objective_id = _clean_text(raw_question.get("objectiveID"))
     if objectives:
-        objectives_by_id = {
-            _uuid_key(objective["id"]): objective for objective in objectives
-        }
-        objectives_by_name = {
-            _canonical(objective["name"]): objective for objective in objectives
-        }
-        objective_from_id = None
-        if raw_objective_id:
-            try:
-                objective_from_id = objectives_by_id.get(_uuid_key(raw_objective_id))
-            except (ValueError, AttributeError):
-                return None
-            if not objective_from_id:
-                return None
-        objective_from_name = (
-            objectives_by_name.get(_canonical(raw_objective_name))
-            if raw_objective_name
-            else None
+        objective = _matching_skill_map_entry(
+            objectives,
+            raw_objective_id,
+            raw_objective_name,
         )
-        if raw_objective_name and not objective_from_name:
-            return None
-        if (
-            objective_from_id
-            and objective_from_name
-            and objective_from_id is not objective_from_name
-        ):
-            return None
-        objective = objective_from_id or objective_from_name
         if not objective:
             return None
         objective_id = objective["id"]
@@ -2204,18 +2136,9 @@ def _normalized_question_skill_tag(
     else:
         if not raw_objective_name or len(raw_objective_name) > MAX_OBJECTIVE_NAME_CHARS:
             return None
-        objective_name_key = _canonical(raw_objective_name)
-        if not objective_name_key:
+        if not _canonical(raw_objective_name):
             return None
-        objective_id = str(
-            uuid.uuid5(
-                uuid.NAMESPACE_URL,
-                (
-                    "checkpoint:skill-map:v1:objective:"
-                    f"{_uuid_key(skill['id'])}:{objective_name_key}"
-                ),
-            )
-        )
+        objective_id = _deterministic_objective_id(skill["id"], raw_objective_name)
         if raw_objective_id:
             try:
                 if _uuid_key(raw_objective_id) != _uuid_key(objective_id):
@@ -2230,6 +2153,32 @@ def _normalized_question_skill_tag(
         "objective": objective_name,
         "topic": skill["name"],
     }
+
+
+def _matching_skill_map_entry(
+    entries: list[dict[str, Any]],
+    raw_id: str,
+    raw_name: str,
+) -> dict[str, Any] | None:
+    """Resolve an optional ID/name pair, rejecting unknown or conflicting tags."""
+    entries_by_id = {_uuid_key(entry["id"]): entry for entry in entries}
+    entries_by_name = {_canonical(entry["name"]): entry for entry in entries}
+
+    entry_from_id = None
+    if raw_id:
+        try:
+            entry_from_id = entries_by_id.get(_uuid_key(raw_id))
+        except (ValueError, AttributeError):
+            return None
+        if not entry_from_id:
+            return None
+
+    entry_from_name = entries_by_name.get(_canonical(raw_name)) if raw_name else None
+    if raw_name and not entry_from_name:
+        return None
+    if entry_from_id and entry_from_name and entry_from_id is not entry_from_name:
+        return None
+    return entry_from_id or entry_from_name
 
 
 def _remaining_requested_skill_allocation(
@@ -2268,7 +2217,7 @@ def _choice_set_key(choices: Any) -> str:
     return "|".join(choice_keys)
 
 
-def _question_coverage_keys(prompt: str, expected_answer: str, topic: str) -> set[str]:
+def _question_coverage_keys(expected_answer: str, topic: str) -> set[str]:
     keys: set[str] = set()
     topic_key = _choice_uniqueness_key(topic)
     answer_key = _choice_uniqueness_key(expected_answer)

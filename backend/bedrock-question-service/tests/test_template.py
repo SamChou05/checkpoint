@@ -8,6 +8,17 @@ DEPLOY_WORKFLOW = Path(__file__).resolve().parents[3] / ".github" / "workflows" 
 CI_WORKFLOW = Path(__file__).resolve().parents[3] / ".github" / "workflows" / "ci.yml"
 
 
+def _indented_block(document: str, heading: str) -> str:
+    match = re.search(
+        rf"^  {re.escape(heading)}:\n(.*?)(?=^  \S|\Z)",
+        document,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if not match:
+        raise ValueError(f"Missing indented block: {heading}")
+    return match.group(1)
+
+
 class BackendInfrastructureTemplateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -44,12 +55,8 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertNotIn("bedrock:InvokeModelWithResponseStream", self.template)
 
     def test_api_uses_legacy_model_for_questions_and_worker_model_for_skill_maps(self):
-        api = self.template.split("  CheckpointQuestionFunction:", maxsplit=1)[1].split(
-            "\n  CheckpointQuestionFunctionLogGroup:", maxsplit=1
-        )[0]
-        worker = self.template.split("  QuestionBankWorkerFunction:", maxsplit=1)[1].split(
-            "\n  QuestionBankWorkerFunctionLogGroup:", maxsplit=1
-        )[0]
+        api = _indented_block(self.template, "CheckpointQuestionFunction")
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
         self.assertIn("BEDROCK_MODEL_ID: !Ref BedrockModelArn", api)
         self.assertIn("SKILL_MAP_MODEL_ID: !Ref QuestionBankWorkerModelArn", api)
         self.assertIn("Resource: !Ref BedrockInvokeResourceArns", api)
@@ -105,9 +112,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             ),
             1,
         )
-        worker = self.template.split(
-            "  QuestionBankWorkerFunction:", maxsplit=1
-        )[1].split("\n  QuestionBankWorkerFunctionLogGroup:", maxsplit=1)[0]
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
         self.assertIn(
             "BEDROCK_READ_TIMEOUT_SECONDS: !Ref QuestionBankWorkerReadTimeoutSeconds",
             worker,
@@ -183,9 +188,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             "QuestionBankWorkerEventsEnabled: !Not [!Equals [!Ref ServiceMode, disabled]]",
             self.template,
         )
-        worker = self.template.split("  QuestionBankWorkerFunction:", maxsplit=1)[1].split(
-            "\n  QuestionBankWorkerFunctionLogGroup:", maxsplit=1
-        )[0]
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
         self.assertIn(
             "Enabled: !If [QuestionBankWorkerEventsEnabled, true, false]",
             worker,

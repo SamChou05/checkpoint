@@ -37,6 +37,14 @@ class FakeBedrockClient:
             }
         }
 
+    @staticmethod
+    def question_response(*questions):
+        return json.dumps({"questions": list(questions)})
+
+    @classmethod
+    def returning_questions(cls, *questions):
+        return cls(cls.question_response(*questions))
+
 
 class TransactionQuotaExceeded(Exception):
     response = {
@@ -104,27 +112,21 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             os.environ.pop(key, None)
 
     def test_generates_contract_response_from_bedrock_json(self):
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        {
-                            "prompt": "LSAT Logical Reasoning: All plaintiffs who filed late were dismissed. Rivera was not dismissed. Which assumption is needed?",
-                            "expectedAnswer": "Every filing was either late or timely.",
-                            "choices": [
-                                "Every filing was either late or timely.",
-                                "Rivera had the strongest claim.",
-                                "Dismissed plaintiffs can appeal.",
-                                "The court reviewed every document twice.",
-                            ],
-                            "explanation": "The conclusion needs a complete late-versus-timely split.",
-                            "topic": "Logical Reasoning",
-                            "difficulty": 3,
-                            "format": "Multiple Choice",
-                        }
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            {
+                "prompt": "LSAT Logical Reasoning: All plaintiffs who filed late were dismissed. Rivera was not dismissed. Which assumption is needed?",
+                "expectedAnswer": "Every filing was either late or timely.",
+                "choices": [
+                    "Every filing was either late or timely.",
+                    "Rivera had the strongest claim.",
+                    "Dismissed plaintiffs can appeal.",
+                    "The court reviewed every document twice.",
+                ],
+                "explanation": "The conclusion needs a complete late-versus-timely split.",
+                "topic": "Logical Reasoning",
+                "difficulty": 3,
+                "format": "Multiple Choice",
+            }
         )
 
         response = lambda_function.handle_http_request(
@@ -153,14 +155,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_gemma_models_inline_instructions(self):
         os.environ["BEDROCK_MODEL_ID"] = "google.gemma-3-4b-it"
         os.environ["BEDROCK_FALLBACK_MODEL_ID"] = ""
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -188,15 +184,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         for model_identifier in model_identifiers:
             with self.subTest(model_identifier=model_identifier):
                 os.environ["BEDROCK_MODEL_ID"] = model_identifier
-                client = FakeBedrockClient(
-                    json.dumps(
-                        {
-                            "questions": [
-                                _raw_question(
-                                    "LSAT Logical Reasoning: Which flaw best describes the argument?"
-                                )
-                            ]
-                        }
+                client = FakeBedrockClient.returning_questions(
+                    _raw_question(
+                        "LSAT Logical Reasoning: Which flaw best describes the argument?"
                     )
                 )
 
@@ -216,14 +206,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_non_gemma_models_use_bedrock_system_prompt(self):
         os.environ["BEDROCK_MODEL_ID"] = "amazon.nova-micro-v1:0"
         os.environ["BEDROCK_FALLBACK_MODEL_ID"] = ""
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -245,14 +229,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             "inference-profile/us.openai.gpt-5.6-luna"
         )
         os.environ["BEDROCK_REASONING_EFFORT"] = "low"
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -273,14 +251,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_gpt_56_none_reasoning_keeps_temperature(self):
         os.environ["BEDROCK_MODEL_ID"] = "us.openai.gpt-5.6-luna"
         os.environ["BEDROCK_REASONING_EFFORT"] = "none"
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -301,14 +273,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             "arn:aws:bedrock:us-east-1::foundation-model/deepseek.v3.2"
         )
         os.environ["BEDROCK_REASONING_EFFORT"] = "low"
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -328,14 +294,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         os.environ["BEDROCK_MODEL_ID"] = (
             "arn:aws:bedrock:us-east-1::foundation-model/moonshotai.kimi-k2.5"
         )
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -354,14 +314,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_reasoning_effort_is_not_sent_to_non_gpt_56_models(self):
         os.environ["BEDROCK_MODEL_ID"] = "amazon.nova-lite-v1:0"
         os.environ["BEDROCK_REASONING_EFFORT"] = "low"
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -388,14 +342,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         payload = _request_payload(target_count=3, minimum_difficulty=3)
         payload["goal"]["focusAreas"] = ""
         payload["goal"]["needsSkillMap"] = True
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("LSAT Logical Reasoning: Which flaw best describes the argument?")
         )
 
         response = lambda_function.handle_http_request(
@@ -700,7 +648,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             topic=skill_map["skills"][0]["name"],
         )
         question["objectiveName"] = skill_map["skills"][0]["objectives"][0]["name"]
-        client = FakeBedrockClient(json.dumps({"questions": [question]}))
+        client = FakeBedrockClient.returning_questions(question)
 
         response = lambda_function.handle_http_request(
             _event(payload),
@@ -815,15 +763,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
                 ),
             }
         ]
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question(
-                            "A negligence claim has duty, breach, and damages but no causal link. Which element is missing?"
-                        )
-                    ]
-                }
+        client = FakeBedrockClient.returning_questions(
+            _raw_question(
+                "A negligence claim has duty, breach, and damages but no causal link. Which element is missing?"
             )
         )
 
@@ -912,13 +854,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
                 "difficulty": 3,
             }
         ]
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question("Operating Systems: Why can a valid virtual address still cause a page fault?")
-                    ]
-                }
+        client = FakeBedrockClient.returning_questions(
+            _raw_question(
+                "Operating Systems: Why can a valid virtual address still cause a page fault?"
             )
         )
 
@@ -931,21 +869,15 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertIn("Expand the question bank with new angles", prompt)
 
     def test_rejects_questions_below_requested_difficulty(self):
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question(
-                            "LSAT Logical Reasoning: Which assumption is required by the argument?",
-                            difficulty=2,
-                        ),
-                        _raw_question(
-                            "LSAT Logical Reasoning: Which flaw best describes the argument?",
-                            difficulty=4,
-                        ),
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question(
+                "LSAT Logical Reasoning: Which assumption is required by the argument?",
+                difficulty=2,
+            ),
+            _raw_question(
+                "LSAT Logical Reasoning: Which flaw best describes the argument?",
+                difficulty=4,
+            ),
         )
 
         response = lambda_function.handle_http_request(
@@ -984,7 +916,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         client = FakeBedrockClient(
             [
                 "Here are two LSAT questions in prose instead of JSON.",
-                json.dumps({"questions": [_raw_question("LSAT Logical Reasoning: Which answer identifies the argument's required assumption?")]}),
+                FakeBedrockClient.question_response(
+                    _raw_question(
+                        "LSAT Logical Reasoning: Which answer identifies the argument's required assumption?"
+                    )
+                ),
             ]
         )
 
@@ -1003,48 +939,40 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_tops_off_short_sanitized_batch(self):
         client = FakeBedrockClient(
             [
-                json.dumps(
-                    {
-                        "questions": [
-                            _raw_question(
-                                "LSAT Logical Reasoning: Which assumption lets the conclusion follow?",
-                                expected_answer=(
-                                    "The conclusion requires an unstated bridge between the evidence "
-                                    "and the claimed result."
-                                ),
-                                explanation=(
-                                    "Without that bridge, the premises do not establish the claimed result."
-                                ),
-                            ),
-                            _raw_question(
-                                "LSAT Logical Reasoning: Which flaw best describes the argument?",
-                                expected_answer=(
-                                    "The argument treats a correlation as proof that one event caused the other."
-                                ),
-                                explanation=(
-                                    "The observed correlation does not rule out coincidence or a shared cause."
-                                ),
-                            ),
-                        ]
-                    }
+                FakeBedrockClient.question_response(
+                    _raw_question(
+                        "LSAT Logical Reasoning: Which assumption lets the conclusion follow?",
+                        expected_answer=(
+                            "The conclusion requires an unstated bridge between the evidence "
+                            "and the claimed result."
+                        ),
+                        explanation=(
+                            "Without that bridge, the premises do not establish the claimed result."
+                        ),
+                    ),
+                    _raw_question(
+                        "LSAT Logical Reasoning: Which flaw best describes the argument?",
+                        expected_answer=(
+                            "The argument treats a correlation as proof that one event caused the other."
+                        ),
+                        explanation=(
+                            "The observed correlation does not rule out coincidence or a shared cause."
+                        ),
+                    ),
                 ),
-                json.dumps(
-                    {
-                        "questions": [
-                            _raw_question(
-                                "LSAT Reading Comprehension: Which answer captures the author's qualified view?",
-                                expected_answer=(
-                                    "The author supports the proposal while reserving judgment about "
-                                    "its long-term effects."
-                                ),
-                                explanation=(
-                                    "The passage endorses the proposal but explicitly leaves its "
-                                    "long-term effects unresolved."
-                                ),
-                                topic="Reading Comprehension",
-                            )
-                        ]
-                    }
+                FakeBedrockClient.question_response(
+                    _raw_question(
+                        "LSAT Reading Comprehension: Which answer captures the author's qualified view?",
+                        expected_answer=(
+                            "The author supports the proposal while reserving judgment about "
+                            "its long-term effects."
+                        ),
+                        explanation=(
+                            "The passage endorses the proposal but explicitly leaves its "
+                            "long-term effects unresolved."
+                        ),
+                        topic="Reading Comprehension",
+                    )
                 ),
             ]
         )
@@ -1068,7 +996,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             [
                 "Not JSON.",
                 "Still not JSON.",
-                json.dumps({"questions": [_raw_question("LSAT Logical Reasoning: Which assumption lets the conclusion follow?")]}),
+                FakeBedrockClient.question_response(
+                    _raw_question(
+                        "LSAT Logical Reasoning: Which assumption lets the conclusion follow?"
+                    )
+                ),
             ]
         )
 
@@ -1091,7 +1023,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         client = FakeBedrockClient(
             [
                 RuntimeError("Invocation of model ID is not supported."),
-                json.dumps({"questions": [_raw_question("LSAT Logical Reasoning: Which assumption lets the conclusion follow?")]}),
+                FakeBedrockClient.question_response(
+                    _raw_question(
+                        "LSAT Logical Reasoning: Which assumption lets the conclusion follow?"
+                    )
+                ),
             ]
         )
 
@@ -1152,45 +1088,39 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         self.assertEqual(question["difficulty"], 4)
 
     def test_filters_duplicates_and_study_strategy_prompts(self):
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        {
-                            "prompt": "Existing prompt",
-                            "expectedAnswer": "A",
-                            "choices": ["A", "B", "C", "D"],
-                            "explanation": "Duplicate.",
-                            "topic": "Logical Reasoning",
-                            "difficulty": 3,
-                            "format": "Multiple Choice",
-                        },
-                        {
-                            "prompt": "How should you study for the LSAT after missing a flaw question?",
-                            "expectedAnswer": "Review the flaw type.",
-                            "choices": ["Review the flaw type.", "Open another app.", "Stop reading.", "Skip the topic."],
-                            "explanation": "Study advice.",
-                            "topic": "Study plan",
-                            "difficulty": 3,
-                            "format": "Multiple Choice",
-                        },
-                        {
-                            "prompt": "LSAT Logical Reasoning: An argument infers causation from a before-after change. What flaw is most likely?",
-                            "expectedAnswer": "It treats temporal order as sufficient proof of causation.",
-                            "choices": [
-                                "It treats temporal order as sufficient proof of causation.",
-                                "It defines the conclusion too narrowly.",
-                                "It proves the opposite conclusion.",
-                                "It relies on a mathematical calculation.",
-                            ],
-                            "explanation": "A before-after pattern alone does not prove causation.",
-                            "topic": "Logical Reasoning",
-                            "difficulty": 4,
-                            "format": "Multiple Choice",
-                        },
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            {
+                "prompt": "Existing prompt",
+                "expectedAnswer": "A",
+                "choices": ["A", "B", "C", "D"],
+                "explanation": "Duplicate.",
+                "topic": "Logical Reasoning",
+                "difficulty": 3,
+                "format": "Multiple Choice",
+            },
+            {
+                "prompt": "How should you study for the LSAT after missing a flaw question?",
+                "expectedAnswer": "Review the flaw type.",
+                "choices": ["Review the flaw type.", "Open another app.", "Stop reading.", "Skip the topic."],
+                "explanation": "Study advice.",
+                "topic": "Study plan",
+                "difficulty": 3,
+                "format": "Multiple Choice",
+            },
+            {
+                "prompt": "LSAT Logical Reasoning: An argument infers causation from a before-after change. What flaw is most likely?",
+                "expectedAnswer": "It treats temporal order as sufficient proof of causation.",
+                "choices": [
+                    "It treats temporal order as sufficient proof of causation.",
+                    "It defines the conclusion too narrowly.",
+                    "It proves the opposite conclusion.",
+                    "It relies on a mathematical calculation.",
+                ],
+                "explanation": "A before-after pattern alone does not prove causation.",
+                "topic": "Logical Reasoning",
+                "difficulty": 4,
+                "format": "Multiple Choice",
+            },
         )
 
         payload = _request_payload(target_count=3, minimum_difficulty=3)
@@ -1262,7 +1192,6 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         answer = "The answer that follows from the stated facts and respects the topic's constraints."
 
         keys = lambda_function._question_coverage_keys(  # noqa: SLF001
-            "Which inference follows?",
             answer,
             "hash maps",
         )
@@ -1321,7 +1250,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             "Choose the correct object pronoun to replace 'el hotel' in the sentence: 'Necesito encontrar el hotel antes de la noche.'"
         )
         third = _raw_question("Spanish grammar: Complete the sentence with the subjunctive form of viajar: Espero que ellos ___ (viajar).")
-        client = FakeBedrockClient(json.dumps({"questions": [first, second, third]}))
+        client = FakeBedrockClient.returning_questions(first, second, third)
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=3, minimum_difficulty=3)),
@@ -1407,7 +1336,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
                 "difficulty": 3,
             }
         ]
-        client = FakeBedrockClient(json.dumps({"questions": [repeated, novel]}))
+        client = FakeBedrockClient.returning_questions(repeated, novel)
 
         response = lambda_function.handle_http_request(_event(payload), bedrock_client=client)
 
@@ -1418,15 +1347,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
 
     def test_rejects_overlong_provider_prompts_before_clipping(self):
         long_prompt = "LSAT Logical Reasoning: " + ("This stimulus is too long. " * 20)
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        _raw_question(long_prompt),
-                        _raw_question("LSAT Logical Reasoning: Which answer identifies the required assumption?"),
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            _raw_question(long_prompt),
+            _raw_question(
+                "LSAT Logical Reasoning: Which answer identifies the required assumption?"
+            ),
         )
 
         response = lambda_function.handle_http_request(
@@ -1442,15 +1367,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_rejects_explanations_that_admit_bad_answer(self):
         bad_question = _raw_question("Calculus: What is the value of this limit?")
         bad_question["explanation"] = "The provided choices do not include the correct answer."
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        bad_question,
-                        _raw_question("Calculus: Which answer correctly applies the derivative rule?"),
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            bad_question,
+            _raw_question(
+                "Calculus: Which answer correctly applies the derivative rule?"
+            ),
         )
 
         response = lambda_function.handle_http_request(
@@ -1467,15 +1388,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         bad_question = _raw_question("Calculus: Which option gives the derivative at x = 1?")
         bad_question["expectedAnswer"] = "B"
         bad_question["choices"] = ["B", "1", "2", "4"]
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        bad_question,
-                        _raw_question("Calculus: Which answer correctly applies the chain rule?"),
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            bad_question,
+            _raw_question(
+                "Calculus: Which answer correctly applies the chain rule?"
+            ),
         )
 
         response = lambda_function.handle_http_request(
@@ -1495,9 +1412,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         question["expectedAnswer"] = "O(n^2)"
         question["choices"] = ["O(n^2)", "O(n)", "O(log n)", "O(1)"]
         question["explanation"] = "The recursive calls copy slices of n, n-1, and smaller elements, so the total copied work is quadratic."
-        client = FakeBedrockClient(
-            json.dumps({"questions": [question]})
-        )
+        client = FakeBedrockClient.returning_questions(question)
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=1, minimum_difficulty=3)),
@@ -1516,9 +1431,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         question["expectedAnswer"] = "8/3"
         question["choices"] = ["8/3", "4", "2", "4/3"]
         question["explanation"] = "An antiderivative is x^3/3; evaluating it from 0 to 2 gives 8/3."
-        client = FakeBedrockClient(
-            json.dumps({"questions": [question]})
-        )
+        client = FakeBedrockClient.returning_questions(question)
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=1, minimum_difficulty=3)),
@@ -1543,7 +1456,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         ]
         question["explanation"] = "Water moves toward the side with the higher solute concentration, so it enters the cell."
         question["topic"] = "Osmosis"
-        client = FakeBedrockClient(json.dumps({"questions": [question]}))
+        client = FakeBedrockClient.returning_questions(question)
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=1, minimum_difficulty=3)),
@@ -1562,7 +1475,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         question["expectedAnswer"] = "negative"
         question["choices"] = ["negative", "positive", "zero", "undefined"]
         question["explanation"] = "The derivative is 3x^2 - 6x + 2, which equals -1 at x = 1."
-        client = FakeBedrockClient(json.dumps({"questions": [question]}))
+        client = FakeBedrockClient.returning_questions(question)
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=1, minimum_difficulty=3)),
@@ -1586,7 +1499,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
             "Set the denominator equal to 2 before factoring.",
         ]
         question["explanation"] = "Factoring the numerator as (x - 2)(x + 2) permits cancellation away from x = 2."
-        client = FakeBedrockClient(json.dumps({"questions": [question]}))
+        client = FakeBedrockClient.returning_questions(question)
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=1, minimum_difficulty=3)),
@@ -1604,16 +1517,10 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         )
         duplicate_question = _raw_question(first_question["prompt"])
         third_question = _raw_question("Calculus: Which graph behavior indicates a jump discontinuity?")
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        first_question,
-                        duplicate_question,
-                        third_question,
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            first_question,
+            duplicate_question,
+            third_question,
         )
 
         response = lambda_function.handle_http_request(
@@ -1630,15 +1537,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         bad_question["expectedAnswer"] = "positive"
         bad_question["choices"] = ["positive", "negative", "zero", "undefined"]
         bad_question["explanation"] = "The computed result is -1, which is negative."
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        bad_question,
-                        _raw_question("Math reasoning: Which statement follows from a negative computed result?"),
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            bad_question,
+            _raw_question(
+                "Math reasoning: Which statement follows from a negative computed result?"
+            ),
         )
 
         response = lambda_function.handle_http_request(
@@ -1655,15 +1558,11 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         bad_question = _raw_question(
             "Choose the correct Spanish verb. Options: 1. llega 2. llegue 3. llego 4. llegar"
         )
-        client = FakeBedrockClient(
-            json.dumps(
-                {
-                    "questions": [
-                        bad_question,
-                        _raw_question("Spanish grammar: Complete the sentence with the subjunctive form of llegar: Espero que ellos ___ (llegar)."),
-                    ]
-                }
-            )
+        client = FakeBedrockClient.returning_questions(
+            bad_question,
+            _raw_question(
+                "Spanish grammar: Complete the sentence with the subjunctive form of llegar: Espero que ellos ___ (llegar)."
+            ),
         )
 
         response = lambda_function.handle_http_request(
@@ -1689,7 +1588,7 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         ]
         question["explanation"] = "Espero que expresses a wish and therefore takes the present subjunctive viajen."
         question["topic"] = "Subjunctive mood"
-        client = FakeBedrockClient(json.dumps({"questions": [question]}))
+        client = FakeBedrockClient.returning_questions(question)
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=1, minimum_difficulty=3)),
@@ -1709,7 +1608,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
 
     def test_backend_token_rejects_missing_header_and_accepts_match(self):
         os.environ["CHECKPOINT_BACKEND_TOKEN"] = "test-token"
-        client = FakeBedrockClient(json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]}))
+        client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
+        )
 
         response = lambda_function.handle_http_request(_event(_request_payload()))
 
@@ -1784,7 +1685,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
 
     def test_backend_auth_fails_closed_without_token_or_explicit_opt_in(self):
         os.environ.pop("ALLOW_UNAUTHENTICATED_BACKEND", None)
-        bedrock_client = FakeBedrockClient(json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]}))
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
+        )
 
         response = lambda_function.handle_http_request(
             _event(_request_payload(target_count=1)),
@@ -1797,8 +1700,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_production_ignores_unauthenticated_development_opt_in(self):
         os.environ["DEPLOYMENT_ENVIRONMENT"] = "production"
         os.environ["ALLOW_UNAUTHENTICATED_BACKEND"] = "true"
-        bedrock_client = FakeBedrockClient(
-            json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]})
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
         )
 
         response = lambda_function.handle_http_request(
@@ -1814,8 +1717,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         os.environ["SERVICE_RETRY_AFTER_SECONDS"] = "900"
         os.environ["RATE_LIMIT_TABLE_NAME"] = "checkpoint-rate-limits"
         os.environ["QUOTA_HASH_SECRET"] = "test-quota-hmac-secret-that-is-long-enough"
-        bedrock_client = FakeBedrockClient(
-            json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]})
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
         )
         dynamo_client = FakeDynamoClient()
 
@@ -1931,8 +1834,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_production_fails_closed_without_rate_limit_table(self):
         os.environ["DEPLOYMENT_ENVIRONMENT"] = "production"
         os.environ["CHECKPOINT_BACKEND_TOKEN"] = "production-test-token"
-        bedrock_client = FakeBedrockClient(
-            json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]})
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
         )
 
         response = lambda_function.handle_http_request(
@@ -2017,8 +1920,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_guardrail_configuration_is_passed_to_bedrock(self):
         os.environ["BEDROCK_GUARDRAIL_IDENTIFIER"] = "guardrail-123"
         os.environ["BEDROCK_GUARDRAIL_VERSION"] = "7"
-        bedrock_client = FakeBedrockClient(
-            json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]})
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
         )
 
         response = lambda_function.handle_http_request(
@@ -2065,8 +1968,8 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         payload = _request_payload(target_count=1)
         payload["goal"]["title"] = "private-goal-marker"
         payload["goal"]["learningTarget"] = "private-goal-marker"
-        bedrock_client = FakeBedrockClient(
-            json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]})
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
         )
         output = io.StringIO()
 
@@ -2141,7 +2044,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
         os.environ["MAX_REQUESTS_PER_INSTALL_PER_DAY"] = "8"
         os.environ["MAX_REQUESTS_PER_IP_PER_DAY"] = "80"
         os.environ["RATE_LIMIT_TTL_SECONDS"] = "172800"
-        bedrock_client = FakeBedrockClient(json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]}))
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
+        )
         dynamo_client = FakeDynamoClient()
         started_at = int(time.time())
 
@@ -2173,7 +2078,9 @@ class BedrockQuestionServiceTests(unittest.TestCase):
     def test_rate_limit_returns_429_before_bedrock_call(self):
         os.environ["RATE_LIMIT_TABLE_NAME"] = "checkpoint-rate-limits"
         os.environ["QUOTA_HASH_SECRET"] = "test-quota-hmac-secret-that-is-long-enough"
-        bedrock_client = FakeBedrockClient(json.dumps({"questions": [_raw_question("Question one about LSAT assumptions?")]}))
+        bedrock_client = FakeBedrockClient.returning_questions(
+            _raw_question("Question one about LSAT assumptions?")
+        )
         dynamo_client = FakeDynamoClient(fail_on_call=1)
 
         response = lambda_function.handle_http_request(
