@@ -42,6 +42,7 @@
 		C10000000000000000000002 /* CheckpointProducts.storekit in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001A /* CheckpointProducts.storekit */; };
 		C10000000000000000000003 /* StoreKitPaymentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000003 /* StoreKitPaymentTests.swift */; };
 		C10000000000000000000004 /* CheckpointWorkflowCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000004 /* CheckpointWorkflowCoordinatorTests.swift */; };
+		C10000000000000000000005 /* BackendQuestionEngineContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000005 /* BackendQuestionEngineContractTests.swift */; };
 		D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* PrivacyInfo.xcprivacy */; };
@@ -144,6 +145,7 @@
 		C20000000000000000000002 /* CheckpointTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CheckpointTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20000000000000000000003 /* StoreKitPaymentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitPaymentTests.swift; sourceTree = "<group>"; };
 		C20000000000000000000004 /* CheckpointWorkflowCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointWorkflowCoordinatorTests.swift; sourceTree = "<group>"; };
+		C20000000000000000000005 /* BackendQuestionEngineContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendQuestionEngineContractTests.swift; sourceTree = "<group>"; };
 		D20000000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 			children = (
 				C20000000000000000000001 /* CheckpointWorkflowTests.swift */,
 				C20000000000000000000004 /* CheckpointWorkflowCoordinatorTests.swift */,
+				C20000000000000000000005 /* BackendQuestionEngineContractTests.swift */,
 				C20000000000000000000003 /* StoreKitPaymentTests.swift */,
 			);
 			path = CheckpointTests;
@@ -621,6 +624,7 @@
 			files = (
 				C10000000000000000000001 /* CheckpointWorkflowTests.swift in Sources */,
 				C10000000000000000000004 /* CheckpointWorkflowCoordinatorTests.swift in Sources */,
+				C10000000000000000000005 /* BackendQuestionEngineContractTests.swift in Sources */,
 				C10000000000000000000003 /* StoreKitPaymentTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

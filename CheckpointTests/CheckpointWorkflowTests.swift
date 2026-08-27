@@ -524,6 +524,710 @@ final class CheckpointWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testInitialGenerationPersistsFirstClassSkillMapBeforeRequestingQuestions() async throws {
+        let inferredMap = GoalSkillMap(
+            topics: [
+                SkillMapTopic(
+                    name: "argument analysis",
+                    objectives: [SkillMapObjective(name: "Identify conclusions")]
+                ),
+                SkillMapTopic(
+                    name: "conditional logic",
+                    objectives: [SkillMapObjective(name: "Translate conditionals")]
+                ),
+                SkillMapTopic(
+                    name: "reading structure",
+                    objectives: [SkillMapObjective(name: "Trace passage structure")]
+                ),
+                SkillMapTopic(
+                    name: "evidence evaluation",
+                    objectives: [SkillMapObjective(name: "Evaluate support")]
+                )
+            ],
+            status: .suggested,
+            provenance: .backendInferred
+        )
+        let backendEngine = FirstClassSkillMapQuestionEngine(skillMap: inferredMap)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.backend)
+
+        await store.createGoal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Strong reader who has not studied formal logic",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        XCTAssertEqual(backendEngine.events.prefix(2), ["inference", "generation"])
+        let firstRequest = try XCTUnwrap(backendEngine.receivedRequests.first)
+        let storedMap = try XCTUnwrap(store.goal?.derivedSkillMap)
+        XCTAssertEqual(storedMap.provenance, .backendInferred)
+        XCTAssertEqual(firstRequest.goal.derivedSkillMap, storedMap)
+        XCTAssertEqual(Set(firstRequest.desiredSkillAllocation.values), [12])
+        XCTAssertEqual(
+            Set(firstRequest.desiredSkillAllocation.keys),
+            Set(storedMap.topics.map(\.id))
+        )
+        XCTAssertTrue(
+            store.activeQuestions.allSatisfy { question in
+                question.skillID != nil &&
+                    storedMap.topics.contains { $0.id == question.skillID }
+            }
+        )
+    }
+
+    @MainActor
+    func testConfirmingUnchangedSkillMapUpdatesMetadataWithoutRegenerating() async throws {
+        let topics = ["argument analysis", "conditional logic", "reading structure"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        let suggestedMap = GoalSkillMap(
+            topics: topics,
+            status: .suggested,
+            version: 4,
+            provenance: .backendInferred
+        )
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "timed sections",
+            derivedSkillMap: suggestedMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let backendEngine = CapturingQuestionEngine(provider: .backend)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (0..<5).map { index in
+            let skill = topics[index % topics.count]
+            return makeQuestion(
+                goal: goal,
+                index: index,
+                topic: skill.name,
+                skillID: skill.id
+            )
+        }
+
+        store.confirmActiveDerivedSkillMap()
+
+        let confirmedGoal = try XCTUnwrap(store.goal)
+        let confirmedMap = try XCTUnwrap(confirmedGoal.derivedSkillMap)
+        XCTAssertEqual(confirmedMap.status, .reviewed)
+        XCTAssertEqual(confirmedMap.version, suggestedMap.version)
+        XCTAssertEqual(confirmedMap.provenance, .backendInferred)
+        XCTAssertEqual(confirmedGoal.focusAreas, goal.focusAreas)
+
+        let idempotentMap = confirmedMap
+        XCTAssertTrue(store.reviewActiveDerivedSkillMap(topics: confirmedMap.topics))
+        XCTAssertTrue(store.reviewActiveDerivedSkillMap(topics: confirmedMap.topics))
+        XCTAssertEqual(store.goal?.derivedSkillMap, idempotentMap)
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertTrue(backendEngine.receivedRequests.isEmpty)
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
+    }
+
+    @MainActor
+    func testAdaptiveSkillWeightsIgnoreInventoryAndRetainMasteredMaintenance() async throws {
+        let weakSkill = SkillMapTopic(
+            name: "argument analysis",
+            objectives: [SkillMapObjective(name: "argument analysis")]
+        )
+        let newSkill = SkillMapTopic(
+            name: "conditional logic",
+            objectives: [SkillMapObjective(name: "conditional logic")]
+        )
+        let masteredSkill = SkillMapTopic(
+            name: "reading structure",
+            objectives: [SkillMapObjective(name: "reading structure")]
+        )
+        let skillMap = GoalSkillMap(
+            topics: [weakSkill, newSkill, masteredSkill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "timed sections",
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let backendEngine = CapturingQuestionEngine(provider: .backend)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.updateMembershipTier(.member)
+        store.updateAIProviderPreference(.backend)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        var weak = TopicCompetency.initial(
+            topic: weakSkill.name,
+            goalID: goal.id,
+            skillID: weakSkill.id
+        )
+        weak.attempts = 10
+        weak.incorrect = 10
+        var mastered = TopicCompetency.initial(
+            topic: masteredSkill.name,
+            estimatedLevel: 5,
+            goalID: goal.id,
+            skillID: masteredSkill.id
+        )
+        mastered.attempts = 10
+        mastered.correct = 10
+        store.competencies = [
+            weak,
+            .initial(topic: newSkill.name, goalID: goal.id, skillID: newSkill.id),
+            mastered
+        ]
+        store.questions = (0..<12).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                topic: weakSkill.name,
+                skillID: weakSkill.id
+            )
+        }
+
+        await store.refreshQuestionBatch()
+        let firstWeights = try XCTUnwrap(backendEngine.receivedRequests.first?.desiredSkillAllocation)
+        await store.refreshQuestionBatch()
+        let secondWeights = try XCTUnwrap(backendEngine.receivedRequests.last?.desiredSkillAllocation)
+
+        XCTAssertEqual(firstWeights, secondWeights)
+        XCTAssertGreaterThan(firstWeights[weakSkill.id, default: 0], firstWeights[newSkill.id, default: 0])
+        XCTAssertGreaterThan(firstWeights[newSkill.id, default: 0], firstWeights[masteredSkill.id, default: 0])
+        XCTAssertGreaterThan(firstWeights[masteredSkill.id, default: 0], 0)
+    }
+
+    @MainActor
+    func testDurableBankRevisionTracksSkillWeightsButNotQuestionInventory() async throws {
+        let skills = ["argument analysis", "conditional logic", "reading structure"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        let skillMap = GoalSkillMap(
+            topics: skills,
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "timed sections",
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "weighted-bank",
+                status: .queued,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount
+            )
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [60_000_000_000]
+        )
+        store.updateMembershipTier(.member)
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.competencies = skills.map {
+            .initial(topic: $0.name, goalID: goal.id, skillID: $0.id)
+        }
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 1,
+                topic: skills[0].name,
+                skillID: skills[0].id
+            )
+        ]
+
+        await store.refreshQuestionBatch()
+        let originalRequest = try XCTUnwrap(bankClient.ensureRequests.last)
+
+        store.questions.append(
+            makeQuestion(
+                goal: goal,
+                index: 2,
+                topic: skills[1].name,
+                skillID: skills[1].id
+            )
+        )
+        await store.refreshQuestionBatch()
+        let inventoryChangedRequest = try XCTUnwrap(bankClient.ensureRequests.last)
+
+        var mastered = try XCTUnwrap(store.competencies.first { $0.skillID == skills[0].id })
+        mastered.attempts = 10
+        mastered.correct = 10
+        store.competencies.removeAll { $0.skillID == skills[0].id }
+        store.competencies.append(mastered)
+        await store.refreshQuestionBatch()
+        let weightsChangedRequest = try XCTUnwrap(bankClient.ensureRequests.last)
+
+        XCTAssertEqual(originalRequest.contextRevision, inventoryChangedRequest.contextRevision)
+        XCTAssertNotEqual(inventoryChangedRequest.contextRevision, weightsChangedRequest.contextRevision)
+        XCTAssertEqual(
+            originalRequest.contextRevision.count,
+            weightsChangedRequest.contextRevision.count
+        )
+    }
+
+    @MainActor
+    func testSkillMapEditRetiresRemovedSkillAndPreservesStableIdentityHistory() throws {
+        let retainedSkill = SkillMapTopic(
+            name: "argument analysis",
+            objectives: [SkillMapObjective(name: "Identify conclusions")]
+        )
+        let removedSkill = SkillMapTopic(
+            name: "conditional logic",
+            objectives: [SkillMapObjective(name: "Translate conditionals")]
+        )
+        let thirdSkill = SkillMapTopic(
+            name: "reading structure",
+            objectives: [SkillMapObjective(name: "Trace passage structure")]
+        )
+        let initialMap = GoalSkillMap(
+            topics: [retainedSkill, removedSkill, thirdSkill],
+            status: .suggested,
+            provenance: .backendInferred
+        )
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            derivedSkillMap: initialMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let retainedQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: retainedSkill.name,
+            skillID: retainedSkill.id,
+            objectiveID: retainedSkill.objectives[0].id,
+            objective: retainedSkill.objectives[0].name
+        )
+        let removedQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: removedSkill.name,
+            skillID: removedSkill.id,
+            objectiveID: removedSkill.objectives[0].id,
+            objective: removedSkill.objectives[0].name
+        )
+        let thirdQuestion = makeQuestion(
+            goal: goal,
+            index: 3,
+            topic: thirdSkill.name,
+            skillID: thirdSkill.id
+        )
+        store.questions = [retainedQuestion, removedQuestion, thirdQuestion]
+        var retainedCompetency = TopicCompetency.initial(
+            topic: retainedSkill.name,
+            goalID: goal.id,
+            skillID: retainedSkill.id
+        )
+        retainedCompetency.attempts = 4
+        retainedCompetency.correct = 3
+        var removedCompetency = TopicCompetency.initial(
+            topic: removedSkill.name,
+            goalID: goal.id,
+            skillID: removedSkill.id
+        )
+        removedCompetency.attempts = 2
+        removedCompetency.incorrect = 2
+        store.competencies = [
+            retainedCompetency,
+            removedCompetency,
+            .initial(topic: thirdSkill.name, goalID: goal.id, skillID: thirdSkill.id)
+        ]
+
+        var renamedSkill = retainedSkill
+        renamedSkill.name = "causal argument analysis"
+        let replacementSkill = SkillMapTopic(name: "evidence evaluation")
+
+        XCTAssertTrue(
+            store.reviewActiveDerivedSkillMap(
+                topics: [renamedSkill, thirdSkill, replacementSkill]
+            )
+        )
+
+        let reviewedMap = try XCTUnwrap(store.goal?.derivedSkillMap)
+        XCTAssertEqual(reviewedMap.version, initialMap.version + 1)
+        XCTAssertEqual(reviewedMap.provenance, .userEdited)
+        XCTAssertTrue(store.reviewActiveDerivedSkillMap(topics: reviewedMap.topics))
+        XCTAssertEqual(store.goal?.derivedSkillMap?.version, reviewedMap.version)
+        XCTAssertEqual(
+            reviewedMap.topics.first(where: { $0.id == replacementSkill.id })?.objectives.map(\.name),
+            [replacementSkill.name]
+        )
+        let canonicalRetainedQuestion = try XCTUnwrap(
+            store.questions.first { $0.id == retainedQuestion.id }
+        )
+        XCTAssertEqual(canonicalRetainedQuestion.skillID, retainedSkill.id)
+        XCTAssertEqual(canonicalRetainedQuestion.topic, renamedSkill.name)
+        XCTAssertEqual(
+            store.questions.first { $0.id == removedQuestion.id }?.status,
+            .retired
+        )
+        XCTAssertFalse(store.nextQuestions(limit: 5).contains { $0.id == removedQuestion.id })
+        XCTAssertEqual(
+            store.competencies.first(where: { $0.skillID == retainedSkill.id })?.attempts,
+            4
+        )
+        XCTAssertNil(store.competencies.first { $0.skillID == removedSkill.id })
+        XCTAssertEqual(
+            store.competencies.first(where: { $0.skillID == replacementSkill.id })?.attempts,
+            0
+        )
+    }
+
+    @MainActor
+    func testConsumedStarterSkillMapReviewPersistsWithoutRegenerating() async throws {
+        let skills = ["argument analysis", "conditional logic", "reading structure"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            derivedSkillMap: GoalSkillMap(
+                topics: skills,
+                status: .reviewed,
+                provenance: .backendInferred
+            ),
+            preferredQuestionStyle: .multipleChoice
+        )
+        let backendEngine = CapturingQuestionEngine(provider: .backend)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let consumedQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: skills[0].name,
+            skillID: skills[0].id,
+            timesAsked: 1
+        )
+        let removedQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: skills[1].name,
+            skillID: skills[1].id
+        )
+        store.questions = [consumedQuestion, removedQuestion]
+        let replacement = SkillMapTopic(name: "evidence evaluation")
+
+        XCTAssertTrue(
+            store.reviewActiveDerivedSkillMap(
+                topics: [skills[0], skills[2], replacement]
+            )
+        )
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertEqual(
+            store.goal?.derivedSkillMap?.topics.map(\.id),
+            [skills[0].id, skills[2].id, replacement.id]
+        )
+        XCTAssertEqual(
+            store.questions.first(where: { $0.id == removedQuestion.id })?.status,
+            .retired
+        )
+        XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
+        XCTAssertNotNil(store.checkpointNotice)
+        XCTAssertTrue(backendEngine.receivedRequests.isEmpty)
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
+        XCTAssertNotEqual(store.questionBatchState, .generating)
+    }
+
+    @MainActor
+    func testConsumedStarterSkillMapRepairPersistsWithoutRegenerating() async throws {
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let backendEngine = CapturingQuestionEngine(provider: .backend)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: backendEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let retainedQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "argument analysis",
+            timesAsked: 1
+        )
+        let retiredQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: "unrelated trivia"
+        )
+        store.questions = [retainedQuestion, retiredQuestion]
+
+        XCTAssertTrue(
+            store.repairActiveSkillMap(
+                topicNames: ["argument analysis", "conditional logic", "reading structure"]
+            )
+        )
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        let repairedMap = try XCTUnwrap(store.goal?.derivedSkillMap)
+        XCTAssertEqual(repairedMap.status, .reviewed)
+        XCTAssertEqual(repairedMap.provenance, .userEdited)
+        XCTAssertEqual(
+            store.questions.first(where: { $0.id == retiredQuestion.id })?.status,
+            .retired
+        )
+        XCTAssertEqual(
+            store.questions.first(where: { $0.id == retainedQuestion.id })?.skillID,
+            repairedMap.topics.first?.id
+        )
+        XCTAssertTrue(store.competencies.allSatisfy { $0.skillID != nil })
+        XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
+        XCTAssertNotNil(store.checkpointNotice)
+        XCTAssertTrue(backendEngine.receivedRequests.isEmpty)
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
+        XCTAssertNotEqual(store.questionBatchState, .generating)
+    }
+
+    @MainActor
+    func testSkillFirstSchedulerStartsWithLeastAttemptedDistinctSkills() throws {
+        let skills = ["arrays", "recursion", "graphs", "hash maps"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        let skillMap = GoalSkillMap(
+            topics: skills,
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let goal = Goal(
+            title: "Prepare for coding interviews",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: skills.map(\.name).joined(separator: ", "),
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateQuestionsPerSession(5)
+        var practiced = TopicCompetency.initial(
+            topic: skills[0].name,
+            goalID: goal.id,
+            skillID: skills[0].id
+        )
+        practiced.attempts = 6
+        practiced.correct = 3
+        store.competencies = [practiced] + skills.dropFirst().map {
+            .initial(topic: $0.name, goalID: goal.id, skillID: $0.id)
+        }
+        store.questions = skills.enumerated().flatMap { skillIndex, skill in
+            (0..<2).map { questionIndex in
+                makeQuestion(
+                    goal: goal,
+                    index: (skillIndex * 10) + questionIndex,
+                    topic: skill.name,
+                    skillID: skill.id
+                )
+            }
+        }
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertNotEqual(session.questions.first?.skillID, practiced.skillID)
+        XCTAssertEqual(Set(session.questions.prefix(2).compactMap(\.skillID)).count, 2)
+        XCTAssertEqual(Set(session.questions.prefix(3).compactMap(\.skillID)).count, 2)
+        XCTAssertEqual(Set(session.questions.compactMap(\.skillID)).count, 3)
+    }
+
+    @MainActor
+    func testSkillFirstSchedulerRepeatsDueWeakSkillWithinBreadthFloor() throws {
+        let skills = ["algebra", "geometry", "statistics"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        let skillMap = GoalSkillMap(
+            topics: skills,
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let goal = Goal(
+            title: "Prepare for math final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateQuestionsPerSession(5)
+        var weak = TopicCompetency.initial(
+            topic: skills[0].name,
+            goalID: goal.id,
+            skillID: skills[0].id
+        )
+        weak.attempts = 8
+        weak.incorrect = 8
+        store.competencies = [weak] + skills.dropFirst().map {
+            .initial(topic: $0.name, goalID: goal.id, skillID: $0.id)
+        }
+        let dueWeakQuestions = (0..<3).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                topic: skills[0].name,
+                skillID: skills[0].id,
+                status: .incorrect,
+                nextReviewAt: Date().addingTimeInterval(-60)
+            )
+        }
+        let breadthQuestions = skills.dropFirst().enumerated().map { index, skill in
+            makeQuestion(
+                goal: goal,
+                index: 10 + index,
+                topic: skill.name,
+                skillID: skill.id
+            )
+        }
+        store.questions = dueWeakQuestions + breadthQuestions
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.questions.filter { $0.skillID == skills[0].id }.count, 3)
+        XCTAssertEqual(Set(session.questions.compactMap(\.skillID)).count, 3)
+    }
+
+    @MainActor
+    func testSkillFirstSchedulerUsesOneDueMasteredMaintenanceQuestion() throws {
+        let skills = ["algebra", "geometry", "statistics"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        let skillMap = GoalSkillMap(
+            topics: skills,
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let goal = Goal(
+            title: "Prepare for math final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: skills.map(\.name).joined(separator: ", "),
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateQuestionsPerSession(5)
+        var mastered = TopicCompetency.initial(
+            topic: skills[0].name,
+            estimatedLevel: 5,
+            goalID: goal.id,
+            skillID: skills[0].id
+        )
+        mastered.attempts = 10
+        mastered.correct = 10
+        store.competencies = [mastered] + skills.dropFirst().map {
+            .initial(topic: $0.name, goalID: goal.id, skillID: $0.id)
+        }
+        let maintenanceQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: skills[0].name,
+            skillID: skills[0].id,
+            status: .correct,
+            timesAsked: 1,
+            timesCorrect: 1,
+            lastAskedAt: Date().addingTimeInterval(-60 * 60 * 24 * 7),
+            nextReviewAt: Date().addingTimeInterval(-60)
+        )
+        let freshQuestions = (2...7).map { index in
+            let skill = skills[1 + (index % 2)]
+            return makeQuestion(
+                goal: goal,
+                index: index,
+                topic: skill.name,
+                skillID: skill.id
+            )
+        }
+        store.questions = freshQuestions + [maintenanceQuestion]
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.questions.last?.id, maintenanceQuestion.id)
+        XCTAssertEqual(session.questions.filter { $0.id == maintenanceQuestion.id }.count, 1)
+    }
+
+    @MainActor
     func testReviewingInferredSkillMapPreservesIdentityMasteryAndTopOffProgress() async throws {
         let backendEngine = SkillMapQuestionEngine(
             provider: .backend,
@@ -579,10 +1283,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(renamedSkill.name, "causal argument analysis")
         XCTAssertTrue(renamedSkill.aliases.contains("argument flaws"))
         XCTAssertEqual(Set(reviewedMap.topics.map(\.id)), Set(suggestedMap.topics.map(\.id)))
-        XCTAssertEqual(
-            reviewedGoal.focusAreas,
-            reviewedMap.topicNames.joined(separator: ", ")
-        )
+        XCTAssertEqual(reviewedGoal.focusAreas, "")
         XCTAssertTrue(
             store.activeQuestions
                 .filter { $0.id == firstQuestion.id }
@@ -596,7 +1297,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(renamedCompetency.attempts, 1)
         XCTAssertEqual(renamedCompetency.correct, 1)
 
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 800_000_000)
 
         renamedCompetency = try XCTUnwrap(
             store.sortedCompetencies.first(where: { $0.skillID == originalSkill.id })
@@ -604,7 +1305,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(renamedCompetency.attempts, 1)
         XCTAssertEqual(renamedCompetency.correct, 1)
         XCTAssertFalse(store.isQuestionBankTopOffInProgress)
-        XCTAssertEqual(backendEngine.receivedRequests.count, 2)
+        XCTAssertEqual(backendEngine.receivedRequests.count, 3)
         XCTAssertGreaterThan(store.activeQuestions.count, UnlockPolicy.default.questionsPerSession)
 
         let restoredStore = CheckpointStore(
@@ -712,6 +1413,165 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(practicedCompetency.attempts, 2)
         XCTAssertEqual(practicedCompetency.correct, 1)
         XCTAssertEqual(practicedCompetency.incorrect, 1)
+    }
+
+    @MainActor
+    func testLegacyQuestionTopicMigrationAcceptsShortSkillNames() throws {
+        let legacyGoal = Goal(
+            title: "Prepare for a technical assessment",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let shortTopics = ["AI", "R", "C"]
+        let seededStore = CheckpointStore(defaults: defaults)
+        seededStore.goal = legacyGoal
+        seededStore.goalProfiles = [legacyGoal]
+        seededStore.questions = shortTopics.enumerated().map { index, topic in
+            makeQuestion(goal: legacyGoal, index: index, topic: topic)
+        }
+        seededStore.updateAIProviderPreference(.backend)
+
+        let restoredStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        let migratedMap = try XCTUnwrap(restoredStore.goal?.derivedSkillMap)
+
+        XCTAssertEqual(migratedMap.topicNames, shortTopics)
+        XCTAssertEqual(migratedMap.provenance, .questionTopics)
+        XCTAssertTrue(restoredStore.activeQuestions.allSatisfy { $0.skillID != nil })
+    }
+
+    @MainActor
+    func testLegacyExplicitFocusAreasMigrateIntoReviewedStableSkillMap() throws {
+        let focusTopics = ["argument analysis", "conditional logic", "reading structure"]
+        let legacyGoal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: focusTopics.joined(separator: ", "),
+            preferredQuestionStyle: .multipleChoice
+        )
+        let seededStore = CheckpointStore(defaults: defaults)
+        seededStore.goal = legacyGoal
+        seededStore.goalProfiles = [legacyGoal]
+        seededStore.questions = focusTopics.enumerated().map { index, topic in
+            makeQuestion(goal: legacyGoal, index: index, topic: topic)
+        }
+        var practiced = TopicCompetency.initial(
+            topic: focusTopics[0],
+            goalID: legacyGoal.id
+        )
+        practiced.attempts = 3
+        practiced.correct = 2
+        practiced.incorrect = 1
+        seededStore.competencies = [practiced]
+        seededStore.updateAIProviderPreference(.backend)
+
+        let restoredStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        let migratedMap = try XCTUnwrap(restoredStore.goal?.derivedSkillMap)
+
+        XCTAssertEqual(migratedMap.topicNames, focusTopics)
+        XCTAssertEqual(migratedMap.status, .reviewed)
+        XCTAssertEqual(migratedMap.provenance, .explicitFocusAreas)
+        XCTAssertTrue(migratedMap.topics.allSatisfy { skill in
+            skill.objectives.count == 1 && skill.objectives.first?.id == skill.id
+        })
+        XCTAssertTrue(restoredStore.activeQuestions.allSatisfy { question in
+            question.skillID != nil && question.objectiveID == question.skillID
+        })
+        XCTAssertEqual(
+            restoredStore.competencies.first(where: { $0.topic == focusTopics[0] })?.attempts,
+            3
+        )
+
+        let stableMap = migratedMap
+        restoredStore.updateAIProviderPreference(.backend)
+        let secondRestore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        XCTAssertEqual(secondRestore.goal?.derivedSkillMap, stableMap)
+    }
+
+    @MainActor
+    func testLegacySkillMapSeedsStableObjectivesAndCanonicalQuestionTags() throws {
+        let topics = ["argument analysis", "conditional logic", "reading structure"].map {
+            SkillMapTopic(name: $0)
+        }
+        let legacyMap = GoalSkillMap(
+            topics: topics,
+            status: .suggested,
+            version: 1,
+            provenance: .questionTopics
+        )
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            derivedSkillMap: legacyMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let seededStore = CheckpointStore(defaults: defaults)
+        seededStore.goal = goal
+        seededStore.goalProfiles = [goal]
+        seededStore.questions = (0..<5).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                topic: topics[index % topics.count].name
+            )
+        }
+        seededStore.updateAIProviderPreference(.backend)
+
+        let restoredStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        let restoredMap = try XCTUnwrap(restoredStore.goal?.derivedSkillMap)
+        XCTAssertEqual(restoredMap.version, 2)
+        XCTAssertTrue(restoredMap.topics.allSatisfy { skill in
+            skill.objectives.count == 1 && skill.objectives.first?.id == skill.id
+        })
+        XCTAssertTrue(restoredStore.activeQuestions.allSatisfy { question in
+            question.skillID != nil && question.objectiveID == question.skillID
+        })
+
+        let stableObjectiveIDs = restoredMap.topics.flatMap(\.objectives).map(\.id)
+        restoredStore.updateAIProviderPreference(.backend)
+        let secondRestore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+        XCTAssertEqual(secondRestore.goal?.derivedSkillMap?.version, 2)
+        XCTAssertEqual(
+            secondRestore.goal?.derivedSkillMap?.topics.flatMap(\.objectives).map(\.id),
+            stableObjectiveIDs
+        )
     }
 
     @MainActor
@@ -839,7 +1699,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         )
         XCTAssertEqual(store.goal?.id, originalGoal.id)
         XCTAssertEqual(store.attempts, [originalAttempt])
-        XCTAssertNil(store.pendingMembershipFeature)
+        XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
 
         try? await Task.sleep(nanoseconds: 200_000_000)
 
@@ -847,16 +1707,21 @@ final class CheckpointWorkflowTests: XCTestCase {
         let repairedMap = try XCTUnwrap(repairedGoal.derivedSkillMap)
         XCTAssertEqual(repairedGoal.id, originalGoal.id)
         XCTAssertEqual(repairedMap.status, .reviewed)
-        XCTAssertEqual(repairedGoal.focusAreas, repairedMap.topicNames.joined(separator: ", "))
+        XCTAssertEqual(repairedGoal.focusAreas, "")
         XCTAssertEqual(store.attempts, [originalAttempt])
+        XCTAssertTrue(backendEngine.receivedRequests.isEmpty)
         let preservedHistory = try XCTUnwrap(
             store.competencies.first(where: { $0.topic == "General progress" })
         )
         XCTAssertEqual(preservedHistory.attempts, 1)
         XCTAssertEqual(preservedHistory.incorrect, 1)
-        XCTAssertTrue(
-            store.activeQuestions.allSatisfy { repairedMap.topicNames.contains($0.topic) }
+        XCTAssertEqual(
+            store.questions.first(where: { $0.id == originalQuestion.id })?.status,
+            .retired
         )
+        XCTAssertTrue(store.nextQuestions(limit: 5).allSatisfy {
+            repairedMap.topicNames.contains($0.topic)
+        })
     }
 
     @MainActor
@@ -1272,13 +2137,13 @@ final class CheckpointWorkflowTests: XCTestCase {
             deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
             category: .codingInterview,
             currentLevel: "Intermediate",
-            focusAreas: "arrays, recursion",
+            focusAreas: "arrays, recursion, hash maps",
             preferredQuestionStyle: .multipleChoice
         )
 
         let firstGoal = try XCTUnwrap(store.goal)
         let firstQuestion = try XCTUnwrap(store.questions.first)
-        XCTAssertEqual(Set(store.competencies.map(\.topic)), ["arrays", "recursion"])
+        XCTAssertEqual(Set(store.competencies.map(\.topic)), ["arrays", "recursion", "hash maps"])
 
         _ = store.submitAnswer(question: firstQuestion, answer: firstQuestion.expectedAnswer, result: .correct)
         store.reportQuestion(firstQuestion, reason: .confusing, note: "stale")
@@ -1293,7 +2158,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
             category: .examPrep,
             currentLevel: "Comfortable with derivatives, weak on integrals",
-            focusAreas: "derivatives, integrals",
+            focusAreas: "derivatives, integrals, limits",
             preferredQuestionStyle: .multipleChoice
         )
 
@@ -1301,8 +2166,8 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertNotEqual(secondGoal.id, firstGoal.id)
         XCTAssertEqual(secondGoal.title, "Prepare for calculus final")
         XCTAssertTrue(store.activeQuestions.allSatisfy { $0.goalID == secondGoal.id })
-        XCTAssertEqual(Set(store.activeQuestions.map(\.topic)), ["derivatives", "integrals"])
-        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["derivatives", "integrals"])
+        XCTAssertEqual(Set(store.activeQuestions.map(\.topic)), ["derivatives", "integrals", "limits"])
+        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["derivatives", "integrals", "limits"])
         XCTAssertTrue(store.activeAttempts.isEmpty)
         XCTAssertTrue(store.activeQuestionReports.isEmpty)
         XCTAssertNil(store.unlockSession)
@@ -1310,7 +2175,7 @@ final class CheckpointWorkflowTests: XCTestCase {
 
         let session = try XCTUnwrap(store.nextCheckpointSession())
         XCTAssertTrue(session.questions.allSatisfy { $0.goalID == secondGoal.id })
-        XCTAssertTrue(session.questions.allSatisfy { ["derivatives", "integrals"].contains($0.topic) })
+        XCTAssertTrue(session.questions.allSatisfy { ["derivatives", "integrals", "limits"].contains($0.topic) })
     }
 
     @MainActor
@@ -1331,7 +2196,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
             category: .codingInterview,
             currentLevel: "Advanced on arrays, weak at recursion",
-            focusAreas: "arrays, recursion",
+            focusAreas: "arrays, recursion, hash maps",
             preferredQuestionStyle: .multipleChoice,
             minimumQuestionDifficulty: 4
         )
@@ -1346,7 +2211,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
             category: .examPrep,
             currentLevel: "Comfortable with derivatives, weak on integrals",
-            focusAreas: "derivatives, integrals",
+            focusAreas: "derivatives, integrals, limits",
             preferredQuestionStyle: .multipleChoice,
             minimumQuestionDifficulty: 2
         )
@@ -1356,7 +2221,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(store.availableGoalProfiles.count, 2)
         XCTAssertEqual(store.activeQuestionDifficulty, 2)
         XCTAssertTrue(store.activeQuestions.allSatisfy { $0.goalID == secondGoal.id })
-        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["derivatives", "integrals"])
+        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["derivatives", "integrals", "limits"])
         XCTAssertTrue(store.activeAttempts.isEmpty)
         XCTAssertTrue(store.activeQuestionReports.isEmpty)
 
@@ -1370,7 +2235,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(store.goal?.id, firstGoal.id)
         XCTAssertEqual(store.activeQuestionDifficulty, 4)
         XCTAssertTrue(store.activeQuestions.allSatisfy { $0.goalID == firstGoal.id })
-        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["arrays", "recursion"])
+        XCTAssertEqual(Set(store.sortedCompetencies.map(\.topic)), ["arrays", "recursion", "hash maps"])
         XCTAssertEqual(store.activeAttempts.count, 1)
         XCTAssertEqual(store.activeQuestionReports.count, 1)
 
@@ -1559,7 +2424,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
             category: .codingInterview,
             currentLevel: "Advanced on arrays",
-            focusAreas: "arrays, recursion",
+            focusAreas: "arrays, recursion, hash maps",
             preferredQuestionStyle: .multipleChoice,
             minimumQuestionDifficulty: 4
         )
@@ -1570,7 +2435,7 @@ final class CheckpointWorkflowTests: XCTestCase {
             deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
             category: .examPrep,
             currentLevel: "Intermediate",
-            focusAreas: "derivatives, integrals",
+            focusAreas: "derivatives, integrals, limits",
             preferredQuestionStyle: .multipleChoice,
             minimumQuestionDifficulty: 2
         )
@@ -1589,7 +2454,7 @@ final class CheckpointWorkflowTests: XCTestCase {
         XCTAssertEqual(Set(restoredStore.availableGoalProfiles.map(\.id)), Set([firstGoal.id, secondGoal.id]))
         XCTAssertEqual(restoredStore.activeQuestionDifficulty, 4)
         XCTAssertTrue(restoredStore.activeQuestions.allSatisfy { $0.goalID == firstGoal.id })
-        XCTAssertEqual(Set(restoredStore.sortedCompetencies.map(\.topic)), ["arrays", "recursion"])
+        XCTAssertEqual(Set(restoredStore.sortedCompetencies.map(\.topic)), ["arrays", "recursion", "hash maps"])
     }
 
     @MainActor
@@ -5638,6 +6503,48 @@ private struct GoalAwareQuestionEngine: QuestionGenerating {
     }
 }
 
+private final class FirstClassSkillMapQuestionEngine: QuestionGenerating, SkillMapInferring, @unchecked Sendable {
+    let provider: AIProviderKind = .backend
+    let skillMap: GoalSkillMap
+    private(set) var events: [String] = []
+    private(set) var receivedRequests: [QuestionGenerationRequest] = []
+
+    init(skillMap: GoalSkillMap) {
+        self.skillMap = skillMap
+    }
+
+    func inferSkillMap(for request: QuestionGenerationRequest) async throws -> GoalSkillMap {
+        events.append("inference")
+        return skillMap
+    }
+
+    func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
+        events.append("generation")
+        receivedRequests.append(request)
+        let requestSkills = request.goal.derivedSkillMap?.topics ?? skillMap.topics
+        let allocatedSkills = requestSkills.flatMap { skill in
+            Array(repeating: skill, count: request.desiredSkillAllocation[skill.id, default: 0])
+        }
+        let selectedSkills = allocatedSkills.isEmpty ? requestSkills : allocatedSkills
+
+        return (0..<request.targetCount).map { index in
+            let skill = selectedSkills[index % selectedSkills.count]
+            let objective = skill.objectives.first
+            return makeQuestion(
+                goal: request.goal,
+                index: index + 1,
+                topic: skill.name,
+                prompt: "First-class map question \(index + 1) for \(skill.name)",
+                skillID: skill.id,
+                objectiveID: objective?.id,
+                objective: objective?.name,
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+}
+
 private final class SkillMapQuestionEngine: QuestionGenerating, @unchecked Sendable {
     let provider: AIProviderKind
     let topics: [String]
@@ -5854,8 +6761,12 @@ private struct ThrowingQuestionEngine: QuestionGenerating {
     }
 }
 
-private struct UnavailableQuestionEngine: QuestionGenerating {
+private struct UnavailableQuestionEngine: QuestionGenerating, SkillMapInferring {
     let provider: AIProviderKind
+
+    func inferSkillMap(for request: QuestionGenerationRequest) async throws -> GoalSkillMap {
+        throw QuestionGenerationError.providerUnavailable
+    }
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         throw QuestionGenerationError.providerUnavailable
@@ -6009,6 +6920,9 @@ private func makeQuestion(
     expectedAnswer: String? = nil,
     choices: [String]? = nil,
     explanation: String? = nil,
+    skillID: SkillMapTopic.ID? = nil,
+    objectiveID: SkillMapObjective.ID? = nil,
+    objective: String? = nil,
     status: QuestionStatus = .new,
     timesAsked: Int = 0,
     timesCorrect: Int = 0,
@@ -6030,6 +6944,9 @@ private func makeQuestion(
         ],
         explanation: explanation ?? "Explanation \(index)",
         topic: topic,
+        skillID: skillID,
+        objectiveID: objectiveID,
+        objective: objective,
         difficulty: difficulty,
         format: .multipleChoice,
         status: status,
@@ -6247,6 +7164,46 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
     }
 
     @MainActor
+    func testMemberBankIsFinitePerAdaptiveContextRevision() async throws {
+        let suiteName = "QuestionBankFiniteMemberTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "member-bank-queued",
+                status: .queued,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount
+            )
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: CapturingQuestionEngine(provider: .backend),
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults
+        )
+        store.updateMembershipTier(.member)
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        let goal = makeGoal()
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        let ensure = try XCTUnwrap(bankClient.ensureRequests.first)
+        XCTAssertEqual(ensure.desiredCount, ProductLimits.memberQuestionBankTargetCount)
+        XCTAssertEqual(ensure.lowWatermark, 0)
+    }
+
+    @MainActor
     func testReadyClaimMergesByRemoteIDAndNeverCallsSynchronousEngine() async throws {
         let suiteName = "QuestionBankReadyTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
@@ -6343,7 +7300,7 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
     }
 
     @MainActor
-    func testSuggestedSkillMapDoesNotAbandonTheActiveRemoteBankRevision() async throws {
+    func testQuestionTopicFallbackUpgradesRemoteBankToStructuredRevision() async throws {
         let suiteName = "QuestionBankSuggestedMapTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
@@ -6381,7 +7338,14 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
                 targetCount: ProductLimits.starterQuestionBankTargetCount
             )
         )
-        let store = CheckpointStore(questionBankClient: bankClient, defaults: defaults)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults
+        )
         store.updateAIProviderPreference(.backend)
         store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
 
@@ -6396,8 +7360,79 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
 
         XCTAssertEqual(store.goal?.derivedSkillMap?.status, .suggested)
         XCTAssertGreaterThan(bankClient.claimIDs.count, 1)
-        XCTAssertEqual(Set(bankClient.ensureRequests.map(\.contextRevision)).count, 1)
+        XCTAssertEqual(Set(bankClient.ensureRequests.map(\.contextRevision)).count, 2)
         XCTAssertEqual(store.questionBankSyncIntents.first?.bankID, "bank-skill-map")
+    }
+
+    @MainActor
+    func testPollingHandsOffWhenSkillWeightsRotateDuringQueuedEnsure() async throws {
+        let suiteName = "QuestionBankWeightRotationTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let focusTopics = ["argument analysis", "conditional logic", "reading structure"]
+        let goal = Goal(
+            title: "Study for the LSAT",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: focusTopics.joined(separator: ", "),
+            preferredQuestionStyle: .multipleChoice
+        )
+        let remoteQuestions = (1...ProductLimits.starterQuestionBankTargetCount).map { index -> CheckpointQuestion in
+            let remoteID = UUID()
+            var question = makeQuestion(
+                goal: goal,
+                index: index,
+                topic: focusTopics[(index - 1) % focusTopics.count]
+            )
+            question.id = remoteID
+            question.remoteID = remoteID.uuidString
+            return question
+        }
+        let bankClient = WeightRotatingQuestionBankClient(questions: remoteQuestions)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        await store.createGoal(
+            title: goal.title,
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+
+        await bankClient.waitForSecondEnsureToStart()
+        let competencyIndex = try XCTUnwrap(store.competencies.indices.first)
+        store.competencies[competencyIndex].estimatedLevel = 5
+        store.competencies[competencyIndex].attempts = 10
+        store.competencies[competencyIndex].correct = 10
+        await bankClient.releaseSecondEnsure()
+
+        for _ in 0..<1_000 {
+            let revisions = await bankClient.ensureContextRevisions()
+            if revisions.count >= 4 && store.activeQuestions.count == remoteQuestions.count {
+                break
+            }
+            await Task.yield()
+        }
+
+        let revisions = await bankClient.ensureContextRevisions()
+        XCTAssertGreaterThanOrEqual(revisions.count, 4)
+        XCTAssertEqual(revisions[0], revisions[1])
+        XCTAssertNotEqual(revisions[1], revisions[2])
+        XCTAssertEqual(revisions[2], revisions[3])
+        XCTAssertEqual(store.activeQuestions.count, remoteQuestions.count)
+        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
     }
 
     @MainActor
@@ -6418,6 +7453,10 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
             questions: remoteQuestions
         )
         let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
             questionBankClient: bankClient,
             defaults: defaults,
             questionBankPollingDelaysNanoseconds: [1]
@@ -6458,6 +7497,10 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
             )
         )
         let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
             questionBankClient: bankClient,
             defaults: defaults,
             questionBankPollingDelaysNanoseconds: [1]
@@ -6477,6 +7520,125 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         XCTAssertEqual(bankClient.ensureRequests.count, 1)
         XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
         XCTAssertTrue(bankClient.claimIDs.isEmpty)
+    }
+
+    @MainActor
+    func testEmptyMemberBankIsTerminalAndStopsPolling() async throws {
+        let suiteName = "QuestionBankMemberExhaustionTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "bank-member-empty",
+                status: .empty,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount
+            )
+        )
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        store.updateMembershipTier(.member)
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        let goal = makeGoal()
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        await store.refreshQuestionBatch()
+        for _ in 0..<20 {
+            await Task.yield()
+        }
+
+        XCTAssertEqual(bankClient.ensureRequests.count, 1)
+        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+        XCTAssertTrue(bankClient.claimIDs.isEmpty)
+        XCTAssertEqual(store.questionBatchState, .failed)
+    }
+
+    @MainActor
+    func testEnsureErrorsStopTerminalPollingButRetainTransientIntent() async throws {
+        let terminalSuiteName = "QuestionBankTerminalEnsureErrorTests.\(UUID().uuidString)"
+        let terminalDefaults = try XCTUnwrap(UserDefaults(suiteName: terminalSuiteName))
+        defer { terminalDefaults.removePersistentDomain(forName: terminalSuiteName) }
+        let terminalClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "unused-terminal-bank",
+                status: .queued,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount
+            ),
+            ensureError: QuestionBankAPIError.unauthorized
+        )
+        let terminalStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: terminalClient,
+            defaults: terminalDefaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        terminalStore.updateMembershipTier(.member)
+        terminalStore.updateAIProviderPreference(.backend)
+        terminalStore.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        let terminalGoal = makeGoal()
+        terminalStore.goal = terminalGoal
+        terminalStore.goalProfiles = [terminalGoal]
+
+        await terminalStore.refreshQuestionBatch()
+
+        XCTAssertEqual(terminalClient.ensureRequests.count, 1)
+        XCTAssertTrue(terminalStore.questionBankSyncIntents.isEmpty)
+        XCTAssertEqual(terminalStore.questionBatchState, .failed)
+        XCTAssertEqual(
+            terminalStore.lastAIErrorMessage,
+            QuestionBankAPIError.unauthorized.localizedDescription
+        )
+
+        let transientSuiteName = "QuestionBankTransientEnsureErrorTests.\(UUID().uuidString)"
+        let transientDefaults = try XCTUnwrap(UserDefaults(suiteName: transientSuiteName))
+        defer { transientDefaults.removePersistentDomain(forName: transientSuiteName) }
+        let transientClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "unused-transient-bank",
+                status: .queued,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount
+            ),
+            ensureError: QuestionBankAPIError.rateLimited
+        )
+        let transientStore = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: UnavailableQuestionEngine(provider: .backend),
+                appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+            ),
+            questionBankClient: transientClient,
+            defaults: transientDefaults,
+            questionBankPollingDelaysNanoseconds: [60_000_000_000]
+        )
+        transientStore.updateMembershipTier(.member)
+        transientStore.updateAIProviderPreference(.backend)
+        transientStore.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        let transientGoal = makeGoal()
+        transientStore.goal = transientGoal
+        transientStore.goalProfiles = [transientGoal]
+
+        await transientStore.refreshQuestionBatch()
+
+        XCTAssertEqual(transientClient.ensureRequests.count, 1)
+        XCTAssertEqual(transientStore.questionBankSyncIntents.count, 1)
+        XCTAssertEqual(transientStore.questionBatchState, .idle)
+        XCTAssertEqual(
+            transientStore.lastAIErrorMessage,
+            QuestionBankAPIError.rateLimited.localizedDescription
+        )
     }
 
     @MainActor
@@ -6508,6 +7670,77 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         XCTAssertEqual(session.questions.count, UnlockPolicy.default.questionsPerSession)
         XCTAssertTrue(bankClient.ensureRequests.isEmpty)
         XCTAssertTrue(bankClient.claimIDs.isEmpty)
+    }
+}
+
+private actor WeightRotatingQuestionBankClient: QuestionBankSyncing {
+    private var questions: [CheckpointQuestion]
+    private var ensureRevisions: [String] = []
+    private var secondEnsureStarted = false
+    private var secondEnsureStartWaiters: [CheckedContinuation<Void, Never>] = []
+    private var secondEnsureRelease: CheckedContinuation<Void, Never>?
+
+    init(questions: [CheckpointQuestion]) {
+        self.questions = questions
+    }
+
+    func waitForSecondEnsureToStart() async {
+        guard !secondEnsureStarted else { return }
+        await withCheckedContinuation { continuation in
+            secondEnsureStartWaiters.append(continuation)
+        }
+    }
+
+    func releaseSecondEnsure() {
+        secondEnsureRelease?.resume()
+        secondEnsureRelease = nil
+    }
+
+    func ensureContextRevisions() -> [String] {
+        ensureRevisions
+    }
+
+    func ensureQuestionBank(
+        for request: QuestionGenerationRequest,
+        contextRevision: String,
+        desiredCount: Int,
+        lowWatermark: Int
+    ) async throws -> QuestionBankPreparationReceipt {
+        ensureRevisions.append(contextRevision)
+        let ensureCallCount = ensureRevisions.count
+        if ensureCallCount == 2 {
+            secondEnsureStarted = true
+            let waiters = secondEnsureStartWaiters
+            secondEnsureStartWaiters.removeAll()
+            waiters.forEach { $0.resume() }
+            await withCheckedContinuation { continuation in
+                secondEnsureRelease = continuation
+            }
+        }
+
+        let isReady = ensureCallCount >= 4
+        return QuestionBankPreparationReceipt(
+            bankID: "bank-weight-rotation",
+            status: isReady ? .ready : .queued,
+            readyCount: isReady ? questions.count : 0,
+            targetCount: desiredCount
+        )
+    }
+
+    func claimQuestions(
+        from bankID: String,
+        claimID: String,
+        limit: Int,
+        for request: QuestionGenerationRequest
+    ) async throws -> QuestionBankClaimReceipt {
+        let claimedQuestions = Array(questions.prefix(limit))
+        questions.removeFirst(claimedQuestions.count)
+        return QuestionBankClaimReceipt(
+            questions: claimedQuestions,
+            status: questions.isEmpty ? .empty : .ready,
+            readyCount: questions.count,
+            targetCount: ProductLimits.starterQuestionBankTargetCount
+        )
     }
 }
 

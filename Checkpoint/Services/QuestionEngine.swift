@@ -104,6 +104,7 @@ struct QuestionGenerationRequest: Sendable {
     var reportedQuestions: [QuestionQualityReport]
     var targetCount: Int
     var minimumDifficulty: Int
+    var desiredSkillAllocation: [SkillMapTopic.ID: Int] = [:]
     var backendEndpoint: URL?
     var backendAuthorizationToken: String? = nil
 
@@ -136,7 +137,9 @@ struct QuestionGenerationRequest: Sendable {
         - Study materials supplied: \(goal.sourceDocuments.isEmpty ? "No" : "Yes — \(goal.sourceDocuments.count) document(s)")
         - Difficulty floor: level \(minimumDifficulty) of 5
         - Difficulty guidance: \(difficultyGuidance)
-        - Skill map mode: \(context.needsGeneratedSkillMap ? "Infer 4 to 6 concrete, teachable skills from the full goal context. Cover those skills across the questions and use only those skill names as question topics." : "Use the learner's focus topics as the initial skill map and preserve their intended subject context.")
+        - Skill map mode: \(skillMapModeSummary)
+        - Structured skill map: \(structuredSkillMapSummary)
+        - Desired skill allocation: \(desiredSkillAllocationSummary)
 
         Generate \(targetCount) level \(minimumDifficulty) of 5 difficulty multiple-choice questions about \(context.learningTarget).
         Question style guidance: \(context.questionDirective)
@@ -163,6 +166,7 @@ struct QuestionGenerationRequest: Sendable {
         - Do not use answer labels such as A, B, C, D, or "choice B" as expectedAnswer or choice text; write the actual answer text.
         - Each question must include exactly 4 answer choices and exactly one best answer.
         - The expected answer must exactly match one visible choice, with a short explanation, a topic, and a 1-to-5 difficulty.
+        - When a structured skill map is supplied, every question must include skillID and objectiveID copied exactly from that map, set topic to the matching skill name, and set objective to the matching objective name.
         - Choices must be parallel in grammar, similar in length, mutually exclusive, plausible, and meaningfully distinct.
         - Do not use "All of the above", "None of the above", "Both A and B", or paraphrased duplicate choices.
         - Distractors should test different subject-matter misconceptions, not restate the same mechanism with synonyms.
@@ -259,6 +263,44 @@ struct QuestionGenerationRequest: Sendable {
         return json
     }
 
+    private var structuredSkillMapSummary: String {
+        guard let skillMap = goal.derivedSkillMap, !skillMap.topics.isEmpty else {
+            return "None supplied."
+        }
+
+        return skillMap.topics.map { skill in
+            let objectives = skill.objectives
+                .map { "\($0.id.uuidString): \($0.name)" }
+                .joined(separator: ", ")
+            return objectives.isEmpty
+                ? "\(skill.id.uuidString): \(skill.name)"
+                : "\(skill.id.uuidString): \(skill.name) [\(objectives)]"
+        }.joined(separator: "; ")
+    }
+
+    private var skillMapModeSummary: String {
+        let context = questionContext
+        if context.hasDerivedSkillMap {
+            return "Use the supplied structured skill map and tag every question with one listed skill and objective ID."
+        }
+        if context.needsGeneratedSkillMap {
+            return "Infer 3 to 6 concrete, teachable skills from the full goal context. Preserve and complete any supplied starting skills, then cover the resulting skills across the questions."
+        }
+        if context.hasUserFocusAreas {
+            return "Use the learner's focus topics as suggested skills and preserve their intended subject context."
+        }
+        return "Infer 3 to 6 concrete, teachable skills from the full goal context, then cover those skills across the questions."
+    }
+
+    private var desiredSkillAllocationSummary: String {
+        guard !desiredSkillAllocation.isEmpty else { return "No explicit allocation." }
+        return desiredSkillAllocation
+            .filter { $0.value > 0 }
+            .map { "\($0.key.uuidString): \($0.value)" }
+            .sorted()
+            .joined(separator: "; ")
+    }
+
     var competencySummary: String {
         guard !competencies.isEmpty else { return "None yet" }
         return competencies
@@ -290,14 +332,14 @@ struct GoalQuestionContext: Equatable, Sendable {
     var hasDerivedSkillMap: Bool
 
     var needsGeneratedSkillMap: Bool {
-        !hasUserFocusAreas && !hasDerivedSkillMap
+        !hasDerivedSkillMap && (!hasUserFocusAreas || !(3...6).contains(contentTopics.count))
     }
 
     init(goal: Goal) {
         let target = GoalQuestionContext.learningTarget(from: goal)
         let focusTopics = GoalQuestionContext.meaningfulFocusTopics(from: goal.focusAreas)
         let derivedTopics = goal.derivedSkillMap?.topicNames ?? []
-        let resolvedTopics = focusTopics.isEmpty ? derivedTopics : focusTopics
+        let resolvedTopics = derivedTopics.isEmpty ? focusTopics : derivedTopics
         learningTarget = target
         contentTopics = GoalQuestionContext.contentTopics(
             learningTarget: target,
@@ -312,8 +354,8 @@ struct GoalQuestionContext: Equatable, Sendable {
             goal: goal,
             learningTarget: target
         )
-        hasUserFocusAreas = !focusTopics.isEmpty
-        hasDerivedSkillMap = focusTopics.isEmpty && !derivedTopics.isEmpty
+        hasUserFocusAreas = derivedTopics.isEmpty && !focusTopics.isEmpty
+        hasDerivedSkillMap = !derivedTopics.isEmpty
     }
 
     private static func learningTarget(from goal: Goal) -> String {
@@ -455,6 +497,10 @@ protocol QuestionGenerating: Sendable {
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion]
 }
 
+protocol SkillMapInferring: Sendable {
+    func inferSkillMap(for request: QuestionGenerationRequest) async throws -> GoalSkillMap
+}
+
 struct HybridQuestionEngine: Sendable {
     private let backendEngine: any QuestionGenerating
     private let appleFoundationEngine: any QuestionGenerating
@@ -469,6 +515,31 @@ struct HybridQuestionEngine: Sendable {
 
     var supportsDurableQuestionBanks: Bool {
         backendEngine is BackendQuestionEngine
+    }
+
+    func inferSkillMap(for request: QuestionGenerationRequest) async throws -> GoalSkillMap {
+        do {
+            guard let skillMapEngine = backendEngine as? any SkillMapInferring else {
+                throw QuestionGenerationError.providerUnavailable
+            }
+            return try await skillMapEngine.inferSkillMap(for: request)
+        } catch {
+            let explicitTopics = GoalQuestionContext.meaningfulFocusTopics(from: request.goal.focusAreas)
+            guard let validatedTopics = SkillMapTopic.validatedNames(explicitTopics) else {
+                throw error
+            }
+
+            return GoalSkillMap(
+                topics: validatedTopics.map { name in
+                    SkillMapTopic(
+                        name: name,
+                        objectives: [SkillMapObjective(name: name)]
+                    )
+                },
+                status: .reviewed,
+                provenance: .explicitFocusAreas
+            )
+        }
     }
 
     func generateQuestionBatch(

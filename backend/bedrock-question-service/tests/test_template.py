@@ -43,7 +43,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertNotIn('bedrock:InvokeModel\n              Resource: "*"', self.template)
         self.assertNotIn("bedrock:InvokeModelWithResponseStream", self.template)
 
-    def test_synchronous_and_worker_models_are_independently_scoped(self):
+    def test_api_uses_legacy_model_for_questions_and_worker_model_for_skill_maps(self):
         api = self.template.split("  CheckpointQuestionFunction:", maxsplit=1)[1].split(
             "\n  CheckpointQuestionFunctionLogGroup:", maxsplit=1
         )[0]
@@ -51,8 +51,9 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             "\n  QuestionBankWorkerFunctionLogGroup:", maxsplit=1
         )[0]
         self.assertIn("BEDROCK_MODEL_ID: !Ref BedrockModelArn", api)
+        self.assertIn("SKILL_MAP_MODEL_ID: !Ref QuestionBankWorkerModelArn", api)
         self.assertIn("Resource: !Ref BedrockInvokeResourceArns", api)
-        self.assertNotIn("QuestionBankWorkerModelArn", api)
+        self.assertIn("Resource: !Ref QuestionBankWorkerInvokeResourceArns", api)
         self.assertIn(
             "BEDROCK_MODEL_ID: !Ref QuestionBankWorkerModelArn",
             worker,
@@ -61,6 +62,10 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             "Resource: !Ref QuestionBankWorkerInvokeResourceArns",
             worker,
         )
+
+    def test_skill_map_inference_route_and_output_are_deployed(self):
+        self.assertIn("Path: /v1/skill-maps/infer", self.template)
+        self.assertIn("SkillMapEndpoint:", self.template)
 
     def test_gpt_56_reasoning_effort_is_wired_to_api_worker_and_deploy(self):
         parameter = self.template.split("  BedrockReasoningEffort:", maxsplit=1)[1].split(
@@ -172,6 +177,19 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertIn("BEDROCK_GUARDRAIL_VERSION", self.template)
         self.assertIn("bedrock:ApplyGuardrail", self.template)
         self.assertIn("SERVICE_MODE", self.template)
+
+    def test_disabled_mode_pauses_worker_queue_without_consuming_retries(self):
+        self.assertIn(
+            "QuestionBankWorkerEventsEnabled: !Not [!Equals [!Ref ServiceMode, disabled]]",
+            self.template,
+        )
+        worker = self.template.split("  QuestionBankWorkerFunction:", maxsplit=1)[1].split(
+            "\n  QuestionBankWorkerFunctionLogGroup:", maxsplit=1
+        )[0]
+        self.assertIn(
+            "Enabled: !If [QuestionBankWorkerEventsEnabled, true, false]",
+            worker,
+        )
 
     def test_guardrail_rules_fail_closed_for_partial_and_unsafe_production_configuration(self):
         self.assertIn("GuardrailConfigurationAllOrNone:", self.template)

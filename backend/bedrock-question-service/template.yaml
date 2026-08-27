@@ -118,7 +118,7 @@ Parameters:
       - enabled
       - drain
       - disabled
-    Description: Kill switch. Drain and disabled reject generation before auth, quota, or Bedrock.
+    Description: Kill switch. Drain rejects new API work while queued jobs finish; disabled also pauses the question-bank SQS consumer.
   ServiceRetryAfterSeconds:
     Type: Number
     Default: 300
@@ -212,6 +212,7 @@ Conditions:
   HasGuardrailArn: !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
   HasAlertEmail: !Not [!Equals [!Ref AlertEmail, ""]]
   HasBudgetEmail: !Not [!Equals [!Ref BudgetAlertEmail, ""]]
+  QuestionBankWorkerEventsEnabled: !Not [!Equals [!Ref ServiceMode, disabled]]
 
 Resources:
   QuestionRateLimitTable:
@@ -299,6 +300,7 @@ Resources:
       Environment:
         Variables:
           BEDROCK_MODEL_ID: !Ref BedrockModelArn
+          SKILL_MAP_MODEL_ID: !Ref QuestionBankWorkerModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
@@ -330,6 +332,12 @@ Resources:
             ApiId: !Ref BackendApi
             Path: /v1/questions
             Method: POST
+        SkillMapInference:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BackendApi
+            Path: /v1/skill-maps/infer
+            Method: POST
         QuestionBankEnsure:
           Type: HttpApi
           Properties:
@@ -348,6 +356,10 @@ Resources:
               Action:
                 - bedrock:InvokeModel
               Resource: !Ref BedrockInvokeResourceArns
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Ref QuestionBankWorkerInvokeResourceArns
             - !If
               - HasGuardrailArn
               - Effect: Allow
@@ -425,6 +437,7 @@ Resources:
           Type: SQS
           Properties:
             Queue: !GetAtt QuestionBankQueue.Arn
+            Enabled: !If [QuestionBankWorkerEventsEnabled, true, false]
             BatchSize: 1
             FunctionResponseTypes:
               - ReportBatchItemFailures
@@ -733,6 +746,9 @@ Outputs:
   QuestionEndpoint:
     Description: API Gateway endpoint to configure as Checkpoint's AI backend endpoint.
     Value: !Sub https://${BackendApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiStageName}/v1/questions
+  SkillMapEndpoint:
+    Description: Infers a structured assessment skill map for a goal.
+    Value: !Sub https://${BackendApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiStageName}/v1/skill-maps/infer
   QuestionBankEnsureEndpoint:
     Description: Idempotently creates or replenishes a durable asynchronous question bank.
     Value: !Sub https://${BackendApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiStageName}/v1/question-banks/ensure

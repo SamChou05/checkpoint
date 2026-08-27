@@ -88,7 +88,7 @@ struct OnboardingView: View {
                                         .font(.subheadline.weight(.semibold))
                                         .foregroundStyle(CheckpointTheme.text)
 
-                                    Text("Optional. Leave this blank and we'll choose from your goal.")
+                                    Text("Optional. Add any must-cover skills. If you leave this blank—or give only a starting point—we’ll complete an editable 3–6 skill map from your goal.")
                                         .font(.footnote)
                                         .foregroundStyle(CheckpointTheme.muted)
 
@@ -239,7 +239,7 @@ struct OnboardingView: View {
 
     private var headerSubtitle: String {
         if isNewProfile {
-            return "Tell us what you're working toward. We'll handle the practice details."
+            return "Tell us what you're working toward. We'll build an editable skill map and prepare practice for each area."
         }
 
         return "Update what you're working toward."

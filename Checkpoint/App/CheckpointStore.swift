@@ -383,9 +383,7 @@ final class CheckpointStore {
     }
 
     var isBuildingActiveSkillMap: Bool {
-        guard let goal,
-              GoalQuestionContext.meaningfulFocusTopics(from: goal.focusAreas).isEmpty,
-              goal.derivedSkillMap == nil else {
+        guard let goal, goal.derivedSkillMap == nil else {
             return false
         }
 
@@ -396,9 +394,7 @@ final class CheckpointStore {
     }
 
     var activeSkillMapNeedsAttention: Bool {
-        guard let goal,
-              GoalQuestionContext.meaningfulFocusTopics(from: goal.focusAreas).isEmpty,
-              goal.derivedSkillMap == nil else {
+        guard let goal, goal.derivedSkillMap == nil else {
             return false
         }
 
@@ -416,35 +412,66 @@ final class CheckpointStore {
               let existingMap = updatedGoal.derivedSkillMap else {
             return false
         }
+        let starterPracticeWasConsumed = hasConsumedStarterPractice
 
         let reviewedTopics = reviewedSkillMapTopics(
             proposedTopics,
             preserving: existingMap
         )
-        guard reviewedTopics.count == existingMap.topics.count,
-              !reviewedTopics.isEmpty else {
+        guard (3...6).contains(reviewedTopics.count) else {
             return false
         }
 
         let previousMap = existingMap
+        let contentChanged = skillMapContentSignature(
+            topics: existingMap.topics
+        ) != skillMapContentSignature(topics: reviewedTopics)
+        if !contentChanged {
+            let metadataChanged = existingMap.status != .reviewed ||
+                existingMap.topics != reviewedTopics
+            guard metadataChanged else { return true }
+
+            var reviewedMap = existingMap
+            reviewedMap.topics = reviewedTopics
+            reviewedMap.status = .reviewed
+            reviewedMap.updatedAt = Date()
+            updatedGoal.derivedSkillMap = reviewedMap
+            storeGoalProfile(updatedGoal)
+            save()
+            publishShieldContext()
+            return true
+        }
+
+        let reviewedSkillIDs = Set(reviewedTopics.map(\.id))
         updatedGoal.derivedSkillMap = GoalSkillMap(
             topics: reviewedTopics,
             status: .reviewed,
+            version: existingMap.version + 1,
+            provenance: .userEdited,
             createdAt: existingMap.createdAt,
             updatedAt: Date()
         )
-        updatedGoal.focusAreas = reviewedTopics.map(\.name).joined(separator: ", ")
         storeGoalProfile(updatedGoal)
 
         for index in questions.indices where questions[index].goalID == updatedGoal.id {
             guard let previousSkill = skillMapTopic(
-                matching: questions[index].topic,
+                matching: questions[index],
                 in: previousMap
-            ),
-            let reviewedSkill = reviewedTopics.first(where: { $0.id == previousSkill.id }) else {
+            ) else {
                 continue
             }
-            questions[index].topic = reviewedSkill.name
+
+            guard reviewedSkillIDs.contains(previousSkill.id),
+                  let reviewedSkill = reviewedTopics.first(where: { $0.id == previousSkill.id }) else {
+                questions[index].status = .retired
+                questions[index].nextReviewAt = nil
+                continue
+            }
+
+            questions[index] = canonicalizedQuestion(
+                questions[index],
+                for: reviewedSkill
+            )
         }
 
         let existingCompetencies = competencies.filter { ($0.goalID ?? updatedGoal.id) == updatedGoal.id }
@@ -457,8 +484,31 @@ final class CheckpointStore {
                 questions: goalQuestions
             )
         )
+        invalidateQuestionBankSynchronization(for: updatedGoal.id)
+        guard isMember || !starterPracticeWasConsumed else {
+            questionBatchState = hasReadyCheckpointSet ? .ready : .idle
+            checkpointNotice = starterQuestionLimitMessage
+            requestMembership(for: .freshQuestionGeneration)
+            save()
+            publishShieldContext()
+            return true
+        }
         save()
         publishShieldContext()
+
+        let retainedQuestionIDs = Set(
+            questions.lazy
+                .filter { $0.goalID == updatedGoal.id && self.isSelectableQuestion($0) }
+                .map(\.id)
+        )
+        if retainedQuestionIDs.isEmpty {
+            prepareInitialQuestionsInBackground(for: updatedGoal)
+        } else {
+            topOffQuestionBankInBackground(
+                for: updatedGoal,
+                starterQuestionIDs: retainedQuestionIDs
+            )
+        }
         return true
     }
 
@@ -470,14 +520,18 @@ final class CheckpointStore {
               let topicNames = SkillMapTopic.validatedNames(rawTopicNames) else {
             return false
         }
+        let starterPracticeWasConsumed = hasConsumedStarterPractice
 
         let repairedMap = GoalSkillMap(
-            topics: topicNames.map { SkillMapTopic(name: $0) },
-            status: .reviewed
+            topics: topicNames.map { name in
+                skillMapTopicWithDefaultObjective(name: name)
+            },
+            status: .reviewed,
+            provenance: .userEdited
         )
         updatedGoal.derivedSkillMap = repairedMap
-        updatedGoal.focusAreas = topicNames.joined(separator: ", ")
         storeGoalProfile(updatedGoal)
+        canonicalizeStoredQuestions(for: updatedGoal)
 
         let existingCompetencies = competencies.filter {
             ($0.goalID ?? updatedGoal.id) == updatedGoal.id
@@ -490,6 +544,16 @@ final class CheckpointStore {
                 questions: questions.filter { $0.goalID == updatedGoal.id }
             )
         )
+        invalidateQuestionBankSynchronization(for: updatedGoal.id)
+
+        guard isMember || !starterPracticeWasConsumed else {
+            questionBatchState = hasReadyCheckpointSet ? .ready : .idle
+            checkpointNotice = starterQuestionLimitMessage
+            requestMembership(for: .freshQuestionGeneration)
+            save()
+            publishShieldContext()
+            return true
+        }
 
         questionRefreshesUsed = 0
         questionBatchState = .generating
@@ -1130,15 +1194,21 @@ final class CheckpointStore {
             beginQuestionGeneration(for: newGoal.id)
         }
 
+        let generationGoal = await goalByPreparingSkillMapIfNeeded(
+            for: newGoal,
+            lifecycleID: lifecycleID
+        )
+        guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
+
         if shouldUseDurableQuestionBank {
             let syncOutcome = await synchronizeDurableQuestionBank(
-                for: newGoal,
+                for: generationGoal,
                 minimumLocalQuestionCount: questionBankTargetCount
             )
             guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
             guard let latestGoal = storedGoalProfile(withID: newGoal.id) else { return }
 
-            if !hasSameGenerationContext(latestGoal, newGoal) {
+            if !hasSameGenerationContext(latestGoal, generationGoal) {
                 backgroundGenerationGoalIDs.remove(newGoal.id)
                 if goal?.id == newGoal.id {
                     finishQuestionGeneration(for: newGoal.id)
@@ -1151,7 +1221,7 @@ final class CheckpointStore {
                 if goal?.id == newGoal.id {
                     questionBatchState = readyQuestionCount(for: newGoal) >= unlockPolicy.questionsPerSession
                         ? .ready
-                        : .idle
+                        : (hasPendingActiveQuestionBankSync ? .idle : .failed)
                     finishQuestionGeneration(for: newGoal.id)
                 }
                 save()
@@ -1162,9 +1232,11 @@ final class CheckpointStore {
         }
 
         let checkpointReadyRequest = generationRequest(
-            goal: newGoal,
+            goal: generationGoal,
             existingQuestions: [],
-            competencies: [],
+            competencies: competencies.filter {
+                ($0.goalID ?? generationGoal.id) == generationGoal.id
+            },
             reportedQuestions: [],
             targetCount: unlockPolicy.questionsPerSession
         )
@@ -1182,7 +1254,7 @@ final class CheckpointStore {
             return
         }
 
-        guard hasSameGenerationContext(resolvedGoal, newGoal) else {
+        guard hasSameGenerationContext(resolvedGoal, generationGoal) else {
             backgroundGenerationGoalIDs.remove(newGoal.id)
             if goal?.id == newGoal.id {
                 finishQuestionGeneration(for: newGoal.id)
@@ -1248,6 +1320,92 @@ final class CheckpointStore {
         }
     }
 
+    private func goalByPreparingSkillMapIfNeeded(
+        for targetGoal: Goal,
+        lifecycleID: UUID
+    ) async -> Goal {
+        guard targetGoal.derivedSkillMap == nil else { return targetGoal }
+
+        let inferenceRequest = generationRequest(
+            goal: targetGoal,
+            existingQuestions: questions.filter { $0.goalID == targetGoal.id },
+            competencies: competencies.filter { ($0.goalID ?? targetGoal.id) == targetGoal.id },
+            reportedQuestions: questionReports.filter { $0.goalID == targetGoal.id },
+            targetCount: unlockPolicy.questionsPerSession
+        )
+
+        let inferredMap: GoalSkillMap
+        do {
+            inferredMap = try await questionEngine.inferSkillMap(for: inferenceRequest)
+        } catch {
+            return targetGoal
+        }
+
+        guard lifecycleID == dataLifecycleID,
+              permitsPersistenceWrites,
+              var latestGoal = storedGoalProfile(withID: targetGoal.id),
+              latestGoal.derivedSkillMap == nil,
+              hasSameGenerationContext(latestGoal, targetGoal),
+              let normalizedMap = normalizedSkillMap(inferredMap) else {
+            return storedGoalProfile(withID: targetGoal.id) ?? targetGoal
+        }
+
+        latestGoal.derivedSkillMap = normalizedMap
+        storeGoalProfile(latestGoal)
+        replaceCompetencies(
+            for: latestGoal.id,
+            with: reconciledCompetencies(
+                existing: competencies.filter { ($0.goalID ?? latestGoal.id) == latestGoal.id },
+                goal: latestGoal,
+                questions: questions.filter { $0.goalID == latestGoal.id }
+            )
+        )
+        save()
+        publishShieldContext()
+        return latestGoal
+    }
+
+    private func normalizedSkillMap(_ skillMap: GoalSkillMap) -> GoalSkillMap? {
+        guard let names = SkillMapTopic.validatedNames(
+            skillMap.topics.map(\.name),
+            allowedCount: 3...6
+        ),
+        Set(skillMap.topics.map(\.id)).count == skillMap.topics.count else {
+            return nil
+        }
+
+        var normalizedMap = skillMap
+        normalizedMap.version = max(1, skillMap.version)
+        normalizedMap.topics = zip(skillMap.topics, names).map { pair in
+            let (topic, name) = pair
+            var normalizedTopic = topic
+            normalizedTopic.name = name
+            if normalizedTopic.objectives.isEmpty {
+                normalizedTopic.objectives = [defaultObjective(for: topic.id, name: name)]
+            }
+            return normalizedTopic
+        }
+        return normalizedMap
+    }
+
+    private func defaultObjective(
+        for skillID: SkillMapTopic.ID,
+        name: String
+    ) -> SkillMapObjective {
+        SkillMapObjective(id: skillID, name: name)
+    }
+
+    private func skillMapTopicWithDefaultObjective(
+        id: SkillMapTopic.ID = UUID(),
+        name: String
+    ) -> SkillMapTopic {
+        SkillMapTopic(
+            id: id,
+            name: name,
+            objectives: [defaultObjective(for: id, name: name)]
+        )
+    }
+
     private func hasSameGenerationContext(_ lhs: Goal, _ rhs: Goal) -> Bool {
         lhs.title == rhs.title &&
             lhs.category == rhs.category &&
@@ -1255,7 +1413,25 @@ final class CheckpointStore {
             lhs.focusAreas == rhs.focusAreas &&
             lhs.sourceDocuments == rhs.sourceDocuments &&
             lhs.preferredQuestionStyle == rhs.preferredQuestionStyle &&
-            lhs.minimumQuestionDifficulty == rhs.minimumQuestionDifficulty
+            lhs.minimumQuestionDifficulty == rhs.minimumQuestionDifficulty &&
+            skillMapGenerationSignature(lhs.derivedSkillMap) == skillMapGenerationSignature(rhs.derivedSkillMap)
+    }
+
+    private func skillMapGenerationSignature(_ skillMap: GoalSkillMap?) -> String {
+        guard let skillMap else { return "none" }
+        return skillMapContentSignature(topics: skillMap.topics)
+    }
+
+    private func skillMapContentSignature(topics: [SkillMapTopic]) -> String {
+        topics.map { skill in
+            let objectives = skill.objectives
+                .map { "\($0.id.uuidString):\($0.name)" }
+                .sorted()
+                .joined(separator: ",")
+            return "\(skill.id.uuidString):\(skill.name):\(objectives)"
+        }
+        .sorted()
+        .joined(separator: "|")
     }
 
     private func initialBatchProviderPreference(for _: QuestionGenerationRequest) -> AIProviderKind {
@@ -1358,10 +1534,26 @@ final class CheckpointStore {
         starterQuestionIDs: Set<CheckpointQuestion.ID>
     ) async {
         let lifecycleID = dataLifecycleID
+        var expectedContextRevision = questionBankContextRevision(for: targetGoal)
         defer {
             questionBankTopOffGoalIDs.remove(targetGoal.id)
             if goal?.id == targetGoal.id {
                 finishQuestionBankTopOff(for: targetGoal.id)
+            }
+            if lifecycleID == dataLifecycleID,
+               permitsPersistenceWrites,
+               let latestGoal = storedGoalProfile(withID: targetGoal.id),
+               questionBankContextRevision(for: latestGoal) != expectedContextRevision,
+               questionBankDeficit(for: latestGoal) > 0 {
+                let retainedQuestionIDs = Set(
+                    questions.lazy
+                        .filter { $0.goalID == latestGoal.id && self.isSelectableQuestion($0) }
+                        .map(\.id)
+                )
+                topOffQuestionBankInBackground(
+                    for: latestGoal,
+                    starterQuestionIDs: retainedQuestionIDs
+                )
             }
         }
 
@@ -1387,7 +1579,7 @@ final class CheckpointStore {
                    !backgroundGenerationGoalIDs.contains(targetGoal.id) {
                     questionBatchState = readyQuestionCount(for: targetGoal) >= unlockPolicy.questionsPerSession
                         ? .ready
-                        : .idle
+                        : (hasPendingActiveQuestionBankSync ? .idle : .failed)
                 }
                 save()
                 publishShieldContext()
@@ -1418,7 +1610,7 @@ final class CheckpointStore {
         guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
 
         guard var resolvedTargetGoal = availableGoalProfiles.first(where: { $0.id == targetGoal.id }) ?? (goal?.id == targetGoal.id ? goal : nil),
-              resolvedTargetGoal.minimumQuestionDifficulty == targetGoal.minimumQuestionDifficulty else {
+              hasSameGenerationContext(resolvedTargetGoal, targetGoal) else {
             save()
             publishShieldContext()
             return
@@ -1478,6 +1670,10 @@ final class CheckpointStore {
                 ? .ready
                 : .failed
         }
+        // A fallback map inferred from this same batch is part of the accepted
+        // result, not an external edit that should immediately duplicate the
+        // top-off. Genuine concurrent edits still differ from this revision.
+        expectedContextRevision = questionBankContextRevision(for: resolvedTargetGoal)
         save()
         publishShieldContext()
     }
@@ -1624,7 +1820,9 @@ final class CheckpointStore {
                 return false
             }
             if syncOutcome.serviceSupported {
-                questionBatchState = hasReadyCheckpointSet ? .ready : .idle
+                questionBatchState = hasReadyCheckpointSet
+                    ? .ready
+                    : (hasPendingActiveQuestionBankSync ? .idle : .failed)
                 save()
                 publishShieldContext()
                 schedulePendingQuestionBankPolling(for: goal)
@@ -1736,7 +1934,12 @@ final class CheckpointStore {
               let question = nextQuestion(
                 excluding: excludedQuestionIDs,
                 avoidingSimilarityTo: selectedQuestions,
-                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse,
+                prefersMasteredMaintenance: selectedQuestions.count == targetCount - 1,
+                forcesSkillBreadth: shouldForceSkillBreadth(
+                    for: selectedQuestions,
+                    targetCount: targetCount
+                )
               ) {
             selectedQuestions.append(question)
             excludedQuestionIDs.insert(question.id)
@@ -1759,10 +1962,32 @@ final class CheckpointStore {
     private func nextQuestion(
         excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>,
         avoidingSimilarityTo selectedQuestions: [CheckpointQuestion],
-        allowsEarlyCorrectReuse: Bool = false
+        allowsEarlyCorrectReuse: Bool = false,
+        prefersMasteredMaintenance: Bool = false,
+        forcesSkillBreadth: Bool = false
     ) -> CheckpointQuestion? {
         let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
+        if prefersMasteredMaintenance,
+           let maintenanceQuestion = masteredMaintenanceQuestion(
+               from: preferredQuestions,
+               avoidingSimilarityTo: selectedQuestions
+           ) ?? masteredMaintenanceQuestion(
+               from: availableQuestions,
+               avoidingSimilarityTo: selectedQuestions
+           ) {
+            return maintenanceQuestion
+        }
+        if forcesSkillBreadth,
+           let breadthQuestion = skillBreadthQuestion(
+               from: preferredQuestions,
+               avoidingSimilarityTo: selectedQuestions
+           ) ?? skillBreadthQuestion(
+               from: availableQuestions,
+               avoidingSimilarityTo: selectedQuestions
+           ) {
+            return breadthQuestion
+        }
         return prioritizedNonCorrectQuestion(
             from: preferredQuestions,
             avoidingSimilarityTo: selectedQuestions
@@ -1868,16 +2093,73 @@ final class CheckpointStore {
     ) -> CheckpointQuestion? {
         guard !orderedQuestions.isEmpty else { return nil }
 
-        let selectedTopicKeys = Set(selectedQuestions.map { questionTopicKey($0.topic) })
-        let isNewTopic: (CheckpointQuestion) -> Bool = { question in
-            !selectedTopicKeys.contains(self.questionTopicKey(question.topic))
+        let selectedSkillKeys = Set(selectedQuestions.map(questionSkillKey))
+        let isNewSkill: (CheckpointQuestion) -> Bool = { question in
+            !selectedSkillKeys.contains(self.questionSkillKey(question))
         }
-        if preferringNewTopic,
-           let question = orderedQuestions.first(where: isNewTopic) {
+        if activeDerivedSkillMap == nil,
+           preferringNewTopic,
+           let question = orderedQuestions.first(where: isNewSkill) {
             return question
         }
 
         return orderedQuestions.first
+    }
+
+    private func shouldForceSkillBreadth(
+        for selectedQuestions: [CheckpointQuestion],
+        targetCount: Int
+    ) -> Bool {
+        guard let skillMap = activeDerivedSkillMap,
+              selectedQuestions.count < targetCount,
+              !selectedQuestions.isEmpty else {
+            return false
+        }
+
+        let distinctSkillCount = Set(selectedQuestions.map(questionSkillKey)).count
+        let breadthFloor = min(3, skillMap.topics.count, targetCount)
+        guard distinctSkillCount < breadthFloor else { return false }
+
+        if selectedQuestions.count == 1 {
+            return distinctSkillCount < min(2, breadthFloor)
+        }
+        return selectedQuestions.count >= 3
+    }
+
+    private func skillBreadthQuestion(
+        from availableQuestions: [CheckpointQuestion],
+        avoidingSimilarityTo selectedQuestions: [CheckpointQuestion]
+    ) -> CheckpointQuestion? {
+        let selectedSkillKeys = Set(selectedQuestions.map(questionSkillKey))
+        let breadthCandidates = availableQuestions.filter {
+            !selectedSkillKeys.contains(questionSkillKey($0))
+        }
+        return prioritizedNonCorrectQuestion(
+            from: breadthCandidates,
+            avoidingSimilarityTo: selectedQuestions
+        )
+    }
+
+    private func masteredMaintenanceQuestion(
+        from availableQuestions: [CheckpointQuestion],
+        avoidingSimilarityTo selectedQuestions: [CheckpointQuestion]
+    ) -> CheckpointQuestion? {
+        guard activeDerivedSkillMap != nil else { return nil }
+        let now = Date()
+        let selectedSkillKeys = Set(selectedQuestions.map(questionSkillKey))
+        return availableQuestions
+            .filter(isSelectableQuestion)
+            .filter { question in
+                guard question.status == .correct,
+                      canReuseCorrectQuestion(question, now: now),
+                      !selectedSkillKeys.contains(questionSkillKey(question)) else {
+                    return false
+                }
+                let competency = competency(for: question)
+                return competency.attempts >= 3 && competency.masteryPercent >= 75
+            }
+            .sorted(by: sortByCorrectReusePriority)
+            .first
     }
 
     // MARK: - Attempts and unlocks
@@ -2454,10 +2736,12 @@ final class CheckpointStore {
     }
 
     private func updateCompetency(for question: CheckpointQuestion, result: AnswerResult) {
-        if storedGoalProfile(withID: question.goalID)?.derivedSkillMap != nil {
+        if let skillMap = storedGoalProfile(withID: question.goalID)?.derivedSkillMap,
+           let skill = skillMapTopic(matching: question, in: skillMap) {
             updateCompetency(
-                topic: question.topic,
+                topic: skill.name,
                 goalID: question.goalID,
+                skillID: skill.id,
                 questionDifficulty: question.difficulty,
                 result: result
             )
@@ -2472,12 +2756,15 @@ final class CheckpointStore {
     private func updateCompetency(
         topic: String,
         goalID: Goal.ID,
+        skillID: UUID? = nil,
         questionDifficulty: Int,
         result: AnswerResult
     ) {
         let targetGoal = storedGoalProfile(withID: goalID)
-        let mappedSkill = targetGoal?.derivedSkillMap.flatMap {
-            skillMapTopic(matching: topic, in: $0)
+        let mappedSkill = targetGoal?.derivedSkillMap.flatMap { skillMap in
+            skillID.flatMap { requestedSkillID in
+                skillMap.topics.first { $0.id == requestedSkillID }
+            } ?? skillMapTopic(matching: topic, in: skillMap)
         }
         if targetGoal?.derivedSkillMap != nil, mappedSkill == nil {
             return
@@ -2532,6 +2819,14 @@ final class CheckpointStore {
     }
 
     private func sortByReviewPriority(_ lhs: CheckpointQuestion, _ rhs: CheckpointQuestion) -> Bool {
+        let lhsCompetency = competency(for: lhs)
+        let rhsCompetency = competency(for: rhs)
+        if lhsCompetency.masteryPercent != rhsCompetency.masteryPercent {
+            return lhsCompetency.masteryPercent < rhsCompetency.masteryPercent
+        }
+        if lhsCompetency.attempts != rhsCompetency.attempts {
+            return lhsCompetency.attempts < rhsCompetency.attempts
+        }
         if lhs.difficulty != rhs.difficulty {
             return lhs.difficulty < rhs.difficulty
         }
@@ -2582,7 +2877,15 @@ final class CheckpointStore {
     }
 
     private func isSelectableQuestion(_ question: CheckpointQuestion) -> Bool {
-        question.status != .retired && question.timesAsked < Self.maximumExactQuestionAskCount
+        guard question.status != .retired,
+              question.timesAsked < Self.maximumExactQuestionAskCount else {
+            return false
+        }
+
+        guard let skillMap = storedGoalProfile(withID: question.goalID)?.derivedSkillMap else {
+            return true
+        }
+        return skillMapTopic(matching: question, in: skillMap) != nil
     }
 
     private static func correctAnswerReviewDelayDays(for correctStreak: Int) -> Int {
@@ -2599,8 +2902,12 @@ final class CheckpointStore {
     }
 
     private func sortByAdaptivePriority(_ lhs: CheckpointQuestion, _ rhs: CheckpointQuestion) -> Bool {
-        let lhsCompetency = competency(for: lhs.topic)
-        let rhsCompetency = competency(for: rhs.topic)
+        let lhsCompetency = competency(for: lhs)
+        let rhsCompetency = competency(for: rhs)
+
+        if lhsCompetency.attempts != rhsCompetency.attempts {
+            return lhsCompetency.attempts < rhsCompetency.attempts
+        }
 
         if lhsCompetency.masteryPercent != rhsCompetency.masteryPercent {
             return lhsCompetency.masteryPercent < rhsCompetency.masteryPercent
@@ -2630,6 +2937,27 @@ final class CheckpointStore {
             }
             return $0.masteryPercent < $1.masteryPercent
         } ?? .initial(topic: competencyTopics(from: topic).first ?? topic, goalID: goal?.id)
+    }
+
+    private func competency(for question: CheckpointQuestion) -> TopicCompetency {
+        if let skillMap = storedGoalProfile(withID: question.goalID)?.derivedSkillMap,
+           let skill = skillMapTopic(matching: question, in: skillMap) {
+            return competencies.first {
+                ($0.goalID == question.goalID || ($0.goalID == nil && goal?.id == question.goalID)) &&
+                    $0.skillID == skill.id
+            } ?? .initial(topic: skill.name, goalID: question.goalID, skillID: skill.id)
+        }
+
+        return competency(for: question.topic)
+    }
+
+    private func questionSkillKey(_ question: CheckpointQuestion) -> String {
+        if let skillMap = storedGoalProfile(withID: question.goalID)?.derivedSkillMap,
+           let skill = skillMapTopic(matching: question, in: skillMap) {
+            return skill.id.uuidString
+        }
+
+        return questionTopicKey(question.topic)
     }
 
     private func targetDifficulty(for competency: TopicCompetency) -> Double {
@@ -3181,8 +3509,7 @@ final class CheckpointStore {
             for: targetGoal,
             rawTopics: rawTopics
         )
-        guard GoalQuestionContext.meaningfulFocusTopics(from: targetGoal.focusAreas).isEmpty,
-              targetGoal.derivedSkillMap == nil,
+        guard targetGoal.derivedSkillMap == nil,
               candidateTopics.count >= 3,
               !requiresAllCandidateTopicsToFit || candidateTopics.count <= 6 else {
             return targetGoal
@@ -3190,8 +3517,11 @@ final class CheckpointStore {
 
         var updatedGoal = targetGoal
         updatedGoal.derivedSkillMap = GoalSkillMap(
-            topics: candidateTopics.prefix(6).map { SkillMapTopic(name: $0) },
-            status: .suggested
+            topics: candidateTopics.prefix(6).map { name in
+                skillMapTopicWithDefaultObjective(name: name)
+            },
+            status: .suggested,
+            provenance: .questionTopics
         )
         storeGoalProfile(updatedGoal)
         return updatedGoal
@@ -3220,8 +3550,11 @@ final class CheckpointStore {
         guard topicNames.count >= 3 else { return nil }
 
         return GoalSkillMap(
-            topics: topicNames.prefix(6).map { SkillMapTopic(name: $0) },
-            status: .suggested
+            topics: topicNames.prefix(6).map { name in
+                skillMapTopicWithDefaultObjective(name: name)
+            },
+            status: .suggested,
+            provenance: .questionTopics
         )
     }
 
@@ -3247,7 +3580,7 @@ final class CheckpointStore {
         return uniqueCompetencyTopics(rawTopics.flatMap(competencyTopics))
             .filter { topic in
                 let key = competencyTopicKey(topic)
-                return topic.count >= 3 &&
+                return !topic.isEmpty &&
                     topic.count <= 48 &&
                     !broadKeys.contains(key) &&
                     !genericKeys.contains(key)
@@ -3258,26 +3591,22 @@ final class CheckpointStore {
         _ proposedTopics: [SkillMapTopic],
         preserving existingMap: GoalSkillMap
     ) -> [SkillMapTopic] {
-        let expectedCount = existingMap.topics.count
         guard let names = SkillMapTopic.validatedNames(
             proposedTopics.map(\.name),
-            allowedCount: expectedCount...expectedCount
+            allowedCount: 3...6
         ),
-        Set(proposedTopics.map(\.id)) == Set(existingMap.topics.map(\.id)) else {
+        Set(proposedTopics.map(\.id)).count == proposedTopics.count else {
             return []
         }
 
         let acceptedNameKeys = Set(names.map(competencyTopicKey))
-        return zip(proposedTopics, names).compactMap { pair in
+        return zip(proposedTopics, names).map { pair in
             let (proposedTopic, name) = pair
-            guard let existingTopic = existingMap.topics.first(where: { $0.id == proposedTopic.id }) else {
-                return nil
-            }
-
             let key = competencyTopicKey(name)
-
-            var aliases = existingTopic.aliases
-            if competencyTopicKey(existingTopic.name) != key {
+            let existingTopic = existingMap.topics.first(where: { $0.id == proposedTopic.id })
+            var aliases = existingTopic?.aliases ?? proposedTopic.aliases
+            if let existingTopic,
+               competencyTopicKey(existingTopic.name) != key {
                 aliases.append(existingTopic.name)
             }
             aliases = uniqueCompetencyTopics(aliases)
@@ -3285,11 +3614,20 @@ final class CheckpointStore {
                     let aliasKey = competencyTopicKey(alias)
                     return aliasKey != key && !acceptedNameKeys.contains(aliasKey)
                 }
+            let objectives: [SkillMapObjective]
+            if !proposedTopic.objectives.isEmpty {
+                objectives = proposedTopic.objectives
+            } else if let existingTopic, !existingTopic.objectives.isEmpty {
+                objectives = existingTopic.objectives
+            } else {
+                objectives = [defaultObjective(for: proposedTopic.id, name: name)]
+            }
 
             return SkillMapTopic(
-                id: existingTopic.id,
+                id: proposedTopic.id,
                 name: name,
-                aliases: aliases
+                aliases: aliases,
+                objectives: objectives
             )
         }
     }
@@ -3310,6 +3648,39 @@ final class CheckpointStore {
         }
     }
 
+    private func skillMapTopic(
+        matching question: CheckpointQuestion,
+        in skillMap: GoalSkillMap
+    ) -> SkillMapTopic? {
+        if let skillID = question.skillID {
+            return skillMap.topics.first { $0.id == skillID }
+        }
+
+        return skillMapTopic(matching: question.topic, in: skillMap)
+    }
+
+    private func canonicalizedQuestion(
+        _ question: CheckpointQuestion,
+        for skill: SkillMapTopic
+    ) -> CheckpointQuestion {
+        var canonicalQuestion = question
+        canonicalQuestion.skillID = skill.id
+        canonicalQuestion.topic = skill.name
+
+        let matchedObjective = question.objectiveID.flatMap { objectiveID in
+            skill.objectives.first { $0.id == objectiveID }
+        } ?? question.objective.flatMap { rawObjective in
+            let objectiveKey = competencyTopicKey(rawObjective)
+            return skill.objectives.first {
+                competencyTopicKey($0.name) == objectiveKey
+            }
+        } ?? (skill.objectives.count == 1 ? skill.objectives.first : nil)
+
+        canonicalQuestion.objectiveID = matchedObjective?.id
+        canonicalQuestion.objective = matchedObjective?.name
+        return canonicalQuestion
+    }
+
     private func canonicalizedQuestions(
         _ candidateQuestions: [CheckpointQuestion],
         for targetGoal: Goal
@@ -3319,13 +3690,10 @@ final class CheckpointStore {
         }
 
         return candidateQuestions.compactMap { question in
-            guard let skill = skillMapTopic(matching: question.topic, in: skillMap) else {
+            guard let skill = skillMapTopic(matching: question, in: skillMap) else {
                 return nil
             }
-
-            var canonicalQuestion = question
-            canonicalQuestion.topic = skill.name
-            return canonicalQuestion
+            return canonicalizedQuestion(question, for: skill)
         }
     }
 
@@ -3334,14 +3702,14 @@ final class CheckpointStore {
 
         for index in questions.indices where questions[index].goalID == targetGoal.id {
             guard let skill = skillMapTopic(
-                matching: questions[index].topic,
+                matching: questions[index],
                 in: skillMap
             ) else {
                 questions[index].status = .retired
                 questions[index].nextReviewAt = nil
                 continue
             }
-            questions[index].topic = skill.name
+            questions[index] = canonicalizedQuestion(questions[index], for: skill)
         }
     }
 
@@ -3349,9 +3717,72 @@ final class CheckpointStore {
     private func migrateLegacyDerivedSkillMapsIfNeeded() -> Bool {
         var didChange = false
 
-        for profile in availableGoalProfiles {
-            guard GoalQuestionContext.meaningfulFocusTopics(from: profile.focusAreas).isEmpty,
-                  profile.derivedSkillMap == nil else {
+        for storedProfile in availableGoalProfiles {
+            var profile = storedProfile
+            if var skillMap = profile.derivedSkillMap {
+                let seededTopics = skillMap.topics.map { skill -> SkillMapTopic in
+                    guard skill.objectives.isEmpty else { return skill }
+                    var seededSkill = skill
+                    seededSkill.objectives = [defaultObjective(for: skill.id, name: skill.name)]
+                    return seededSkill
+                }
+                if seededTopics != skillMap.topics {
+                    skillMap.topics = seededTopics
+                    skillMap.version += 1
+                    skillMap.updatedAt = Date()
+                    profile.derivedSkillMap = skillMap
+                    storeGoalProfile(profile)
+                    didChange = true
+                }
+
+                let previousQuestions = questions.filter { $0.goalID == profile.id }
+                canonicalizeStoredQuestions(for: profile)
+                if previousQuestions != questions.filter({ $0.goalID == profile.id }) {
+                    didChange = true
+                }
+
+                let existingCompetencies = competencies.filter {
+                    $0.goalID == profile.id || ($0.goalID == nil && profile.id == goal?.id)
+                }
+                let updatedCompetencies = reconciledCompetencies(
+                    existing: existingCompetencies,
+                    goal: profile,
+                    questions: questions.filter { $0.goalID == profile.id }
+                )
+                if existingCompetencies != updatedCompetencies {
+                    replaceCompetencies(for: profile.id, with: updatedCompetencies)
+                    didChange = true
+                }
+                continue
+            }
+
+            let explicitFocusTopics = GoalQuestionContext.meaningfulFocusTopics(
+                from: profile.focusAreas
+            )
+            if let validatedFocusTopics = SkillMapTopic.validatedNames(explicitFocusTopics) {
+                var updatedProfile = profile
+                updatedProfile.derivedSkillMap = GoalSkillMap(
+                    topics: validatedFocusTopics.map { name in
+                        skillMapTopicWithDefaultObjective(name: name)
+                    },
+                    status: .reviewed,
+                    provenance: .explicitFocusAreas
+                )
+                storeGoalProfile(updatedProfile)
+                canonicalizeStoredQuestions(for: updatedProfile)
+                let existingCompetencies = competencies.filter {
+                    $0.goalID == updatedProfile.id ||
+                        ($0.goalID == nil && updatedProfile.id == goal?.id)
+                }
+                replaceCompetencies(
+                    for: updatedProfile.id,
+                    with: reconciledCompetencies(
+                        existing: existingCompetencies,
+                        goal: updatedProfile,
+                        questions: questions.filter { $0.goalID == updatedProfile.id }
+                    )
+                )
+                didChange = true
                 continue
             }
 
@@ -3481,7 +3912,9 @@ final class CheckpointStore {
         }
 
         let unmatchedPracticedCompetencies = existing.filter { candidate in
-            candidate.attempts > 0 && !newCompetencies.contains(where: { matches(candidate, $0) })
+            candidate.attempts > 0 &&
+                (goal.derivedSkillMap == nil || candidate.skillID == nil) &&
+                !newCompetencies.contains(where: { matches(candidate, $0) })
         }
         return reconciled + unmatchedPracticedCompetencies
     }
@@ -3769,9 +4202,11 @@ final class CheckpointStore {
 
         let lifecycleID = dataLifecycleID
         let desiredCount = min(100, max(questionBankTargetCount, minimumLocalQuestionCount ?? 0))
-        let lowWatermark = isMember
-            ? min(max(20, StopBlockingPolicy.questionsPerSession), max(0, desiredCount - 1))
-            : 0
+        // Skill weights are part of the context revision, so each bank is a
+        // finite snapshot of the learner's current needs. Replenishing that
+        // old revision would generate a second reserve that is usually
+        // superseded before the local cache needs it.
+        let lowWatermark = 0
         let contextRevision = questionBankContextRevision(for: targetGoal)
         var intent = upsertQuestionBankSyncIntent(
             for: targetGoal,
@@ -3811,6 +4246,18 @@ final class CheckpointStore {
             removeQuestionBankSyncIntent(for: targetGoal.id)
             save()
             return DurableQuestionBankSyncOutcome(serviceSupported: false, addedQuestionCount: 0)
+        } catch let error as QuestionBankAPIError {
+            switch error {
+            case .backendNotConfigured, .invalidRequest, .unauthorized, .contextConflict, .badResponse:
+                removeQuestionBankSyncIntent(for: targetGoal.id)
+            case .bankNotFound:
+                break
+            case .claimConflict, .rateLimited, .serviceUnavailable:
+                markQuestionBankSyncAttempt(for: targetGoal.id)
+            }
+            lastAIErrorMessage = error.localizedDescription
+            save()
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
         } catch {
             markQuestionBankSyncAttempt(for: targetGoal.id)
             lastAIErrorMessage = error.localizedDescription
@@ -3820,8 +4267,18 @@ final class CheckpointStore {
 
         guard lifecycleID == dataLifecycleID,
               permitsPersistenceWrites,
-              let currentGoal = storedGoalProfile(withID: targetGoal.id),
-              questionBankContextRevision(for: currentGoal) == contextRevision else {
+              let currentGoal = storedGoalProfile(withID: targetGoal.id) else {
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
+        }
+        let currentContextRevision = questionBankContextRevision(for: currentGoal)
+        guard currentContextRevision == contextRevision else {
+            _ = upsertQuestionBankSyncIntent(
+                for: currentGoal,
+                contextRevision: currentContextRevision,
+                desiredCount: desiredCount,
+                lowWatermark: lowWatermark
+            )
+            save()
             return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
         }
 
@@ -3834,7 +4291,7 @@ final class CheckpointStore {
         save()
 
         guard preparation.readyCount > 0 else {
-            if lowWatermark == 0, preparation.status == .empty {
+            if preparation.status == .empty {
                 // A finite bank can legitimately end below the nominal local
                 // target when a claimed item is rejected by the app sanitizer.
                 // The server uses queued for delayed/retryable work, so empty
@@ -3902,8 +4359,18 @@ final class CheckpointStore {
 
             guard lifecycleID == dataLifecycleID,
                   permitsPersistenceWrites,
-                  var resolvedGoal = storedGoalProfile(withID: targetGoal.id),
-                  questionBankContextRevision(for: resolvedGoal) == intent.contextRevision else {
+                  var resolvedGoal = storedGoalProfile(withID: targetGoal.id) else {
+                break
+            }
+            let resolvedContextRevision = questionBankContextRevision(for: resolvedGoal)
+            guard resolvedContextRevision == intent.contextRevision else {
+                _ = upsertQuestionBankSyncIntent(
+                    for: resolvedGoal,
+                    contextRevision: resolvedContextRevision,
+                    desiredCount: desiredCount,
+                    lowWatermark: lowWatermark
+                )
+                save()
                 break
             }
 
@@ -4026,10 +4493,15 @@ final class CheckpointStore {
                       self.shouldUseDurableQuestionBank,
                       self.questionBankPollingTokens[targetGoal.id] == pollingToken,
                       let currentGoal = self.storedGoalProfile(withID: targetGoal.id),
-                      self.questionBankSyncIntents.contains(where: {
-                          $0.goalID == targetGoal.id && $0.contextRevision == contextRevision
+                      let currentIntent = self.questionBankSyncIntents.first(where: {
+                          $0.goalID == targetGoal.id
                       }) else {
                     self.finishQuestionBankPolling(for: targetGoal.id, token: pollingToken)
+                    return
+                }
+                guard currentIntent.contextRevision == contextRevision else {
+                    self.finishQuestionBankPolling(for: targetGoal.id, token: pollingToken)
+                    self.schedulePendingQuestionBankPolling(for: currentGoal)
                     return
                 }
 
@@ -4037,6 +4509,15 @@ final class CheckpointStore {
                     for: currentGoal,
                     minimumLocalQuestionCount: self.questionBankTargetCount
                 )
+                if let latestIntent = self.questionBankSyncIntents.first(where: {
+                    $0.goalID == targetGoal.id
+                }),
+                   latestIntent.contextRevision != contextRevision,
+                   let latestGoal = self.storedGoalProfile(withID: targetGoal.id) {
+                    self.finishQuestionBankPolling(for: targetGoal.id, token: pollingToken)
+                    self.schedulePendingQuestionBankPolling(for: latestGoal)
+                    return
+                }
                 guard outcome.serviceSupported else {
                     if !self.hasConsumedStarterPractice {
                         await self.generateInitialQuestionBatch(for: currentGoal)
@@ -4120,19 +4601,35 @@ final class CheckpointStore {
         questionBankSyncIntents.removeAll { $0.goalID == goalID }
     }
 
+    private func invalidateQuestionBankSynchronization(for goalID: Goal.ID) {
+        questionBankSyncIntents.removeAll { $0.goalID == goalID }
+        questionBankPollingTokens.removeValue(forKey: goalID)
+        questionBankPollingGoalIDs.remove(goalID)
+        durableQuestionBankUnavailableForLifecycle = false
+    }
+
     private func questionBankContextRevision(for goal: Goal) -> String {
         var hash: UInt64 = 14_695_981_039_346_656_037
-        let reviewedSkillMap = goal.derivedSkillMap?.status == .reviewed
-            ? goal.derivedSkillMap
-            : nil
+        let goalCompetencies = competencies.filter {
+            ($0.goalID ?? goal.id) == goal.id
+        }
+        let skillAllocationSignature = desiredSkillAllocation(
+            for: goal,
+            competencies: goalCompetencies
+        )
+        .map { "\($0.key.uuidString):\($0.value)" }
+        .sorted()
+        .joined(separator: "|")
         let components = [
             goal.title,
             goal.currentLevel,
             goal.focusAreas,
             String(goal.minimumQuestionDifficulty),
             goal.preferredQuestionStyle.rawValue,
-            reviewedSkillMap?.status.rawValue ?? "",
-            reviewedSkillMap?.topics.map { "\($0.id.uuidString):\($0.name)" }.joined(separator: "|") ?? ""
+            goal.derivedSkillMap.map {
+                skillMapContentSignature(topics: $0.topics)
+            } ?? "",
+            skillAllocationSignature
         ] + goal.sourceDocuments.flatMap { document in
             [document.id.uuidString, document.name, document.text]
         }
@@ -4157,16 +4654,60 @@ final class CheckpointStore {
         reportedQuestions: [QuestionQualityReport],
         targetCount: Int? = nil
     ) -> QuestionGenerationRequest {
-        QuestionGenerationRequest(
+        let resolvedTargetCount = targetCount ?? questionBankTargetCount
+        return QuestionGenerationRequest(
             goal: goal,
             existingQuestions: existingQuestions,
             competencies: competencies,
             reportedQuestions: reportedQuestions,
-            targetCount: targetCount ?? questionBankTargetCount,
+            targetCount: resolvedTargetCount,
             minimumDifficulty: goal.minimumQuestionDifficulty,
+            desiredSkillAllocation: desiredSkillAllocation(
+                for: goal,
+                competencies: competencies
+            ),
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken
         )
+    }
+
+    private func desiredSkillAllocation(
+        for targetGoal: Goal,
+        competencies: [TopicCompetency]
+    ) -> [SkillMapTopic.ID: Int] {
+        guard let skillMap = targetGoal.derivedSkillMap,
+              !skillMap.topics.isEmpty else {
+            return [:]
+        }
+
+        var competencyBySkillID: [SkillMapTopic.ID: TopicCompetency] = [:]
+        for competency in competencies {
+            guard let skillID = competency.skillID else { continue }
+            if let existing = competencyBySkillID[skillID] {
+                competencyBySkillID[skillID] = mergedCompetency(existing, with: competency)
+            } else {
+                competencyBySkillID[skillID] = competency
+            }
+        }
+        var allocation: [SkillMapTopic.ID: Int] = [:]
+        for skill in skillMap.topics {
+            let competency = competencyBySkillID[skill.id]
+                ?? .initial(topic: skill.name, goalID: targetGoal.id, skillID: skill.id)
+            if competency.attempts == 0 {
+                // New skills receive a strong exploration prior without depending on
+                // how many questions happen to be cached on this device.
+                allocation[skill.id] = 12
+                continue
+            }
+
+            let weaknessBonus = Int(
+                ceil(Double(max(0, 100 - competency.masteryPercent)) / 10.0)
+            )
+            let uncertaintyBonus = max(0, 4 - min(4, competency.attempts))
+            let weight = min(16, max(3, 3 + weaknessBonus + uncertaintyBonus))
+            allocation[skill.id] = weight
+        }
+        return allocation
     }
 
     private var resolvedBackendEndpoint: URL? {

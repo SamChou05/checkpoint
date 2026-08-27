@@ -1,6 +1,6 @@
 # Bedrock Question Service
 
-AWS Lambda backend for Checkpoint's AI question-generation contract. The iOS app sends goal context and question constraints; the service can either return a synchronous batch from `POST /v1/questions` or enqueue an expiring server-side bank through `POST /v1/question-banks/ensure`. A DynamoDB Streams outbox consumer durably forwards pending jobs to SQS, and a separate SQS-triggered worker calls Amazon Bedrock, validates the output, and stores ready inventory for `POST /v1/question-banks/claim`. The JSON contract is documented in `../../docs/AI_BACKEND_CONTRACT.md`.
+AWS Lambda backend for Checkpoint's AI question-generation contract. The iOS app sends goal context and question constraints; the service can infer a first-class assessment plan through `POST /v1/skill-maps/infer`, return a synchronous compatibility batch from `POST /v1/questions`, or enqueue an expiring server-side bank through `POST /v1/question-banks/ensure`. A DynamoDB Streams outbox consumer durably forwards pending jobs to SQS, and a separate SQS-triggered worker calls Amazon Bedrock, validates the output, and stores ready inventory for `POST /v1/question-banks/claim`. The JSON contract is documented in `../../docs/AI_BACKEND_CONTRACT.md`.
 
 Generation is domain-general. Named-domain examples belong only to eval fixtures; production code has no LSAT, MCAT, language, coding, or other subject-specific question branches.
 
@@ -34,6 +34,7 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | Name | Default | Purpose |
 | --- | --- | --- |
 | `BEDROCK_MODEL_ID` | `amazon.nova-lite-v1:0` in local code | Model or inference-profile identifier/ARN passed to Converse. The SAM stack receives this separately as `BedrockModelArn`. |
+| `SKILL_MAP_MODEL_ID` | falls back to `BEDROCK_MODEL_ID` locally; `QuestionBankWorkerModelArn` in SAM | Model used only by synchronous skill-map planning. The deployed API intentionally uses the stronger asynchronous-worker model for this low-volume, quality-sensitive step while leaving legacy synchronous questions on `BEDROCK_MODEL_ID`. |
 | `BEDROCK_FALLBACK_MODEL_ID` | empty | Optional secondary model ARN; enable only after it passes the same eval suite. |
 | `BEDROCK_REASONING_EFFORT` | empty locally; `low` in the deploy workflow | Optional GPT-5.6 effort: `none`, `low`, `medium`, `high`, `xhigh`, or `max`. At `low` or higher the request sends the reasoning field and deliberately omits temperature/top-p sampling controls; `none` retains the configured temperature. Non-GPT-5.6 models ignore this setting. |
 | `BEDROCK_GUARDRAIL_IDENTIFIER` | empty | Optional Guardrail ID. Must be paired with a version. |
@@ -50,7 +51,7 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `CHECKPOINT_BACKEND_TOKEN` | empty | Temporary shared bearer for internal/TestFlight builds. Empty fails closed outside explicit development mode. |
 | `ALLOW_UNAUTHENTICATED_BACKEND` | `false` | Explicit development-only bypass. Ignored for TestFlight/production environments. |
 | `DEPLOYMENT_ENVIRONMENT` | `development` locally | `development`, `testflight`, or `production`. |
-| `SERVICE_MODE` | `enabled` | `enabled`, `drain`, or `disabled`; the latter two reject before auth, quota, or Bedrock. |
+| `SERVICE_MODE` | `enabled` | `enabled`, `drain`, or `disabled`. Drain rejects new API work while workers finish the durable queue. Disabled also pauses the worker's SQS event source so queued messages retain their retry budget until the service is re-enabled. |
 | `SERVICE_RETRY_AFTER_SECONDS` | `300` | `Retry-After` value returned by the kill switch. |
 | `RATE_LIMIT_TABLE_NAME` | empty locally | DynamoDB table. SAM always configures it and sets `REQUIRE_RATE_LIMITING=true`. |
 | `QUOTA_HASH_SECRET` | none | Server-only HMAC key, at least 32 characters, used to pseudonymize quota identifiers. |
@@ -71,6 +72,7 @@ The service authenticates first, then fully decodes and validates the request be
 
 - UTF-8 JSON and a configurable byte ceiling
 - explicit limits for goal, focus, level, directive, topic, prompt, answer, choice, and competency fields
+- UUID, name, objective, map-size, map-revision, and desired-allocation validation for structured skill maps
 - an optional top-level `sourceDocuments` array of `{ "name": "...", "text": "..." }` objects; existing clients may omit it
 - at most 5 source documents, 160 characters per normalized name, and 24,000 normalized source-text characters across the request
 - deterministic source truncation that shares the context budget across documents and samples the beginning, middle, and end of over-budget text
@@ -83,13 +85,73 @@ Source documents are accepted as extracted UTF-8 text, not binary uploads or bas
 
 When source context is present, the assessment prompt treats it as the primary content scope, requires source-supported answers and self-contained question stems, and explicitly treats document names and contents as untrusted evidence rather than instructions. Outlines and syllabi may scope reliable subject knowledge, but the model is told not to claim unsupported details came from a source or infer content omitted by truncation.
 
-Synchronous `/v1/questions` install and IP limits are consumed in one DynamoDB transaction. A rejected transaction cannot consume one counter without the other. Asynchronous worker passes consume a separate pseudonymous install-only counter before Bedrock; the compact SQS job deliberately does not retain the request IP. API Gateway throttling remains the edge control for `ensure` and `claim`. Deployments configured with `REQUIRE_RATE_LIMITING=true`, or marked `production`, fail closed if the table or HMAC secret is missing.
+Synchronous `/v1/questions` and `/v1/skill-maps/infer` install and IP limits are consumed in one DynamoDB transaction. A rejected transaction cannot consume one counter without the other. Asynchronous worker passes consume a separate pseudonymous install-only counter before Bedrock; the compact SQS job deliberately does not retain the request IP. API Gateway throttling remains the edge control for `ensure` and `claim`. Deployments configured with `REQUIRE_RATE_LIMITING=true`, or marked `production`, fail closed if the table or HMAC secret is missing.
+
+## Skill-map inference and tagged questions
+
+`POST /v1/skill-maps/infer` is an authenticated, quota-limited synchronous planning call. It accepts goal context, optional competency/source context, and zero to six user suggestions:
+
+```json
+{
+  "goal": {
+    "title": "Become confident with personal finance",
+    "learningTarget": "Personal finance",
+    "focusAreas": "budgeting and long-term investing",
+    "currentLevel": "beginner"
+  },
+  "suggestedSkills": ["Budgeting"],
+  "competencies": [],
+  "sourceDocuments": []
+}
+```
+
+It asks the configured `SKILL_MAP_MODEL_ID` for three to six distinct skills and two to five assessable objectives per skill. Skill names are limited to 48 characters and cannot contain commas or semicolons; objective names are limited to 80 characters. These rules match the iOS persistence contract without truncation or client-only rejection. Supplied suggestions must satisfy the same skill-name rules and remain recognizably represented; the model completes the rest of a broad map and creates objectives for suggested skills. The server validates the structure and assigns deterministic UUIDv5 identifiers derived from canonical skill and objective names. Repeating an equivalent result therefore produces the same IDs. New maps return:
+
+```json
+{
+  "skillMap": {
+    "version": 1,
+    "skills": [
+      {
+        "id": "d4cde937-1aa7-59c6-a9c8-6a7d537384aa",
+        "name": "Budgeting",
+        "objectives": [
+          {
+            "id": "18186747-a3dd-5370-8680-7695e69650df",
+            "name": "Classify fixed and variable expenses"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+The example is abbreviated; a real inference response always has the minimum skill and objective counts. The response version is `1` for a newly inferred map. Question and bank requests may send a later positive `skillMap.version` after user edits, and the backend preserves that revision. They may also send a user-added skill with an empty `objectives` array; generation then requires a concrete objective label and derives a deterministic objective UUID tied to that skill ID.
+
+`POST /v1/questions` and `POST /v1/question-banks/ensure` accept the optional top-level `skillMap` plus a desired distribution. The canonical Swift-safe allocation wire shape is:
+
+```json
+{
+  "desiredSkillAllocation": [
+    {"skillID": "d4cde937-1aa7-59c6-a9c8-6a7d537384aa", "count": 12}
+  ]
+}
+```
+
+A UUID-keyed JSON object is accepted for non-Swift callers as a compatibility convenience. Despite the wire field name `count`, each value is a stable relative **weight for the entire durable bank target**, not the client's current local deficit and not a count for the next generation call. Values may be 0 through 100, their sum need not equal `desiredCount`, and a zero or omitted skill receives no target when any explicit positive weights are present. Unknown, duplicate, malformed, or all-zero allocations return `400`.
+
+The worker resolves the stable weights against the server's `desiredCount`, reserves at least one maintenance slot for every positive-weight skill, measures finite-bank history or replenishing ready inventory as appropriate, and derives short-lived per-batch counts from the remaining server-side deficits. A durable bank therefore continues replenishing a small positive-weight skill after its ready question is claimed. Repeated `ensure` calls for the same `contextRevision` must send the same weight map; changing the weights requires a new context revision and bank, rather than recomputing weights from the app's local inventory. A bank target smaller than its number of positive-weight skills returns `400` because it cannot preserve that maintenance guarantee.
+
+The legacy synchronous `/v1/questions` route has no durable inventory; when it receives the field, it applies the same weights only across that one requested batch.
+
+Every accepted map-aware question returns `skillID`, `objectiveID`, and `objective`; `topic` remains populated with the canonical skill name for legacy UI and coverage logic. Provider IDs are never trusted blindly. The sanitizer resolves matching topic/objective names and any supplied IDs against the request map, assigns the request's canonical IDs, and drops missing, conflicting, or off-map items. Requests without `skillMap` keep the existing topic-only contract unchanged.
 
 ## Durable asynchronous question banks
 
 `POST /v1/question-banks/ensure` accepts the normal generation request plus the client-computed `contextRevision`, `desiredCount`, and `lowWatermark`. It authenticates and validates the request, derives an opaque bank identifier scoped to the pseudonymized installation and goal context, persists the validated generation context, and uses a DynamoDB transaction to atomically link the bank to a pending outbox job when inventory needs replenishment. It returns `202` with `bankID`, `status`, `readyCount`, and `targetCount`; it does not wait for Bedrock.
 
-`lowWatermark=0` means a finite starter bank: the server tracks cumulative accepted generation and stops permanently for that bank revision once it reaches `desiredCount`. Claims reduce ready inventory but do not reset that cumulative ceiling, and repeated `ensure` polling cannot replenish it. A positive watermark enables ongoing replenishment toward `desiredCount`; claiming down to or below the watermark schedules another refill. The current client requests 40 finite questions for Free and an 80-question bank with a 20-question refill watermark for Pro. Those tier inputs are still caller-supplied today, so public production must derive or authorize them from server-verified StoreKit entitlement rather than trusting the app.
+`lowWatermark=0` means a finite bank: the server tracks cumulative accepted generation and stops permanently for that bank revision once it reaches `desiredCount`. Claims reduce ready inventory but do not reset that cumulative ceiling, and repeated `ensure` polling cannot replenish it. A positive watermark remains available as the general server contract for ongoing replenishment toward `desiredCount`; claiming down to or below that watermark schedules another refill. The current client uses finite per-revision banks for both tiers: 40 questions for Free and 80 for Pro. A changed adaptive context revision creates a newly weighted finite bank instead of refilling the prior revision indefinitely. Those tier inputs are still caller-supplied today, so public production must derive or authorize them from server-verified StoreKit entitlement rather than trusting the app.
 
 After the transaction commits, the API makes an immediate best-effort delivery and the table's `NEW_IMAGE` DynamoDB Stream independently invokes the outbox consumer. The consumer recognizes pending job records, re-reads their current state, sends a compact SQS message when still needed, and conditionally marks the job sent. This closes the crash window between committing the job and sending it to SQS. DynamoDB Streams and SQS are both at-least-once systems, so the direct and stream senders can race and duplicate messages are expected. Stable job IDs, a conditional processing lease, and an atomic per-job provider-attempt counter keep those duplicates within the configured generation bound.
 
@@ -181,11 +243,11 @@ arn:aws:bedrock:<source-region>:<account-id>:project/default
 
 Replace `<source-region>` with the region in which this stack invokes Bedrock and `<account-id>` with the deploying AWS account. Confirm the profile's destination list with `GetInferenceProfile` before each production rollout; a geography profile's destinations are stable for that profile, but a newly selected profile can have a different allowlist. AWS documents the model ID, default-project requirement, and regional availability in the [GPT-5.6 Luna model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-56-luna.html).
 
-The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with that full HTTPS URL. The app derives the sibling `/v1/question-banks/ensure` and `/v1/question-banks/claim` URLs, which are also emitted as stack outputs. Moving from the previous Function URL changes the endpoint, so update the app configuration only after the API Gateway deployment succeeds.
+The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with that full HTTPS URL. The app derives the sibling `/v1/skill-maps/infer`, `/v1/question-banks/ensure`, and `/v1/question-banks/claim` URLs, which are also emitted as stack outputs. Moving from the previous Function URL changes the endpoint, so update the app configuration only after the API Gateway deployment succeeds.
 
 ## Operations
 
-`SERVICE_MODE=drain` and `SERVICE_MODE=disabled` return `503` with `Retry-After` on API generation entry points. Change the CloudFormation parameter and deploy the configuration update to operate the switch. Reserved concurrency, worker and outbox concurrency, API throttling, and the SQS/DynamoDB event-source mappings remain separate emergency fuses.
+`SERVICE_MODE=drain` and `SERVICE_MODE=disabled` return `503` with `Retry-After` on API entry points. Drain mode continues consuming already-queued question-bank jobs so the durable backlog reaches a clean stopping point. Disabled mode also disables the worker's SQS event-source mapping; messages remain encrypted in the queue without advancing their receive count and resume automatically when the stack returns to `enabled` or `drain`. An invocation already in flight during the CloudFormation update still fails closed and becomes visible again after the queue visibility timeout. Change the CloudFormation parameter and deploy the configuration update to operate the switch. Reserved concurrency, outbox concurrency, API throttling, and the DynamoDB event-source mapping remain separate emergency fuses.
 
 Structured metrics contain only bounded operational fields: outcome, status, request ID, latency, question counts, provider calls, and Bedrock token counts. They never include goal text, focus areas, prompts, answers, bearer tokens, raw install IDs, or raw IP addresses.
 
@@ -239,6 +301,7 @@ The manual deployment workflow has a separate `run_smoke_test` checkbox. When se
 ## Response statuses
 
 - `200`: sanitized question batch
+- `200`: inferred and validated skill map
 - `200`: question-bank claim response
 - `202`: question-bank ensure accepted or already in progress
 - `400`: malformed or oversized request

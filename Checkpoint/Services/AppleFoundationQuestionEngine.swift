@@ -44,8 +44,9 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         - Test the learning target itself, not studying, motivation, app blocking, or next steps unless the target is study skills.
         - Treat any legacy category as optional metadata. Never replace, narrow, or reinterpret the learner's stated goal because of it.
         - Select authentic question forms, terminology, notation, source material, and reasoning patterns for the stated subject rather than applying a fixed interview or exam template.
-        - Return exactly {"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","difficulty":1,"format":"Multiple Choice"}]}.
+        - Return exactly {"questions":[{"prompt":"...","expectedAnswer":"...","choices":["...","...","...","..."],"explanation":"...","topic":"...","skillID":"optional UUID","objectiveID":"optional UUID","objective":"optional objective name","difficulty":1,"format":"Multiple Choice"}]}.
         - Each question has a self-contained stem, one best answer, exactly 4 choices, a short explanation, a topic, and difficulty 1-5.
+        - When the task supplies a structured skill map, copy skillID and objectiveID exactly from that map and make topic and objective match those records.
         - Keep each prompt under 280 characters and do not include answer labels or option text inside the prompt field.
         - Do not use answer labels such as A, B, C, D, or "choice B" as expectedAnswer or choice text; write the actual answer text.
         - Choices are parallel, similar length, mutually exclusive, plausible, and not paraphrases.

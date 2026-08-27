@@ -1,7 +1,12 @@
 import Foundation
 
-struct BackendQuestionEngine: QuestionGenerating {
+struct BackendQuestionEngine: QuestionGenerating, SkillMapInferring, @unchecked Sendable {
     let provider: AIProviderKind = .backend
+    private let session: URLSession
+
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
 
     func generateQuestions(for request: QuestionGenerationRequest) async throws -> [CheckpointQuestion] {
         guard let endpoint = request.backendEndpoint else {
@@ -19,7 +24,7 @@ struct BackendQuestionEngine: QuestionGenerating {
         urlRequest.timeoutInterval = 45
         urlRequest.httpBody = try JSONEncoder().encode(BackendQuestionRequest(request: request))
 
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        let (data, response) = try await session.data(for: urlRequest)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw QuestionGenerationError.serviceUnavailable
@@ -48,6 +53,49 @@ struct BackendQuestionEngine: QuestionGenerating {
         }
 
         return questions
+    }
+
+    func inferSkillMap(for request: QuestionGenerationRequest) async throws -> GoalSkillMap {
+        guard let endpoint = request.backendEndpoint else {
+            throw QuestionGenerationError.backendNotConfigured
+        }
+
+        var urlRequest = URLRequest(url: Self.skillMapEndpoint(generationEndpoint: endpoint))
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue(BackendClientIdentity.installID, forHTTPHeaderField: "X-Checkpoint-Install-ID")
+        if let token = request.backendAuthorizationToken?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !token.isEmpty {
+            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        urlRequest.timeoutInterval = 30
+        urlRequest.httpBody = try JSONEncoder().encode(
+            BackendSkillMapInferenceRequest(request: request)
+        )
+
+        let (data, response) = try await session.data(for: urlRequest)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw QuestionGenerationError.serviceUnavailable
+        }
+        guard (200..<300).contains(httpResponse.statusCode) else {
+            throw Self.generationError(for: httpResponse.statusCode, responseBody: data)
+        }
+
+        let payload: BackendSkillMapInferenceResponse
+        do {
+            payload = try JSONDecoder().decode(BackendSkillMapInferenceResponse.self, from: data)
+        } catch {
+            throw QuestionGenerationError.badResponse
+        }
+
+        return try payload.skillMap.makeSkillMap(provenance: .backendInferred)
+    }
+
+    static func skillMapEndpoint(generationEndpoint: URL) -> URL {
+        generationEndpoint
+            .deletingLastPathComponent()
+            .appendingPathComponent("skill-maps", isDirectory: true)
+            .appendingPathComponent("infer", isDirectory: false)
     }
 
     static func generationError(
@@ -384,6 +432,8 @@ struct BackendQuestionRequest: Encodable {
     private var targetCount: Int
     private var minimumDifficulty: Int
     private var difficultyGuidance: String
+    private var skillMap: BackendSkillMapPayload?
+    private var desiredSkillAllocation: [DesiredSkillAllocationPayload]?
     private var contextRevision: String?
     private var desiredCount: Int?
     private var lowWatermark: Int?
@@ -396,18 +446,123 @@ struct BackendQuestionRequest: Encodable {
         lowWatermark: Int? = nil
     ) {
         goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
-        competencies = request.competencies.map(CompetencyPayload.init)
-        existingPrompts = request.existingQuestions.map(\.prompt)
-        existingQuestionCoverage = request.existingQuestions.prefix(30).map(QuestionCoveragePayload.init)
-        reportedPrompts = request.reportedQuestions.map(\.prompt)
+        competencies = request.competencies.prefix(20).map(CompetencyPayload.init)
+        let recentQuestions = request.existingQuestions.suffix(30)
+        existingPrompts = recentQuestions.map(\.prompt)
+        existingQuestionCoverage = recentQuestions.map(QuestionCoveragePayload.init)
+        reportedPrompts = request.reportedQuestions.prefix(30).map(\.prompt)
         sourceDocuments = request.goal.sourceDocuments.map(SourceDocumentPayload.init)
         targetCount = targetCountOverride ?? request.targetCount
         minimumDifficulty = request.minimumDifficulty
         difficultyGuidance = request.difficultyGuidance
+        skillMap = request.goal.derivedSkillMap.map(BackendSkillMapPayload.init)
+        let allocation = request.desiredSkillAllocation
+            .filter { $0.value >= 0 }
+            .map { DesiredSkillAllocationPayload(skillID: $0.key, count: $0.value) }
+            .sorted { $0.skillID.uuidString < $1.skillID.uuidString }
+        desiredSkillAllocation = allocation.isEmpty ? nil : allocation
         self.contextRevision = contextRevision
         self.desiredCount = desiredCount
         self.lowWatermark = lowWatermark
     }
+}
+
+struct BackendSkillMapInferenceRequest: Encodable {
+    private var goal: GoalPayload
+    private var suggestedSkills: [String]
+    private var competencies: [CompetencyPayload]
+    private var sourceDocuments: [SourceDocumentPayload]
+
+    init(request: QuestionGenerationRequest) {
+        goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
+        let suggestions = request.goal.derivedSkillMap?.topicNames
+            ?? GoalQuestionContext.meaningfulFocusTopics(from: request.goal.focusAreas)
+        suggestedSkills = Array(suggestions.prefix(6))
+        competencies = request.competencies.prefix(20).map(CompetencyPayload.init)
+        sourceDocuments = request.goal.sourceDocuments.map(SourceDocumentPayload.init)
+    }
+}
+
+private struct DesiredSkillAllocationPayload: Encodable {
+    var skillID: SkillMapTopic.ID
+    var count: Int
+}
+
+struct BackendSkillMapPayload: Codable {
+    var version: Int
+    var skills: [BackendSkillPayload]
+
+    init(skillMap: GoalSkillMap) {
+        version = skillMap.version
+        skills = skillMap.topics.map(BackendSkillPayload.init)
+    }
+
+    func makeSkillMap(provenance: SkillMapProvenance) throws -> GoalSkillMap {
+        let normalizedNames = skills.map { SkillMapTopic.normalizedName($0.name) }
+        guard version == 1,
+              let validatedNames = SkillMapTopic.validatedNames(normalizedNames),
+              Set(skills.map(\.id)).count == skills.count else {
+            throw QuestionGenerationError.badResponse
+        }
+
+        var allObjectiveIDs: Set<SkillMapObjective.ID> = []
+        let topics = try zip(skills, validatedNames).map { skill, normalizedName in
+            guard (1...8).contains(skill.objectives.count) else {
+                throw QuestionGenerationError.badResponse
+            }
+
+            let objectives = try skill.objectives.map { objective in
+                let name = SkillMapTopic.normalizedName(objective.name)
+                guard (1...80).contains(name.count),
+                      allObjectiveIDs.insert(objective.id).inserted else {
+                    throw QuestionGenerationError.badResponse
+                }
+                return SkillMapObjective(id: objective.id, name: name)
+            }
+            let objectiveNames = objectives.map { $0.name.lowercased() }
+            guard Set(objectiveNames).count == objectiveNames.count else {
+                throw QuestionGenerationError.badResponse
+            }
+
+            return SkillMapTopic(
+                id: skill.id,
+                name: normalizedName,
+                objectives: objectives
+            )
+        }
+
+        return GoalSkillMap(
+            topics: topics,
+            version: version,
+            provenance: provenance
+        )
+    }
+}
+
+struct BackendSkillPayload: Codable {
+    var id: SkillMapTopic.ID
+    var name: String
+    var objectives: [BackendObjectivePayload]
+
+    init(skill: SkillMapTopic) {
+        id = skill.id
+        name = skill.name
+        objectives = skill.objectives.map(BackendObjectivePayload.init)
+    }
+}
+
+struct BackendObjectivePayload: Codable {
+    var id: SkillMapObjective.ID
+    var name: String
+
+    init(objective: SkillMapObjective) {
+        id = objective.id
+        name = objective.name
+    }
+}
+
+struct BackendSkillMapInferenceResponse: Decodable {
+    var skillMap: BackendSkillMapPayload
 }
 
 private struct SourceDocumentPayload: Encodable {
@@ -439,7 +594,7 @@ private struct GoalPayload: Encodable {
         deadline = goal.deadline
         category = goal.category.rawValue
         currentLevel = goal.currentLevel
-        focusAreas = goal.focusAreas
+        focusAreas = questionContext.hasDerivedSkillMap ? "" : goal.focusAreas
         learningTarget = questionContext.learningTarget
         contentTopics = questionContext.contentTopics
         questionDirective = questionContext.questionDirective
@@ -449,6 +604,9 @@ private struct GoalPayload: Encodable {
 }
 
 private struct QuestionCoveragePayload: Encodable {
+    var skillID: SkillMapTopic.ID?
+    var objectiveID: SkillMapObjective.ID?
+    var objective: String?
     var topic: String
     var prompt: String
     var expectedAnswer: String
@@ -456,6 +614,9 @@ private struct QuestionCoveragePayload: Encodable {
     var difficulty: Int
 
     init(question: CheckpointQuestion) {
+        skillID = question.skillID
+        objectiveID = question.objectiveID
+        objective = question.objective
         topic = question.topic
         prompt = question.prompt
         expectedAnswer = question.expectedAnswer
@@ -465,6 +626,7 @@ private struct QuestionCoveragePayload: Encodable {
 }
 
 private struct CompetencyPayload: Encodable {
+    var skillID: SkillMapTopic.ID?
     var topic: String
     var estimatedLevel: Double
     var masteryPercent: Int
@@ -474,6 +636,7 @@ private struct CompetencyPayload: Encodable {
     var incorrect: Int
 
     init(competency: TopicCompetency) {
+        skillID = competency.skillID
         topic = competency.topic
         estimatedLevel = competency.estimatedLevel
         masteryPercent = competency.masteryPercent
@@ -495,6 +658,9 @@ struct GeneratedQuestionPayload: Decodable {
     var choices: [String]
     var explanation: String
     var topic: String
+    var skillID: SkillMapTopic.ID?
+    var objectiveID: SkillMapObjective.ID?
+    var objective: String?
     var difficulty: Int
     var format: QuestionFormat
 
@@ -507,6 +673,10 @@ struct GeneratedQuestionPayload: Decodable {
         case choices
         case explanation
         case topic
+        case skillID
+        case objectiveID
+        case objective
+        case objectiveName
         case difficulty
         case format
     }
@@ -521,6 +691,12 @@ struct GeneratedQuestionPayload: Decodable {
         choices = try container.decodeIfPresent([String].self, forKey: .choices) ?? []
         explanation = try container.decodeIfPresent(String.self, forKey: .explanation) ?? ""
         topic = try container.decodeIfPresent(String.self, forKey: .topic) ?? ""
+        skillID = try container.decodeIfPresent(String.self, forKey: .skillID)
+            .flatMap(SkillMapTopic.ID.init(uuidString:))
+        objectiveID = try container.decodeIfPresent(String.self, forKey: .objectiveID)
+            .flatMap(SkillMapObjective.ID.init(uuidString:))
+        objective = try container.decodeIfPresent(String.self, forKey: .objective)
+            ?? container.decodeIfPresent(String.self, forKey: .objectiveName)
         difficulty = try container.decodeIfPresent(Int.self, forKey: .difficulty) ?? 1
 
         let rawFormat = try container.decodeIfPresent(String.self, forKey: .format) ?? ""
@@ -537,6 +713,9 @@ struct GeneratedQuestionPayload: Decodable {
             choices: choices,
             explanation: explanation,
             topic: topic,
+            skillID: skillID,
+            objectiveID: objectiveID,
+            objective: objective,
             difficulty: min(5, max(1, difficulty)),
             format: .multipleChoice,
             sourcePrompt: sourcePrompt

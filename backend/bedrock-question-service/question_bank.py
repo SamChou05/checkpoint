@@ -45,6 +45,44 @@ class ProviderAttemptLimitError(RuntimeError):
     """The logical job has exhausted its provider-call allowance."""
 
 
+def _validate_durable_skill_allocation(
+    normalized_request: dict[str, Any],
+    desired_count: int,
+) -> None:
+    skills = normalized_request.get("skillMap", {}).get("skills", [])
+    if not skills:
+        return
+    allocation = normalized_request.get("desiredSkillAllocation", {})
+    positive_skill_count = (
+        sum(1 for count in allocation.values() if count > 0)
+        if allocation
+        else len(skills)
+    )
+    if desired_count < positive_skill_count:
+        raise QuestionBankError(
+            400,
+            "desiredCount must provide at least one durable inventory slot for "
+            "every positive-weight skill.",
+            "invalid_request",
+        )
+
+
+def _skill_allocation_key(normalized_request: dict[str, Any]) -> str:
+    skills = normalized_request.get("skillMap", {}).get("skills", [])
+    if not skills:
+        return "legacy"
+    allocation = normalized_request.get("desiredSkillAllocation", {})
+    entries = [
+        {
+            "skillID": skill["id"],
+            "weight": allocation.get(skill["id"], 0) if allocation else 1,
+        }
+        for skill in skills
+    ]
+    entries.sort(key=lambda entry: entry["skillID"])
+    return _plain_digest(_json(entries))
+
+
 def ensure_bank(
     payload: dict[str, Any],
     event: dict[str, Any],
@@ -75,6 +113,7 @@ def ensure_bank(
     generation_payload = dict(payload)
     generation_payload["targetCount"] = min(desired_count, _generation_chunk_count())
     normalized = normalize_request(generation_payload)
+    _validate_durable_skill_allocation(normalized, desired_count)
     context_revision = _required_revision(payload.get("contextRevision"))
     goal_key = _secret_digest("goal", goal_id)
     bank_id = _secret_digest("bank", f"{owner_digest}:{goal_key}:{context_revision}")
@@ -578,6 +617,14 @@ def _process_job(
     existing_items = _query_question_history(client, table_name, bank_key)
     existing_questions = [_question_from_item(item) for item in existing_items]
     generation_request["targetCount"] = min(_generation_chunk_count(), deficit)
+    if generation_request.get("skillMap"):
+        generation_request["requestedSkillAllocation"] = _worker_skill_allocation(
+            generation_request,
+            existing_items,
+            desired_count=desired_count,
+            low_watermark=low_watermark,
+            target_count=generation_request["targetCount"],
+        )
     generation_request["existingPrompts"] = list(
         dict.fromkeys(
             generation_request.get("existingPrompts", [])
@@ -589,6 +636,9 @@ def _process_job(
         + [
             {
                 "topic": question.get("topic", ""),
+                "skillID": question.get("skillID", ""),
+                "objectiveID": question.get("objectiveID", ""),
+                "objective": question.get("objective", ""),
                 "prompt": question.get("prompt", ""),
                 "expectedAnswer": question.get("expectedAnswer", ""),
                 "choices": question.get("choices", []),
@@ -715,6 +765,7 @@ def _activate_goal_version(
             "contextRevision": _s(context_revision),
             "ownerHash": _s(owner_hash),
             "generationRequest": _s(_json(normalized)),
+            "skillAllocationKey": _s(_skill_allocation_key(normalized)),
             "desiredCount": _n(desired_count),
             "lowWatermark": _n(low_watermark),
             "readyCount": _n(0),
@@ -801,12 +852,18 @@ def _update_bank_configuration(
             TableName=table_name,
             Key=bank_key,
             UpdateExpression=(
-                "SET generationRequest = :request, desiredCount = :desired, lowWatermark = :low, "
+                "SET generationRequest = :request, skillAllocationKey = :allocation, "
+                "desiredCount = :desired, lowWatermark = :low, "
                 "updatedAt = :now, expiresAt = :ttl"
             ),
-            ConditionExpression="contextRevision = :revision AND attribute_not_exists(tombstonedAt)",
+            ConditionExpression=(
+                "contextRevision = :revision AND attribute_not_exists(tombstonedAt) "
+                "AND (attribute_not_exists(skillAllocationKey) OR "
+                "skillAllocationKey = :allocation)"
+            ),
             ExpressionAttributeValues={
                 ":request": _s(_json(normalized)),
+                ":allocation": _s(_skill_allocation_key(normalized)),
                 ":desired": _n(desired_count),
                 ":low": _n(low_watermark),
                 ":now": _n(now),
@@ -1161,6 +1218,147 @@ def _reserve_provider_attempt(
         if job and _number(job, "providerAttemptCount") >= limit:
             return False
         raise
+
+
+def _worker_skill_allocation(
+    generation_request: dict[str, Any],
+    existing_items: list[dict[str, Any]],
+    *,
+    desired_count: int,
+    low_watermark: int,
+    target_count: int,
+) -> dict[str, int]:
+    """Derive this worker chunk from stable whole-bank weights and server inventory."""
+    skills = generation_request.get("skillMap", {}).get("skills", [])
+    skill_ids = [skill.get("id", "") for skill in skills if skill.get("id")]
+    if not skill_ids or target_count <= 0:
+        return {}
+
+    desired_allocation = generation_request.get("desiredSkillAllocation", {})
+    targets = _resolved_skill_targets(
+        skill_ids,
+        desired_allocation if isinstance(desired_allocation, dict) else {},
+        desired_count,
+    )
+    relevant_items = (
+        existing_items
+        if low_watermark == 0
+        else [item for item in existing_items if _string(item, "state") in {"", "ready"}]
+    )
+    counts = {skill_id: 0 for skill_id in skill_ids}
+    for item in relevant_items:
+        try:
+            question = _question_from_item(item)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        skill_id = question.get("skillID")
+        if skill_id in counts:
+            counts[skill_id] += 1
+
+    deficits = {
+        skill_id: max(0, targets.get(skill_id, 0) - counts.get(skill_id, 0))
+        for skill_id in skill_ids
+    }
+    return _allocate_deficit_chunk(deficits, min(target_count, sum(deficits.values())))
+
+
+def _resolved_skill_targets(
+    skill_ids: list[str],
+    desired_allocation: dict[str, int],
+    desired_count: int,
+) -> dict[str, int]:
+    """Resolve durable weights to inventory targets with positive-skill maintenance."""
+    if desired_count <= 0 or not skill_ids:
+        return {}
+    weights = {
+        skill_id: max(0, int(desired_allocation.get(skill_id, 0)))
+        for skill_id in skill_ids
+    }
+    if not any(weights.values()):
+        weights = {skill_id: 1 for skill_id in skill_ids}
+    positive_skill_ids = [
+        skill_id for skill_id in skill_ids if weights[skill_id] > 0
+    ]
+    targets = {skill_id: 0 for skill_id in skill_ids}
+    if desired_count < len(positive_skill_ids):
+        ranked = sorted(
+            positive_skill_ids,
+            key=lambda skill_id: (
+                weights[skill_id],
+                -skill_ids.index(skill_id),
+            ),
+            reverse=True,
+        )
+        for skill_id in ranked[:desired_count]:
+            targets[skill_id] = 1
+        return targets
+
+    for skill_id in positive_skill_ids:
+        targets[skill_id] = 1
+    remaining_count = desired_count - len(positive_skill_ids)
+    weight_total = sum(weights.values())
+    exact = {
+        skill_id: remaining_count * weights[skill_id] / weight_total
+        for skill_id in skill_ids
+    }
+    additions = {skill_id: int(exact[skill_id]) for skill_id in skill_ids}
+    targets = {
+        skill_id: targets[skill_id] + additions[skill_id]
+        for skill_id in skill_ids
+    }
+    remainder = desired_count - sum(targets.values())
+    ranked = sorted(
+        skill_ids,
+        key=lambda skill_id: (
+            exact[skill_id] - additions[skill_id],
+            -skill_ids.index(skill_id),
+        ),
+        reverse=True,
+    )
+    for skill_id in ranked[:remainder]:
+        targets[skill_id] += 1
+    return targets
+
+
+def _allocate_deficit_chunk(
+    deficits: dict[str, int],
+    target_count: int,
+) -> dict[str, int]:
+    allocation = {skill_id: 0 for skill_id in deficits}
+    remaining_deficits = dict(deficits)
+    remaining_slots = target_count
+    # A generation chunk can be smaller than the skill map. Prioritize the
+    # most-underfilled skills before applying the one-per-skill breadth pass so
+    # a later map entry is not skipped on every consecutive chunk. Python's
+    # stable sort preserves map order as the deterministic tie-breaker.
+    ordered_skill_ids = sorted(
+        remaining_deficits,
+        key=lambda skill_id: remaining_deficits[skill_id],
+        reverse=True,
+    )
+    for skill_id in ordered_skill_ids:
+        if remaining_slots <= 0:
+            break
+        deficit = remaining_deficits[skill_id]
+        if deficit <= 0:
+            continue
+        allocation[skill_id] += 1
+        remaining_deficits[skill_id] -= 1
+        remaining_slots -= 1
+    for _ in range(remaining_slots):
+        candidates = [
+            skill_id
+            for skill_id, remaining in remaining_deficits.items()
+            if remaining > 0
+        ]
+        if not candidates:
+            break
+        selected = max(candidates, key=lambda skill_id: remaining_deficits[skill_id])
+        allocation[selected] += 1
+        remaining_deficits[selected] -= 1
+    return {
+        skill_id: count for skill_id, count in allocation.items() if count > 0
+    }
 
 
 def _prepare_questions(

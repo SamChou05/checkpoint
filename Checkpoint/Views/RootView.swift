@@ -8,6 +8,8 @@ struct RootView: View {
     @State private var selectedTab: AppTab = .home
     @State private var activeCheckpointSession: CheckpointSession?
     @State private var pendingShieldRetryTask: Task<Void, Never>?
+    @State private var isSuggestedSkillMapReviewPresented = false
+    @State private var lastPresentedSkillMapSignature: String?
     @Environment(\.scenePhase) private var scenePhase
 
     private var store: CheckpointStore { appModel.store }
@@ -70,6 +72,9 @@ struct RootView: View {
             OnboardingView(store: store)
                 .interactiveDismissDisabled(store.goal == nil)
         }
+        .sheet(isPresented: $isSuggestedSkillMapReviewPresented) {
+            SkillMapReviewView(store: store)
+        }
         .task {
             await screenTime.bootstrapAuthorizationIfNeeded()
             workflow.reconcileProtectionState()
@@ -82,6 +87,7 @@ struct RootView: View {
             await purchaseController.loadProducts()
             workflow.reconcileProtectionState()
             handlePendingShieldActivation()
+            presentSuggestedSkillMapReviewIfNeeded()
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
@@ -99,6 +105,13 @@ struct RootView: View {
         }
         .onChange(of: store.goal) { _, newGoal in
             workflow.goalDidChange()
+            presentSuggestedSkillMapReviewIfNeeded()
+        }
+        .onChange(of: store.activeDerivedSkillMap) { _, _ in
+            presentSuggestedSkillMapReviewIfNeeded()
+        }
+        .onChange(of: store.isOnboardingPresented) { _, _ in
+            presentSuggestedSkillMapReviewIfNeeded()
         }
         .onChange(of: screenTime.hasSelection) { _, hasSelection in
             workflow.selectionDidChange(hasSelection: hasSelection)
@@ -138,6 +151,22 @@ struct RootView: View {
                 schedulePendingShieldRetryIfNeeded()
             }
         }
+    }
+
+    private func presentSuggestedSkillMapReviewIfNeeded() {
+        guard !store.isOnboardingPresented,
+              activeCheckpointSession == nil,
+              store.pendingMembershipFeature == nil,
+              let goalID = store.goal?.id,
+              let skillMap = store.activeDerivedSkillMap,
+              skillMap.status == .suggested else {
+            return
+        }
+
+        let signature = "\(goalID.uuidString):\(skillMap.version):\(skillMap.updatedAt.timeIntervalSince1970)"
+        guard signature != lastPresentedSkillMapSignature else { return }
+        lastPresentedSkillMapSignature = signature
+        isSuggestedSkillMapReviewPresented = true
     }
 
     private func schedulePendingShieldRetryIfNeeded() {

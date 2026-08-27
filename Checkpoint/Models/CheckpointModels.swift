@@ -163,19 +163,57 @@ enum SkillMapStatus: String, Codable, Equatable, Sendable {
     case reviewed
 }
 
+enum SkillMapProvenance: String, Codable, Equatable, Sendable {
+    case backendInferred
+    case explicitFocusAreas
+    case questionTopics
+    case userEdited
+}
+
+struct SkillMapObjective: Identifiable, Codable, Equatable, Sendable {
+    var id: UUID
+    var name: String
+
+    init(
+        id: UUID = UUID(),
+        name: String
+    ) {
+        self.id = id
+        self.name = SkillMapTopic.normalizedName(name)
+    }
+}
+
 struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
     var id: UUID
     var name: String
     var aliases: [String]
+    var objectives: [SkillMapObjective]
 
     init(
         id: UUID = UUID(),
         name: String,
-        aliases: [String] = []
+        aliases: [String] = [],
+        objectives: [SkillMapObjective] = []
     ) {
         self.id = id
         self.name = name
         self.aliases = aliases
+        self.objectives = objectives
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case aliases
+        case objectives
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        name = try container.decode(String.self, forKey: .name)
+        aliases = try container.decodeIfPresent([String].self, forKey: .aliases) ?? []
+        objectives = try container.decodeIfPresent([SkillMapObjective].self, forKey: .objectives) ?? []
     }
 
     static func normalizedName(_ rawName: String) -> String {
@@ -195,7 +233,7 @@ struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
         let unsupportedSeparators = CharacterSet(charactersIn: ",;\n")
         let names = rawNames.map(normalizedName)
         guard names.allSatisfy({ name in
-            (3...48).contains(name.count) &&
+            (1...48).contains(name.count) &&
                 name.rangeOfCharacter(from: unsupportedSeparators) == nil
         }) else {
             return nil
@@ -208,6 +246,8 @@ struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
 }
 
 struct GoalSkillMap: Codable, Equatable, Sendable {
+    var version: Int
+    var provenance: SkillMapProvenance
     var topics: [SkillMapTopic]
     var status: SkillMapStatus
     var createdAt: Date
@@ -216,13 +256,37 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
     init(
         topics: [SkillMapTopic],
         status: SkillMapStatus = .suggested,
+        version: Int = 1,
+        provenance: SkillMapProvenance = .questionTopics,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) {
+        self.version = max(1, version)
+        self.provenance = provenance
         self.topics = topics
         self.status = status
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case version
+        case provenance
+        case topics
+        case status
+        case createdAt
+        case updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        version = max(1, try container.decodeIfPresent(Int.self, forKey: .version) ?? 1)
+        provenance = try container.decodeIfPresent(SkillMapProvenance.self, forKey: .provenance)
+            ?? .questionTopics
+        topics = try container.decode([SkillMapTopic].self, forKey: .topics)
+        status = try container.decodeIfPresent(SkillMapStatus.self, forKey: .status) ?? .suggested
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt) ?? createdAt
     }
 
     var topicNames: [String] {
@@ -498,6 +562,9 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var choices: [String]
     var explanation: String
     var topic: String
+    var skillID: SkillMapTopic.ID?
+    var objectiveID: SkillMapObjective.ID?
+    var objective: String?
     var difficulty: Int
     var format: QuestionFormat
     var status: QuestionStatus = .new
@@ -516,6 +583,9 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         choices: [String] = [],
         explanation: String,
         topic: String,
+        skillID: SkillMapTopic.ID? = nil,
+        objectiveID: SkillMapObjective.ID? = nil,
+        objective: String? = nil,
         difficulty: Int,
         format: QuestionFormat,
         status: QuestionStatus = .new,
@@ -533,6 +603,9 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         self.choices = choices
         self.explanation = explanation
         self.topic = topic
+        self.skillID = skillID
+        self.objectiveID = objectiveID
+        self.objective = objective
         self.difficulty = difficulty
         self.format = format
         self.status = status
@@ -552,6 +625,9 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         case choices
         case explanation
         case topic
+        case skillID
+        case objectiveID
+        case objective
         case difficulty
         case format
         case status
@@ -572,6 +648,9 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         choices = try container.decodeIfPresent([String].self, forKey: .choices) ?? []
         explanation = try container.decode(String.self, forKey: .explanation)
         topic = try container.decode(String.self, forKey: .topic)
+        skillID = try container.decodeIfPresent(SkillMapTopic.ID.self, forKey: .skillID)
+        objectiveID = try container.decodeIfPresent(SkillMapObjective.ID.self, forKey: .objectiveID)
+        objective = try container.decodeIfPresent(String.self, forKey: .objective)
         difficulty = try container.decode(Int.self, forKey: .difficulty)
         format = try container.decode(QuestionFormat.self, forKey: .format)
         status = try container.decodeIfPresent(QuestionStatus.self, forKey: .status) ?? .new

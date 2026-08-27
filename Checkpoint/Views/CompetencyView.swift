@@ -87,10 +87,20 @@ struct CompetencyView: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(skillMap.topics) { topic in
-                        Label(topic.name, systemImage: "circle.fill")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.text)
-                            .symbolRenderingMode(.hierarchical)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Label(topic.name, systemImage: "circle.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.text)
+                                .symbolRenderingMode(.hierarchical)
+
+                            if !topic.objectives.isEmpty {
+                                Text(topic.objectives.prefix(3).map(\.name).joined(separator: " · "))
+                                    .font(.caption)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .padding(.leading, 22)
+                            }
+                        }
                     }
                 }
 
@@ -101,7 +111,7 @@ struct CompetencyView: View {
                                 store.confirmActiveDerivedSkillMap()
                             }
                         }
-                        skillMapButton(title: "Edit names", systemImage: "pencil") {
+                        skillMapButton(title: "Review skills", systemImage: "slider.horizontal.3") {
                             isSkillMapEditorPresented = true
                         }
                     }
@@ -112,7 +122,7 @@ struct CompetencyView: View {
                                 store.confirmActiveDerivedSkillMap()
                             }
                         }
-                        skillMapButton(title: "Edit names", systemImage: "pencil") {
+                        skillMapButton(title: "Review skills", systemImage: "slider.horizontal.3") {
                             isSkillMapEditorPresented = true
                         }
                     }
@@ -203,7 +213,7 @@ struct CompetencyView: View {
     }
 }
 
-private struct SkillMapReviewView: View {
+struct SkillMapReviewView: View {
     let store: CheckpointStore
 
     @Environment(\.dismiss) private var dismiss
@@ -223,7 +233,7 @@ private struct SkillMapReviewView: View {
                             .font(.title2.bold())
                             .foregroundStyle(CheckpointTheme.text)
 
-                        Text("Rename anything that doesn’t feel right. The same stable skills will keep their existing mastery history.")
+                        Text("Edit a name to rename a skill and preserve its progress. Use Replace when the subject itself changes; that starts fresh questions and mastery.")
                             .font(.subheadline)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -232,20 +242,68 @@ private struct SkillMapReviewView: View {
                     SectionPanel("Skill names") {
                         VStack(spacing: 12) {
                             ForEach(Array(topics.indices), id: \.self) { index in
-                                TextField("Skill \(index + 1)", text: $topics[index].name)
-                                    .textFieldStyle(.plain)
-                                    .foregroundStyle(CheckpointTheme.text)
-                                    .padding(12)
-                                    .background(
-                                        CheckpointTheme.panelRaised,
-                                        in: RoundedRectangle(cornerRadius: 8)
-                                    )
-                                    .accessibilityLabel("Skill \(index + 1) name")
+                                HStack(spacing: 10) {
+                                    TextField("Skill \(index + 1)", text: $topics[index].name)
+                                        .textFieldStyle(.plain)
+                                        .foregroundStyle(CheckpointTheme.text)
+                                        .padding(12)
+                                        .background(
+                                            CheckpointTheme.panelRaised,
+                                            in: RoundedRectangle(cornerRadius: 8)
+                                        )
+                                        .accessibilityLabel("Skill \(index + 1) name")
+
+                                    if topics.count > 3 {
+                                        Button {
+                                            topics.remove(at: index)
+                                        } label: {
+                                            Image(systemName: "minus.circle.fill")
+                                                .font(.title3)
+                                                .foregroundStyle(CheckpointTheme.coral)
+                                                .frame(width: 44, height: 44)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityLabel("Remove skill \(index + 1)")
+                                    }
+                                }
+
+                                if !topics[index].objectives.isEmpty {
+                                    Text(topics[index].objectives.prefix(3).map(\.name).joined(separator: " · "))
+                                        .font(.caption)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+
+                                if existingSkillIDs.contains(topics[index].id) {
+                                    Button {
+                                        topics[index] = SkillMapTopic(name: "")
+                                    } label: {
+                                        Label("Replace this skill", systemImage: "arrow.triangle.2.circlepath")
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(CheckpointTheme.amber)
+                                            .frame(maxWidth: .infinity, minHeight: 36, alignment: .leading)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityHint("Retires this skill's questions and starts new progress")
+                                }
+                            }
+
+                            if topics.count < 6 {
+                                Button {
+                                    topics.append(SkillMapTopic(name: ""))
+                                } label: {
+                                    Label("Add another skill", systemImage: "plus")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.teal)
+                                        .frame(maxWidth: .infinity, minHeight: 44)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
 
                         if !isValid {
-                            Text("Use a different 3–48 character name for every skill. Commas and semicolons aren’t supported in skill names.")
+                            Text("Use a unique name up to 48 characters for every skill. Commas and semicolons aren’t supported in skill names.")
                                 .font(.footnote.weight(.semibold))
                                 .foregroundStyle(CheckpointTheme.coral)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -282,10 +340,11 @@ private struct SkillMapReviewView: View {
     }
 
     private var isValid: Bool {
-        SkillMapTopic.validatedNames(
-            topics.map(\.name),
-            allowedCount: topics.count...topics.count
-        ) != nil
+        SkillMapTopic.validatedNames(topics.map(\.name)) != nil
+    }
+
+    private var existingSkillIDs: Set<SkillMapTopic.ID> {
+        Set(store.activeDerivedSkillMap?.topics.map(\.id) ?? [])
     }
 }
 
@@ -301,7 +360,7 @@ private struct SkillMapRepairView: View {
         var initialNames = store.sortedCompetencies.compactMap { competency -> String? in
             let name = SkillMapTopic.normalizedName(competency.topic)
             let key = name.lowercased()
-            guard (3...48).contains(name.count),
+            guard (1...48).contains(name.count),
                   name.rangeOfCharacter(from: CharacterSet(charactersIn: ",;\n")) == nil,
                   !seenKeys.contains(key) else {
                 return nil
@@ -374,7 +433,7 @@ private struct SkillMapRepairView: View {
                         }
 
                         if !isValid {
-                            Text("Use a different 3–48 character name for every skill. Commas and semicolons aren’t supported in skill names.")
+                            Text("Use a unique name up to 48 characters for every skill. Commas and semicolons aren’t supported in skill names.")
                                 .font(.footnote.weight(.semibold))
                                 .foregroundStyle(CheckpointTheme.coral)
                                 .fixedSize(horizontal: false, vertical: true)
