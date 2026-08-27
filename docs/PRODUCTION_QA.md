@@ -6,8 +6,8 @@ Use this checklist before TestFlight and again before App Store submission. Mark
 
 Started: June 4, 2026 PDT.
 
-- [x] Debug simulator tests passed: 192 passed, 0 failed on July 12 after required Screen Time authorization, approved-relaunch, failed-erasure gating, crash-safe snapshot-erasure recovery, and question-session diversity coverage was added.
-- [x] Bedrock question service unit tests passed: 88 passed, 0 failed on July 12.
+- [x] Debug simulator tests passed: 265 passed, 0 failed on August 27 with simulator signing enabled and parallel testing disabled.
+- [x] Bedrock question service unit tests passed: 156 passed, 0 failed on Python 3.12 on August 27; Ruff, Python compilation, and SAM lint validation also passed.
 - [x] Release simulator build succeeded.
 - [x] `Checkpoint/Config/Secrets.xcconfig` is ignored and not tracked.
 - [x] Backend endpoint is configured locally and returned authenticated, validated question sets across exam, language, history, and uncommon raw-goal fixtures.
@@ -55,11 +55,11 @@ Findings:
 ## AI Backend
 
 - [ ] App build has the intended API Gateway `/v1/questions` endpoint; production Automatic has no Apple/local or canned fallback.
-- [ ] The same API stage exposes authenticated `POST /v1/question-banks/ensure` and `POST /v1/question-banks/claim`; no unintended public routes or Lambda Function URL exist.
+- [ ] The same API stage exposes authenticated `POST /v1/skill-maps/infer`, `POST /v1/question-banks/ensure`, and `POST /v1/question-banks/claim`; no unintended public routes or Lambda Function URL exist.
 - [ ] Backend endpoint returns the documented JSON response, not placeholder Lambda text.
-- [ ] Internal/TestFlight backend enforces its rotated bearer on synchronous generation, ensure, and claim; public production enforces App Attest assertions and replay protection instead of trusting the embedded bearer or install UUID.
+- [ ] Internal/TestFlight backend enforces its rotated bearer on synchronous generation, skill-map inference, ensure, and claim; public production enforces App Attest assertions and replay protection instead of trusting the embedded bearer or install UUID.
 - [ ] `ALLOW_UNAUTHENTICATED_BACKEND` is not enabled on any exposed API Gateway stage.
-- [ ] Backend verifies current StoreKit entitlement before accepting paid bank targets/watermarks, assigning paid quotas, or enabling Pro-only access.
+- [ ] Backend verifies current StoreKit entitlement before accepting tier-specific bank policies, assigning paid quotas, or enabling Pro-only access.
 - [ ] Synchronous generation atomically rate limits by install ID and source IP; every asynchronous worker pass charges its pseudonymous install quota before Bedrock, and API Gateway throttles ensure/claim.
 - [ ] Backend caps requested batch size.
 - [ ] Backend rejects malformed, duplicate, off-target, and below-difficulty questions.
@@ -103,8 +103,8 @@ Findings:
 - [ ] Turn protection off, force-quit and relaunch Checkpoint, and verify no previously selected app remains blocked.
 - [ ] Open a protected app and confirm the custom Checkpoint shield appears.
 - [ ] Confirm the shield shows the current goal after switching goals.
-- [ ] Tap the shield action and confirm Checkpoint opens.
-- [ ] Confirm a protected-app checkpoint appears without needing to manually start anything.
+- [ ] On iOS 26.5 or newer, tap the shield action and confirm Checkpoint opens. On older systems, confirm the manual-open instruction and open Checkpoint from the Home Screen.
+- [ ] Confirm a protected-app checkpoint appears from the pending attempt after either handoff path.
 - [ ] Fail a checkpoint and confirm protected apps remain locked.
 - [ ] Retake after failure and confirm missed questions are prioritized.
 - [ ] Pass a checkpoint and confirm selected apps unblock for the configured break.
@@ -132,7 +132,7 @@ Findings:
 ## App Store Assets
 
 - [ ] Family Controls distribution access is approved for shipping bundle IDs.
-- [ ] App privacy labels match local storage, Screen Time usage, and backend generation.
+- [ ] App privacy labels match local storage, Screen Time selection and coordination state, backend generation, and StoreKit purchases.
 - [ ] Hosted privacy policy is live.
 - [ ] Support URL is live.
 - [ ] App Store screenshots are captured on current UI.

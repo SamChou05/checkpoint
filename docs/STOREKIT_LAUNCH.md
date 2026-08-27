@@ -24,7 +24,7 @@ For a persistent on-device QA build that remains Pro after a Home-screen relaunc
 1. Open `Checkpoint.xcodeproj`.
 2. Select the shared `Checkpoint` scheme.
 3. Run the app on a simulator or development device.
-4. Open Settings > Choose your plan.
+4. Open Settings > Plan > Free and Pro.
 5. Confirm the Pro card loads StoreKit prices.
 6. Purchase the monthly or annual test product.
 7. Confirm the app switches from Free to Pro.

@@ -9,15 +9,15 @@ Checkpoint is not App Store-ready yet, but the repo now has the core workflow, t
 - Failed checkpoint sets make missed questions due immediately so the next attempt retests them first.
 - AI generation is AI-only: production `Automatic` routes directly to the configured cloud backend, with no alternate production source or canned fallback.
 - A practice set is not ready until at least five questions pass validation; pending generation and retryable service, connection, or quality states are visible.
-- Live-backend smoke tests exercised LSAT, MCAT, Spanish, modern history, and a raw-goal beekeeping case. Full validated sets were observed across all five domains; a partial Spanish batch was correctly rejected by the stricter gate and succeeded on retry. Endpoint and token values live only in ignored local configuration and are not recorded in version control.
+- The August 2026 cross-domain capture for the evaluated TestFlight asynchronous worker passed all 13 fixtures and all 43 generated questions after deterministic grading.
 - Main app and Screen Time extensions include Family Controls and App Group entitlement files.
 - Main app and Screen Time extensions include privacy manifests for `UserDefaults` access.
 - Successful checkpoints temporarily unshield selected apps, then schedule a Device Activity monitor extension to re-apply shields after the unlock window.
-- Settings includes shield-extension diagnostics to confirm whether the custom Checkpoint shield rendered or iOS fell back to the default Restricted page.
+- In Debug builds, Settings includes shield-extension diagnostics to confirm whether the custom Checkpoint shield rendered or iOS fell back to the default Restricted page.
 - New installs start with no restricted apps/categories selected, and empty shield attempts surface an in-app error.
 - Blocked-app launches with no available checkpoint questions surface a recovery notice.
-- The full simulator XCTest suite passes: 192 tests, 0 failures on July 12, 2026, using Xcode 26.4.1 with normal simulator signing and parallel testing disabled.
-- The Bedrock question service suite passes: 88 tests, 0 failures on Python 3.12 on July 12, 2026.
+- The full simulator XCTest suite passes: 265 tests, 0 failures on August 27, 2026, using Xcode 26.4.1 with simulator signing enabled and parallel testing disabled.
+- The Bedrock question service suite passes: 156 tests, 0 failures on Python 3.12 on August 27, 2026; Ruff, Python compilation, and SAM lint validation also pass.
 - GitHub Actions definitions now cover backend tests, secret scanning, iOS simulator tests, a Release simulator build, and Xcode static analysis. A separate backend workflow is manual-only and environment-gated.
 - Starter-membership product behavior is implemented. The first goal and blocker/checkpoint/unlock loop are usable before payment; membership unlocks goal switching, fresh ongoing generation, larger question banks, and adaptive Study Assist.
 
@@ -56,9 +56,9 @@ These cannot be completed from the repo alone:
 2. Enable `group.com.samchou.checkpoint` for all four bundle IDs. Request Family Controls distribution access separately for the main app and each of the three extension bundle IDs; development entitlement success is not distribution approval.
 3. After approval, create distribution profiles for all four targets. Produce a signed archive, export it, upload it, and confirm that App Store Connect finishes processing it. The CI simulator build does not satisfy this gate.
 4. Accept the Paid Apps Agreement and complete banking and tax. Create the `Checkpoint Pro` subscription group plus `checkpoint.membership.monthly` and `checkpoint.membership.yearly`, add required localization/review information, attach the first subscriptions to the app version, and perform the full TestFlight sandbox purchase/restore/expiration/cancellation pass.
-5. Finalize retention and deletion treatment for goals, prompts, install IDs, IP quota records, AWS/Bedrock processing, and iOS device-backup eligibility with appropriate legal review. Publish working Privacy Policy and Support URLs, expose the required legal links in the app, complete App Store privacy labels, and manually verify that Erase All Data removes backend and App Group/Screen Time state as promised.
+5. Finalize retention and deletion treatment for goals, prompts, install IDs, IP quota records, AWS/Bedrock processing, and iOS device-backup eligibility with appropriate legal review. Publish working Privacy Policy and Support URLs, expose the required legal links in the app, and complete App Store privacy labels. Verify that Erase All Data matches the published scope for local and App Group/Screen Time state; until a remote deletion route ships, disclose the backend's TTL-based removal.
 6. Define the policy for arbitrary-goal harmful content, refusal behavior, and age suitability. Select and configure input/output controls or Bedrock Guardrails, have a human review adversarial results, and answer App Store age-rating and generative-content questions consistently with observed behavior.
-7. Install build 4 on the physical test iPhone and run both build 3 → 4 migration and a full reset. Complete the entire physical shield matrix, including selection changes, protection off, every break duration, force quit, reboot, editing during a break, custom shield rendering, and selection limits.
+7. Install the current build over the prior physical-device build, validate the upgrade migration, and then run a full reset. Complete the entire physical shield matrix, including selection changes, protection off, every break duration, force quit, reboot, editing during a break, custom shield rendering, and selection limits.
 8. Complete physical iOS 17 minimum-version, small-screen, VoiceOver, and large Dynamic Type validation. Simulator coverage is supporting evidence, not accessibility or Screen Time sign-off.
 9. Finalize screenshots, store copy, content rights, export compliance, DSA status, support contact, and App Review notes. A human should review every screenshot and metadata answer against the exact uploaded build.
 10. Deploy and approve the production backend, then configure the real HTTPS endpoint and token for the signed Release build through protected build settings. Do not treat a manual SAM deployment as public-production security approval until App Attest, server-side entitlement/quota enforcement, throttling, budgets, kill switch, metrics, and outage alerts are accepted.
@@ -86,9 +86,9 @@ Run this before TestFlight and again before App Store submission:
 4. Choose at least one restricted app and one category.
 5. Apply the shield from Home.
 6. Open a restricted app and confirm the Checkpoint shield appears.
-7. If the system default Restricted page appears, open Settings > Advanced > Troubleshooting and reset and confirm whether the custom shield render count is still zero before debugging UI copy.
-8. Tap the primary shield button and confirm Checkpoint opens.
-9. Confirm the checkpoint sheet appears from the pending shield attempt, including when Checkpoint was last left on Settings, Progress, or History.
+7. If the system default Restricted page appears in a Debug build, open Settings > Developer tools > Diagnostics and preview and confirm whether the custom shield render count is still zero before debugging UI copy.
+8. On iOS 26.5 or newer, tap the primary shield button and confirm Checkpoint opens. On older systems, confirm the shield explains the manual handoff and open Checkpoint from the Home Screen.
+9. Confirm the checkpoint sheet appears from the pending shield attempt after either handoff path, including when Checkpoint was last left on Settings, Progress, or History.
 10. Fail at least two questions and confirm the app stays locked.
 11. Try again and confirm the missed questions appear first.
 12. Pass with 4 of 5 correct and confirm the app temporarily unshields.

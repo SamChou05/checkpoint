@@ -2,12 +2,16 @@
 
 Use this as the source of truth for the final TestFlight and App Store readiness pass. Keep each entry dated, include the device/build, and link the follow-up commit when a test creates work.
 
-Last updated: July 12, 2026 EDT.
+Last updated: August 27, 2026 PDT.
 
 ## Latest Local Validation
 
 | Date | Area | Build or Device | Result | Notes |
 | --- | --- | --- | --- | --- |
+| August 27, 2026 | Full simulator XCTest suite | Xcode 26.4.1, iPhone 17 Pro simulator | Pass | 265 passed, 0 failed with simulator signing enabled and parallel testing disabled. |
+| August 27, 2026 | Bedrock question service unit tests | Python 3.12 `unittest` | Pass | 156 passed, 0 failed; Ruff, Python compilation, and SAM lint validation also passed. |
+| August 27, 2026 | Cross-domain Bedrock capture | Moonshot AI Kimi K2.5, non-thinking mode | Pass | All 13 fixtures and all 43 generated questions passed deterministic grading. |
+| August 27, 2026 | Release simulator build and static analysis | Xcode 26.4.1, generic iOS simulator | Pass | Release build and `xcodebuild analyze` completed successfully. |
 | July 12, 2026 | Full simulator XCTest suite | Xcode 26.4.1, iPhone 17 simulator | Pass | 192 passed, 0 failed with normal simulator signing and parallel testing disabled, including explicit Screen Time authorization, approved-relaunch, failed-erasure write gates, and crash-safe snapshot-erasure recovery. |
 | July 12, 2026 | Bedrock question service unit tests | Python 3.12 `unittest` | Pass | 88 passed, 0 failed; Ruff, Python compilation, and SAM lint validation also passed. |
 | July 12, 2026 | Release simulator build, static analysis, and signed device compile | Xcode 26.4.1 | Pass | Release simulator build and analysis completed; the generic iPhone Debug bundle passed strict deep code-sign verification. |
@@ -72,8 +76,8 @@ Run on a physical iPhone before TestFlight and again before App Store submission
 - [ ] Turn protection off, force-quit/relaunch, and confirm all targets remain unblocked.
 - [ ] Open a protected app and confirm the custom Checkpoint shield appears.
 - [ ] Switch goals in Checkpoint and confirm the shield shows the new current goal.
-- [ ] Tap the shield action and confirm Checkpoint opens.
-- [ ] Confirm the protected-app checkpoint appears automatically.
+- [ ] On iOS 26.5 or newer, tap the shield action and confirm Checkpoint opens. On older systems, confirm the manual-open instruction and open Checkpoint from the Home Screen.
+- [ ] Confirm the protected-app checkpoint appears from the pending attempt after either handoff path.
 - [ ] Fail a checkpoint and confirm protected apps remain locked.
 - [ ] Retry and confirm missed questions are prioritized.
 - [ ] Pass with the configured score and confirm protected apps unblock for the configured duration.

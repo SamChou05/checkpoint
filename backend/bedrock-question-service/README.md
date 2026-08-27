@@ -11,7 +11,7 @@ The checked-in bearer gate is for controlled development and TestFlight only. A 
 Before public App Store release:
 
 - replace the shared bearer and install UUID identity on every synchronous and question-bank route with per-request App Attest assertions, server challenges, replay protection, and server-held key state
-- validate StoreKit subscription status on the server before accepting caller-selected bank sizes, assigning paid quotas, or enabling Pro replenishment watermarks
+- validate StoreKit subscription status on the server before accepting caller-selected bank sizes, assigning paid quotas, or applying tier-specific bank policies
 - keep server quotas, API Gateway throttles, reserved concurrency, alarms, and budgets enabled as independent cost controls
 
 This service does not claim to implement App Attest or server-side StoreKit verification yet. The asynchronous routes therefore do not make the current bearer/install-ID boundary safe for public production and must remain behind the same controlled-development/TestFlight gate.
@@ -34,9 +34,11 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | Name | Default | Purpose |
 | --- | --- | --- |
 | `BEDROCK_MODEL_ID` | `amazon.nova-lite-v1:0` in local code | Model or inference-profile identifier/ARN passed to Converse. The SAM stack receives this separately as `BedrockModelArn`. |
+| `BEDROCK_REGION` | `AWS_REGION` | Optional region override for the Bedrock Runtime client. DynamoDB uses `AWS_REGION` when present and otherwise falls back to this value. |
 | `SKILL_MAP_MODEL_ID` | falls back to `BEDROCK_MODEL_ID` locally; `QuestionBankWorkerModelArn` in SAM | Model used only by synchronous skill-map planning. The deployed API intentionally uses the stronger asynchronous-worker model for this low-volume, quality-sensitive step while leaving legacy synchronous questions on `BEDROCK_MODEL_ID`. |
 | `BEDROCK_FALLBACK_MODEL_ID` | empty | Optional secondary model ARN; enable only after it passes the same eval suite. |
 | `BEDROCK_REASONING_EFFORT` | empty locally; `low` in the deploy workflow | Optional GPT-5.6 effort: `none`, `low`, `medium`, `high`, `xhigh`, or `max`. At `low` or higher the request sends the reasoning field and deliberately omits temperature/top-p sampling controls; `none` retains the configured temperature. Non-GPT-5.6 models ignore this setting. |
+| `BEDROCK_TEMPERATURE` | `0.2` | Sampling temperature from 0 to 1 when reasoning is disabled or unsupported. GPT-5.6 requests at `low` or higher reasoning effort omit it. |
 | `BEDROCK_GUARDRAIL_IDENTIFIER` | empty | Optional Guardrail ID. Must be paired with a version. |
 | `BEDROCK_GUARDRAIL_VERSION` | empty | Optional numeric Guardrail version or `DRAFT`. |
 | `MAX_QUESTIONS_PER_BATCH` | `20` | Per-request output-count ceiling. |
@@ -53,15 +55,18 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `DEPLOYMENT_ENVIRONMENT` | `development` locally | `development`, `testflight`, or `production`. |
 | `SERVICE_MODE` | `enabled` | `enabled`, `drain`, or `disabled`. Drain rejects new API work while workers finish the durable queue. Disabled also pauses the worker's SQS event source so queued messages retain their retry budget until the service is re-enabled. |
 | `SERVICE_RETRY_AFTER_SECONDS` | `300` | `Retry-After` value returned by the kill switch. |
+| `PROVIDER_RETRY_AFTER_SECONDS` | `30` | `Retry-After` value returned for provider and unexpected generation failures, capped at 3,600 seconds. |
 | `RATE_LIMIT_TABLE_NAME` | empty locally | DynamoDB table. SAM always configures it and sets `REQUIRE_RATE_LIMITING=true`. |
 | `QUOTA_HASH_SECRET` | none | Server-only HMAC key, at least 32 characters, used to pseudonymize quota identifiers. |
 | `MAX_REQUESTS_PER_INSTALL_PER_DAY` | `40` | Daily generation requests per pseudonymized install value. |
 | `MAX_REQUESTS_PER_IP_PER_DAY` | `400` | Daily generation requests per pseudonymized source IP. |
+| `RATE_LIMIT_RETRY_AFTER_SECONDS` | `3600` | `Retry-After` value returned when a daily generation quota is exhausted, capped at 86,400 seconds. |
 | `RATE_LIMIT_TTL_SECONDS` | `172800` | Nominal quota-record TTL. DynamoDB deletion after expiry is asynchronous. |
 | `QUESTION_BANK_TABLE_NAME` | none locally | DynamoDB table containing expiring question-bank metadata, validated generation context, ready questions, and claim records. SAM configures it for the API, outbox consumer, and worker. |
 | `QUESTION_BANK_QUEUE_URL` | none locally | SQS queue used by `ensure`, the stream outbox consumer, and the worker when more inventory is needed. SAM configures it for all three functions. |
 | `QUESTION_BANK_TTL_SECONDS` | `2592000` | Nominal 30-day lifetime for question-bank records. DynamoDB TTL deletion is asynchronous and is not an exact deletion deadline. |
 | `QUESTION_BANK_MAX_RECEIVE_COUNT` | `5` | Shared SQS redrive, per-job generation-attempt, and terminal-failure threshold. |
+| `QUESTION_BANK_FAILURE_COOLDOWN_SECONDS` | `300` | Earliest retry time recorded after a question-bank job reaches terminal failure. |
 | `EMIT_STRUCTURED_METRICS` | on in Lambda | Emits privacy-safe request and provider metrics in CloudWatch EMF. |
 
 For `deepseek.v3.2` and `moonshotai.kimi-k2.5`, the runtime sends `thinking.type=disabled` as a model-specific additional request field. This simple structured-generation workload retains the configured temperature while avoiding unnecessary reasoning latency and tokens. GPT-5.6 continues to use only its separate `reasoning_effort` field, and other models receive neither override.
@@ -165,7 +170,7 @@ Outbox recovery must begin before the original 24-hour stream record expires whe
 
 The server queue removes app-lifecycle dependence, but it does not promise a fixed completion time: Lambda throttling, SQS retries, Bedrock capacity, the kill switch, or a dead-lettered job can delay replenishment. The app must keep a local ready reserve, poll with backoff, and continue serving accepted local questions while a refill is pending.
 
-Only `POST ensure` and `POST claim` are deployed in this increment. There is no authenticated remote-bank deletion route yet. Add one before claiming that in-app **Erase all data** immediately removes server-side question-bank records.
+The deployed question-bank operations are `POST ensure` and `POST claim`; there is no authenticated remote-bank deletion route yet. Add one before claiming that in-app **Erase all data** immediately removes server-side question-bank records.
 
 ## Safety behavior
 
@@ -243,7 +248,7 @@ arn:aws:bedrock:<source-region>:<account-id>:project/default
 
 Replace `<source-region>` with the region in which this stack invokes Bedrock and `<account-id>` with the deploying AWS account. Confirm the profile's destination list with `GetInferenceProfile` before each production rollout; a geography profile's destinations are stable for that profile, but a newly selected profile can have a different allowlist. AWS documents the model ID, default-project requirement, and regional availability in the [GPT-5.6 Luna model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-56-luna.html).
 
-The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with that full HTTPS URL. The app derives the sibling `/v1/skill-maps/infer`, `/v1/question-banks/ensure`, and `/v1/question-banks/claim` URLs, which are also emitted as stack outputs. Moving from the previous Function URL changes the endpoint, so update the app configuration only after the API Gateway deployment succeeds.
+The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with that full HTTPS URL. The app derives the sibling `/v1/skill-maps/infer`, `/v1/question-banks/ensure`, and `/v1/question-banks/claim` URLs, which are also emitted as stack outputs.
 
 ## Operations
 
@@ -284,7 +289,7 @@ ruff check lambda_function.py question_bank.py smoke_test_backend.py tests evals
 sam validate --lint --template-file template.yaml
 ```
 
-With a local ignored `Checkpoint/Config/Secrets.xcconfig`, the existing redacted live checks remain available after its endpoint is updated to the API Gateway output:
+With a local ignored `Checkpoint/Config/Secrets.xcconfig`, the redacted live checks are:
 
 ```bash
 python3 smoke_test_backend.py --case-id lsat_logical_reasoning_medium

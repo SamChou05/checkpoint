@@ -57,6 +57,8 @@ python3 -m venv .venv-evals
   --sleep-seconds 1
 ```
 
+Pass `--prompt-variant checklist` or `--prompt-variant compact` to capture an A/B prompt variant; omitting it uses the balanced production prompt. Captured rows record the active variant.
+
 If the local AWS session is expired, the capture command records a `provider_error` row for each failed case instead of losing the run. Reauthenticate with your normal AWS flow, for example `aws login`, then rerun capture. Use `--stop-on-error` when you want capture to stop after the first provider failure.
 
 Then score the captured responses:

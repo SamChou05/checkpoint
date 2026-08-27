@@ -31,7 +31,7 @@ What Checkpoint does:
 - Ask short checkpoint sets before protected-app breaks.
 - Temporarily unlock protected apps after a passing score.
 - Re-lock apps when the break window expires.
-- Track weekly questions answered, accuracy, skill progress, and screen-time patterns.
+- Track weekly questions answered, accuracy, skill progress, and earned app-break activity.
 - Keep separate Pro goal profiles for school, exams, interviews, and personal goals.
 
 Checkpoint is designed to feel steady, academic, and low-friction. It is not about guilt or punishment. It is about making the next small rep easier to choose.

@@ -1,16 +1,16 @@
 # AI Backend Contract
 
-Checkpoint generates multiple-choice questions only through AI providers. In production, `Automatic` routes directly to the configured cloud backend. It never substitutes canned or template questions. A first AWS Bedrock Lambda implementation lives in `backend/bedrock-question-service`.
+Checkpoint generates multiple-choice questions only through AI providers. In production, `Automatic` routes directly to the configured cloud backend. It never substitutes canned or template questions. The AWS Bedrock Lambda implementation lives in `backend/bedrock-question-service`.
 
 Apple Foundation Models remains code-supported only as an explicit internal experiment. It is not selected by production `Automatic` and is not a production fallback or question source because availability, OS model version, and reasoning capability vary.
 
-The iOS app uses three API Gateway routes: synchronous compatibility generation at `POST /v1/questions`, asynchronous preparation at `POST /v1/question-banks/ensure`, and ready-inventory delivery at `POST /v1/question-banks/claim`. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from `Checkpoint/Config/Secrets.xcconfig`, the `CheckpointAIBackendEndpoint` Info.plist key, or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. The configured URL ends in `/v1/questions`; the client derives the two sibling question-bank routes. For controlled development and TestFlight, configure a random bearer of at least 32 characters through `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN` and set the same value as `CHECKPOINT_BACKEND_TOKEN` in the backend stack; never place AWS credentials in the app. The embedded shared bearer and install UUID are not public-production identity: App Attest challenges/assertions, replay protection, server-held key state, and server-side StoreKit entitlement checks remain mandatory public-release gates on all three routes.
+The iOS app uses four API Gateway routes: skill-map inference at `POST /v1/skill-maps/infer`, synchronous compatibility generation at `POST /v1/questions`, asynchronous preparation at `POST /v1/question-banks/ensure`, and ready-inventory delivery at `POST /v1/question-banks/claim`. The normal user-facing Settings screen does not expose provider or endpoint selection. Internal endpoint configuration can come from `Checkpoint/Config/Secrets.xcconfig`, the `CheckpointAIBackendEndpoint` Info.plist key, or the `CHECKPOINT_AI_BACKEND_ENDPOINT` launch environment value. The configured URL ends in `/v1/questions`; the client derives the three sibling routes. For controlled development and TestFlight, configure a random bearer of at least 32 characters through `CheckpointAIBackendToken` or `CHECKPOINT_AI_BACKEND_TOKEN` and set the same value as `CHECKPOINT_BACKEND_TOKEN` in the backend stack; never place AWS credentials in the app. The embedded shared bearer and install UUID are not public-production identity: App Attest challenges/assertions, replay protection, server-held key state, and server-side StoreKit entitlement checks remain mandatory public-release gates on all four routes.
 
 For development and TestFlight builds, copy `Checkpoint/Config/Secrets.example.xcconfig` to `Checkpoint/Config/Secrets.xcconfig`. Use the escaped URL style shown in the example (`https:/$()/...`) so Xcode does not treat `//` as an xcconfig comment. CI can instead supply `CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE` and `CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE`.
 
 Release builds fail at build time unless the resolved endpoint is HTTPS, the token contains at least 32 non-placeholder characters, and hosted HTTPS Privacy Policy and Support URLs are configured. CI must opt in explicitly when it uses reserved `.invalid` legal-link placeholders for a simulator-only compile check. This backend configuration is mandatory because the cloud backend is the canonical production question source.
 
-The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls. Synchronous generation uses that header plus source IP for daily quota counters. The asynchronous worker uses a separate keyed-hash install counter and does not put the source IP into its SQS job. A keyed hash of the install ID also scopes server-side question banks. The install ID is a random UUID generated on-device and is not a user account identifier. It is still caller-supplied and must not be treated as trusted identity or subscription proof.
+The app includes an anonymous `X-Checkpoint-Install-ID` header on backend calls. Synchronous generation and skill-map inference use that header plus source IP for daily quota counters. The asynchronous worker uses a separate keyed-hash install counter and does not put the source IP into its SQS job. A keyed hash of the install ID also scopes server-side question banks. The install ID is a random UUID generated on-device and is not a user account identifier. It is still caller-supplied and must not be treated as trusted identity or subscription proof.
 
 ## Request
 
@@ -21,7 +21,7 @@ The minimum useful contract is the user's raw goal. `focusAreas` and `currentLev
   "goal": {
     "id": "<goal UUID; required by question-bank ensure>",
     "title": "<raw user goal>",
-    "deadline": "2026-06-27T00:00:00Z",
+    "deadline": "<ISO 8601 deadline>",
     "category": "Custom",
     "focusAreas": "<optional focus area one, optional focus area two>",
     "currentLevel": "<optional learner level>",
@@ -46,6 +46,8 @@ The minimum useful contract is the user's raw goal. `focusAreas` and `currentLev
 `sourceDocuments` is optional and existing clients may omit it. The backend accepts at most five documents, limits names to 160 characters, and allocates a shared 24,000-character normalized-text budget fairly across the supplied documents. The iOS client applies a stricter 80-character filename limit and the same aggregate text budget before sending. Binary or base64 file bodies are not part of this contract.
 
 Source names and text are untrusted reference data, not instructions. When sources are supplied, generated facts and correct answers must be supported by the available source text, and the question stem must include any passage needed to answer it. The model must not invent content hidden by truncation. The raw-text path is intended for a small set of excerpts; larger source collections require chunking, retrieval, source versioning, and question-level support references.
+
+Map-aware requests may also include a versioned `skillMap` and a `desiredSkillAllocation` array. Allocation values are relative weights for the entire durable bank target, not counts for the next provider call. When a map is supplied, accepted questions also carry the canonical `skillID`, `objectiveID`, and objective name. See `backend/bedrock-question-service/README.md` for the exact structured-map wire shape and validation limits.
 
 ## Response
 
@@ -77,7 +79,7 @@ Source names and text are untrusted reference data, not instructions. When sourc
 - `difficulty` should be greater than or equal to `minimumDifficulty` from the request.
 - Use `difficultyGuidance` to make the question substance match the configured level; do not relabel an easy question as hard.
 - `format` must be `Multiple Choice`.
-- `choices` should include 4 options.
+- `choices` must include exactly 4 options.
 - `expectedAnswer` must exactly match one item in `choices`.
 - All 4 choices must be meaningfully distinct in wording and substance. Do not include near-synonyms or paraphrases of the same answer.
 - Distractors should test different misconceptions, not restate the same mechanism with synonyms.
@@ -88,7 +90,7 @@ Source names and text are untrusted reference data, not instructions. When sourc
 - If `minimumDifficulty` is above 1, avoid remedial/basic questions unless the target topic cannot support harder prompts.
 - If generated questions come back below `minimumDifficulty`, the backend and app should drop them instead of promoting their numeric difficulty.
 - Treat the raw goal and focus areas as canonical. Use optional derived fields and competency estimates only when they remain aligned with that user input.
-- If focus areas are present and derived topics are absent, split the focus areas into the initial topic map. If the goal remains broad, infer 4 to 6 subject-matter skills and use those skill names as returned question topics.
+- If focus areas are present and derived topics are absent, split the focus areas into the initial topic map. If the goal remains broad, infer 3 to 6 subject-matter skills and use those skill names as returned question topics.
 - Treat verbs in the title such as `study`, `prepare`, `pass`, or `learn` as intent, not as the tested subject. Test the knowledge or skill named by the goal itself.
 - Use one domain-general assessment prompt and structural validator path. Production code must not branch on named exams, languages, technical fields, or other subjects; named examples belong in eval fixtures.
 - Do not ask about study plans, productivity, motivation, app blocking, or next steps unless the learning target is explicitly study skills.
@@ -127,7 +129,7 @@ An operator should retain the outbox failure message and act before the source s
   },
   "contextRevision": "<opaque client revision for generation-relevant goal context>",
   "desiredCount": 80,
-  "lowWatermark": 20,
+  "lowWatermark": 0,
   "targetCount": 20
 }
 ```
@@ -135,13 +137,13 @@ An operator should retain the outbox failure message and act before the source s
 The example is abridged; `ensure` still requires the normal goal, context, coverage, difficulty, and source fields described in the main request contract.
 
 - `goal.id` is the app's goal UUID and is required for the durable-bank route.
-- `contextRevision` is required, is at most 128 non-whitespace/control characters, and changes whenever generation-relevant goal, source, or difficulty context changes.
+- `contextRevision` is required, is at most 128 non-whitespace/control characters, and changes whenever generation-relevant goal, source, difficulty, Skill Map, or allocation context changes.
 - `desiredCount` is the inventory target and must be 1 through 100.
-- `lowWatermark` must be nonnegative and less than `desiredCount`. A value of `0` creates a finite starter bank: cumulative accepted generation stops at `desiredCount`, and claims or repeated ensure polling do not replenish it. A positive value enables ongoing refill toward `desiredCount` when ready inventory falls to or below the watermark.
+- `lowWatermark` must be nonnegative and less than `desiredCount`. A value of `0` creates a finite bank: cumulative accepted generation stops at `desiredCount`, and claims or repeated ensure polling do not replenish it. A positive value enables ongoing refill toward `desiredCount` when ready inventory falls to or below the watermark.
 - `targetCount` remains the maximum size of one model-generation batch and is capped by the backend.
 - Repeating `ensure` for the same installation, goal, and normalized generation context reuses the same bank and does not intentionally create duplicate in-flight work. The bank's active-job update and pending outbox record are committed atomically; the database never relies only on a non-transactional SQS send to remember that generation is needed.
-- Material goal/source/difficulty context changes resolve to a different context version so stale questions are not delivered into the edited goal.
-- The current app asks for a 40-question finite Free bank (`lowWatermark=0`) and an 80-question replenishing Pro bank (`lowWatermark=20`). The server must verify StoreKit entitlement and choose/authorize these values before public production; caller-supplied tier fields are not proof of purchase.
+- Material goal, source, difficulty, Skill Map, or allocation changes resolve to a different context version so stale questions are not delivered into the edited goal.
+- The current app asks for finite per-context-revision banks for both tiers: 40 questions for Free and 80 for Pro, each with `lowWatermark=0`. Adaptive context changes create a new weighted revision instead of replenishing stale weights indefinitely. The server must verify StoreKit entitlement and choose or authorize these values before public production; caller-supplied tier fields are not proof of purchase.
 
 The accepted response is `202`:
 
@@ -211,11 +213,11 @@ There is no deployed remote-bank deletion route in this increment. An authentica
 - Generate into a durable server bank in batches, not per blocked-app attempt.
 - Keep claimed, validated questions cached in the app for instant and offline checkpoint serving.
 - On goal creation or goal changes, call `ensure`, then claim enough validated inventory for the first 5-question ready set and continue claiming toward the local target as server inventory becomes available.
-- For an entitled replenishing bank, call `ensure` before local/server inventory runs out; the worker may continue after the app closes. A finite starter bank must never be reset or refilled merely because claimed inventory is low.
+- For a server-authorized replenishing bank, call `ensure` before local/server inventory runs out; the worker may continue after the app closes. A finite bank must never be reset or refilled merely because claimed inventory is low.
 - Do not substitute canned or template questions for short, failed, or rejected AI batches.
 - Keep cloud calls behind the backend service; the iOS app must never contain Bedrock, AWS, or other model-provider secrets.
 - Exposed backend URLs should fail closed without `CHECKPOINT_BACKEND_TOKEN`; only set `ALLOW_UNAUTHENTICATED_BACKEND=true` for controlled local/private testing.
-- Cap batch size in the backend. The synchronous endpoint accepts at most 20 questions, while the durable bank worker defaults to five-question generation chunks and chains jobs until the larger bank target is full.
+- Cap batch size in the backend. The current deployment configures the synchronous endpoint for at most 20 questions, while the durable bank worker defaults to five-question generation chunks and chains jobs until the larger bank target is full.
 - Rate-limit synchronous generation by anonymous app install ID and source IP; charge asynchronous worker passes to a pseudonymous install quota before Bedrock and retain API Gateway throttling on the enqueue/claim routes.
 - Retry malformed model output against the pinned production model before returning a generation error. Alternate models remain disabled unless they pass the same eval suite and quality thresholds.
 - Use backend generation when:

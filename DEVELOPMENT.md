@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: August 26, 2026
+Last updated: August 27, 2026
 
 ## Current Product Direction
 
@@ -39,7 +39,7 @@ Important platform constraint:
 - Screen Time authorization is a required startup phase shown before first-goal onboarding; denial or cancellation stays on a clear retry screen instead of hiding recovery in Settings.
 - Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 review from Settings.
 - Settings places a compact Plan section below the core goal and app-protection controls.
-- Question replenishment is abstracted away from users: Checkpoint quietly prepares fresh AI-generated questions when the current set can no longer fill the next checkpoint.
+- For members, question replenishment is abstracted away: Checkpoint quietly prepares fresh AI-generated questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
 - Natural-language goal profile onboarding with sensible defaults and optional topic/starting-level customization.
@@ -55,12 +55,12 @@ Important platform constraint:
 
 - Goal intake captures title, deadline, focus areas, and the profile-specific minimum question level; internal category and topic inference keep question generation aligned.
 - The generation request derives a learning target, content topics, and a question directive before calling the configured cloud backend in production.
-- If a goal has no usable focus areas, the initial 5-question provider batch is allowed to infer the first Skill Map; background bank top-off then uses those generated competencies.
+- If a goal has no usable focus areas or derived map, the app first asks the active provider for a structured Skill Map. Accepted question topics can still bootstrap a map if that planning call is unavailable.
 - Provider prompts intentionally stay simple: user goal, derived learning target, content topics, requested count, difficulty floor, a concise difficulty rubric, and multiple-choice requirements.
 - The MVP question format is limited to multiple choice for simpler grading and testing.
 - Backend generation and an explicit internal Apple Foundation Models experiment are wired behind a shared interface.
-- A first AWS Bedrock Lambda backend is scaffolded in `backend/bedrock-question-service`; it matches the app contract, validates model output, and keeps provider credentials off-device.
-- Live-backend smoke tests exercised LSAT, MCAT, Spanish, modern history, and raw-goal beekeeping cases. The endpoint produced full validated sets across all five domains; one Spanish run initially yielded only 4 of 5 under the stricter local gate and passed on retry, confirming why the backend must retry partial batches before declaring a set ready. Endpoint and token values live only in ignored local configuration and remain outside version control.
+- An AWS Bedrock Lambda backend is implemented in `backend/bedrock-question-service`; it matches the app contract, validates model output, and keeps provider credentials off-device.
+- The August 2026 cross-domain capture for the evaluated TestFlight worker passed all 13 fixtures and all 43 generated questions after deterministic grading.
 - AI generation should happen in batches and be cached locally, not live on every app-open attempt.
 - Questions store prompt, expected answer, answer choices, explanation, topic, difficulty, format, status, ask count, correctness count, and next review date.
 - Answer attempts are stored in history.
@@ -77,7 +77,6 @@ Important platform constraint:
 - The user sees pending generation and retryable service, connection, or quality failures, with goal-editing offered only when more specific subject context could help.
 - Question refresh is abstracted away from users. Starter users get the first generated bank; membership keeps fresh questions flowing after that set runs low.
 - Debug and Release builds both use StoreKit entitlements for Free/Pro access; local development uses `Checkpoint/Config/CheckpointProducts.storekit` through the shared Xcode scheme.
-- Users can report bad questions with a reason and optional note.
 - Question generation now uses a provider router:
   - Automatic (production cloud backend)
   - Backend
@@ -139,14 +138,14 @@ Important platform constraint:
 - Device Activity Monitor extension target.
 - Shield configuration shows Checkpoint-branded shield copy.
 - Shield configuration writes render diagnostics to the shared App Group so Settings can confirm whether iOS loaded the custom shield page or fell back to the system Restricted page.
-- Shield action records a pending checkpoint attempt in shared App Group state and asks iOS to open Checkpoint.
+- Shield action records a pending checkpoint attempt in shared App Group state and, on iOS 26.5 or newer, asks iOS to open Checkpoint. Older systems retain the shield for manual handoff.
 - Pending shield attempts are consumed at the app root, so the checkpoint sheet can appear even if Checkpoint opens on Settings or Progress.
 - Device Activity monitor re-applies selected app/category/web shields after a temporary unlock expires.
 - Main app consumes pending shield attempts on launch or foreground activation and opens the checkpoint answer flow.
 
 ## Current Technical Limits
 
-- Simulator XCTest verification passes locally through XcodeBuildMCP.
+- The full signed simulator XCTest suite passes with direct `xcodebuild` invocation.
 - Real Screen Time behavior must be verified on a physical iPhone.
 - Apple's public [`openParentalControlsApp`](https://developer.apple.com/documentation/managedsettings/shieldactionresponse/openparentalcontrolsapp) shield response is documented as available starting in iOS 26.5. The project still targets iOS 17 and currently compiles against an iOS 26.4 SDK, where it must fall back to recording the attempt and deferring. Automatic shield-to-app launch is therefore an explicit iOS-version and physical-device release gate; the UI must not promise an automatic handoff on older systems.
 - Family Controls capability and App Groups must be enabled in Apple Developer/Xcode for the app and Screen Time extensions.
@@ -162,7 +161,7 @@ Important platform constraint:
 
 While Apple entitlement/device setup is pending, useful local work is:
 
-- Exercise primary/backup recovery and legacy migration again on the build-3 to build-4 physical-device upgrade path.
+- Exercise primary/backup recovery and legacy migration again from the previous physical-device build to the current candidate.
 - Evaluate the one-question calibration and goal-classification flow described in `docs/QUESTION_CONTEXT_STRATEGY.md`.
 - Improve adaptive competency and diagnostic flows.
 - Continue UI polish and error states.
@@ -187,16 +186,15 @@ The MVP is complete when:
 
 ### P0
 
-- Run the project in Xcode and fix real build issues.
-- Enable Family Controls and App Groups for all targets.
+- Confirm Family Controls and App Group provisioning for all four shipping bundle IDs.
 - Test the shield loop on a real iPhone.
 - Confirm Shield Configuration extension is invoked for app tokens and category tokens.
-- If the default Restricted page appears, check Settings > Advanced > Troubleshooting and reset. A zero custom shield render count means the signed build did not load the Shield Configuration extension, usually due to extension provisioning, bundle ID, Family Controls, or App Group setup.
+- If the default Restricted page appears in a Debug build, check Settings > Developer tools > Diagnostics and preview. A zero custom shield render count means the signed build did not load the Shield Configuration extension, usually due to extension provisioning, bundle ID, Family Controls, or App Group setup.
 - Confirm Shield Action extension writes pending attempts.
-- Confirm Checkpoint opens from the shield primary action and picks up pending attempts.
+- On iOS 26.5 or newer, confirm Checkpoint opens from the shield primary action; on older systems, confirm the manual-open path picks up the pending attempt.
 - Confirm Device Activity monitor re-locks selected apps at unlock expiration while Checkpoint is backgrounded.
 - Validate the versioned primary/backup persistence migration on the physical upgrade install and verify Erase all data removes both copies.
-- Deploy and verify the Bedrock backend against a real endpoint/model.
+- Deploy and verify the intended TestFlight or production Bedrock stack against its real endpoint and model.
 - Configure Release with an HTTPS backend endpoint and token through `Checkpoint/Config/Secrets.xcconfig` or the `CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE` and `CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE` build settings.
 - Keep Apple Foundation Models validation separate as an internal experiment; it is not a release-readiness dependency.
 

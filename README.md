@@ -25,7 +25,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Feedback notes live in Settings and can be shared through the system share sheet instead of interrupting the checkpoint quiz.
 - Home no longer offers one-tap pause or manual checkpoint entry while blocking is active; short breaks start from blocked-app attempts or emergency passes, while fully stopping blocking requires an 18-of-20 stop challenge.
 - Manual checkpoint preview lives in Debug-only Developer tools and does not unlock apps.
-- Checkpoint quietly prepares fresh questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
+- For members, Checkpoint quietly prepares fresh questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
 - Question generation explicitly plans distinct tested objectives, and fresh quiz slots spread across available topics before repeating one.
 - Users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
 - Starter/membership product behavior: the first goal, app blocking, and checkpoint unlock loop are usable before payment; membership keeps fresh checkpoints ready, unlocks goal profiles, larger question banks, and adaptive Study Assist.
@@ -42,7 +42,7 @@ The MVP uses one canonical production AI route:
 
 - Production `Automatic` routes directly to the configured cloud backend.
 - Apple Foundation Models remains code-supported only as an explicit internal experiment. It is not selected by production `Automatic` and is not a production fallback or question source because availability, OS model version, and reasoning capability vary.
-- Cloud generation is batch-based; the first AWS Bedrock Lambda service lives in `backend/bedrock-question-service`.
+- Cloud generation is batch-based; the AWS Bedrock Lambda service lives in `backend/bedrock-question-service`.
 - Checkpoint does not substitute canned or template questions when AI generation is unavailable or produces an unacceptable batch.
 - Provider prompts receive the raw goal plus optional focus, current level, derived topics, and competency history through one domain-general assessment contract.
 - Named subjects such as LSAT, MCAT, language learning, and beekeeping live only in evaluation fixtures; production prompts and validators do not branch by subject or contain authored question banks.
@@ -85,8 +85,8 @@ Fastest options:
 For real Screen Time testing:
 
 1. Use a real iPhone when possible.
-2. In Xcode, add the Family Controls capability for the app target.
-3. Confirm the bundle ID is available in your Apple Developer account.
+2. Confirm development signing for the app and all three extensions includes Family Controls and the shared App Group.
+3. Confirm all four bundle IDs are registered to your Apple Developer team.
 4. Launch Checkpoint and approve the required Screen Time request before goal setup appears.
 5. Select apps/categories and tap `Start protection` from Home.
 
@@ -108,8 +108,8 @@ The current code includes the FamilyControls picker, selection persistence, Mana
 
 ## Required Apple Setup
 
-- Add Family Controls capability to the main app and Screen Time extensions.
-- Add App Groups to the main app and Screen Time extensions.
+- Enable Family Controls for the main app and Screen Time extension bundle IDs in Apple Developer, then regenerate matching profiles.
+- Enable the shared App Group for all four bundle IDs and profiles.
 - Use the same group ID: `group.com.samchou.checkpoint`.
 - Configure the main app bundle ID: `com.samchou.checkpoint`.
 - Configure extension bundle IDs:

@@ -85,7 +85,7 @@ The configured default makes quota rows eligible for automatic deletion after 48
 
 Checkpoint uses Apple StoreKit for subscriptions. Purchases, billing, refunds, cancellation, and subscription management are handled by Apple. Checkpoint receives subscription entitlement information from StoreKit so the app can determine whether Free or Pro features should be available. Apple's handling of purchase information is governed by Apple's policies.
 
-The current backend does not independently verify StoreKit entitlement before accepting caller-supplied question-bank targets or Pro-style replenishment thresholds. Public production must verify current entitlement on the server and bind it to authenticated App Attest-backed requests; an app-reported plan or installation UUID is not sufficient proof.
+The current backend does not independently verify StoreKit entitlement before accepting caller-supplied question-bank targets or tier policies. Public production must verify current entitlement on the server and bind it to authenticated App Attest-backed requests; an app-reported plan or installation UUID is not sufficient proof.
 
 ## Tracking, Advertising, And Sale
 

@@ -4,7 +4,7 @@ This inventory contains 40 simulator-rendered scenarios plus two below-the-fold 
 
 - Open `index.html` for the clickable gallery.
 - Open `00-all-screens-overview.jpg` for a single contact sheet.
-- Open the numbered contact sheets for larger grouped views.
+- Larger grouped contact sheets: [access and goals](01-access-and-goals.jpg), [Home and weekly review](02-home-and-weekly-review.jpg), [Progress and Skill Map](03-progress-and-skill-map.jpg), [Settings, support, and plan](04-settings-support-and-plan.jpg), and [checkpoint and diagnostics](05-checkpoint-and-diagnostics.jpg).
 - Full-resolution captures are in `screens/`.
 
 ## Coverage

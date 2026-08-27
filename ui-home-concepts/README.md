@@ -4,6 +4,12 @@ This folder contains the earlier SwiftUI explorations and visual QA captures for
 
 The two protected-app-time concepts use illustrative Screen Time fixture data. Shipping either one requires a Device Activity Report extension and a same-period usage baseline; Checkpoint does not collect those durations today.
 
+## Capture index
+
+- [Concept comparison contact sheet](00-home-concepts-comparison.jpg)
+- Implemented Light Study Beacon: [populated](screens/home-production-beacon-light.png), [empty](screens/home-production-beacon-empty.png), [setup](screens/home-production-beacon-setup.png), and [large-text accessibility](screens/home-production-beacon-accessibility.png)
+- Earlier production-state QA: [setup](screens/home-production-setup.png), [generating](screens/home-production-generating.png), [generation failed](screens/home-production-failed.png), [protection on](screens/home-production-protection.png), [active break](screens/home-production-break.png), [weekly activity](screens/home-production-weekly.png), and [large-text weekly activity](screens/home-production-weekly-accessibility.png)
+
 ## Implemented direction — Light Study Beacon
 
 ![Populated production Home](screens/home-production-beacon-light.png)
