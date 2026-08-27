@@ -86,7 +86,7 @@ def ensure_bank(
         now,
     )
     if previous_bank_id and previous_bank_id != bank_id:
-        _tombstone_stale_bank(client, table_name, owner_digest, previous_bank_id, now)
+        _mark_bank_superseded(client, table_name, owner_digest, previous_bank_id, now)
 
     meta = _update_bank_configuration(
         client,
@@ -1182,7 +1182,7 @@ def _mark_rate_limited(client: Any, table_name: str, job_key: dict[str, Any]) ->
         LOGGER.exception("Failed to mark asynchronous generation rate limit")
 
 
-def _tombstone_stale_bank(
+def _mark_bank_superseded(
     client: Any,
     table_name: str,
     owner_digest: str,
@@ -1194,20 +1194,19 @@ def _tombstone_stale_bank(
             TableName=table_name,
             Key=_bank_key(owner_digest, bank_id),
             UpdateExpression=(
-                "SET #state = :stale, tombstonedAt = :now, updatedAt = :now, expiresAt = :ttl "
-                "REMOVE generationRequest, activeJobID"
+                "SET #state = :stale, updatedAt = :now, expiresAt = :ttl"
             ),
             ConditionExpression="attribute_exists(pk)",
             ExpressionAttributeNames={"#state": "state"},
             ExpressionAttributeValues={
                 ":stale": _s("superseded"),
                 ":now": _n(now),
-                ":ttl": _n(now + TOMBSTONE_TTL_SECONDS),
+                ":ttl": _n(now + _bank_ttl_seconds()),
             },
         )
     except Exception as error:
         if not _is_conditional_failure(error):
-            LOGGER.exception("Failed to tombstone superseded question bank")
+            LOGGER.exception("Failed to mark superseded question bank")
 
 
 def _purge_bank_children(client: Any, table_name: str, bank_key: dict[str, Any]) -> None:

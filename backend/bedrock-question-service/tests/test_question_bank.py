@@ -173,6 +173,46 @@ class QuestionBankTests(unittest.TestCase):
             )
         self.assertEqual(raised.exception.status_code, 400)
 
+    def test_superseded_revision_can_be_reactivated_after_goal_revert(self):
+        client = mock.Mock()
+        bank_id = "a" * 64
+        bank_key = {"pk": {"S": f"BANK#{'b' * 64}#{bank_id}"}, "sk": {"S": "META"}}
+        pointer_key = {"pk": {"S": f"OWNER#{'b' * 64}"}, "sk": {"S": "GOAL#goal"}}
+        reusable_meta = {
+            **bank_key,
+            "state": {"S": "superseded"},
+            "contextRevision": {"S": "0123456789abcdef"},
+        }
+        pointer = {
+            **pointer_key,
+            "currentBankID": {"S": "c" * 64},
+            "contextRevision": {"S": "fedcba9876543210"},
+        }
+
+        with mock.patch.object(
+            question_bank,
+            "_get_item",
+            side_effect=[reusable_meta, pointer],
+        ):
+            previous = question_bank._activate_goal_version(  # noqa: SLF001
+                client,
+                "question-banks",
+                bank_key,
+                pointer_key,
+                bank_id,
+                "0123456789abcdef",
+                "goal",
+                _normalized_request(),
+                40,
+                0,
+                1_700_000_000,
+            )
+
+        self.assertEqual(previous, "c" * 64)
+        update = client.update_item.call_args.kwargs
+        self.assertEqual(update["ExpressionAttributeValues"][":bank"], {"S": bank_id})
+        self.assertNotIn("tombstonedAt", update["UpdateExpression"])
+
         oversized = _ensure_payload()
         oversized["desiredCount"] = 101
         with self.assertRaises(question_bank.QuestionBankError) as raised:
