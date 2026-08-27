@@ -1,5 +1,4 @@
-// CI can inject release values through *_OVERRIDE. Local and release secrets can
-// still live in Secrets.xcconfig, which is ignored by git and loaded last.
+// CI uses *_OVERRIDE; ignored Secrets.xcconfig loads local and release values last.
 
 CHECKPOINT_AI_BACKEND_ENDPOINT = $(CHECKPOINT_AI_BACKEND_ENDPOINT_OVERRIDE)
 CHECKPOINT_AI_BACKEND_TOKEN = $(CHECKPOINT_AI_BACKEND_TOKEN_OVERRIDE)

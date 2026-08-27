@@ -144,49 +144,47 @@ jobs:
             exit 1
           fi
 
-          IFS=',' read -r -a invoke_resources <<< "$BEDROCK_INVOKE_RESOURCE_ARNS"
-          primary_is_allowed=false
-          fallback_is_allowed=false
-          for resource in "${invoke_resources[@]}"; do
-            resource="${resource#"${resource%%[![:space:]]*}"}"
-            resource="${resource%"${resource##*[![:space:]]}"}"
-            if [[ -z "$resource" || "$resource" == *'*'* || "$resource" != arn:*:bedrock:* ]]; then
-              echo "Every BEDROCK_INVOKE_RESOURCE_ARNS value must be a non-wildcard Bedrock ARN." >&2
-              exit 1
-            fi
-            [[ "$resource" == "$BEDROCK_MODEL_ARN" ]] && primary_is_allowed=true
-            [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$resource" == "$BEDROCK_FALLBACK_MODEL_ARN" ]] && fallback_is_allowed=true
-          done
-          if [[ "$primary_is_allowed" != true ]]; then
-            echo "BEDROCK_INVOKE_RESOURCE_ARNS must include BEDROCK_MODEL_ARN." >&2
-            exit 1
-          fi
-          if [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$fallback_is_allowed" != true ]]; then
-            echo "BEDROCK_INVOKE_RESOURCE_ARNS must include BEDROCK_FALLBACK_MODEL_ARN." >&2
-            exit 1
-          fi
+          validate_invoke_resources() {
+            local resource_list="$1"
+            local primary_model="$2"
+            local resource_list_name="$3"
+            local primary_model_name="$4"
+            local primary_is_allowed=false
+            local fallback_is_allowed=false
+            local resource
+            local -a resources
 
-          IFS=',' read -r -a worker_invoke_resources <<< "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS"
-          worker_primary_is_allowed=false
-          worker_fallback_is_allowed=false
-          for resource in "${worker_invoke_resources[@]}"; do
-            resource="${resource#"${resource%%[![:space:]]*}"}"
-            resource="${resource%"${resource##*[![:space:]]}"}"
-            if [[ -z "$resource" || "$resource" == *'*'* || "$resource" != arn:*:bedrock:* ]]; then
-              echo "Every QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS value must be a non-wildcard Bedrock ARN." >&2
+            IFS=',' read -r -a resources <<< "$resource_list"
+            for resource in "${resources[@]}"; do
+              resource="${resource#"${resource%%[![:space:]]*}"}"
+              resource="${resource%"${resource##*[![:space:]]}"}"
+              if [[ -z "$resource" || "$resource" == *'*'* || "$resource" != arn:*:bedrock:* ]]; then
+                echo "Every $resource_list_name value must be a non-wildcard Bedrock ARN." >&2
+                exit 1
+              fi
+              [[ "$resource" == "$primary_model" ]] && primary_is_allowed=true
+              [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$resource" == "$BEDROCK_FALLBACK_MODEL_ARN" ]] && fallback_is_allowed=true
+            done
+            if [[ "$primary_is_allowed" != true ]]; then
+              echo "$resource_list_name must include $primary_model_name." >&2
               exit 1
             fi
-            [[ "$resource" == "$QUESTION_BANK_WORKER_MODEL_ARN" ]] && worker_primary_is_allowed=true
-            [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$resource" == "$BEDROCK_FALLBACK_MODEL_ARN" ]] && worker_fallback_is_allowed=true
-          done
-          if [[ "$worker_primary_is_allowed" != true ]]; then
-            echo "QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS must include QUESTION_BANK_WORKER_MODEL_ARN." >&2
-            exit 1
-          fi
-          if [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$worker_fallback_is_allowed" != true ]]; then
-            echo "QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS must include BEDROCK_FALLBACK_MODEL_ARN." >&2
-            exit 1
-          fi
+            if [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$fallback_is_allowed" != true ]]; then
+              echo "$resource_list_name must include BEDROCK_FALLBACK_MODEL_ARN." >&2
+              exit 1
+            fi
+          }
+
+          validate_invoke_resources \
+            "$BEDROCK_INVOKE_RESOURCE_ARNS" \
+            "$BEDROCK_MODEL_ARN" \
+            BEDROCK_INVOKE_RESOURCE_ARNS \
+            BEDROCK_MODEL_ARN
+          validate_invoke_resources \
+            "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS" \
+            "$QUESTION_BANK_WORKER_MODEL_ARN" \
+            QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS \
+            QUESTION_BANK_WORKER_MODEL_ARN
           case "$BEDROCK_REASONING_EFFORT" in
             none|low|medium|high|xhigh|max) ;;
             *)
