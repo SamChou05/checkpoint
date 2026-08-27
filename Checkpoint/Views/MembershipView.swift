@@ -154,36 +154,18 @@ struct MembershipView: View {
         return "For more goals and practice that keeps adapting as you learn."
     }
 
-    private var monthlyProduct: Product? {
+    private var preferredProduct: Product? {
         purchaseController.products.first { $0.id == MembershipProductID.monthly }
-    }
-
-    private var yearlyProduct: Product? {
-        purchaseController.products.first { $0.id == MembershipProductID.yearly }
+            ?? purchaseController.products.first { $0.id == MembershipProductID.yearly }
     }
 
     private var proPriceText: String? {
-        if let monthlyProduct {
-            return monthlyProduct.displayPrice
-        }
-
-        if let yearlyProduct {
-            return yearlyProduct.displayPrice
-        }
-
-        return nil
+        preferredProduct?.displayPrice
     }
 
     private var proPriceCadenceText: String? {
-        if monthlyProduct != nil {
-            return "per month"
-        }
-
-        if yearlyProduct != nil {
-            return "per year"
-        }
-
-        return nil
+        guard let preferredProduct else { return nil }
+        return preferredProduct.id == MembershipProductID.monthly ? "per month" : "per year"
     }
 
     private var subscriptionDisclosureText: String {
@@ -194,15 +176,11 @@ struct MembershipView: View {
         VStack(alignment: .leading, spacing: 8) {
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 16) {
-                    CompactLegalLink(title: "Privacy Policy", url: legalLinks.privacyPolicyURL)
-                    CompactLegalLink(title: "Support", url: legalLinks.supportURL)
-                    CompactLegalLink(title: "Terms of Use", url: LegalLinks.termsOfUseURL)
+                    paywallLegalLinkItems
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    CompactLegalLink(title: "Privacy Policy", url: legalLinks.privacyPolicyURL)
-                    CompactLegalLink(title: "Support", url: legalLinks.supportURL)
-                    CompactLegalLink(title: "Terms of Use", url: LegalLinks.termsOfUseURL)
+                    paywallLegalLinkItems
                 }
             }
 
@@ -214,6 +192,13 @@ struct MembershipView: View {
             }
         }
         .padding(.top, 2)
+    }
+
+    @ViewBuilder
+    private var paywallLegalLinkItems: some View {
+        CompactLegalLink(title: "Privacy Policy", url: legalLinks.privacyPolicyURL)
+        CompactLegalLink(title: "Support", url: legalLinks.supportURL)
+        CompactLegalLink(title: "Terms of Use", url: LegalLinks.termsOfUseURL)
     }
 
     private func loadEntitlements() async {

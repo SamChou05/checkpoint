@@ -1,5 +1,32 @@
 import Foundation
 
+private enum QuestionText {
+    static func collapsedWhitespace(_ string: String) -> String {
+        string
+            .split(whereSeparator: { $0.isWhitespace })
+            .joined(separator: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    static func clipped(_ string: String, maxLength: Int) -> String {
+        guard string.count > maxLength else {
+            return string
+        }
+
+        return String(string.prefix(maxLength)).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    static func uniqueIgnoringCase(_ values: [String]) -> [String] {
+        var seen: Set<String> = []
+        return values.filter { value in
+            let key = value.lowercased()
+            guard !seen.contains(key) else { return false }
+            seen.insert(key)
+            return true
+        }
+    }
+}
+
 enum QuestionGenerationError: LocalizedError, Equatable, Sendable {
     case providerUnavailable
     case backendNotConfigured
@@ -171,26 +198,36 @@ struct QuestionGenerationRequest: Sendable {
     }
 
     private static func currentLevelSummary(_ currentLevel: String) -> String {
-        let normalized = collapsedWhitespace(currentLevel)
+        let normalized = QuestionText.collapsedWhitespace(currentLevel)
         return normalized.isEmpty ? "Not provided; infer an appropriate starting point from the goal and requested difficulty." : normalized
     }
 
     private static func questionCoverageNotes(for questions: [CheckpointQuestion]) -> [String] {
         let notes = questions.map { question in
-            let topic = clipped(collapsedWhitespace(question.topic), maxLength: 40)
-            let prompt = clipped(collapsedWhitespace(question.prompt), maxLength: 120)
-            let answer = clipped(collapsedWhitespace(question.expectedAnswer), maxLength: 90)
+            let topic = QuestionText.clipped(
+                QuestionText.collapsedWhitespace(question.topic),
+                maxLength: 40
+            )
+            let prompt = QuestionText.clipped(
+                QuestionText.collapsedWhitespace(question.prompt),
+                maxLength: 120
+            )
+            let answer = QuestionText.clipped(
+                QuestionText.collapsedWhitespace(question.expectedAnswer),
+                maxLength: 90
+            )
             return "\(topic): \(prompt) -> \(answer)"
         }
 
-        return unique(notes).prefix(24).map { $0 }
+        return QuestionText.uniqueIgnoringCase(notes).prefix(24).map { $0 }
     }
 
     private static func topicCoverageSummary(for questions: [CheckpointQuestion]) -> String {
         guard !questions.isEmpty else { return "None yet" }
 
         let groupedCounts = Dictionary(grouping: questions) { question in
-            collapsedWhitespace(question.topic).isEmpty ? "Untitled topic" : collapsedWhitespace(question.topic)
+            let topic = QuestionText.collapsedWhitespace(question.topic)
+            return topic.isEmpty ? "Untitled topic" : topic
         }
         let summary = groupedCounts
             .map { topic, questions in "\(topic): \(questions.count)" }
@@ -199,31 +236,6 @@ struct QuestionGenerationRequest: Sendable {
             .joined(separator: "; ")
 
         return summary.isEmpty ? "None yet" : summary
-    }
-
-    private static func collapsedWhitespace(_ string: String) -> String {
-        string
-            .split(whereSeparator: { $0.isWhitespace })
-            .joined(separator: " ")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private static func clipped(_ string: String, maxLength: Int) -> String {
-        guard string.count > maxLength else {
-            return string
-        }
-
-        return String(string.prefix(maxLength)).trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private static func unique(_ values: [String]) -> [String] {
-        var seen: Set<String> = []
-        return values.filter { value in
-            let key = value.lowercased()
-            guard !seen.contains(key) else { return false }
-            seen.insert(key)
-            return true
-        }
     }
 
     private var sourceDocumentContext: String {
@@ -259,10 +271,7 @@ struct GoalSetupGuidance: Equatable, Sendable {
     var interpretation: String?
 
     init(title: String, focusAreas: String) {
-        let normalizedTitle = title
-            .split(whereSeparator: { $0.isWhitespace })
-            .joined(separator: " ")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedTitle = QuestionText.collapsedWhitespace(title)
         let focusTopics = GoalQuestionContext.meaningfulFocusTopics(from: focusAreas)
         let target = GoalQuestionContext.learningTarget(fromTitle: normalizedTitle)
 
@@ -313,7 +322,7 @@ struct GoalQuestionContext: Equatable, Sendable {
     }
 
     static func learningTarget(fromTitle rawTitle: String) -> String {
-        let title = collapsedWhitespace(rawTitle)
+        let title = QuestionText.collapsedWhitespace(rawTitle)
         let lowercasedTitle = title.lowercased()
 
         let prefixes = [
@@ -350,7 +359,7 @@ struct GoalQuestionContext: Equatable, Sendable {
     }
 
     private static func fallbackTarget(_ text: String) -> String {
-        var trimmed = collapsedWhitespace(text)
+        var trimmed = QuestionText.collapsedWhitespace(text)
             .trimmingCharacters(in: CharacterSet(charactersIn: ".:;,- "))
 
         for article in ["a ", "an ", "the "] where trimmed.lowercased().hasPrefix(article) {
@@ -367,7 +376,7 @@ struct GoalQuestionContext: Equatable, Sendable {
         focusTopics rawTopics: [String]
     ) -> [String] {
         if !rawTopics.isEmpty {
-            return unique(rawTopics)
+            return QuestionText.uniqueIgnoringCase(rawTopics)
         }
 
         return [learningTarget]
@@ -391,7 +400,7 @@ struct GoalQuestionContext: Equatable, Sendable {
 
         let topics = focusAreas
             .components(separatedBy: separators)
-            .map(collapsedWhitespace)
+            .map(QuestionText.collapsedWhitespace)
             .filter { topic in
                 let normalizedTopic = topic.lowercased()
                 guard !topic.isEmpty,
@@ -404,7 +413,7 @@ struct GoalQuestionContext: Equatable, Sendable {
                 return true
             }
 
-        return unique(topics)
+        return QuestionText.uniqueIgnoringCase(topics)
     }
 
     private static func questionDirective(
@@ -412,7 +421,7 @@ struct GoalQuestionContext: Equatable, Sendable {
         learningTarget: String,
         contentTopics: [String]
     ) -> String {
-        let levelContext = collapsedWhitespace(goal.currentLevel)
+        let levelContext = QuestionText.collapsedWhitespace(goal.currentLevel)
         let learnerGuidance = levelContext.isEmpty
             ? "Infer the learner's starting point from the requested difficulty."
             : "Calibrate the questions using this learner context: \(levelContext)."
@@ -431,23 +440,6 @@ struct GoalQuestionContext: Equatable, Sendable {
             "habit building",
             "learning how to learn"
         ].contains { signal.contains($0) }
-    }
-
-    private static func unique(_ values: [String]) -> [String] {
-        var seen: Set<String> = []
-        return values.filter { value in
-            let key = value.lowercased()
-            guard !seen.contains(key) else { return false }
-            seen.insert(key)
-            return true
-        }
-    }
-
-    private static func collapsedWhitespace(_ string: String) -> String {
-        string
-            .split(whereSeparator: { $0.isWhitespace })
-            .joined(separator: " ")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
@@ -604,8 +596,14 @@ enum QuestionBatchSanitizer {
 
         for question in questions {
             var sanitizedQuestion = question
-            sanitizedQuestion.prompt = clipped(question.prompt.trimmingCharacters(in: .whitespacesAndNewlines), maxLength: 360)
-            let expectedAnswer = clipped(question.expectedAnswer.trimmingCharacters(in: .whitespacesAndNewlines), maxLength: 280)
+            sanitizedQuestion.prompt = QuestionText.clipped(
+                question.prompt.trimmingCharacters(in: .whitespacesAndNewlines),
+                maxLength: 360
+            )
+            let expectedAnswer = QuestionText.clipped(
+                question.expectedAnswer.trimmingCharacters(in: .whitespacesAndNewlines),
+                maxLength: 280
+            )
             guard let choiceResolution = sanitizedChoices(
                 question.choices,
                 expectedAnswer: expectedAnswer,
@@ -615,8 +613,14 @@ enum QuestionBatchSanitizer {
             }
             sanitizedQuestion.expectedAnswer = choiceResolution.expectedAnswer
             sanitizedQuestion.choices = choiceResolution.choices
-            sanitizedQuestion.explanation = clipped(question.explanation.trimmingCharacters(in: .whitespacesAndNewlines), maxLength: 420)
-            sanitizedQuestion.topic = clipped(collapsedWhitespace(question.topic), maxLength: 48)
+            sanitizedQuestion.explanation = QuestionText.clipped(
+                question.explanation.trimmingCharacters(in: .whitespacesAndNewlines),
+                maxLength: 420
+            )
+            sanitizedQuestion.topic = QuestionText.clipped(
+                QuestionText.collapsedWhitespace(question.topic),
+                maxLength: 48
+            )
             sanitizedQuestion.difficulty = min(5, max(1, question.difficulty))
             sanitizedQuestion.format = .multipleChoice
             sanitizedQuestion.status = .new
@@ -796,7 +800,7 @@ enum QuestionBatchSanitizer {
     }
 
     private static func isBareAnswerLabel(_ text: String) -> Bool {
-        var normalized = collapsedWhitespace(text)
+        var normalized = QuestionText.collapsedWhitespace(text)
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -844,14 +848,14 @@ enum QuestionBatchSanitizer {
     }
 
     private static func explanationSupportedChoice(_ explanation: String, choices: [String]) -> String? {
-        let normalizedExplanation = collapsedWhitespace(explanation)
+        let normalizedExplanation = QuestionText.collapsedWhitespace(explanation)
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .lowercased()
         let shortOutputChoices: Set<String> = ["positive", "negative", "zero", "undefined", "true", "false"]
         var supportedChoices: [String] = []
 
         for choice in choices {
-            let normalizedChoice = collapsedWhitespace(choice)
+            let normalizedChoice = QuestionText.collapsedWhitespace(choice)
                 .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
                 .lowercased()
             guard shortOutputChoices.contains(normalizedChoice) else { continue }
@@ -877,7 +881,7 @@ enum QuestionBatchSanitizer {
         explanation: String
     ) -> (expectedAnswer: String, choices: [String])? {
         let clippedChoices = choices
-            .map { clipped(collapsedWhitespace($0), maxLength: 140) }
+            .map { QuestionText.clipped(QuestionText.collapsedWhitespace($0), maxLength: 140) }
             .filter { !$0.isEmpty }
 
         var seen: Set<String> = []
@@ -929,7 +933,7 @@ enum QuestionBatchSanitizer {
 
     private static func correctChoiceFromExplanation(_ explanation: String, choices: [String]) -> String? {
         let normalizedExplanation = answerKey(explanation)
-        let explanationWords = collapsedWhitespace(explanation)
+        let explanationWords = QuestionText.collapsedWhitespace(explanation)
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .lowercased()
 
@@ -1087,21 +1091,6 @@ enum QuestionBatchSanitizer {
     }
 
     private static func canonicalPrompt(_ prompt: String) -> String {
-        collapsedWhitespace(prompt).lowercased()
-    }
-
-    private static func collapsedWhitespace(_ string: String) -> String {
-        string
-            .split(whereSeparator: { $0.isWhitespace })
-            .joined(separator: " ")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private static func clipped(_ string: String, maxLength: Int) -> String {
-        guard string.count > maxLength else {
-            return string
-        }
-
-        return String(string.prefix(maxLength)).trimmingCharacters(in: .whitespacesAndNewlines)
+        QuestionText.collapsedWhitespace(prompt).lowercased()
     }
 }

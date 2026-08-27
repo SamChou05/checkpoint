@@ -420,6 +420,8 @@ private struct CompetencyRow: View {
     @State private var isExpanded = false
 
     var body: some View {
+        let progress = progressPresentation
+
         SectionPanel {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .top) {
@@ -435,13 +437,13 @@ private struct CompetencyRow: View {
 
                     Spacer()
 
-                    StatusBadge(text: progressLabel, tint: tint)
+                    StatusBadge(text: progress.label, tint: progress.tint)
                 }
 
                 ProgressView(value: Double(competency.masteryPercent), total: 100)
-                    .tint(tint)
+                    .tint(progress.tint)
                     .accessibilityLabel("Progress")
-                    .accessibilityValue(progressLabel)
+                    .accessibilityValue(progress.label)
 
                 DisclosureGroup(isExpanded: $isExpanded) {
                     HStack {
@@ -466,18 +468,18 @@ private struct CompetencyRow: View {
         "\(competency.attempts) \(competency.attempts == 1 ? "question" : "questions") answered"
     }
 
-    private var progressLabel: String {
+    private var progressPresentation: (label: String, tint: Color) {
         if competency.attempts == 0 {
-            return "Not started"
+            return ("Not started", CheckpointTheme.blue)
         }
 
         switch competency.masteryPercent {
         case 75...:
-            return "Strong"
+            return ("Strong", CheckpointTheme.teal)
         case 40..<75:
-            return "Building"
+            return ("Building", CheckpointTheme.amber)
         default:
-            return "Needs practice"
+            return ("Needs practice", CheckpointTheme.coral)
         }
     }
 
@@ -493,20 +495,5 @@ private struct CompetencyRow: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(title): \(value)")
-    }
-
-    private var tint: Color {
-        if competency.attempts == 0 {
-            return CheckpointTheme.blue
-        }
-
-        switch competency.masteryPercent {
-        case 75...:
-            return CheckpointTheme.teal
-        case 40..<75:
-            return CheckpointTheme.amber
-        default:
-            return CheckpointTheme.coral
-        }
     }
 }

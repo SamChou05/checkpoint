@@ -35,6 +35,10 @@ struct GoalSourceImportResult: Sendable {
 
 enum GoalSourceDocumentImporter {
     static let supportedContentTypes: [UTType] = [.text, .pdf]
+    private static let knownTextExtensions: Set<String> = [
+        "txt", "md", "markdown", "csv", "tsv", "json", "xml", "yaml", "yml",
+        "html", "htm", "log", "swift", "py", "js", "ts", "css", "sql"
+    ]
 
     static func importDocuments(from urls: [URL]) async -> GoalSourceImportResult {
         await Task.detached(priority: .userInitiated) {
@@ -77,7 +81,8 @@ enum GoalSourceDocumentImporter {
         let text: String
         if contentType?.conforms(to: .pdf) == true || url.pathExtension.lowercased() == "pdf" {
             text = try extractedPDFText(from: url)
-        } else if contentType?.conforms(to: .text) == true || isKnownTextExtension(url.pathExtension) {
+        } else if contentType?.conforms(to: .text) == true
+            || knownTextExtensions.contains(url.pathExtension.lowercased()) {
             text = try extractedPlainText(from: url)
         } else {
             throw GoalSourceImportError.unsupportedType
@@ -142,13 +147,5 @@ enum GoalSourceDocumentImporter {
         #else
         throw GoalSourceImportError.unsupportedType
         #endif
-    }
-
-    private static func isKnownTextExtension(_ rawExtension: String) -> Bool {
-        let textExtensions: Set<String> = [
-            "txt", "md", "markdown", "csv", "tsv", "json", "xml", "yaml", "yml",
-            "html", "htm", "log", "swift", "py", "js", "ts", "css", "sql"
-        ]
-        return textExtensions.contains(rawExtension.lowercased())
     }
 }

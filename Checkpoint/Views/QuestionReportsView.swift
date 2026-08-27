@@ -36,8 +36,8 @@ struct QuestionReportsView: View {
                             PrimaryActionButton(title: "Save note", systemImage: "square.and.arrow.down") {
                                 saveNote()
                             }
-                            .disabled(message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                            .opacity(message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.55 : 1)
+                            .disabled(isMessageEmpty)
+                            .opacity(isMessageEmpty ? 0.55 : 1)
 
                             if let statusMessage {
                                 Text(statusMessage)
@@ -72,6 +72,10 @@ struct QuestionReportsView: View {
                 }
             }
         }
+    }
+
+    private var isMessageEmpty: Bool {
+        message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private func saveNote() {

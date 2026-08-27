@@ -74,7 +74,7 @@ def main() -> int:
     except urllib.error.HTTPError as error:
         print(f"Backend smoke failed with HTTP {error.code}.", file=sys.stderr)
         return 1
-    except (OSError, ValueError, json.JSONDecodeError) as error:
+    except (OSError, ValueError) as error:
         print(f"Backend smoke failed before validation: {type(error).__name__}.", file=sys.stderr)
         return 1
 
