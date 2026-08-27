@@ -38,14 +38,12 @@ enum AnswerResult: String, Codable, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 }
 
-enum QuestionReportReason: String, Codable, CaseIterable, Identifiable, Sendable {
+enum QuestionReportReason: String, Codable, Sendable {
     case tooEasy = "Too Easy"
     case tooHard = "Too Hard"
     case confusing = "Confusing"
     case wrongAnswer = "Wrong Answer"
     case irrelevant = "Irrelevant"
-
-    var id: String { rawValue }
 }
 
 enum IssueReportCategory: String, Codable, CaseIterable, Identifiable, Sendable {
