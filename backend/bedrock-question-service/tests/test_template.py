@@ -234,10 +234,10 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertIn("BedrockReasoningEffort", workflow_overrides)
         self.assertNotIn("BedrockModelId", workflow_overrides)
 
-    def test_ci_and_deploy_compile_question_bank_module(self):
-        compile_command = r"python -m compileall -q [^\n]*question_bank\.py"
-        self.assertRegex(self.ci_workflow, compile_command)
-        self.assertRegex(self.deploy_workflow, compile_command)
+    def test_ci_and_deploy_compile_all_backend_modules(self):
+        compile_command = "run: python -m compileall -q ./*.py tests evals"
+        self.assertIn(compile_command, self.ci_workflow)
+        self.assertIn(compile_command, self.deploy_workflow)
 
 
 if __name__ == "__main__":

@@ -285,7 +285,8 @@ The unit tests inject fake Bedrock and DynamoDB clients; AWS credentials are not
 ```bash
 cd backend/bedrock-question-service
 python3 -m unittest discover -s tests
-ruff check lambda_function.py question_bank.py smoke_test_backend.py tests evals/checkpoint_question_eval.py
+ruff check ./*.py tests evals
+python3 -m compileall -q ./*.py tests evals
 sam validate --lint --template-file template.yaml
 ```
 
