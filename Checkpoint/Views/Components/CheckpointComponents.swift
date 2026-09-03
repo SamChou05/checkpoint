@@ -214,6 +214,7 @@ struct CheckpointSetupMark: View {
     let stage: String
     var step: Int?
     var stepCount = 3
+    var systemImage = "checkmark.shield.fill"
     var isWorking = false
     var compact = false
 
@@ -246,7 +247,7 @@ struct CheckpointSetupMark: View {
     }
 
     private var markIcon: some View {
-        Image(systemName: "checkmark.shield.fill")
+        Image(systemName: systemImage)
             .symbolRenderingMode(.hierarchical)
             .font(.system(size: compact ? 19 : 24, weight: .semibold))
             .foregroundStyle(CheckpointTheme.mint)
@@ -369,7 +370,7 @@ struct PrimaryActionButton: View {
                 .shadow(color: CheckpointTheme.shadowElevated, radius: 10, y: 5)
         }
         .buttonStyle(CheckpointPressButtonStyle())
-        .opacity(isEnabled ? 1 : 0.58)
+        .opacity(isEnabled || isLoading ? 1 : 0.58)
         .accessibilityLabel(isLoading ? "\(title), in progress" : title)
     }
 
@@ -469,6 +470,7 @@ struct CheckpointHeroSurface<Content: View>: View {
     var glowDiameter: CGFloat = 150
     var glowBlurRadius: CGFloat = 11
     var glowOffset = CGSize(width: 64, height: -82)
+    var contentPadding: CGFloat = 18
     @ViewBuilder var content: Content
 
     init(
@@ -477,6 +479,7 @@ struct CheckpointHeroSurface<Content: View>: View {
         glowDiameter: CGFloat = 150,
         glowBlurRadius: CGFloat = 11,
         glowOffset: CGSize = CGSize(width: 64, height: -82),
+        contentPadding: CGFloat = 18,
         @ViewBuilder content: () -> Content
     ) {
         self.glowColor = glowColor
@@ -484,12 +487,13 @@ struct CheckpointHeroSurface<Content: View>: View {
         self.glowDiameter = glowDiameter
         self.glowBlurRadius = glowBlurRadius
         self.glowOffset = glowOffset
+        self.contentPadding = contentPadding
         self.content = content()
     }
 
     var body: some View {
         content
-            .padding(18)
+            .padding(contentPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)

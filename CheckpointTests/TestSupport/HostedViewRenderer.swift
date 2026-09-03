@@ -8,7 +8,9 @@ enum HostedViewRenderer {
         for content: Content,
         width: CGFloat,
         height: CGFloat,
-        colorScheme: ColorScheme
+        colorScheme: ColorScheme,
+        settlingTime: TimeInterval = 0.05,
+        renderScale: CGFloat = 2
     ) -> UIImage {
         let size = CGSize(width: width, height: height)
         let frame = CGRect(origin: .zero, size: size)
@@ -26,11 +28,11 @@ enum HostedViewRenderer {
         hostingController.view.frame = frame
         hostingController.view.setNeedsLayout()
         hostingController.view.layoutIfNeeded()
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.05))
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: settlingTime))
         hostingController.view.layoutIfNeeded()
 
         let format = UIGraphicsImageRendererFormat.preferred()
-        format.scale = 2
+        format.scale = renderScale
         let renderer = UIGraphicsImageRenderer(size: size, format: format)
         return renderer.image { _ in
             XCTAssertTrue(
