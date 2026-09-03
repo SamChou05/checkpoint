@@ -16,6 +16,13 @@ protocol AppProtectionControlling: AnyObject {
 
 extension ScreenTimeController: AppProtectionControlling {}
 
+enum CheckpointFailureProtectionOutcome: Equatable {
+    case activeBreakContinues
+    case protectionRemainsOn
+    case protectionTurnedOffForUnavailableCheckpoint
+    case protectionIsOff
+}
+
 @MainActor
 @Observable
 final class CheckpointWorkflowCoordinator {
@@ -175,13 +182,24 @@ final class CheckpointWorkflowCoordinator {
         return nil
     }
 
-    func resolveFailed(_ session: CheckpointSession) {
-        guard session.purpose != .preview else { return }
+    @discardableResult
+    func resolveFailed(_ session: CheckpointSession) -> CheckpointFailureProtectionOutcome? {
+        guard session.purpose != .preview else { return nil }
         guard store.resolveCheckpointRun(
             sessionID: session.id,
             didPass: false
-        ) else { return }
+        ) else { return nil }
         reconcileProtectionState()
+
+        if store.unlockSession?.isActive == true {
+            return .activeBreakContinues
+        }
+        if protection.isShieldingEnabled {
+            return .protectionRemainsOn
+        }
+        return store.hasReadyCheckpointSet
+            ? .protectionIsOff
+            : .protectionTurnedOffForUnavailableCheckpoint
     }
 
     @discardableResult

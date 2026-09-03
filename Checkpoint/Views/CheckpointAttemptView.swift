@@ -102,13 +102,316 @@ enum CheckpointFeedbackRevealBehavior: Equatable {
     }
 }
 
+enum CheckpointResolutionTone: Equatable {
+    case success
+    case needsPractice
+}
+
+struct CheckpointResolutionPresentation: Equatable {
+    let eyebrow: String
+    let title: String
+    let scoreText: String
+    let detail: String
+    let systemImage: String
+    let tone: CheckpointResolutionTone
+    let actionTitle: String
+    let actionSystemImage: String
+
+    init(
+        purpose: CheckpointSessionPurpose,
+        didMeetStandard: Bool,
+        correctAnswerCount: Int,
+        questionCount: Int,
+        unlockMinutes: Int,
+        failureProtectionOutcome: CheckpointFailureProtectionOutcome?,
+        protectionActionFailed: Bool = false,
+        cooldownDurationText: String = CheckpointRetryPolicy.cooldownDurationText
+    ) {
+        let safeQuestionCount = max(0, questionCount)
+        let safeCorrectAnswerCount = min(max(0, correctAnswerCount), safeQuestionCount)
+
+        scoreText = "\(safeCorrectAnswerCount) of \(safeQuestionCount) correct"
+        tone = didMeetStandard ? .success : .needsPractice
+
+        if purpose == .preview {
+            eyebrow = "PRACTICE RESULT"
+            title = "Practice complete"
+            systemImage = didMeetStandard ? "checkmark.seal.fill" : "book.closed.fill"
+            detail = didMeetStandard
+                ? "You met the practice standard. App protection did not change."
+                : "You didn't meet the practice standard yet. App protection did not change."
+            actionTitle = "Finish"
+            actionSystemImage = "checkmark.seal"
+            return
+        }
+
+        eyebrow = "CHECKPOINT RESULT"
+        if didMeetStandard {
+            title = "Checkpoint cleared"
+            systemImage = "checkmark.seal.fill"
+
+            switch purpose {
+            case .temporaryUnlock:
+                detail = protectionActionFailed
+                    ? "You met the standard, but the break didn't start."
+                    : "Your \(unlockMinutes)-minute break is ready to begin."
+                actionTitle = "Begin \(unlockMinutes)-minute break"
+                actionSystemImage = "lock.open"
+            case .stopBlocking:
+                detail = protectionActionFailed
+                    ? "You met the standard, but app protection didn't change."
+                    : "App protection is ready to turn off."
+                actionTitle = "Turn off protection"
+                actionSystemImage = "hand.raised"
+            case .preview:
+                preconditionFailure("Preview resolution is handled above")
+            }
+        } else {
+            title = "Checkpoint not cleared"
+            systemImage = "arrow.counterclockwise.circle.fill"
+            switch failureProtectionOutcome {
+            case .activeBreakContinues:
+                detail = "Your break continues. Check Home when it ends to confirm protection status."
+            case .protectionRemainsOn:
+                detail = "Protection stays on. Try again in \(cooldownDurationText), and we'll revisit what you missed."
+            case .protectionTurnedOffForUnavailableCheckpoint:
+                detail = "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
+            case .protectionIsOff:
+                detail = "Protection is off. Review its status from Home before trying another checkpoint."
+            case nil:
+                detail = "The standard wasn't met. Return home to review protection before trying again."
+            }
+            actionTitle = "Return home"
+            actionSystemImage = "house"
+        }
+    }
+}
+
+struct CheckpointProtectionActionFailurePresentation: Equatable {
+    let title: String
+    let detail: String
+    let systemImage = "exclamationmark.triangle.fill"
+
+    init(purpose: CheckpointSessionPurpose, detail: String) {
+        switch purpose {
+        case .temporaryUnlock:
+            title = "Break didn't start"
+        case .stopBlocking:
+            title = "Protection didn't change"
+        case .preview:
+            title = "Action didn't finish"
+        }
+        self.detail = detail
+    }
+}
+
+enum CheckpointResolutionMotionStyle: Equatable {
+    case choreographed
+    case identity
+}
+
+struct CheckpointResolutionMotionPolicy {
+    let reduceMotion: Bool
+
+    var style: CheckpointResolutionMotionStyle {
+        reduceMotion ? .identity : .choreographed
+    }
+
+    var animation: Animation? {
+        CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+    }
+
+    var transition: AnyTransition {
+        guard !reduceMotion else { return .identity }
+        return .asymmetric(
+            insertion: .opacity.combined(with: .scale(scale: 0.975, anchor: .top)),
+            removal: .opacity
+        )
+    }
+}
+
+enum CheckpointFeedbackDestination: Hashable {
+    case answerFeedback
+    case protectionActionFailure
+    case resolution
+
+    static func resolve(shouldFinish: Bool) -> Self {
+        shouldFinish ? .resolution : .answerFeedback
+    }
+}
+
+enum CheckpointAttemptInitialPresentation: Equatable {
+    case unanswered
+    case terminal(
+        questionIndex: Int,
+        correctAnswerCount: Int,
+        answer: String,
+        result: AnswerResult,
+        didPass: Bool,
+        actionErrorMessage: String? = nil
+    )
+}
+
+private struct CheckpointResolutionCard: View {
+    let presentation: CheckpointResolutionPresentation
+    let feedbackSequence: Int
+    let reduceMotion: Bool
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            resolutionIdentity
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(presentation.scoreText)
+                    .font(.title3.weight(.bold))
+                    .monospacedDigit()
+                    .foregroundStyle(CheckpointTheme.heroText)
+                    .padding(.horizontal, 11)
+                    .padding(.vertical, 7)
+                    .background(
+                        CheckpointTheme.heroSubtleFill,
+                        in: Capsule()
+                    )
+
+                Text(presentation.detail)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(CheckpointTheme.ink)
+                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
+                .overlay(alignment: .topTrailing) {
+                    Circle()
+                        .fill(accent.opacity(0.11))
+                        .frame(width: 150, height: 150)
+                        .blur(radius: 11)
+                        .offset(x: 62, y: -78)
+                        .allowsHitTesting(false)
+                }
+        )
+        .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            "\(presentation.title). \(presentation.scoreText). \(presentation.detail)"
+        )
+        .accessibilityAddTraits(.isHeader)
+    }
+
+    @ViewBuilder
+    private var resolutionIdentity: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                resultIcon
+                identityCopy
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 13) {
+                    resultIcon
+                    identityCopy
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    resultIcon
+                    identityCopy
+                }
+            }
+        }
+    }
+
+    private var resultIcon: some View {
+        Image(systemName: presentation.systemImage)
+            .font(.system(size: 20, weight: .bold))
+            .foregroundStyle(CheckpointTheme.ink)
+            .frame(width: 50, height: 50)
+            .background(accent, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .symbolEffect(.bounce, options: .nonRepeating, value: feedbackSequence)
+            .symbolEffectsRemoved(reduceMotion)
+            .fixedSize()
+            .accessibilityHidden(true)
+    }
+
+    private var identityCopy: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(presentation.eyebrow)
+                .font(.caption2.weight(.bold))
+                .tracking(0.85)
+                .foregroundStyle(accent)
+
+            Text(presentation.title)
+                .font(.title2.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var accent: Color {
+        switch presentation.tone {
+        case .success:
+            CheckpointTheme.heroSuccess
+        case .needsPractice:
+            CheckpointTheme.heroWarning
+        }
+    }
+}
+
+private struct CheckpointProtectionActionFailureCard: View {
+    let presentation: CheckpointProtectionActionFailurePresentation
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: presentation.systemImage)
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(CheckpointTheme.coral)
+                .frame(width: 34, height: 34)
+                .background(
+                    CheckpointTheme.coral.opacity(0.12),
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(presentation.title)
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.coral)
+
+                Text(presentation.detail)
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.coral.opacity(0.08),
+            in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                .stroke(CheckpointTheme.coral.opacity(0.32), lineWidth: 1)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(presentation.title). \(presentation.detail)")
+        .accessibilityAddTraits(.isHeader)
+    }
+}
+
 struct CheckpointAttemptView: View {
     let store: CheckpointStore
     let workflow: CheckpointWorkflowCoordinator
     let session: CheckpointSession
+    private let reduceMotionOverride: Bool?
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @State private var currentQuestionIndex = 0
@@ -117,6 +420,7 @@ struct CheckpointAttemptView: View {
     @State private var result: AnswerResult = .correct
     @State private var checkedAnswer: CheckedCheckpointAnswer?
     @State private var protectionActionErrorMessage: String?
+    @State private var protectionActionErrorSequence = 0
     @State private var feedbackSequence = 0
     @State private var resolutionFeedback: CheckpointResolutionFeedback?
     @State private var isExitConfirmationPresented = false
@@ -125,6 +429,58 @@ struct CheckpointAttemptView: View {
     @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
 
+    init(
+        store: CheckpointStore,
+        workflow: CheckpointWorkflowCoordinator,
+        session: CheckpointSession,
+        initialPresentation: CheckpointAttemptInitialPresentation = .unanswered,
+        reduceMotionOverride: Bool? = nil
+    ) {
+        self.store = store
+        self.workflow = workflow
+        self.session = session
+        self.reduceMotionOverride = reduceMotionOverride
+
+        guard case let .terminal(
+            questionIndex,
+            correctAnswerCount,
+            answer,
+            result,
+            didPass,
+            actionErrorMessage
+        ) = initialPresentation else { return }
+
+        let boundedQuestionIndex = min(
+            max(0, questionIndex),
+            max(0, session.questions.count - 1)
+        )
+        let boundedCorrectAnswerCount = min(
+            max(0, correctAnswerCount),
+            session.questions.count
+        )
+        _currentQuestionIndex = State(initialValue: boundedQuestionIndex)
+        _correctAnswerCount = State(initialValue: boundedCorrectAnswerCount)
+        _answer = State(initialValue: answer)
+        _result = State(initialValue: result)
+        _checkedAnswer = State(
+            initialValue: CheckedCheckpointAnswer(
+                result: result,
+                shouldFinish: true,
+                shouldPass: didPass,
+                failureProtectionOutcome: !didPass && session.purpose != .preview
+                    ? (store.hasReadyCheckpointSet
+                        ? .protectionRemainsOn
+                        : .protectionTurnedOffForUnavailableCheckpoint)
+                    : nil
+            )
+        )
+        _protectionActionErrorMessage = State(initialValue: actionErrorMessage)
+    }
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
+
     var body: some View {
         NavigationStack {
             ScrollViewReader { scrollProxy in
@@ -132,6 +488,29 @@ struct CheckpointAttemptView: View {
                     VStack(alignment: .leading, spacing: 18) {
                         progressHeader
                             .id(AttemptScrollAnchor.question)
+
+                        if let resolutionPresentation {
+                            CheckpointResolutionCard(
+                                presentation: resolutionPresentation,
+                                feedbackSequence: feedbackSequence,
+                                reduceMotion: reduceMotion
+                            )
+                            .id(CheckpointFeedbackDestination.resolution)
+                            .accessibilityFocused($accessibilityFocus, equals: .resolution)
+                            .transition(resolutionMotionPolicy.transition)
+
+                            if let protectionActionFailurePresentation {
+                                CheckpointProtectionActionFailureCard(
+                                    presentation: protectionActionFailurePresentation
+                                )
+                                .id(CheckpointFeedbackDestination.protectionActionFailure)
+                                .accessibilityFocused(
+                                    $accessibilityFocus,
+                                    equals: .protectionActionFailure
+                                )
+                                .transition(resolutionMotionPolicy.transition)
+                            }
+                        }
 
                         questionPanel
                             .id(question.id)
@@ -147,6 +526,9 @@ struct CheckpointAttemptView: View {
                 }
                 .onChange(of: feedbackSequence) { _, sequence in
                     revealFeedback(sequence: sequence, using: scrollProxy)
+                }
+                .onChange(of: protectionActionErrorSequence) { _, sequence in
+                    revealProtectionActionFailure(sequence: sequence, using: scrollProxy)
                 }
             }
             .checkpointScreenBackground()
@@ -201,6 +583,7 @@ struct CheckpointAttemptView: View {
         .sensoryFeedback(.warning, trigger: resolutionFeedback) { _, newValue in
             newValue == .failed
         }
+        .sensoryFeedback(.error, trigger: protectionActionErrorSequence)
     }
 
     private var progressHeader: some View {
@@ -332,7 +715,7 @@ struct CheckpointAttemptView: View {
 
     private var progressStatusText: String {
         if let checkedAnswer, checkedAnswer.shouldFinish {
-            return checkedAnswer.shouldPass ? "Ready to clear" : "Standard not met"
+            return checkedAnswer.shouldPass ? "Standard met" : "Standard not met"
         }
         if remainingCorrectAnswers == 0 {
             return "Standard met"
@@ -347,6 +730,31 @@ struct CheckpointAttemptView: View {
             return remainingCorrectAnswers == 0 ? CheckpointTheme.teal : CheckpointTheme.muted
         }
         return checkedAnswer.shouldPass ? CheckpointTheme.teal : CheckpointTheme.coral
+    }
+
+    private var resolutionPresentation: CheckpointResolutionPresentation? {
+        guard let checkedAnswer, checkedAnswer.shouldFinish else { return nil }
+        return CheckpointResolutionPresentation(
+            purpose: session.purpose,
+            didMeetStandard: checkedAnswer.shouldPass,
+            correctAnswerCount: correctAnswerCount,
+            questionCount: session.questions.count,
+            unlockMinutes: store.unlockPolicy.unlockMinutes,
+            failureProtectionOutcome: checkedAnswer.failureProtectionOutcome,
+            protectionActionFailed: protectionActionErrorMessage != nil
+        )
+    }
+
+    private var protectionActionFailurePresentation: CheckpointProtectionActionFailurePresentation? {
+        guard let protectionActionErrorMessage else { return nil }
+        return CheckpointProtectionActionFailurePresentation(
+            purpose: session.purpose,
+            detail: protectionActionErrorMessage
+        )
+    }
+
+    private var resolutionMotionPolicy: CheckpointResolutionMotionPolicy {
+        CheckpointResolutionMotionPolicy(reduceMotion: reduceMotion)
     }
 
     private var usesAutomaticEvaluation: Bool {
@@ -377,22 +785,11 @@ struct CheckpointAttemptView: View {
             return "Check answer"
         }
 
-        if checkedAnswer.shouldFinish {
-            return checkedAnswer.shouldPass ? passingSubmitButtonTitle : "Done"
+        if checkedAnswer.shouldFinish, let resolutionPresentation {
+            return resolutionPresentation.actionTitle
         }
 
         return "Next question"
-    }
-
-    private var passingSubmitButtonTitle: String {
-        switch session.purpose {
-        case .temporaryUnlock:
-            return "Begin \(store.unlockPolicy.unlockMinutes)-minute break"
-        case .preview:
-            return "Finish"
-        case .stopBlocking:
-            return "Turn off protection"
-        }
     }
 
     private var submitButtonIcon: String {
@@ -400,22 +797,11 @@ struct CheckpointAttemptView: View {
             return "checkmark.seal"
         }
 
-        if checkedAnswer.shouldFinish {
-            return checkedAnswer.shouldPass ? passingSubmitButtonIcon : "lock"
+        if checkedAnswer.shouldFinish, let resolutionPresentation {
+            return resolutionPresentation.actionSystemImage
         }
 
         return "arrow.right"
-    }
-
-    private var passingSubmitButtonIcon: String {
-        switch session.purpose {
-        case .temporaryUnlock:
-            return "lock.open"
-        case .preview:
-            return "checkmark.seal"
-        case .stopBlocking:
-            return "hand.raised"
-        }
     }
 
     private func handlePrimaryAction() {
@@ -436,6 +822,7 @@ struct CheckpointAttemptView: View {
             answeredQuestionCount: answeredQuestionCount
         )
         let shouldPass = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
+        var failureProtectionOutcome: CheckpointFailureProtectionOutcome?
 
         if session.purpose != .preview {
             store.submitAnswer(
@@ -446,17 +833,21 @@ struct CheckpointAttemptView: View {
             )
 
             if shouldFinish && !shouldPass {
-                workflow.resolveFailed(session)
+                failureProtectionOutcome = workflow.resolveFailed(session)
             }
         }
 
         isAnswerFieldFocused = false
-        withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
+        let updateAnimation = shouldFinish
+            ? resolutionMotionPolicy.animation
+            : CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+        withAnimation(updateAnimation) {
             correctAnswerCount = updatedCorrectCount
             checkedAnswer = CheckedCheckpointAnswer(
                 result: result,
                 shouldFinish: shouldFinish,
-                shouldPass: shouldPass
+                shouldPass: shouldPass,
+                failureProtectionOutcome: failureProtectionOutcome
             )
             feedbackSequence += 1
         }
@@ -471,7 +862,10 @@ struct CheckpointAttemptView: View {
         guard !checkedAnswer.shouldFinish else {
             if checkedAnswer.shouldPass {
                 if let errorMessage = workflow.finishPassed(session) {
-                    protectionActionErrorMessage = errorMessage
+                    withAnimation(resolutionMotionPolicy.animation) {
+                        protectionActionErrorMessage = errorMessage
+                        protectionActionErrorSequence += 1
+                    }
                     return
                 }
                 protectionActionErrorMessage = nil
@@ -506,9 +900,19 @@ struct CheckpointAttemptView: View {
         Task { @MainActor in
             await Task.yield()
 
-            guard sequence == feedbackSequence, checkedAnswer != nil else { return }
+            guard sequence == feedbackSequence, let checkedAnswer else { return }
 
-            accessibilityFocus = .feedback
+            let destination = CheckpointFeedbackDestination.resolve(
+                shouldFinish: checkedAnswer.shouldFinish
+            )
+            switch destination {
+            case .answerFeedback:
+                accessibilityFocus = .answerFeedback
+            case .protectionActionFailure:
+                accessibilityFocus = .protectionActionFailure
+            case .resolution:
+                accessibilityFocus = .resolution
+            }
 
             let behavior = CheckpointFeedbackRevealBehavior.resolve(
                 reduceMotion: reduceMotion,
@@ -517,7 +921,34 @@ struct CheckpointAttemptView: View {
             guard case let .focusAndScroll(animated) = behavior else { return }
 
             withAnimation(animated ? CheckpointMotion.change : nil) {
-                proxy.scrollTo(AttemptScrollAnchor.feedback, anchor: .top)
+                proxy.scrollTo(destination, anchor: .top)
+            }
+        }
+    }
+
+    private func revealProtectionActionFailure(
+        sequence: Int,
+        using proxy: ScrollViewProxy
+    ) {
+        Task { @MainActor in
+            await Task.yield()
+
+            guard sequence == protectionActionErrorSequence,
+                  protectionActionErrorMessage != nil else { return }
+
+            accessibilityFocus = .protectionActionFailure
+
+            let behavior = CheckpointFeedbackRevealBehavior.resolve(
+                reduceMotion: reduceMotion,
+                assistiveNavigationEnabled: voiceOverEnabled || switchControlEnabled
+            )
+            guard case let .focusAndScroll(animated) = behavior else { return }
+
+            withAnimation(animated ? CheckpointMotion.change : nil) {
+                proxy.scrollTo(
+                    CheckpointFeedbackDestination.protectionActionFailure,
+                    anchor: .center
+                )
             }
         }
     }
@@ -567,18 +998,6 @@ struct CheckpointAttemptView: View {
         }
     }
 
-    private var failedSessionFeedbackText: String {
-        switch session.purpose {
-        case .preview:
-            return "We'll revisit what you missed."
-        case .temporaryUnlock, .stopBlocking:
-            if store.hasReadyCheckpointSet {
-                return "Protection stays on. Try again in \(CheckpointRetryPolicy.cooldownDurationText), and we'll revisit what you missed."
-            }
-            return "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
-        }
-    }
-
     @ViewBuilder
     private var inlineFeedback: some View {
         if let checkedAnswer {
@@ -590,18 +1009,31 @@ struct CheckpointAttemptView: View {
                 .overlay(CheckpointTheme.hairline)
 
             VStack(alignment: .leading, spacing: 12) {
+                if checkedAnswer.shouldFinish {
+                    Text("FINAL ANSWER")
+                        .font(.caption2.weight(.bold))
+                        .tracking(0.8)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .accessibilityHidden(true)
+                }
+
                 HStack(spacing: 10) {
                     Image(systemName: feedbackPresentation.systemImage)
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(resultTint(for: feedbackPresentation.tone))
                         .symbolEffect(.bounce, options: .nonRepeating, value: feedbackSequence)
-                        .symbolEffectsRemoved(reduceMotion)
+                        .symbolEffectsRemoved(reduceMotion || checkedAnswer.shouldFinish)
                         .accessibilityHidden(true)
 
                     Text(feedbackPresentation.label)
                         .font(.headline)
                         .foregroundStyle(resultTint(for: feedbackPresentation.tone))
-                        .accessibilityFocused($accessibilityFocus, equals: .feedback)
+                        .accessibilityLabel(
+                            checkedAnswer.shouldFinish
+                                ? "Final answer: \(feedbackPresentation.label)"
+                                : feedbackPresentation.label
+                        )
+                        .accessibilityFocused($accessibilityFocus, equals: .answerFeedback)
                         .accessibilityAddTraits(.isHeader)
                 }
 
@@ -638,27 +1070,13 @@ struct CheckpointAttemptView: View {
                     in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
                 )
 
-                if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
-                    Text(failedSessionFeedbackText)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.amber)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                if let protectionActionErrorMessage {
-                    Text(protectionActionErrorMessage)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.coral)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
                 if QuestionQualityFeedbackPresentation.supportsRemoval(in: session.purpose) {
                     QuestionRemovalControl(report: currentQuestionReport) {
                         presentQuestionQualityFeedback()
                     }
                 }
             }
-            .id(AttemptScrollAnchor.feedback)
+            .id(CheckpointFeedbackDestination.answerFeedback)
             .transition(feedbackTransition)
         }
     }
@@ -736,16 +1154,18 @@ private struct CheckedCheckpointAnswer {
     let result: AnswerResult
     let shouldFinish: Bool
     let shouldPass: Bool
+    let failureProtectionOutcome: CheckpointFailureProtectionOutcome?
 }
 
 private enum AttemptAccessibilityFocus: Hashable {
     case question
-    case feedback
+    case answerFeedback
+    case protectionActionFailure
+    case resolution
 }
 
 private enum AttemptScrollAnchor: Hashable {
     case question
-    case feedback
 }
 
 private enum CheckpointResolutionFeedback: Hashable {

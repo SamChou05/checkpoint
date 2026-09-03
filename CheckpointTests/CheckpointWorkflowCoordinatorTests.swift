@@ -213,6 +213,57 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testFailedResolutionReturnsStableProtectionOutcomeWhenRetrySetRemainsReady() throws {
+        let store = makeStore(questionCount: 10)
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let outcome = workflow.resolveFailed(session)
+
+        XCTAssertEqual(outcome, .protectionRemainsOn)
+        XCTAssertTrue(protection.isShieldingEnabled)
+        XCTAssertNil(store.activeCheckpointRun)
+    }
+
+    @MainActor
+    func testFailedResolutionReportsWhenUnavailableRetryTurnsProtectionOff() throws {
+        let store = makeStore(questionCount: 5)
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+        store.questions[0].status = .retired
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let outcome = workflow.resolveFailed(session)
+
+        XCTAssertEqual(outcome, .protectionTurnedOffForUnavailableCheckpoint)
+        XCTAssertFalse(protection.isShieldingEnabled)
+        XCTAssertEqual(protection.clearShieldCount, 1)
+        XCTAssertNil(store.activeCheckpointRun)
+    }
+
+    @MainActor
+    func testFailedStopReviewReportsThatActiveBreakContinues() throws {
+        let store = makeStore(questionCount: StopBlockingPolicy.questionsPerSession)
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        store.startUnlockSession(minutes: 10)
+        let session = try XCTUnwrap(store.startStopBlockingSession())
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let outcome = workflow.resolveFailed(session)
+
+        XCTAssertEqual(outcome, .activeBreakContinues)
+        XCTAssertEqual(protection.applyShieldCount, 1)
+        XCTAssertTrue(store.unlockSession?.isActive == true)
+        XCTAssertNil(store.activeCheckpointRun)
+    }
+
+    @MainActor
     func testPreviewExitDoesNotStartCooldownOrChangeProtection() throws {
         let store = makeStore(questionCount: 5)
         let session = try XCTUnwrap(store.startPreviewCheckpointSession())
