@@ -96,6 +96,13 @@ private struct ProgressScreenSnapshot: Equatable {
     var stage: Stage
 }
 
+private struct FocusWinsDestination: Identifiable {
+    let goalID: Goal.ID
+    let goalTitle: String
+
+    var id: Goal.ID { goalID }
+}
+
 struct CompetencyView: View {
     let store: CheckpointStore
 
@@ -106,6 +113,7 @@ struct CompetencyView: View {
     @State private var isSkillMapRepairPresented = false
     @State private var isSkillHistoryExpanded = false
     @State private var isRetryingInitialQuestions = false
+    @State private var focusWinsDestination: FocusWinsDestination?
 
     private var usesStackedTypeLayout: Bool {
         dynamicTypeSize == .xLarge ||
@@ -159,6 +167,10 @@ struct CompetencyView: View {
                 LazyVStack(alignment: .leading, spacing: 20) {
                     progressHeader
 
+                    if let goal = store.goal {
+                        focusWinsEntry(for: goal)
+                    }
+
                     if store.goal == nil {
                         emptyState
                     } else if store.isPreparingActiveGoalQuestions {
@@ -211,6 +223,13 @@ struct CompetencyView: View {
         }
         .sheet(isPresented: $isSkillMapRepairPresented) {
             SkillMapRepairView(store: store)
+        }
+        .sheet(item: $focusWinsDestination) { destination in
+            FocusWinsView(
+                store: store,
+                goalID: destination.goalID,
+                goalTitle: destination.goalTitle
+            )
         }
     }
 
@@ -321,6 +340,113 @@ struct CompetencyView: View {
             return "checkmark.circle.fill"
         }
         return store.isMember ? "circle" : "lock.fill"
+    }
+
+    private func focusWinsEntry(for goal: Goal) -> some View {
+        let count = store.focusWins(for: goal.id).count
+
+        return Button {
+            focusWinsDestination = FocusWinsDestination(
+                goalID: goal.id,
+                goalTitle: goal.title
+            )
+        } label: {
+            SectionPanel {
+                Group {
+                    if usesStackedTypeLayout {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(alignment: .center, spacing: 12) {
+                                focusWinsIcon
+
+                                Text("Focus Wins")
+                                    .font(.headline)
+                                    .foregroundStyle(CheckpointTheme.text)
+                            }
+
+                            focusWinsDetail
+
+                            HStack(spacing: 7) {
+                                Spacer(minLength: 0)
+                                focusWinsCount(count)
+                                focusWinsChevron
+                            }
+                        }
+                    } else {
+                        HStack(alignment: .center, spacing: 14) {
+                            focusWinsIcon
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Focus Wins")
+                                    .font(.headline)
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                focusWinsDetail
+                            }
+
+                            Spacer(minLength: 4)
+
+                            HStack(spacing: 7) {
+                                focusWinsCount(count)
+                                focusWinsChevron
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            }
+        }
+        .buttonStyle(CheckpointPressButtonStyle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Focus Wins")
+        .accessibilityValue(focusWinsAccessibilityValue(count))
+        .accessibilityHint("Opens Focus Wins for \(goal.title).")
+    }
+
+    private var focusWinsIcon: some View {
+        Image(systemName: "note.text")
+            .font(.system(size: 18, weight: .bold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .frame(width: 44, height: 44)
+            .background(
+                CheckpointTheme.teal.opacity(0.11),
+                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private var focusWinsDetail: some View {
+        Text("Keep a private note of progress you noticed toward this goal.")
+            .font(.subheadline)
+            .foregroundStyle(CheckpointTheme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func focusWinsCount(_ count: Int) -> some View {
+        Text(focusWinsCountLabel(count))
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var focusWinsChevron: some View {
+        Image(systemName: "chevron.right")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .accessibilityHidden(true)
+    }
+
+    private func focusWinsCountLabel(_ count: Int) -> String {
+        switch count {
+        case 0: "No notes"
+        case 1: "1 note"
+        default: "\(count) notes"
+        }
+    }
+
+    private func focusWinsAccessibilityValue(_ count: Int) -> String {
+        count == 0
+            ? "No entries logged by you"
+            : "\(count) \(count == 1 ? "entry" : "entries") logged by you"
     }
 
     private var progressHero: some View {

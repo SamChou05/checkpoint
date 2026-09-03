@@ -15,6 +15,7 @@ Checkpoint may store the following information locally:
 - Goals, deadlines, categories, current level, focus areas, difficulty preferences, and text extracted from optional study-material files.
 - Generated questions, choices, expected answers, explanations, topics, and question status.
 - Competency estimates, attempts, answer history, accuracy, progress, and app-break history.
+- User-authored Focus Wins notes and the times they were logged, associated with the relevant goal.
 - Question and issue reports plus limited question-generation diagnostics.
 - Protected-app, category, and website selections made through Apple's Screen Time APIs.
 - Current protection and break state used by the main app and its Screen Time extensions.
@@ -33,6 +34,7 @@ Local data remains until it is removed by the user, pruned by the limits below, 
 
 - 500 questions per goal, prioritizing still-usable questions and then the most recently used retired questions.
 - 2,000 attempts per goal.
+- 500 Focus Wins per goal, keeping the most recently logged notes.
 - 1,000 unlock events per goal.
 - 250 question reports per goal.
 - 100 issue reports across the app.
@@ -57,6 +59,8 @@ When cloud question generation is used, Checkpoint sends its backend the informa
 - Filenames and extracted text from optional study materials attached to the goal.
 
 The request also includes the random installation identifier in a header. AWS infrastructure observes the request's source IP address as part of delivering the network request.
+
+Focus Wins are kept in the local learning snapshot. The current implementation does not include their note text or timestamps in AI question-generation requests, progress metrics, practice recommendations, Screen Time coordination data, or app-break decisions.
 
 The Checkpoint backend validates the request and stores the normalized generation context in an encrypted, expiring DynamoDB question bank. When preparation is needed, a database transaction atomically links the bank to a pending coordination job. A DynamoDB Streams consumer durably forwards that job to an encrypted queue, and an asynchronous worker later sends the relevant goal and question context to Amazon Bedrock. Amazon Bedrock returns generated question content to the worker, which validates and stores accepted questions. Claiming marks those questions as claimed rather than deleting them; their content remains with the bank as deduplication history until its Time to Live makes the records eligible for deletion. The app can also send compact one-way fingerprints of older local question stems so the backend rejects exact repeats without sending those older prompts to the model. Skill Map evolution is a separate synchronous planning request; the backend validates mastery evidence before asking Bedrock for harder successor skills, and the app revalidates the returned version before saving it. Operational metrics intentionally contain counts, status, latency, token usage, and a request identifier rather than goal or question text.
 
@@ -95,6 +99,8 @@ Checkpoint does not use third-party advertising or Apple's advertising identifie
 ## Erasing Data
 
 Using **Erase all data** in Checkpoint removes the local primary and backup learning snapshots, any legacy snapshot, goals and progress in memory, the App Group's Screen Time selection and coordination files, protection diagnostics, and the locally stored installation identifier. It also turns off Checkpoint-managed shields.
+
+When deletion of an individual Focus Win or goal is saved successfully, Checkpoint removes the affected Focus Win or goal-associated Focus Wins from memory and the current primary learning snapshot. The immediately preceding recovery backup can still contain the deleted Focus Win or goal until a later successful save replaces the backup or **Erase all data** removes it. Using **Erase all data** removes Focus Wins for every goal from Checkpoint's active local storage, subject to the device-backup limitation described above.
 
 Erase all data does not cancel an Apple subscription and does not revoke the Screen Time permission granted in iOS Settings. It also does not currently call an authenticated backend deletion endpoint. Existing server-side question banks, ready and claimed generated questions, source context, idempotent claim records, pseudonymous quota rows, DynamoDB stream records, and already queued generation jobs can therefore remain and queued work can finish after local erasure. Question-bank records rely on their nominal 30-day Time to Live, quota rows rely on their shorter configured Time to Live, and both are deleted asynchronously by AWS after becoming eligible. DynamoDB stream records are available for up to 24 hours, source-queue messages for up to 4 days, and generation dead-letter jobs or outbox failure metadata for up to 14 days. Data already processed by AWS or Amazon Bedrock is subject to the production service-processing terms and retention settings that still need to be finalized.
 
