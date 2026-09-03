@@ -748,6 +748,41 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testRecordingFocusWinReportsFailureWhenTimestampRetentionPrunesIt() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let retainedWins = (0..<CheckpointStore.maximumStoredFocusWinCountPerGoal).map { index in
+            FocusWin(
+                goalID: goal.id,
+                note: "Future win \(index)",
+                loggedAt: Date(timeIntervalSince1970: TimeInterval(10_000 + index))
+            )
+        }
+        store.focusWins = retainedWins
+
+        XCTAssertFalse(
+            store.recordFocusWin(
+                note: "Do not report this as saved.",
+                goalID: goal.id,
+                loggedAt: Date(timeIntervalSince1970: 100)
+            )
+        )
+        XCTAssertEqual(
+            Set(store.focusWins.map(\.id)),
+            Set(retainedWins.map(\.id))
+        )
+        XCTAssertFalse(store.focusWins.contains { $0.note == "Do not report this as saved." })
+
+        let restoredStore = CheckpointStore(defaults: defaults)
+        XCTAssertEqual(
+            Set(restoredStore.focusWins.map(\.id)),
+            Set(retainedWins.map(\.id))
+        )
+    }
+
+    @MainActor
     func testPostEraseReconciliationDoesNotRecreateLocalOrAppGroupState() {
         let goal = makeGoal()
         let store = makeFileBackedStore(goal: goal)

@@ -619,15 +619,13 @@ final class CheckpointStore {
         }
 
         let previousFocusWins = focusWins
-        focusWins.insert(
-            FocusWin(goalID: goalID, note: note, loggedAt: loggedAt),
-            at: 0
-        )
+        let focusWin = FocusWin(goalID: goalID, note: note, loggedAt: loggedAt)
+        focusWins.insert(focusWin, at: 0)
         guard save() else {
             focusWins = previousFocusWins
             return false
         }
-        return true
+        return focusWins.contains(where: { $0.id == focusWin.id })
     }
 
     @discardableResult
