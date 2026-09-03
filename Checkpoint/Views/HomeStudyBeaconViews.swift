@@ -36,36 +36,22 @@ struct HomeFirstCheckpointLaunchpad: View {
                 .foregroundStyle(CheckpointTheme.muted)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 18) {
-                launchIdentity
+            CheckpointHeroSurface(glowColor: CheckpointTheme.mint) {
+                VStack(alignment: .leading, spacing: 18) {
+                    launchIdentity
 
-                Text(instructionText)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(CheckpointTheme.heroMuted)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityLabel(instructionText)
+                    Text(instructionText)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityLabel(instructionText)
 
-                Divider()
-                    .overlay(CheckpointTheme.heroDivider)
+                    Divider()
+                        .overlay(CheckpointTheme.heroDivider)
 
-                protectionControls
+                    protectionControls
+                }
             }
-            .padding(18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(CheckpointTheme.ink)
-                    .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                    .overlay(alignment: .topTrailing) {
-                        Circle()
-                            .fill(CheckpointTheme.mint.opacity(0.09))
-                            .frame(width: 150, height: 150)
-                            .blur(radius: 11)
-                            .offset(x: 64, y: -82)
-                            .allowsHitTesting(false)
-                    }
-            )
-            .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
         }
         .padding(.horizontal, 4)
     }

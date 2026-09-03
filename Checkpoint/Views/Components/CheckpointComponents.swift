@@ -463,6 +463,51 @@ struct SectionPanel<Content: View>: View {
     }
 }
 
+struct CheckpointHeroSurface<Content: View>: View {
+    var glowColor: Color
+    var glowOpacity: Double = 0.09
+    var glowDiameter: CGFloat = 150
+    var glowBlurRadius: CGFloat = 11
+    var glowOffset = CGSize(width: 64, height: -82)
+    @ViewBuilder var content: Content
+
+    init(
+        glowColor: Color,
+        glowOpacity: Double = 0.09,
+        glowDiameter: CGFloat = 150,
+        glowBlurRadius: CGFloat = 11,
+        glowOffset: CGSize = CGSize(width: 64, height: -82),
+        @ViewBuilder content: () -> Content
+    ) {
+        self.glowColor = glowColor
+        self.glowOpacity = glowOpacity
+        self.glowDiameter = glowDiameter
+        self.glowBlurRadius = glowBlurRadius
+        self.glowOffset = glowOffset
+        self.content = content()
+    }
+
+    var body: some View {
+        content
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(CheckpointTheme.ink)
+                    .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
+                    .overlay(alignment: .topTrailing) {
+                        Circle()
+                            .fill(glowColor.opacity(glowOpacity))
+                            .frame(width: glowDiameter, height: glowDiameter)
+                            .blur(radius: glowBlurRadius)
+                            .offset(glowOffset)
+                            .allowsHitTesting(false)
+                    }
+            )
+            .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
+    }
+}
+
 struct StatusBadge: View {
     var text: String
     var tint: Color

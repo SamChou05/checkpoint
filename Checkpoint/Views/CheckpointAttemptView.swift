@@ -260,43 +260,33 @@ private struct CheckpointResolutionCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            resolutionIdentity
+        CheckpointHeroSurface(
+            glowColor: accent,
+            glowOpacity: 0.11,
+            glowOffset: CGSize(width: 62, height: -78)
+        ) {
+            VStack(alignment: .leading, spacing: 16) {
+                resolutionIdentity
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text(presentation.scoreText)
-                    .font(.title3.weight(.bold))
-                    .monospacedDigit()
-                    .foregroundStyle(CheckpointTheme.heroText)
-                    .padding(.horizontal, 11)
-                    .padding(.vertical, 7)
-                    .background(
-                        CheckpointTheme.heroSubtleFill,
-                        in: Capsule()
-                    )
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(presentation.scoreText)
+                        .font(.title3.weight(.bold))
+                        .monospacedDigit()
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .padding(.horizontal, 11)
+                        .padding(.vertical, 7)
+                        .background(
+                            CheckpointTheme.heroSubtleFill,
+                            in: Capsule()
+                        )
 
-                Text(presentation.detail)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(CheckpointTheme.heroMuted)
-                    .fixedSize(horizontal: false, vertical: true)
+                    Text(presentation.detail)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
-        .padding(18)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(CheckpointTheme.ink)
-                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                .overlay(alignment: .topTrailing) {
-                    Circle()
-                        .fill(accent.opacity(0.11))
-                        .frame(width: 150, height: 150)
-                        .blur(radius: 11)
-                        .offset(x: 62, y: -78)
-                        .allowsHitTesting(false)
-                }
-        )
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(
             "\(presentation.title). \(presentation.scoreText). \(presentation.detail)"
