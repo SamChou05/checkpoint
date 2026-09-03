@@ -229,7 +229,9 @@ struct LightStudyBeaconSection: View {
 
         let questionNoun = metrics.questionsAnswered == 1 ? "question" : "questions"
         let breakNoun = metrics.checkpointsCleared == 1 ? "break" : "breaks"
-        return "Weekly signal. \(metrics.questionsAnswered) \(questionNoun), \(metrics.accuracyText) accuracy, \(metrics.checkpointsCleared) \(breakNoun) earned."
+        let summary = "Weekly signal. \(metrics.questionsAnswered) \(questionNoun), \(metrics.accuracyText) accuracy, \(metrics.checkpointsCleared) \(breakNoun) earned."
+        guard let insight else { return summary }
+        return "\(summary) \(insight.text)"
     }
 
     private var signalText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }

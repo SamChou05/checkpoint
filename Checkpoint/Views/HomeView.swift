@@ -37,9 +37,11 @@ struct HomeView: View {
                         if isTemporarilyUnblocked {
                             screenTimePanel
                             goalHero(goal)
+                            homeNextFocusPanel
                             studyBeaconPanel
                         } else {
                             goalHero(goal)
+                            homeNextFocusPanel
 
                             if isHealthyProtectionState {
                                 studyBeaconPanel
@@ -441,10 +443,95 @@ struct HomeView: View {
 
         return LightStudyBeaconSection(
             metrics: metrics,
-            competencies: store.visibleActiveCompetencies,
+            competencies: store.activeProgressCompetencies,
             insight: weeklyImpactInsight(for: metrics)
         ) {
             isWeeklyReviewPresented = true
+        }
+    }
+
+    private var homeNextFocusPanel: some View {
+        Group {
+            if let focusState = store.studyFocusState {
+                switch focusState {
+                case .recommendation, .awaitingQuestion, .caughtUp:
+                    homeStudyFocusCard(focusState)
+                        .transition(homeNextFocusTransition)
+                }
+            }
+        }
+        .animation(
+            CheckpointMotion.animation(
+                CheckpointMotion.reveal,
+                reduceMotion: accessibilityReduceMotion
+            ),
+            value: store.studyFocusState
+        )
+    }
+
+    private var homeNextFocusTransition: AnyTransition {
+        accessibilityReduceMotion
+            ? .identity
+            : .opacity.combined(with: .scale(scale: 0.985))
+    }
+
+    private func homeStudyFocusCard(_ state: StudyFocusState) -> some View {
+        let tint = state.isRecommendation ? CheckpointTheme.blue : CheckpointTheme.teal
+
+        return Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 12) {
+                    homeStudyFocusIcon(systemImage: state.systemImage, tint: tint)
+                    homeStudyFocusCopy(state: state, tint: tint)
+                }
+            } else {
+                HStack(alignment: .top, spacing: 14) {
+                    homeStudyFocusIcon(systemImage: state.systemImage, tint: tint)
+                    homeStudyFocusCopy(state: state, tint: tint)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.panelRaised.opacity(0.62),
+            in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(tint.opacity(0.16), lineWidth: 1)
+        }
+    }
+
+    private func homeStudyFocusIcon(systemImage: String, tint: Color) -> some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 17, weight: .bold))
+            .foregroundStyle(tint)
+            .frame(width: 42, height: 42)
+            .background(tint.opacity(0.11), in: RoundedRectangle(cornerRadius: 12))
+            .accessibilityHidden(true)
+    }
+
+    private func homeStudyFocusCopy(state: StudyFocusState, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("NEXT FOCUS")
+                .font(.caption2.weight(.bold))
+                .tracking(0.85)
+                .foregroundStyle(tint)
+                .accessibilityAddTraits(.isHeader)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(state.title)
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(state.detail)
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .accessibilityElement(children: .combine)
         }
     }
 
@@ -453,16 +540,8 @@ struct HomeView: View {
 
         if metrics.missedAnswers > 0, let reviewSkill = metrics.reviewSkill {
             return WeeklyImpactInsight(
-                text: "Review next: \(reviewSkill).",
-                systemImage: "arrow.turn.down.right",
-                tint: CheckpointTheme.amber
-            )
-        }
-
-        if let focusRecommendation = store.studyFocusRecommendation {
-            return WeeklyImpactInsight(
-                text: focusRecommendation,
-                systemImage: "bookmark.fill",
+                text: "Lowest current estimate: \(reviewSkill).",
+                systemImage: "chart.bar.fill",
                 tint: CheckpointTheme.amber
             )
         }

@@ -672,7 +672,7 @@ struct SettingsView: View {
 
     private var planDetailText: String {
         if store.isMember {
-            return "Pro is active: multiple goals, ongoing practice, and guided review."
+            return "Pro is active: multiple goals, ongoing practice, and Next Focus."
         }
 
         return "Free includes one goal and app protection."

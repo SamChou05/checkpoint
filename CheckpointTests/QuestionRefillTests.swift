@@ -336,24 +336,219 @@ final class QuestionRefillTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
-    func testStudyAssistRecommendationUsesWeakestTopic() throws {
-        let goal = makeGoal()
+    func testStudyAssistRecommendationMatchesSchedulerAndUsesCanonicalSkill() throws {
+        let arrays = SkillMapTopic(name: "Array mechanics", aliases: ["arrays"])
+        let recursion = SkillMapTopic(name: "Recursion fundamentals", aliases: ["recursive calls"])
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [arrays, recursion],
+            status: .reviewed
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        let coolingMiss = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "arrays",
+            skillID: arrays.id,
+            status: .incorrect,
+            nextReviewAt: Date().addingTimeInterval(3_600)
+        )
+        let freshQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: "recursive calls",
+            skillID: recursion.id
+        )
+        store.questions = [coolingMiss, freshQuestion]
+
+        XCTAssertNil(store.studyFocusRecommendation)
+        XCTAssertNil(store.studyFocusState)
+
+        store.updateMembershipTier(.member)
+
+        let scheduledQuestion = try XCTUnwrap(store.nextQuestion())
+        let recommendation = try XCTUnwrap(store.studyFocusRecommendation)
+
+        XCTAssertEqual(scheduledQuestion.id, freshQuestion.id)
+        XCTAssertEqual(recommendation.questionID, scheduledQuestion.id)
+        XCTAssertEqual(recommendation.skillID, recursion.id)
+        XCTAssertEqual(recommendation.skillName, "Recursion fundamentals")
+        XCTAssertEqual(recommendation.title, "Recursion fundamentals")
+        XCTAssertFalse(store.hasReadyCheckpointSet)
+        XCTAssertFalse(recommendation.detail.localizedCaseInsensitiveContains("ready"))
+
+        guard case let .recommendation(sharedRecommendation)? = store.studyFocusState else {
+            return XCTFail("Expected the shared Next Focus state to expose the scheduler result.")
+        }
+        XCTAssertEqual(sharedRecommendation, recommendation)
+    }
+
+    @MainActor
+    func testStudyAssistRecommendationRequiresReviewedMap() {
+        let skill = SkillMapTopic(name: "Arrays")
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill], status: .suggested)
         let store = CheckpointStore(defaults: defaults)
         store.updateMembershipTier(.member)
         store.goal = goal
-        var arrays = TopicCompetency.initial(topic: "arrays", estimatedLevel: 1.4)
-        arrays.attempts = 4
-        arrays.correct = 1
-        arrays.incorrect = 3
-        var recursion = TopicCompetency.initial(topic: "recursion", estimatedLevel: 2.8)
-        recursion.attempts = 4
-        recursion.correct = 4
-        store.competencies = [recursion, arrays]
+        store.goalProfiles = [goal]
+        store.questions = [
+            makeQuestion(goal: goal, index: 1, topic: "Arrays", skillID: skill.id)
+        ]
 
-        let recommendation = try XCTUnwrap(store.studyFocusRecommendation)
-        XCTAssertTrue(recommendation.contains("arrays"))
-        XCTAssertTrue(recommendation.contains("another pass"))
-        XCTAssertFalse(recommendation.contains("%"))
+        XCTAssertNotNil(store.nextQuestion())
+        XCTAssertNil(store.studyFocusRecommendation)
+        XCTAssertNil(store.studyFocusState)
+    }
+
+    @MainActor
+    func testStudyAssistRecommendationDoesNotInventFocusWithoutSelectableQuestion() {
+        let skill = SkillMapTopic(name: "Arrays")
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill], status: .reviewed)
+        let store = CheckpointStore(defaults: defaults)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 1,
+                topic: "Arrays",
+                skillID: skill.id,
+                status: .correct,
+                timesAsked: 1,
+                timesCorrect: 1,
+                nextReviewAt: Date().addingTimeInterval(86_400)
+            )
+        ]
+
+        XCTAssertNil(store.nextQuestion())
+        XCTAssertNil(store.studyFocusRecommendation)
+        XCTAssertEqual(store.studyFocusState, .caughtUp)
+    }
+
+    @MainActor
+    func testStudyFocusStateClassifiesInventoryWithoutFalsePreparingCopy() {
+        let skill = SkillMapTopic(name: "Arrays")
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill], status: .reviewed)
+        let store = CheckpointStore(defaults: defaults)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        XCTAssertEqual(store.studyFocusState, .awaitingQuestion)
+
+        store.questionBatchState = .generating
+        XCTAssertTrue(store.isPreparingActiveGoalQuestions)
+        XCTAssertNil(store.studyFocusState)
+
+        store.questionBatchState = .failed
+        XCTAssertTrue(store.isQuestionGenerationBlockingPractice)
+        XCTAssertNil(store.studyFocusState)
+
+        store.questionBatchState = .idle
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 1,
+                topic: "Arrays",
+                skillID: skill.id,
+                status: .retired
+            )
+        ]
+        XCTAssertEqual(store.studyFocusState, .awaitingQuestion)
+
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 2,
+                topic: "Arrays",
+                skillID: skill.id,
+                timesAsked: 2
+            )
+        ]
+        XCTAssertEqual(store.studyFocusState, .awaitingQuestion)
+
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 3,
+                topic: "Off-map skill",
+                skillID: UUID()
+            )
+        ]
+        XCTAssertEqual(store.studyFocusState, .awaitingQuestion)
+
+        let futureMaintenance = makeQuestion(
+            goal: goal,
+            index: 4,
+            topic: "Arrays",
+            skillID: skill.id,
+            status: .correct,
+            timesAsked: 1,
+            timesCorrect: 1,
+            nextReviewAt: Date().addingTimeInterval(86_400)
+        )
+        store.questions = [futureMaintenance]
+        XCTAssertEqual(store.usableQuestionCount, 1)
+        XCTAssertNil(store.nextQuestion())
+        XCTAssertEqual(store.studyFocusState, .caughtUp)
+
+        let freshQuestion = makeQuestion(
+            goal: goal,
+            index: 5,
+            topic: "Arrays",
+            skillID: skill.id
+        )
+        store.questions = [freshQuestion]
+        guard case let .recommendation(recommendation)? = store.studyFocusState else {
+            return XCTFail("Expected a recommendation for selectable inventory.")
+        }
+        XCTAssertEqual(recommendation.questionID, freshQuestion.id)
+    }
+
+    @MainActor
+    func testStudyFocusPracticeHistoryIsStableAcrossDuplicateRowOrder() throws {
+        let skill = SkillMapTopic(name: "Array mechanics", aliases: ["array basics"])
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill], status: .reviewed)
+        let store = CheckpointStore(defaults: defaults)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 1,
+                topic: "Array mechanics",
+                skillID: skill.id
+            )
+        ]
+
+        let untouched = TopicCompetency.initial(
+            topic: "Array mechanics",
+            goalID: goal.id,
+            skillID: skill.id
+        )
+        var practiced = TopicCompetency.initial(
+            topic: "array basics",
+            goalID: goal.id
+        )
+        practiced.attempts = 3
+        practiced.correct = 2
+        practiced.incorrect = 1
+
+        for rows in [[untouched, practiced], [practiced, untouched]] {
+            store.competencies = rows
+            let recommendation = try XCTUnwrap(store.studyFocusRecommendation)
+            XCTAssertEqual(recommendation.title, "Array mechanics")
+            XCTAssertTrue(recommendation.detail.contains("sharpen"))
+        }
     }
 
     @MainActor

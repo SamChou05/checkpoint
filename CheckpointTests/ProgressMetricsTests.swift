@@ -395,7 +395,7 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         )
         hashProgress.attempts = 2
 
-        let rows = ProgressSkillRows.orderedCompetencies(
+        let rows = SkillMapReconciler.orderedCompetencies(
             for: skillMap,
             from: [graphProgress, hashProgress],
             goalID: goalID
@@ -405,6 +405,96 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(rows.map(\.skillID), [first.id, second.id, third.id])
         XCTAssertEqual(rows.map(\.attempts), [2, 0, 4])
         XCTAssertTrue(rows.allSatisfy { $0.goalID == goalID })
+    }
+
+    @MainActor
+    func testProgressSkillRowsDoNotDuplicateExplicitSkillEvidenceFromCompoundLegacyTopic() {
+        let goalID = UUID()
+        let arrays = SkillMapTopic(name: "Arrays")
+        let linkedLists = SkillMapTopic(name: "Linked lists")
+        let skillMap = GoalSkillMap(
+            topics: [arrays, linkedLists],
+            status: .reviewed
+        )
+        var legacy = TopicCompetency.initial(
+            topic: "Arrays, linked lists",
+            goalID: goalID,
+            skillID: arrays.id
+        )
+        legacy.attempts = 3
+        legacy.correct = 2
+        legacy.incorrect = 1
+
+        let displayCompetencies = SkillMapReconciler.mergedCompetenciesForDisplay([legacy])
+        let rows = SkillMapReconciler.orderedCompetencies(
+            for: skillMap,
+            from: [legacy],
+            goalID: goalID
+        )
+
+        XCTAssertEqual(displayCompetencies.count, 1)
+        XCTAssertEqual(rows.map(\.attempts), [3, 0])
+        XCTAssertEqual(rows.map(\.correct), [2, 0])
+        XCTAssertEqual(rows.map(\.incorrect), [1, 0])
+    }
+
+    @MainActor
+    func testCompetencyDisplayMergesRenamedRowsByStableSkillIdentity() throws {
+        let goalID = UUID()
+        let skillID = UUID()
+        var legacyName = TopicCompetency.initial(
+            topic: "Array basics",
+            goalID: goalID,
+            skillID: skillID
+        )
+        legacyName.attempts = 2
+        legacyName.correct = 1
+        legacyName.incorrect = 1
+
+        var currentName = TopicCompetency.initial(
+            topic: "Array mechanics",
+            goalID: goalID,
+            skillID: skillID
+        )
+        currentName.attempts = 3
+        currentName.correct = 2
+        currentName.partial = 1
+
+        let displayCompetencies = SkillMapReconciler.mergedCompetenciesForDisplay([
+            legacyName,
+            currentName
+        ])
+        let merged = try XCTUnwrap(displayCompetencies.first)
+
+        XCTAssertEqual(displayCompetencies.count, 1)
+        XCTAssertEqual(merged.skillID, skillID)
+        XCTAssertEqual(merged.attempts, 5)
+        XCTAssertEqual(merged.correct, 3)
+        XCTAssertEqual(merged.partial, 1)
+        XCTAssertEqual(merged.incorrect, 1)
+    }
+
+    @MainActor
+    func testCompetencyDisplayKeepsSameNamedDistinctSkillsSeparate() {
+        let goalID = UUID()
+        var first = TopicCompetency.initial(
+            topic: "Model evaluation",
+            goalID: goalID,
+            skillID: UUID()
+        )
+        first.attempts = 2
+        var second = TopicCompetency.initial(
+            topic: "Model evaluation",
+            goalID: goalID,
+            skillID: UUID()
+        )
+        second.attempts = 5
+
+        let merged = SkillMapReconciler.mergedCompetenciesForDisplay([first, second])
+
+        XCTAssertEqual(merged.count, 2)
+        XCTAssertEqual(Set(merged.compactMap(\.skillID)).count, 2)
+        XCTAssertEqual(Set(merged.map(\.attempts)), [2, 5])
     }
 
     func testProgressDashboardSummaryRecognizesAllStrongSkills() {
@@ -485,9 +575,8 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertTrue(store.isQuestionGenerationBlockingPractice)
     }
 
-    func testProgressFocusRecommendationDistinguishesReadyAndScheduledReview() throws {
+    func testStudyFocusRecommendationExplainsEachReviewState() throws {
         let goalID = UUID()
-        let now = Date(timeIntervalSince1970: 1_700_000_000)
         var question = CheckpointQuestion(
             goalID: goalID,
             prompt: "Explain recursion.",
@@ -500,35 +589,65 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
             sourcePrompt: "Recursion"
         )
 
-        question.nextReviewAt = now.addingTimeInterval(-60)
-        let ready = try XCTUnwrap(
-            ProgressFocusRecommendation(
+        let missed = try XCTUnwrap(
+            StudyFocusRecommendation(
                 question: question,
+                skillID: nil,
                 skillName: "Recursion",
-                competency: nil,
-                now: now
+                hasPracticeHistory: true
             )
         )
-        XCTAssertEqual(ready.title, "Review Recursion")
-        XCTAssertTrue(ready.detail.contains("ready"))
+        XCTAssertEqual(missed.title, "Recursion")
+        XCTAssertEqual(missed.detail, "A missed question is ready in your review plan.")
 
-        question.nextReviewAt = now.addingTimeInterval(60)
-        let scheduled = try XCTUnwrap(
-            ProgressFocusRecommendation(
+        question.status = .due
+        let partial = try XCTUnwrap(
+            StudyFocusRecommendation(
                 question: question,
+                skillID: nil,
                 skillName: "Recursion",
-                competency: nil,
-                now: now
+                hasPracticeHistory: true
             )
         )
-        XCTAssertEqual(scheduled.title, "Return to Recursion")
-        XCTAssertFalse(scheduled.detail.contains("ready"))
+        XCTAssertEqual(partial.title, "Recursion")
+        XCTAssertEqual(partial.detail, "A partial answer is ready in your review plan.")
+
+        question.status = .skipped
+        let skipped = try XCTUnwrap(
+            StudyFocusRecommendation(
+                question: question,
+                skillID: nil,
+                skillName: "Recursion",
+                hasPracticeHistory: true
+            )
+        )
+        XCTAssertEqual(skipped.title, "Recursion")
+
+        question.status = .correct
+        let maintenance = try XCTUnwrap(
+            StudyFocusRecommendation(
+                question: question,
+                skillID: nil,
+                skillName: "Recursion",
+                hasPracticeHistory: true
+            )
+        )
+        XCTAssertEqual(maintenance.title, "Recursion")
+
+        question.status = .retired
+        XCTAssertNil(
+            StudyFocusRecommendation(
+                question: question,
+                skillID: nil,
+                skillName: "Recursion",
+                hasPracticeHistory: true
+            )
+        )
     }
 
-    func testProgressFocusRecommendationDoesNotCallFutureDueReviewReady() throws {
+    func testStudyFocusRecommendationDistinguishesNewSkillSignalState() throws {
         let goalID = UUID()
-        let now = Date(timeIntervalSince1970: 1_700_000_000)
-        var question = CheckpointQuestion(
+        let question = CheckpointQuestion(
             goalID: goalID,
             prompt: "Explain recursion.",
             expectedAnswer: "A function calls itself.",
@@ -536,34 +655,73 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
             topic: "Recursion",
             difficulty: 2,
             format: .shortAnswer,
-            status: .due,
+            status: .new,
             sourcePrompt: "Recursion"
+        )
+
+        let firstSignal = try XCTUnwrap(
+            StudyFocusRecommendation(
+                question: question,
+                skillID: nil,
+                skillName: "Recursion",
+                hasPracticeHistory: false
+            )
+        )
+        let established = try XCTUnwrap(
+            StudyFocusRecommendation(
+                question: question,
+                skillID: nil,
+                skillName: "Recursion",
+                hasPracticeHistory: true
+            )
+        )
+
+        XCTAssertEqual(firstSignal.title, "Recursion")
+        XCTAssertTrue(firstSignal.detail.contains("first signal"))
+        XCTAssertEqual(established.title, "Recursion")
+        XCTAssertTrue(established.detail.contains("sharpen"))
+    }
+
+    func testStudyFocusRecommendationDistinguishesReadyAndScheduledReview() throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        var question = CheckpointQuestion(
+            goalID: UUID(),
+            prompt: "Explain recursion.",
+            expectedAnswer: "A function calls itself.",
+            explanation: "Recursive calls reduce a problem.",
+            topic: "Recursion",
+            difficulty: 2,
+            format: .shortAnswer,
+            status: .incorrect,
+            nextReviewAt: now.addingTimeInterval(-60),
+            sourcePrompt: "Recursion"
+        )
+
+        let ready = try XCTUnwrap(
+            StudyFocusRecommendation(
+                question: question,
+                skillID: nil,
+                skillName: "Recursion",
+                hasPracticeHistory: true,
+                now: now
+            )
         )
 
         question.nextReviewAt = now.addingTimeInterval(60)
         let scheduled = try XCTUnwrap(
-            ProgressFocusRecommendation(
+            StudyFocusRecommendation(
                 question: question,
+                skillID: nil,
                 skillName: "Recursion",
-                competency: nil,
+                hasPracticeHistory: true,
                 now: now
             )
         )
-        XCTAssertEqual(scheduled.title, "Return to Recursion")
-        XCTAssertTrue(scheduled.detail.contains("future checkpoint"))
-        XCTAssertFalse(scheduled.detail.contains("ready"))
 
-        question.nextReviewAt = now.addingTimeInterval(-60)
-        let ready = try XCTUnwrap(
-            ProgressFocusRecommendation(
-                question: question,
-                skillName: "Recursion",
-                competency: nil,
-                now: now
-            )
-        )
-        XCTAssertEqual(ready.title, "Refresh Recursion")
         XCTAssertTrue(ready.detail.contains("ready"))
+        XCTAssertFalse(ready.detail.contains("scheduled"))
+        XCTAssertTrue(scheduled.detail.contains("scheduled"))
+        XCTAssertFalse(scheduled.detail.contains("ready"))
     }
 
     @MainActor

@@ -392,9 +392,12 @@ struct SkillMapReconciler {
         var mergedByTopic: [String: TopicCompetency] = [:]
 
         for competency in competencies {
-            let topics = competencyTopics(from: competency.topic)
+            let topics = competency.skillID == nil
+                ? competencyTopics(from: competency.topic)
+                : [competency.topic]
             for topic in topics {
-                let key = competencyTopicKey(topic)
+                let key = competency.skillID.map { "skill:\($0.uuidString)" }
+                    ?? "topic:\(competencyTopicKey(topic))"
                 var normalizedCompetency = competency
                 normalizedCompetency.topic = topic
 
@@ -407,6 +410,41 @@ struct SkillMapReconciler {
         }
 
         return Array(mergedByTopic.values)
+    }
+
+    static func orderedCompetencies(
+        for skillMap: GoalSkillMap,
+        from competencies: [TopicCompetency],
+        goalID: Goal.ID
+    ) -> [TopicCompetency] {
+        skillMap.topics.map { topic in
+            let matchingCompetencies = competencies.filter { competency in
+                if let skillID = competency.skillID {
+                    return skillID == topic.id
+                }
+
+                return skillMapTopic(
+                    matching: competency.topic,
+                    in: skillMap
+                )?.id == topic.id
+            }
+
+            guard var resolved = matchingCompetencies.first else {
+                return TopicCompetency.initial(
+                    topic: topic.name,
+                    goalID: goalID,
+                    skillID: topic.id
+                )
+            }
+
+            for duplicate in matchingCompetencies.dropFirst() {
+                resolved = mergedCompetency(resolved, with: duplicate)
+            }
+            resolved.topic = topic.name
+            resolved.goalID = goalID
+            resolved.skillID = topic.id
+            return resolved
+        }
     }
 
     static func mergedCompetency(_ lhs: TopicCompetency, with rhs: TopicCompetency) -> TopicCompetency {

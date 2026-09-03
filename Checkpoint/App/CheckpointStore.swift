@@ -271,6 +271,19 @@ final class CheckpointStore {
         SkillMapReconciler.mergedCompetenciesForDisplay(activeCompetencies)
     }
 
+    var activeProgressCompetencies: [TopicCompetency] {
+        guard let goal,
+              let skillMap = activeDerivedSkillMap else {
+            return sortedCompetencies
+        }
+
+        return SkillMapReconciler.orderedCompetencies(
+            for: skillMap,
+            from: activeCompetencies,
+            goalID: goal.id
+        )
+    }
+
     var activeQuestionReports: [QuestionQualityReport] {
         guard let goalID = goal?.id else { return [] }
         return questionReports.filter { $0.goalID == goalID }
@@ -799,25 +812,48 @@ final class CheckpointStore {
         return reason
     }
 
-    var studyFocusRecommendation: String? {
-        guard isMember, goal != nil else { return nil }
-        let selector = questionSelector
-
-        if let missedTopic = activeQuestions
-            .filter({ $0.status == .incorrect })
-            .sorted(by: selector.sortByReviewPriority)
-            .first?
-            .topic {
-            return "\(missedTopic) has a few missed questions ready for review."
+    var studyFocusRecommendation: StudyFocusRecommendation? {
+        guard canUse(.adaptiveStudyAssist),
+              let skillMap = activeDerivedSkillMap,
+              skillMap.status == .reviewed,
+              let question = nextQuestion() else {
+            return nil
         }
 
-        guard let competency = sortedCompetencies.first else { return nil }
-
-        if competency.attempts == 0 {
-            return "Start with \(competency.topic) to build your progress."
+        let mappedSkill = SkillMapReconciler.skillMapTopic(
+            matching: question,
+            in: skillMap
+        )
+        let skillName = mappedSkill?.name ?? question.topic
+        let skillNameKey = SkillMapReconciler.competencyTopicKey(skillName)
+        let hasPracticeHistory = activeProgressCompetencies.contains { candidate in
+            if let mappedSkill, candidate.skillID == mappedSkill.id {
+                return candidate.attempts > 0
+            }
+            return candidate.attempts > 0 &&
+                SkillMapReconciler.competencyTopicKey(candidate.topic) == skillNameKey
         }
 
-        return "\(competency.topic) would benefit from another pass."
+        return StudyFocusRecommendation(
+            question: question,
+            skillID: mappedSkill?.id ?? question.skillID,
+            skillName: skillName,
+            hasPracticeHistory: hasPracticeHistory
+        )
+    }
+
+    var studyFocusState: StudyFocusState? {
+        guard canUse(.adaptiveStudyAssist),
+              activeDerivedSkillMap?.status == .reviewed,
+              !isPreparingActiveGoalQuestions,
+              !isQuestionGenerationBlockingPractice else {
+            return nil
+        }
+        if let recommendation = studyFocusRecommendation {
+            return .recommendation(recommendation)
+        }
+
+        return usableQuestionCount > 0 ? .caughtUp : .awaitingQuestion
     }
 
     var questionLevelRecommendation: QuestionLevelRecommendation? {

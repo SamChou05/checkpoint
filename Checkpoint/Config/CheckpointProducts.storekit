@@ -92,7 +92,7 @@
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Multiple goals, ongoing practice generation, broader checkpoint variety, and guided review.",
+              "description" : "Multiple goals, ongoing practice generation, broader checkpoint variety, and Next Focus.",
               "displayName" : "Checkpoint Pro Monthly",
               "locale" : "en_US"
             }
@@ -117,7 +117,7 @@
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Multiple goals, ongoing practice generation, broader checkpoint variety, and guided review.",
+              "description" : "Multiple goals, ongoing practice generation, broader checkpoint variety, and Next Focus.",
               "displayName" : "Checkpoint Pro Annual",
               "locale" : "en_US"
             }

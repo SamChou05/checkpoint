@@ -81,103 +81,6 @@ struct ProgressDashboardNarrative: Equatable {
     }
 }
 
-@MainActor
-struct ProgressSkillRows {
-    static func orderedCompetencies(
-        for skillMap: GoalSkillMap,
-        from competencies: [TopicCompetency],
-        goalID: Goal.ID
-    ) -> [TopicCompetency] {
-        skillMap.topics.map { topic in
-            let matchingCompetencies = competencies.filter { competency in
-                if let skillID = competency.skillID {
-                    return skillID == topic.id
-                }
-
-                return SkillMapReconciler.skillMapTopic(
-                    matching: competency.topic,
-                    in: skillMap
-                )?.id == topic.id
-            }
-
-            guard var resolved = matchingCompetencies.first else {
-                return TopicCompetency.initial(
-                    topic: topic.name,
-                    goalID: goalID,
-                    skillID: topic.id
-                )
-            }
-
-            for duplicate in matchingCompetencies.dropFirst() {
-                resolved = SkillMapReconciler.mergedCompetency(resolved, with: duplicate)
-            }
-            resolved.topic = topic.name
-            resolved.goalID = goalID
-            resolved.skillID = topic.id
-            return resolved
-        }
-    }
-}
-
-struct ProgressFocusRecommendation: Equatable {
-    var eyebrow: String
-    var title: String
-    var detail: String
-    var systemImage: String
-
-    init?(
-        question: CheckpointQuestion,
-        skillName: String,
-        competency: TopicCompetency?,
-        now: Date = Date()
-    ) {
-        eyebrow = "GUIDED REVIEW"
-
-        switch question.status {
-        case .due:
-            if (question.nextReviewAt ?? .distantPast) <= now {
-                title = "Refresh \(skillName)"
-                detail = "A scheduled review is ready for your next checkpoint."
-                systemImage = "clock.arrow.circlepath"
-            } else {
-                title = "Return to \(skillName)"
-                detail = "A partial answer is scheduled for another pass in a future checkpoint."
-                systemImage = "arrow.turn.down.right"
-            }
-        case .incorrect:
-            if (question.nextReviewAt ?? .distantPast) <= now {
-                title = "Review \(skillName)"
-                detail = "A previous answer needs review and is ready for another pass."
-                systemImage = "arrow.counterclockwise.circle.fill"
-            } else {
-                title = "Return to \(skillName)"
-                detail = "This skill needs another pass in your next checkpoint."
-                systemImage = "arrow.turn.down.right"
-            }
-        case .new:
-            if competency?.attempts == 0 || competency == nil {
-                title = "Start \(skillName)"
-                detail = "Your next checkpoint can establish the first signal for this skill."
-                systemImage = "sparkles"
-            } else {
-                title = "Keep building \(skillName)"
-                detail = "Your next checkpoint can add another useful signal here."
-                systemImage = "arrow.up.right"
-            }
-        case .skipped:
-            title = "Return to \(skillName)"
-            detail = "A skipped question is available for another look."
-            systemImage = "arrow.uturn.backward.circle.fill"
-        case .correct:
-            title = "Refresh \(skillName)"
-            detail = "A maintenance check is ready to keep this skill current."
-            systemImage = "arrow.triangle.2.circlepath"
-        case .retired:
-            return nil
-        }
-    }
-}
-
 private struct ProgressScreenSnapshot: Equatable {
     enum Stage: Equatable {
         case noGoal
@@ -212,16 +115,7 @@ struct CompetencyView: View {
     }
 
     private var competencies: [TopicCompetency] {
-        if let goal = store.goal,
-           let skillMap = store.activeDerivedSkillMap {
-            return ProgressSkillRows.orderedCompetencies(
-                for: skillMap,
-                from: store.visibleActiveCompetencies,
-                goalID: goal.id
-            )
-        }
-
-        return store.sortedCompetencies
+        store.activeProgressCompetencies
     }
 
     private var dashboardSummary: ProgressDashboardSummary {
@@ -235,27 +129,8 @@ struct CompetencyView: View {
         ProgressDashboardNarrative(summary: dashboardSummary)
     }
 
-    private var focusRecommendation: ProgressFocusRecommendation? {
-        guard store.canUse(.adaptiveStudyAssist),
-              let question = store.nextQuestion() else {
-            return nil
-        }
-
-        let mappedSkill = store.activeDerivedSkillMap.flatMap { skillMap in
-            SkillMapReconciler.skillMapTopic(matching: question, in: skillMap)
-        }
-        let competency = competencies.first { candidate in
-            if let mappedSkill {
-                return candidate.skillID == mappedSkill.id
-            }
-            return SkillMapTopic.canonicalIdentityKey(candidate.topic) ==
-                SkillMapTopic.canonicalIdentityKey(question.topic)
-        }
-        return ProgressFocusRecommendation(
-            question: question,
-            skillName: mappedSkill?.name ?? question.topic,
-            competency: competency
-        )
+    private var focusState: StudyFocusState? {
+        store.studyFocusState
     }
 
     private var screenSnapshot: ProgressScreenSnapshot {
@@ -308,9 +183,7 @@ struct CompetencyView: View {
 
                         progressHero
 
-                        if let focusRecommendation {
-                            guidedReviewPanel(focusRecommendation)
-                        }
+                        nextFocusPanel
 
                         focusAreasPanel(title: "Focus areas")
 
@@ -505,9 +378,7 @@ struct CompetencyView: View {
             .foregroundStyle(heroText)
             .monospacedDigit()
             .contentTransition(.numericText())
-            .accessibilityLabel(
-                "\(dashboardSummary.practicedSkillCount) of \(dashboardSummary.totalSkillCount) skills practiced"
-            )
+            .accessibilityLabel(coverageAccessibilityLabel)
     }
 
     private var coverageLabel: some View {
@@ -515,7 +386,7 @@ struct CompetencyView: View {
             Text(
                 store.activeDerivedSkillMap?.status == .suggested
                     ? "DRAFT SKILL COVERAGE"
-                    : "SKILL COVERAGE"
+                    : "ACTIVE SKILL COVERAGE"
             )
                 .font(.caption2.weight(.bold))
                 .tracking(1)
@@ -526,6 +397,13 @@ struct CompetencyView: View {
                 .foregroundStyle(heroSecondaryText)
         }
         .accessibilityHidden(true)
+    }
+
+    private var coverageAccessibilityLabel: String {
+        let mapState = store.activeDerivedSkillMap?.status == .suggested
+            ? "Draft learning map"
+            : "Active learning map"
+        return "\(mapState), \(dashboardSummary.practicedSkillCount) of \(dashboardSummary.totalSkillCount) skills practiced"
     }
 
     private var coverageTrack: some View {
@@ -666,7 +544,37 @@ struct CompetencyView: View {
         dashboardSummary.lastPracticedValue()
     }
 
-    private func guidedReviewPanel(_ recommendation: ProgressFocusRecommendation) -> some View {
+    private var nextFocusPanel: some View {
+        Group {
+            if store.activeDerivedSkillMap?.status == .reviewed {
+                if !store.canUse(.adaptiveStudyAssist) {
+                    guidedReviewUpgradePanel
+                        .transition(nextFocusTransition)
+                } else if let focusState {
+                    switch focusState {
+                    case let .recommendation(recommendation):
+                        guidedReviewPanel(recommendation)
+                            .transition(nextFocusTransition)
+                    case .awaitingQuestion, .caughtUp:
+                        guidedReviewStatusPanel(focusState)
+                            .transition(nextFocusTransition)
+                    }
+                }
+            }
+        }
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion),
+            value: focusState
+        )
+    }
+
+    private var nextFocusTransition: AnyTransition {
+        reduceMotion
+            ? .identity
+            : .opacity.combined(with: .scale(scale: 0.985))
+    }
+
+    private func guidedReviewPanel(_ recommendation: StudyFocusRecommendation) -> some View {
         SectionPanel {
             Group {
                 if usesStackedTypeLayout {
@@ -681,11 +589,141 @@ struct CompetencyView: View {
                     }
                 }
             }
+        }
+    }
+
+    private var guidedReviewUpgradePanel: some View {
+        Button {
+            store.requestMembership(for: .adaptiveStudyAssist)
+        } label: {
+            SectionPanel {
+                Group {
+                    if usesStackedTypeLayout {
+                        VStack(alignment: .leading, spacing: 14) {
+                            HStack {
+                                guidedReviewUpgradeIcon
+                                Spacer(minLength: 8)
+                                guidedReviewUpgradeChevron
+                            }
+                            guidedReviewUpgradeCopy
+                        }
+                    } else {
+                        HStack(alignment: .top, spacing: 14) {
+                            guidedReviewUpgradeIcon
+                            guidedReviewUpgradeCopy
+                            Spacer(minLength: 4)
+                            guidedReviewUpgradeChevron
+                        }
+                    }
+                }
+            }
+        }
+        .buttonStyle(CheckpointPressButtonStyle())
+        .accessibilityLabel("Next Focus, Pro. Know what to practice next.")
+        .accessibilityHint("Opens Checkpoint Pro")
+    }
+
+    private var guidedReviewUpgradeIcon: some View {
+        Image(systemName: "scope")
+            .font(.system(size: 18, weight: .bold))
+            .foregroundStyle(CheckpointTheme.blue)
+            .frame(width: 44, height: 44)
+            .background(
+                CheckpointTheme.blue.opacity(0.11),
+                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private var guidedReviewUpgradeCopy: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 7) {
+                Text("NEXT FOCUS")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.85)
+
+                Text("PRO")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.55)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 4)
+                    .background(CheckpointTheme.blue.opacity(0.11), in: Capsule())
+            }
+            .foregroundStyle(CheckpointTheme.blue)
+
+            Text("Know what to practice next")
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text("Pro uses your answer history and review schedule to surface one clear priority.")
+                .font(.subheadline)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var guidedReviewUpgradeChevron: some View {
+        Image(systemName: "chevron.right")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.blue)
+            .accessibilityHidden(true)
+    }
+
+    private func guidedReviewStatusPanel(_ state: StudyFocusState) -> some View {
+        SectionPanel {
+            Group {
+                if usesStackedTypeLayout {
+                    VStack(alignment: .leading, spacing: 14) {
+                        guidedReviewStatusIcon(state.systemImage)
+                        guidedReviewStatusCopy(state)
+                    }
+                } else {
+                    HStack(alignment: .top, spacing: 14) {
+                        guidedReviewStatusIcon(state.systemImage)
+                        guidedReviewStatusCopy(state)
+                    }
+                }
+            }
+        }
+    }
+
+    private func guidedReviewStatusIcon(_ systemImage: String) -> some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 18, weight: .bold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .frame(width: 44, height: 44)
+            .background(
+                CheckpointTheme.teal.opacity(0.11),
+                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private func guidedReviewStatusCopy(_ state: StudyFocusState) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("NEXT FOCUS")
+                .font(.caption2.weight(.bold))
+                .tracking(0.85)
+                .foregroundStyle(CheckpointTheme.teal)
+                .accessibilityAddTraits(.isHeader)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(state.title)
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(state.detail)
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             .accessibilityElement(children: .combine)
         }
     }
 
-    private func guidedReviewIcon(_ recommendation: ProgressFocusRecommendation) -> some View {
+    private func guidedReviewIcon(_ recommendation: StudyFocusRecommendation) -> some View {
         Image(systemName: recommendation.systemImage)
             .font(.system(size: 18, weight: .bold))
             .foregroundStyle(CheckpointTheme.blue)
@@ -697,22 +735,26 @@ struct CompetencyView: View {
             .accessibilityHidden(true)
     }
 
-    private func guidedReviewCopy(_ recommendation: ProgressFocusRecommendation) -> some View {
+    private func guidedReviewCopy(_ recommendation: StudyFocusRecommendation) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(recommendation.eyebrow)
+            Text("NEXT FOCUS")
                 .font(.caption2.weight(.bold))
                 .tracking(0.85)
                 .foregroundStyle(CheckpointTheme.blue)
+                .accessibilityAddTraits(.isHeader)
 
-            Text(recommendation.title)
-                .font(.headline)
-                .foregroundStyle(CheckpointTheme.text)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(recommendation.title)
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
 
-            Text(recommendation.detail)
-                .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+                Text(recommendation.detail)
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .accessibilityElement(children: .combine)
         }
     }
 
@@ -756,7 +798,7 @@ struct CompetencyView: View {
                     }
                 }
 
-                Text("Confirm or edit these skills so future practice and progress stay accurate.")
+                Text("Confirm or edit these skills so future questions and progress signals stay aligned.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -789,9 +831,10 @@ struct CompetencyView: View {
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("Review your suggested skills")
+                Text("Draft learning map")
                     .font(.headline)
                     .foregroundStyle(CheckpointTheme.text)
+                    .accessibilityAddTraits(.isHeader)
 
                 Text("A quick review keeps every signal meaningful.")
                     .font(.footnote)
@@ -802,7 +845,7 @@ struct CompetencyView: View {
     }
 
     private var suggestedMapBadge: some View {
-        Text("SUGGESTED")
+        Text("DRAFT")
             .font(.caption2.weight(.bold))
             .tracking(0.65)
             .foregroundStyle(CheckpointTheme.blue)
@@ -840,7 +883,7 @@ struct CompetencyView: View {
                     }
                 }
 
-                SecondaryActionButton(title: "Review skill map", systemImage: "slider.horizontal.3") {
+                SecondaryActionButton(title: "Edit skill map", systemImage: "slider.horizontal.3") {
                     isSkillMapEditorPresented = true
                 }
 
@@ -869,9 +912,10 @@ struct CompetencyView: View {
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("Reviewed learning map")
+                Text("Active learning map")
                     .font(.headline)
                     .foregroundStyle(CheckpointTheme.text)
+                    .accessibilityAddTraits(.isHeader)
 
                 Text("\(skillMap.topics.count) active skills · updated \(skillMap.updatedAt.formatted(.dateTime.month(.abbreviated).day()))")
                     .font(.footnote)
@@ -882,7 +926,7 @@ struct CompetencyView: View {
     }
 
     private var reviewedMapBadge: some View {
-        Text("REVIEWED")
+        Text("ACTIVE")
             .font(.caption2.weight(.bold))
             .tracking(0.65)
             .foregroundStyle(CheckpointTheme.teal)
