@@ -67,6 +67,7 @@ final class CheckpointStore {
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
     var questionBankSyncIntents: [QuestionBankSyncIntent] = []
+    var skillMapEvolutionIntents: [SkillMapEvolutionIntent] = []
     private(set) var hasNoPersistedAppData = true
     private(set) var requiresPersistenceEraseRecovery = false
 
@@ -81,6 +82,7 @@ final class CheckpointStore {
     @ObservationIgnored private var questionBankPollingGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankPollingTokens: [Goal.ID: UUID] = [:]
     @ObservationIgnored private var questionBankSynchronizationGoalIDs: Set<Goal.ID> = []
+    @ObservationIgnored private var skillMapEvolutionGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private let questionBankPollingDelaysNanoseconds: [UInt64]
     @ObservationIgnored private var durableQuestionBankUnavailableForLifecycle = false
     @ObservationIgnored private static let initialCheckpointReadyTargetCount = 5
@@ -98,6 +100,19 @@ final class CheckpointStore {
     @ObservationIgnored private static let maximumExactQuestionAskCount = 2
     @ObservationIgnored private static let failedCheckpointCooldown: TimeInterval = 5 * 60
     @ObservationIgnored private static let maximumClaimsPerSync = 4
+    @ObservationIgnored private static let maximumEmptyFillCycleRetries = 1
+    @ObservationIgnored private static let evolutionMinimumAttempts = 10
+    @ObservationIgnored private static let evolutionMinimumMasteryPercent = 85
+    @ObservationIgnored private static let evolutionMinimumCorrectStreak = 3
+    @ObservationIgnored private static let evolutionRecentAttemptCount = 4
+    @ObservationIgnored private static let evolutionMinimumRecentEvidenceCount = 4
+    @ObservationIgnored private static let evolutionMinimumRecentScore = 0.85
+    @ObservationIgnored private static let evolutionMinimumObjectiveScore = 0.75
+    @ObservationIgnored private static let evolutionMaximumSkillsPerCycle = 2
+    @ObservationIgnored private static let evolutionEvidenceMaximumAge: TimeInterval = 30 * 24 * 60 * 60
+    @ObservationIgnored private static let evolutionRetryBackoff: TimeInterval = 6 * 60 * 60
+    @ObservationIgnored private static let evolutionRecentAttemptLimitPerSkill = 15
+    @ObservationIgnored private static let evolutionMaximumInvalidResponseAttempts = 2
     @ObservationIgnored private static let defaultQuestionBankPollingDelaysNanoseconds: [UInt64] =
         [1, 2, 4, 8, 16, 30, 60].map { $0 * 1_000_000_000 }
 
@@ -143,6 +158,7 @@ final class CheckpointStore {
             )
         }
         removeLegacyLocalQuestionBankIfNeeded()
+        resumeSkillMapEvolutionIfNeeded()
         resumeQuestionBankMaintenanceIfNeeded()
     }
 
@@ -237,7 +253,18 @@ final class CheckpointStore {
 
     var activeCompetencies: [TopicCompetency] {
         guard let goalID = goal?.id else { return [] }
-        return competencies.filter { $0.goalID == goalID || $0.goalID == nil }
+        let goalCompetencies = competencies.filter { $0.goalID == goalID || $0.goalID == nil }
+        guard let skillMap = goal?.derivedSkillMap else { return goalCompetencies }
+        let activeSkillIDs = Set(skillMap.topics.map(\.id))
+        return goalCompetencies.filter { competency in
+            if let skillID = competency.skillID {
+                return activeSkillIDs.contains(skillID)
+            }
+            return SkillMapReconciler.skillMapTopic(
+                matching: competency.topic,
+                in: skillMap
+            ) != nil
+        }
     }
 
     var visibleActiveCompetencies: [TopicCompetency] {
@@ -265,6 +292,32 @@ final class CheckpointStore {
         goal?.derivedSkillMap
     }
 
+    var archivedActiveSkillTopics: [ArchivedSkillMapTopic] {
+        goal?.derivedSkillMap?.archivedTopics.sorted {
+            if $0.archivedAt == $1.archivedAt {
+                return $0.topic.name < $1.topic.name
+            }
+            return $0.archivedAt > $1.archivedAt
+        } ?? []
+    }
+
+    func updateActiveSkillMapEvolutionEnabled(_ isEnabled: Bool) {
+        guard var updatedGoal = goal, var skillMap = updatedGoal.derivedSkillMap else { return }
+        guard skillMap.evolutionEnabled != isEnabled else { return }
+        skillMap.evolutionEnabled = isEnabled
+        skillMap.updatedAt = Date()
+        updatedGoal.derivedSkillMap = skillMap
+        storeGoalProfile(updatedGoal)
+        if !isEnabled {
+            removeSkillMapEvolutionIntent(for: updatedGoal.id)
+        }
+        save()
+        publishShieldContext()
+        if isEnabled {
+            _ = scheduleSkillMapEvolutionIfNeeded(for: updatedGoal)
+        }
+    }
+
     var isBuildingActiveSkillMap: Bool {
         guard let goal, goal.derivedSkillMap == nil else {
             return false
@@ -273,7 +326,7 @@ final class CheckpointStore {
         return questionBatchState == .generating ||
             backgroundGenerationGoalIDs.contains(goal.id) ||
             questionBankTopOffGoalIDs.contains(goal.id) ||
-            questionBankSyncIntents.contains { $0.goalID == goal.id }
+            hasPendingQuestionBankSync(for: goal)
     }
 
     var activeSkillMapNeedsAttention: Bool {
@@ -301,7 +354,16 @@ final class CheckpointStore {
             proposedTopics,
             preserving: existingMap
         )
-        guard (3...6).contains(reviewedTopics.count) else {
+        let archivedSkillIDs = Set(existingMap.archivedTopics.map(\.id))
+        guard (3...6).contains(reviewedTopics.count),
+              !SkillMapReconciler.hasArchivedSkillCollision(
+                topics: reviewedTopics,
+                archivedTopics: existingMap.archivedTopics
+              ),
+              !SkillMapReconciler.hasRemovedSkillNameCollision(
+                topics: reviewedTopics,
+                existingTopics: existingMap.topics
+              ) else {
             return false
         }
 
@@ -326,15 +388,30 @@ final class CheckpointStore {
         }
 
         let reviewedSkillIDs = Set(reviewedTopics.map(\.id))
+        let newlyArchivedTopics = existingMap.topics.compactMap { topic -> ArchivedSkillMapTopic? in
+            guard !reviewedSkillIDs.contains(topic.id), !archivedSkillIDs.contains(topic.id) else {
+                return nil
+            }
+            return archivedSkillEntry(
+                for: topic,
+                goalID: updatedGoal.id,
+                reason: .userRemoved,
+                successorSkillIDs: []
+            )
+        }
         updatedGoal.derivedSkillMap = GoalSkillMap(
             topics: reviewedTopics,
+            archivedTopics: existingMap.archivedTopics + newlyArchivedTopics,
             status: .reviewed,
             version: existingMap.version + 1,
             provenance: .userEdited,
+            evolutionEnabled: existingMap.evolutionEnabled,
+            lastEvolvedAt: existingMap.lastEvolvedAt,
             createdAt: existingMap.createdAt,
             updatedAt: Date()
         )
         storeGoalProfile(updatedGoal)
+        removeSkillMapEvolutionIntent(for: updatedGoal.id)
 
         for index in questions.indices where questions[index].goalID == updatedGoal.id {
             guard let previousSkill = SkillMapReconciler.skillMapTopic(
@@ -561,13 +638,71 @@ final class CheckpointStore {
         targetCount: Int? = nil,
         allowsEarlyCorrectReuse: Bool = false
     ) -> Int {
-        max(
+        let inventoryDeficit = max(
             0,
             (targetCount ?? questionBankTargetCount) - readyQuestionCount(
                 for: profile,
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
             )
         )
+        return max(
+            inventoryDeficit,
+            skillQuestionCoverageDeficit(
+                for: profile,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            )
+        )
+    }
+
+    private func skillQuestionCoverageDeficit(
+        for profile: Goal,
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> Int {
+        skillQuestionCoverageDeficitBySkillID(
+            for: profile,
+            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+        ).values.reduce(0, +)
+    }
+
+    private func skillQuestionCoverageDeficitBySkillID(
+        for profile: Goal,
+        allowsEarlyCorrectReuse: Bool = false
+    ) -> [SkillMapTopic.ID: Int] {
+        guard let skillMap = profile.derivedSkillMap else { return [:] }
+
+        let selector = questionSelector
+        let now = Date()
+        var readyCountBySkillID: [SkillMapTopic.ID: Int] = [:]
+        var readyObjectiveIDsBySkillID: [SkillMapTopic.ID: Set<SkillMapObjective.ID>] = [:]
+        for question in questions where question.goalID == profile.id &&
+            question.difficulty >= profile.minimumQuestionDifficulty &&
+            selector.isReadyQuestionBankCandidate(
+                question,
+                now: now,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            ) {
+            guard let skill = SkillMapReconciler.skillMapTopic(matching: question, in: skillMap) else {
+                continue
+            }
+            readyCountBySkillID[skill.id, default: 0] += 1
+            let canonicalQuestion = SkillMapReconciler.canonicalizedQuestion(
+                question,
+                for: skill
+            )
+            if let objectiveID = canonicalQuestion.objectiveID {
+                readyObjectiveIDsBySkillID[skill.id, default: []].insert(objectiveID)
+            }
+        }
+        return Dictionary(uniqueKeysWithValues: skillMap.topics.map { skill in
+            let skillFloorDeficit = max(0, 2 - readyCountBySkillID[skill.id, default: 0])
+            let coveredObjectiveIDs = readyObjectiveIDsBySkillID[skill.id, default: []]
+            let objectiveDeficit = skill.objectives.filter {
+                !coveredObjectiveIDs.contains($0.id)
+            }.count
+            // One new question can satisfy both the skill floor and one missing
+            // objective, so the required count is the larger of the two deficits.
+            return (skill.id, max(skillFloorDeficit, objectiveDeficit))
+        })
     }
 
     func questionBankReadinessWarning(for profile: Goal) -> String? {
@@ -577,7 +712,7 @@ final class CheckpointStore {
 
         if backgroundGenerationGoalIDs.contains(profile.id)
             || questionBankTopOffGoalIDs.contains(profile.id)
-            || questionBankSyncIntents.contains(where: { $0.goalID == profile.id }) {
+            || hasPendingQuestionBankSync(for: profile) {
             return readyCount > 0 ? "Preparing more practice" : "Preparing practice"
         }
 
@@ -626,8 +761,42 @@ final class CheckpointStore {
     }
 
     private var hasPendingActiveQuestionBankSync: Bool {
-        guard let goalID = goal?.id else { return false }
-        return questionBankSyncIntents.contains { $0.goalID == goalID }
+        guard let goal else { return false }
+        return hasPendingQuestionBankSync(for: goal)
+    }
+
+    private func hasPendingQuestionBankSync(for targetGoal: Goal) -> Bool {
+        guard let intent = questionBankSyncIntents.first(where: {
+            $0.goalID == targetGoal.id
+        }) else {
+            return false
+        }
+        return !isQuestionBankSyncIntentBlocked(intent, for: targetGoal)
+    }
+
+    private func hasBlockedQuestionBankSyncIntent(for targetGoal: Goal) -> Bool {
+        guard let intent = questionBankSyncIntents.first(where: {
+            $0.goalID == targetGoal.id
+        }) else {
+            return false
+        }
+        return isQuestionBankSyncIntentBlocked(intent, for: targetGoal)
+    }
+
+    private func isQuestionBankSyncIntentBlocked(
+        _ intent: QuestionBankSyncIntent,
+        for targetGoal: Goal
+    ) -> Bool {
+        intent.contextRevision == questionBankContextRevision(for: targetGoal) &&
+            normalizedQuestionBankBlockedReason(intent.generationBlockedReason) != nil
+    }
+
+    private func normalizedQuestionBankBlockedReason(_ rawReason: String?) -> String? {
+        guard let reason = rawReason?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !reason.isEmpty else {
+            return nil
+        }
+        return reason
     }
 
     var studyFocusRecommendation: String? {
@@ -726,11 +895,13 @@ final class CheckpointStore {
         publishShieldContext()
 
         if hasActiveQuestions {
+            _ = scheduleSkillMapEvolutionIfNeeded(for: selectedGoal)
             Task { [weak self] in
                 _ = await self?.refreshQuestionBatchIfNeeded()
                 await self?.prepareProtectionReviewQuestionBankIfNeeded()
             }
         } else {
+            _ = scheduleSkillMapEvolutionIfNeeded(for: selectedGoal)
             prepareInitialQuestionsInBackground(for: selectedGoal)
         }
         return true
@@ -842,6 +1013,10 @@ final class CheckpointStore {
         publishShieldContext()
 
         if tier == .member, goal != nil {
+            resumeSkillMapEvolutionIfNeeded()
+            if let goal {
+                _ = scheduleSkillMapEvolutionIfNeeded(for: goal)
+            }
             Task { [weak self] in
                 _ = await self?.refreshQuestionBatchIfNeeded()
             }
@@ -1009,6 +1184,8 @@ final class CheckpointStore {
         }
 
         questionBankSyncIntents.removeAll { $0.goalID == updatedGoal.id }
+        skillMapEvolutionIntents.removeAll { $0.goalID == updatedGoal.id }
+        skillMapEvolutionGoalIDs.remove(updatedGoal.id)
         questionBankPollingGoalIDs.remove(updatedGoal.id)
         questionBankPollingTokens.removeValue(forKey: updatedGoal.id)
         questionBankSynchronizationGoalIDs.remove(updatedGoal.id)
@@ -1251,6 +1428,10 @@ final class CheckpointStore {
 
     func retryInitialQuestionGeneration() async {
         guard let goal else { return }
+        // A blocked bank cycle is terminal for automatic work, but this explicit
+        // action is the user's opt-in to start a fresh server cycle.
+        invalidateQuestionBankSynchronization(for: goal.id)
+        save()
         await generateInitialQuestionBatch(for: goal)
     }
 
@@ -1307,7 +1488,10 @@ final class CheckpointStore {
         for goal: Goal,
         starterQuestionIDs: Set<CheckpointQuestion.ID> = []
     ) {
-        guard !questionBankTopOffGoalIDs.contains(goal.id) else { return }
+        guard !questionBankTopOffGoalIDs.contains(goal.id),
+              !hasBlockedQuestionBankSyncIntent(for: goal) else {
+            return
+        }
 
         questionBankTopOffGoalIDs.insert(goal.id)
         if self.goal?.id == goal.id {
@@ -1321,7 +1505,9 @@ final class CheckpointStore {
 
     private func scheduleQuestionBankMaintenanceIfNeeded(for targetGoal: Goal) {
         guard isMember,
-              readyQuestionCount(for: targetGoal) <= ProductLimits.autoRefreshThreshold,
+              !hasBlockedQuestionBankSyncIntent(for: targetGoal),
+              (readyQuestionCount(for: targetGoal) <= ProductLimits.autoRefreshThreshold ||
+                skillQuestionCoverageDeficit(for: targetGoal) > 0),
               questionBankDeficit(for: targetGoal) > 0,
               !questionBankTopOffGoalIDs.contains(targetGoal.id) else {
             return
@@ -1759,9 +1945,15 @@ final class CheckpointStore {
         }
 
         let unlockMinutes = unlockMinutesOverride ?? (grantsUnlock ? unlockMinutes(for: result) : 0)
+        let mappedSkill = questionGoal.derivedSkillMap.flatMap {
+            SkillMapReconciler.skillMapTopic(matching: question, in: $0)
+        }
         let attempt = CheckpointAttempt(
             questionID: question.id,
             goalID: question.goalID,
+            skillID: mappedSkill?.id ?? question.skillID,
+            objectiveID: question.objectiveID,
+            questionDifficulty: question.difficulty,
             prompt: question.prompt,
             answer: answer,
             result: result,
@@ -1782,7 +1974,10 @@ final class CheckpointStore {
             recordUnlockSession(minutes: unlockMinutes, goalID: question.goalID)
         }
 
-        scheduleQuestionBankMaintenanceIfNeeded(for: questionGoal)
+        let isEvolutionPending = scheduleSkillMapEvolutionIfNeeded(for: questionGoal)
+        if !isEvolutionPending {
+            scheduleQuestionBankMaintenanceIfNeeded(for: questionGoal)
+        }
         save()
         publishShieldContext()
         return unlockMinutes
@@ -1864,8 +2059,10 @@ final class CheckpointStore {
         questionBankPollingGoalIDs = []
         questionBankPollingTokens = [:]
         questionBankSynchronizationGoalIDs = []
+        skillMapEvolutionGoalIDs = []
         durableQuestionBankUnavailableForLifecycle = false
         questionBankSyncIntents = []
+        skillMapEvolutionIntents = []
         isOnboardingPresented = true
         persistenceRecoveryMessage = nil
         do {
@@ -2083,17 +2280,15 @@ final class CheckpointStore {
         if didPass {
             checkpointRetryCooldownUntil = nil
             checkpointNotice = nil
-            save()
-            publishShieldContext()
-            return true
+        } else {
+            markQuestionsMissedDueNow(
+                missedQuestionIDs.union(activeRun.missedQuestionIDs ?? [])
+            )
+            applyCheckpointRetryCooldown()
         }
-
-        markQuestionsMissedDueNow(
-            missedQuestionIDs.union(activeRun.missedQuestionIDs ?? [])
-        )
-        applyCheckpointRetryCooldown()
         save()
         publishShieldContext()
+        resumeSkillMapEvolutionAfterCheckpointRun(goalID: activeRun.goalID)
         return true
     }
 
@@ -2110,9 +2305,18 @@ final class CheckpointStore {
     }
 
     func discardCheckpointRunBeforePresentation(sessionID: CheckpointSession.ID) {
-        guard activeCheckpointRun?.sessionID == sessionID else { return }
+        guard let activeRun = activeCheckpointRun,
+              activeRun.sessionID == sessionID else { return }
         activeCheckpointRun = nil
         save()
+        resumeSkillMapEvolutionAfterCheckpointRun(goalID: activeRun.goalID)
+    }
+
+    private func resumeSkillMapEvolutionAfterCheckpointRun(goalID: Goal.ID) {
+        guard let targetGoal = storedGoalProfile(withID: goalID) else { return }
+        if !scheduleSkillMapEvolutionIfNeeded(for: targetGoal) {
+            scheduleQuestionBankMaintenanceIfNeeded(for: targetGoal)
+        }
     }
 
     private func beginCheckpointRun(_ session: CheckpointSession) {
@@ -2181,6 +2385,9 @@ final class CheckpointStore {
         if var activeGoal = goal {
             activeGoal.minimumQuestionDifficulty = normalizedDifficulty
             goal = activeGoal
+            if normalizedDifficulty != previousDifficulty {
+                removeSkillMapEvolutionIntent(for: activeGoal.id)
+            }
         } else {
             unlockPolicy.minimumQuestionDifficulty = normalizedDifficulty
         }
@@ -2247,8 +2454,13 @@ final class CheckpointStore {
     private func updateQuestion(_ question: CheckpointQuestion, result: AnswerResult) {
         guard let index = questions.firstIndex(where: { $0.id == question.id }) else { return }
 
+        let wasRetired = questions[index].status == .retired
         questions[index].timesAsked += 1
         questions[index].lastAskedAt = Date()
+        guard !wasRetired else {
+            questions[index].nextReviewAt = nil
+            return
+        }
 
         switch result {
         case .correct:
@@ -2370,6 +2582,735 @@ final class CheckpointStore {
         competencies[index].estimatedLevel = min(5.0, max(1.0, competencies[index].estimatedLevel))
     }
 
+    // MARK: - Adaptive skill-map evolution
+
+    @discardableResult
+    func evaluateSkillMapEvolutionIfNeeded() -> Bool {
+        guard let goal else { return false }
+        return scheduleSkillMapEvolutionIfNeeded(for: goal)
+    }
+
+    @discardableResult
+    private func scheduleSkillMapEvolutionIfNeeded(for requestedGoal: Goal) -> Bool {
+        guard isMember,
+              permitsPersistenceWrites,
+              let targetGoal = storedGoalProfile(withID: requestedGoal.id),
+              let skillMap = targetGoal.derivedSkillMap,
+              skillMap.status == .reviewed,
+              skillMap.evolutionEnabled else {
+            return false
+        }
+
+        if let existingIntent = skillMapEvolutionIntents.first(where: { $0.goalID == targetGoal.id }) {
+            if !isSkillMapEvolutionIntentCurrent(existingIntent, for: targetGoal) {
+                removeSkillMapEvolutionIntent(id: existingIntent.id)
+                save()
+            } else {
+                if skillMapEvolutionGoalIDs.contains(targetGoal.id) {
+                    return true
+                }
+
+                let eligibleSkills = evolutionEligibleSkills(for: targetGoal)
+                guard !eligibleSkills.isEmpty else {
+                    // Keep same-map failure state dormant so a temporary miss cannot
+                    // reset the invalid-response retry cap when mastery returns.
+                    return false
+                }
+                let eligibleSkillIDs = Set(eligibleSkills.map(\.id))
+                var intentToProcess = existingIntent
+                let existingTargetIDs = Set(existingIntent.masteredSkillIDs)
+                let hasValidExistingTarget = (1...Self.evolutionMaximumSkillsPerCycle)
+                    .contains(existingIntent.masteredSkillIDs.count) &&
+                    existingTargetIDs.count == existingIntent.masteredSkillIDs.count &&
+                    existingTargetIDs.isSubset(of: eligibleSkillIDs)
+                if !hasValidExistingTarget {
+                    let replacementTargetIDs = Array(
+                        eligibleSkills.prefix(Self.evolutionMaximumSkillsPerCycle).map(\.id)
+                    )
+                    intentToProcess.masteredSkillIDs = replacementTargetIDs
+                    if Set(replacementTargetIDs) != existingTargetIDs {
+                        // Invalid-response failures belong to the exact requested
+                        // predecessor set. A newly eligible target gets a fresh budget.
+                        intentToProcess.lastAttemptAt = nil
+                        intentToProcess.lastFailure = nil
+                        intentToProcess.invalidResponseAttemptCount = 0
+                    }
+                    if let index = skillMapEvolutionIntents.firstIndex(where: {
+                        $0.id == intentToProcess.id
+                    }) {
+                        skillMapEvolutionIntents[index] = intentToProcess
+                    }
+                    save()
+                }
+
+                guard canAttemptSkillMapEvolution(intentToProcess) else {
+                    return false
+                }
+                if activeCheckpointRun?.goalID == targetGoal.id {
+                    return true
+                }
+                if !skillMapEvolutionGoalIDs.contains(targetGoal.id) {
+                    Task { [weak self] in
+                        await self?.processSkillMapEvolutionIntent(intentToProcess.id)
+                    }
+                }
+                return true
+            }
+        }
+        guard !skillMapEvolutionGoalIDs.contains(targetGoal.id) else {
+            return true
+        }
+
+        let eligibleSkills = evolutionEligibleSkills(for: targetGoal)
+        guard !eligibleSkills.isEmpty else { return false }
+
+        let intent = SkillMapEvolutionIntent(
+            goalID: targetGoal.id,
+            baseVersion: skillMap.version,
+            baseMapFingerprint: SkillMapReconciler.skillMapFingerprint(topics: skillMap.topics),
+            masteredSkillIDs: Array(
+                eligibleSkills.prefix(Self.evolutionMaximumSkillsPerCycle).map(\.id)
+            )
+        )
+        skillMapEvolutionIntents.removeAll { $0.goalID == targetGoal.id }
+        skillMapEvolutionIntents.append(intent)
+        save()
+
+        if activeCheckpointRun?.goalID != targetGoal.id {
+            Task { [weak self] in
+                await self?.processSkillMapEvolutionIntent(intent.id)
+            }
+        }
+        return true
+    }
+
+    private func evolutionEligibleSkills(for targetGoal: Goal) -> [SkillMapTopic] {
+        guard let skillMap = targetGoal.derivedSkillMap else { return [] }
+        var competencyBySkillID: [SkillMapTopic.ID: TopicCompetency] = [:]
+        for competency in competencies {
+            guard (competency.goalID ?? targetGoal.id) == targetGoal.id,
+                  let skillID = competency.skillID else {
+                continue
+            }
+            if let existing = competencyBySkillID[skillID] {
+                competencyBySkillID[skillID] = SkillMapReconciler.mergedCompetency(
+                    existing,
+                    with: competency
+                )
+            } else {
+                competencyBySkillID[skillID] = competency
+            }
+        }
+
+        return skillMap.topics.compactMap { skill -> (SkillMapTopic, TopicCompetency)? in
+            guard let competency = competencyBySkillID[skill.id],
+                  competency.attempts >= Self.evolutionMinimumAttempts,
+                  competency.masteryPercent >= Self.evolutionMinimumMasteryPercent,
+                  competency.currentStreak >= Self.evolutionMinimumCorrectStreak,
+                  hasStrongRecentEvolutionEvidence(for: skill, goalID: targetGoal.id) else {
+                return nil
+            }
+            return (skill, competency)
+        }
+        .sorted { lhs, rhs in
+            if lhs.1.masteryPercent != rhs.1.masteryPercent {
+                return lhs.1.masteryPercent > rhs.1.masteryPercent
+            }
+            if lhs.1.estimatedLevel != rhs.1.estimatedLevel {
+                return lhs.1.estimatedLevel > rhs.1.estimatedLevel
+            }
+            if lhs.1.attempts != rhs.1.attempts {
+                return lhs.1.attempts > rhs.1.attempts
+            }
+            return lhs.0.id.uuidString < rhs.0.id.uuidString
+        }
+        .map(\.0)
+    }
+
+    private func hasStrongRecentEvolutionEvidence(
+        for skill: SkillMapTopic,
+        goalID: Goal.ID
+    ) -> Bool {
+        let evidenceAttempts = recentEvolutionAttempts(for: skill, goalID: goalID)
+        let recentAttempts = evidenceAttempts.prefix(Self.evolutionRecentAttemptCount)
+        guard recentAttempts.count >= Self.evolutionMinimumRecentEvidenceCount,
+              recentAttempts.contains(where: { ($0.questionDifficulty ?? 0) >= 4 }) else {
+            return false
+        }
+
+        let nonCorrectCount = recentAttempts.filter { $0.result != .correct }.count
+        guard nonCorrectCount <= 1 else { return false }
+        let score = recentAttempts.reduce(0.0) { partialResult, attempt in
+            switch attempt.result {
+            case .correct:
+                return partialResult + 1
+            case .partial:
+                return partialResult + 0.5
+            case .incorrect, .unclear:
+                return partialResult
+            }
+        } / Double(recentAttempts.count)
+        guard score >= Self.evolutionMinimumRecentScore,
+              !skill.objectives.isEmpty else {
+            return false
+        }
+
+        return skill.objectives.allSatisfy { objective in
+            let objectiveAttempts = evidenceAttempts.filter { $0.objectiveID == objective.id }
+            guard !objectiveAttempts.isEmpty else { return false }
+            let objectiveScore = objectiveAttempts.reduce(0.0) { partialResult, attempt in
+                switch attempt.result {
+                case .correct:
+                    return partialResult + 1
+                case .partial:
+                    return partialResult + 0.5
+                case .incorrect, .unclear:
+                    return partialResult
+                }
+            } / Double(objectiveAttempts.count)
+            return objectiveScore >= Self.evolutionMinimumObjectiveScore
+        }
+    }
+
+    private func recentEvolutionAttempts(
+        for skill: SkillMapTopic,
+        goalID: Goal.ID
+    ) -> [CheckpointAttempt] {
+        let cutoff = Date().addingTimeInterval(-Self.evolutionEvidenceMaximumAge)
+        let objectiveIDs = Set(skill.objectives.map(\.id))
+        let singleObjectiveID = skill.objectives.count == 1 ? skill.objectives.first?.id : nil
+        return Array(
+            attempts
+                .compactMap { attempt -> CheckpointAttempt? in
+                    guard attempt.goalID == goalID,
+                          attempt.skillID == skill.id,
+                          attempt.createdAt >= cutoff else {
+                        return nil
+                    }
+                    if let objectiveID = attempt.objectiveID {
+                        return objectiveIDs.contains(objectiveID) ? attempt : nil
+                    }
+                    guard let singleObjectiveID else { return nil }
+                    var normalizedAttempt = attempt
+                    normalizedAttempt.objectiveID = singleObjectiveID
+                    return normalizedAttempt
+                }
+                .sorted { lhs, rhs in
+                    if lhs.createdAt != rhs.createdAt {
+                        return lhs.createdAt > rhs.createdAt
+                    }
+                    return lhs.id.uuidString < rhs.id.uuidString
+                }
+                .prefix(Self.evolutionRecentAttemptLimitPerSkill)
+        )
+    }
+
+    private func canAttemptSkillMapEvolution(
+        _ intent: SkillMapEvolutionIntent,
+        now: Date = Date()
+    ) -> Bool {
+        guard intent.lastFailure != .safetyIntervention,
+              intent.invalidResponseAttemptCount < Self.evolutionMaximumInvalidResponseAttempts else {
+            return false
+        }
+        guard let lastAttemptAt = intent.lastAttemptAt else { return true }
+        return now.timeIntervalSince(lastAttemptAt) >= Self.evolutionRetryBackoff
+    }
+
+    private func isSkillMapEvolutionIntentCurrent(
+        _ intent: SkillMapEvolutionIntent,
+        for targetGoal: Goal
+    ) -> Bool {
+        guard let skillMap = targetGoal.derivedSkillMap,
+              skillMap.status == .reviewed,
+              skillMap.evolutionEnabled,
+              skillMap.version == intent.baseVersion,
+              SkillMapReconciler.skillMapFingerprint(topics: skillMap.topics) == intent.baseMapFingerprint else {
+            return false
+        }
+        return true
+    }
+
+    private func isSkillMapEvolutionIntentCurrentAndEligible(
+        _ intent: SkillMapEvolutionIntent,
+        for targetGoal: Goal
+    ) -> Bool {
+        guard isSkillMapEvolutionIntentCurrent(intent, for: targetGoal) else {
+            return false
+        }
+        guard (1...Self.evolutionMaximumSkillsPerCycle).contains(intent.masteredSkillIDs.count),
+              Set(intent.masteredSkillIDs).count == intent.masteredSkillIDs.count else {
+            return false
+        }
+        let eligibleSkillIDs = Set(evolutionEligibleSkills(for: targetGoal).map(\.id))
+        return Set(intent.masteredSkillIDs).isSubset(of: eligibleSkillIDs)
+    }
+
+    private func processSkillMapEvolutionIntent(_ intentID: SkillMapEvolutionIntent.ID) async {
+        guard let intent = skillMapEvolutionIntents.first(where: { $0.id == intentID }),
+              !skillMapEvolutionGoalIDs.contains(intent.goalID),
+              isMember,
+              canAttemptSkillMapEvolution(intent),
+              activeCheckpointRun?.goalID != intent.goalID else {
+            return
+        }
+        skillMapEvolutionGoalIDs.insert(intent.goalID)
+        defer { skillMapEvolutionGoalIDs.remove(intent.goalID) }
+
+        let lifecycleID = dataLifecycleID
+        guard let targetGoal = storedGoalProfile(withID: intent.goalID) else {
+            removeSkillMapEvolutionIntent(id: intentID)
+            save()
+            return
+        }
+        guard isSkillMapEvolutionIntentCurrent(intent, for: targetGoal) else {
+            removeSkillMapEvolutionIntent(id: intentID)
+            save()
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        }
+        guard isSkillMapEvolutionIntentCurrentAndEligible(intent, for: targetGoal) else {
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        }
+
+        if let index = skillMapEvolutionIntents.firstIndex(where: { $0.id == intentID }) {
+            skillMapEvolutionIntents[index].lastAttemptAt = Date()
+            skillMapEvolutionIntents[index].lastFailure = nil
+            save()
+        }
+        let masteredSkillIDs = Set(intent.masteredSkillIDs)
+        let masteredSkillsByID = Dictionary(
+            uniqueKeysWithValues: (targetGoal.derivedSkillMap?.topics ?? [])
+                .filter { masteredSkillIDs.contains($0.id) }
+                .map { ($0.id, $0) }
+        )
+        let request = SkillMapEvolutionRequest(
+            goal: targetGoal,
+            baseMapFingerprint: intent.baseMapFingerprint,
+            masteredSkillIDs: intent.masteredSkillIDs,
+            competencies: mergedEvolutionCompetencies(
+                for: masteredSkillIDs,
+                goalID: targetGoal.id
+            ),
+            recentAttempts: intent.masteredSkillIDs
+                .compactMap { masteredSkillsByID[$0] }
+                .flatMap { recentEvolutionAttempts(for: $0, goalID: targetGoal.id) }
+                .sorted { lhs, rhs in
+                    if lhs.createdAt != rhs.createdAt {
+                        return lhs.createdAt > rhs.createdAt
+                    }
+                    return lhs.id.uuidString < rhs.id.uuidString
+                },
+            backendEndpoint: resolvedBackendEndpoint,
+            backendAuthorizationToken: resolvedBackendAuthorizationToken
+        )
+
+        let proposal: SkillMapEvolutionProposal
+        do {
+            proposal = try await questionEngine.evolveSkillMap(for: request)
+        } catch let error as QuestionGenerationError where error == .badResponse {
+            recordInvalidSkillMapEvolutionResponse(
+                intentID: intentID,
+                for: targetGoal,
+                schedulesBankMaintenance: false
+            )
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        } catch let error as QuestionGenerationError where error == .providerFailure {
+            // Bedrock/provider failures can be transient outages. Preserve the
+            // ordinary persisted backoff without consuming the malformed-response cap.
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        } catch let error as QuestionGenerationError where error == .safetyIntervention {
+            if let index = skillMapEvolutionIntents.firstIndex(where: { $0.id == intentID }) {
+                skillMapEvolutionIntents[index].lastFailure = .safetyIntervention
+            }
+            save()
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        } catch {
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        }
+
+        guard lifecycleID == dataLifecycleID,
+              permitsPersistenceWrites,
+              isMember,
+              skillMapEvolutionIntents.contains(where: { $0.id == intentID }),
+              let currentGoal = storedGoalProfile(withID: intent.goalID) else {
+            return
+        }
+        if activeCheckpointRun?.goalID == intent.goalID {
+            if let index = skillMapEvolutionIntents.firstIndex(where: { $0.id == intentID }) {
+                // The proposal cannot be applied while the current run still references
+                // predecessor questions. Make it immediately retryable when that run resolves.
+                skillMapEvolutionIntents[index].lastAttemptAt = nil
+                skillMapEvolutionIntents[index].lastFailure = nil
+                save()
+            }
+            return
+        }
+        guard isSkillMapEvolutionIntentCurrent(intent, for: currentGoal) else {
+            removeSkillMapEvolutionIntent(id: intentID)
+            save()
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        }
+        guard isSkillMapEvolutionIntentCurrentAndEligible(intent, for: currentGoal) else {
+            continueAfterSkillMapEvolutionRequestFailure(
+                goalID: intent.goalID,
+                lifecycleID: lifecycleID
+            )
+            return
+        }
+        _ = applySkillMapEvolution(
+            proposal,
+            intent: intent,
+            to: currentGoal
+        )
+    }
+
+    private func mergedEvolutionCompetencies(
+        for skillIDs: Set<SkillMapTopic.ID>,
+        goalID: Goal.ID
+    ) -> [TopicCompetency] {
+        var mergedBySkillID: [SkillMapTopic.ID: TopicCompetency] = [:]
+        for competency in competencies {
+            guard (competency.goalID ?? goalID) == goalID,
+                  let skillID = competency.skillID,
+                  skillIDs.contains(skillID) else {
+                continue
+            }
+            if let existing = mergedBySkillID[skillID] {
+                mergedBySkillID[skillID] = SkillMapReconciler.mergedCompetency(
+                    existing,
+                    with: competency
+                )
+            } else {
+                mergedBySkillID[skillID] = competency
+            }
+        }
+        return skillIDs.compactMap { mergedBySkillID[$0] }
+    }
+
+    @discardableResult
+    private func applySkillMapEvolution(
+        _ proposal: SkillMapEvolutionProposal,
+        intent: SkillMapEvolutionIntent,
+        to currentGoal: Goal
+    ) -> Bool {
+        guard var currentMap = currentGoal.derivedSkillMap,
+              isSkillMapEvolutionIntentCurrentAndEligible(intent, for: currentGoal),
+              currentMap.version == intent.baseVersion,
+              SkillMapReconciler.skillMapFingerprint(topics: currentMap.topics) == intent.baseMapFingerprint else {
+            removeSkillMapEvolutionIntent(id: intent.id)
+            save()
+            scheduleQuestionBankMaintenanceIfNeeded(for: currentGoal)
+            return false
+        }
+        guard proposal.baseVersion == intent.baseVersion,
+              proposal.baseMapFingerprint == intent.baseMapFingerprint,
+              proposal.topics.count == currentMap.topics.count,
+              (3...6).contains(proposal.topics.count),
+              (1...Self.evolutionMaximumSkillsPerCycle).contains(proposal.replacements.count) else {
+            recordInvalidSkillMapEvolutionResponse(intentID: intent.id, for: currentGoal)
+            return false
+        }
+
+        let predecessorIDs = Set(proposal.replacements.map(\.predecessorSkillID))
+        let successorIDs = Set(proposal.replacements.map(\.successorSkillID))
+        let intendedPredecessorIDs = Set(intent.masteredSkillIDs)
+        let currentByID = Dictionary(uniqueKeysWithValues: currentMap.topics.map { ($0.id, $0) })
+        let returnedByID = Dictionary(uniqueKeysWithValues: proposal.topics.map { ($0.id, $0) })
+        let historicalIDs = Set(currentMap.archivedTopics.map(\.id))
+        guard predecessorIDs == intendedPredecessorIDs,
+              predecessorIDs.count == proposal.replacements.count,
+              successorIDs.count == proposal.replacements.count,
+              predecessorIDs.allSatisfy({ currentByID[$0] != nil }),
+              successorIDs.isDisjoint(with: Set(currentByID.keys)),
+              successorIDs.isDisjoint(with: historicalIDs),
+              Set(returnedByID.keys).count == proposal.topics.count else {
+            recordInvalidSkillMapEvolutionResponse(intentID: intent.id, for: currentGoal)
+            return false
+        }
+
+        let retainedIDs = Set(currentByID.keys).subtracting(predecessorIDs)
+        let expectedReturnedIDs = retainedIDs.union(successorIDs)
+        guard Set(returnedByID.keys) == expectedReturnedIDs else {
+            recordInvalidSkillMapEvolutionResponse(intentID: intent.id, for: currentGoal)
+            return false
+        }
+        for retainedID in retainedIDs {
+            guard let retained = currentByID[retainedID],
+                  let returned = returnedByID[retainedID],
+                  retained.name == returned.name,
+                  retained.objectives == returned.objectives else {
+                recordInvalidSkillMapEvolutionResponse(intentID: intent.id, for: currentGoal)
+                return false
+            }
+        }
+
+        let replacementBySuccessorID = Dictionary(
+            uniqueKeysWithValues: proposal.replacements.map { ($0.successorSkillID, $0) }
+        )
+        var evolvedTopics: [SkillMapTopic] = []
+        for returnedTopic in proposal.topics {
+            if let retained = currentByID[returnedTopic.id] {
+                evolvedTopics.append(retained)
+                continue
+            }
+            guard let replacement = replacementBySuccessorID[returnedTopic.id],
+                  let predecessor = currentByID[replacement.predecessorSkillID] else {
+                recordInvalidSkillMapEvolutionResponse(intentID: intent.id, for: currentGoal)
+                return false
+            }
+            var successor = returnedTopic
+            successor.aliases = []
+            successor.stage = predecessor.stage + 1
+            successor.predecessorIDs = [predecessor.id]
+            evolvedTopics.append(successor)
+        }
+        let successorsHaveValidObjectives = evolvedTopics
+            .filter { successorIDs.contains($0.id) }
+            .allSatisfy { (2...5).contains($0.objectives.count) }
+        guard SkillMapTopic.validatedNames(evolvedTopics.map(\.name)) != nil,
+              successorsHaveValidObjectives else {
+            recordInvalidSkillMapEvolutionResponse(intentID: intent.id, for: currentGoal)
+            return false
+        }
+        let retiredNameKeys = Set(
+            currentMap.archivedTopics.map {
+                SkillMapReconciler.skillMapEvolutionNameKey($0.topic.name)
+            } + predecessorIDs.compactMap {
+                currentByID[$0].map { SkillMapReconciler.skillMapEvolutionNameKey($0.name) }
+            }
+        )
+        let successorNamesAreNew = evolvedTopics
+            .filter { successorIDs.contains($0.id) }
+            .allSatisfy {
+                !retiredNameKeys.contains(SkillMapReconciler.skillMapEvolutionNameKey($0.name))
+            }
+        guard successorNamesAreNew else {
+            recordInvalidSkillMapEvolutionResponse(intentID: intent.id, for: currentGoal)
+            return false
+        }
+
+        let evolutionDate = Date()
+        var archivedTopics = currentMap.archivedTopics
+        for replacement in proposal.replacements {
+            guard let predecessor = currentByID[replacement.predecessorSkillID] else { continue }
+            archivedTopics.append(
+                archivedSkillEntry(
+                    for: predecessor,
+                    goalID: currentGoal.id,
+                    reason: .mastered,
+                    successorSkillIDs: [replacement.successorSkillID],
+                    archivedAt: evolutionDate
+                )
+            )
+        }
+
+        var updatedGoal = currentGoal
+        currentMap.topics = evolvedTopics
+        currentMap.archivedTopics = archivedTopics
+        currentMap.version = intent.baseVersion + 1
+        currentMap.provenance = .adaptiveEvolution
+        currentMap.status = .reviewed
+        currentMap.lastEvolvedAt = evolutionDate
+        currentMap.updatedAt = evolutionDate
+        updatedGoal.derivedSkillMap = currentMap
+        storeGoalProfile(updatedGoal)
+
+        for index in questions.indices where questions[index].goalID == updatedGoal.id {
+            guard let priorSkill = SkillMapReconciler.skillMapTopic(
+                matching: questions[index],
+                in: currentGoal.derivedSkillMap ?? currentMap
+            ), predecessorIDs.contains(priorSkill.id) else {
+                continue
+            }
+            questions[index].status = .retired
+            questions[index].nextReviewAt = nil
+        }
+
+        replaceCompetencies(
+            for: updatedGoal.id,
+            with: SkillMapReconciler.reconciledCompetencies(
+                existing: competencies.filter { ($0.goalID ?? updatedGoal.id) == updatedGoal.id },
+                goal: updatedGoal,
+                questions: questions.filter { $0.goalID == updatedGoal.id }
+            )
+        )
+        removeSkillMapEvolutionIntent(id: intent.id)
+        invalidateQuestionBankSynchronization(for: updatedGoal.id)
+        let transitionSummary = proposal.replacements.compactMap { replacement -> String? in
+            guard let predecessor = currentByID[replacement.predecessorSkillID],
+                  let successor = evolvedTopics.first(where: { $0.id == replacement.successorSkillID }) else {
+                return nil
+            }
+            return "\(predecessor.name) → \(successor.name)"
+        }
+        checkpointNotice = transitionSummary.isEmpty
+            ? "Your skill map advanced. New questions are being prepared."
+            : "Skill map advanced: \(transitionSummary.joined(separator: "; ")). New questions are being prepared."
+        save()
+        publishShieldContext()
+        if evolutionEligibleSkills(for: updatedGoal).isEmpty {
+            topOffQuestionBankInBackground(for: updatedGoal)
+        } else {
+            Task { [weak self] in
+                await Task.yield()
+                guard let self,
+                      let latestGoal = self.storedGoalProfile(withID: updatedGoal.id) else {
+                    return
+                }
+                if !self.scheduleSkillMapEvolutionIfNeeded(for: latestGoal) {
+                    self.topOffQuestionBankInBackground(for: latestGoal)
+                }
+            }
+        }
+        return true
+    }
+
+    private func recordInvalidSkillMapEvolutionResponse(
+        intentID: SkillMapEvolutionIntent.ID,
+        for targetGoal: Goal,
+        schedulesBankMaintenance: Bool = true
+    ) {
+        if let index = skillMapEvolutionIntents.firstIndex(where: { $0.id == intentID }) {
+            if skillMapEvolutionIntents[index].lastAttemptAt == nil {
+                skillMapEvolutionIntents[index].lastAttemptAt = Date()
+            }
+            skillMapEvolutionIntents[index].lastFailure = .invalidResponse
+            skillMapEvolutionIntents[index].invalidResponseAttemptCount += 1
+        }
+        save()
+        if schedulesBankMaintenance {
+            scheduleQuestionBankMaintenanceIfNeeded(for: targetGoal)
+        }
+    }
+
+    private func continueAfterSkillMapEvolutionRequestFailure(
+        goalID: Goal.ID,
+        lifecycleID: UUID
+    ) {
+        guard lifecycleID == dataLifecycleID,
+              permitsPersistenceWrites,
+              let currentGoal = storedGoalProfile(withID: goalID) else {
+            return
+        }
+        // The request has completed, so a current replacement intent may now be
+        // scheduled without violating the per-goal single-flight fence.
+        skillMapEvolutionGoalIDs.remove(goalID)
+        if !scheduleSkillMapEvolutionIfNeeded(for: currentGoal) {
+            scheduleQuestionBankMaintenanceIfNeeded(for: currentGoal)
+        }
+    }
+
+    private func archivedSkillEntry(
+        for topic: SkillMapTopic,
+        goalID: Goal.ID,
+        reason: ArchivedSkillReason,
+        successorSkillIDs: [SkillMapTopic.ID],
+        archivedAt: Date = Date()
+    ) -> ArchivedSkillMapTopic {
+        let matchingCompetencies = competencies.filter {
+            ($0.goalID ?? goalID) == goalID && $0.skillID == topic.id
+        }
+        let competency = matchingCompetencies.first.map { firstCompetency in
+            matchingCompetencies.dropFirst().reduce(firstCompetency) { partialResult, duplicate in
+                SkillMapReconciler.mergedCompetency(partialResult, with: duplicate)
+            }
+        }
+        let snapshot = competency.map {
+            ArchivedSkillMasterySnapshot(
+                estimatedLevel: $0.estimatedLevel,
+                masteryPercent: $0.masteryPercent,
+                attempts: $0.attempts,
+                correct: $0.correct,
+                partial: $0.partial,
+                incorrect: $0.incorrect,
+                currentStreak: $0.currentStreak
+            )
+        }
+        return ArchivedSkillMapTopic(
+            topic: topic,
+            reason: reason,
+            archivedAt: archivedAt,
+            successorSkillIDs: successorSkillIDs,
+            mastery: snapshot
+        )
+    }
+
+    private func resumeSkillMapEvolutionIfNeeded() {
+        guard isMember else { return }
+        let availableGoalIDs = Set(availableGoalProfiles.map(\.id))
+        let previousIntentCount = skillMapEvolutionIntents.count
+        skillMapEvolutionIntents.removeAll { !availableGoalIDs.contains($0.goalID) }
+        if skillMapEvolutionIntents.count != previousIntentCount {
+            save()
+        }
+        let activeGoalID = goal?.id
+        for intent in skillMapEvolutionIntents where intent.goalID != activeGoalID {
+            guard let targetGoal = storedGoalProfile(withID: intent.goalID) else {
+                continue
+            }
+            guard isSkillMapEvolutionIntentCurrent(intent, for: targetGoal) else {
+                removeSkillMapEvolutionIntent(id: intent.id)
+                save()
+                continue
+            }
+            guard canAttemptSkillMapEvolution(intent),
+                  isSkillMapEvolutionIntentCurrentAndEligible(intent, for: targetGoal) else {
+                continue
+            }
+            Task { [weak self] in
+                await self?.processSkillMapEvolutionIntent(intent.id)
+            }
+        }
+        if let goal {
+            _ = scheduleSkillMapEvolutionIfNeeded(for: goal)
+        }
+    }
+
+    private func hasReadySkillMapEvolutionIntent(for targetGoal: Goal) -> Bool {
+        guard isMember,
+              let intent = skillMapEvolutionIntents.first(where: { $0.goalID == targetGoal.id }),
+              canAttemptSkillMapEvolution(intent) else {
+            return false
+        }
+        return isSkillMapEvolutionIntentCurrentAndEligible(intent, for: targetGoal)
+    }
+
+    private func removeSkillMapEvolutionIntent(for goalID: Goal.ID) {
+        skillMapEvolutionIntents.removeAll { $0.goalID == goalID }
+    }
+
+    private func removeSkillMapEvolutionIntent(id: SkillMapEvolutionIntent.ID) {
+        skillMapEvolutionIntents.removeAll { $0.id == id }
+    }
+
     // MARK: - Profile helpers
 
     private func upsertGoalProfile(_ profile: Goal) {
@@ -2394,6 +3335,8 @@ final class CheckpointStore {
         questionReports.removeAll { $0.goalID == goalID }
         unlockEvents.removeAll { $0.goalID == goalID }
         questionBankSyncIntents.removeAll { $0.goalID == goalID }
+        skillMapEvolutionIntents.removeAll { $0.goalID == goalID }
+        skillMapEvolutionGoalIDs.remove(goalID)
         questionBankPollingGoalIDs.remove(goalID)
         questionBankPollingTokens.removeValue(forKey: goalID)
         questionBankSynchronizationGoalIDs.remove(goalID)
@@ -2492,7 +3435,8 @@ final class CheckpointStore {
             membershipTier: membershipTier,
             questionRefreshesUsed: questionRefreshesUsed,
             lastAutomaticQuestionRefreshAt: lastAutomaticQuestionRefreshAt,
-            questionBankSyncIntents: questionBankSyncIntents
+            questionBankSyncIntents: questionBankSyncIntents,
+            skillMapEvolutionIntents: skillMapEvolutionIntents
         )
 
         do {
@@ -2753,7 +3697,8 @@ final class CheckpointStore {
 
             if activeQuestions.isEmpty,
                let goal,
-               !questionBankSyncIntents.contains(where: { $0.goalID == goal.id }) {
+               !questionBankSyncIntents.contains(where: { $0.goalID == goal.id }),
+               !hasReadySkillMapEvolutionIntent(for: goal) {
                 prepareInitialQuestionsInBackground(for: goal)
             }
         } else if questionBatchState == .failed, hasReadyCheckpointSet {
@@ -2763,8 +3708,19 @@ final class CheckpointStore {
     }
 
     private func resumeQuestionBankMaintenanceIfNeeded() {
-        let pendingGoalIDs = Set(questionBankSyncIntents.map(\.goalID))
-        for pendingGoal in availableGoalProfiles where pendingGoalIDs.contains(pendingGoal.id) {
+        let allIntentGoalIDs = Set(questionBankSyncIntents.map(\.goalID))
+        let pendingGoalIDs = Set(
+            availableGoalProfiles.compactMap { profile in
+                hasPendingQuestionBankSync(for: profile) ? profile.id : nil
+            }
+        )
+        let evolvingGoalIDs = Set(
+            availableGoalProfiles.compactMap { profile in
+                hasReadySkillMapEvolutionIntent(for: profile) ? profile.id : nil
+            }
+        )
+        for pendingGoal in availableGoalProfiles
+        where pendingGoalIDs.contains(pendingGoal.id) && !evolvingGoalIDs.contains(pendingGoal.id) {
             guard !backgroundGenerationGoalIDs.contains(pendingGoal.id),
                   !questionBankTopOffGoalIDs.contains(pendingGoal.id) else {
                 continue
@@ -2774,11 +3730,13 @@ final class CheckpointStore {
 
         guard let goal,
               isMember,
-              !pendingGoalIDs.contains(goal.id),
+              !allIntentGoalIDs.contains(goal.id),
+              !evolvingGoalIDs.contains(goal.id),
               questionBatchState != .generating,
               !backgroundGenerationGoalIDs.contains(goal.id),
               !questionBankTopOffGoalIDs.contains(goal.id),
-              readyQuestionCount(for: goal) <= ProductLimits.autoRefreshThreshold,
+              (readyQuestionCount(for: goal) <= ProductLimits.autoRefreshThreshold ||
+                skillQuestionCoverageDeficit(for: goal) > 0),
               questionBankDeficit(for: goal) > 0 else {
             return
         }
@@ -2834,6 +3792,7 @@ final class CheckpointStore {
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
         lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
         questionBankSyncIntents = snapshot.questionBankSyncIntents ?? []
+        skillMapEvolutionIntents = snapshot.skillMapEvolutionIntents ?? []
         goalProfiles = snapshot.goalProfiles ?? snapshot.goal.map { [$0] } ?? []
         goal = snapshot.goal
 
@@ -2852,7 +3811,8 @@ final class CheckpointStore {
             checkpointNotice = recoveryMessage
         }
         let derivedSkillMapsChanged = migrateLegacyDerivedSkillMapsIfNeeded()
-        if retentionChanged || derivedSkillMapsChanged {
+        let attemptMetadataChanged = backfillAttemptMetadataIfNeeded()
+        if retentionChanged || derivedSkillMapsChanged || attemptMetadataChanged {
             save()
         }
     }
@@ -2947,6 +3907,34 @@ final class CheckpointStore {
             }
             questions[index] = SkillMapReconciler.canonicalizedQuestion(questions[index], for: skill)
         }
+    }
+
+    @discardableResult
+    private func backfillAttemptMetadataIfNeeded() -> Bool {
+        var didChange = false
+        let questionByID = Dictionary(uniqueKeysWithValues: questions.map { ($0.id, $0) })
+
+        for index in attempts.indices {
+            guard let question = questionByID[attempts[index].questionID] else { continue }
+            let targetGoal = storedGoalProfile(withID: attempts[index].goalID)
+            let mappedSkill = targetGoal?.derivedSkillMap.flatMap {
+                SkillMapReconciler.skillMapTopic(matching: question, in: $0)
+            }
+
+            if attempts[index].skillID == nil, let skillID = mappedSkill?.id ?? question.skillID {
+                attempts[index].skillID = skillID
+                didChange = true
+            }
+            if attempts[index].objectiveID == nil, let objectiveID = question.objectiveID {
+                attempts[index].objectiveID = objectiveID
+                didChange = true
+            }
+            if attempts[index].questionDifficulty == nil {
+                attempts[index].questionDifficulty = question.difficulty
+                didChange = true
+            }
+        }
+        return didChange
     }
 
     @discardableResult
@@ -3216,26 +4204,37 @@ final class CheckpointStore {
         defer { questionBankSynchronizationGoalIDs.remove(targetGoal.id) }
 
         let lifecycleID = dataLifecycleID
-        let desiredCount = min(100, max(questionBankTargetCount, minimumLocalQuestionCount ?? 0))
-        // Skill weights make each bank revision finite; do not replenish stale weights.
-        let lowWatermark = 0
-        let contextRevision = questionBankContextRevision(for: targetGoal)
-        var intent = upsertQuestionBankSyncIntent(
-            for: targetGoal,
-            contextRevision: contextRevision,
-            desiredCount: desiredCount,
-            lowWatermark: lowWatermark
-        )
-
+        let localTarget = minimumLocalQuestionCount ?? questionBankTargetCount
         let initialDeficit = questionBankDeficit(
             for: targetGoal,
-            targetCount: minimumLocalQuestionCount ?? questionBankTargetCount
+            targetCount: localTarget
         )
         guard initialDeficit > 0 else {
             removeQuestionBankSyncIntent(for: targetGoal.id)
             save()
             return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
         }
+        let requestedDesiredCount = remoteQuestionBankDesiredCount(
+            for: targetGoal,
+            localDeficit: initialDeficit
+        )
+        // Skill weights make each bank revision finite; do not replenish stale weights.
+        let lowWatermark = 0
+        let contextRevision = questionBankContextRevision(for: targetGoal)
+        if let existingIntent = questionBankSyncIntents.first(where: {
+            $0.goalID == targetGoal.id
+        }), isQuestionBankSyncIntentBlocked(existingIntent, for: targetGoal) {
+            return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
+        }
+        var intent = upsertQuestionBankSyncIntent(
+            for: targetGoal,
+            contextRevision: contextRevision,
+            desiredCount: requestedDesiredCount,
+            lowWatermark: lowWatermark
+        )
+        // A context's remote fill target is monotonic even as local claims reduce
+        // the deficit; a later poll must not shrink a bank already being prepared.
+        let desiredCount = intent.desiredCount
 
         let ensureRequest = generationRequest(
             goal: targetGoal,
@@ -3249,7 +4248,7 @@ final class CheckpointStore {
         do {
             preparation = try await questionBankClient.ensureQuestionBank(
                 for: ensureRequest,
-                contextRevision: contextRevision,
+                contextRevision: intent.bankContextRevision ?? intent.contextRevision,
                 desiredCount: desiredCount,
                 lowWatermark: lowWatermark
             )
@@ -3284,10 +4283,10 @@ final class CheckpointStore {
         }
         let currentContextRevision = questionBankContextRevision(for: currentGoal)
         guard currentContextRevision == contextRevision else {
-            _ = upsertQuestionBankSyncIntent(
+            refreshQuestionBankSyncIntentForCurrentDeficit(
                 for: currentGoal,
                 contextRevision: currentContextRevision,
-                desiredCount: desiredCount,
+                localTarget: localTarget,
                 lowWatermark: lowWatermark
             )
             save()
@@ -3298,14 +4297,40 @@ final class CheckpointStore {
             intent.bankID = preparation.bankID
             intent.claimID = UUID().uuidString
         }
+        intent.generationBlockedReason = normalizedQuestionBankBlockedReason(
+            preparation.generationBlockedReason
+        )
         intent.lastAttemptAt = Date()
         replaceQuestionBankSyncIntent(intent)
         save()
 
         guard preparation.readyCount > 0 else {
-            if preparation.status == .empty {
-                // Sanitizer rejections can leave a finite bank below target; empty ends polling.
-                removeQuestionBankSyncIntent(for: targetGoal.id)
+            if preparation.status == .empty,
+               intent.generationBlockedReason == nil {
+                // The server has spent this finite bank, but client-side validation may
+                // have rejected some claimed rows. Give that local deficit one fresh,
+                // crash-resumable fill cycle instead of silently stranding first use.
+                // Persistently stop after the bounded retry so validation drift cannot
+                // create an unbounded background/provider-cost loop.
+                let emptyRetryCount = intent.emptyFillCycleRetryCount ?? 0
+                if emptyRetryCount < Self.maximumEmptyFillCycleRetries {
+                    intent.bankContextRevision = newQuestionBankContextRevision(
+                        baseRevision: intent.contextRevision
+                    )
+                    intent.bankID = nil
+                    intent.claimID = UUID().uuidString
+                    intent.desiredCount = remoteQuestionBankDesiredCount(
+                        for: targetGoal,
+                        localDeficit: initialDeficit
+                    )
+                    intent.emptyFillCycleRetryCount = emptyRetryCount + 1
+                    intent.createdAt = Date()
+                    intent.lastAttemptAt = nil
+                    replaceQuestionBankSyncIntent(intent)
+                } else {
+                    intent.generationBlockedReason = "client_validation_limit"
+                    replaceQuestionBankSyncIntent(intent)
+                }
                 save()
             }
             return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
@@ -3314,18 +4339,19 @@ final class CheckpointStore {
         var totalAdded = 0
         var claimAttemptCount = 0
         while claimAttemptCount < Self.maximumClaimsPerSync {
-            guard let latestGoal = storedGoalProfile(withID: targetGoal.id),
-                  questionBankContextRevision(for: latestGoal) == intent.contextRevision else {
-                _ = upsertQuestionBankSyncIntent(
-                    for: currentGoal,
-                    desiredCount: desiredCount,
+            guard let latestGoal = storedGoalProfile(withID: targetGoal.id) else { break }
+            let latestContextRevision = questionBankContextRevision(for: latestGoal)
+            guard latestContextRevision == intent.contextRevision else {
+                refreshQuestionBankSyncIntentForCurrentDeficit(
+                    for: latestGoal,
+                    contextRevision: latestContextRevision,
+                    localTarget: localTarget,
                     lowWatermark: lowWatermark
                 )
                 save()
                 break
             }
 
-            let localTarget = minimumLocalQuestionCount ?? questionBankTargetCount
             let deficit = questionBankDeficit(for: latestGoal, targetCount: localTarget)
             guard deficit > 0 else {
                 removeQuestionBankSyncIntent(for: targetGoal.id)
@@ -3370,11 +4396,17 @@ final class CheckpointStore {
                   var resolvedGoal = storedGoalProfile(withID: targetGoal.id) else {
                 break
             }
+            if let blockedReason = normalizedQuestionBankBlockedReason(
+                claim.generationBlockedReason
+            ) {
+                intent.generationBlockedReason = blockedReason
+            }
             let resolvedContextRevision = questionBankContextRevision(for: resolvedGoal)
             guard resolvedContextRevision == intent.contextRevision else {
-                _ = upsertQuestionBankSyncIntent(
+                refreshQuestionBankSyncIntentForCurrentDeficit(
                     for: resolvedGoal,
-                    desiredCount: desiredCount,
+                    contextRevision: resolvedContextRevision,
+                    localTarget: localTarget,
                     lowWatermark: lowWatermark
                 )
                 save()
@@ -3424,6 +4456,7 @@ final class CheckpointStore {
 
             totalAdded += newQuestions.count
             if !newQuestions.isEmpty {
+                intent.emptyFillCycleRetryCount = 0
                 lastQuestionProvider = .backend
                 lastQuestionGenerationFailure = nil
                 lastAIErrorMessage = nil
@@ -3431,12 +4464,19 @@ final class CheckpointStore {
 
             let updatedRevision = questionBankContextRevision(for: resolvedGoal)
             if updatedRevision != intent.contextRevision {
-                intent = upsertQuestionBankSyncIntent(
+                refreshQuestionBankSyncIntentForCurrentDeficit(
                     for: resolvedGoal,
                     contextRevision: updatedRevision,
-                    desiredCount: desiredCount,
+                    localTarget: localTarget,
                     lowWatermark: lowWatermark
                 )
+                guard let refreshedIntent = questionBankSyncIntents.first(where: {
+                    $0.goalID == resolvedGoal.id
+                }) else {
+                    save()
+                    break
+                }
+                intent = refreshedIntent
             } else {
                 // Keep the old claim ID until its questions and replacement share one snapshot.
                 intent.claimID = UUID().uuidString
@@ -3453,7 +4493,8 @@ final class CheckpointStore {
             claimAttemptCount += 1
             guard !claim.questions.isEmpty,
                   questionBankSyncIntents.contains(where: { $0.goalID == targetGoal.id }),
-                  updatedRevision == contextRevision else {
+                  updatedRevision == contextRevision,
+                  !(intent.generationBlockedReason != nil && claim.readyCount == 0) else {
                 break
             }
         }
@@ -3464,9 +4505,134 @@ final class CheckpointStore {
         )
     }
 
+    func remoteQuestionBankDesiredCount(
+        for targetGoal: Goal,
+        localDeficit: Int
+    ) -> Int {
+        guard let skillMap = targetGoal.derivedSkillMap,
+              !skillMap.topics.isEmpty else {
+            return min(100, max(1, localDeficit))
+        }
+        let goalCompetencies = competencies.filter {
+            ($0.goalID ?? targetGoal.id) == targetGoal.id
+        }
+        let weights = desiredSkillAllocation(
+            for: targetGoal,
+            competencies: goalCompetencies
+        )
+        let skillIDs = skillMap.topics.map(\.id)
+        let positiveWeightSkillCount = skillIDs.filter { weights[$0, default: 0] > 0 }.count
+        let coverageDeficits = skillQuestionCoverageDeficitBySkillID(for: targetGoal)
+        let objectiveCounts = Dictionary(uniqueKeysWithValues: skillMap.topics.map {
+            ($0.id, $0.objectives.count)
+        })
+        let minimumDesiredCount = min(
+            100,
+            max(1, localDeficit, positiveWeightSkillCount)
+        )
+        for desiredCount in minimumDesiredCount...100 {
+            let targets = apportionedSkillCounts(
+                skillIDs: skillIDs,
+                weights: weights,
+                desiredCount: desiredCount
+            )
+            if skillIDs.allSatisfy({
+                targets[$0, default: 0] >= max(
+                    coverageDeficits[$0, default: 0],
+                    objectiveCounts[$0, default: 0]
+                )
+            }) {
+                return desiredCount
+            }
+        }
+        return 100
+    }
+
+    private func apportionedSkillCounts(
+        skillIDs: [SkillMapTopic.ID],
+        weights: [SkillMapTopic.ID: Int],
+        desiredCount: Int
+    ) -> [SkillMapTopic.ID: Int] {
+        guard desiredCount > 0, !skillIDs.isEmpty else { return [:] }
+
+        let resolvedWeights = Dictionary(uniqueKeysWithValues: skillIDs.map {
+            ($0, max(0, weights[$0, default: 0]))
+        })
+        let positiveSkillIDs = skillIDs.filter { resolvedWeights[$0, default: 0] > 0 }
+        var targets = Dictionary(uniqueKeysWithValues: skillIDs.map { ($0, 0) })
+        guard !positiveSkillIDs.isEmpty else { return targets }
+
+        if desiredCount < positiveSkillIDs.count {
+            let orderByID = Dictionary(uniqueKeysWithValues: skillIDs.enumerated().map { ($1, $0) })
+            let ranked = positiveSkillIDs.sorted { lhs, rhs in
+                let lhsWeight = resolvedWeights[lhs, default: 0]
+                let rhsWeight = resolvedWeights[rhs, default: 0]
+                if lhsWeight != rhsWeight { return lhsWeight > rhsWeight }
+                return orderByID[lhs, default: 0] < orderByID[rhs, default: 0]
+            }
+            for skillID in ranked.prefix(desiredCount) {
+                targets[skillID] = 1
+            }
+            return targets
+        }
+
+        for skillID in positiveSkillIDs {
+            targets[skillID] = 1
+        }
+        let remainingCount = desiredCount - positiveSkillIDs.count
+        let weightTotal = positiveSkillIDs.reduce(0) {
+            $0 + resolvedWeights[$1, default: 0]
+        }
+        guard remainingCount > 0, weightTotal > 0 else { return targets }
+
+        let orderByID = Dictionary(uniqueKeysWithValues: skillIDs.enumerated().map { ($1, $0) })
+        var fractionalRemainders: [SkillMapTopic.ID: Double] = [:]
+        for skillID in positiveSkillIDs {
+            let exact = Double(remainingCount * resolvedWeights[skillID, default: 0]) /
+                Double(weightTotal)
+            let addition = Int(exact)
+            targets[skillID, default: 0] += addition
+            fractionalRemainders[skillID] = exact - Double(addition)
+        }
+        let remainder = desiredCount - targets.values.reduce(0, +)
+        let ranked = positiveSkillIDs.sorted { lhs, rhs in
+            let lhsRemainder = fractionalRemainders[lhs, default: 0]
+            let rhsRemainder = fractionalRemainders[rhs, default: 0]
+            if lhsRemainder != rhsRemainder { return lhsRemainder > rhsRemainder }
+            return orderByID[lhs, default: 0] < orderByID[rhs, default: 0]
+        }
+        for skillID in ranked.prefix(remainder) {
+            targets[skillID, default: 0] += 1
+        }
+        return targets
+    }
+
+    private func refreshQuestionBankSyncIntentForCurrentDeficit(
+        for targetGoal: Goal,
+        contextRevision: String,
+        localTarget: Int,
+        lowWatermark: Int
+    ) {
+        let deficit = questionBankDeficit(for: targetGoal, targetCount: localTarget)
+        guard deficit > 0 else {
+            removeQuestionBankSyncIntent(for: targetGoal.id)
+            return
+        }
+        _ = upsertQuestionBankSyncIntent(
+            for: targetGoal,
+            contextRevision: contextRevision,
+            desiredCount: remoteQuestionBankDesiredCount(
+                for: targetGoal,
+                localDeficit: deficit
+            ),
+            lowWatermark: lowWatermark
+        )
+    }
+
     private func schedulePendingQuestionBankPolling(for targetGoal: Goal) {
         guard shouldUseDurableQuestionBank,
               let initialIntent = questionBankSyncIntents.first(where: { $0.goalID == targetGoal.id }),
+              !isQuestionBankSyncIntentBlocked(initialIntent, for: targetGoal),
               !questionBankPollingGoalIDs.contains(targetGoal.id) else {
             return
         }
@@ -3510,6 +4676,10 @@ final class CheckpointStore {
                     self.schedulePendingQuestionBankPolling(for: currentGoal)
                     return
                 }
+                guard !self.isQuestionBankSyncIntentBlocked(currentIntent, for: currentGoal) else {
+                    self.finishQuestionBankPolling(for: targetGoal.id, token: pollingToken)
+                    return
+                }
 
                 let outcome = await self.synchronizeDurableQuestionBank(
                     for: currentGoal,
@@ -3537,11 +4707,17 @@ final class CheckpointStore {
                 if self.goal?.id == currentGoal.id {
                     self.questionBatchState = self.readyQuestionCount(for: currentGoal) >= self.unlockPolicy.questionsPerSession
                         ? .ready
-                        : .idle
+                        : (self.hasPendingQuestionBankSync(for: currentGoal) ? .idle : .failed)
                 }
                 self.save()
                 self.publishShieldContext()
 
+                if let latestIntent = self.questionBankSyncIntents.first(where: {
+                    $0.goalID == currentGoal.id
+                }), self.isQuestionBankSyncIntentBlocked(latestIntent, for: currentGoal) {
+                    self.finishQuestionBankPolling(for: targetGoal.id, token: pollingToken)
+                    return
+                }
                 if !self.questionBankSyncIntents.contains(where: { $0.goalID == currentGoal.id }) {
                     self.finishQuestionBankPolling(for: targetGoal.id, token: pollingToken)
                     return
@@ -3581,11 +4757,19 @@ final class CheckpointStore {
             var intent = questionBankSyncIntents[index]
             if intent.contextRevision != contextRevision {
                 intent.contextRevision = contextRevision
+                intent.bankContextRevision = newQuestionBankContextRevision(
+                    baseRevision: contextRevision
+                )
                 intent.bankID = nil
                 intent.claimID = UUID().uuidString
                 intent.createdAt = Date()
+                intent.lastAttemptAt = nil
+                intent.generationBlockedReason = nil
+                intent.emptyFillCycleRetryCount = 0
+                intent.desiredCount = desiredCount
+            } else {
+                intent.desiredCount = max(intent.desiredCount, desiredCount)
             }
-            intent.desiredCount = desiredCount
             intent.lowWatermark = lowWatermark
             questionBankSyncIntents[index] = intent
             save()
@@ -3595,12 +4779,19 @@ final class CheckpointStore {
         let intent = QuestionBankSyncIntent(
             goalID: targetGoal.id,
             contextRevision: contextRevision,
+            bankContextRevision: newQuestionBankContextRevision(
+                baseRevision: contextRevision
+            ),
             desiredCount: desiredCount,
             lowWatermark: lowWatermark
         )
         questionBankSyncIntents.append(intent)
         save()
         return intent
+    }
+
+    private func newQuestionBankContextRevision(baseRevision: String) -> String {
+        "\(baseRevision):\(UUID().uuidString)"
     }
 
     private func replaceQuestionBankSyncIntent(_ intent: QuestionBankSyncIntent) {
@@ -3674,16 +4865,26 @@ final class CheckpointStore {
         targetCount: Int? = nil
     ) -> QuestionGenerationRequest {
         let resolvedTargetCount = targetCount ?? questionBankTargetCount
+        let generationCompetencies: [TopicCompetency]
+        if let skillMap = goal.derivedSkillMap {
+            let activeSkillIDs = Set(skillMap.topics.map(\.id))
+            generationCompetencies = competencies.filter { competency in
+                guard let skillID = competency.skillID else { return true }
+                return activeSkillIDs.contains(skillID)
+            }
+        } else {
+            generationCompetencies = competencies
+        }
         return QuestionGenerationRequest(
             goal: goal,
             existingQuestions: existingQuestions,
-            competencies: competencies,
+            competencies: generationCompetencies,
             reportedQuestions: reportedQuestions,
             targetCount: resolvedTargetCount,
             minimumDifficulty: goal.minimumQuestionDifficulty,
             desiredSkillAllocation: desiredSkillAllocation(
                 for: goal,
-                competencies: competencies
+                competencies: generationCompetencies
             ),
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken
@@ -3722,7 +4923,14 @@ final class CheckpointStore {
                 ceil(Double(max(0, 100 - competency.masteryPercent)) / 10.0)
             )
             let uncertaintyBonus = max(0, 4 - min(4, competency.attempts))
-            let weight = min(16, max(3, 3 + weaknessBonus + uncertaintyBonus))
+            let weight = min(
+                16,
+                max(
+                    3,
+                    skill.objectives.count,
+                    3 + weaknessBonus + uncertaintyBonus
+                )
+            )
             allocation[skill.id] = weight
         }
         return allocation

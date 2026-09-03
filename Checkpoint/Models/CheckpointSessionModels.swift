@@ -24,6 +24,9 @@ struct CheckpointAttempt: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var questionID: CheckpointQuestion.ID
     var goalID: Goal.ID
+    var skillID: SkillMapTopic.ID? = nil
+    var objectiveID: SkillMapObjective.ID? = nil
+    var questionDifficulty: Int? = nil
     var prompt: String
     var answer: String
     var result: AnswerResult

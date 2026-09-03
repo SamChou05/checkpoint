@@ -47,6 +47,7 @@ struct QuestionBankPreparationReceipt: Equatable, Sendable {
     var status: QuestionBankRemoteStatus
     var readyCount: Int
     var targetCount: Int
+    var generationBlockedReason: String? = nil
 }
 
 struct QuestionBankClaimReceipt: Equatable, Sendable {
@@ -54,6 +55,7 @@ struct QuestionBankClaimReceipt: Equatable, Sendable {
     var status: QuestionBankRemoteStatus
     var readyCount: Int
     var targetCount: Int
+    var generationBlockedReason: String? = nil
 }
 
 protocol QuestionBankSyncing: Sendable {
@@ -138,7 +140,8 @@ struct BackendQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
             bankID: bankID,
             status: payload.status,
             readyCount: payload.readyCount,
-            targetCount: payload.targetCount
+            targetCount: payload.targetCount,
+            generationBlockedReason: payload.generationBlockedReason
         )
     }
 
@@ -172,7 +175,8 @@ struct BackendQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
             BackendQuestionBankClaimRequest(
                 bankID: normalizedBankID,
                 claimID: normalizedClaimID,
-                limit: limit
+                limit: limit,
+                request: request
             )
         )
 
@@ -202,7 +206,8 @@ struct BackendQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
             },
             status: payload.status,
             readyCount: payload.readyCount,
-            targetCount: payload.targetCount
+            targetCount: payload.targetCount,
+            generationBlockedReason: payload.generationBlockedReason
         )
     }
 
@@ -248,12 +253,28 @@ private struct BackendQuestionBankPreparationResponse: Decodable {
     var status: QuestionBankRemoteStatus
     var readyCount: Int
     var targetCount: Int
+    var generationBlockedReason: String?
 }
 
 struct BackendQuestionBankClaimRequest: Encodable {
     var bankID: String
     var claimID: String
     var limit: Int
+    var blockedStemFingerprints: [String]
+
+    init(
+        bankID: String,
+        claimID: String,
+        limit: Int,
+        request: QuestionGenerationRequest? = nil
+    ) {
+        self.bankID = bankID
+        self.claimID = claimID
+        self.limit = limit
+        blockedStemFingerprints = request.map {
+            BackendQuestionHistory.blockedStemFingerprints(for: $0)
+        } ?? []
+    }
 }
 
 private struct BackendQuestionBankClaimResponse: Decodable {
@@ -261,4 +282,5 @@ private struct BackendQuestionBankClaimResponse: Decodable {
     var status: QuestionBankRemoteStatus
     var readyCount: Int
     var targetCount: Int
+    var generationBlockedReason: String?
 }

@@ -12,6 +12,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - The raw typed goal is authoritative. Legacy goal category remains compatibility metadata and new goals default to `Custom` instead of being classified by subject keywords.
 - Provider-based multiple-choice question generation extracts a learning target from typed goals, so phrases like `Study for the LSAT` produce LSAT questions rather than study-habit prompts.
 - Goals without focus areas ask the active AI provider to infer a subject-matter Skill Map from the user's exact learning target; Checkpoint does not seed it with canned topic lists.
+- Reviewed Skill Maps remain editable and, for members, can advance mastered skills into harder successor skills from recent per-objective evidence while preserving an inspectable archive of prior stages.
 - Automatic question generation with provider details abstracted away from the user-facing app.
 - Multi-question checkpoint sessions that ask 5 questions and require 4 correct answers by default before an unlock.
 - Per-profile 1-to-5 question difficulty floor so users can skip remedial prompts for goals they already know well, with an opt-in level-up prompt after strong recent accuracy.
@@ -25,8 +26,9 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Feedback notes live in Settings and can be shared through the system share sheet instead of interrupting the checkpoint quiz.
 - Home no longer offers one-tap pause or manual checkpoint entry while blocking is active; short breaks start from blocked-app attempts or emergency passes, while fully stopping blocking requires an 18-of-20 stop challenge.
 - Manual checkpoint preview lives in Debug-only Developer tools and does not unlock apps.
-- For members, Checkpoint quietly prepares fresh questions when the current set can no longer fill the next checkpoint, so users do not manage a question bank.
-- Question generation explicitly plans distinct tested objectives, and fresh quiz slots spread across available topics before repeating one.
+- For members, Checkpoint quietly prepares fresh questions server-side before the local reserve runs out, and a persisted bank intent resumes after relaunch without making a blocked user wait on a model call.
+- Question generation explicitly plans distinct tested objectives, weights struggling and unexplored skills more heavily, and restores at least two ready questions per active skill with fresh coverage for every active objective.
+- Exact question stems are rejected across a batch, the complete server-bank history, and a bounded fingerprint of local history; related questions that test a genuinely different angle remain valid.
 - Users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
 - Starter/membership product behavior: the first goal, app blocking, and checkpoint unlock loop are usable before payment; membership keeps fresh checkpoints ready, unlocks goal profiles, larger question banks, and adaptive Study Assist.
 - Privacy manifests for the app and Screen Time extensions.

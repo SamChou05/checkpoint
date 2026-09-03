@@ -6,6 +6,7 @@ struct BackendQuestionRequest: Encodable {
     private var existingPrompts: [String]
     private var existingQuestionCoverage: [QuestionCoveragePayload]
     private var reportedPrompts: [String]
+    private var blockedStemFingerprints: [String]
     private var sourceDocuments: [SourceDocumentPayload]
     private var targetCount: Int
     private var minimumDifficulty: Int
@@ -15,6 +16,7 @@ struct BackendQuestionRequest: Encodable {
     private var contextRevision: String?
     private var desiredCount: Int?
     private var lowWatermark: Int?
+    private var requiresFullObjectiveCoverage: Bool?
 
     init(
         request: QuestionGenerationRequest,
@@ -29,6 +31,7 @@ struct BackendQuestionRequest: Encodable {
         existingPrompts = recentQuestions.map(\.prompt)
         existingQuestionCoverage = recentQuestions.map(QuestionCoveragePayload.init)
         reportedPrompts = request.reportedQuestions.prefix(30).map(\.prompt)
+        blockedStemFingerprints = BackendQuestionHistory.blockedStemFingerprints(for: request)
         sourceDocuments = request.goal.sourceDocuments.map(SourceDocumentPayload.init)
         targetCount = targetCountOverride ?? request.targetCount
         minimumDifficulty = request.minimumDifficulty
@@ -42,6 +45,48 @@ struct BackendQuestionRequest: Encodable {
         self.contextRevision = contextRevision
         self.desiredCount = desiredCount
         self.lowWatermark = lowWatermark
+        requiresFullObjectiveCoverage = desiredCount == nil ? nil : true
+    }
+}
+
+enum BackendQuestionHistory {
+    static let maximumBlockedStemFingerprintCount = 750
+
+    static func blockedStemFingerprints(for request: QuestionGenerationRequest) -> [String] {
+        let fingerprints = request.existingQuestions.compactMap {
+            QuestionBatchSanitizer.questionStemFingerprint($0.prompt)
+        } + request.reportedQuestions.compactMap {
+            QuestionBatchSanitizer.questionStemFingerprint($0.prompt)
+        }
+        return Array(Set(fingerprints))
+            .sorted()
+            .prefix(maximumBlockedStemFingerprintCount)
+            .map { $0 }
+    }
+}
+
+enum BackendSkillMapEvolutionHistory {
+    static let maximumArchivedSkillNameFingerprintCount = 750
+
+    static func archivedSkillNameFingerprints(for skillMap: GoalSkillMap?) -> [String] {
+        let fingerprints = skillMap?.archivedTopics.compactMap {
+            skillNameFingerprint($0.topic.name)
+        } ?? []
+        return Array(Set(fingerprints))
+            .sorted()
+            .prefix(maximumArchivedSkillNameFingerprintCount)
+            .map { $0 }
+    }
+
+    static func skillNameFingerprint(_ name: String) -> String? {
+        let identity = SkillMapTopic.canonicalIdentityKey(name)
+        guard !identity.isEmpty else { return nil }
+        var hash: UInt64 = 14_695_981_039_346_656_037
+        for byte in identity.utf8 {
+            hash ^= UInt64(byte)
+            hash &*= 1_099_511_628_211
+        }
+        return String(format: "%016llx", hash)
     }
 }
 
@@ -61,6 +106,42 @@ struct BackendSkillMapInferenceRequest: Encodable {
     }
 }
 
+struct BackendSkillMapEvolutionRequest: Encodable {
+    private var goal: GoalPayload
+    private var baseMapFingerprint: String
+    private var currentSkillMap: BackendSkillMapPayload
+    private var masteredSkillIDs: [SkillMapTopic.ID]
+    private var competencies: [EvolutionCompetencyPayload]
+    private var recentAttempts: [EvolutionAttemptPayload]
+    private var archivedSkills: [ArchivedSkillPayload]
+    private var archivedSkillNameFingerprints: [String]
+    private var sourceDocuments: [SourceDocumentPayload]
+
+    init(request: SkillMapEvolutionRequest) {
+        goal = GoalPayload(
+            goal: request.goal,
+            questionContext: GoalQuestionContext(goal: request.goal)
+        )
+        baseMapFingerprint = request.baseMapFingerprint
+        currentSkillMap = BackendSkillMapPayload(
+            skillMap: request.goal.derivedSkillMap ?? GoalSkillMap(topics: [])
+        )
+        masteredSkillIDs = request.masteredSkillIDs
+        competencies = request.competencies
+            .filter { competency in
+                competency.skillID.map(request.masteredSkillIDs.contains) == true
+            }
+            .map(EvolutionCompetencyPayload.init)
+        recentAttempts = request.recentAttempts.prefix(30).map(EvolutionAttemptPayload.init)
+        archivedSkills = (request.goal.derivedSkillMap?.archivedTopics.suffix(48) ?? []).map {
+            ArchivedSkillPayload(id: $0.topic.id, name: $0.topic.name)
+        }
+        archivedSkillNameFingerprints = BackendSkillMapEvolutionHistory
+            .archivedSkillNameFingerprints(for: request.goal.derivedSkillMap)
+        sourceDocuments = request.goal.sourceDocuments.map(SourceDocumentPayload.init)
+    }
+}
+
 private struct DesiredSkillAllocationPayload: Encodable {
     var skillID: SkillMapTopic.ID
     var count: Int
@@ -75,9 +156,12 @@ struct BackendSkillMapPayload: Codable {
         skills = skillMap.topics.map(BackendSkillPayload.init)
     }
 
-    func makeSkillMap(provenance: SkillMapProvenance) throws -> GoalSkillMap {
+    func makeSkillMap(
+        provenance: SkillMapProvenance,
+        expectedVersion: Int = 1
+    ) throws -> GoalSkillMap {
         let normalizedNames = skills.map { SkillMapTopic.normalizedName($0.name) }
-        guard version == 1,
+        guard version == expectedVersion,
               let validatedNames = SkillMapTopic.validatedNames(normalizedNames),
               Set(skills.map(\.id)).count == skills.count else {
             throw QuestionGenerationError.badResponse
@@ -85,7 +169,7 @@ struct BackendSkillMapPayload: Codable {
 
         var allObjectiveIDs: Set<SkillMapObjective.ID> = []
         let topics = try zip(skills, validatedNames).map { skill, normalizedName in
-            guard (1...8).contains(skill.objectives.count) else {
+            guard (1...SkillMapTopic.maximumActiveObjectiveCount).contains(skill.objectives.count) else {
                 throw QuestionGenerationError.badResponse
             }
 
@@ -125,7 +209,9 @@ struct BackendSkillPayload: Codable {
     init(skill: SkillMapTopic) {
         id = skill.id
         name = skill.name
-        objectives = skill.objectives.map(BackendObjectivePayload.init)
+        objectives = skill.objectives
+            .prefix(SkillMapTopic.maximumActiveObjectiveCount)
+            .map(BackendObjectivePayload.init)
     }
 }
 
@@ -141,6 +227,97 @@ struct BackendObjectivePayload: Codable {
 
 struct BackendSkillMapInferenceResponse: Decodable {
     var skillMap: BackendSkillMapPayload
+}
+
+struct BackendSkillMapEvolutionResponse: Decodable {
+    var baseMapFingerprint: String
+    var baseVersion: Int
+    var skillMap: BackendSkillMapPayload
+    var replacements: [BackendSkillMapEvolutionReplacement]
+
+    func makeProposal() throws -> SkillMapEvolutionProposal {
+        let fingerprint = baseMapFingerprint.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !fingerprint.isEmpty,
+              fingerprint.count <= 128,
+              baseVersion >= 1,
+              (1...2).contains(replacements.count),
+              Set(replacements.map(\.predecessorSkillID)).count == replacements.count,
+              Set(replacements.map(\.successorSkillID)).count == replacements.count else {
+            throw QuestionGenerationError.badResponse
+        }
+        let evolvedMap = try skillMap.makeSkillMap(
+            provenance: .adaptiveEvolution,
+            expectedVersion: baseVersion + 1
+        )
+        let returnedByID = Dictionary(uniqueKeysWithValues: evolvedMap.topics.map { ($0.id, $0) })
+        guard replacements.allSatisfy({ replacement in
+            guard let successor = returnedByID[replacement.successorSkillID] else { return false }
+            return (2...5).contains(successor.objectives.count)
+        }) else {
+            throw QuestionGenerationError.badResponse
+        }
+        return SkillMapEvolutionProposal(
+            baseMapFingerprint: fingerprint,
+            baseVersion: baseVersion,
+            topics: evolvedMap.topics,
+            replacements: replacements.map {
+                SkillMapEvolutionReplacement(
+                    predecessorSkillID: $0.predecessorSkillID,
+                    successorSkillID: $0.successorSkillID
+                )
+            }
+        )
+    }
+}
+
+struct BackendSkillMapEvolutionReplacement: Decodable {
+    var predecessorSkillID: SkillMapTopic.ID
+    var successorSkillID: SkillMapTopic.ID
+}
+
+private struct EvolutionCompetencyPayload: Encodable {
+    var skillID: SkillMapTopic.ID?
+    var topic: String
+    var estimatedLevel: Double
+    var masteryPercent: Int
+    var attempts: Int
+    var correct: Int
+    var partial: Int
+    var incorrect: Int
+    var currentStreak: Int
+
+    init(competency: TopicCompetency) {
+        skillID = competency.skillID
+        topic = competency.topic
+        estimatedLevel = competency.estimatedLevel
+        masteryPercent = competency.masteryPercent
+        attempts = competency.attempts
+        correct = competency.correct
+        partial = competency.partial
+        incorrect = competency.incorrect
+        currentStreak = competency.currentStreak
+    }
+}
+
+private struct EvolutionAttemptPayload: Encodable {
+    var skillID: SkillMapTopic.ID?
+    var objectiveID: SkillMapObjective.ID?
+    var difficulty: Int
+    var result: String
+    var occurredAt: String
+
+    init(attempt: CheckpointAttempt) {
+        skillID = attempt.skillID
+        objectiveID = attempt.objectiveID
+        difficulty = UnlockPolicy.normalizedQuestionDifficulty(attempt.questionDifficulty ?? 1)
+        result = attempt.result.rawValue.lowercased()
+        occurredAt = attempt.createdAt.ISO8601Format()
+    }
+}
+
+private struct ArchivedSkillPayload: Encodable {
+    var id: SkillMapTopic.ID
+    var name: String
 }
 
 private struct SourceDocumentPayload: Encodable {

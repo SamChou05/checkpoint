@@ -210,7 +210,15 @@ struct CheckpointQuestionSelector {
         avoidingSimilarityTo selectedQuestions: [CheckpointQuestion],
         preferringNewTopic: Bool = false
     ) -> CheckpointQuestion? {
-        guard !orderedQuestions.isEmpty else { return nil }
+        let distinctQuestions = orderedQuestions.filter { candidate in
+            selectedQuestions.allSatisfy { selected in
+                !QuestionBatchSanitizer.hasSameQuestionStem(
+                    candidate.prompt,
+                    selected.prompt
+                )
+            }
+        }
+        guard !distinctQuestions.isEmpty else { return nil }
 
         let selectedSkillKeys = Set(selectedQuestions.map(questionSkillKey))
         let isNewSkill: (CheckpointQuestion) -> Bool = { question in
@@ -218,11 +226,38 @@ struct CheckpointQuestionSelector {
         }
         if activeDerivedSkillMap == nil,
            preferringNewTopic,
-           let question = orderedQuestions.first(where: isNewSkill) {
+           let question = distinctQuestions.first(where: isNewSkill) {
             return question
         }
 
-        return orderedQuestions.first
+        guard let baselineQuestion = distinctQuestions.first,
+              activeDerivedSkillMap != nil else {
+            return distinctQuestions.first
+        }
+        let baselineSkillKey = questionSkillKey(baselineQuestion)
+        let sameSkillCandidates = distinctQuestions.filter {
+            questionSkillKey($0) == baselineSkillKey
+        }
+        let attemptedObjectiveKeys = Set(
+            activeQuestions
+                .filter { $0.timesAsked > 0 }
+                .compactMap(questionObjectiveKey)
+        )
+        let selectedObjectiveKeys = Set(selectedQuestions.compactMap(questionObjectiveKey))
+        if let unseenObjectiveQuestion = sameSkillCandidates.first(where: { question in
+            guard let objectiveKey = questionObjectiveKey(question) else { return false }
+            return !attemptedObjectiveKeys.contains(objectiveKey) &&
+                !selectedObjectiveKeys.contains(objectiveKey)
+        }) {
+            return unseenObjectiveQuestion
+        }
+        if let unselectedObjectiveQuestion = sameSkillCandidates.first(where: { question in
+            guard let objectiveKey = questionObjectiveKey(question) else { return false }
+            return !selectedObjectiveKeys.contains(objectiveKey)
+        }) {
+            return unselectedObjectiveQuestion
+        }
+        return baselineQuestion
     }
 
     private func shouldForceSkillBreadth(
@@ -271,7 +306,13 @@ struct CheckpointQuestionSelector {
             .filter { question in
                 guard question.status == .correct,
                       canReuseCorrectQuestion(question, now: now),
-                      !selectedSkillKeys.contains(questionSkillKey(question)) else {
+                      !selectedSkillKeys.contains(questionSkillKey(question)),
+                      selectedQuestions.allSatisfy({ selected in
+                          !QuestionBatchSanitizer.hasSameQuestionStem(
+                              question.prompt,
+                              selected.prompt
+                          )
+                      }) else {
                     return false
                 }
                 let competency = competency(for: question)
@@ -422,6 +463,18 @@ struct CheckpointQuestionSelector {
         }
 
         return SkillMapReconciler.questionTopicKey(question.topic)
+    }
+
+    private func questionObjectiveKey(_ question: CheckpointQuestion) -> String? {
+        guard let skillMap = storedGoalProfile(withID: question.goalID)?.derivedSkillMap,
+              let skill = SkillMapReconciler.skillMapTopic(matching: question, in: skillMap),
+              let objectiveID = SkillMapReconciler.canonicalizedQuestion(
+                question,
+                for: skill
+              ).objectiveID else {
+            return nil
+        }
+        return "\(skill.id.uuidString):\(objectiveID.uuidString)"
     }
 
     private func targetDifficulty(for competency: TopicCompetency) -> Double {

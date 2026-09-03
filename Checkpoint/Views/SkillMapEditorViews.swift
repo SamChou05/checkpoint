@@ -66,7 +66,12 @@ struct SkillMapReviewView: View {
                             }
                         }
 
-                        if !isValid {
+                        if reusesRetiredSkill {
+                            Text("A retired skill name can’t be reused. Choose a new name so its saved history stays distinct.")
+                                .font(.caption)
+                                .foregroundStyle(CheckpointTheme.coral)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } else if !isValid {
                             SkillNameValidationMessage()
                         }
                     }
@@ -101,7 +106,18 @@ struct SkillMapReviewView: View {
     }
 
     private var isValid: Bool {
-        SkillMapTopic.validatedNames(topics.map(\.name)) != nil
+        SkillMapTopic.validatedNames(topics.map(\.name)) != nil && !reusesRetiredSkill
+    }
+
+    private var reusesRetiredSkill: Bool {
+        let map = store.activeDerivedSkillMap
+        return SkillMapReconciler.hasArchivedSkillCollision(
+            topics: topics,
+            archivedTopics: map?.archivedTopics ?? []
+        ) || SkillMapReconciler.hasRemovedSkillNameCollision(
+            topics: topics,
+            existingTopics: map?.topics ?? []
+        )
     }
 
     private var existingSkillIDs: Set<SkillMapTopic.ID> {

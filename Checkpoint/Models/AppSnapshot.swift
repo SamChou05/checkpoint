@@ -24,4 +24,5 @@ struct AppSnapshot: Codable, Sendable {
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?
     var questionBankSyncIntents: [QuestionBankSyncIntent]?
+    var skillMapEvolutionIntents: [SkillMapEvolutionIntent]?
 }

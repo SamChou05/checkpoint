@@ -4,6 +4,7 @@ enum QuestionGenerationError: LocalizedError, Equatable, Sendable {
     case providerUnavailable
     case backendNotConfigured
     case serviceUnavailable
+    case providerFailure
     case rateLimited
     case safetyIntervention
     case badResponse
@@ -17,6 +18,8 @@ enum QuestionGenerationError: LocalizedError, Equatable, Sendable {
             return "No backend endpoint is configured."
         case .serviceUnavailable:
             return "The AI question service is unavailable."
+        case .providerFailure:
+            return "The AI provider could not produce a usable response."
         case .rateLimited:
             return "The AI question service rate limit was reached."
         case .safetyIntervention:
@@ -86,6 +89,32 @@ protocol SkillMapInferring: Sendable {
     func inferSkillMap(for request: QuestionGenerationRequest) async throws -> GoalSkillMap
 }
 
+struct SkillMapEvolutionRequest: Sendable {
+    var goal: Goal
+    var baseMapFingerprint: String
+    var masteredSkillIDs: [SkillMapTopic.ID]
+    var competencies: [TopicCompetency]
+    var recentAttempts: [CheckpointAttempt]
+    var backendEndpoint: URL?
+    var backendAuthorizationToken: String?
+}
+
+struct SkillMapEvolutionReplacement: Equatable, Sendable {
+    var predecessorSkillID: SkillMapTopic.ID
+    var successorSkillID: SkillMapTopic.ID
+}
+
+struct SkillMapEvolutionProposal: Equatable, Sendable {
+    var baseMapFingerprint: String
+    var baseVersion: Int
+    var topics: [SkillMapTopic]
+    var replacements: [SkillMapEvolutionReplacement]
+}
+
+protocol SkillMapEvolving: Sendable {
+    func evolveSkillMap(for request: SkillMapEvolutionRequest) async throws -> SkillMapEvolutionProposal
+}
+
 struct HybridQuestionEngine: Sendable {
     private let backendEngine: any QuestionGenerating
     private let appleFoundationEngine: any QuestionGenerating
@@ -125,6 +154,13 @@ struct HybridQuestionEngine: Sendable {
                 provenance: .explicitFocusAreas
             )
         }
+    }
+
+    func evolveSkillMap(for request: SkillMapEvolutionRequest) async throws -> SkillMapEvolutionProposal {
+        guard let evolutionEngine = backendEngine as? any SkillMapEvolving else {
+            throw QuestionGenerationError.providerUnavailable
+        }
+        return try await evolutionEngine.evolveSkillMap(for: request)
     }
 
     func generateQuestionBatch(
@@ -197,6 +233,8 @@ struct HybridQuestionEngine: Sendable {
         switch generationError {
         case .providerUnavailable, .backendNotConfigured, .serviceUnavailable:
             return .serviceUnavailable
+        case .providerFailure:
+            return .qualityRejected
         case .rateLimited:
             return .serviceUnavailable
         case .safetyIntervention:

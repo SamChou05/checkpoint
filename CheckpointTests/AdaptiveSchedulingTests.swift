@@ -178,4 +178,63 @@ final class AdaptiveSchedulingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(session.questions.filter { $0.id == maintenanceQuestion.id }.count, 1)
     }
 
+    @MainActor
+    func testSchedulerPrefersUnattemptedObjectivesWithinSelectedSkill() throws {
+        let broadSkill = SkillMapTopic(
+            name: "systems design",
+            objectives: (0..<5).map { SkillMapObjective(name: "objective \($0)") }
+        )
+        let skills = [
+            broadSkill,
+            SkillMapTopic(
+                name: "communication",
+                objectives: [SkillMapObjective(name: "explain tradeoffs")]
+            ),
+            SkillMapTopic(
+                name: "prioritization",
+                objectives: [SkillMapObjective(name: "rank constraints")]
+            )
+        ]
+        let goal = Goal(
+            title: "Practice product architecture",
+            deadline: Date().addingTimeInterval(30 * 24 * 60 * 60),
+            category: .custom,
+            currentLevel: "Beginner",
+            focusAreas: "",
+            derivedSkillMap: GoalSkillMap(
+                topics: skills,
+                status: .reviewed,
+                provenance: .userEdited
+            ),
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.competencies = skills.map {
+            .initial(topic: $0.name, goalID: goal.id, skillID: $0.id)
+        }
+        store.questions = broadSkill.objectives.enumerated().map { index, objective in
+            makeQuestion(
+                goal: goal,
+                index: 7_000 + index,
+                topic: broadSkill.name,
+                skillID: broadSkill.id,
+                objectiveID: objective.id,
+                objective: objective.name,
+                status: .new,
+                timesAsked: index == 0 ? 1 : 0,
+                difficulty: index == 0 ? 1 : 5
+            )
+        }
+
+        let selected = store.nextQuestions(limit: 4)
+
+        XCTAssertEqual(selected.count, 4)
+        XCTAssertEqual(
+            Set(selected.compactMap(\.objectiveID)),
+            Set(broadSkill.objectives.dropFirst().map(\.id))
+        )
+    }
+
 }

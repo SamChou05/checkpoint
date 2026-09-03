@@ -49,6 +49,7 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         XCTAssertEqual(payload["contextRevision"] as? String, "0123456789abcdef")
         XCTAssertEqual(payload["desiredCount"] as? Int, 80)
         XCTAssertEqual(payload["lowWatermark"] as? Int, 10)
+        XCTAssertEqual(payload["requiresFullObjectiveCoverage"] as? Bool, true)
     }
 
     func testClaimedRemoteIDBecomesStableLocalQuestionID() throws {
@@ -72,18 +73,274 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
 
     func testClaimPayloadCarriesPersistedIdempotencyKey() throws {
         let claimID = UUID().uuidString
+        let goal = makeGoal()
+        var request = makeRequest(goal: goal)
+        request.existingQuestions = [
+            makeQuestion(goal: goal, index: 31, prompt: "Historical claim stem 31")
+        ]
+        request.reportedQuestions = [
+            QuestionQualityReport(
+                questionID: UUID(),
+                goalID: goal.id,
+                prompt: "Reported claim stem",
+                reason: .wrongAnswer,
+                note: ""
+            )
+        ]
         let data = try JSONEncoder().encode(
             BackendQuestionBankClaimRequest(
                 bankID: "bank-123",
                 claimID: claimID,
-                limit: BackendQuestionBankClient.maximumClaimCount
+                limit: BackendQuestionBankClient.maximumClaimCount,
+                request: request
             )
         )
         let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let blockedStemFingerprints = try XCTUnwrap(
+            payload["blockedStemFingerprints"] as? [String]
+        )
 
         XCTAssertEqual(payload["bankID"] as? String, "bank-123")
         XCTAssertEqual(payload["claimID"] as? String, claimID)
         XCTAssertEqual(payload["limit"] as? Int, BackendQuestionBankClient.maximumClaimCount)
+        XCTAssertEqual(
+            Set(blockedStemFingerprints),
+            Set([
+                try XCTUnwrap(
+                    QuestionBatchSanitizer.questionStemFingerprint("Historical claim stem 31")
+                ),
+                try XCTUnwrap(
+                    QuestionBatchSanitizer.questionStemFingerprint("Reported claim stem")
+                )
+            ])
+        )
+    }
+
+    func testLegacyQuestionBankIntentFallsBackToBaseContextRevision() throws {
+        let original = QuestionBankSyncIntent(
+            goalID: UUID(),
+            contextRevision: "0123456789abcdef",
+            desiredCount: 40,
+            lowWatermark: 0
+        )
+        let data = try JSONEncoder().encode(original)
+        var legacyObject = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
+        legacyObject.removeValue(forKey: "bankContextRevision")
+        legacyObject.removeValue(forKey: "emptyFillCycleRetryCount")
+        let legacyData = try JSONSerialization.data(withJSONObject: legacyObject)
+
+        let decoded = try JSONDecoder().decode(QuestionBankSyncIntent.self, from: legacyData)
+
+        XCTAssertNil(decoded.bankContextRevision)
+        XCTAssertNil(decoded.generationBlockedReason)
+        XCTAssertNil(decoded.emptyFillCycleRetryCount)
+        XCTAssertEqual(decoded.bankContextRevision ?? decoded.contextRevision, decoded.contextRevision)
+    }
+
+    @MainActor
+    func testBlockedBankStaysDormantAcrossRelaunchUntilExplicitRetry() async throws {
+        let suiteName = "QuestionBankBlockedCycleTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let skills = ["arrays", "recursion", "hash maps"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: skills,
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "blocked-bank",
+                status: .empty,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount,
+                generationBlockedReason: "provider_failure_limit"
+            )
+        )
+        let unavailableEngine = HybridQuestionEngine(
+            backendEngine: UnavailableQuestionEngine(provider: .backend),
+            appleFoundationEngine: UnavailableQuestionEngine(provider: .appleFoundation)
+        )
+        let initialStore = CheckpointStore(
+            questionEngine: unavailableEngine,
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        initialStore.updateMembershipTier(.member)
+        initialStore.updateAIProviderPreference(.backend)
+        initialStore.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        initialStore.goal = goal
+        initialStore.goalProfiles = [goal]
+
+        await initialStore.refreshQuestionBatch()
+
+        XCTAssertEqual(bankClient.ensureRequests.count, 1)
+        XCTAssertEqual(
+            initialStore.questionBankSyncIntents.first?.generationBlockedReason,
+            "provider_failure_limit"
+        )
+        XCTAssertEqual(initialStore.questionBatchState, .failed)
+        XCTAssertFalse(initialStore.isPreparingActiveGoalQuestions)
+        let firstCycleRevision = try XCTUnwrap(bankClient.ensureRequests.first?.contextRevision)
+
+        let resumedStore = CheckpointStore(
+            questionEngine: unavailableEngine,
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        for _ in 0..<20 {
+            await Task.yield()
+        }
+
+        XCTAssertEqual(bankClient.ensureRequests.count, 1)
+        XCTAssertEqual(
+            resumedStore.questionBankSyncIntents.first?.generationBlockedReason,
+            "provider_failure_limit"
+        )
+        XCTAssertFalse(resumedStore.isPreparingActiveGoalQuestions)
+        XCTAssertFalse(resumedStore.questionGenerationStatusText.contains("Getting"))
+
+        await resumedStore.retryInitialQuestionGeneration()
+
+        XCTAssertEqual(bankClient.ensureRequests.count, 2)
+        let retryCycleRevision = try XCTUnwrap(bankClient.ensureRequests.last?.contextRevision)
+        XCTAssertNotEqual(retryCycleRevision, firstCycleRevision)
+        XCTAssertEqual(
+            retryCycleRevision.split(separator: ":").first,
+            firstCycleRevision.split(separator: ":").first
+        )
+        XCTAssertEqual(
+            resumedStore.questionBankSyncIntents.first?.generationBlockedReason,
+            "provider_failure_limit"
+        )
+
+        var editedSkills = skills
+        editedSkills[0].name = "array traversal"
+        XCTAssertTrue(resumedStore.reviewActiveDerivedSkillMap(topics: editedSkills))
+        for _ in 0..<40 {
+            await Task.yield()
+        }
+
+        XCTAssertEqual(bankClient.ensureRequests.count, 3)
+        let editedCycleRevision = try XCTUnwrap(bankClient.ensureRequests.last?.contextRevision)
+        XCTAssertNotEqual(
+            editedCycleRevision.split(separator: ":").first,
+            retryCycleRevision.split(separator: ":").first
+        )
+        XCTAssertEqual(
+            resumedStore.questionBankSyncIntents.first?.generationBlockedReason,
+            "provider_failure_limit"
+        )
+    }
+
+    @MainActor
+    func testBlockedBankClaimsAlreadyReadyQuestionsBeforeBecomingDormant() async throws {
+        let suiteName = "QuestionBankBlockedReadyTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let skills = ["arrays", "recursion", "hash maps"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: $0)])
+        }
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: skills,
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        var readyQuestion = makeQuestion(
+            goal: goal,
+            index: 9_000,
+            topic: skills[0].name,
+            skillID: skills[0].id,
+            objectiveID: skills[0].objectives[0].id,
+            objective: skills[0].objectives[0].name,
+            difficulty: 4
+        )
+        readyQuestion.remoteID = readyQuestion.id.uuidString
+        let bankClient = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "blocked-ready-bank",
+                status: .ready,
+                readyCount: 1,
+                targetCount: ProductLimits.memberQuestionBankTargetCount,
+                generationBlockedReason: "provider_failure_limit"
+            ),
+            defaultClaim: QuestionBankClaimReceipt(
+                questions: [readyQuestion],
+                status: .empty,
+                readyCount: 0,
+                targetCount: ProductLimits.memberQuestionBankTargetCount,
+                generationBlockedReason: "provider_failure_limit"
+            )
+        )
+        let store = CheckpointStore(
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [1]
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.membershipTier = .member
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        await store.refreshQuestionBatch()
+        for _ in 0..<20 {
+            await Task.yield()
+        }
+
+        XCTAssertEqual(bankClient.ensureRequests.count, 1)
+        XCTAssertEqual(bankClient.claimIDs.count, 1)
+        XCTAssertTrue(store.questions.contains { $0.id == readyQuestion.id })
+        XCTAssertEqual(
+            store.questionBankSyncIntents.first?.generationBlockedReason,
+            "provider_failure_limit"
+        )
+        XCTAssertFalse(store.isPreparingActiveGoalQuestions)
+    }
+
+    @MainActor
+    func testCompletedFiniteBankUsesFreshCycleWhenSameContextNeedsRefill() async throws {
+        let suiteName = "QuestionBankCycleTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let bankClient = RefillCycleQuestionBankClient()
+        let store = CheckpointStore(
+            questionBankClient: bankClient,
+            defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [60_000_000_000]
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.membershipTier = .member
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        await store.refreshQuestionBatch()
+        XCTAssertEqual(store.readyQuestionCount, ProductLimits.memberQuestionBankTargetCount)
+        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+        let firstCycleRevision = try XCTUnwrap(bankClient.ensureContextRevisions.first)
+
+        store.questions.removeAll()
+        await store.refreshQuestionBatch()
+
+        XCTAssertEqual(store.readyQuestionCount, ProductLimits.memberQuestionBankTargetCount)
+        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+        XCTAssertEqual(bankClient.ensureContextRevisions.count, 2)
+        let secondCycleRevision = try XCTUnwrap(bankClient.ensureContextRevisions.last)
+        XCTAssertNotEqual(firstCycleRevision, secondCycleRevision)
+        XCTAssertEqual(
+            firstCycleRevision.split(separator: ":").first,
+            secondCycleRevision.split(separator: ":").first
+        )
     }
 
     @MainActor
@@ -127,7 +384,10 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         XCTAssertEqual(intent.bankID, "bank-queued")
         XCTAssertFalse(intent.claimID.isEmpty)
         XCTAssertEqual(intent.contextRevision.count, 16)
-        XCTAssertEqual(bankClient.ensureRequests.first?.contextRevision, intent.contextRevision)
+        XCTAssertEqual(
+            bankClient.ensureRequests.first?.contextRevision,
+            intent.bankContextRevision ?? intent.contextRevision
+        )
         XCTAssertEqual(bankClient.ensureRequests.first?.desiredCount, ProductLimits.starterQuestionBankTargetCount)
         XCTAssertEqual(bankClient.ensureRequests.first?.lowWatermark, 0)
 
@@ -414,9 +674,14 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
         let goal = makeGoal()
+        let coverageTopics = ["arrays", "recursion", "hash maps"]
         let remoteQuestions = (1...ProductLimits.starterQuestionBankTargetCount).map { index -> CheckpointQuestion in
             let remoteID = UUID()
-            var question = makeQuestion(goal: goal, index: index)
+            var question = makeQuestion(
+                goal: goal,
+                index: index,
+                topic: coverageTopics[(index - 1) % coverageTopics.count]
+            )
             question.id = remoteID
             question.remoteID = remoteID.uuidString
             return question
@@ -456,7 +721,7 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
     }
 
     @MainActor
-    func testExhaustedFiniteBankStopsPollingBelowNominalLocalTarget() async throws {
+    func testExhaustedFiniteBankRetriesOneFreshCycleThenStops() async throws {
         let suiteName = "QuestionBankFiniteExhaustionTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
@@ -489,14 +754,30 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
             focusAreas: goal.focusAreas,
             preferredQuestionStyle: goal.preferredQuestionStyle
         )
+        for _ in 0..<500 {
+            if bankClient.ensureRequests.count >= 2,
+               store.questionBankSyncIntents.first?.generationBlockedReason ==
+                "client_validation_limit" {
+                break
+            }
+            await Task.yield()
+        }
 
-        XCTAssertEqual(bankClient.ensureRequests.count, 1)
-        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+        XCTAssertEqual(bankClient.ensureRequests.count, 2)
+        XCTAssertEqual(
+            Set(bankClient.ensureRequests.map(\.contextRevision)).count,
+            2
+        )
+        XCTAssertEqual(
+            store.questionBankSyncIntents.first?.generationBlockedReason,
+            "client_validation_limit"
+        )
+        XCTAssertEqual(store.questionBankSyncIntents.first?.emptyFillCycleRetryCount, 1)
         XCTAssertTrue(bankClient.claimIDs.isEmpty)
     }
 
     @MainActor
-    func testEmptyMemberBankIsTerminalAndStopsPolling() async throws {
+    func testEmptyMemberBankRetriesOneFreshCycleThenBecomesDormant() async throws {
         let suiteName = "QuestionBankMemberExhaustionTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
@@ -525,12 +806,24 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         store.goalProfiles = [goal]
 
         await store.refreshQuestionBatch()
-        for _ in 0..<20 {
+        for _ in 0..<500 {
+            if bankClient.ensureRequests.count >= 2,
+               store.questionBankSyncIntents.first?.generationBlockedReason ==
+                "client_validation_limit" {
+                break
+            }
             await Task.yield()
         }
 
-        XCTAssertEqual(bankClient.ensureRequests.count, 1)
-        XCTAssertTrue(store.questionBankSyncIntents.isEmpty)
+        XCTAssertEqual(bankClient.ensureRequests.count, 2)
+        XCTAssertEqual(
+            Set(bankClient.ensureRequests.map(\.contextRevision)).count,
+            2
+        )
+        XCTAssertEqual(
+            store.questionBankSyncIntents.first?.generationBlockedReason,
+            "client_validation_limit"
+        )
         XCTAssertTrue(bankClient.claimIDs.isEmpty)
         XCTAssertEqual(store.questionBatchState, .failed)
     }
@@ -756,6 +1049,56 @@ private final class DelayedReadyQuestionBankClient: QuestionBankSyncing, @unchec
             status: questions.isEmpty ? .empty : .ready,
             readyCount: questions.count,
             targetCount: ProductLimits.starterQuestionBankTargetCount
+        )
+    }
+}
+
+private final class RefillCycleQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
+    private(set) var ensureContextRevisions: [String] = []
+    private var questionsByBankID: [String: [CheckpointQuestion]] = [:]
+
+    func ensureQuestionBank(
+        for request: QuestionGenerationRequest,
+        contextRevision: String,
+        desiredCount: Int,
+        lowWatermark: Int
+    ) async throws -> QuestionBankPreparationReceipt {
+        ensureContextRevisions.append(contextRevision)
+        let bankID = "bank-\(contextRevision)"
+        if questionsByBankID[bankID] == nil {
+            let cycle = ensureContextRevisions.count
+            questionsByBankID[bankID] = (0..<desiredCount).map { index in
+                makeQuestion(
+                    goal: request.goal,
+                    index: (cycle * 1_000) + index,
+                    prompt: "Cycle \(cycle) question case \(index)?"
+                )
+            }
+        }
+        let readyCount = questionsByBankID[bankID]?.count ?? 0
+        return QuestionBankPreparationReceipt(
+            bankID: bankID,
+            status: readyCount > 0 ? .ready : .empty,
+            readyCount: readyCount,
+            targetCount: desiredCount
+        )
+    }
+
+    func claimQuestions(
+        from bankID: String,
+        claimID: String,
+        limit: Int,
+        for request: QuestionGenerationRequest
+    ) async throws -> QuestionBankClaimReceipt {
+        var available = questionsByBankID[bankID] ?? []
+        let claimed = Array(available.prefix(limit))
+        available.removeFirst(claimed.count)
+        questionsByBankID[bankID] = available
+        return QuestionBankClaimReceipt(
+            questions: claimed,
+            status: available.isEmpty ? .empty : .ready,
+            readyCount: available.count,
+            targetCount: claimed.count + available.count
         )
     }
 }

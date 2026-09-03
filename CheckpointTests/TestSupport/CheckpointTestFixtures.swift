@@ -87,7 +87,7 @@ func makeQuestion(
     let correctAnswer = expectedAnswer ?? "Correct answer \(index)"
     return CheckpointQuestion(
         goalID: goal.id,
-        prompt: prompt ?? "Question \(index): Which option best supports the goal?",
+        prompt: prompt ?? "Which option best supports goal test case \(index)?",
         expectedAnswer: correctAnswer,
         choices: choices ?? [
             correctAnswer,

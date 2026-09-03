@@ -103,7 +103,10 @@ enum MultipleChoiceAnswerNormalizer {
 
     private static func normalizedText(_ text: String) -> String {
         text
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .folding(
+                options: [.diacriticInsensitive, .caseInsensitive],
+                locale: Locale(identifier: "en_US_POSIX")
+            )
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }

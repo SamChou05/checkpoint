@@ -19,6 +19,10 @@ struct SkillMapReconciler {
             normalizedTopic.name = name
             if normalizedTopic.objectives.isEmpty {
                 normalizedTopic.objectives = [defaultObjective(for: topic.id, name: name)]
+            } else {
+                normalizedTopic.objectives = Array(
+                    normalizedTopic.objectives.prefix(SkillMapTopic.maximumActiveObjectiveCount)
+                )
             }
             return normalizedTopic
         }
@@ -65,10 +69,68 @@ struct SkillMapReconciler {
                 .map { "\($0.id.uuidString):\($0.name)" }
                 .sorted()
                 .joined(separator: ",")
+            let predecessors = skill.predecessorIDs
+                .map(\.uuidString)
+                .sorted()
+                .joined(separator: ",")
+            return "\(skill.id.uuidString):\(skill.name):\(skill.stage):\(predecessors):\(objectives)"
+        }
+        .sorted()
+        .joined(separator: "|")
+    }
+
+    static func skillMapFingerprint(topics: [SkillMapTopic]) -> String {
+        let wireSignature = topics.map { skill in
+            let objectives = skill.objectives
+                .prefix(SkillMapTopic.maximumActiveObjectiveCount)
+                .map { "\($0.id.uuidString):\($0.name)" }
+                .sorted()
+                .joined(separator: ",")
             return "\(skill.id.uuidString):\(skill.name):\(objectives)"
         }
         .sorted()
         .joined(separator: "|")
+
+        var hash: UInt64 = 14_695_981_039_346_656_037
+        for byte in wireSignature.utf8 {
+            hash ^= UInt64(byte)
+            hash &*= 1_099_511_628_211
+        }
+        return String(format: "%016llx", hash)
+    }
+
+    static func skillMapEvolutionNameKey(_ rawName: String) -> String {
+        SkillMapTopic.canonicalIdentityKey(rawName)
+    }
+
+    static func hasArchivedSkillCollision(
+        topics: [SkillMapTopic],
+        archivedTopics: [ArchivedSkillMapTopic]
+    ) -> Bool {
+        let archivedIDs = Set(archivedTopics.map(\.id))
+        let archivedNameKeys = Set(
+            archivedTopics.map { SkillMapTopic.canonicalIdentityKey($0.topic.name) }
+        )
+        return !archivedIDs.isDisjoint(with: Set(topics.map(\.id))) ||
+            !archivedNameKeys.isDisjoint(
+                with: Set(topics.map { SkillMapTopic.canonicalIdentityKey($0.name) })
+            )
+    }
+
+    static func hasRemovedSkillNameCollision(
+        topics: [SkillMapTopic],
+        existingTopics: [SkillMapTopic]
+    ) -> Bool {
+        let proposedIDs = Set(topics.map(\.id))
+        let removedNameKeys = Set(
+            existingTopics
+                .filter { !proposedIDs.contains($0.id) }
+                .map { SkillMapTopic.canonicalIdentityKey($0.name) }
+        )
+        guard !removedNameKeys.isEmpty else { return false }
+        return topics.contains {
+            removedNameKeys.contains(SkillMapTopic.canonicalIdentityKey($0.name))
+        }
     }
 
     private static func inferredSkillMap(
@@ -160,9 +222,13 @@ struct SkillMapReconciler {
                 }
             let objectives: [SkillMapObjective]
             if !proposedTopic.objectives.isEmpty {
-                objectives = proposedTopic.objectives
+                objectives = Array(
+                    proposedTopic.objectives.prefix(SkillMapTopic.maximumActiveObjectiveCount)
+                )
             } else if let existingTopic, !existingTopic.objectives.isEmpty {
-                objectives = existingTopic.objectives
+                objectives = Array(
+                    existingTopic.objectives.prefix(SkillMapTopic.maximumActiveObjectiveCount)
+                )
             } else {
                 objectives = [defaultObjective(for: proposedTopic.id, name: name)]
             }
@@ -171,7 +237,9 @@ struct SkillMapReconciler {
                 id: proposedTopic.id,
                 name: name,
                 aliases: aliases,
-                objectives: objectives
+                objectives: objectives,
+                stage: existingTopic?.stage ?? proposedTopic.stage,
+                predecessorIDs: existingTopic?.predecessorIDs ?? proposedTopic.predecessorIDs
             )
         }
     }
@@ -307,9 +375,14 @@ struct SkillMapReconciler {
             return existingCompetency
         }
 
+        let archivedSkillIDs = Set(
+            goal.derivedSkillMap?.archivedTopics.map { $0.topic.id } ?? []
+        )
         let unmatchedPracticedCompetencies = existing.filter { candidate in
             candidate.attempts > 0 &&
-                (goal.derivedSkillMap == nil || candidate.skillID == nil) &&
+                (goal.derivedSkillMap == nil ||
+                    candidate.skillID == nil ||
+                    candidate.skillID.map(archivedSkillIDs.contains) == true) &&
                 !newCompetencies.contains(where: { matches(candidate, $0) })
         }
         return reconciled + unmatchedPracticedCompetencies
@@ -349,20 +422,47 @@ struct SkillMapReconciler {
         merged.correct = lhs.correct + rhs.correct
         merged.partial = lhs.partial + rhs.partial
         merged.incorrect = lhs.incorrect + rhs.incorrect
-        merged.currentStreak = max(lhs.currentStreak, rhs.currentStreak)
 
+        let latest: TopicCompetency
         switch (lhs.lastPracticedAt, rhs.lastPracticedAt) {
-        case let (lhsDate?, rhsDate?) where rhsDate > lhsDate:
-            merged.lastPracticedAt = rhsDate
-            merged.lastResult = rhs.lastResult
-        case (nil, let rhsDate?):
-            merged.lastPracticedAt = rhsDate
-            merged.lastResult = rhs.lastResult
+        case let (lhsDate?, rhsDate?) where lhsDate != rhsDate:
+            latest = rhsDate > lhsDate ? rhs : lhs
+        case (nil, .some):
+            latest = rhs
+        case (.some, nil):
+            latest = lhs
         default:
-            break
+            // Equal or missing migration timestamps cannot establish recency. Prefer
+            // the conservative streak, then the less-successful result, so merge
+            // order cannot resurrect stale mastery.
+            if lhs.currentStreak != rhs.currentStreak {
+                latest = rhs.currentStreak < lhs.currentStreak ? rhs : lhs
+            } else {
+                latest = evolutionResultRank(rhs.lastResult) > evolutionResultRank(lhs.lastResult)
+                    ? rhs
+                    : lhs
+            }
         }
+        merged.currentStreak = latest.currentStreak
+        merged.lastPracticedAt = latest.lastPracticedAt
+        merged.lastResult = latest.lastResult
 
         return merged
+    }
+
+    private static func evolutionResultRank(_ result: AnswerResult?) -> Int {
+        switch result {
+        case .correct:
+            return 0
+        case .partial:
+            return 1
+        case .incorrect:
+            return 2
+        case .unclear:
+            return 3
+        case nil:
+            return 4
+        }
     }
 
     static func competencyTopics(from text: String) -> [String] {

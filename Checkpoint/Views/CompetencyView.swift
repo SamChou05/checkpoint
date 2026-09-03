@@ -4,6 +4,7 @@ struct CompetencyView: View {
     let store: CheckpointStore
     @State private var isSkillMapEditorPresented = false
     @State private var isSkillMapRepairPresented = false
+    @State private var isSkillHistoryExpanded = false
 
     var body: some View {
         NavigationStack {
@@ -88,10 +89,20 @@ struct CompetencyView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(skillMap.topics) { topic in
                         VStack(alignment: .leading, spacing: 3) {
-                            Label(topic.name, systemImage: "circle.fill")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.text)
-                                .symbolRenderingMode(.hierarchical)
+                            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                                Label(topic.name, systemImage: "circle.fill")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+                                    .symbolRenderingMode(.hierarchical)
+
+                                Spacer(minLength: 4)
+
+                                if topic.stage > 1 {
+                                    Text("Stage \(topic.stage)")
+                                        .font(.caption2.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.teal)
+                                }
+                            }
 
                             if !topic.objectives.isEmpty {
                                 Text(topic.objectives.prefix(3).map(\.name).joined(separator: " · "))
@@ -102,6 +113,63 @@ struct CompetencyView: View {
                             }
                         }
                     }
+                }
+
+                if skillMap.status == .reviewed {
+                    Divider()
+
+                    if store.isMember {
+                        Toggle(
+                            isOn: Binding(
+                                get: { skillMap.evolutionEnabled },
+                                set: { store.updateActiveSkillMapEvolutionEnabled($0) }
+                            )
+                        ) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Advance mastered skills")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+                                Text("Replace proven skills with a harder next step while keeping their history.")
+                                    .font(.caption)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                            }
+                        }
+                        .tint(CheckpointTheme.teal)
+                    } else {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Adaptive progression with Pro")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.text)
+                            Text("Pro can advance a mastered skill to its next challenge without losing your progress history.")
+                                .font(.caption)
+                                .foregroundStyle(CheckpointTheme.muted)
+                        }
+                    }
+                }
+
+                if !skillMap.archivedTopics.isEmpty {
+                    Divider()
+
+                    DisclosureGroup(isExpanded: $isSkillHistoryExpanded) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(store.archivedActiveSkillTopics) { archived in
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(archived.topic.name)
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.text)
+                                    Text(archivedSkillSummary(archived, in: skillMap))
+                                        .font(.caption)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                }
+                            }
+                        }
+                        .padding(.top, 8)
+                    } label: {
+                        Text("Skill history (\(skillMap.archivedTopics.count))")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+                    }
+                    .tint(CheckpointTheme.teal)
                 }
 
                 ViewThatFits(in: .horizontal) {
@@ -129,6 +197,28 @@ struct CompetencyView: View {
                 }
             }
         }
+    }
+
+    private func archivedSkillSummary(
+        _ archived: ArchivedSkillMapTopic,
+        in skillMap: GoalSkillMap
+    ) -> String {
+        let reason: String
+        switch archived.reason {
+        case .mastered:
+            if let successorName = archived.successorSkillIDs.compactMap({ successorID in
+                skillMap.topics.first(where: { $0.id == successorID })?.name ??
+                    skillMap.archivedTopics.first(where: { $0.id == successorID })?.topic.name
+            }).first {
+                reason = "Mastered · advanced to \(successorName)"
+            } else {
+                reason = "Mastered"
+            }
+        case .userRemoved:
+            reason = "Removed during review"
+        }
+        let mastery = archived.mastery.map { " · \($0.masteryPercent)% at archive" } ?? ""
+        return "\(reason)\(mastery) · \(archived.archivedAt.formatted(date: .abbreviated, time: .omitted))"
     }
 
     private func skillMapButton(

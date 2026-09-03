@@ -4,6 +4,71 @@ import XCTest
 // MARK: - Question validation
 
 final class QuestionValidationTests: XCTestCase {
+    func testExactStemNormalizationDoesNotEraseLeadingMeaningfulPunctuation() {
+        XCTAssertFalse(
+            QuestionBatchSanitizer.hasSameQuestionStem(
+                "?What does this operator mean?",
+                "What does this operator mean?"
+            )
+        )
+    }
+
+    func testExactStemNormalizationPreservesSuperscriptAndSubscriptMeaning() {
+        XCTAssertFalse(
+            QuestionBatchSanitizer.hasSameQuestionStem(
+                "What is x²?",
+                "What is x2?"
+            )
+        )
+        XCTAssertFalse(
+            QuestionBatchSanitizer.hasSameQuestionStem(
+                "What is x₁?",
+                "What is x1?"
+            )
+        )
+    }
+
+    func testExactStemNormalizationIgnoresWhitespaceAroundMathOperators() {
+        for mathOperator in [
+            "<=", ">=", "!=", "==", "+", "-", "−", "×", "÷", "=", "<", ">",
+            "≤", "≥", "≠", "±", "∓", "⋅", "·", "*", "/", "^", "%"
+        ] {
+            XCTAssertTrue(
+                QuestionBatchSanitizer.hasSameQuestionStem(
+                    "What is x \(mathOperator) 1?",
+                    "What is x\(mathOperator)1?"
+                ),
+                "Expected operator-spacing parity for \(mathOperator)"
+            )
+        }
+        XCTAssertFalse(
+            QuestionBatchSanitizer.hasSameQuestionStem(
+                "What is x + 1?",
+                "What is x - 1?"
+            )
+        )
+    }
+
+    func testStemFingerprintTracksExactNormalizedIdentity() throws {
+        let spaced = try XCTUnwrap(
+            QuestionBatchSanitizer.questionStemFingerprint("What is x + 1?")
+        )
+        let compact = try XCTUnwrap(
+            QuestionBatchSanitizer.questionStemFingerprint("WHAT is x+1!")
+        )
+        let superscript = try XCTUnwrap(
+            QuestionBatchSanitizer.questionStemFingerprint("What is x²?")
+        )
+        let plainDigit = try XCTUnwrap(
+            QuestionBatchSanitizer.questionStemFingerprint("What is x2?")
+        )
+
+        XCTAssertEqual(spaced, compact)
+        XCTAssertEqual(spaced, "66a0e917835b1b99")
+        XCTAssertNotEqual(superscript, plainDigit)
+        XCTAssertTrue(spaced.range(of: #"^[0-9a-f]{16}$"#, options: .regularExpression) != nil)
+    }
+
     func testSanitizerRejectsDuplicateReportedAndInvalidProviderQuestions() {
         let goal = makeGoal()
         let existingQuestion = makeQuestion(goal: goal, index: 1, prompt: "Already stored prompt")
@@ -138,7 +203,7 @@ final class QuestionValidationTests: XCTestCase {
         XCTAssertTrue(sanitized.isEmpty)
     }
 
-    func testSanitizerRejectsNearDuplicateQuotedPrompts() {
+    func testSanitizerAllowsSimilarQuotedPromptsWhenStemsDiffer() {
         let goal = makeGoal()
         let request = makeRequest(goal: goal)
         let first = makeQuestion(
@@ -154,7 +219,47 @@ final class QuestionValidationTests: XCTestCase {
 
         let sanitized = QuestionBatchSanitizer.sanitize([first, second], for: request)
 
-        XCTAssertEqual(sanitized.map(\.id), [first.id])
+        XCTAssertEqual(sanitized.map(\.id), [first.id, second.id])
+    }
+
+    func testSanitizerAllowsDifferentQuestionsAboutTheSameQuotedPassage() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal, targetCount: 2)
+        let meaningQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "reading comprehension",
+            prompt: "In the passage 'The river rose overnight,' what changed?",
+            expectedAnswer: "The river level increased.",
+            choices: [
+                "The river level increased.",
+                "The river completely dried up.",
+                "A bridge moved upstream.",
+                "The weather became warmer."
+            ],
+            explanation: "The word rose describes an increase in the river level."
+        )
+        let timingQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: "sequence and timing",
+            prompt: "In the passage 'The river rose overnight,' when did the change happen?",
+            expectedAnswer: "During the night.",
+            choices: [
+                "During the night.",
+                "At noon the next day.",
+                "Before sunset a week earlier.",
+                "The passage gives no timing."
+            ],
+            explanation: "Overnight directly identifies when the river rose."
+        )
+
+        let sanitized = QuestionBatchSanitizer.sanitize(
+            [meaningQuestion, timingQuestion],
+            for: request
+        )
+
+        XCTAssertEqual(sanitized.map(\.id), [meaningQuestion.id, timingQuestion.id])
     }
 
     func testSanitizerRejectsDuplicateMultipleChoiceAnswers() {
@@ -177,6 +282,73 @@ final class QuestionValidationTests: XCTestCase {
         let sanitized = QuestionBatchSanitizer.sanitize([question], for: request)
 
         XCTAssertTrue(sanitized.isEmpty)
+    }
+
+    func testSanitizerRejectsSemanticallyDuplicateInflectedChoices() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which item can perform the requested operation?",
+            expectedAnswer: "A machine",
+            choices: ["A machine", "machines", "dogs", "birds"],
+            explanation: "A machine is the item designed to perform the requested operation.",
+            difficulty: 2
+        )
+
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: request).isEmpty)
+    }
+
+    func testSanitizerRejectsChoicesThatDifferOnlyByDiacritics() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which French word names a coffee shop?",
+            expectedAnswer: "café",
+            choices: ["café", "cafe", "dogs", "birds"],
+            explanation: "Café is the French word used here for a coffee shop.",
+            difficulty: 2
+        )
+
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: request).isEmpty)
+    }
+
+    func testSanitizerUsesLocaleIndependentChoiceFolding() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which city spans Europe and Asia?",
+            expectedAnswer: "İstanbul",
+            choices: ["İstanbul", "istanbul", "Ankara", "Bursa"],
+            explanation: "İstanbul is the city in this set that spans Europe and Asia.",
+            difficulty: 2
+        )
+
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: request).isEmpty)
+    }
+
+    func testSanitizerKeepsShortPluralChoiceBoundaryDistinct() {
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal)
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Which option names one feline?",
+            expectedAnswer: "A cat",
+            choices: ["A cat", "cats", "dogs", "birds"],
+            explanation: "A cat names one feline.",
+            difficulty: 2
+        )
+
+        XCTAssertEqual(
+            QuestionBatchSanitizer.sanitize([question], for: request).map(\.id),
+            [question.id]
+        )
     }
 
     func testSanitizerDoesNotTreatDomainDependentVerbsAsGlobalSynonyms() {

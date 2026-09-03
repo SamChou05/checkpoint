@@ -17,6 +17,102 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testCheckpointSessionNeverIncludesTheSameNormalizedStemTwice() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+
+        let first = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "arrays",
+            prompt: "Which operation removes the final element from an array?"
+        )
+        let duplicate = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: "array operations",
+            prompt: "  WHICH operation removes the final element from an array!  "
+        )
+        let fillers = (3...6).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                topic: "topic \(index)",
+                prompt: "Which distinct concept is tested by question \(index)?"
+            )
+        }
+        store.questions = [first, duplicate] + fillers
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(
+            session.questions.filter { [first.id, duplicate.id].contains($0.id) }.count,
+            1
+        )
+    }
+
+    @MainActor
+    func testCheckpointSessionAllowsSimilarQuestionsWithDifferentStems() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+
+        let stackQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "data structures",
+            prompt: "Which removal order does a stack use?"
+        )
+        let queueQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: "data structures",
+            prompt: "Which removal order does a queue use?"
+        )
+        store.questions = [stackQuestion, queueQuestion] + (3...5).map { index in
+            makeQuestion(goal: goal, index: index, topic: "topic \(index)")
+        }
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertTrue(session.questions.contains { $0.id == stackQuestion.id })
+        XCTAssertTrue(session.questions.contains { $0.id == queueQuestion.id })
+    }
+
+    @MainActor
+    func testCheckpointSessionAllowsDifferentQuestionsAboutTheSameQuotedPassage() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+
+        let meaningQuestion = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "reading comprehension",
+            prompt: "In the passage 'The river rose overnight,' what changed?"
+        )
+        let timingQuestion = makeQuestion(
+            goal: goal,
+            index: 2,
+            topic: "reading comprehension",
+            prompt: "In the passage 'The river rose overnight,' when did the change happen?"
+        )
+        store.questions = [meaningQuestion, timingQuestion] + (3...5).map { index in
+            makeQuestion(goal: goal, index: index, topic: "topic \(index)")
+        }
+
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+
+        XCTAssertTrue(session.questions.contains { $0.id == meaningQuestion.id })
+        XCTAssertTrue(session.questions.contains { $0.id == timingQuestion.id })
+    }
+
+    @MainActor
     func testCheckpointSessionSpreadsFreshQuestionsAcrossTopicsBeforeRepeatingOne() throws {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)

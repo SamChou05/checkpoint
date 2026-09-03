@@ -1,6 +1,31 @@
 import Foundation
 
 enum QuestionBatchSanitizer {
+    /// Exact stem identities used to keep one question from appearing twice even
+    /// when a provider changes casing, terminal punctuation, or adds a wrapper.
+    /// This intentionally does not use fuzzy similarity: closely related questions
+    /// that test a different angle remain valid.
+    static func questionStemKeys(_ prompt: String) -> Set<String> {
+        let key = exactQuestionStemKey(prompt)
+        return key.isEmpty ? [] : [key]
+    }
+
+    static func hasSameQuestionStem(_ lhs: String, _ rhs: String) -> Bool {
+        !questionStemKeys(lhs).isDisjoint(with: questionStemKeys(rhs))
+    }
+
+    /// Compact wire identity for comparing the complete local history without
+    /// sending old question text back to the generation model.
+    static func questionStemFingerprint(_ prompt: String) -> String? {
+        guard let key = questionStemKeys(prompt).first else { return nil }
+        var hash: UInt64 = 14_695_981_039_346_656_037
+        for byte in key.utf8 {
+            hash ^= UInt64(byte)
+            hash &*= 1_099_511_628_211
+        }
+        return String(format: "%016llx", hash)
+    }
+
     static func sanitize(_ questions: [CheckpointQuestion], for request: QuestionGenerationRequest) -> [CheckpointQuestion] {
         let existingPrompts = Set(request.existingQuestions.flatMap { promptKeys($0.prompt) })
         let reportedPrompts = Set(request.reportedQuestions.flatMap { promptKeys($0.prompt) })
@@ -191,39 +216,15 @@ enum QuestionBatchSanitizer {
     }
 
     private static func promptKeys(_ prompt: String) -> Set<String> {
-        var keys: Set<String> = [canonicalPrompt(prompt)]
-
-        let nsRange = NSRange(prompt.startIndex..<prompt.endIndex, in: prompt)
-        if let regex = try? NSRegularExpression(pattern: #"'([^']+)'|"([^"]+)""#) {
-            var quotedKeys: [String] = []
-            for match in regex.matches(in: prompt, range: nsRange) {
-                for rangeIndex in 1..<match.numberOfRanges {
-                    let range = match.range(at: rangeIndex)
-                    guard range.location != NSNotFound,
-                          let swiftRange = Range(range, in: prompt) else { continue }
-                    let key = canonicalPrompt(String(prompt[swiftRange]))
-                    if key.count >= 16 {
-                        quotedKeys.append(key)
-                    }
-                }
-            }
-
-            if let longestKey = quotedKeys.max(by: { $0.count < $1.count }) {
-                keys.insert("quoted:" + longestKey)
-            }
-        }
-
-        let leadingPattern = #"(?i)^(?:choose|select|which|what|identify|pick)\b.*?\b(?:sentence|question|example|option)\b[: ]+"#
-        if let range = prompt.range(of: leadingPattern, options: .regularExpression) {
-            keys.insert(canonicalPrompt(String(prompt[range.upperBound...])))
-        }
-
-        return keys.filter { !$0.isEmpty }
+        questionStemKeys(prompt)
     }
 
     private static func isBareAnswerLabel(_ text: String) -> Bool {
         var normalized = QuestionText.collapsedWhitespace(text)
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .folding(
+                options: [.diacriticInsensitive, .caseInsensitive],
+                locale: Locale(identifier: "en_US_POSIX")
+            )
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -271,14 +272,20 @@ enum QuestionBatchSanitizer {
 
     private static func explanationSupportedChoice(_ explanation: String, choices: [String]) -> String? {
         let normalizedExplanation = QuestionText.collapsedWhitespace(explanation)
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .folding(
+                options: [.diacriticInsensitive, .caseInsensitive],
+                locale: Locale(identifier: "en_US_POSIX")
+            )
             .lowercased()
         let shortOutputChoices: Set<String> = ["positive", "negative", "zero", "undefined", "true", "false"]
         var supportedChoices: [String] = []
 
         for choice in choices {
             let normalizedChoice = QuestionText.collapsedWhitespace(choice)
-                .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+                .folding(
+                    options: [.diacriticInsensitive, .caseInsensitive],
+                    locale: Locale(identifier: "en_US_POSIX")
+                )
                 .lowercased()
             guard shortOutputChoices.contains(normalizedChoice) else { continue }
 
@@ -372,7 +379,10 @@ enum QuestionBatchSanitizer {
 
     private static func semanticChoiceKey(_ text: String) -> String {
         var normalized = text
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .folding(
+                options: [.diacriticInsensitive, .caseInsensitive],
+                locale: Locale(identifier: "en_US_POSIX")
+            )
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -427,6 +437,52 @@ enum QuestionBatchSanitizer {
     }
 
     private static func canonicalPrompt(_ prompt: String) -> String {
-        QuestionText.collapsedWhitespace(prompt).lowercased()
+        QuestionText.collapsedWhitespace(prompt)
+            .folding(
+                options: [.caseInsensitive, .diacriticInsensitive],
+                locale: Locale(identifier: "en_US_POSIX")
+            )
+            .lowercased()
+            .trimmingCharacters(
+                in: .whitespacesAndNewlines.union(
+                    CharacterSet(charactersIn: ".?!:;\"'“”‘’")
+                )
+            )
+    }
+
+    private static func exactQuestionStemKey(_ prompt: String) -> String {
+        var normalized = QuestionText.collapsedWhitespace(
+            prompt.precomposedStringWithCanonicalMapping
+        )
+        .folding(options: [.caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+        .lowercased()
+        normalized = normalized.precomposedStringWithCanonicalMapping
+
+        let presentationPrefixes = [
+            #"^(?:question|item)\s+\d+\s*[:.)-]\s*"#,
+            #"^(?:choose|select|identify|pick)\s+(?:the\s+)?(?:correct|best)\s+(?:answer|choice|option)(?:\s+(?:to|for)\s+(?:this\s+)?(?:question|item|example))?\s*[:-]\s*"#
+        ]
+        for pattern in presentationPrefixes {
+            normalized = normalized.replacingOccurrences(
+                of: pattern,
+                with: "",
+                options: [.regularExpression, .caseInsensitive]
+            )
+        }
+        normalized = normalized.replacingOccurrences(
+            of: #"\s+([,.;:?!])"#,
+            with: "$1",
+            options: .regularExpression
+        )
+        normalized = normalized.replacingOccurrences(
+            of: #"\s*(<=|>=|!=|==|[+\-−×÷=*/^%±∓<>=≤≥≠⋅·])\s*"#,
+            with: "$1",
+            options: .regularExpression
+        )
+        while let finalCharacter = normalized.last,
+              " .?!".contains(finalCharacter) {
+            normalized.removeLast()
+        }
+        return normalized
     }
 }

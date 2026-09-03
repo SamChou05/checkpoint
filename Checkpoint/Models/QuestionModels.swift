@@ -163,11 +163,21 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
 
 struct QuestionBankSyncIntent: Identifiable, Codable, Equatable, Sendable {
     var goalID: Goal.ID
+    /// Stable local content/weight revision used for stale-context checks.
     var contextRevision: String
+    /// Per-fill-cycle revision sent to the server so an exhausted finite bank
+    /// is never reopened when the same local context later needs inventory.
+    var bankContextRevision: String?
     var bankID: String?
     var claimID: String
     var desiredCount: Int
     var lowWatermark: Int
+    /// A server-side terminal reason for this exact bank cycle. The intent stays
+    /// persisted but dormant until its generation context changes or the user retries.
+    var generationBlockedReason: String?
+    /// Counts consecutive completed server banks that produced no locally usable
+    /// inventory. Optional so snapshots written by older builds continue to decode.
+    var emptyFillCycleRetryCount: Int?
     var createdAt: Date
     var lastAttemptAt: Date?
 
@@ -176,19 +186,25 @@ struct QuestionBankSyncIntent: Identifiable, Codable, Equatable, Sendable {
     init(
         goalID: Goal.ID,
         contextRevision: String,
+        bankContextRevision: String? = nil,
         bankID: String? = nil,
         claimID: String = UUID().uuidString,
         desiredCount: Int,
         lowWatermark: Int,
+        generationBlockedReason: String? = nil,
+        emptyFillCycleRetryCount: Int? = 0,
         createdAt: Date = Date(),
         lastAttemptAt: Date? = nil
     ) {
         self.goalID = goalID
         self.contextRevision = contextRevision
+        self.bankContextRevision = bankContextRevision ?? contextRevision
         self.bankID = bankID
         self.claimID = claimID
         self.desiredCount = desiredCount
         self.lowWatermark = lowWatermark
+        self.generationBlockedReason = generationBlockedReason
+        self.emptyFillCycleRetryCount = emptyFillCycleRetryCount
         self.createdAt = createdAt
         self.lastAttemptAt = lastAttemptAt
     }

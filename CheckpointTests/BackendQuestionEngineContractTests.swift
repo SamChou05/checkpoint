@@ -19,6 +19,11 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertEqual(skillMap.provenance, .questionTopics)
         XCTAssertEqual(skillMap.topics.first?.id, skillID)
         XCTAssertEqual(skillMap.topics.first?.objectives, [])
+        XCTAssertEqual(skillMap.topics.first?.stage, 1)
+        XCTAssertEqual(skillMap.topics.first?.predecessorIDs, [])
+        XCTAssertEqual(skillMap.archivedTopics, [])
+        XCTAssertTrue(skillMap.evolutionEnabled)
+        XCTAssertNil(skillMap.lastEvolvedAt)
 
         let legacyQuestionData = Data(
             """
@@ -39,6 +44,23 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertNil(question.skillID)
         XCTAssertNil(question.objectiveID)
         XCTAssertNil(question.objective)
+    }
+
+    func testSkillMapNamesUseBackendCanonicalUniqueness() {
+        XCTAssertNil(
+            SkillMapTopic.validatedNames([
+                "Data Flow",
+                "Data-Flow",
+                "Control flow"
+            ])
+        )
+        XCTAssertNotNil(
+            SkillMapTopic.validatedNames([
+                "Data Flow",
+                "Control flow",
+                "State management"
+            ])
+        )
     }
 
     func testBackendQuestionRequestEncodesSkillMapAndAllocationAsArray() throws {
@@ -65,6 +87,7 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         let allocation = try XCTUnwrap(payload["desiredSkillAllocation"] as? [[String: Any]])
 
         XCTAssertEqual(skillMap["version"] as? Int, 1)
+        XCTAssertNil(payload["requiresFullObjectiveCoverage"])
         XCTAssertEqual(encodedSkills.count, 3)
         XCTAssertEqual(encodedSkills.first?["id"] as? String, skills[0].id.uuidString)
         XCTAssertEqual(
@@ -116,6 +139,9 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         let existingPrompts = try XCTUnwrap(payload["existingPrompts"] as? [String])
         let coverage = try XCTUnwrap(payload["existingQuestionCoverage"] as? [[String: Any]])
         let reportedPrompts = try XCTUnwrap(payload["reportedPrompts"] as? [String])
+        let blockedStemFingerprints = try XCTUnwrap(
+            payload["blockedStemFingerprints"] as? [String]
+        )
         let competencies = try XCTUnwrap(payload["competencies"] as? [[String: Any]])
 
         XCTAssertEqual(existingPrompts.count, 30)
@@ -127,9 +153,46 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertEqual(reportedPrompts.count, 30)
         XCTAssertEqual(reportedPrompts.first, "Reported prompt 0")
         XCTAssertEqual(reportedPrompts.last, "Reported prompt 29")
+        XCTAssertEqual(blockedStemFingerprints.count, 90)
+        XCTAssertEqual(blockedStemFingerprints, blockedStemFingerprints.sorted())
+        let oldestExistingFingerprint = try XCTUnwrap(
+            QuestionBatchSanitizer.questionStemFingerprint("Existing prompt 0")
+        )
+        let olderReportedFingerprint = try XCTUnwrap(
+            QuestionBatchSanitizer.questionStemFingerprint("Reported prompt 44")
+        )
+        XCTAssertTrue(blockedStemFingerprints.contains(oldestExistingFingerprint))
+        XCTAssertTrue(blockedStemFingerprints.contains(olderReportedFingerprint))
         XCTAssertEqual(competencies.count, 20)
         XCTAssertEqual(competencies.first?["topic"] as? String, "Competency 0")
         XCTAssertEqual(competencies.last?["topic"] as? String, "Competency 19")
+    }
+
+    func testBlockedStemFingerprintHistoryIsDeterministicallyCapped() {
+        let goal = makeGoal()
+        var request = makeRequest(goal: goal)
+        request.existingQuestions = (0..<800).map { index in
+            CheckpointQuestion(
+                goalID: goal.id,
+                prompt: "Complete historical question \(index)",
+                expectedAnswer: "Answer \(index)",
+                choices: ["Answer \(index)", "Wrong A", "Wrong B", "Wrong C"],
+                explanation: "Explanation \(index)",
+                topic: "History",
+                difficulty: 2,
+                format: .multipleChoice,
+                sourcePrompt: "contract history"
+            )
+        }
+
+        let fingerprints = BackendQuestionHistory.blockedStemFingerprints(for: request)
+
+        XCTAssertEqual(
+            fingerprints.count,
+            BackendQuestionHistory.maximumBlockedStemFingerprintCount
+        )
+        XCTAssertEqual(fingerprints, fingerprints.sorted())
+        XCTAssertEqual(Set(fingerprints).count, fingerprints.count)
     }
 
     func testSkillMapInferenceRequestCarriesSuggestedSkills() throws {
@@ -147,6 +210,126 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertNotNil(payload["goal"] as? [String: Any])
         XCTAssertNotNil(payload["competencies"] as? [[String: Any]])
         XCTAssertNotNil(payload["sourceDocuments"] as? [[String: Any]])
+    }
+
+    func testSkillMapEvolutionRequestCarriesBoundedEvidenceAndHistory() throws {
+        let skills = makeSkills()
+        let archived = (0..<50).map { index in
+            let topic = SkillMapTopic(
+                name: "Archived skill \(index)",
+                objectives: [SkillMapObjective(name: "Archived objective \(index)")]
+            )
+            return ArchivedSkillMapTopic(
+                topic: topic,
+                reason: .mastered,
+                archivedAt: Date(timeIntervalSince1970: Double(index)),
+                successorSkillIDs: [],
+                mastery: nil
+            )
+        }
+        let skillMap = GoalSkillMap(
+            topics: skills,
+            archivedTopics: archived,
+            status: .reviewed,
+            version: 7,
+            provenance: .adaptiveEvolution
+        )
+        let goal = makeGoal(skillMap: skillMap)
+        var competency = TopicCompetency.initial(
+            topic: skills[0].name,
+            estimatedLevel: 5,
+            goalID: goal.id,
+            skillID: skills[0].id
+        )
+        competency.attempts = 10
+        competency.correct = 9
+        competency.partial = 1
+        competency.currentStreak = 4
+        let attemptDate = Date(timeIntervalSince1970: 1_700_000_000)
+        let attempts = (0..<35).map { index in
+            CheckpointAttempt(
+                questionID: UUID(),
+                goalID: goal.id,
+                skillID: skills[0].id,
+                objectiveID: skills[0].objectives[0].id,
+                questionDifficulty: index == 0 ? 4 : 3,
+                prompt: "Evidence \(index)",
+                answer: "Answer",
+                result: index == 0 ? .partial : .correct,
+                unlockMinutes: 0,
+                createdAt: attemptDate.addingTimeInterval(Double(index))
+            )
+        }
+        let request = SkillMapEvolutionRequest(
+            goal: goal,
+            baseMapFingerprint: "0123456789abcdef",
+            masteredSkillIDs: [skills[0].id],
+            competencies: [competency],
+            recentAttempts: attempts,
+            backendEndpoint: URL(string: "https://api.example.com/prod/v1/questions"),
+            backendAuthorizationToken: "token"
+        )
+
+        let data = try JSONEncoder().encode(BackendSkillMapEvolutionRequest(request: request))
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let goalPayload = try XCTUnwrap(payload["goal"] as? [String: Any])
+        let currentSkillMap = try XCTUnwrap(payload["currentSkillMap"] as? [String: Any])
+        let encodedAttempts = try XCTUnwrap(payload["recentAttempts"] as? [[String: Any]])
+        let archivedSkills = try XCTUnwrap(payload["archivedSkills"] as? [[String: Any]])
+        let archivedNameFingerprints = try XCTUnwrap(
+            payload["archivedSkillNameFingerprints"] as? [String]
+        )
+
+        XCTAssertEqual(goalPayload["id"] as? String, goal.id.uuidString)
+        XCTAssertEqual(payload["baseMapFingerprint"] as? String, "0123456789abcdef")
+        XCTAssertEqual(currentSkillMap["version"] as? Int, 7)
+        XCTAssertEqual((currentSkillMap["skills"] as? [[String: Any]])?.count, 3)
+        XCTAssertEqual(payload["masteredSkillIDs"] as? [String], [skills[0].id.uuidString])
+        XCTAssertEqual((payload["competencies"] as? [[String: Any]])?.count, 1)
+        XCTAssertEqual(encodedAttempts.count, 30)
+        XCTAssertEqual(encodedAttempts[0]["result"] as? String, "partial")
+        XCTAssertEqual(encodedAttempts[0]["difficulty"] as? Int, 4)
+        XCTAssertNotNil(encodedAttempts[0]["occurredAt"] as? String)
+        XCTAssertEqual(archivedSkills.count, 48)
+        XCTAssertEqual(archivedSkills.first?["id"] as? String, archived[2].id.uuidString)
+        XCTAssertEqual(archivedSkills.last?["id"] as? String, archived[49].id.uuidString)
+        XCTAssertEqual(archivedNameFingerprints.count, 50)
+        XCTAssertEqual(Set(archivedNameFingerprints).count, 50)
+        XCTAssertTrue(
+            archivedNameFingerprints.contains(
+                try XCTUnwrap(
+                    BackendSkillMapEvolutionHistory.skillNameFingerprint("Archived skill 0")
+                )
+            )
+        )
+    }
+
+    func testArchivedSkillNameFingerprintParityAndBound() throws {
+        XCTAssertEqual(
+            BackendSkillMapEvolutionHistory.skillNameFingerprint("Formal-Logic Basics"),
+            "c229f5dbe43478b7"
+        )
+
+        let archived = (0..<(BackendSkillMapEvolutionHistory
+            .maximumArchivedSkillNameFingerprintCount + 10)).map { index in
+            ArchivedSkillMapTopic(
+                topic: SkillMapTopic(name: "Historical skill \(index)"),
+                reason: .mastered,
+                archivedAt: Date(timeIntervalSince1970: Double(index)),
+                successorSkillIDs: [],
+                mastery: nil
+            )
+        }
+        let fingerprints = BackendSkillMapEvolutionHistory.archivedSkillNameFingerprints(
+            for: GoalSkillMap(topics: makeSkills(), archivedTopics: archived)
+        )
+
+        XCTAssertEqual(
+            fingerprints.count,
+            BackendSkillMapEvolutionHistory.maximumArchivedSkillNameFingerprintCount
+        )
+        XCTAssertEqual(fingerprints, fingerprints.sorted())
+        XCTAssertEqual(Set(fingerprints).count, fingerprints.count)
     }
 
     func testPartialFocusAreasRequestSkillMapCompletionForFallbackGeneration() throws {
@@ -204,6 +387,166 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertEqual(
             skillMap.topics.flatMap(\.objectives).map(\.id),
             skills.flatMap(\.objectives).map(\.id)
+        )
+    }
+
+    func testLegacySkillMapObjectivesMigrateToBackendLimitInOriginalOrder() throws {
+        let legacyObjectives = (0..<8).map { index in
+            SkillMapObjective(name: "Legacy objective \(index)")
+        }
+        var legacyMap = GoalSkillMap(
+            topics: [
+                SkillMapTopic(name: "Legacy skill", objectives: [legacyObjectives[0]]),
+                SkillMapTopic(
+                    name: "Current skill two",
+                    objectives: [SkillMapObjective(name: "Current objective two")]
+                ),
+                SkillMapTopic(
+                    name: "Current skill three",
+                    objectives: [SkillMapObjective(name: "Current objective three")]
+                )
+            ],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        // Simulate a snapshot written by the former eight-objective client.
+        legacyMap.topics[0].objectives = legacyObjectives
+
+        let persistedData = try JSONEncoder().encode(legacyMap)
+        let migratedMap = try JSONDecoder().decode(GoalSkillMap.self, from: persistedData)
+
+        XCTAssertEqual(
+            migratedMap.topics[0].objectives.map(\.id),
+            Array(legacyObjectives.prefix(SkillMapTopic.maximumActiveObjectiveCount)).map(\.id)
+        )
+
+        var defensivelyMutatedMap = migratedMap
+        defensivelyMutatedMap.topics[0].objectives = legacyObjectives
+        let backendPayload = BackendSkillMapPayload(skillMap: defensivelyMutatedMap)
+        XCTAssertEqual(
+            backendPayload.skills[0].objectives.count,
+            SkillMapTopic.maximumActiveObjectiveCount
+        )
+        XCTAssertNoThrow(
+            try backendPayload.makeSkillMap(
+                provenance: .userEdited,
+                expectedVersion: migratedMap.version
+            )
+        )
+    }
+
+    func testEvolutionResponseBuildsVersionedReplacementProposal() throws {
+        let skills = makeSkills()
+        let successor = SkillMapTopic(
+            name: "Advanced algebra",
+            objectives: [
+                SkillMapObjective(name: "Model nonlinear systems"),
+                SkillMapObjective(name: "Compare nonlinear solution methods")
+            ]
+        )
+        let responseData = try JSONEncoder().encode(
+            TestEvolutionEnvelope(
+                baseMapFingerprint: "0123456789abcdef",
+                baseVersion: 7,
+                skillMap: BackendSkillMapPayload(
+                    skillMap: GoalSkillMap(
+                        topics: [successor, skills[1], skills[2]],
+                        version: 8,
+                        provenance: .adaptiveEvolution
+                    )
+                ),
+                replacements: [
+                    TestEvolutionReplacementEnvelope(
+                        predecessorSkillID: skills[0].id,
+                        successorSkillID: successor.id
+                    )
+                ]
+            )
+        )
+
+        let response = try JSONDecoder().decode(BackendSkillMapEvolutionResponse.self, from: responseData)
+        let proposal = try response.makeProposal()
+
+        XCTAssertEqual(proposal.baseMapFingerprint, "0123456789abcdef")
+        XCTAssertEqual(proposal.baseVersion, 7)
+        XCTAssertEqual(proposal.topics.map(\.id), [successor.id, skills[1].id, skills[2].id])
+        XCTAssertEqual(
+            proposal.replacements,
+            [
+                SkillMapEvolutionReplacement(
+                    predecessorSkillID: skills[0].id,
+                    successorSkillID: successor.id
+                )
+            ]
+        )
+    }
+
+    func testEvolutionResponseRejectsSuccessorWithTooFewObjectives() throws {
+        let skills = makeSkills()
+        let successor = SkillMapTopic(
+            name: "Advanced algebra",
+            objectives: [SkillMapObjective(name: "Model nonlinear systems")]
+        )
+        let responseData = try JSONEncoder().encode(
+            TestEvolutionEnvelope(
+                baseMapFingerprint: "0123456789abcdef",
+                baseVersion: 7,
+                skillMap: BackendSkillMapPayload(
+                    skillMap: GoalSkillMap(
+                        topics: [successor, skills[1], skills[2]],
+                        version: 8,
+                        provenance: .adaptiveEvolution
+                    )
+                ),
+                replacements: [
+                    TestEvolutionReplacementEnvelope(
+                        predecessorSkillID: skills[0].id,
+                        successorSkillID: successor.id
+                    )
+                ]
+            )
+        )
+
+        let response = try JSONDecoder().decode(BackendSkillMapEvolutionResponse.self, from: responseData)
+        XCTAssertThrowsError(try response.makeProposal()) { error in
+            XCTAssertEqual(error as? QuestionGenerationError, .badResponse)
+        }
+    }
+
+    @MainActor
+    func testSkillMapFingerprintMatchesBackendCanonicalVector() throws {
+        let skills = [
+            SkillMapTopic(
+                id: try XCTUnwrap(UUID(uuidString: "00000000-0000-0000-0000-000000000002")),
+                name: "Geometry",
+                objectives: [
+                    SkillMapObjective(
+                        id: try XCTUnwrap(UUID(uuidString: "00000000-0000-0000-0000-000000000020")),
+                        name: "Angles"
+                    )
+                ],
+                stage: 4,
+                predecessorIDs: [UUID()]
+            ),
+            SkillMapTopic(
+                id: try XCTUnwrap(UUID(uuidString: "00000000-0000-0000-0000-000000000001")),
+                name: "Algebra",
+                objectives: [
+                    SkillMapObjective(
+                        id: try XCTUnwrap(UUID(uuidString: "00000000-0000-0000-0000-000000000011")),
+                        name: "Quadratics"
+                    ),
+                    SkillMapObjective(
+                        id: try XCTUnwrap(UUID(uuidString: "00000000-0000-0000-0000-000000000010")),
+                        name: "Equations"
+                    )
+                ]
+            )
+        ]
+
+        XCTAssertEqual(
+            SkillMapReconciler.skillMapFingerprint(topics: skills),
+            "c9b546abf8a1bf1f"
         )
     }
 
@@ -276,6 +619,58 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         XCTAssertEqual(
             BackendQuestionEngine.skillMapEndpoint(generationEndpoint: endpoint).absoluteString,
             "https://api.example.com/prod/v1/skill-maps/infer"
+        )
+    }
+
+    func testSkillMapEvolutionEndpointIsSiblingOfQuestionEndpoint() throws {
+        let endpoint = try XCTUnwrap(URL(string: "https://api.example.com/prod/v1/questions"))
+
+        XCTAssertEqual(
+            BackendQuestionEngine.skillMapEvolutionEndpoint(generationEndpoint: endpoint).absoluteString,
+            "https://api.example.com/prod/v1/skill-maps/evolve"
+        )
+    }
+
+    func testProviderFailureResponseIsDistinctFromTransientServerFailure() {
+        XCTAssertEqual(
+            BackendQuestionEngine.generationError(
+                for: 502,
+                responseBody: Data(#"{"code":"provider_failure"}"#.utf8)
+            ),
+            .providerFailure
+        )
+        XCTAssertEqual(
+            BackendQuestionEngine.generationError(
+                for: 502,
+                responseBody: Data(#"{"code":"system_failure"}"#.utf8)
+            ),
+            .serviceUnavailable
+        )
+        XCTAssertEqual(
+            BackendQuestionEngine.generationError(
+                for: 502,
+                responseBody: Data(#"{"code":"provider_invalid_response"}"#.utf8)
+            ),
+            .badResponse
+        )
+    }
+
+    func testEvolutionInvalidRequestUsesBoundedInvalidResponsePathOnlyForEvolution() {
+        let responseBody = Data(#"{"code":"invalid_request"}"#.utf8)
+
+        XCTAssertEqual(
+            BackendQuestionEngine.skillMapEvolutionError(
+                for: 400,
+                responseBody: responseBody
+            ),
+            .badResponse
+        )
+        XCTAssertEqual(
+            BackendQuestionEngine.generationError(
+                for: 400,
+                responseBody: responseBody
+            ),
+            .serviceUnavailable
         )
     }
 
@@ -366,6 +761,18 @@ final class BackendQuestionEngineContractTests: XCTestCase {
 
 private struct TestInferenceEnvelope: Encodable {
     var skillMap: BackendSkillMapPayload
+}
+
+private struct TestEvolutionEnvelope: Encodable {
+    var baseMapFingerprint: String
+    var baseVersion: Int
+    var skillMap: BackendSkillMapPayload
+    var replacements: [TestEvolutionReplacementEnvelope]
+}
+
+private struct TestEvolutionReplacementEnvelope: Encodable {
+    var predecessorSkillID: SkillMapTopic.ID
+    var successorSkillID: SkillMapTopic.ID
 }
 
 private final class StubSkillMapEngine: QuestionGenerating, SkillMapInferring, @unchecked Sendable {
