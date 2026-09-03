@@ -6,100 +6,42 @@ struct CheckpointAttemptView: View {
     let session: CheckpointSession
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var currentQuestionIndex = 0
     @State private var correctAnswerCount = 0
     @State private var answer = ""
     @State private var result: AnswerResult = .correct
     @State private var checkedAnswer: CheckedCheckpointAnswer?
     @State private var protectionActionErrorMessage: String?
+    @State private var feedbackSequence = 0
+    @State private var resolutionFeedback: CheckpointResolutionFeedback?
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(sessionSubtitle)
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.text)
-                            .fixedSize(horizontal: false, vertical: true)
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        progressHeader
+                            .id(AttemptScrollAnchor.question)
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("Question \(currentQuestionIndex + 1) of \(session.questions.count)")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Spacer()
-
-                                Text("\(correctAnswerCount)/\(session.unlockThreshold) correct")
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.muted)
-                            }
-
-                            ProgressView(
-                                value: Double(completedQuestionCount),
-                                total: Double(max(session.questions.count, 1))
-                            )
-                            .tint(CheckpointTheme.teal)
-                            .accessibilityLabel("Checkpoint progress")
-                            .accessibilityValue(
-                                "\(completedQuestionCount) of \(session.questions.count) questions completed; \(correctAnswerCount) of \(session.unlockThreshold) correct"
-                            )
-                        }
-                        .padding(.top, 6)
+                        questionPanel
+                            .id(question.id)
+                            .transition(questionTransition)
                     }
-
-                    SectionPanel {
-                        VStack(alignment: .leading, spacing: 14) {
-                            HStack {
-                                StatusBadge(text: question.topic, tint: CheckpointTheme.teal)
-                            }
-
-                            Text(question.prompt)
-                                .font(.title3.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.text)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .accessibilityFocused($accessibilityFocus, equals: .question)
-
-                            if question.format == .multipleChoice, !question.choices.isEmpty {
-                                VStack(spacing: 10) {
-                                    ForEach(question.choices, id: \.self) { choice in
-                                        ChoiceButton(
-                                            title: choice,
-                                            isSelected: answer == choice,
-                                            isLocked: checkedAnswer != nil
-                                        ) {
-                                            guard checkedAnswer == nil else { return }
-                                            answer = choice
-                                        }
-                                    }
-                                }
-                            } else {
-                                TextField("Type your answer", text: $answer, axis: .vertical)
-                                    .lineLimit(5, reservesSpace: true)
-                                    .textFieldStyle(.plain)
-                                    .foregroundStyle(CheckpointTheme.text)
-                                    .padding(12)
-                                    .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-                                    .disabled(checkedAnswer != nil)
-                            }
-                        }
-                    }
-
-                    resultPanel
-
-                    PrimaryActionButton(
-                        title: submitButtonTitle,
-                        systemImage: submitButtonIcon
-                    ) {
-                        handlePrimaryAction()
-                    }
-                    .disabled(checkedAnswer == nil && answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                    .padding(.bottom, 12)
                 }
-                .padding(20)
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: currentQuestionIndex) { _, _ in
+                    scrollToQuestion(using: scrollProxy)
+                }
             }
             .checkpointScreenBackground()
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                primaryActionBar
+            }
             .navigationTitle("Checkpoint")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
@@ -116,6 +58,122 @@ struct CheckpointAttemptView: View {
         .onDisappear {
             workflow.abandon(session)
         }
+        .sensoryFeedback(.success, trigger: resolutionFeedback) { _, newValue in
+            newValue == .passed
+        }
+        .sensoryFeedback(.warning, trigger: resolutionFeedback) { _, newValue in
+            newValue == .failed
+        }
+    }
+
+    private var progressHeader: some View {
+        VStack(alignment: .leading, spacing: 11) {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text("Question \(currentQuestionIndex + 1) of \(session.questions.count)")
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .contentTransition(.numericText())
+
+                Spacer(minLength: 8)
+
+                Text(progressStatusText)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(progressStatusTint)
+                    .multilineTextAlignment(.trailing)
+            }
+
+            ProgressView(
+                value: Double(completedQuestionCount),
+                total: Double(max(session.questions.count, 1))
+            )
+            .tint(CheckpointTheme.teal)
+            .animation(
+                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                value: completedQuestionCount
+            )
+            .accessibilityLabel("Checkpoint progress")
+            .accessibilityValue(
+                "\(completedQuestionCount) of \(session.questions.count) questions completed; \(correctAnswerCount) of \(session.unlockThreshold) correct"
+            )
+
+            Text(sessionSubtitle)
+                .font(.footnote)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var questionPanel: some View {
+        SectionPanel {
+            VStack(alignment: .leading, spacing: 16) {
+                StatusBadge(text: question.topic, tint: CheckpointTheme.teal)
+
+                Text(question.prompt)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityFocused($accessibilityFocus, equals: .question)
+
+                answerControls
+
+                inlineFeedback
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var answerControls: some View {
+        if question.format == .multipleChoice, !question.choices.isEmpty {
+            VStack(spacing: 10) {
+                ForEach(question.choices, id: \.self) { choice in
+                    ChoiceButton(
+                        title: choice,
+                        state: choiceState(for: choice)
+                    ) {
+                        guard checkedAnswer == nil else { return }
+                        answer = choice
+                    }
+                }
+            }
+        } else {
+            TextField("Type your answer", text: $answer, axis: .vertical)
+                .lineLimit(5, reservesSpace: true)
+                .textFieldStyle(.plain)
+                .foregroundStyle(CheckpointTheme.text)
+                .padding(14)
+                .background(
+                    CheckpointTheme.panelRaised.opacity(0.78),
+                    in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
+                        .stroke(CheckpointTheme.hairline, lineWidth: 1)
+                }
+                .disabled(checkedAnswer != nil)
+
+            if !usesAutomaticEvaluation, checkedAnswer == nil {
+                reflectionAssessment
+            }
+        }
+    }
+
+    private var primaryActionBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            PrimaryActionButton(
+                title: submitButtonTitle,
+                systemImage: submitButtonIcon
+            ) {
+                handlePrimaryAction()
+            }
+            .disabled(checkedAnswer == nil && answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .padding(.bottom, 10)
+        }
+        .background(.ultraThinMaterial)
     }
 
     private var question: CheckpointQuestion {
@@ -128,6 +186,29 @@ struct CheckpointAttemptView: View {
 
     private var completedQuestionCount: Int {
         currentQuestionIndex + (checkedAnswer == nil ? 0 : 1)
+    }
+
+    private var remainingCorrectAnswers: Int {
+        max(0, session.unlockThreshold - correctAnswerCount)
+    }
+
+    private var progressStatusText: String {
+        if let checkedAnswer, checkedAnswer.shouldFinish {
+            return checkedAnswer.shouldPass ? "Ready to clear" : "Standard not met"
+        }
+        if remainingCorrectAnswers == 0 {
+            return "Standard met"
+        }
+        return remainingCorrectAnswers == 1
+            ? "1 more to clear"
+            : "\(remainingCorrectAnswers) more to clear"
+    }
+
+    private var progressStatusTint: Color {
+        guard let checkedAnswer, checkedAnswer.shouldFinish else {
+            return remainingCorrectAnswers == 0 ? CheckpointTheme.teal : CheckpointTheme.muted
+        }
+        return checkedAnswer.shouldPass ? CheckpointTheme.teal : CheckpointTheme.coral
     }
 
     private var usesAutomaticEvaluation: Bool {
@@ -231,12 +312,18 @@ struct CheckpointAttemptView: View {
             }
         }
 
-        correctAnswerCount = updatedCorrectCount
-        checkedAnswer = CheckedCheckpointAnswer(
-            result: result,
-            shouldFinish: shouldFinish,
-            shouldPass: shouldPass
-        )
+        withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
+            correctAnswerCount = updatedCorrectCount
+            checkedAnswer = CheckedCheckpointAnswer(
+                result: result,
+                shouldFinish: shouldFinish,
+                shouldPass: shouldPass
+            )
+            feedbackSequence += 1
+        }
+        if shouldFinish {
+            resolutionFeedback = shouldPass ? .passed : .failed
+        }
         accessibilityFocus = .feedback
     }
 
@@ -259,11 +346,19 @@ struct CheckpointAttemptView: View {
     }
 
     private func advanceToNextQuestion() {
-        currentQuestionIndex += 1
-        answer = ""
-        result = .correct
-        checkedAnswer = nil
+        withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
+            currentQuestionIndex += 1
+            answer = ""
+            result = .correct
+            checkedAnswer = nil
+        }
         accessibilityFocus = .question
+    }
+
+    private func scrollToQuestion(using proxy: ScrollViewProxy) {
+        withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
+            proxy.scrollTo(AttemptScrollAnchor.question, anchor: .top)
+        }
     }
 
     private func closeCheckpoint() {
@@ -271,7 +366,14 @@ struct CheckpointAttemptView: View {
     }
 
     private func resultTint(for result: AnswerResult) -> Color {
-        result == .correct ? CheckpointTheme.teal : CheckpointTheme.coral
+        switch result {
+        case .correct:
+            return CheckpointTheme.teal
+        case .partial, .unclear:
+            return CheckpointTheme.amber
+        case .incorrect:
+            return CheckpointTheme.coral
+        }
     }
 
     private var failedSessionFeedbackText: String {
@@ -287,59 +389,139 @@ struct CheckpointAttemptView: View {
     }
 
     @ViewBuilder
-    private var resultPanel: some View {
+    private var inlineFeedback: some View {
         if let checkedAnswer {
-            SectionPanel("Feedback") {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(checkedAnswer.result == .correct ? "Correct" : "Not quite")
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 10) {
+                    Image(systemName: feedbackSystemImage(for: checkedAnswer.result))
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(resultTint(for: checkedAnswer.result))
+                        .symbolEffect(.bounce, options: .nonRepeating, value: feedbackSequence)
+                        .symbolEffectsRemoved(reduceMotion)
+                        .accessibilityHidden(true)
+
+                    Text(feedbackTitle(for: checkedAnswer.result))
                         .font(.headline)
                         .foregroundStyle(resultTint(for: checkedAnswer.result))
                         .accessibilityFocused($accessibilityFocus, equals: .feedback)
+                }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        if checkedAnswer.result != .correct {
-                            Text("Correct answer")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(CheckpointTheme.muted)
-
-                            Text(question.expectedAnswer)
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.text)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-
-                        Text(question.explanation)
-                            .font(.footnote)
+                VStack(alignment: .leading, spacing: 8) {
+                    if checkedAnswer.result != .correct,
+                       !hasDisplayableCorrectChoice {
+                        Text("Correct answer")
+                            .font(.caption.weight(.bold))
                             .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(12)
-                    .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
 
-                    if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
-                        Text(failedSessionFeedbackText)
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.amber)
+                        Text(question.expectedAnswer)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    if let protectionActionErrorMessage {
-                        Text(protectionActionErrorMessage)
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.coral)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    Text(question.explanation)
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(13)
+                .background(
+                    CheckpointTheme.panelRaised.opacity(0.68),
+                    in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
+                )
+
+                if checkedAnswer.result != .correct && checkedAnswer.shouldFinish && !checkedAnswer.shouldPass {
+                    Text(failedSessionFeedbackText)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.amber)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if let protectionActionErrorMessage {
+                    Text(protectionActionErrorMessage)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.coral)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-        } else if !usesAutomaticEvaluation {
-            SectionPanel("How did it go?") {
-                Picker("How did it go?", selection: $result) {
-                    ForEach(AnswerResult.allCases) { result in
-                        Text(selfAssessmentLabel(for: result)).tag(result)
-                    }
+            .transition(feedbackTransition)
+        }
+    }
+
+    private var reflectionAssessment: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("How did it go?")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(CheckpointTheme.muted)
+
+            Picker("How did it go?", selection: $result) {
+                ForEach(AnswerResult.allCases) { result in
+                    Text(selfAssessmentLabel(for: result)).tag(result)
                 }
-                .pickerStyle(.segmented)
             }
+            .pickerStyle(.segmented)
+        }
+    }
+
+    private var questionTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .asymmetric(
+                insertion: .move(edge: .trailing).combined(with: .opacity),
+                removal: .opacity
+            )
+    }
+
+    private var feedbackTransition: AnyTransition {
+        reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity)
+    }
+
+    private func choiceState(for choice: String) -> CheckpointChoiceState {
+        guard checkedAnswer != nil else {
+            return answer == choice ? .selected : .idle
+        }
+
+        if AnswerGrader.evaluate(answer: choice, question: question).result == .correct {
+            return .correct
+        }
+        if answer == choice {
+            return .incorrect
+        }
+        return .locked
+    }
+
+    private var hasDisplayableCorrectChoice: Bool {
+        question.format == .multipleChoice && question.choices.contains { choice in
+            AnswerGrader.evaluate(answer: choice, question: question).result == .correct
+        }
+    }
+
+    private func feedbackTitle(for result: AnswerResult) -> String {
+        switch result {
+        case .correct:
+            return "Correct"
+        case .partial:
+            return "Almost"
+        case .incorrect:
+            return "Not quite"
+        case .unclear:
+            return "Needs review"
+        }
+    }
+
+    private func feedbackSystemImage(for result: AnswerResult) -> String {
+        switch result {
+        case .correct:
+            return "checkmark.circle.fill"
+        case .partial:
+            return "circle.lefthalf.filled"
+        case .incorrect:
+            return "xmark.circle.fill"
+        case .unclear:
+            return "questionmark.circle.fill"
         }
     }
 
@@ -368,19 +550,47 @@ private enum AttemptAccessibilityFocus: Hashable {
     case feedback
 }
 
+private enum AttemptScrollAnchor: Hashable {
+    case question
+}
+
+private enum CheckpointResolutionFeedback: Hashable {
+    case passed
+    case failed
+}
+
+private enum CheckpointChoiceState: Hashable {
+    case idle
+    case selected
+    case correct
+    case incorrect
+    case locked
+
+    var isLocked: Bool {
+        switch self {
+        case .correct, .incorrect, .locked:
+            return true
+        case .idle, .selected:
+            return false
+        }
+    }
+}
+
 private struct ChoiceButton: View {
     var title: String
-    var isSelected: Bool
-    var isLocked: Bool
+    var state: CheckpointChoiceState
     var action: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                Image(systemName: systemImage)
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(isSelected ? CheckpointTheme.teal : CheckpointTheme.muted)
+                    .foregroundStyle(iconTint)
                     .frame(width: 22)
+                    .contentTransition(.symbolEffect(.replace))
 
                 Text(title)
                     .font(.subheadline.weight(.semibold))
@@ -390,22 +600,85 @@ private struct ChoiceButton: View {
                 Spacer(minLength: 0)
             }
             .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
             .background(
-                isSelected ? CheckpointTheme.teal.opacity(0.16) : CheckpointTheme.panelRaised,
-                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                backgroundColor,
+                in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(isSelected ? CheckpointTheme.teal.opacity(0.75) : CheckpointTheme.hairline, lineWidth: 1)
+                RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                    .stroke(borderColor, lineWidth: state == .idle || state == .locked ? 1 : 1.4)
             )
         }
-        .buttonStyle(.plain)
-        .disabled(isLocked)
-        .opacity(isLocked && !isSelected ? 0.62 : 1)
+        .buttonStyle(CheckpointPressButtonStyle())
+        .disabled(state.isLocked)
+        .opacity(state == .locked ? 0.58 : 1)
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: state
+        )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityValue(accessibilityValue)
+        .accessibilityAddTraits(state == .selected ? .isSelected : [])
+    }
+
+    private var systemImage: String {
+        switch state {
+        case .selected, .correct:
+            return "checkmark.circle.fill"
+        case .incorrect:
+            return "xmark.circle.fill"
+        case .idle, .locked:
+            return "circle"
+        }
+    }
+
+    private var iconTint: Color {
+        switch state {
+        case .selected, .correct:
+            return CheckpointTheme.teal
+        case .incorrect:
+            return CheckpointTheme.coral
+        case .idle, .locked:
+            return CheckpointTheme.muted
+        }
+    }
+
+    private var backgroundColor: Color {
+        switch state {
+        case .selected, .correct:
+            return CheckpointTheme.teal.opacity(state == .correct ? 0.18 : 0.12)
+        case .incorrect:
+            return CheckpointTheme.coral.opacity(0.12)
+        case .idle, .locked:
+            return CheckpointTheme.panelRaised.opacity(0.72)
+        }
+    }
+
+    private var borderColor: Color {
+        switch state {
+        case .selected, .correct:
+            return CheckpointTheme.teal.opacity(0.72)
+        case .incorrect:
+            return CheckpointTheme.coral.opacity(0.72)
+        case .idle, .locked:
+            return CheckpointTheme.hairline
+        }
+    }
+
+    private var accessibilityValue: String {
+        switch state {
+        case .idle:
+            return "Not selected"
+        case .selected:
+            return "Selected"
+        case .correct:
+            return "Correct answer"
+        case .incorrect:
+            return "Selected, incorrect"
+        case .locked:
+            return "Not selected"
+        }
     }
 }
