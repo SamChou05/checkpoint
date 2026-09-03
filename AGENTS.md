@@ -2,7 +2,9 @@
 
 ## Git history and handoffs
 
-- Commit cohesive, verified milestones regularly instead of accumulating large mixed changes.
+- Commit early and often: create a commit after every cohesive, verified milestone, such as a completed feature slice, bug fix, refactor, test addition, or documentation update.
+- Do not wait until the end of a long task to commit, and do not let multiple independent milestones accumulate into one large mixed change. Commit before switching workstreams, beginning risky follow-up work, or handing work to another agent.
+- Keep each commit buildable and appropriately verified. Frequent commits must still represent meaningful, reviewable progress rather than arbitrary snapshots or time-based checkpoints.
 - Write descriptive commit subjects and bodies that explain what changed, why it changed, and the meaningful verification performed. Treat Git history as the project's detailed changelog.
 - Push verified milestone commits to the current tracked upstream promptly unless the user says not to push or the push would publish incomplete, unsafe, or secret material.
 - Before committing or pushing, confirm the target branch, run the relevant tests or checks, and run `git diff --check`.
