@@ -42,6 +42,25 @@ struct CheckpointAttempt: Identifiable, Codable, Equatable, Sendable {
     var createdAt = Date()
 }
 
+struct FocusWin: Identifiable, Codable, Equatable, Sendable {
+    var id: UUID
+    var goalID: Goal.ID
+    var note: String
+    var loggedAt: Date
+
+    init(
+        id: UUID = UUID(),
+        goalID: Goal.ID,
+        note: String,
+        loggedAt: Date = Date()
+    ) {
+        self.id = id
+        self.goalID = goalID
+        self.note = note
+        self.loggedAt = loggedAt
+    }
+}
+
 struct WeeklyMetricsSummary: Identifiable, Equatable, Sendable {
     static let allGoalsID = "all-goals"
 

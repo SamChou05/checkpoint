@@ -373,6 +373,10 @@ final class GoalProfileTests: CheckpointWorkflowTestCase {
             UnlockEvent(goalID: activeGoal.id, minutes: 30),
             UnlockEvent(goalID: inactiveGoal.id, minutes: 15)
         ]
+        store.focusWins = [
+            FocusWin(goalID: activeGoal.id, note: "Active goal win"),
+            FocusWin(goalID: inactiveGoal.id, note: "Inactive goal win")
+        ]
 
         XCTAssertTrue(store.deleteGoalProfile(inactiveGoal.id))
 
@@ -382,6 +386,7 @@ final class GoalProfileTests: CheckpointWorkflowTestCase {
         XCTAssertTrue(store.attempts.allSatisfy { $0.goalID == activeGoal.id })
         XCTAssertTrue(store.competencies.allSatisfy { $0.goalID == activeGoal.id })
         XCTAssertTrue(store.unlockEvents.allSatisfy { $0.goalID == activeGoal.id })
+        XCTAssertEqual(store.focusWins.map(\.goalID), [activeGoal.id])
         XCTAssertEqual(SharedAppGroup.currentShieldContext().goalTitle, activeGoal.title)
     }
 

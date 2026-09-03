@@ -39,6 +39,7 @@ final class CheckpointStore {
     var questions: [CheckpointQuestion] = []
     var attempts: [CheckpointAttempt] = []
     var competencies: [TopicCompetency] = []
+    var focusWins: [FocusWin] = []
     var unlockEvents: [UnlockEvent] = []
     var questionReports: [QuestionQualityReport] = []
     var issueReports: [UserIssueReport] = []
@@ -91,6 +92,8 @@ final class CheckpointStore {
     @ObservationIgnored private static let maximumQuestionGenerationPreviewCount = 12
     @ObservationIgnored static let maximumStoredQuestionCountPerGoal = 500
     @ObservationIgnored static let maximumStoredAttemptCountPerGoal = 2_000
+    @ObservationIgnored static let maximumStoredFocusWinCountPerGoal = 500
+    @ObservationIgnored static let maximumFocusWinNoteLength = 280
     @ObservationIgnored static let maximumStoredUnlockEventCountPerGoal = 1_000
     @ObservationIgnored static let maximumStoredQuestionReportCountPerGoal = 250
     @ObservationIgnored static let maximumStoredIssueReportCount = 100
@@ -587,6 +590,60 @@ final class CheckpointStore {
             if $1.id == goal?.id { return false }
             return $0.createdAt > $1.createdAt
         }
+    }
+
+    var activeFocusWins: [FocusWin] {
+        guard let goalID = goal?.id else { return [] }
+        return focusWins(for: goalID)
+    }
+
+    func focusWins(for goalID: Goal.ID) -> [FocusWin] {
+        focusWins
+            .filter { $0.goalID == goalID }
+            .sorted(by: Self.focusWinComesBefore)
+    }
+
+    @discardableResult
+    func recordFocusWin(
+        note rawNote: String,
+        goalID: Goal.ID,
+        loggedAt: Date = Date()
+    ) -> Bool {
+        guard availableGoalProfiles.contains(where: { $0.id == goalID }) else {
+            return false
+        }
+
+        let note = rawNote.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !note.isEmpty, note.count <= Self.maximumFocusWinNoteLength else {
+            return false
+        }
+
+        let previousFocusWins = focusWins
+        focusWins.insert(
+            FocusWin(goalID: goalID, note: note, loggedAt: loggedAt),
+            at: 0
+        )
+        guard save() else {
+            focusWins = previousFocusWins
+            return false
+        }
+        return true
+    }
+
+    @discardableResult
+    func deleteFocusWin(id focusWinID: FocusWin.ID, goalID: Goal.ID) -> Bool {
+        guard availableGoalProfiles.contains(where: { $0.id == goalID }),
+              focusWins.contains(where: { $0.id == focusWinID && $0.goalID == goalID }) else {
+            return false
+        }
+
+        let previousFocusWins = focusWins
+        focusWins.removeAll { $0.id == focusWinID && $0.goalID == goalID }
+        guard save() else {
+            focusWins = previousFocusWins
+            return false
+        }
+        return true
     }
 
     var isMember: Bool {
@@ -2090,6 +2147,7 @@ final class CheckpointStore {
         questions = []
         attempts = []
         competencies = []
+        focusWins = []
         unlockEvents = []
         questionReports = []
         issueReports = []
@@ -3392,6 +3450,7 @@ final class CheckpointStore {
         questions.removeAll { $0.goalID == goalID }
         attempts.removeAll { $0.goalID == goalID }
         competencies.removeAll { $0.goalID == goalID || (includeLegacyCompetencies && $0.goalID == nil) }
+        focusWins.removeAll { $0.goalID == goalID }
         questionReports.removeAll { $0.goalID == goalID }
         unlockEvents.removeAll { $0.goalID == goalID }
         questionBankSyncIntents.removeAll { $0.goalID == goalID }
@@ -3478,6 +3537,7 @@ final class CheckpointStore {
             questions: questions,
             attempts: attempts,
             competencies: competencies,
+            focusWins: focusWins,
             unlockEvents: unlockEvents,
             questionReports: questionReports,
             issueReports: issueReports,
@@ -3521,6 +3581,11 @@ final class CheckpointStore {
             limit: Self.maximumStoredAttemptCountPerGoal,
             goalID: \CheckpointAttempt.goalID
         )
+        let retainedFocusWins = retainingFirstPerGoal(
+            focusWins.sorted(by: Self.focusWinComesBefore),
+            limit: Self.maximumStoredFocusWinCountPerGoal,
+            goalID: \FocusWin.goalID
+        )
         let retainedUnlockEvents = retainingFirstPerGoal(
             unlockEvents,
             limit: Self.maximumStoredUnlockEventCountPerGoal,
@@ -3537,6 +3602,7 @@ final class CheckpointStore {
         )
         let changed = retainedQuestions != questions ||
             retainedAttempts != attempts ||
+            retainedFocusWins != focusWins ||
             retainedUnlockEvents != unlockEvents ||
             retainedQuestionReports != questionReports ||
             retainedIssueReports != issueReports ||
@@ -3544,6 +3610,7 @@ final class CheckpointStore {
 
         questions = retainedQuestions
         attempts = retainedAttempts
+        focusWins = retainedFocusWins
         unlockEvents = retainedUnlockEvents
         questionReports = retainedQuestionReports
         issueReports = retainedIssueReports
@@ -3598,6 +3665,13 @@ final class CheckpointStore {
             retainedCounts[id] = count + 1
             return true
         }
+    }
+
+    nonisolated private static func focusWinComesBefore(_ lhs: FocusWin, _ rhs: FocusWin) -> Bool {
+        if lhs.loggedAt != rhs.loggedAt {
+            return lhs.loggedAt > rhs.loggedAt
+        }
+        return lhs.id.uuidString < rhs.id.uuidString
     }
 
     private func publishShieldContext() {
@@ -3830,6 +3904,7 @@ final class CheckpointStore {
         questions = snapshot.questions
         attempts = snapshot.attempts
         competencies = snapshot.competencies
+        focusWins = snapshot.focusWins ?? []
         unlockEvents = snapshot.unlockEvents ?? []
         questionReports = snapshot.questionReports ?? []
         issueReports = snapshot.issueReports ?? []

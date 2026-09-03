@@ -6,6 +6,7 @@ struct AppSnapshot: Codable, Sendable {
     var questions: [CheckpointQuestion]
     var attempts: [CheckpointAttempt]
     var competencies: [TopicCompetency]
+    var focusWins: [FocusWin]?
     var unlockEvents: [UnlockEvent]?
     var questionReports: [QuestionQualityReport]?
     var issueReports: [UserIssueReport]?

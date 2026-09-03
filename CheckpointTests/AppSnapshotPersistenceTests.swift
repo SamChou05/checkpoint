@@ -469,9 +469,289 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testFocusWinsPersistPerGoalInNewestFirstOrder() throws {
+        let activeGoal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = activeGoal
+        store.goalProfiles = [activeGoal, otherGoal]
+
+        XCTAssertTrue(
+            store.recordFocusWin(
+                note: "  Explained a recursive solution clearly.  ",
+                goalID: activeGoal.id,
+                loggedAt: Date(timeIntervalSince1970: 100)
+            )
+        )
+        XCTAssertTrue(
+            store.recordFocusWin(
+                note: "Finished the derivatives review set.",
+                goalID: otherGoal.id,
+                loggedAt: Date(timeIntervalSince1970: 200)
+            )
+        )
+        XCTAssertTrue(
+            store.recordFocusWin(
+                note: "Solved the follow-up without a hint.",
+                goalID: activeGoal.id,
+                loggedAt: Date(timeIntervalSince1970: 300)
+            )
+        )
+
+        XCTAssertEqual(
+            store.activeFocusWins.map(\.note),
+            ["Solved the follow-up without a hint.", "Explained a recursive solution clearly."]
+        )
+        XCTAssertEqual(
+            store.focusWins(for: otherGoal.id).map(\.note),
+            ["Finished the derivatives review set."]
+        )
+
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertEqual(restoredStore.goal?.id, activeGoal.id)
+        XCTAssertEqual(restoredStore.activeFocusWins, store.activeFocusWins)
+        XCTAssertEqual(
+            restoredStore.focusWins(for: otherGoal.id),
+            store.focusWins(for: otherGoal.id)
+        )
+    }
+
+    @MainActor
+    func testFocusWinValidationRejectsBlankOversizedAndUnknownGoalNotes() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        XCTAssertFalse(store.recordFocusWin(note: " \n\t ", goalID: goal.id))
+        XCTAssertFalse(
+            store.recordFocusWin(
+                note: String(repeating: "a", count: CheckpointStore.maximumFocusWinNoteLength + 1),
+                goalID: goal.id
+            )
+        )
+        XCTAssertFalse(
+            store.recordFocusWin(
+                note: "This goal does not exist.",
+                goalID: UUID()
+            )
+        )
+        XCTAssertTrue(
+            store.recordFocusWin(
+                note: String(repeating: "a", count: CheckpointStore.maximumFocusWinNoteLength),
+                goalID: goal.id
+            )
+        )
+        XCTAssertEqual(store.focusWins.count, 1)
+    }
+
+    @MainActor
+    func testRecordingFocusWinDoesNotChangeLearningOrAccessState() {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
+        store.competencies = [TopicCompetency.initial(topic: "arrays", goalID: goal.id)]
+        let nextQuestionID = store.nextQuestion()?.id
+        let weeklyMetrics = store.weeklyActiveGoalMetrics
+        let unlockPolicy = store.unlockPolicy
+        let questionBatchState = store.questionBatchState
+
+        XCTAssertTrue(store.recordFocusWin(note: "Worked through the edge case.", goalID: goal.id))
+
+        XCTAssertEqual(store.nextQuestion()?.id, nextQuestionID)
+        XCTAssertEqual(store.weeklyActiveGoalMetrics, weeklyMetrics)
+        XCTAssertEqual(store.unlockPolicy, unlockPolicy)
+        XCTAssertEqual(store.questionBatchState, questionBatchState)
+        XCTAssertTrue(store.attempts.isEmpty)
+        XCTAssertTrue(store.unlockEvents.isEmpty)
+        XCTAssertEqual(store.competencies, [TopicCompetency.initial(topic: "arrays", goalID: goal.id)])
+    }
+
+    @MainActor
+    func testFocusWinsRemainAttachedWhenGoalTitleChanges() async throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
+        XCTAssertTrue(store.recordFocusWin(note: "Kept the same goal identity.", goalID: goal.id))
+        let win = try XCTUnwrap(store.activeFocusWins.first)
+
+        await store.updateActiveGoal(
+            title: "Pass senior technical interviews",
+            deadline: goal.deadline,
+            category: goal.category,
+            currentLevel: goal.currentLevel,
+            focusAreas: goal.focusAreas,
+            sourceDocuments: goal.sourceDocuments,
+            preferredQuestionStyle: goal.preferredQuestionStyle,
+            minimumQuestionDifficulty: goal.minimumQuestionDifficulty,
+            waitForQuestionGeneration: false
+        )
+
+        XCTAssertEqual(store.goal?.id, goal.id)
+        XCTAssertEqual(store.activeFocusWins, [win])
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(restoredStore.goal?.title, "Pass senior technical interviews")
+        XCTAssertEqual(restoredStore.activeFocusWins, [win])
+    }
+
+    @MainActor
+    func testFailedFocusWinWritesRollBackAddAndDelete() throws {
+        try Data("not a directory".utf8).write(to: persistenceDirectory)
+        let goal = makeGoal()
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        XCTAssertFalse(
+            store.recordFocusWin(
+                note: "This cannot be durably stored.",
+                goalID: goal.id
+            )
+        )
+        XCTAssertTrue(store.focusWins.isEmpty)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+
+        let existingWin = FocusWin(
+            goalID: goal.id,
+            note: "Keep this in memory when deletion cannot be saved.",
+            loggedAt: Date(timeIntervalSince1970: 100)
+        )
+        store.focusWins = [existingWin]
+
+        XCTAssertFalse(store.deleteFocusWin(id: existingWin.id, goalID: goal.id))
+        XCTAssertEqual(store.focusWins, [existingWin])
+    }
+
+    @MainActor
+    func testFocusWinDeleteRequiresMatchingGoalAndPersists() throws {
+        let activeGoal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = activeGoal
+        store.goalProfiles = [activeGoal, otherGoal]
+        XCTAssertTrue(store.recordFocusWin(note: "A durable win.", goalID: activeGoal.id))
+        let win = try XCTUnwrap(store.activeFocusWins.first)
+
+        XCTAssertFalse(store.deleteFocusWin(id: win.id, goalID: otherGoal.id))
+        XCTAssertEqual(store.activeFocusWins, [win])
+        XCTAssertTrue(store.deleteFocusWin(id: win.id, goalID: activeGoal.id))
+        XCTAssertTrue(store.activeFocusWins.isEmpty)
+
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertTrue(restoredStore.focusWins.isEmpty)
+    }
+
+    @MainActor
+    func testLegacySnapshotWithoutFocusWinsRestoresAnEmptyLedger() throws {
+        let goal = makeGoal()
+        let originalStore = CheckpointStore(defaults: defaults)
+        originalStore.goal = goal
+        originalStore.goalProfiles = [goal]
+        originalStore.updateUnlockMinutes(10)
+        let envelopeData = try XCTUnwrap(
+            defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey)
+        )
+        let envelope = try JSONDecoder().decode(AppSnapshotEnvelope.self, from: envelopeData)
+        var legacySnapshotObject = try XCTUnwrap(
+            JSONSerialization.jsonObject(
+                with: JSONEncoder().encode(envelope.snapshot)
+            ) as? [String: Any]
+        )
+        legacySnapshotObject.removeValue(forKey: "focusWins")
+        let legacyData = try JSONSerialization.data(withJSONObject: legacySnapshotObject)
+        defaults.removeObject(forKey: AppSnapshotPersistence.primaryDefaultsKey)
+        defaults.removeObject(forKey: AppSnapshotPersistence.backupDefaultsKey)
+        defaults.set(legacyData, forKey: AppSnapshotPersistence.legacySnapshotKey)
+
+        let restoredStore = CheckpointStore(defaults: defaults)
+
+        XCTAssertEqual(restoredStore.goal?.id, goal.id)
+        XCTAssertTrue(restoredStore.focusWins.isEmpty)
+        XCTAssertNil(defaults.data(forKey: AppSnapshotPersistence.legacySnapshotKey))
+    }
+
+    @MainActor
+    func testFocusWinRetentionKeepsNewestRecordsPerGoal() {
+        let activeGoal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = activeGoal
+        store.goalProfiles = [activeGoal, otherGoal]
+        store.focusWins = [activeGoal, otherGoal].flatMap { goal in
+            (0...CheckpointStore.maximumStoredFocusWinCountPerGoal).map { index in
+                FocusWin(
+                    goalID: goal.id,
+                    note: "Win \(index)",
+                    loggedAt: Date(timeIntervalSince1970: TimeInterval(index))
+                )
+            }
+        }
+
+        store.updateUnlockMinutes(10)
+
+        for goal in [activeGoal, otherGoal] {
+            let retainedWins = store.focusWins(for: goal.id)
+            XCTAssertEqual(
+                retainedWins.count,
+                CheckpointStore.maximumStoredFocusWinCountPerGoal
+            )
+            XCTAssertEqual(retainedWins.first?.loggedAt, Date(timeIntervalSince1970: 500))
+            XCTAssertEqual(retainedWins.last?.loggedAt, Date(timeIntervalSince1970: 1))
+        }
+    }
+
+    @MainActor
     func testPostEraseReconciliationDoesNotRecreateLocalOrAppGroupState() {
         let goal = makeGoal()
         let store = makeFileBackedStore(goal: goal)
+        XCTAssertTrue(store.recordFocusWin(note: "Erase this win.", goalID: goal.id))
         store.startUnlockSession(minutes: 10)
         SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
         SharedAppGroup.publishShieldContext(goalTitle: goal.title, promptPreview: nil)
@@ -490,6 +770,7 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         store.updateMembershipTier(.member)
 
         XCTAssertTrue(store.hasNoPersistedAppData)
+        XCTAssertTrue(store.focusWins.isEmpty)
         XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
         XCTAssertFalse(SharedAppGroup.hasPersistedData)
 
@@ -502,6 +783,7 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         reloadedScreenTime.clearShield()
 
         XCTAssertTrue(reloadedStore.hasNoPersistedAppData)
+        XCTAssertTrue(reloadedStore.focusWins.isEmpty)
         XCTAssertFalse(FileManager.default.fileExists(atPath: persistenceDirectory.path))
         XCTAssertFalse(SharedAppGroup.hasPersistedData)
     }
