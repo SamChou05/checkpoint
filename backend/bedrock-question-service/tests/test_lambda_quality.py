@@ -1048,6 +1048,42 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(questions), 1)
         self.assertIn("subjunctive", questions[0]["prompt"])
 
+    def test_strips_redundant_line_delimited_choice_echo_from_prompt(self):
+        question = _raw_question(
+            "During an inspection, many bees have deformed wings. What is the most likely cause?"
+        )
+        question["expectedAnswer"] = "B. Varroa mites"
+        question["choices"] = [
+            "A. Poor nutrition",
+            "B. Varroa mites",
+            "C. Lack of space",
+            "D. Insufficient queen activity",
+        ]
+        question["explanation"] = (
+            "Varroa mites transmit viruses associated with deformed wings."
+        )
+        question["prompt"] += """
+
+A. Poor nutrition
+B. Varroa mites
+C. Lack of space
+D. Insufficient queen activity
+"""
+        request = lambda_function._normalize_request(  # noqa: SLF001
+            _request_payload(target_count=1, minimum_difficulty=3)
+        )
+
+        sanitized = lambda_function._sanitize_questions(  # noqa: SLF001
+            [question],
+            request,
+        )
+
+        self.assertEqual(len(sanitized), 1)
+        self.assertEqual(
+            sanitized[0]["prompt"],
+            "During an inspection, many bees have deformed wings. What is the most likely cause?",
+        )
+
     def test_accepts_valid_language_question_without_language_specific_shape_filter(
         self,
     ):

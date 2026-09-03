@@ -152,7 +152,10 @@ def _sanitize_questions(
                 if accepted_objective_counts.get(objective_pair, 0) >= objective_limit:
                     continue
 
-        raw_prompt = _clean_text(raw_question.get("prompt"))
+        raw_prompt = _prompt_without_trailing_choice_echo(
+            raw_question.get("prompt"),
+            raw_question.get("choices"),
+        )
         if len(raw_prompt) > MAX_PROVIDER_PROMPT_CHARS:
             continue
 
@@ -599,6 +602,40 @@ def _looks_like_answer_label(value: str) -> bool:
             _clean_text(value),
         )
     )
+
+
+def _prompt_without_trailing_choice_echo(prompt: Any, raw_choices: Any) -> str:
+    """Remove a provider's redundant, line-delimited copy of its choice array."""
+    cleaned_prompt = _clean_text(prompt)
+    if not isinstance(prompt, str) or not isinstance(raw_choices, list):
+        return cleaned_prompt
+
+    choices = [_clean_text(choice) for choice in raw_choices]
+    if len(choices) != 4 or any(not choice for choice in choices):
+        return cleaned_prompt
+
+    lines = prompt.splitlines()
+    nonempty_lines = [
+        (index, _clean_text(line))
+        for index, line in enumerate(lines)
+        if _clean_text(line)
+    ]
+    if len(nonempty_lines) <= len(choices):
+        return cleaned_prompt
+
+    trailing_lines = nonempty_lines[-len(choices) :]
+    choice_keys = [
+        _clean_text(_strip_choice_label(choice)).casefold() for choice in choices
+    ]
+    trailing_keys = [
+        _clean_text(_strip_choice_label(line)).casefold()
+        for _, line in trailing_lines
+    ]
+    if trailing_keys != choice_keys:
+        return cleaned_prompt
+
+    prefix = _clean_text("\n".join(lines[: trailing_lines[0][0]]))
+    return prefix or cleaned_prompt
 
 
 def _prompt_contains_embedded_options(prompt: str) -> bool:
