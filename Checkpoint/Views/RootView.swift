@@ -3,6 +3,42 @@ import SwiftUI
 import UIKit
 #endif
 
+enum FirstRunSetupProgress {
+    static let pendingKey = "checkpoint.firstRunSetup.pendingAppSelection.v1"
+
+    static func isPending(defaults: UserDefaults = .standard) -> Bool {
+        defaults.bool(forKey: pendingKey)
+    }
+
+    static func begin(defaults: UserDefaults = .standard) {
+        defaults.set(true, forKey: pendingKey)
+    }
+
+    static func complete(defaults: UserDefaults = .standard) {
+        defaults.removeObject(forKey: pendingKey)
+    }
+
+    static func shouldResumeAppSelection(
+        isPending: Bool,
+        hasGoal: Bool,
+        isAuthorized: Bool,
+        isOnboardingPresented: Bool
+    ) -> Bool {
+        isPending && hasGoal && isAuthorized && !isOnboardingPresented
+    }
+
+    @MainActor
+    @discardableResult
+    static func completeAfterStartingProtection(
+        defaults: UserDefaults = .standard,
+        startProtection: @MainActor () async -> Bool
+    ) async -> Bool {
+        guard await startProtection() else { return false }
+        complete(defaults: defaults)
+        return true
+    }
+}
+
 struct RootView: View {
     @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
@@ -10,6 +46,11 @@ struct RootView: View {
     @State private var pendingShieldRetryTask: Task<Void, Never>?
     @State private var isSuggestedSkillMapReviewPresented = false
     @State private var lastPresentedSkillMapSignature: String?
+    @State private var isFirstRunSetupPending = FirstRunSetupProgress.isPending()
+    @State private var isOnboardingSheetActive = false
+    @State private var isFirstRunAppSelectionQueued = false
+    @State private var isFirstRunAppSelectionPresented = false
+    @State private var suppressedSuggestedSkillMapGoalID: Goal.ID?
     @Environment(\.scenePhase) private var scenePhase
 
     private var store: CheckpointStore { appModel.store }
@@ -55,9 +96,29 @@ struct RootView: View {
         .sheet(item: membershipFeatureBinding) { feature in
             MembershipView(feature: feature, store: store, purchaseController: purchaseController)
         }
-        .sheet(isPresented: onboardingPresentationBinding) {
-            OnboardingView(store: store)
+        .sheet(
+            isPresented: onboardingPresentationBinding,
+            onDismiss: handleOnboardingDismissed
+        ) {
+            OnboardingView(store: store) {
+                beginFirstRunSetup()
+            }
+                .onAppear {
+                    isOnboardingSheetActive = true
+                }
                 .interactiveDismissDisabled(store.goal == nil)
+        }
+        .sheet(
+            isPresented: $isFirstRunAppSelectionPresented,
+            onDismiss: handleFirstRunAppSelectionDismissed
+        ) {
+            RestrictedAppsView(
+                screenTime: screenTime,
+                presentationMode: .firstRun,
+                onStartProtection: finishFirstRunSetup,
+                onContinueWithoutProtection: completeFirstRunSetup
+            )
+            .interactiveDismissDisabled()
         }
         .sheet(isPresented: $isSuggestedSkillMapReviewPresented) {
             SkillMapReviewView(store: store)
@@ -72,8 +133,13 @@ struct RootView: View {
         .onChange(of: screenTime.hasRequiredScreenTimeAuthorization) { _, isAuthorized in
             guard isAuthorized else { return }
             reconcileProtectionAndHandlePendingAttempt()
+            resumeFirstRunSetupIfNeeded()
         }
         .onChange(of: store.goal) { _, _ in
+            if store.goal == nil {
+                beginFirstRunSetup()
+                suppressedSuggestedSkillMapGoalID = nil
+            }
             workflow.goalDidChange()
             presentSuggestedSkillMapReviewIfNeeded()
         }
@@ -101,6 +167,10 @@ struct RootView: View {
     }
 
     private func bootstrap() async {
+        if store.goal == nil {
+            beginFirstRunSetup()
+        }
+
         await screenTime.bootstrapAuthorizationIfNeeded()
         reconcileProtectionAndHandlePendingAttempt()
 
@@ -112,6 +182,7 @@ struct RootView: View {
         await purchaseController.loadProducts()
 
         reconcileProtectionAndHandlePendingAttempt()
+        resumeFirstRunSetupIfNeeded()
         presentSuggestedSkillMapReviewIfNeeded()
     }
 
@@ -122,6 +193,7 @@ struct RootView: View {
             await refreshPlanAccessFromEntitlements()
         }
         handlePendingShieldActivation()
+        resumeFirstRunSetupIfNeeded()
     }
 
     private func reconcileProtectionAndHandlePendingAttempt() {
@@ -152,10 +224,14 @@ struct RootView: View {
     }
 
     private func presentSuggestedSkillMapReviewIfNeeded() {
-        guard !store.isOnboardingPresented,
+        guard !isFirstRunSetupPending,
+              !store.isOnboardingPresented,
+              !isOnboardingSheetActive,
+              !isFirstRunAppSelectionPresented,
               activeCheckpointSession == nil,
               store.pendingMembershipFeature == nil,
               let goalID = store.goal?.id,
+              goalID != suppressedSuggestedSkillMapGoalID,
               let skillMap = store.activeDerivedSkillMap,
               skillMap.status == .suggested else {
             return
@@ -165,6 +241,91 @@ struct RootView: View {
         guard signature != lastPresentedSkillMapSignature else { return }
         lastPresentedSkillMapSignature = signature
         isSuggestedSkillMapReviewPresented = true
+    }
+
+    private func handleOnboardingDismissed() {
+        isOnboardingSheetActive = false
+        resumeFirstRunSetupIfNeeded()
+        presentSuggestedSkillMapReviewIfNeeded()
+    }
+
+    private func handleFirstRunAppSelectionDismissed() {
+        guard !isFirstRunSetupPending else { return }
+        selectedTab = .home
+    }
+
+    private func beginFirstRunSetup() {
+        FirstRunSetupProgress.begin()
+        isFirstRunSetupPending = true
+    }
+
+    private func resumeFirstRunSetupIfNeeded() {
+        guard
+            FirstRunSetupProgress.shouldResumeAppSelection(
+                isPending: isFirstRunSetupPending,
+                hasGoal: store.goal != nil,
+                isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
+                isOnboardingPresented: store.isOnboardingPresented
+            ),
+            !isOnboardingSheetActive,
+            !isFirstRunAppSelectionPresented,
+            !isFirstRunAppSelectionQueued
+        else {
+            return
+        }
+
+        isFirstRunAppSelectionQueued = true
+        Task { @MainActor in
+            await Task.yield()
+            guard
+                FirstRunSetupProgress.shouldResumeAppSelection(
+                    isPending: isFirstRunSetupPending,
+                    hasGoal: store.goal != nil,
+                    isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
+                    isOnboardingPresented: store.isOnboardingPresented
+                ),
+                !isOnboardingSheetActive
+            else {
+                isFirstRunAppSelectionQueued = false
+                return
+            }
+            isFirstRunAppSelectionPresented = true
+            isFirstRunAppSelectionQueued = false
+        }
+    }
+
+    private func finishFirstRunSetup() async -> String? {
+        let preparationDeadline = Date().addingTimeInterval(45)
+        while store.isPreparingActiveGoalQuestions, Date() < preparationDeadline {
+            do {
+                try await Task.sleep(for: .milliseconds(250))
+            } catch {
+                return "Setup was interrupted. Try turning protection on again."
+            }
+        }
+
+        if store.isPreparingActiveGoalQuestions {
+            return "Your first checkpoint is still being prepared. Try again in a moment."
+        }
+
+        let didStartProtection = await FirstRunSetupProgress.completeAfterStartingProtection {
+            await workflow.startProtection()
+        }
+        guard didStartProtection else {
+            return store.checkpointNotice
+                ?? screenTime.userFacingErrorMessage
+                ?? "Protection could not turn on. Check your selections and try again."
+        }
+
+        isFirstRunSetupPending = false
+        suppressedSuggestedSkillMapGoalID = store.goal?.id
+        return nil
+    }
+
+    private func completeFirstRunSetup() {
+        FirstRunSetupProgress.complete()
+        isFirstRunSetupPending = false
+        suppressedSuggestedSkillMapGoalID = store.goal?.id
     }
 
     private func schedulePendingShieldRetryIfNeeded() {

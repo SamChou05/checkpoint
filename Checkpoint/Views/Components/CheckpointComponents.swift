@@ -38,6 +38,96 @@ enum CheckpointMotion {
     }
 }
 
+struct CheckpointSetupMark: View {
+    let stage: String
+    var step: Int?
+    var stepCount = 3
+    var isWorking = false
+    var compact = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @ViewBuilder
+    var body: some View {
+        if compact {
+            HStack(spacing: 10) {
+                markIcon
+                markCopy
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilityDescription)
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    markIcon
+                    markCopy
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    markIcon
+                    markCopy
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilityDescription)
+        }
+    }
+
+    private var markIcon: some View {
+        Image(systemName: "checkmark.shield.fill")
+            .symbolRenderingMode(.hierarchical)
+            .font(.system(size: compact ? 19 : 24, weight: .semibold))
+            .foregroundStyle(CheckpointTheme.mint)
+            .frame(width: compact ? 40 : 52, height: compact ? 40 : 52)
+            .background(
+                CheckpointTheme.ink,
+                in: RoundedRectangle(
+                    cornerRadius: compact ? 13 : 16,
+                    style: .continuous
+                )
+            )
+            .symbolEffect(
+                .pulse,
+                options: .repeating,
+                isActive: isWorking && !reduceMotion
+            )
+            .fixedSize()
+            .accessibilityHidden(true)
+    }
+
+    private var markCopy: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("CHECKPOINT")
+                .font(.caption2.weight(.bold))
+                .tracking(1.1)
+                .foregroundStyle(CheckpointTheme.text)
+
+            if compact, let step {
+                Text("STEP \(step) OF \(stepCount) · \(stage.uppercased())")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.muted)
+            } else {
+                Text(stage.uppercased())
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.muted)
+
+                if let step {
+                    Text("STEP \(step) OF \(stepCount)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.muted)
+                }
+            }
+        }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var accessibilityDescription: String {
+        guard let step else { return "Checkpoint setup, \(stage)" }
+        return "Checkpoint setup, step \(step) of \(stepCount), \(stage)"
+    }
+}
+
 struct CheckpointPressButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

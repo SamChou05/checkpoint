@@ -20,6 +20,52 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - First-run setup durability
+
+    func testPendingFirstRunAppSelectionSurvivesRelaunchAndResumesRouting() throws {
+        FirstRunSetupProgress.begin(defaults: defaults)
+
+        let relaunchedDefaults = try XCTUnwrap(UserDefaults(suiteName: defaultsSuiteName))
+        let isPendingAfterRelaunch = FirstRunSetupProgress.isPending(defaults: relaunchedDefaults)
+
+        XCTAssertTrue(isPendingAfterRelaunch)
+        XCTAssertTrue(
+            FirstRunSetupProgress.shouldResumeAppSelection(
+                isPending: isPendingAfterRelaunch,
+                hasGoal: true,
+                isAuthorized: true,
+                isOnboardingPresented: false
+            )
+        )
+    }
+
+    @MainActor
+    func testFailedFirstRunProtectionStartKeepsSetupPending() async {
+        FirstRunSetupProgress.begin(defaults: defaults)
+
+        let didComplete = await FirstRunSetupProgress.completeAfterStartingProtection(
+            defaults: defaults,
+            startProtection: { false }
+        )
+
+        XCTAssertFalse(didComplete)
+        XCTAssertTrue(FirstRunSetupProgress.isPending(defaults: defaults))
+    }
+
+    @MainActor
+    func testSuccessfulFirstRunProtectionStartClearsPendingStateAcrossRelaunch() async throws {
+        FirstRunSetupProgress.begin(defaults: defaults)
+
+        let didComplete = await FirstRunSetupProgress.completeAfterStartingProtection(
+            defaults: defaults,
+            startProtection: { true }
+        )
+        let relaunchedDefaults = try XCTUnwrap(UserDefaults(suiteName: defaultsSuiteName))
+
+        XCTAssertTrue(didComplete)
+        XCTAssertFalse(FirstRunSetupProgress.isPending(defaults: relaunchedDefaults))
+    }
+
     // MARK: - Protection and break transitions
 
     @MainActor

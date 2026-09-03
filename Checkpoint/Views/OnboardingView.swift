@@ -1,10 +1,27 @@
+import Accessibility
 import SwiftUI
 import UniformTypeIdentifiers
 
+private enum GoalSetupMode: Equatable {
+    case firstGoal
+    case newGoal
+    case editGoal
+}
+
+private enum GoalSetupField: Hashable {
+    case title
+    case focusAreas
+    case currentLevel
+}
+
 struct OnboardingView: View {
     let store: CheckpointStore
+    private let mode: GoalSetupMode
+    private let onFirstGoalCreated: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var focusedField: GoalSetupField?
     @State private var title = ""
     @State private var deadline = Calendar.current.date(byAdding: .month, value: 2, to: Date()) ?? Date()
     @State private var focusAreas = ""
@@ -17,10 +34,22 @@ struct OnboardingView: View {
     @State private var isImportingSources = false
     @State private var sourceImportMessage: String?
 
-    init(store: CheckpointStore) {
+    init(
+        store: CheckpointStore,
+        onFirstGoalCreated: @escaping () -> Void = {}
+    ) {
         self.store = store
+        self.onFirstGoalCreated = onFirstGoalCreated
 
-        if let goal = store.goal, !store.isCreatingGoalProfile {
+        if store.goal == nil {
+            mode = .firstGoal
+        } else if store.isCreatingGoalProfile {
+            mode = .newGoal
+        } else {
+            mode = .editGoal
+        }
+
+        if let goal = store.goal, mode == .editGoal {
             _title = State(initialValue: goal.title)
             _deadline = State(initialValue: max(goal.deadline, Date()))
             _focusAreas = State(initialValue: goal.focusAreas)
@@ -39,16 +68,7 @@ struct OnboardingView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(isNewProfile ? "Create a goal" : "Update goal")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
-
-                        Text(headerSubtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    goalSetupHeader
 
                     if let persistenceMessage = store.persistenceRecoveryMessage {
                         Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
@@ -56,18 +76,44 @@ struct OnboardingView: View {
                             .foregroundStyle(CheckpointTheme.amber)
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(12)
-                            .background(CheckpointTheme.panel, in: RoundedRectangle(cornerRadius: 8))
+                            .background(
+                                CheckpointTheme.panel,
+                                in: RoundedRectangle(
+                                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                                    style: .continuous
+                                )
+                            )
                     }
 
-                    SectionPanel("Goal") {
-                        TextField("Goal", text: $title, axis: .vertical)
+                    SectionPanel {
+                        Text("Learning goal")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+
+                        TextField(
+                            "Learning goal",
+                            text: $title,
+                            prompt: Text("For example: Pass the California bar exam"),
+                            axis: .vertical
+                        )
                             .textFieldStyle(.plain)
                             .font(.headline)
                             .foregroundStyle(CheckpointTheme.text)
                             .padding(12)
-                            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                            .background(
+                                CheckpointTheme.panelRaised,
+                                in: RoundedRectangle(
+                                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                                    style: .continuous
+                                )
+                            )
+                            .focused($focusedField, equals: .title)
+                            .submitLabel(.done)
+                            .onSubmit {
+                                focusedField = nil
+                            }
 
-                        DatePicker("Deadline", selection: $deadline, in: Date()..., displayedComponents: .date)
+                        DatePicker("Target date", selection: $deadline, in: Date()..., displayedComponents: .date)
                             .foregroundStyle(CheckpointTheme.text)
 
                         if shouldShowGoalInterpretation,
@@ -76,8 +122,13 @@ struct OnboardingView: View {
                                 .font(.footnote.weight(.semibold))
                                 .foregroundStyle(CheckpointTheme.teal)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .transition(.opacity.combined(with: .scale(scale: 0.98)))
                         }
                     }
+                    .animation(
+                        CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion),
+                        value: setupGuidance.interpretation
+                    )
 
                     SectionPanel {
                         DisclosureGroup(isExpanded: $isCustomizationExpanded) {
@@ -87,16 +138,25 @@ struct OnboardingView: View {
                                         .font(.subheadline.weight(.semibold))
                                         .foregroundStyle(CheckpointTheme.text)
 
-                                    Text("Optional. Add any must-cover skills. If you leave this blank—or give only a starting point—we’ll complete an editable 3–6 skill map from your goal.")
+                                    Text("Add anything Checkpoint must cover. Leave this blank and we’ll suggest an editable topic map from your goal.")
                                         .font(.footnote)
                                         .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
 
                                     TextField("For example: contracts, vocabulary", text: $focusAreas, axis: .vertical)
                                         .lineLimit(3, reservesSpace: true)
                                         .textFieldStyle(.plain)
                                         .foregroundStyle(CheckpointTheme.text)
                                         .padding(12)
-                                        .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                                        .background(
+                                            CheckpointTheme.panelRaised,
+                                            in: RoundedRectangle(
+                                                cornerRadius: CheckpointTheme.compactCornerRadius,
+                                                style: .continuous
+                                            )
+                                        )
+                                        .focused($focusedField, equals: .focusAreas)
+                                        .submitLabel(.done)
 
                                     if !parsedFocusAreas.isEmpty {
                                         ScrollView(.horizontal, showsIndicators: false) {
@@ -131,7 +191,15 @@ struct OnboardingView: View {
                                     .textFieldStyle(.plain)
                                     .foregroundStyle(CheckpointTheme.text)
                                     .padding(12)
-                                    .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                                    .background(
+                                        CheckpointTheme.panelRaised,
+                                        in: RoundedRectangle(
+                                            cornerRadius: CheckpointTheme.compactCornerRadius,
+                                            style: .continuous
+                                        )
+                                    )
+                                    .focused($focusedField, equals: .currentLevel)
+                                    .submitLabel(.done)
                                 }
 
                                 Divider()
@@ -150,11 +218,11 @@ struct OnboardingView: View {
                             .padding(.top, 12)
                         } label: {
                             VStack(alignment: .leading, spacing: 3) {
-                                Text("Customize practice")
+                                Text("Topics, level, and study materials")
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(CheckpointTheme.text)
 
-                                Text("Optional topics and starting level")
+                                Text("Optional details for more tailored questions")
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
                             }
@@ -162,21 +230,17 @@ struct OnboardingView: View {
                         .tint(CheckpointTheme.teal)
                     }
 
-                    PrimaryActionButton(
-                        title: primaryButtonTitle,
-                        systemImage: "book.closed",
-                        isLoading: isCreating
-                    ) {
-                        saveGoal()
-                    }
-                    .disabled(isCreating || isTitleEmpty)
                 }
                 .padding(20)
             }
+            .scrollDismissesKeyboard(.interactively)
             .checkpointScreenBackground()
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                saveActionBar
+            }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    if store.goal != nil {
+                    if mode != .firstGoal {
                         Button("Cancel") {
                             store.isCreatingGoalProfile = false
                             store.isOnboardingPresented = false
@@ -200,22 +264,111 @@ struct OnboardingView: View {
                 store.isCreatingGoalProfile = false
             }
         }
+        .onChange(of: focusedField) { previousField, currentField in
+            guard previousField == .title,
+                  currentField != .title,
+                  shouldShowGoalInterpretation,
+                  let interpretation = setupGuidance.interpretation else {
+                return
+            }
+            AccessibilityNotification.Announcement(
+                "Checkpoint will prepare \(interpretation.lowercased())."
+            ).post()
+        }
+        .onChange(of: sourceImportMessage) { _, message in
+            guard let message else { return }
+            AccessibilityNotification.Announcement(message).post()
+        }
+    }
+
+    private var goalSetupHeader: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if mode == .firstGoal {
+                CheckpointSetupMark(stage: "Your goal", step: 2, isWorking: isCreating)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(headerTitle)
+                    .font(.largeTitle.bold())
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+
+                Text(headerSubtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var saveActionBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            PrimaryActionButton(
+                title: primaryButtonTitle,
+                systemImage: primaryButtonSystemImage,
+                isLoading: isCreating
+            ) {
+                focusedField = nil
+                saveGoal()
+            }
+            .disabled(isCreating || isTitleEmpty)
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .padding(.bottom, 10)
+        }
+        .background(.ultraThinMaterial)
+    }
+
+    private var headerTitle: String {
+        switch mode {
+        case .firstGoal:
+            "What are you working toward?"
+        case .newGoal:
+            "Add another goal."
+        case .editGoal:
+            "Refine your goal."
+        }
     }
 
     private var headerSubtitle: String {
-        if isNewProfile {
-            return "Tell us what you're working toward. We'll build an editable skill map and prepare practice for each area."
+        switch mode {
+        case .firstGoal:
+            "Checkpoint will turn your goal into short practice before selected apps open."
+        case .newGoal:
+            "Keep this priority separate with its own topics, practice, and progress."
+        case .editGoal:
+            "Update the direction and level of your future checkpoints."
         }
-
-        return "Update what you're working toward."
     }
 
     private var primaryButtonTitle: String {
-        isNewProfile ? "Create goal" : "Save changes"
+        if isCreating {
+            return mode == .editGoal ? "Saving changes" : "Preparing your goal"
+        }
+
+        switch mode {
+        case .firstGoal:
+            return "Continue to app selection"
+        case .newGoal:
+            return "Create goal"
+        case .editGoal:
+            return "Save changes"
+        }
     }
 
-    private var isNewProfile: Bool {
-        store.goal == nil || store.isCreatingGoalProfile
+    private var primaryButtonSystemImage: String {
+        switch mode {
+        case .firstGoal:
+            "arrow.right"
+        case .newGoal:
+            "plus"
+        case .editGoal:
+            "checkmark"
+        }
     }
 
     private var isTitleEmpty: Bool {
@@ -242,7 +395,7 @@ struct OnboardingView: View {
             guard !isCreating else { return }
             isCreating = true
 
-            if isNewProfile {
+            if mode != .editGoal {
                 await store.createGoal(
                     title: title,
                     deadline: deadline,
@@ -269,6 +422,9 @@ struct OnboardingView: View {
 
             isCreating = false
             if !store.isOnboardingPresented {
+                if mode == .firstGoal, store.goal != nil {
+                    onFirstGoalCreated()
+                }
                 dismiss()
             }
         }
@@ -280,7 +436,7 @@ struct OnboardingView: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
 
-            Text("Optional. Add text, Markdown, or a text-based PDF when questions should follow specific material. Extracted text is saved with this goal and sent to the AI question service.")
+            Text("Add text, Markdown, or a text-based PDF when practice should follow specific material. Checkpoint extracts readable text for the question service; the original file is not uploaded.")
                 .font(.footnote)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
@@ -312,7 +468,7 @@ struct OnboardingView: View {
                     || sourceDocuments.count >= GoalContextLimits.maximumDocumentCount
             )
 
-            Text("Up to \(GoalContextLimits.maximumDocumentCount) files. Long material is trimmed to a shared \(GoalContextLimits.maximumTotalDocumentCharacters.formatted())-character context budget.")
+            Text("Up to \(GoalContextLimits.maximumDocumentCount) files. Longer text may be trimmed to keep practice focused.")
                 .font(.caption)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
@@ -324,7 +480,13 @@ struct OnboardingView: View {
             Image(systemName: "doc.text")
                 .foregroundStyle(CheckpointTheme.teal)
                 .frame(width: 28, height: 28)
-                .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 7))
+                .background(
+                    CheckpointTheme.teal.opacity(0.10),
+                    in: RoundedRectangle(
+                        cornerRadius: CheckpointTheme.compactCornerRadius,
+                        style: .continuous
+                    )
+                )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(document.name)
@@ -345,14 +507,20 @@ struct OnboardingView: View {
             } label: {
                 Image(systemName: "xmark")
                     .font(.caption.weight(.bold))
-                    .frame(width: 36, height: 36)
+                    .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
             .foregroundStyle(CheckpointTheme.coral)
             .accessibilityLabel("Remove \(document.name)")
         }
         .padding(10)
-        .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+        .background(
+            CheckpointTheme.panelRaised,
+            in: RoundedRectangle(
+                cornerRadius: CheckpointTheme.compactCornerRadius,
+                style: .continuous
+            )
+        )
     }
 
     private func handleSourceImport(_ result: Result<[URL], Error>) {
@@ -394,7 +562,6 @@ private struct FocusAreaChip: View {
             .font(.caption.weight(.semibold))
             .foregroundStyle(CheckpointTheme.teal)
             .lineLimit(1)
-            .minimumScaleFactor(0.85)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
