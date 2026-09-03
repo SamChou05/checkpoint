@@ -238,8 +238,7 @@ private struct FamilyPickerContent: View {
                 Label(selectionSummary, systemImage: "checklist")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.text)
-                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
-                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if !localSelection.categoryTokens.isEmpty {
                     Text(categorySelectionDetail)

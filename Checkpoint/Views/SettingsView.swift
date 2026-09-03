@@ -8,6 +8,9 @@ struct SettingsView: View {
     let presentCheckpoint: (CheckpointSession) -> Bool
     private let legalLinks = LegalLinks.current
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
     @State private var isIssueReportsPresented = false
@@ -20,6 +23,7 @@ struct SettingsView: View {
     @State private var previewCheckpointMessage: String?
     @State private var isPreparingPreviewCheckpoint = false
     @State private var stopBlockingMessage: String?
+    @State private var protectionActionMessage: String?
     @State private var isPreparingStopChallenge = false
     @State private var isStopProtectionConfirmationPresented = false
     @State private var isStopWithoutReviewConfirmationPresented = false
@@ -29,122 +33,8 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    SectionPanel("Goals") {
-                        if let goal = store.goal {
-                            VStack(alignment: .leading, spacing: 10) {
-                                HStack(alignment: .top) {
-                                    VStack(alignment: .leading, spacing: 5) {
-                                        Text(goal.title)
-                                            .font(.headline)
-                                            .foregroundStyle(CheckpointTheme.text)
-
-                                        if let focusText = store.activeGoalFocusText {
-                                            Text("Focus: \(focusText)")
-                                                .font(.subheadline)
-                                                .foregroundStyle(CheckpointTheme.muted)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                        }
-                                    }
-
-                                    Spacer()
-
-                                    if store.availableGoalProfiles.count > 1 || (store.isMember && store.hasReachedGoalProfileLimit) {
-                                        StatusBadge(
-                                            text: store.goalProfileCapacityText,
-                                            tint: store.hasReachedGoalProfileLimit ? CheckpointTheme.amber : CheckpointTheme.teal
-                                        )
-                                    }
-                                }
-
-                                if store.availableGoalProfiles.count > 1 {
-                                    Divider()
-
-                                    VStack(spacing: 0) {
-                                        ForEach(store.availableGoalProfiles) { profile in
-                                            goalProfileRow(profile)
-
-                                            if profile.id != store.availableGoalProfiles.last?.id {
-                                                Divider()
-                                                    .padding(.leading, 44)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        HStack(spacing: 10) {
-                            SecondaryActionButton(title: "Edit goal", systemImage: "pencil") {
-                                store.presentActiveGoalEditor()
-                            }
-
-                            newGoalButton
-                        }
-
-                        if let goal = store.goal, store.availableGoalProfiles.count <= 1 {
-                            deleteGoalButton(goal)
-                        }
-                    }
-
-                    SectionPanel("Protected apps") {
-                        VStack(alignment: .leading, spacing: 10) {
-                            HStack {
-                                Text("Status")
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                Spacer()
-                                Text(screenTime.userFacingProtectionStatus)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            Text(screenTime.restrictedAppsSummary)
-                                .font(.footnote)
-                                .foregroundStyle(CheckpointTheme.muted)
-                                .fixedSize(horizontal: false, vertical: true)
-
-                            if shouldShowScreenTimeAuthorizationButton {
-                                SecondaryActionButton(title: "Allow Screen Time", systemImage: "shield") {
-                                    Task {
-                                        await screenTime.requestAuthorization()
-                                    }
-                                }
-                            } else if screenTime.setupState != .unavailable {
-                                SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
-                                    isRestrictedAppsPresented = true
-                                }
-                            }
-
-                            if canStopBlocking {
-                                Divider()
-
-                                SecondaryActionButton(title: isPreparingStopChallenge ? "Preparing review" : "Turn off protection", systemImage: "hand.raised") {
-                                    isStopProtectionConfirmationPresented = true
-                                }
-                                .disabled(isPreparingStopChallenge)
-
-                                if let stopBlockingMessage {
-                                    Text(stopBlockingMessage)
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.amber)
-                                        .fixedSize(horizontal: false, vertical: true)
-
-                                    SecondaryActionButton(
-                                        title: "Turn off without review",
-                                        systemImage: "lock.open"
-                                    ) {
-                                        isStopWithoutReviewConfirmationPresented = true
-                                    }
-                                }
-                            }
-
-                            if let message = screenTime.userFacingErrorMessage {
-                                Text(message)
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.coral)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
-                    }
+                    protectionPanel
+                    goalsPanel
 
                     SectionPanel("Practice standard") {
                         practiceStandardContent
@@ -214,7 +104,309 @@ struct SettingsView: View {
             } message: {
                 Text(goalDeletionConfirmationMessage)
             }
+            .onChange(of: screenTime.userFacingProtectionStatus) { _, status in
+                guard advancedAction == nil else { return }
+                protectionActionMessage = nil
+                AccessibilityNotification.Announcement("Protection status: \(status).").post()
+            }
+            .onChange(of: screenTime.userFacingErrorMessage) { _, message in
+                guard advancedAction == nil,
+                      let message else { return }
+                AccessibilityNotification.Announcement(message).post()
+            }
+            .onChange(of: stopBlockingMessage) { _, message in
+                guard let message else { return }
+                AccessibilityNotification.Announcement(message).post()
+            }
+            .onChange(of: resetRecoveryMessage) { _, message in
+                guard advancedAction == nil, let message else { return }
+                AccessibilityNotification.Announcement(message).post()
+            }
         }
+    }
+
+    private var protectionPanel: some View {
+        SectionPanel("Protection") {
+            VStack(alignment: .leading, spacing: 14) {
+                protectionStatusHeader
+
+                Text(screenTime.restrictedAppsSummary)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityHidden(true)
+
+                protectionPrimaryControl
+
+                if let protectionActionMessage {
+                    Label(protectionActionMessage, systemImage: "exclamationmark.triangle.fill")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.amber)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                } else if shouldExplainCheckpointReadiness {
+                    Text("Checkpoint will verify a full practice set before protection turns on, so you can always earn access to your apps.")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.amber)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if canStopBlocking {
+                    Divider()
+
+                    SecondaryActionButton(
+                        title: isPreparingStopChallenge ? "Preparing review" : "Turn off protection",
+                        systemImage: "hand.raised"
+                    ) {
+                        isStopProtectionConfirmationPresented = true
+                    }
+                    .disabled(isPreparingStopChallenge)
+
+                    if let stopBlockingMessage {
+                        Text(stopBlockingMessage)
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+
+                        SecondaryActionButton(
+                            title: "Turn off without review",
+                            systemImage: "lock.open"
+                        ) {
+                            isStopWithoutReviewConfirmationPresented = true
+                        }
+                    }
+                }
+
+                if let message = screenTime.userFacingErrorMessage,
+                   message != protectionActionMessage {
+                    Label(message, systemImage: "exclamationmark.triangle.fill")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.coral)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+            }
+            .animation(
+                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                value: screenTime.userFacingProtectionStatus
+            )
+            .animation(
+                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                value: screenTime.userFacingErrorMessage
+            )
+            .animation(
+                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                value: protectionActionMessage
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var protectionStatusHeader: some View {
+        let identity = HStack(spacing: 12) {
+            Image(systemName: protectionSystemImage)
+                .font(.system(size: 19, weight: .semibold))
+                .foregroundStyle(protectionTint)
+                .frame(width: 42, height: 42)
+                .background(protectionTint.opacity(0.13), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .contentTransition(.symbolEffect(.replace))
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("App protection")
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text(protectionStatusDetail)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 10) {
+                    identity
+                    StatusBadge(text: screenTime.userFacingProtectionStatus, tint: protectionTint)
+                }
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    identity
+                    Spacer(minLength: 8)
+                    StatusBadge(text: screenTime.userFacingProtectionStatus, tint: protectionTint)
+                }
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("App protection")
+        .accessibilityValue(
+            "\(screenTime.userFacingProtectionStatus). \(protectionStatusDetail) \(screenTime.restrictedAppsSummary)."
+        )
+    }
+
+    @ViewBuilder
+    private var protectionPrimaryControl: some View {
+        if screenTime.setupState == .unavailable {
+            EmptyView()
+        } else if screenTime.isRequestingAuthorization {
+            PrimaryActionButton(
+                title: "Requesting Screen Time access",
+                systemImage: "shield",
+                isLoading: true,
+                action: {}
+            )
+            .disabled(true)
+        } else if screenTime.requiresScreenTimeAuthorization {
+            PrimaryActionButton(title: "Allow Screen Time", systemImage: "shield") {
+                requestScreenTimeAuthorization()
+            }
+        } else if !screenTime.hasSelection {
+            PrimaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
+                protectionActionMessage = nil
+                isRestrictedAppsPresented = true
+            }
+        } else if !canStopBlocking {
+            PrimaryActionButton(
+                title: isProtectionStartBusy ? "Checking checkpoint" : "Start protection",
+                systemImage: "checkmark.shield",
+                isLoading: isProtectionStartBusy
+            ) {
+                prepareAndStartProtection()
+            }
+            .disabled(isProtectionStartBusy)
+        } else {
+            SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
+                protectionActionMessage = nil
+                isRestrictedAppsPresented = true
+            }
+        }
+    }
+
+    private var goalsPanel: some View {
+        SectionPanel("Goals") {
+            if let goal = store.goal {
+                VStack(alignment: .leading, spacing: 10) {
+                    goalSummary(goal)
+
+                    if store.availableGoalProfiles.count > 1 {
+                        Divider()
+
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Other goals")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.muted)
+                                .padding(.bottom, 4)
+
+                            ForEach(otherGoalProfiles) { profile in
+                                goalProfileRow(profile)
+
+                                if profile.id != otherGoalProfiles.last?.id {
+                                    Divider()
+                                        .padding(.leading, dynamicTypeSize.isAccessibilitySize ? 0 : 44)
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                Text("Add a learning goal to personalize each checkpoint.")
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 10) {
+                    editGoalButton
+                    newGoalButton
+                }
+            } else {
+                HStack(spacing: 10) {
+                    editGoalButton
+                    newGoalButton
+                }
+            }
+
+            if let goal = store.goal, store.availableGoalProfiles.count <= 1 {
+                deleteGoalButton(goal)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func goalSummary(_ goal: Goal) -> some View {
+        let summary = VStack(alignment: .leading, spacing: 5) {
+            Text(goal.title)
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let focusText = store.activeGoalFocusText {
+                Text("Focus: \(focusText)")
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 10) {
+                summary
+                goalSummaryAccessories(goal)
+            }
+        } else {
+            HStack(alignment: .top, spacing: 12) {
+                summary
+                Spacer(minLength: 8)
+                goalSummaryAccessories(goal)
+            }
+        }
+    }
+
+    private func goalSummaryAccessories(_ goal: Goal) -> some View {
+        HStack(spacing: 8) {
+            goalCapacityBadge
+
+            if store.availableGoalProfiles.count > 1 {
+                Menu {
+                    Button(role: .destructive) {
+                        pendingGoalDeletion = goal
+                    } label: {
+                        Label("Delete current goal", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .frame(width: 44, height: 44)
+                        .background(CheckpointTheme.panelRaised.opacity(0.72), in: RoundedRectangle(cornerRadius: 10))
+                }
+                .accessibilityLabel("More options for \(goal.title)")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var goalCapacityBadge: some View {
+        if store.availableGoalProfiles.count > 1 || (store.isMember && store.hasReachedGoalProfileLimit) {
+            StatusBadge(
+                text: store.goalProfileCapacityText,
+                tint: store.hasReachedGoalProfileLimit ? CheckpointTheme.amber : CheckpointTheme.teal
+            )
+        }
+    }
+
+    private var otherGoalProfiles: [Goal] {
+        store.availableGoalProfiles.filter { $0.id != store.goal?.id }
+    }
+
+    private var editGoalButton: some View {
+        SecondaryActionButton(title: "Edit goal", systemImage: "pencil") {
+            store.presentActiveGoalEditor()
+        }
+        .disabled(store.goal == nil)
     }
 
     @ViewBuilder
@@ -231,57 +423,116 @@ struct SettingsView: View {
         .opacity(isLimitReached ? 0.65 : 1)
     }
 
+    @ViewBuilder
     private func goalProfileRow(_ profile: Goal) -> some View {
         let isActive = profile.id == store.goal?.id
 
-        return HStack(spacing: 10) {
-            Button {
-                store.switchActiveGoal(to: profile.id)
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(isActive ? CheckpointTheme.teal : CheckpointTheme.muted)
-                        .frame(width: 32, height: 32)
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                goalProfileSelectionButton(profile, isActive: isActive)
+                goalProfileDeleteButton(profile, expanded: true)
+            }
+            .padding(.vertical, 10)
+        } else {
+            HStack(spacing: 10) {
+                goalProfileSelectionButton(profile, isActive: isActive)
+                goalProfileDeleteButton(profile, expanded: false)
+            }
+            .padding(.vertical, 10)
+        }
+    }
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(profile.title)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.text)
-                            .lineLimit(2)
-                            .fixedSize(horizontal: false, vertical: true)
+    private func goalProfileSelectionButton(_ profile: Goal, isActive: Bool) -> some View {
+        Button {
+            store.switchActiveGoal(to: profile.id)
+        } label: {
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 12) {
+                            goalSelectionIcon(isActive: isActive)
+
+                            Text(profile.title)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.text)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
 
                         Text(goalProfileDetailText(for: profile))
                             .font(.footnote)
                             .foregroundStyle(CheckpointTheme.muted)
-                            .lineLimit(2)
                             .fixedSize(horizontal: false, vertical: true)
+
+                        if isActive {
+                            StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                        }
                     }
+                } else {
+                    HStack(spacing: 12) {
+                        goalSelectionIcon(isActive: isActive)
 
-                    Spacer(minLength: 0)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(profile.title)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.text)
+                                .lineLimit(2)
+                                .fixedSize(horizontal: false, vertical: true)
 
-                    if isActive {
-                        StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                            Text(goalProfileDetailText(for: profile))
+                                .font(.footnote)
+                                .foregroundStyle(CheckpointTheme.muted)
+                                .lineLimit(2)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+
+                        Spacer(minLength: 0)
+
+                        if isActive {
+                            StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                        }
                     }
                 }
-                .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
-            .disabled(isActive)
-
-            Button {
-                pendingGoalDeletion = profile
-            } label: {
-                Image(systemName: "trash")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(CheckpointTheme.coral)
-                    .frame(width: 44, height: 44)
-                    .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Delete \(profile.title)")
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .contentShape(Rectangle())
         }
-        .padding(.vertical, 10)
+        .buttonStyle(.plain)
+        .disabled(isActive)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(profile.title)
+        .accessibilityValue("\(isActive ? "Current goal. " : "")\(goalProfileDetailText(for: profile))")
+        .accessibilityHint(isActive ? "Current goal." : "Activates this goal.")
+        .accessibilityAddTraits(isActive ? .isSelected : [])
+    }
+
+    private func goalSelectionIcon(isActive: Bool) -> some View {
+        Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
+            .font(.system(size: 18, weight: .semibold))
+            .foregroundStyle(isActive ? CheckpointTheme.teal : CheckpointTheme.muted)
+            .frame(width: 32, height: 32)
+            .accessibilityHidden(true)
+    }
+
+    private func goalProfileDeleteButton(_ profile: Goal, expanded: Bool) -> some View {
+        Button {
+            pendingGoalDeletion = profile
+        } label: {
+            Group {
+                if expanded {
+                    Label("Delete goal", systemImage: "trash")
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                } else {
+                    Image(systemName: "trash")
+                        .font(.system(size: 14, weight: .bold))
+                        .frame(width: 44, height: 44)
+                }
+            }
+            .foregroundStyle(CheckpointTheme.coral)
+            .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Delete \(profile.title)")
     }
 
     private func deleteGoalButton(_ goal: Goal) -> some View {
@@ -292,10 +543,9 @@ struct SettingsView: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.coral)
                 .multilineTextAlignment(.center)
-                .lineLimit(1)
-                .minimumScaleFactor(0.85)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 13)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .padding(.horizontal, 12)
                 .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -313,8 +563,111 @@ struct SettingsView: View {
         screenTime.isShieldingEnabled || screenTime.setupState == .temporarilyUnlocked
     }
 
-    private var shouldShowScreenTimeAuthorizationButton: Bool {
-        screenTime.setupState == .notStarted || screenTime.setupState == .failed
+    private func requestScreenTimeAuthorization() {
+        guard !screenTime.isRequestingAuthorization else { return }
+        protectionActionMessage = nil
+
+        Task {
+            await screenTime.requestAuthorization()
+        }
+    }
+
+    private func prepareAndStartProtection() {
+        guard !isProtectionStartBusy else { return }
+        protectionActionMessage = nil
+
+        Task {
+            let didStart = await workflow.startProtection()
+            guard !didStart else { return }
+
+            if let message = store.checkpointNotice {
+                protectionActionMessage = message
+                AccessibilityNotification.Announcement(message).post()
+            } else if screenTime.userFacingErrorMessage == nil {
+                let message = "Protection could not start. Check your setup and try again."
+                protectionActionMessage = message
+                AccessibilityNotification.Announcement(message).post()
+            }
+        }
+    }
+
+    private var isProtectionStartBusy: Bool {
+        workflow.isStartingProtection || store.isPreparingActiveGoalQuestions
+    }
+
+    private var shouldExplainCheckpointReadiness: Bool {
+        screenTime.setupState == .authorized
+            && screenTime.hasSelection
+            && !canStopBlocking
+            && !store.hasReadyCheckpointSet
+    }
+
+    private var protectionSystemImage: String {
+        switch screenTime.setupState {
+        case .shieldActive:
+            return "checkmark.shield.fill"
+        case .temporarilyUnlocked:
+            return "timer"
+        case .failed:
+            return "exclamationmark.shield.fill"
+        case .unavailable:
+            return "iphone.slash"
+        case .notStarted, .authorized:
+            return screenTime.hasSelection ? "shield" : "shield.lefthalf.filled"
+        }
+    }
+
+    private var protectionTint: Color {
+        switch screenTime.setupState {
+        case .shieldActive:
+            return CheckpointTheme.teal
+        case .temporarilyUnlocked:
+            return CheckpointTheme.amber
+        case .failed:
+            return CheckpointTheme.coral
+        case .unavailable:
+            return CheckpointTheme.muted
+        case .notStarted, .authorized:
+            return CheckpointTheme.blue
+        }
+    }
+
+    private var protectionStatusDetail: String {
+        if screenTime.isRequestingAuthorization {
+            return "Waiting for iPhone to confirm Screen Time access."
+        }
+
+        switch screenTime.setupState {
+        case .shieldActive:
+            return "Selected apps pause at a goal-based checkpoint."
+        case .temporarilyUnlocked:
+            return "Your timed break is active; protection restarts automatically."
+        case .failed:
+            return "Screen Time access needs attention before protection can start."
+        case .unavailable:
+            return "App protection is available on iPhone."
+        case .authorized where screenTime.hasSelection && store.hasReadyCheckpointSet:
+            return "Your apps and practice set are ready to protect."
+        case .authorized where screenTime.hasSelection:
+            return "Your apps are selected; Checkpoint will verify practice before starting."
+        case .authorized:
+            return "Choose the apps you want to use more intentionally."
+        case .notStarted:
+            return "Allow Screen Time to set up private, on-device protection."
+        }
+    }
+
+    private var resetRecoveryMessage: String? {
+        let messages = [
+            store.persistenceRecoveryMessage,
+            screenTime.sharedDataEraseErrorMessage
+        ].compactMap { $0 }
+        let uniqueMessages = messages.reduce(into: [String]()) { result, message in
+            if !result.contains(message) {
+                result.append(message)
+            }
+        }
+        return uniqueMessages.isEmpty ? nil : uniqueMessages.joined(separator: " ")
     }
 
     private var planDetailText: String {
@@ -347,6 +700,7 @@ struct SettingsView: View {
                 Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct starts a \(store.unlockPolicy.unlockMinutes)-minute break.")
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             DisclosureGroup(isExpanded: $isPracticeStandardExpanded) {
@@ -386,11 +740,17 @@ struct SettingsView: View {
                 }
                 .padding(.top, 10)
             } label: {
-                Text("Customize")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                HStack {
+                    Text("Customize")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.teal)
+                    Spacer(minLength: 8)
+                }
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
             }
             .tint(CheckpointTheme.teal)
+            .accessibilityHint(isPracticeStandardExpanded ? "Collapses practice controls." : "Expands practice controls.")
         }
     }
 
@@ -401,7 +761,10 @@ struct SettingsView: View {
                     title: "Practice history",
                     detail: historyDetailText,
                     systemImage: "clock.arrow.circlepath",
-                    trailingText: "\(store.activeAttempts.count)"
+                    trailingText: "\(store.activeAttempts.count)",
+                    voiceOverValue: store.activeAttempts.isEmpty
+                        ? "No answers yet"
+                        : "\(store.activeAttempts.count) answers. \(historyDetailText)"
                 ) {
                     isHistoryPresented = true
                 }
@@ -412,7 +775,10 @@ struct SettingsView: View {
                     title: "Help & feedback",
                     detail: issueReportsDetailText,
                     systemImage: "bubble.left.and.bubble.right",
-                    trailingText: "\(store.issueReportCount)"
+                    trailingText: "\(store.issueReportCount)",
+                    voiceOverValue: store.issueReportCount == 0
+                        ? "No saved reports"
+                        : "\(store.issueReportCount) saved reports"
                 ) {
                     isIssueReportsPresented = true
                 }
@@ -426,7 +792,8 @@ struct SettingsView: View {
                 title: "Free and Pro",
                 detail: planDetailText,
                 systemImage: "creditcard",
-                trailingText: store.membershipTier.displayName
+                trailingText: store.membershipTier.displayName,
+                voiceOverValue: "\(store.membershipTier.displayName) plan. \(planDetailText)"
             ) {
                 isPlanPresented = true
             }
@@ -468,15 +835,16 @@ struct SettingsView: View {
 
     private var appDataPanel: some View {
         SectionPanel("App data") {
+            if let resetRecoveryMessage {
+                Label(resetRecoveryMessage, systemImage: "externaldrive.badge.exclamationmark")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.amber)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
             DisclosureGroup(isExpanded: $isAppDataExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
-                    if let persistenceMessage = store.persistenceRecoveryMessage {
-                        Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.amber)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
                     Text("Erase goals, progress, protected-app selections, diagnostics, and the anonymous backend install ID, then turn off app protection.")
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
@@ -488,12 +856,22 @@ struct SettingsView: View {
                 }
                 .padding(.top, 10)
             } label: {
-                Text("Reset options")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
+                HStack {
+                    Text("Reset options")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                    Spacer(minLength: 8)
+                }
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
             }
             .tint(CheckpointTheme.teal)
+            .accessibilityHint(isAppDataExpanded ? "Collapses reset options." : "Expands reset options.")
         }
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: resetRecoveryMessage
+        )
     }
 
     #if DEBUG
@@ -510,7 +888,8 @@ struct SettingsView: View {
                         title: "Question diagnostics",
                         detail: store.questionGenerationDiagnosticsSummary,
                         systemImage: "text.magnifyingglass",
-                        trailingText: "\(store.questionGenerationTraces.count)"
+                        trailingText: "\(store.questionGenerationTraces.count)",
+                        voiceOverValue: "\(store.questionGenerationTraces.count) generation traces. \(store.questionGenerationDiagnosticsSummary)"
                     ) {
                         isGenerationDiagnosticsPresented = true
                     }
@@ -530,11 +909,17 @@ struct SettingsView: View {
                 }
                 .padding(.top, 10)
             } label: {
-                Text("Diagnostics and preview")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
+                HStack {
+                    Text("Diagnostics and preview")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                    Spacer(minLength: 8)
+                }
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
             }
             .tint(CheckpointTheme.teal)
+            .accessibilityHint(isDeveloperToolsExpanded ? "Collapses developer tools." : "Expands developer tools.")
         }
     }
     #endif

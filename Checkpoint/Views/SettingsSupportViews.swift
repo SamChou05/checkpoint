@@ -48,6 +48,8 @@ struct AdvancedConfirmationView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var confirmationText = ""
+    @State private var actionErrorMessage: String?
+    @AccessibilityFocusState private var isActionErrorFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -78,13 +80,39 @@ struct AdvancedConfirmationView: View {
                                 .autocorrectionDisabled()
                                 .padding(12)
                                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
+                                .accessibilityLabel("Confirmation phrase")
+                                .accessibilityHint("Type \(action.confirmationPhrase) to continue.")
 
-                            PrimaryActionButton(title: action.buttonTitle, systemImage: action.systemImage) {
+                            Button(role: .destructive) {
                                 performAction()
-                                dismiss()
-                            }
-                            .disabled(!isConfirmed)
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: action.systemImage)
 
+                                    Text(action.buttonTitle)
+                                }
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, minHeight: 52)
+                                .padding(.horizontal, 12)
+                                .background(
+                                    CheckpointTheme.coral,
+                                    in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                                )
+                            }
+                            .buttonStyle(CheckpointPressButtonStyle())
+                            .disabled(!isConfirmed)
+                            .opacity(isConfirmed ? 1 : 0.58)
+                            .accessibilityLabel(action.buttonTitle)
+
+                            if let actionErrorMessage {
+                                Label(actionErrorMessage, systemImage: "exclamationmark.triangle.fill")
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.coral)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityFocused($isActionErrorFocused)
+                            }
                         }
                     }
                 }
@@ -109,11 +137,31 @@ struct AdvancedConfirmationView: View {
     }
 
     private func performAction() {
+        actionErrorMessage = nil
+
         switch action {
         case .resetData:
             screenTime.eraseAllData()
             store.eraseAllData()
         }
+
+        let recoveryMessages = [
+            screenTime.sharedDataEraseErrorMessage,
+            store.persistenceRecoveryMessage
+        ].compactMap { $0 }
+
+        guard recoveryMessages.isEmpty else {
+            let message = recoveryMessages.joined(separator: " ")
+            actionErrorMessage = message
+            Task { @MainActor in
+                await Task.yield()
+                isActionErrorFocused = true
+            }
+            return
+        }
+
+        AccessibilityNotification.Announcement("All Checkpoint data was erased.").post()
+        dismiss()
     }
 }
 
@@ -122,36 +170,80 @@ struct SettingsNavigationRow: View {
     var detail: String
     var systemImage: String
     var trailingText: String
+    var voiceOverValue: String? = nil
     var action: () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                SettingsRowIcon(systemImage: systemImage)
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 12) {
+                            SettingsRowIcon(systemImage: systemImage)
+                            titleLabel
+                            Spacer(minLength: 8)
+                            chevron
+                        }
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.text)
+                        VStack(alignment: .leading, spacing: 4) {
+                            trailingLabel
+                            detailLabel
+                        }
+                    }
+                } else {
+                    HStack(spacing: 12) {
+                        SettingsRowIcon(systemImage: systemImage)
 
-                    Text(detail)
-                        .font(.footnote)
-                        .foregroundStyle(CheckpointTheme.muted)
+                        VStack(alignment: .leading, spacing: 4) {
+                            titleLabel
+                            detailLabel
+                        }
+
+                        Spacer(minLength: 0)
+                        trailingLabel
+                        chevron
+                    }
                 }
-
-                Spacer(minLength: 0)
-
-                Text(trailingText)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.text)
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.muted)
             }
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(voiceOverValue ?? detail)
+        .accessibilityHint("Opens \(title).")
+    }
+
+    private var titleLabel: some View {
+        Text(title)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.text)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var detailLabel: some View {
+        Text(detail)
+            .font(.footnote)
+            .foregroundStyle(CheckpointTheme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var trailingLabel: some View {
+        Text(trailingText)
+            .font(.subheadline.weight(.bold))
+            .foregroundStyle(CheckpointTheme.text)
+            .fixedSize(horizontal: false, vertical: true)
+            .contentTransition(.numericText())
+    }
+
+    private var chevron: some View {
+        Image(systemName: "chevron.right")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.muted)
+            .accessibilityHidden(true)
     }
 }
 
@@ -161,6 +253,8 @@ struct LegalLinkRow: View {
     var systemImage: String
     var url: URL?
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     @ViewBuilder
     var body: some View {
         if let url {
@@ -168,39 +262,74 @@ struct LegalLinkRow: View {
                 rowContent
             }
             .buttonStyle(.plain)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(title)
+            .accessibilityValue(detail)
+            .accessibilityHint("Opens in your browser.")
         } else {
             rowContent
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(title)
+                .accessibilityValue(detail)
                 .accessibilityHint("This URL is not configured in this build.")
         }
     }
 
+    @ViewBuilder
     private var rowContent: some View {
-        HStack(spacing: 12) {
-            SettingsRowIcon(systemImage: systemImage)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 12) {
+                        SettingsRowIcon(systemImage: systemImage)
+                        legalTitle
+                    }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
-
-                Text(detail)
-                    .font(.footnote)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer(minLength: 8)
-
-            if url == nil {
-                StatusBadge(text: "Not configured", tint: CheckpointTheme.coral)
+                    legalDetail
+                    legalAccessory
+                }
             } else {
-                Image(systemName: "arrow.up.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.muted)
+                HStack(spacing: 12) {
+                    SettingsRowIcon(systemImage: systemImage)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        legalTitle
+                        legalDetail
+                    }
+
+                    Spacer(minLength: 8)
+                    legalAccessory
+                }
             }
         }
-        .frame(minHeight: 44)
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
         .contentShape(Rectangle())
+    }
+
+    private var legalTitle: some View {
+        Text(title)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.text)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var legalDetail: some View {
+        Text(detail)
+            .font(.footnote)
+            .foregroundStyle(CheckpointTheme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    @ViewBuilder
+    private var legalAccessory: some View {
+        if url == nil {
+            StatusBadge(text: "Not configured", tint: CheckpointTheme.coral)
+        } else {
+            Image(systemName: "arrow.up.right")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(CheckpointTheme.muted)
+                .accessibilityHidden(true)
+        }
     }
 }
 
@@ -213,5 +342,6 @@ private struct SettingsRowIcon: View {
             .foregroundStyle(CheckpointTheme.teal)
             .frame(width: 34, height: 34)
             .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+            .accessibilityHidden(true)
     }
 }
