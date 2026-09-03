@@ -28,34 +28,37 @@ struct SkillMapReviewView: View {
 
                     SectionPanel("Skill names") {
                         VStack(spacing: 12) {
-                            ForEach(Array(topics.indices), id: \.self) { index in
-                                EditableSkillNameRow(
-                                    index: index,
-                                    name: $topics[index].name,
-                                    canRemove: topics.count > 3
-                                ) {
-                                    topics.remove(at: index)
-                                }
-
-                                if !topics[index].objectives.isEmpty {
-                                    Text(topics[index].objectives.prefix(3).map(\.name).joined(separator: " · "))
-                                        .font(.caption)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-
-                                if existingSkillIDs.contains(topics[index].id) {
-                                    Button {
-                                        topics[index] = SkillMapTopic(name: "")
-                                    } label: {
-                                        Label("Replace this skill", systemImage: "arrow.triangle.2.circlepath")
-                                            .font(.caption.weight(.semibold))
-                                            .foregroundStyle(CheckpointTheme.amber)
-                                            .frame(maxWidth: .infinity, minHeight: 36, alignment: .leading)
+                            ForEach(topics) { topic in
+                                if let index = topics.firstIndex(where: { $0.id == topic.id }) {
+                                    EditableSkillNameRow(
+                                        index: index,
+                                        name: $topics[index].name,
+                                        canRemove: topics.count > 3
+                                    ) {
+                                        topics.removeAll { $0.id == topic.id }
                                     }
-                                    .buttonStyle(.plain)
-                                    .accessibilityHint("Retires this skill's questions and starts new progress")
+
+                                    if !topics[index].objectives.isEmpty {
+                                        Text(topics[index].objectives.prefix(3).map(\.name).joined(separator: " · "))
+                                            .font(.caption)
+                                            .foregroundStyle(CheckpointTheme.muted)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+
+                                    if existingSkillIDs.contains(topic.id) {
+                                        Button {
+                                            guard let replacementIndex = topics.firstIndex(where: { $0.id == topic.id }) else { return }
+                                            topics[replacementIndex] = SkillMapTopic(name: "")
+                                        } label: {
+                                            Label("Replace this skill", systemImage: "arrow.triangle.2.circlepath")
+                                                .font(.caption.weight(.semibold))
+                                                .foregroundStyle(CheckpointTheme.amber)
+                                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityHint("Retires this skill's questions and starts new progress")
+                                    }
                                 }
                             }
 
@@ -66,13 +69,8 @@ struct SkillMapReviewView: View {
                             }
                         }
 
-                        if reusesRetiredSkill {
-                            Text("A retired skill name can’t be reused. Choose a new name so its saved history stays distinct.")
-                                .font(.caption)
-                                .foregroundStyle(CheckpointTheme.coral)
-                                .fixedSize(horizontal: false, vertical: true)
-                        } else if !isValid {
-                            SkillNameValidationMessage()
+                        if let validationMessage {
+                            SkillNameValidationMessage(message: validationMessage)
                         }
                     }
                 }
@@ -103,6 +101,9 @@ struct SkillMapReviewView: View {
             }
         }
         .preferredColorScheme(.light)
+        .onChange(of: validationMessage) { _, message in
+            announceValidation(message)
+        }
     }
 
     private var isValid: Bool {
@@ -120,6 +121,21 @@ struct SkillMapReviewView: View {
         )
     }
 
+    private var validationMessage: String? {
+        if reusesRetiredSkill {
+            return "A retired skill name can’t be reused. Choose a new name so its saved history stays distinct."
+        }
+        if !isValid {
+            return SkillNameValidationMessage.defaultMessage
+        }
+        return nil
+    }
+
+    private func announceValidation(_ message: String?) {
+        guard let message else { return }
+        AccessibilityNotification.Announcement(message).post()
+    }
+
     private var existingSkillIDs: Set<SkillMapTopic.ID> {
         Set(store.activeDerivedSkillMap?.topics.map(\.id) ?? [])
     }
@@ -129,7 +145,7 @@ struct SkillMapRepairView: View {
     let store: CheckpointStore
 
     @Environment(\.dismiss) private var dismiss
-    @State private var topicNames: [String]
+    @State private var topicDrafts: [SkillNameDraft]
 
     init(store: CheckpointStore) {
         self.store = store
@@ -149,7 +165,7 @@ struct SkillMapRepairView: View {
         while initialNames.count < 4 {
             initialNames.append("")
         }
-        _topicNames = State(initialValue: initialNames)
+        _topicDrafts = State(initialValue: initialNames.map(SkillNameDraft.init(name:)))
     }
 
     var body: some View {
@@ -169,25 +185,27 @@ struct SkillMapRepairView: View {
 
                     SectionPanel("Skill names") {
                         VStack(spacing: 12) {
-                            ForEach(Array(topicNames.indices), id: \.self) { index in
-                                EditableSkillNameRow(
-                                    index: index,
-                                    name: $topicNames[index],
-                                    canRemove: topicNames.count > 3
-                                ) {
-                                    topicNames.remove(at: index)
+                            ForEach(topicDrafts) { draft in
+                                if let index = topicDrafts.firstIndex(where: { $0.id == draft.id }) {
+                                    EditableSkillNameRow(
+                                        index: index,
+                                        name: $topicDrafts[index].name,
+                                        canRemove: topicDrafts.count > 3
+                                    ) {
+                                        topicDrafts.removeAll { $0.id == draft.id }
+                                    }
                                 }
                             }
                         }
 
-                        if topicNames.count < 6 {
+                        if topicDrafts.count < 6 {
                             AddSkillNameButton {
-                                topicNames.append("")
+                                topicDrafts.append(SkillNameDraft(name: ""))
                             }
                         }
 
-                        if !isValid {
-                            SkillNameValidationMessage()
+                        if let validationMessage {
+                            SkillNameValidationMessage(message: validationMessage)
                         }
                     }
                 }
@@ -207,7 +225,7 @@ struct SkillMapRepairView: View {
             }
             .safeAreaInset(edge: .bottom) {
                 PrimaryActionButton(title: "Use these skills", systemImage: "checkmark") {
-                    if store.repairActiveSkillMap(topicNames: topicNames) {
+                    if store.repairActiveSkillMap(topicNames: topicDrafts.map(\.name)) {
                         dismiss()
                     }
                 }
@@ -218,11 +236,28 @@ struct SkillMapRepairView: View {
             }
         }
         .preferredColorScheme(.light)
+        .onChange(of: validationMessage) { _, message in
+            announceValidation(message)
+        }
     }
 
     private var isValid: Bool {
-        SkillMapTopic.validatedNames(topicNames) != nil
+        SkillMapTopic.validatedNames(topicDrafts.map(\.name)) != nil
     }
+
+    private var validationMessage: String? {
+        isValid ? nil : SkillNameValidationMessage.defaultMessage
+    }
+
+    private func announceValidation(_ message: String?) {
+        guard let message else { return }
+        AccessibilityNotification.Announcement(message).post()
+    }
+}
+
+private struct SkillNameDraft: Identifiable {
+    let id = UUID()
+    var name: String
 }
 
 private struct EditableSkillNameRow: View {
@@ -272,8 +307,12 @@ private struct AddSkillNameButton: View {
 }
 
 private struct SkillNameValidationMessage: View {
+    static let defaultMessage = "Use a unique name up to 48 characters for every skill. Commas and semicolons aren’t supported in skill names."
+
+    var message: String
+
     var body: some View {
-        Text("Use a unique name up to 48 characters for every skill. Commas and semicolons aren’t supported in skill names.")
+        Text(message)
             .font(.footnote.weight(.semibold))
             .foregroundStyle(CheckpointTheme.coral)
             .fixedSize(horizontal: false, vertical: true)

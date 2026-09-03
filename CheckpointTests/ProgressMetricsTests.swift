@@ -309,6 +309,263 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertTrue(store.sortedCompetencies.allSatisfy { $0.masteryPercent < 100 })
     }
 
+    func testCompetencyProgressBandKeepsSparseEvidenceInCalibration() {
+        var competency = TopicCompetency.initial(topic: "Concurrency", estimatedLevel: 5)
+
+        XCTAssertEqual(CompetencyProgressBand.resolve(for: competency), .notStarted)
+
+        competency.attempts = 1
+        competency.correct = 1
+        XCTAssertEqual(CompetencyProgressBand.resolve(for: competency), .calibrating)
+
+        competency.attempts = 9
+        competency.correct = 9
+        XCTAssertEqual(CompetencyProgressBand.resolve(for: competency), .calibrating)
+
+        competency.attempts = 10
+        competency.correct = 10
+        XCTAssertEqual(CompetencyProgressBand.resolve(for: competency), .strong)
+    }
+
+    func testCompetencyProgressBandUsesMasteryAfterCalibration() {
+        var needsPractice = TopicCompetency.initial(topic: "Recursion", estimatedLevel: 1)
+        needsPractice.attempts = 10
+        needsPractice.incorrect = 10
+        XCTAssertEqual(CompetencyProgressBand.resolve(for: needsPractice), .needsPractice)
+
+        var building = TopicCompetency.initial(topic: "Graphs", estimatedLevel: 1)
+        building.attempts = 10
+        building.correct = 6
+        building.incorrect = 4
+        XCTAssertEqual(CompetencyProgressBand.resolve(for: building), .building)
+
+        var strong = TopicCompetency.initial(topic: "Arrays", estimatedLevel: 2)
+        strong.attempts = 10
+        strong.correct = 10
+        XCTAssertEqual(CompetencyProgressBand.resolve(for: strong), .strong)
+    }
+
+    func testProgressDashboardSummaryCountsOnlyMappedRows() {
+        let lastPracticedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let notStarted = TopicCompetency.initial(topic: "Arrays")
+
+        var calibrating = TopicCompetency.initial(topic: "Graphs")
+        calibrating.attempts = 2
+        calibrating.correct = 2
+
+        var strong = TopicCompetency.initial(topic: "Hash maps", estimatedLevel: 2)
+        strong.attempts = 10
+        strong.correct = 10
+
+        let summary = ProgressDashboardSummary(
+            competencies: [notStarted, calibrating, strong],
+            attemptDates: [lastPracticedAt]
+        )
+
+        XCTAssertEqual(summary.totalSkillCount, 3)
+        XCTAssertEqual(summary.practicedSkillCount, 2)
+        XCTAssertEqual(summary.strongSkillCount, 1)
+        XCTAssertEqual(summary.calibratingSkillCount, 1)
+        XCTAssertEqual(summary.lastPracticedAt, lastPracticedAt)
+        XCTAssertEqual(summary.coverageProgress, 2.0 / 3.0, accuracy: 0.001)
+        XCTAssertFalse(summary.allSkillsAreStrong)
+    }
+
+    @MainActor
+    func testProgressSkillRowsPreserveMapOrderAndFillMissingSkills() {
+        let goalID = UUID()
+        let first = SkillMapTopic(name: "Hash maps")
+        let second = SkillMapTopic(name: "Arrays")
+        let third = SkillMapTopic(name: "Graphs")
+        let skillMap = GoalSkillMap(
+            topics: [first, second, third],
+            status: .reviewed
+        )
+
+        var graphProgress = TopicCompetency.initial(
+            topic: "Graph traversal",
+            goalID: goalID,
+            skillID: third.id
+        )
+        graphProgress.attempts = 4
+        var hashProgress = TopicCompetency.initial(
+            topic: "Hash tables",
+            goalID: goalID,
+            skillID: first.id
+        )
+        hashProgress.attempts = 2
+
+        let rows = ProgressSkillRows.orderedCompetencies(
+            for: skillMap,
+            from: [graphProgress, hashProgress],
+            goalID: goalID
+        )
+
+        XCTAssertEqual(rows.map(\.topic), ["Hash maps", "Arrays", "Graphs"])
+        XCTAssertEqual(rows.map(\.skillID), [first.id, second.id, third.id])
+        XCTAssertEqual(rows.map(\.attempts), [2, 0, 4])
+        XCTAssertTrue(rows.allSatisfy { $0.goalID == goalID })
+    }
+
+    func testProgressDashboardSummaryRecognizesAllStrongSkills() {
+        var first = TopicCompetency.initial(topic: "Arrays", estimatedLevel: 2)
+        first.attempts = 10
+        first.correct = 10
+
+        var second = TopicCompetency.initial(topic: "Graphs", estimatedLevel: 2)
+        second.attempts = 10
+        second.correct = 10
+
+        let summary = ProgressDashboardSummary(
+            competencies: [first, second]
+        )
+
+        XCTAssertTrue(summary.allSkillsAreStrong)
+        XCTAssertEqual(summary.strongSkillCount, 2)
+        XCTAssertEqual(summary.calibratingSkillCount, 0)
+    }
+
+    func testProgressDashboardSummaryMergesAttemptAndCompetencyRecency() {
+        let olderAttempt = Date(timeIntervalSince1970: 1_700_000_000)
+        let newerCompetencyPractice = olderAttempt.addingTimeInterval(3_600)
+        var competency = TopicCompetency.initial(topic: "Arrays")
+        competency.attempts = 2
+        competency.lastPracticedAt = newerCompetencyPractice
+
+        let summary = ProgressDashboardSummary(
+            competencies: [competency],
+            attemptDates: [olderAttempt]
+        )
+
+        XCTAssertEqual(summary.lastPracticedAt, newerCompetencyPractice)
+    }
+
+    func testProgressDashboardPresentationHandlesIncompleteAndUndatedHistory() {
+        var established = TopicCompetency.initial(topic: "Arrays")
+        established.attempts = 10
+        established.correct = 6
+        let untouched = TopicCompetency.initial(topic: "Graphs")
+        let summary = ProgressDashboardSummary(competencies: [established, untouched])
+        let narrative = ProgressDashboardNarrative(summary: summary)
+
+        XCTAssertEqual(summary.unpracticedSkillCount, 1)
+        XCTAssertEqual(narrative.title, "1 skill still needs a first signal")
+        XCTAssertEqual(narrative.detail, "Practice it once to complete your skill coverage.")
+        XCTAssertEqual(summary.lastPracticedValue(), "Earlier")
+    }
+
+    func testCompetencyRecencyLabelDistinguishesUntouchedAndUndatedHistory() {
+        XCTAssertEqual(
+            CompetencyRecencyLabel.text(attempts: 0, lastPracticedAt: nil),
+            "Not practiced yet"
+        )
+        XCTAssertEqual(
+            CompetencyRecencyLabel.text(attempts: 2, lastPracticedAt: nil),
+            "Practiced previously"
+        )
+    }
+
+    @MainActor
+    func testProgressPreparationAndFailureRemainBlockingAfterSkillMapPersists() {
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [SkillMapTopic(name: "Arrays")],
+            status: .suggested
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        store.questionBatchState = .generating
+        XCTAssertTrue(store.isPreparingActiveGoalQuestions)
+        XCTAssertFalse(store.isQuestionGenerationBlockingPractice)
+
+        store.questionBatchState = .failed
+        XCTAssertFalse(store.isPreparingActiveGoalQuestions)
+        XCTAssertTrue(store.isQuestionGenerationBlockingPractice)
+    }
+
+    func testProgressFocusRecommendationDistinguishesReadyAndScheduledReview() throws {
+        let goalID = UUID()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        var question = CheckpointQuestion(
+            goalID: goalID,
+            prompt: "Explain recursion.",
+            expectedAnswer: "A function calls itself.",
+            explanation: "Recursive calls reduce a problem.",
+            topic: "Recursion",
+            difficulty: 2,
+            format: .shortAnswer,
+            status: .incorrect,
+            sourcePrompt: "Recursion"
+        )
+
+        question.nextReviewAt = now.addingTimeInterval(-60)
+        let ready = try XCTUnwrap(
+            ProgressFocusRecommendation(
+                question: question,
+                skillName: "Recursion",
+                competency: nil,
+                now: now
+            )
+        )
+        XCTAssertEqual(ready.title, "Review Recursion")
+        XCTAssertTrue(ready.detail.contains("ready"))
+
+        question.nextReviewAt = now.addingTimeInterval(60)
+        let scheduled = try XCTUnwrap(
+            ProgressFocusRecommendation(
+                question: question,
+                skillName: "Recursion",
+                competency: nil,
+                now: now
+            )
+        )
+        XCTAssertEqual(scheduled.title, "Return to Recursion")
+        XCTAssertFalse(scheduled.detail.contains("ready"))
+    }
+
+    func testProgressFocusRecommendationDoesNotCallFutureDueReviewReady() throws {
+        let goalID = UUID()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        var question = CheckpointQuestion(
+            goalID: goalID,
+            prompt: "Explain recursion.",
+            expectedAnswer: "A function calls itself.",
+            explanation: "Recursive calls reduce a problem.",
+            topic: "Recursion",
+            difficulty: 2,
+            format: .shortAnswer,
+            status: .due,
+            sourcePrompt: "Recursion"
+        )
+
+        question.nextReviewAt = now.addingTimeInterval(60)
+        let scheduled = try XCTUnwrap(
+            ProgressFocusRecommendation(
+                question: question,
+                skillName: "Recursion",
+                competency: nil,
+                now: now
+            )
+        )
+        XCTAssertEqual(scheduled.title, "Return to Recursion")
+        XCTAssertTrue(scheduled.detail.contains("future checkpoint"))
+        XCTAssertFalse(scheduled.detail.contains("ready"))
+
+        question.nextReviewAt = now.addingTimeInterval(-60)
+        let ready = try XCTUnwrap(
+            ProgressFocusRecommendation(
+                question: question,
+                skillName: "Recursion",
+                competency: nil,
+                now: now
+            )
+        )
+        XCTAssertEqual(ready.title, "Refresh Recursion")
+        XCTAssertTrue(ready.detail.contains("ready"))
+    }
+
     @MainActor
     func testIssueReportsPersistAndRejectBlankMessages() throws {
         let goal = makeGoal()
