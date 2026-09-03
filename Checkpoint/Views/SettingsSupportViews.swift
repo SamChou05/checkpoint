@@ -92,12 +92,12 @@ struct AdvancedConfirmationView: View {
                                     Text(action.buttonTitle)
                                 }
                                 .font(.headline)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(CheckpointTheme.paper)
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: .infinity, minHeight: 52)
                                 .padding(.horizontal, 12)
                                 .background(
-                                    CheckpointTheme.coral,
+                                    CheckpointTheme.destructiveFill,
                                     in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
                                 )
                             }

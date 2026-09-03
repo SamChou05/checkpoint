@@ -251,7 +251,6 @@ struct OnboardingView: View {
                 }
             }
         }
-        .preferredColorScheme(.light)
         .fileImporter(
             isPresented: $isSourceImporterPresented,
             allowedContentTypes: GoalSourceDocumentImporter.supportedContentTypes,

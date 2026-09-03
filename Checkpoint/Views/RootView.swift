@@ -85,7 +85,6 @@ struct RootView: View {
                 .tag(AppTab.settings)
         }
         .tint(CheckpointTheme.teal)
-        .preferredColorScheme(.light)
         .fullScreenCover(isPresented: screenTimeAuthorizationRequiredBinding) {
             RequiredScreenTimeAccessView(store: store, screenTime: screenTime)
                 .interactiveDismissDisabled()

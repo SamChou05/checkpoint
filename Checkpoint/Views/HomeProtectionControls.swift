@@ -45,6 +45,10 @@ struct HomeProtectionActionButton: View {
             .frame(maxWidth: .infinity, minHeight: 56)
             .padding(.horizontal, 10)
             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(CheckpointTheme.controlStroke, lineWidth: 1)
+            }
         }
         .buttonStyle(.plain)
     }

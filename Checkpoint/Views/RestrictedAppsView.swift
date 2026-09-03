@@ -60,7 +60,6 @@ struct RestrictedAppsView: View {
                     }
                 }
         }
-        .preferredColorScheme(.light)
         .task {
             if screenTime.setupState == .notStarted || screenTime.setupState == .failed {
                 await screenTime.requestAuthorization()

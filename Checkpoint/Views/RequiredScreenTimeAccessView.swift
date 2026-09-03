@@ -68,7 +68,6 @@ struct RequiredScreenTimeAccessView: View {
             accessActionBar
         }
         .checkpointScreenBackground()
-        .preferredColorScheme(.light)
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
             value: accessErrorMessage

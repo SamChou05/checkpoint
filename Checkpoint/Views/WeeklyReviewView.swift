@@ -213,6 +213,7 @@ struct WeeklyReviewView: View {
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(CheckpointTheme.ink)
+                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
                 .overlay(alignment: .topTrailing) {
                     Circle()
                         .fill(heroAccent.opacity(0.09))
@@ -222,7 +223,7 @@ struct WeeklyReviewView: View {
                         .allowsHitTesting(false)
                 }
         )
-        .shadow(color: CheckpointTheme.ink.opacity(0.14), radius: 18, y: 10)
+        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 10)
         .accessibilityElement(children: .contain)
     }
 
@@ -415,9 +416,9 @@ struct WeeklyReviewView: View {
         reduceMotion ? .identity : .opacity
     }
 
-    private var heroText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }
-    private var heroSecondaryText: Color { Color(red: 0.66, green: 0.75, blue: 0.71) }
-    private var heroAccent: Color { CheckpointTheme.mint }
+    private var heroText: Color { CheckpointTheme.heroText }
+    private var heroSecondaryText: Color { CheckpointTheme.heroMuted }
+    private var heroAccent: Color { CheckpointTheme.heroSuccess }
 }
 
 private struct WeeklyPracticeBars: View {
@@ -466,13 +467,13 @@ private struct WeeklyPracticeBars: View {
 
     private func barColor(for day: WeeklyPracticeDay) -> Color {
         if day.questionsAnswered > 0 {
-            return CheckpointTheme.mint
+            return CheckpointTheme.heroSuccess
         }
-        return Color.white.opacity(day.date > Date() ? 0.07 : 0.14)
+        return CheckpointTheme.heroTrack.opacity(day.date > Date() ? 0.45 : 1)
     }
 
     private func labelColor(for day: WeeklyPracticeDay) -> Color {
-        Color.white.opacity(day.date > Date() ? 0.50 : 0.62)
+        CheckpointTheme.heroMuted.opacity(day.date > Date() ? 0.72 : 1)
     }
 
     private func accessibilityLabel(for day: WeeklyPracticeDay) -> String {

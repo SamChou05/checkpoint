@@ -116,7 +116,7 @@ struct HistoryView: View {
                     }
 
                     Divider()
-                        .overlay(Color.white.opacity(0.11))
+                        .overlay(CheckpointTheme.heroDivider)
 
                     summaryMetrics
                 }
@@ -127,6 +127,7 @@ struct HistoryView: View {
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(CheckpointTheme.ink)
+                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
                 .overlay(alignment: .topTrailing) {
                     Circle()
                         .fill(CheckpointTheme.mint.opacity(0.08))
@@ -136,7 +137,7 @@ struct HistoryView: View {
                         .allowsHitTesting(false)
                 }
         )
-        .shadow(color: CheckpointTheme.ink.opacity(0.14), radius: 18, y: 10)
+        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 10)
         .accessibilityElement(children: .contain)
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
@@ -177,7 +178,7 @@ struct HistoryView: View {
     private var accuracyRing: some View {
         ZStack {
             Circle()
-                .stroke(Color.white.opacity(0.11), lineWidth: 7)
+                .stroke(CheckpointTheme.heroTrack, lineWidth: 7)
 
             Circle()
                 .trim(from: 0, to: accuracyProgress)
@@ -318,23 +319,27 @@ struct HistoryView: View {
                     Text("\(count(for: filter))")
                         .font(.caption2.weight(.bold))
                         .monospacedDigit()
-                        .foregroundStyle(isSelected ? CheckpointTheme.mint : CheckpointTheme.muted)
+                        .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
                         .background(
-                            (isSelected ? Color.white.opacity(0.09) : CheckpointTheme.hairline.opacity(0.45)),
+                            (isSelected ? CheckpointTheme.selectionCountFill : CheckpointTheme.hairline.opacity(0.45)),
                             in: Capsule()
                         )
                 }
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? summaryText : CheckpointTheme.text)
+                .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.text)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .background(
-                    isSelected ? CheckpointTheme.ink : Color.clear,
+                    isSelected ? CheckpointTheme.selectionFill : Color.clear,
                     in: RoundedRectangle(cornerRadius: 10, style: .continuous)
                 )
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(isSelected ? CheckpointTheme.actionBorder : Color.clear, lineWidth: 1)
+                }
             }
             .buttonStyle(CheckpointPressButtonStyle())
             .accessibilityLabel("\(filter.accessibilityTitle), \(count(for: filter))")
@@ -380,7 +385,7 @@ struct HistoryView: View {
                                 .fill(CheckpointTheme.panel.opacity(0.96))
                                 .stroke(CheckpointTheme.hairline, lineWidth: 1)
                         )
-                        .shadow(color: CheckpointTheme.ink.opacity(0.05), radius: 12, y: 5)
+                        .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: 5)
                     }
                 }
             }
@@ -471,15 +476,15 @@ struct HistoryView: View {
     }
 
     private var summaryText: Color {
-        Color(red: 0.94, green: 0.98, blue: 0.96)
+        CheckpointTheme.heroText
     }
 
     private var summarySecondaryText: Color {
-        Color(red: 0.66, green: 0.75, blue: 0.71)
+        CheckpointTheme.heroMuted
     }
 
     private var summaryAmber: Color {
-        Color(red: 0.91, green: 0.72, blue: 0.35)
+        CheckpointTheme.heroWarning
     }
 }
 

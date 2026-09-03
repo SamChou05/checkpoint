@@ -341,12 +341,12 @@ struct CompetencyView: View {
             coverageTrack
 
             Divider()
-                .overlay(Color.white.opacity(0.11))
+                .overlay(CheckpointTheme.heroDivider)
 
             heroSupportingMetrics
 
             Divider()
-                .overlay(Color.white.opacity(0.11))
+                .overlay(CheckpointTheme.heroDivider)
 
             progressNarrative
         }
@@ -355,6 +355,7 @@ struct CompetencyView: View {
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(CheckpointTheme.ink)
+                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
                 .overlay(alignment: .topTrailing) {
                     Circle()
                         .fill(heroAccent.opacity(0.08))
@@ -364,7 +365,7 @@ struct CompetencyView: View {
                         .allowsHitTesting(false)
                 }
         )
-        .shadow(color: CheckpointTheme.ink.opacity(0.14), radius: 18, y: 10)
+        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 10)
         .accessibilityElement(children: .contain)
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
@@ -410,7 +411,7 @@ struct CompetencyView: View {
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(Color.white.opacity(0.12))
+                    .fill(CheckpointTheme.heroTrack)
 
                 Capsule()
                     .fill(heroAccent)
@@ -1247,15 +1248,15 @@ struct CompetencyView: View {
     }
 
     private var heroText: Color {
-        Color(red: 0.94, green: 0.98, blue: 0.96)
+        CheckpointTheme.heroText
     }
 
     private var heroSecondaryText: Color {
-        Color(red: 0.66, green: 0.75, blue: 0.71)
+        CheckpointTheme.heroMuted
     }
 
     private var heroAccent: Color {
-        CheckpointTheme.mint
+        CheckpointTheme.heroSuccess
     }
 
 }

@@ -24,7 +24,7 @@ struct LightStudyBeaconSection: View {
 
                     if let insight {
                         Divider()
-                            .overlay(Color.white.opacity(0.10))
+                            .overlay(CheckpointTheme.heroDivider)
 
                         insightRow(insight)
                     }
@@ -34,6 +34,7 @@ struct LightStudyBeaconSection: View {
                 .background(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .fill(CheckpointTheme.ink)
+                        .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
                         .overlay(alignment: .topTrailing) {
                             Circle()
                                 .fill(signalAccent.opacity(0.08))
@@ -43,7 +44,7 @@ struct LightStudyBeaconSection: View {
                                 .allowsHitTesting(false)
                         }
                 )
-                .shadow(color: CheckpointTheme.ink.opacity(0.12), radius: 16, y: 8)
+                .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
             }
             .buttonStyle(CheckpointPressButtonStyle())
             .accessibilityLabel(weeklySignalAccessibilityLabel)
@@ -99,7 +100,7 @@ struct LightStudyBeaconSection: View {
                 primaryMetric
 
                 Rectangle()
-                    .fill(Color.white.opacity(0.11))
+                    .fill(CheckpointTheme.heroDivider)
                     .frame(width: 1, height: 70)
                     .accessibilityHidden(true)
 
@@ -244,11 +245,11 @@ struct LightStudyBeaconSection: View {
     private func insightTint(for insight: WeeklySignalInsight) -> Color {
         switch insight.role {
         case .lowestCurrentEstimate:
-            CheckpointTheme.amber
+            CheckpointTheme.heroWarning
         case .highestCurrentEstimate:
-            CheckpointTheme.blue
+            CheckpointTheme.heroInfo
         case .checkpointsCleared, .answersLogged, .checkpointStreak:
-            CheckpointTheme.teal
+            CheckpointTheme.heroSuccess
         }
     }
 
@@ -258,7 +259,7 @@ struct LightStudyBeaconSection: View {
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(signalAccent)
                 .frame(width: 40, height: 40)
-                .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+                .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 12))
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
@@ -296,7 +297,7 @@ struct LightStudyBeaconSection: View {
         return "\(summary) \(insight.accessibilityLabel)."
     }
 
-    private var signalText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }
-    private var signalSecondaryText: Color { Color(red: 0.66, green: 0.75, blue: 0.71) }
-    private var signalAccent: Color { CheckpointTheme.mint }
+    private var signalText: Color { CheckpointTheme.heroText }
+    private var signalSecondaryText: Color { CheckpointTheme.heroMuted }
+    private var signalAccent: Color { CheckpointTheme.heroSuccess }
 }

@@ -160,7 +160,7 @@ struct MembershipView: View {
             }
 
             Divider()
-                .overlay(Color.white.opacity(0.11))
+                .overlay(CheckpointTheme.heroDivider)
 
             VStack(alignment: .leading, spacing: 14) {
                 ProBenefitRow(
@@ -182,6 +182,7 @@ struct MembershipView: View {
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(CheckpointTheme.ink)
+                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
                 .overlay(alignment: .topTrailing) {
                     Circle()
                         .fill(CheckpointTheme.mint.opacity(0.09))
@@ -191,7 +192,7 @@ struct MembershipView: View {
                         .allowsHitTesting(false)
                 }
         )
-        .shadow(color: CheckpointTheme.ink.opacity(0.16), radius: 20, y: 10)
+        .shadow(color: CheckpointTheme.shadowElevated, radius: 20, y: 10)
     }
 
     @ViewBuilder
@@ -536,8 +537,8 @@ struct MembershipView: View {
         dismiss()
     }
 
-    private var proText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }
-    private var proSecondaryText: Color { Color(red: 0.66, green: 0.75, blue: 0.71) }
+    private var proText: Color { CheckpointTheme.heroText }
+    private var proSecondaryText: Color { CheckpointTheme.heroMuted }
 }
 
 private struct MembershipPlanRow: View {
@@ -562,7 +563,7 @@ private struct MembershipPlanRow: View {
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .stroke(
-                        isSelected ? CheckpointTheme.teal.opacity(0.72) : CheckpointTheme.hairline,
+                        isSelected ? CheckpointTheme.teal.opacity(0.72) : CheckpointTheme.controlStroke,
                         lineWidth: isSelected ? 1.5 : 1
                     )
             }
@@ -674,11 +675,11 @@ private struct ProBenefitRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color(red: 0.94, green: 0.98, blue: 0.96))
+                    .foregroundStyle(CheckpointTheme.heroText)
 
                 Text(detail)
                     .font(.footnote)
-                    .foregroundStyle(Color(red: 0.66, green: 0.75, blue: 0.71))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

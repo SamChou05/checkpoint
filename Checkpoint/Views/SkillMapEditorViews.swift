@@ -100,7 +100,6 @@ struct SkillMapReviewView: View {
                 .background(.ultraThinMaterial)
             }
         }
-        .preferredColorScheme(.light)
         .onChange(of: validationMessage) { _, message in
             announceValidation(message)
         }
@@ -235,7 +234,6 @@ struct SkillMapRepairView: View {
                 .background(.ultraThinMaterial)
             }
         }
-        .preferredColorScheme(.light)
         .onChange(of: validationMessage) { _, message in
             announceValidation(message)
         }

@@ -85,7 +85,7 @@ struct PracticeStandardStepperRow: View {
         .background(CheckpointTheme.panel, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(CheckpointTheme.hairline, lineWidth: 1)
+                .stroke(CheckpointTheme.controlStroke, lineWidth: 1)
         )
     }
 
@@ -132,7 +132,7 @@ struct BreakDurationMenu: View {
             .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(CheckpointTheme.hairline, lineWidth: 1)
+                    .stroke(CheckpointTheme.controlStroke, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

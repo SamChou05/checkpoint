@@ -134,7 +134,6 @@ struct CheckpointAttemptView: View {
                 }
             }
         }
-        .preferredColorScheme(.light)
         .interactiveDismissDisabled(session.purpose != .preview)
         .onDisappear {
             workflow.abandon(session)
@@ -229,7 +228,7 @@ struct CheckpointAttemptView: View {
                 )
                 .overlay {
                     RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
-                        .stroke(CheckpointTheme.hairline, lineWidth: 1)
+                        .stroke(CheckpointTheme.controlStroke, lineWidth: 1)
                 }
                 .disabled(checkedAnswer != nil)
 
@@ -752,7 +751,7 @@ private struct ChoiceButton: View {
         case .incorrect:
             return CheckpointTheme.coral.opacity(0.72)
         case .idle, .locked:
-            return CheckpointTheme.hairline
+            return CheckpointTheme.controlStroke
         }
     }
 
