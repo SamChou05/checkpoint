@@ -97,7 +97,6 @@ struct CompetencyRow: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isExpanded = false
-    @State private var hasRevealedProgress = false
 
     private var usesStackedTypeLayout: Bool {
         dynamicTypeSize == .xLarge ||
@@ -150,9 +149,6 @@ struct CompetencyRow: View {
                             : .opacity.combined(with: .move(edge: .top))
                     )
             }
-        }
-        .onAppear {
-            revealProgressIfNeeded()
         }
         .sensoryFeedback(.selection, trigger: isExpanded)
     }
@@ -274,14 +270,14 @@ struct CompetencyRow: View {
 
                 Capsule()
                     .fill(progressBand.tint)
-                    .frame(width: proxy.size.width * revealedProgress)
+                    .frame(width: proxy.size.width * progress)
             }
         }
         .frame(height: 6)
         .accessibilityHidden(true)
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-            value: revealedProgress
+            value: progress
         )
     }
 
@@ -375,8 +371,8 @@ struct CompetencyRow: View {
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var revealedProgress: Double {
-        guard hasRevealedProgress, competency.attempts > 0 else { return 0 }
+    private var progress: Double {
+        guard competency.attempts > 0 else { return 0 }
 
         if progressBand == .calibrating {
             return min(
@@ -449,14 +445,4 @@ struct CompetencyRow: View {
         return "\(progressBand.label). \(mastery). \(answerCountText). \(recencyText). \(breakdown). \(lastResult)\(streak)\(calibration) \(isExpanded ? "Expanded" : "Collapsed")."
     }
 
-    private func revealProgressIfNeeded() {
-        guard !hasRevealedProgress else { return }
-        if reduceMotion {
-            hasRevealedProgress = true
-        } else {
-            withAnimation(CheckpointMotion.reveal) {
-                hasRevealedProgress = true
-            }
-        }
-    }
 }

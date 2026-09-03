@@ -7,7 +7,6 @@ struct HistoryView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selectedFilter: PracticeHistoryFilter = .all
-    @State private var hasRevealedSummary = false
 
     private var attempts: [CheckpointAttempt] {
         store.activeAttempts.sorted { lhs, rhs in
@@ -75,9 +74,6 @@ struct HistoryView: View {
                     }
                     .foregroundStyle(CheckpointTheme.teal)
                 }
-            }
-            .onAppear {
-                revealSummaryIfNeeded()
             }
             .sensoryFeedback(.selection, trigger: selectedFilter)
         }
@@ -184,7 +180,7 @@ struct HistoryView: View {
                 .stroke(Color.white.opacity(0.11), lineWidth: 7)
 
             Circle()
-                .trim(from: 0, to: hasRevealedSummary ? accuracyProgress : 0)
+                .trim(from: 0, to: accuracyProgress)
                 .stroke(
                     CheckpointTheme.mint,
                     style: StrokeStyle(lineWidth: 7, lineCap: .round)
@@ -472,18 +468,6 @@ struct HistoryView: View {
             .tracking(0.95)
             .foregroundStyle(CheckpointTheme.muted)
             .accessibilityAddTraits(.isHeader)
-    }
-
-    private func revealSummaryIfNeeded() {
-        guard !hasRevealedSummary else { return }
-
-        if reduceMotion {
-            hasRevealedSummary = true
-        } else {
-            withAnimation(CheckpointMotion.reveal) {
-                hasRevealedSummary = true
-            }
-        }
     }
 
     private var summaryText: Color {

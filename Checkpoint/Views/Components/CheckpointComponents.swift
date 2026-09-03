@@ -149,6 +149,7 @@ struct PrimaryActionButton: View {
     var action: () -> Void
 
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(
         title: String,
@@ -165,12 +166,17 @@ struct PrimaryActionButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                if isLoading {
-                    ProgressView()
-                        .tint(CheckpointTheme.paper)
-                } else {
-                    Image(systemName: systemImage)
+                Group {
+                    if isLoading {
+                        ProgressView()
+                            .tint(CheckpointTheme.paper)
+                    } else {
+                        Image(systemName: systemImage)
+                            .contentTransition(.symbolEffect(.replace))
+                            .symbolEffectsRemoved(reduceMotion)
+                    }
                 }
+                .frame(width: 20, height: 20)
 
                 Text(title)
             }

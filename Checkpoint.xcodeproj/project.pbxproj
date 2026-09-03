@@ -83,6 +83,7 @@
 		CB0000000000000000000012 /* QuestionEngineTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000012 /* QuestionEngineTestDoubles.swift */; };
 		CB0000000000000000000013 /* QuestionBankTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000013 /* QuestionBankTestDoubles.swift */; };
 		CB0000000000000000000014 /* PracticeHistoryReviewPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000014 /* PracticeHistoryReviewPresentationTests.swift */; };
+		CB0000000000000000000015 /* HomeProtectionControlsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000015 /* HomeProtectionControlsTests.swift */; };
 		D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* PrivacyInfo.xcprivacy */; };
@@ -225,6 +226,7 @@
 		CA0000000000000000000012 /* QuestionEngineTestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionEngineTestDoubles.swift; sourceTree = "<group>"; };
 		CA0000000000000000000013 /* QuestionBankTestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionBankTestDoubles.swift; sourceTree = "<group>"; };
 		CA0000000000000000000014 /* PracticeHistoryReviewPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHistoryReviewPresentationTests.swift; sourceTree = "<group>"; };
+		CA0000000000000000000015 /* HomeProtectionControlsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeProtectionControlsTests.swift; sourceTree = "<group>"; };
 		D20000000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -448,6 +450,7 @@
 				CA0000000000000000000007 /* ProgressMetricsTests.swift */,
 				CA0000000000000000000004 /* CheckpointSessionTests.swift */,
 				CA0000000000000000000014 /* PracticeHistoryReviewPresentationTests.swift */,
+				CA0000000000000000000015 /* HomeProtectionControlsTests.swift */,
 				CA000000000000000000000C /* ScreenTimeCoordinationTests.swift */,
 				CA000000000000000000000A /* QuestionRefillTests.swift */,
 				CA0000000000000000000003 /* AppSnapshotPersistenceTests.swift */,
@@ -775,6 +778,7 @@
 				CB0000000000000000000007 /* ProgressMetricsTests.swift in Sources */,
 				CB0000000000000000000004 /* CheckpointSessionTests.swift in Sources */,
 				CB0000000000000000000014 /* PracticeHistoryReviewPresentationTests.swift in Sources */,
+				CB0000000000000000000015 /* HomeProtectionControlsTests.swift in Sources */,
 				CB000000000000000000000C /* ScreenTimeCoordinationTests.swift in Sources */,
 				CB000000000000000000000A /* QuestionRefillTests.swift in Sources */,
 				CB0000000000000000000003 /* AppSnapshotPersistenceTests.swift in Sources */,
