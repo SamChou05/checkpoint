@@ -4,6 +4,7 @@ import json
 import re
 from typing import Any
 
+from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 from request_contract import (
     MAX_OBJECTIVE_NAME_CHARS,
     _canonical,
@@ -12,7 +13,6 @@ from request_contract import (
     _clean_text,
     _clip,
     _deterministic_objective_id,
-    _duplicate_prompt_key,
     _strip_choice_label,
     _uuid_key,
 )
@@ -101,15 +101,27 @@ def _sanitize_questions(
     if not isinstance(raw_questions, list):
         return []
 
+    requested_objective_allocation = _requested_objective_allocation_limits(request)
+    if requested_objective_allocation is None:
+        return []
+
     minimum_difficulty = request["minimumDifficulty"]
     blocked_prompts = set()
     for prompt in request["existingPrompts"] + request["reportedPrompts"]:
-        blocked_prompts.add(_canonical(prompt))
-        blocked_prompts.add(_duplicate_prompt_key(prompt))
+        blocked_prompts.add(_normalized_stem_identity(prompt))
+    for coverage in request["existingQuestionCoverage"]:
+        prompt = coverage.get("prompt", "")
+        if prompt:
+            blocked_prompts.add(_normalized_stem_identity(prompt))
     seen_prompts = set(blocked_prompts)
+    seen_stem_fingerprints = set(request.get("blockedStemFingerprints", []))
     seen_coverage = set()
     seen_choice_sets = set()
     accepted_skill_counts: dict[str, int] = {}
+    accepted_objective_counts: dict[tuple[str, str], int] = {}
+    objective_scoped_skill_ids = {
+        skill_id for skill_id, _ in requested_objective_allocation
+    }
     for coverage in request["existingQuestionCoverage"]:
         seen_coverage.update(
             _question_coverage_keys(
@@ -134,6 +146,11 @@ def _sanitize_questions(
             allowed_count = request.get("requestedSkillAllocation", {}).get(skill_id, 0)
             if accepted_skill_counts.get(skill_id, 0) >= allowed_count:
                 continue
+            if skill_id in objective_scoped_skill_ids:
+                objective_pair = (skill_id, skill_tag["objectiveID"])
+                objective_limit = requested_objective_allocation.get(objective_pair, 0)
+                if accepted_objective_counts.get(objective_pair, 0) >= objective_limit:
+                    continue
 
         raw_prompt = _clean_text(raw_question.get("prompt"))
         if len(raw_prompt) > MAX_PROVIDER_PROMPT_CHARS:
@@ -153,7 +170,8 @@ def _sanitize_questions(
         if not topic:
             topic = request["goal"]["contentTopics"][0]
 
-        prompt_keys = {_canonical(prompt), _duplicate_prompt_key(prompt)}
+        prompt_keys = {_normalized_stem_identity(prompt)}
+        stem_fingerprint = _stem_fingerprint(prompt)
         coverage_keys = _question_coverage_keys(expected_answer, topic)
         if (
             len(prompt) < 12
@@ -162,8 +180,9 @@ def _sanitize_questions(
             or not explanation
             or _explanation_admits_bad_answer(explanation)
             or any(prompt_key in seen_prompts for prompt_key in prompt_keys)
+            or stem_fingerprint in seen_stem_fingerprints
             or not seen_coverage.isdisjoint(coverage_keys)
-            or _looks_like_study_strategy(prompt, request["goal"]["learningTarget"])
+            or _looks_like_study_strategy(prompt, request["goal"])
             or _prompt_contains_embedded_options(prompt)
             or _prompt_contains_latex_markup(prompt)
         ):
@@ -191,6 +210,7 @@ def _sanitize_questions(
             continue
 
         seen_prompts.update(prompt_keys)
+        seen_stem_fingerprints.add(stem_fingerprint)
         seen_coverage.update(coverage_keys)
         seen_choice_sets.add(choice_set_key)
         question = {
@@ -207,6 +227,11 @@ def _sanitize_questions(
             accepted_skill_counts[skill_tag["skillID"]] = (
                 accepted_skill_counts.get(skill_tag["skillID"], 0) + 1
             )
+            objective_pair = (skill_tag["skillID"], skill_tag["objectiveID"])
+            if objective_pair in requested_objective_allocation:
+                accepted_objective_counts[objective_pair] = (
+                    accepted_objective_counts.get(objective_pair, 0) + 1
+                )
         sanitized.append(question)
 
         if len(sanitized) >= request["targetCount"]:
@@ -282,7 +307,7 @@ def _matching_skill_map_entry(
     if raw_id:
         try:
             entry_from_id = entries_by_id.get(_uuid_key(raw_id))
-        except (ValueError, AttributeError):
+        except (ValueError, AttributeError, TypeError):
             return None
         if not entry_from_id:
             return None
@@ -305,6 +330,104 @@ def _remaining_requested_skill_allocation(
         if skill_id in remaining:
             remaining[skill_id] = max(0, remaining[skill_id] - 1)
     return {skill_id: count for skill_id, count in remaining.items() if count > 0}
+
+
+def _remaining_requested_objective_allocation(
+    request: dict[str, Any],
+    accepted_questions: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    accepted_counts: dict[tuple[str, str], int] = {}
+    for question in accepted_questions:
+        pair = (question.get("skillID", ""), question.get("objectiveID", ""))
+        accepted_counts[pair] = accepted_counts.get(pair, 0) + 1
+
+    remaining: list[dict[str, Any]] = []
+    for entry in request.get("requestedObjectiveAllocation", []):
+        pair = (entry["skillID"], entry["objectiveID"])
+        count = max(0, entry["count"] - accepted_counts.get(pair, 0))
+        if count > 0:
+            remaining.append({**entry, "count": count})
+    return remaining
+
+
+def _requested_objective_allocation_limits(
+    request: dict[str, Any],
+) -> dict[tuple[str, str], int] | None:
+    """Validate the bounded server-internal objective quota representation."""
+    if "requestedObjectiveAllocation" not in request:
+        return {}
+    raw_allocation = request.get("requestedObjectiveAllocation")
+    if not isinstance(raw_allocation, list) or len(raw_allocation) > 30:
+        return None
+
+    target_count = request.get("targetCount")
+    if isinstance(target_count, bool) or not isinstance(target_count, int):
+        return None
+
+    skills_by_id: dict[str, dict[str, Any]] = {}
+    objectives_by_skill_id: dict[str, dict[str, str]] = {}
+    for skill in request.get("skillMap", {}).get("skills", []):
+        try:
+            skill_key = _uuid_key(skill.get("id", ""))
+        except (ValueError, AttributeError, TypeError):
+            return None
+        skills_by_id[skill_key] = skill
+        objective_ids: dict[str, str] = {}
+        for objective in skill.get("objectives", []):
+            try:
+                objective_key = _uuid_key(objective.get("id", ""))
+            except (ValueError, AttributeError, TypeError):
+                return None
+            objective_ids[objective_key] = objective["id"]
+        objectives_by_skill_id[skill_key] = objective_ids
+
+    limits: dict[tuple[str, str], int] = {}
+    totals_by_skill_id: dict[str, int] = {}
+    for entry in raw_allocation:
+        if not isinstance(entry, dict):
+            return None
+        count = entry.get("count")
+        if (
+            isinstance(count, bool)
+            or not isinstance(count, int)
+            or not 1 <= count <= max(1, target_count)
+        ):
+            return None
+        try:
+            skill_key = _uuid_key(entry.get("skillID", ""))
+            objective_key = _uuid_key(entry.get("objectiveID", ""))
+        except (ValueError, AttributeError, TypeError):
+            return None
+        skill = skills_by_id.get(skill_key)
+        objective_id = objectives_by_skill_id.get(skill_key, {}).get(objective_key)
+        if not skill or not objective_id:
+            return None
+        pair = (skill["id"], objective_id)
+        if pair in limits:
+            return None
+        limits[pair] = count
+        totals_by_skill_id[skill["id"]] = (
+            totals_by_skill_id.get(skill["id"], 0) + count
+        )
+
+    requested_skills = request.get("requestedSkillAllocation", {})
+    if not isinstance(requested_skills, dict):
+        return None
+    for skill in skills_by_id.values():
+        requested_count = requested_skills.get(skill["id"], 0)
+        if isinstance(requested_count, bool) or not isinstance(requested_count, int):
+            return None
+        objective_count = len(skill.get("objectives", []))
+        allocated_count = totals_by_skill_id.get(skill["id"], 0)
+        if objective_count > 0 and requested_count > 0:
+            if allocated_count != requested_count:
+                return None
+        elif allocated_count != 0:
+            return None
+
+    if sum(limits.values()) > target_count:
+        return None
+    return limits
 
 
 def _question_coverage_payload(question: dict[str, Any]) -> dict[str, Any]:
@@ -415,8 +538,11 @@ def _normalized_choices(raw_choices: Any, expected_answer: str) -> list[str]:
     return [expected_answer] + distractors[:3]
 
 
-def _looks_like_study_strategy(prompt: str, learning_target: str) -> bool:
-    target = learning_target.lower()
+def _looks_like_study_strategy(prompt: str, goal: dict[str, Any]) -> bool:
+    target = " ".join(
+        str(goal.get(field, ""))
+        for field in ("title", "learningTarget", "focusAreas")
+    ).lower()
     if (
         "study skill" in target
         or "productivity" in target
@@ -428,15 +554,22 @@ def _looks_like_study_strategy(prompt: str, learning_target: str) -> bool:
     blocked_phrases = [
         "how should you study",
         "study plan",
+        "study rep",
         "study schedule",
         "study strategy",
+        "practice rep",
         "practice schedule",
+        "clearest progress",
         "next step",
         "visible progress",
+        "finish line",
+        "try harder",
         "motivation",
         "blocked app",
         "screen time",
         "open another app",
+        "distraction",
+        "what should you do next",
     ]
     return any(phrase.replace(" ", "") in normalized for phrase in blocked_phrases)
 

@@ -25,7 +25,11 @@ from question_bank_common import (
     WORKER_LEASE_SECONDS,
     NonRetryableGenerationError,
     ProviderAttemptLimitError,
+    ProviderQuotaLimitError,
     QuestionBankError,
+    _normalized_stem_identity,
+    _stem_fingerprint,
+    _validated_blocked_stem_fingerprints,
 )
 from question_bank_inventory import (
     _activate_goal_version,
@@ -84,14 +88,15 @@ from question_bank_worker import (
     _apportion_skill_counts,
     _commit_generated_questions,
     _complete_job_without_questions,
-    _consume_worker_quota,
     _finish_stale_job,
     _mark_generation_blocked,
     _mark_job_terminal_failure,
     _mark_rate_limited,
     _prepare_questions,
+    _recent_question_items,
     _reserve_provider_attempt,
     _reset_job_for_retry,
+    _worker_objective_allocation,
     _worker_skill_allocation,
 )
 
@@ -100,9 +105,14 @@ for _compatibility_type in (
     QuestionBankError,
     NonRetryableGenerationError,
     ProviderAttemptLimitError,
+    ProviderQuotaLimitError,
 ):
     _compatibility_type.__module__ = __name__
 del _compatibility_type
+
+
+MAX_CLAIM_TRANSACTION_QUESTION_UPDATES = 22
+MAX_DUPLICATE_CLEANUP_QUESTION_UPDATES = 23
 
 
 def ensure_bank(
@@ -171,8 +181,12 @@ def ensure_bank(
         low_watermark,
         now,
     )
-    if _inventory_progress(meta) >= desired_count:
-        if low_watermark == 0 and not _boolean(meta, "initialFillComplete"):
+    effective_desired_count = max(desired_count, _number(meta, "desiredCount"))
+    effective_low_watermark = _number(meta, "lowWatermark")
+    if _inventory_progress(meta) >= effective_desired_count:
+        if effective_low_watermark == 0 and not _boolean(
+            meta, "initialFillComplete"
+        ):
             _mark_initial_fill_complete(client, table_name, bank_key, now)
             meta = _get_item(client, table_name, bank_key, consistent=True) or meta
     else:
@@ -229,7 +243,16 @@ def claim_questions(
         )
         return response
 
-    for _ in range(4):
+    try:
+        blocked_stem_fingerprints = set(
+            _validated_blocked_stem_fingerprints(
+                payload.get("blockedStemFingerprints")
+            )
+        )
+    except ValueError as error:
+        raise QuestionBankError(400, str(error), "invalid_request") from error
+
+    for _ in range(8):
         meta = _get_item(client, table_name, bank_key, consistent=True)
         _require_active_meta(meta, owner_digest)
         observed_ready = _number(meta, "readyCount")
@@ -241,17 +264,79 @@ def claim_questions(
             # the row. A legacy row without state is therefore still ready.
             if _string(item, "state") in {"", "ready"}
         ]
-        question_items = all_ready_items[:limit]
-        questions = [_question_from_item(item) for item in question_items]
+        seen_stem_identities = set()
+        for item in history_items:
+            if _string(item, "state") != "claimed":
+                continue
+            try:
+                question = _question_from_item(item)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if not isinstance(question, dict):
+                continue
+            stem_identity = _normalized_stem_identity(question.get("prompt"))
+            if stem_identity:
+                seen_stem_identities.add(stem_identity)
+        question_items = []
+        claimed_items = []
+        discard_items = []
+        questions = []
+        for item in all_ready_items:
+            question_items.append(item)
+            try:
+                question = _question_from_item(item)
+            except (json.JSONDecodeError, TypeError):
+                discard_items.append(item)
+                continue
+            if not isinstance(question, dict):
+                discard_items.append(item)
+                continue
+            stem_identity = _normalized_stem_identity(question.get("prompt"))
+            stem_is_blocked = (
+                _stem_fingerprint(question.get("prompt"))
+                in blocked_stem_fingerprints
+            )
+            if (
+                not stem_identity
+                or stem_is_blocked
+                or stem_identity in seen_stem_identities
+            ):
+                discard_items.append(item)
+                continue
+            seen_stem_identities.add(stem_identity)
+            claimed_items.append(item)
+            questions.append(question)
+            if len(questions) >= limit:
+                break
+        if len(question_items) > MAX_CLAIM_TRANSACTION_QUESTION_UPDATES:
+            # A claim needs three transaction slots for META, its idempotency
+            # record, and the active-goal condition. Retire enough bad legacy
+            # rows first, then rebuild a full unique claim from fresh state.
+            _consume_duplicate_question_rows(
+                client,
+                table_name,
+                bank_key,
+                pointer_key,
+                meta,
+                discard_items[:MAX_DUPLICATE_CLEANUP_QUESTION_UPDATES],
+            )
+            continue
+        # Every scanned row is terminally transitioned below. Valid rows become
+        # claimed; malformed or duplicate legacy rows become discarded and
+        # therefore never masquerade as questions that were actually served.
         # QUESTION records have their own TTL. Reconcile the cached counter to
         # the strongly consistent inventory instead of trusting a stale META.
         after_count = len(all_ready_items) - len(question_items)
         desired_count = _number(meta, "desiredCount")
         low_watermark = _number(meta, "lowWatermark")
-        blocked_reason = _string(meta, "generationBlockedReason")
-        finite_fill_pending = (
-            low_watermark == 0 and _number(meta, "generatedCount") < desired_count
+        observed_generated = _number(meta, "generatedCount")
+        after_generated = (
+            max(0, observed_generated - len(discard_items))
+            if low_watermark == 0
+            else observed_generated
         )
+        blocked_reason = _string(meta, "generationBlockedReason")
+        finite_fill_pending = low_watermark == 0 and after_generated < desired_count
         needs_refill = not blocked_reason and (
             finite_fill_pending
             or (
@@ -269,36 +354,61 @@ def claim_questions(
             "targetCount": desired_count,
             "questions": questions,
         }
+        if blocked_reason:
+            response["generationBlockedReason"] = blocked_reason
         now = int(time.time())
-        meta_condition = "readyCount = :observed AND attribute_not_exists(tombstonedAt)"
+        meta_condition = (
+            "readyCount = :observed AND desiredCount = :observedDesired "
+            "AND lowWatermark = :observedLow "
+            "AND attribute_not_exists(tombstonedAt)"
+        )
         meta_values = {
             ":after": _n(after_count),
             ":observed": _n(observed_ready),
+            ":observedDesired": _n(desired_count),
+            ":observedLow": _n(low_watermark),
             ":state": _s(response["status"]),
             ":now": _n(now),
             ":ttl": _n(now + _bank_ttl_seconds()),
         }
+        meta_setters = [
+            "readyCount = :after",
+            "#state = :state",
+            "updatedAt = :now",
+            "expiresAt = :ttl",
+        ]
+        if low_watermark == 0 and discard_items:
+            meta_condition += " AND generatedCount = :observedGenerated"
+            meta_values[":observedGenerated"] = _n(observed_generated)
+            meta_values[":afterGenerated"] = _n(after_generated)
+            meta_setters.append("generatedCount = :afterGenerated")
         if blocked_reason:
             meta_condition += " AND generationBlockedReason = :blockedReason"
             meta_values[":blockedReason"] = _s(blocked_reason)
         else:
             meta_condition += " AND attribute_not_exists(generationBlockedReason)"
         transaction: list[dict[str, Any]] = []
+        claimed_keys = {_string(item, "sk") for item in claimed_items}
         for item in question_items:
+            is_claimed = _string(item, "sk") in claimed_keys
+            terminal_state = "claimed" if is_claimed else "discarded"
+            terminal_timestamp = "claimedAt" if is_claimed else "discardedAt"
+            stale_timestamp = "discardedAt" if is_claimed else "claimedAt"
             transaction.append(
                 {
                     "Update": {
                         "TableName": table_name,
                         "Key": {"pk": item["pk"], "sk": item["sk"]},
                         "UpdateExpression": (
-                            "SET #state = :claimed, claimedAt = :now, expiresAt = :ttl"
+                            f"SET #state = :terminal, {terminal_timestamp} = :now, "
+                            f"expiresAt = :ttl REMOVE {stale_timestamp}"
                         ),
                         "ConditionExpression": (
                             "attribute_not_exists(#state) OR #state = :ready"
                         ),
                         "ExpressionAttributeNames": {"#state": "state"},
                         "ExpressionAttributeValues": {
-                            ":claimed": _s("claimed"),
+                            ":terminal": _s(terminal_state),
                             ":ready": _s("ready"),
                             ":now": _n(now),
                             ":ttl": _n(now + _bank_ttl_seconds()),
@@ -312,7 +422,7 @@ def claim_questions(
                     "Update": {
                         "TableName": table_name,
                         "Key": bank_key,
-                        "UpdateExpression": "SET readyCount = :after, #state = :state, updatedAt = :now, expiresAt = :ttl",
+                        "UpdateExpression": "SET " + ", ".join(meta_setters),
                         "ConditionExpression": meta_condition,
                         "ExpressionAttributeNames": {"#state": "state"},
                         "ExpressionAttributeValues": meta_values,
@@ -377,6 +487,125 @@ def claim_questions(
     )
 
 
+def _consume_duplicate_question_rows(
+    client: Any,
+    table_name: str,
+    bank_key: dict[str, Any],
+    pointer_key: dict[str, Any],
+    meta: dict[str, Any],
+    items: list[dict[str, Any]],
+) -> None:
+    """Retire legacy duplicate/corrupt rows before an atomic full-size claim."""
+    if not items:
+        return
+    observed_ready = _number(meta, "readyCount")
+    after_count = max(0, observed_ready - len(items))
+    desired_count = _number(meta, "desiredCount")
+    low_watermark = _number(meta, "lowWatermark")
+    observed_generated = _number(meta, "generatedCount")
+    after_generated = (
+        max(0, observed_generated - len(items))
+        if low_watermark == 0
+        else observed_generated
+    )
+    blocked_reason = _string(meta, "generationBlockedReason")
+    finite_fill_pending = low_watermark == 0 and after_generated < desired_count
+    needs_refill = not blocked_reason and (
+        finite_fill_pending
+        or (
+            low_watermark > 0
+            and after_count <= low_watermark
+            and after_count < desired_count
+        )
+    )
+    state = "queued" if needs_refill else ("ready" if after_count else "empty")
+    now = int(time.time())
+    transaction: list[dict[str, Any]] = []
+    for item in items:
+        transaction.append(
+            {
+                "Update": {
+                    "TableName": table_name,
+                    "Key": {"pk": item["pk"], "sk": item["sk"]},
+                    "UpdateExpression": (
+                        "SET #state = :discarded, discardedAt = :now, "
+                        "expiresAt = :ttl REMOVE claimedAt"
+                    ),
+                    "ConditionExpression": (
+                        "attribute_not_exists(#state) OR #state = :ready"
+                    ),
+                    "ExpressionAttributeNames": {"#state": "state"},
+                    "ExpressionAttributeValues": {
+                        ":discarded": _s("discarded"),
+                        ":ready": _s("ready"),
+                        ":now": _n(now),
+                        ":ttl": _n(now + _bank_ttl_seconds()),
+                    },
+                }
+            }
+        )
+    meta_condition = (
+        "readyCount = :observed AND desiredCount = :observedDesired "
+        "AND lowWatermark = :observedLow "
+        "AND attribute_not_exists(tombstonedAt)"
+    )
+    meta_values = {
+        ":after": _n(after_count),
+        ":observed": _n(observed_ready),
+        ":observedDesired": _n(desired_count),
+        ":observedLow": _n(low_watermark),
+        ":state": _s(state),
+        ":now": _n(now),
+        ":ttl": _n(now + _bank_ttl_seconds()),
+    }
+    meta_setters = [
+        "readyCount = :after",
+        "#state = :state",
+        "updatedAt = :now",
+        "expiresAt = :ttl",
+    ]
+    if low_watermark == 0:
+        meta_condition += " AND generatedCount = :observedGenerated"
+        meta_values[":observedGenerated"] = _n(observed_generated)
+        meta_values[":afterGenerated"] = _n(after_generated)
+        meta_setters.append("generatedCount = :afterGenerated")
+    if blocked_reason:
+        meta_condition += " AND generationBlockedReason = :blockedReason"
+        meta_values[":blockedReason"] = _s(blocked_reason)
+    else:
+        meta_condition += " AND attribute_not_exists(generationBlockedReason)"
+
+    transaction.extend(
+        [
+            {
+                "Update": {
+                    "TableName": table_name,
+                    "Key": bank_key,
+                    "UpdateExpression": "SET " + ", ".join(meta_setters),
+                    "ConditionExpression": meta_condition,
+                    "ExpressionAttributeNames": {"#state": "state"},
+                    "ExpressionAttributeValues": meta_values,
+                }
+            },
+            {
+                "ConditionCheck": {
+                    "TableName": table_name,
+                    "Key": pointer_key,
+                    "ConditionExpression": "currentBankID = :bank",
+                    "ExpressionAttributeValues": {
+                        ":bank": _s(_string(meta, "bankID"))
+                    },
+                }
+            },
+        ]
+    )
+    try:
+        client.transact_write_items(TransactItems=transaction)
+    except Exception as error:
+        if not _is_conditional_failure(error):
+            raise
+
+
 def _recover_refill_after_claim(
     client: Any,
     queue: Any,
@@ -410,7 +639,9 @@ def _recover_refill_after_claim(
 def handle_worker_event(
     event: dict[str, Any],
     context: Any,
-    generate_questions: Callable[[dict[str, Any]], list[dict[str, Any]]],
+    generate_questions: Callable[
+        [dict[str, Any], Callable[[], None]], list[dict[str, Any]]
+    ],
     *,
     dynamodb_client: Any | None = None,
     sqs_client: Any | None = None,
@@ -434,7 +665,7 @@ def handle_worker_event(
             _mark_job_terminal_failure(
                 client,
                 message,
-                _max_receive_count(),
+                _receive_count(record),
             )
             LOGGER.error("Question-bank job exhausted its provider-attempt allowance")
             if on_terminal_failure:
@@ -495,7 +726,9 @@ def handle_outbox_event(
 
 def _process_job(
     message: dict[str, Any],
-    generate_questions: Callable[[dict[str, Any]], list[dict[str, Any]]],
+    generate_questions: Callable[
+        [dict[str, Any], Callable[[], None]], list[dict[str, Any]]
+    ],
     client: Any,
     queue: Any,
 ) -> None:
@@ -511,7 +744,7 @@ def _process_job(
     now = int(time.time())
     lease_token = str(uuid.uuid4())
     try:
-        acquired = client.update_item(
+        client.update_item(
             TableName=table_name,
             Key=job_key,
             UpdateExpression=(
@@ -530,8 +763,7 @@ def _process_job(
                 ":lease": _n(now + WORKER_LEASE_SECONDS),
                 ":now": _n(now),
             },
-            ReturnValues="ALL_NEW",
-        ).get("Attributes", {})
+        )
     except Exception as error:
         if not _is_conditional_failure(error):
             raise
@@ -584,18 +816,31 @@ def _process_job(
         )
         return
 
-    _consume_worker_quota(client, table_name, job_key, acquired, owner_digest)
     generation_request = json.loads(_string(meta, "generationRequest"))
     existing_items = _query_question_history(client, table_name, bank_key)
-    existing_questions = [_question_from_item(item) for item in existing_items]
+    recent_items = _recent_question_items(
+        [item for item in existing_items if _string(item, "state") != "discarded"],
+        30,
+    )
+    existing_questions = [_question_from_item(item) for item in recent_items]
     generation_request["targetCount"] = min(_generation_chunk_count(), deficit)
     if generation_request.get("skillMap"):
-        generation_request["requestedSkillAllocation"] = _worker_skill_allocation(
+        requested_skill_allocation = _worker_skill_allocation(
             generation_request,
             existing_items,
             desired_count=desired_count,
             low_watermark=low_watermark,
             target_count=generation_request["targetCount"],
+        )
+        generation_request["requestedSkillAllocation"] = requested_skill_allocation
+        generation_request["requestedObjectiveAllocation"] = (
+            _worker_objective_allocation(
+                generation_request,
+                existing_items,
+                desired_count=desired_count,
+                low_watermark=low_watermark,
+                requested_skill_allocation=requested_skill_allocation,
+            )
         )
     generation_request["existingPrompts"] = list(
         dict.fromkeys(
@@ -620,15 +865,18 @@ def _process_job(
         ]
     )[-30:]
 
-    try:
+    def reserve_provider_call() -> None:
         if not _reserve_provider_attempt(
             client,
             table_name,
             job_key,
             lease_token,
+            owner_digest,
         ):
             raise ProviderAttemptLimitError
-        generated = generate_questions(generation_request)
+
+    try:
+        generated = generate_questions(generation_request, reserve_provider_call)
         prepared = _prepare_questions(bank_id, generated, existing_items)
         if not prepared:
             raise RuntimeError("Provider returned no new usable questions.")
@@ -657,6 +905,11 @@ def _process_job(
             error.code,
         )
         return
+    except ProviderQuotaLimitError:
+        if _mark_rate_limited(client, table_name, job_key):
+            return
+        _reset_job_for_retry(client, table_name, bank_key, job_key, lease_token)
+        raise
     except ProviderAttemptLimitError:
         raise
     except Exception:

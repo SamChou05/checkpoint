@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import unittest
@@ -368,6 +369,144 @@ class LambdaSkillMapTests(BackendTestCase):
 
         self.assertEqual(sanitized, [])
 
+    def test_worker_objective_quota_rejects_wrong_objective_and_retries_exact_gap(
+        self,
+    ):
+        skill_map = _skill_map()
+        skill_map["skills"][0]["objectives"].append(
+            {
+                "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+                "name": "Evaluate counterexamples",
+            }
+        )
+        payload = _request_payload(target_count=1)
+        payload["skillMap"] = skill_map
+        payload["desiredSkillAllocation"] = [
+            {"skillID": skill_map["skills"][0]["id"], "count": 1}
+        ]
+        request = lambda_function._normalize_request(payload)  # noqa: SLF001
+        skill = request["skillMap"]["skills"][0]
+        wrong_objective, requested_objective = skill["objectives"]
+        request["requestedObjectiveAllocation"] = [
+            {
+                "skillID": skill["id"],
+                "objectiveID": requested_objective["id"],
+                "count": 1,
+            }
+        ]
+
+        def tagged_question(prompt, objective):
+            question = _raw_question(prompt, topic=skill["name"])
+            question.update(
+                {
+                    "skillID": skill["id"],
+                    "objectiveID": objective["id"],
+                    "objective": objective["name"],
+                }
+            )
+            return question
+
+        client = FakeBedrockClient(
+            [
+                FakeBedrockClient.question_response(
+                    tagged_question(
+                        "Which assumption is required for this sample conclusion?",
+                        wrong_objective,
+                    )
+                ),
+                FakeBedrockClient.question_response(
+                    tagged_question(
+                        "Which counterexample most directly weakens this sample rule?",
+                        requested_objective,
+                    )
+                ),
+            ]
+        )
+
+        questions = lambda_function._generate_sanitized_questions(  # noqa: SLF001
+            request,
+            client,
+        )
+
+        self.assertEqual(len(questions), 1)
+        self.assertEqual(questions[0]["objectiveID"], requested_objective["id"])
+        self.assertEqual(len(client.calls), 2)
+        retry_prompt = client.calls[1]["messages"][0]["content"][0]["text"]
+        self.assertIn("Required per-objective allocation", retry_prompt)
+        self.assertIn(requested_objective["id"], retry_prompt)
+        retry_request = json.loads(
+            retry_prompt.split("<generation_request_json>\n", 1)[1].split(
+                "\n</generation_request_json>",
+                1,
+            )[0]
+        )
+        self.assertEqual(
+            retry_request["requestedObjectiveAllocation"],
+            request["requestedObjectiveAllocation"],
+        )
+
+    def test_worker_objective_quota_schema_is_bounded_and_exact(self):
+        skill_map = _skill_map()
+        skill_map["skills"][0]["objectives"].append(
+            {
+                "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+                "name": "Evaluate counterexamples",
+            }
+        )
+        payload = _request_payload(target_count=2)
+        payload["skillMap"] = skill_map
+        payload["desiredSkillAllocation"] = [
+            {"skillID": skill_map["skills"][0]["id"], "count": 1}
+        ]
+        request = lambda_function._normalize_request(payload)  # noqa: SLF001
+        skill = request["skillMap"]["skills"][0]
+        request["requestedSkillAllocation"] = {skill["id"]: 2}
+        first_entry = {
+            "skillID": skill["id"],
+            "objectiveID": skill["objectives"][0]["id"],
+            "count": 1,
+        }
+        second_entry = {
+            "skillID": skill["id"],
+            "objectiveID": skill["objectives"][1]["id"],
+            "count": 1,
+        }
+        valid_question = _raw_question(
+            "Which premise is necessary for this sample inference?",
+            topic=skill["name"],
+        )
+        valid_question.update(
+            {
+                "skillID": skill["id"],
+                "objectiveID": skill["objectives"][0]["id"],
+                "objective": skill["objectives"][0]["name"],
+            }
+        )
+
+        invalid_allocations = {
+            "missing skill quota": [first_entry],
+            "duplicate objective": [first_entry, first_entry],
+            "unknown objective": [
+                first_entry,
+                {
+                    **second_entry,
+                    "objectiveID": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+                },
+            ],
+            "too many entries": [first_entry] * 31,
+            "nonpositive count": [{**first_entry, "count": 0}, second_entry],
+        }
+        for name, allocation in invalid_allocations.items():
+            with self.subTest(name=name):
+                invalid_request = {**request, "requestedObjectiveAllocation": allocation}
+                self.assertEqual(
+                    lambda_function._sanitize_questions(  # noqa: SLF001
+                        [valid_question],
+                        invalid_request,
+                    ),
+                    [],
+                )
+
     def test_new_skill_without_objectives_gets_deterministic_objective_id(self):
         skill_map = _skill_map(empty_objectives=True)
         payload = _request_payload(target_count=1)
@@ -417,6 +556,28 @@ class LambdaSkillMapTests(BackendTestCase):
                 skill_map["skills"][1]["id"]: 1,
             },
         )
+
+    def test_full_objective_coverage_capability_defaults_false_and_requires_boolean(
+        self,
+    ):
+        payload = _request_payload(target_count=2)
+
+        legacy = lambda_function._normalize_request(payload)  # noqa: SLF001
+        self.assertFalse(legacy["requiresFullObjectiveCoverage"])
+
+        opted_in_payload = copy.deepcopy(payload)
+        opted_in_payload["requiresFullObjectiveCoverage"] = True
+        opted_in = lambda_function._normalize_request(opted_in_payload)  # noqa: SLF001
+        self.assertTrue(opted_in["requiresFullObjectiveCoverage"])
+
+        for invalid in (None, 1, "true", []):
+            invalid_payload = copy.deepcopy(payload)
+            invalid_payload["requiresFullObjectiveCoverage"] = invalid
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(
+                lambda_function.BadRequestError,
+                "requiresFullObjectiveCoverage must be a boolean",
+            ):
+                lambda_function._normalize_request(invalid_payload)  # noqa: SLF001
 
     def test_user_prompt_includes_raw_goal_focus_and_current_level(self):
         payload = _request_payload(target_count=2, minimum_difficulty=3)

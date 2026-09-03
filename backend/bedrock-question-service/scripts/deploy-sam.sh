@@ -25,6 +25,7 @@ parameters=(
   "RateLimitTTLSeconds=$RATE_LIMIT_TTL_SECONDS"
   "QuestionBankTTLSeconds=$QUESTION_BANK_TTL_SECONDS"
   "QuestionBankMaxReceiveCount=$QUESTION_BANK_MAX_RECEIVE_COUNT"
+  "QuestionBankMaxFailedGenerationJobs=$QUESTION_BANK_MAX_FAILED_GENERATION_JOBS"
   "DeploymentEnvironment=$DEPLOYMENT_ENVIRONMENT"
   "ServiceMode=$SERVICE_MODE"
   "ServiceRetryAfterSeconds=$SERVICE_RETRY_AFTER_SECONDS"

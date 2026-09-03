@@ -20,7 +20,7 @@ import re
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Callable
 
 import question_bank
 from question_generation import (
@@ -89,6 +89,7 @@ from question_quality import (
 from request_contract import (
     DEFAULT_MAX_QUESTIONS,
     DEFAULT_MAX_REQUEST_BODY_BYTES,
+    MAX_ARCHIVED_SKILL_NAME_FINGERPRINTS,
     MAX_OBJECTIVE_NAME_CHARS,
     MAX_SKILL_ALLOCATION_WEIGHT,
     MAX_SKILL_MAP_SKILLS,
@@ -125,13 +126,17 @@ from request_contract import (
     _max_questions,
     _nonnegative_int,
     _normalize_request,
+    _normalize_skill_map_evolution_request,
     _normalize_skill_map_inference_request,
+    _normalized_archived_skill_name_fingerprints,
     _normalized_competencies,
     _normalized_desired_skill_allocation,
     _normalized_source_documents,
     _normalized_supplied_skill_map,
     _rate_limiting_required,
     _source_context_character_limits,
+    _skill_map_fingerprint,
+    _skill_name_fingerprint,
     _strip_answer_prefix,
     _strip_choice_label,
     _topics_from_focus,
@@ -144,6 +149,7 @@ from request_contract import (
 )
 from service_errors import (
     BadRequestError,
+    InvalidProviderResponseError,
     ProviderCallBudgetExceededError,
     ProviderError,
     RateLimitExceededError,
@@ -151,10 +157,20 @@ from service_errors import (
     ServiceConfigurationError,
 )
 from skill_maps import (
+    MAX_EVOLUTION_REPLACEMENTS,
     MIN_INFERRED_SKILL_MAP_SKILLS,
     MIN_INFERRED_SKILL_OBJECTIVES,
+    SKILL_MAP_EVOLUTION_ID_PREFIX,
+    _deterministic_evolved_skill_id,
+    _evolve_skill_map,
+    _is_superficial_successor_name,
     _infer_skill_map,
+    _sanitize_skill_map_evolution,
     _sanitize_inferred_skill_map,
+    _skill_map_evolution_from_provider_text,
+    _skill_map_evolution_retry_prompt,
+    _skill_map_evolution_system_prompt,
+    _skill_map_evolution_user_prompt,
     _skill_map_from_provider_text,
     _skill_map_model_attempts,
     _skill_map_retry_prompt,
@@ -166,6 +182,7 @@ from skill_maps import (
 
 for _compatibility_type in (
     BadRequestError,
+    InvalidProviderResponseError,
     ProviderError,
     RateLimitExceededError,
     ServiceConfigurationError,
@@ -185,6 +202,7 @@ METRIC_NAMESPACE = "Checkpoint/Backend"
 METRIC_SERVICE = "QuestionGeneration"
 HTTP_ROUTE_PATHS = {
     "/v1/questions",
+    "/v1/skill-maps/evolve",
     "/v1/skill-maps/infer",
     "/v1/question-banks/ensure",
     "/v1/question-banks/claim",
@@ -221,11 +239,17 @@ def question_bank_worker_handler(event: dict[str, Any], context: Any) -> dict[st
     request_metrics = _new_request_metrics(context)
     safety_intervened = False
     terminal_failure = False
-    call_budget = _new_provider_call_budget(context)
 
-    def generate_questions(request: dict[str, Any]) -> list[dict[str, Any]]:
+    def generate_questions(
+        request: dict[str, Any],
+        reserve_provider_call: Callable[[], None] | None = None,
+    ) -> list[dict[str, Any]]:
         nonlocal safety_intervened
         request_metrics["QuestionsRequested"] += request["targetCount"]
+        call_budget = _new_provider_call_budget(
+            context,
+            reserve_call=reserve_provider_call,
+        )
         try:
             questions = _generate_sanitized_questions(
                 request,
@@ -321,6 +345,18 @@ def handle_http_request(
                 )
                 outcome = "skill_map_success"
                 response = _response(200, {"skillMap": skill_map})
+            elif path == "/v1/skill-maps/evolve":
+                normalized = _normalize_skill_map_evolution_request(payload)
+                _check_rate_limits(event, dynamodb_client)
+                call_budget = _new_provider_call_budget(context)
+                evolution = _evolve_skill_map(
+                    normalized,
+                    bedrock_client,
+                    call_budget=call_budget,
+                    request_metrics=request_metrics,
+                )
+                outcome = "skill_map_evolution_success"
+                response = _response(200, evolution)
             elif path == "/v1/question-banks/ensure":
                 bank = question_bank.ensure_bank(
                     payload,
@@ -391,6 +427,15 @@ def handle_http_request(
             "Question generation is temporarily unavailable.",
             code="service_unavailable",
             headers={"Retry-After": str(_service_retry_after_seconds())},
+        )
+    except InvalidProviderResponseError:
+        outcome = "provider_invalid_response"
+        LOGGER.error("Question provider returned invalid output")
+        response = _error(
+            502,
+            "Question generation returned invalid output",
+            code="provider_invalid_response",
+            headers={"Retry-After": str(_provider_retry_after_seconds())},
         )
     except ProviderError:
         outcome = "provider_failure"

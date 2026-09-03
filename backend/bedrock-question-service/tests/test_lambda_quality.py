@@ -3,6 +3,7 @@ import os
 import unittest
 
 import lambda_function
+from question_bank_common import _stem_fingerprint
 from lambda_test_support import (
     BackendTestCase,
     FakeBedrockClient,
@@ -13,6 +14,60 @@ from lambda_test_support import (
 
 
 class LambdaQualityTests(BackendTestCase):
+    def test_blocked_stem_fingerprint_contract_is_bounded_and_strict(self):
+        valid = _stem_fingerprint("Which conclusion follows from the evidence?")
+        payload = _request_payload(target_count=1)
+        payload["blockedStemFingerprints"] = [valid, valid]
+
+        normalized = lambda_function._normalize_request(payload)  # noqa: SLF001
+
+        self.assertEqual(normalized["blockedStemFingerprints"], [valid])
+        boundary_payload = _request_payload(target_count=1)
+        boundary_payload["blockedStemFingerprints"] = [
+            f"{index:016x}" for index in range(750)
+        ]
+        boundary = lambda_function._normalize_request(  # noqa: SLF001
+            boundary_payload
+        )
+        self.assertEqual(len(boundary["blockedStemFingerprints"]), 750)
+        invalid_values = [
+            "not-an-array",
+            ["A" * 16],
+            ["0" * 15],
+            [1],
+            ["0" * 16] * 751,
+        ]
+        for invalid in invalid_values:
+            with self.subTest(invalid=invalid if isinstance(invalid, str) else len(invalid)):
+                invalid_payload = _request_payload(target_count=1)
+                invalid_payload["blockedStemFingerprints"] = invalid
+                with self.assertRaises(ValueError):
+                    lambda_function._normalize_request(invalid_payload)  # noqa: SLF001
+
+    def test_blocked_stem_fingerprint_filters_without_reaching_provider_prompt(self):
+        question = _raw_question(
+            "LSAT Logical Reasoning: Which conclusion follows from the stated evidence?"
+        )
+        fingerprint = _stem_fingerprint(question["prompt"])
+        payload = _request_payload(target_count=1)
+        payload["blockedStemFingerprints"] = [fingerprint]
+        request = lambda_function._normalize_request(payload)  # noqa: SLF001
+
+        sanitized = lambda_function._sanitize_questions(  # noqa: SLF001
+            [question],
+            request,
+        )
+        initial_prompt = lambda_function._user_prompt(request)  # noqa: SLF001
+        retry_prompt = lambda_function._json_retry_prompt(  # noqa: SLF001
+            request,
+            "malformed",
+        )
+
+        self.assertEqual(sanitized, [])
+        for provider_prompt in (initial_prompt, retry_prompt):
+            self.assertNotIn("blockedStemFingerprints", provider_prompt)
+            self.assertNotIn(fingerprint, provider_prompt)
+
     def test_rejects_questions_below_requested_difficulty(self):
         client = FakeBedrockClient.returning_questions(
             _raw_question(
@@ -133,6 +188,70 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(client.calls), 2)
         second_prompt = client.calls[1]["messages"][0]["content"][0]["text"]
         self.assertIn("Generate exactly 1 level 3 of 5", second_prompt)
+
+    def test_top_off_attempt_cannot_repeat_an_accepted_stem(self):
+        first = _raw_question(
+            "A policy applies to every licensed operator. Vega is licensed. What follows?",
+            expected_answer="The policy applies to Vega.",
+            explanation="Vega belongs to the stated set of licensed operators.",
+        )
+        repeated_stem = _raw_question(
+            first["prompt"],
+            expected_answer="Vega is governed by the policy.",
+            explanation="The universal rule covers Vega under a different explanation.",
+        )
+        repeated_stem["choices"] = [
+            repeated_stem["expectedAnswer"],
+            "Vega is automatically exempt from the policy.",
+            "The policy applies only to unlicensed operators.",
+            "Nothing follows about any licensed operator.",
+        ]
+        novel = _raw_question(
+            "A permit expires only after notice. No notice was sent. What follows?",
+            expected_answer="The permit has not expired under the stated rule.",
+            explanation="The necessary notice condition has not occurred.",
+        )
+        client = FakeBedrockClient(
+            [
+                FakeBedrockClient.question_response(first),
+                FakeBedrockClient.question_response(repeated_stem, novel),
+            ]
+        )
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=2)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        questions = json.loads(response["body"])["questions"]
+        self.assertEqual(
+            [question["prompt"] for question in questions],
+            [first["prompt"], novel["prompt"]],
+        )
+        self.assertEqual(len(client.calls), 2)
+
+    def test_existing_coverage_prompt_blocks_same_stem_without_prompt_list(self):
+        repeated = _raw_question(
+            "A cache entry is valid but absent from memory. What must happen next?"
+        )
+        request = lambda_function._normalize_request(  # noqa: SLF001
+            _request_payload(target_count=1)
+        )
+        request["existingPrompts"] = []
+        request["existingQuestionCoverage"] = [
+            {
+                "topic": "",
+                "prompt": repeated["prompt"],
+                "expectedAnswer": "",
+                "choices": [],
+                "difficulty": 3,
+            }
+        ]
+
+        sanitized = lambda_function._sanitize_questions([repeated], request)  # noqa: SLF001
+
+        self.assertEqual(sanitized, [])
 
     def test_uses_fallback_model_after_primary_json_failures(self):
         os.environ["BEDROCK_MODEL_ID"] = "google.gemma-3-4b-it"
@@ -290,6 +409,50 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(questions), 1)
         self.assertIn("causation", questions[0]["prompt"])
 
+    def test_server_rejects_every_study_strategy_phrase_rejected_by_ios(self):
+        request = lambda_function._normalize_request(  # noqa: SLF001
+            _request_payload(target_count=1)
+        )
+        phrases = [
+            "study rep",
+            "practice rep",
+            "clearest progress",
+            "finish line",
+            "try harder",
+            "distraction",
+            "what should you do next",
+        ]
+
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                question = _raw_question(
+                    f"After missing an LSAT item, which {phrase} would help most?"
+                )
+                self.assertEqual(
+                    lambda_function._sanitize_questions(  # noqa: SLF001
+                        [question],
+                        request,
+                    ),
+                    [],
+                )
+
+    def test_study_strategy_goal_signal_matches_ios_title_and_focus_areas(self):
+        payload = _request_payload(target_count=1)
+        payload["goal"]["title"] = "Build stronger productivity habits"
+        payload["goal"]["focusAreas"] = "time management"
+        payload["goal"]["learningTarget"] = "Daily routines"
+        request = lambda_function._normalize_request(payload)  # noqa: SLF001
+        question = _raw_question(
+            "When a distraction interrupts a work block, what should you do next?"
+        )
+
+        sanitized = lambda_function._sanitize_questions(  # noqa: SLF001
+            [question],
+            request,
+        )
+
+        self.assertEqual(len(sanitized), 1)
+
     def test_rejects_quoted_generic_meta_filler_question(self):
         request = lambda_function._normalize_request(  # noqa: SLF001
             {
@@ -411,7 +574,7 @@ class LambdaQualityTests(BackendTestCase):
         ]:
             self.assertNotIn(overfit_term, system_prompt)
 
-    def test_filters_near_duplicate_quoted_prompts(self):
+    def test_allows_similar_quoted_prompts_when_stems_differ(self):
         first = _raw_question(
             "Select the correct object pronoun for the sentence: 'Necesito encontrar el hotel antes de la noche.'"
         )
@@ -430,9 +593,50 @@ class LambdaQualityTests(BackendTestCase):
 
         self.assertEqual(response["statusCode"], 200)
         questions = json.loads(response["body"])["questions"]
-        self.assertEqual(len(questions), 2)
+        self.assertEqual(len(questions), 3)
         self.assertEqual(questions[0]["prompt"], first["prompt"])
-        self.assertEqual(questions[1]["prompt"], third["prompt"])
+        self.assertEqual(questions[1]["prompt"], second["prompt"])
+        self.assertEqual(questions[2]["prompt"], third["prompt"])
+
+    def test_allows_distinct_questions_about_the_same_quoted_passage(self):
+        passage = "'The river rose overnight, covering the lower trail.'"
+        meaning = _raw_question(
+            f"According to {passage}, what changed?",
+            expected_answer="The river level increased and covered the lower trail.",
+            explanation="The passage says the river rose and then covered the lower trail.",
+            topic="Reading Comprehension",
+        )
+        meaning["choices"] = [
+            meaning["expectedAnswer"],
+            "The river dried up and exposed the trail.",
+            "The trail moved to higher ground.",
+            "The passage describes no physical change.",
+        ]
+        timing = _raw_question(
+            f"According to {passage}, when did the change occur?",
+            expected_answer="It occurred overnight.",
+            explanation="The passage explicitly places the river's rise overnight.",
+            topic="Sequence and Timing",
+        )
+        timing["choices"] = [
+            timing["expectedAnswer"],
+            "It occurred at noon.",
+            "It occurred one week earlier.",
+            "The passage provides no timing information.",
+        ]
+        client = FakeBedrockClient.returning_questions(meaning, timing)
+
+        response = lambda_function.handle_http_request(
+            _event(_request_payload(target_count=2, minimum_difficulty=3)),
+            bedrock_client=client,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        questions = json.loads(response["body"])["questions"]
+        self.assertEqual(
+            [question["prompt"] for question in questions],
+            [meaning["prompt"], timing["prompt"]],
+        )
 
     def test_rejects_duplicate_answer_choices_after_generic_label_normalization(self):
         client = FakeBedrockClient(
@@ -470,6 +674,77 @@ class LambdaQualityTests(BackendTestCase):
         questions = json.loads(response["body"])["questions"]
         self.assertEqual(len(questions), 1)
         self.assertNotIn("MMU", questions[0]["prompt"])
+
+    def test_rejects_choices_that_client_collapses_by_semantic_singularization(self):
+        question = _raw_question(
+            "Manufacturing: Which item can perform the requested operation?",
+            expected_answer="A machine",
+            explanation="A machine is the item designed to perform the requested operation.",
+            topic="Manufacturing",
+        )
+        question["choices"] = ["A machine", "machines", "dogs", "birds"]
+        request = lambda_function._normalize_request(  # noqa: SLF001
+            _request_payload(target_count=1, minimum_difficulty=3)
+        )
+
+        self.assertEqual(
+            lambda_function._sanitize_questions([question], request),  # noqa: SLF001
+            [],
+        )
+
+    def test_rejects_choices_that_client_collapses_by_diacritic_folding(self):
+        question = _raw_question(
+            "French vocabulary: Which word names a coffee shop?",
+            expected_answer="café",
+            explanation="Café is the French word used here for a coffee shop.",
+            topic="French vocabulary",
+        )
+        question["choices"] = ["café", "cafe", "dogs", "birds"]
+        request = lambda_function._normalize_request(  # noqa: SLF001
+            _request_payload(target_count=1, minimum_difficulty=3)
+        )
+
+        self.assertEqual(
+            lambda_function._sanitize_questions([question], request),  # noqa: SLF001
+            [],
+        )
+
+    def test_choice_folding_is_locale_independent_for_dotted_i(self):
+        question = _raw_question(
+            "Geography: Which city spans Europe and Asia?",
+            expected_answer="İstanbul",
+            explanation="İstanbul is the city in this set that spans Europe and Asia.",
+            topic="Geography",
+        )
+        question["choices"] = ["İstanbul", "istanbul", "Ankara", "Bursa"]
+        request = lambda_function._normalize_request(  # noqa: SLF001
+            _request_payload(target_count=1, minimum_difficulty=3)
+        )
+
+        self.assertEqual(
+            lambda_function._sanitize_questions([question], request),  # noqa: SLF001
+            [],
+        )
+
+    def test_short_plural_choice_boundary_matches_client(self):
+        question = _raw_question(
+            "Animal vocabulary: Which option names one feline?",
+            expected_answer="A cat",
+            explanation="A cat names one feline.",
+            topic="Animal vocabulary",
+        )
+        question["choices"] = ["A cat", "cats", "dogs", "birds"]
+        request = lambda_function._normalize_request(  # noqa: SLF001
+            _request_payload(target_count=1, minimum_difficulty=3)
+        )
+
+        sanitized = lambda_function._sanitize_questions(  # noqa: SLF001
+            [question],
+            request,
+        )
+
+        self.assertEqual(len(sanitized), 1)
+        self.assertEqual(set(sanitized[0]["choices"]), set(question["choices"]))
 
     def test_rejects_same_topic_answer_as_existing_coverage(self):
         repeated = {

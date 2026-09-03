@@ -24,11 +24,11 @@ DEFAULT_FORBIDDEN_TERMS = [
     "motivation",
 ]
 DISALLOWED_CHOICE_TEXT = {
-    "alloftheabove",
-    "noneoftheabove",
-    "bothaandb",
+    "allabove",
+    "noneabove",
+    "bothandb",
     "bothbandc",
-    "allchoicesarecorrect",
+    "allchoicearecorrect",
 }
 SCENARIO_SIGNALS = [
     "if ",

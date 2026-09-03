@@ -72,12 +72,16 @@ def _bank_response(meta: dict[str, Any]) -> dict[str, Any]:
         state = "queued"
     elif state not in {"queued", "processing", "ready", "empty"}:
         state = "ready" if ready else "empty"
-    return {
+    response = {
         "bankID": _string(meta, "bankID"),
         "status": state,
         "readyCount": ready,
         "targetCount": target,
     }
+    blocked_reason = _string(meta, "generationBlockedReason")
+    if blocked_reason:
+        response["generationBlockedReason"] = blocked_reason
+    return response
 
 
 def _stored_claim(item: dict[str, Any]) -> dict[str, Any]:

@@ -72,6 +72,7 @@ Parameters:
     Type: Number
     Default: 40
     MinValue: 1
+    Description: Daily synchronous requests per install and, in a separate counter namespace, asynchronous Bedrock calls per install.
   MaxRequestsPerIPPerDay:
     Type: Number
     Default: 400
@@ -161,7 +162,13 @@ Parameters:
     Default: 5
     MinValue: 2
     MaxValue: 10
-    Description: Shared SQS redrive, job provider-attempt, and terminal-failure threshold.
+    Description: Shared SQS redrive and actual per-job Bedrock Converse-call threshold.
+  QuestionBankMaxFailedGenerationJobs:
+    Type: Number
+    Default: 3
+    MinValue: 1
+    MaxValue: 10
+    Description: Exhausted generation jobs allowed per bank context before automatic generation is permanently blocked for that context.
   LogRetentionDays:
     Type: Number
     Default: 14
@@ -338,6 +345,12 @@ Resources:
             ApiId: !Ref BackendApi
             Path: /v1/skill-maps/infer
             Method: POST
+        SkillMapEvolution:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BackendApi
+            Path: /v1/skill-maps/evolve
+            Method: POST
         QuestionBankEnsure:
           Type: HttpApi
           Properties:
@@ -431,6 +444,7 @@ Resources:
           QUESTION_BANK_QUEUE_URL: !Ref QuestionBankQueue
           QUESTION_BANK_TTL_SECONDS: !Ref QuestionBankTTLSeconds
           QUESTION_BANK_MAX_RECEIVE_COUNT: !Ref QuestionBankMaxReceiveCount
+          QUESTION_BANK_MAX_FAILED_GENERATION_JOBS: !Ref QuestionBankMaxFailedGenerationJobs
           EMIT_STRUCTURED_METRICS: "true"
       Events:
         QuestionBankJobs:
@@ -749,6 +763,9 @@ Outputs:
   SkillMapEndpoint:
     Description: Infers a structured assessment skill map for a goal.
     Value: !Sub https://${BackendApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiStageName}/v1/skill-maps/infer
+  SkillMapEvolutionEndpoint:
+    Description: Advances mastered skill-map nodes to harder successor skills.
+    Value: !Sub https://${BackendApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiStageName}/v1/skill-maps/evolve
   QuestionBankEnsureEndpoint:
     Description: Idempotently creates or replenishes a durable asynchronous question bank.
     Value: !Sub https://${BackendApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${ApiStageName}/v1/question-banks/ensure

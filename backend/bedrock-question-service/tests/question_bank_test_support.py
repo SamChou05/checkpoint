@@ -79,11 +79,18 @@ class ClaimDynamo:
                 values = update["ExpressionAttributeValues"]
                 if sk == "META" and ":after" in values:
                     self.meta["readyCount"] = values[":after"]
-                    self.meta["state"] = values[":state"]
+                    if ":afterGenerated" in values:
+                        self.meta["generatedCount"] = values[":afterGenerated"]
+                    if ":state" in values:
+                        self.meta["state"] = values[":state"]
                 elif sk.startswith("QUESTION#"):
                     for item in self.questions:
                         if item["sk"]["S"] == sk:
-                            item["state"] = values[":claimed"]
+                            item["state"] = (
+                                values.get(":terminal")
+                                or values.get(":discarded")
+                                or values[":claimed"]
+                            )
             elif "Put" in operation:
                 item = operation["Put"]["Item"]
                 if item["sk"]["S"].startswith("CLAIM#"):
@@ -233,7 +240,12 @@ class QuestionBankTestCase(unittest.TestCase):
             "QUESTION_BANK_TTL_SECONDS",
             "QUESTION_BANK_FAILURE_COOLDOWN_SECONDS",
             "QUESTION_BANK_GENERATION_CHUNK_SIZE",
+            "QUESTION_BANK_MAX_FAILED_GENERATION_JOBS",
             "QUESTION_BANK_MAX_RECEIVE_COUNT",
             "QUOTA_HASH_SECRET",
+            "RATE_LIMIT_TABLE_NAME",
+            "MAX_REQUESTS_PER_INSTALL_PER_DAY",
+            "REQUIRE_RATE_LIMITING",
+            "RATE_LIMIT_TTL_SECONDS",
         ]:
             os.environ.pop(key, None)

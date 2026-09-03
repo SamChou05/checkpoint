@@ -39,16 +39,42 @@ def _validate_durable_skill_allocation(
     if not skills:
         return
     allocation = normalized_request.get("desiredSkillAllocation", {})
-    positive_skill_count = (
-        sum(1 for count in allocation.values() if count > 0)
+    skill_ids = [skill["id"] for skill in skills]
+    weights = (
+        {skill_id: allocation.get(skill_id, 0) for skill_id in skill_ids}
         if allocation
-        else len(skills)
+        else {skill_id: 1 for skill_id in skill_ids}
     )
-    if desired_count < positive_skill_count:
+    apportioned_targets = _facade()._apportion_skill_counts(
+        skill_ids,
+        weights,
+        desired_count,
+    )
+    requires_full_objective_coverage = (
+        normalized_request.get("requiresFullObjectiveCoverage") is True
+    )
+    undersized_skills = [
+        skill
+        for skill in skills
+        if weights[skill["id"]] > 0
+        and apportioned_targets.get(skill["id"], 0)
+        < (
+            max(1, len(skill.get("objectives", [])))
+            if requires_full_objective_coverage
+            else 1
+        )
+    ]
+    if undersized_skills:
+        coverage_requirement = (
+            " and every active objective within that skill"
+            if requires_full_objective_coverage
+            else ""
+        )
         raise QuestionBankError(
             400,
-            "desiredCount must provide at least one durable inventory slot for "
-            "every positive-weight skill.",
+            "desiredCount and desiredSkillAllocation must provide at least one "
+            "durable inventory slot for every positive-weight skill"
+            f"{coverage_requirement}.",
             "invalid_request",
         )
 
@@ -106,6 +132,7 @@ def _activate_goal_version(
             "lowWatermark": _n(low_watermark),
             "readyCount": _n(0),
             "generatedCount": _n(0),
+            "failedGenerationJobCount": _n(0),
             "state": _s("empty"),
             "createdAt": _n(now),
             "updatedAt": _n(now),
@@ -185,6 +212,15 @@ def _update_bank_configuration(
     low_watermark: int,
     now: int,
 ) -> dict[str, Any]:
+    values = {
+        ":request": _s(_json(normalized)),
+        ":allocation": _s(_skill_allocation_key(normalized)),
+        ":desired": _n(desired_count),
+        ":low": _n(low_watermark),
+        ":now": _n(now),
+        ":ttl": _n(now + _bank_ttl_seconds()),
+        ":revision": _s(context_revision),
+    }
     try:
         return client.update_item(
             TableName=table_name,
@@ -197,17 +233,30 @@ def _update_bank_configuration(
             ConditionExpression=(
                 "contextRevision = :revision AND attribute_not_exists(tombstonedAt) "
                 "AND (attribute_not_exists(skillAllocationKey) OR "
-                "skillAllocationKey = :allocation)"
+                "skillAllocationKey = :allocation) "
+                "AND (attribute_not_exists(desiredCount) OR desiredCount <= :desired)"
             ),
-            ExpressionAttributeValues={
-                ":request": _s(_json(normalized)),
-                ":allocation": _s(_skill_allocation_key(normalized)),
-                ":desired": _n(desired_count),
-                ":low": _n(low_watermark),
-                ":now": _n(now),
-                ":ttl": _n(now + _bank_ttl_seconds()),
-                ":revision": _s(context_revision),
-            },
+            ExpressionAttributeValues=values,
+            ReturnValues="ALL_NEW",
+        )["Attributes"]
+    except Exception as error:
+        if not _is_conditional_failure(error):
+            raise
+
+    try:
+        return client.update_item(
+            TableName=table_name,
+            Key=bank_key,
+            UpdateExpression=(
+                "SET generationRequest = :request, skillAllocationKey = :allocation, "
+                "lowWatermark = :low, updatedAt = :now, expiresAt = :ttl"
+            ),
+            ConditionExpression=(
+                "contextRevision = :revision AND attribute_not_exists(tombstonedAt) "
+                "AND (attribute_not_exists(skillAllocationKey) OR "
+                "skillAllocationKey = :allocation) AND desiredCount >= :desired"
+            ),
+            ExpressionAttributeValues=values,
             ReturnValues="ALL_NEW",
         )["Attributes"]
     except Exception as error:

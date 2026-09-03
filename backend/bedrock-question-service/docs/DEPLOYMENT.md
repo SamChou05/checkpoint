@@ -29,8 +29,9 @@ Important guided values:
 - `QuestionBankTTLSeconds`: defaults to 30 days; choose and publish the production retention period before launch
 - `QuestionBankWorkerReservedConcurrency`: defaults to 2 and independently caps asynchronous Bedrock work
 - `QuestionBankWorkerReadTimeoutSeconds`: defaults to 75 seconds for asynchronous generation; keep it below the worker's 120-second Lambda timeout. It does not change the synchronous API's 20-second default
-- `QuestionBankGenerationChunkSize`: defaults to 5 questions; the worker durably chains chunks until the 40/80-question target is full
-- `QuestionBankMaxReceiveCount`: defaults to 5 and drives SQS redrive, the per-job generation-attempt ceiling, and terminal-failure bookkeeping
+- `QuestionBankGenerationChunkSize`: defaults to 5 questions; the worker durably chains chunks until the caller's finite fill-cycle target is full (an empty client cache normally requests 40 Free or 80 Pro, while later cycles can be smaller)
+- `QuestionBankMaxReceiveCount`: defaults to 5 and drives SQS redrive and the per-job generation-attempt ceiling
+- `QuestionBankMaxFailedGenerationJobs`: defaults to 3; after that many exhausted jobs, the exact bank context is durably blocked until the app begins a new fill-cycle context
 - the outbox consumer reserves concurrency 2 in the template, independently capping stream-to-queue recovery work
 - throttle, reserved-concurrency, request, provider-call, and daily-quota values: begin with the template defaults and adjust from observed metrics
 - `AlertEmail`: optional outside production and required in production; confirm the SNS subscription email after deployment
@@ -68,7 +69,7 @@ arn:aws:bedrock:<source-region>:<account-id>:project/default
 
 Replace `<source-region>` with the region in which this stack invokes Bedrock and `<account-id>` with the deploying AWS account. Confirm the profile's destination list with `GetInferenceProfile` before each production rollout; a geography profile's destinations are stable for that profile, but a newly selected profile can have a different allowlist. AWS documents the model ID, default-project requirement, and regional availability in the [GPT-5.6 Luna model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-56-luna.html).
 
-The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with that full HTTPS URL. The app derives the sibling `/v1/skill-maps/infer`, `/v1/question-banks/ensure`, and `/v1/question-banks/claim` URLs, which are also emitted as stack outputs.
+The stack output `QuestionEndpoint` includes `/v1/questions`; configure the app with that full HTTPS URL. The app derives the sibling `/v1/skill-maps/infer`, `/v1/skill-maps/evolve`, `/v1/question-banks/ensure`, and `/v1/question-banks/claim` URLs, which are also emitted as stack outputs.
 
 ## IAM
 

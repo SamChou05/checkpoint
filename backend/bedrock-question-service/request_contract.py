@@ -2,14 +2,18 @@
 
 import base64
 import binascii
+import hmac
 import json
 import math
 import os
 import re
+import unicodedata
 import uuid
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import question_bank
+from question_bank_common import _validated_blocked_stem_fingerprints
 from service_errors import BadRequestError
 
 
@@ -24,6 +28,18 @@ MAX_SKILL_OBJECTIVES = 5
 MAX_SKILL_NAME_CHARS = 48
 MAX_OBJECTIVE_NAME_CHARS = 80
 MAX_SKILL_ALLOCATION_WEIGHT = 100
+MAX_ARCHIVED_SKILLS = 48
+MAX_ARCHIVED_SKILL_NAME_FINGERPRINTS = 750
+MAX_RECENT_EVOLUTION_ATTEMPTS = 30
+MAX_EVOLUTION_SKILLS = 2
+MIN_EVOLUTION_ATTEMPTS = 10
+MIN_EVOLUTION_MASTERY_PERCENT = 85
+MIN_EVOLUTION_CORRECT_STREAK = 3
+MIN_RECENT_EVOLUTION_ATTEMPTS = 4
+MIN_RECENT_EVOLUTION_SCORE = 0.85
+MIN_OBJECTIVE_EVOLUTION_SCORE = 0.75
+MAX_RECENT_EVOLUTION_MISSES = 1
+EVOLUTION_ATTEMPT_MAX_AGE_DAYS = 30
 UNSUPPORTED_SKILL_NAME_SEPARATORS = frozenset(",;")
 SKILL_MAP_ID_PREFIX = "checkpoint:skill-map:v1"
 SOURCE_TRUNCATION_MARKER = "\n\n[... source truncated ...]\n\n"
@@ -156,6 +172,212 @@ def _normalize_skill_map_inference_request(payload: dict[str, Any]) -> dict[str,
     }
 
 
+def _normalize_skill_map_evolution_request(payload: dict[str, Any]) -> dict[str, Any]:
+    """Validate a version-fenced request to replace mastered map nodes."""
+    base_request = _normalize_skill_map_inference_request(payload)
+    goal = payload.get("goal", {})
+    goal_id = _validated_uuid(goal.get("id"), "goal.id")
+    base_fingerprint = _validated_text(
+        payload.get("baseMapFingerprint"),
+        "baseMapFingerprint",
+        16,
+    )
+    if not re.fullmatch(r"[0-9a-f]{16}", base_fingerprint):
+        raise BadRequestError(
+            "baseMapFingerprint must be a 16-character lowercase hexadecimal value."
+        )
+
+    current_skill_map = _normalized_supplied_skill_map(payload.get("currentSkillMap"))
+    if not current_skill_map:
+        raise BadRequestError("Missing currentSkillMap object.")
+    if not 3 <= len(current_skill_map["skills"]) <= MAX_SKILL_MAP_SKILLS:
+        raise BadRequestError("currentSkillMap must contain 3 to 6 active skills.")
+    if current_skill_map["version"] >= 1_000_000:
+        raise BadRequestError("currentSkillMap.version cannot be advanced further.")
+    if any(not skill["objectives"] for skill in current_skill_map["skills"]):
+        raise BadRequestError(
+            "Every currentSkillMap skill must contain at least one objective."
+        )
+    expected_fingerprint = _skill_map_fingerprint(current_skill_map)
+    if not hmac.compare_digest(base_fingerprint, expected_fingerprint):
+        raise BadRequestError(
+            "baseMapFingerprint does not match currentSkillMap."
+        )
+
+    mastered_value = payload.get("masteredSkillIDs")
+    if not isinstance(mastered_value, list):
+        raise BadRequestError("masteredSkillIDs must be an array.")
+    if not 1 <= len(mastered_value) <= MAX_EVOLUTION_SKILLS:
+        raise BadRequestError("masteredSkillIDs must contain 1 or 2 skill IDs.")
+
+    active_skill_ids = {
+        _uuid_key(skill["id"]): skill["id"] for skill in current_skill_map["skills"]
+    }
+    mastered_skill_ids: list[str] = []
+    seen_mastered_ids: set[str] = set()
+    for index, raw_skill_id in enumerate(mastered_value):
+        skill_id = _validated_uuid(raw_skill_id, f"masteredSkillIDs[{index}]")
+        skill_key = _uuid_key(skill_id)
+        if skill_key in seen_mastered_ids:
+            raise BadRequestError("masteredSkillIDs must contain distinct IDs.")
+        if skill_key not in active_skill_ids:
+            raise BadRequestError(
+                f"masteredSkillIDs[{index}] does not belong to currentSkillMap."
+            )
+        seen_mastered_ids.add(skill_key)
+        mastered_skill_ids.append(active_skill_ids[skill_key])
+
+    competencies = base_request["competencies"]
+    if len(competencies) != len(mastered_skill_ids):
+        raise BadRequestError(
+            "competencies must contain exactly one row per masteredSkillID."
+        )
+    competency_by_skill_id: dict[str, dict[str, Any]] = {}
+    for competency_index, competency in enumerate(competencies):
+        raw_skill_id = competency.get("skillID")
+        if not raw_skill_id:
+            raise BadRequestError(
+                "Every evolution competency row requires a skillID."
+            )
+        skill_key = _uuid_key(raw_skill_id)
+        if skill_key in competency_by_skill_id:
+            raise BadRequestError("competencies must contain at most one row per skillID.")
+        if skill_key not in seen_mastered_ids:
+            raise BadRequestError(
+                "competencies may reference only masteredSkillIDs."
+            )
+        for field_name, maximum in (
+            ("attempts", 1_000_000),
+            ("masteryPercent", 100),
+            ("currentStreak", 1_000_000),
+        ):
+            _strict_int(
+                competency.get(field_name),
+                f"competencies[{competency_index}].{field_name}",
+                0,
+                maximum,
+            )
+        competency_by_skill_id[skill_key] = competency
+
+    recent_attempts = _normalized_evolution_attempts(
+        payload.get("recentAttempts"),
+        current_skill_map,
+    )
+    if any(
+        _uuid_key(attempt["skillID"]) not in seen_mastered_ids
+        for attempt in recent_attempts
+    ):
+        raise BadRequestError(
+            "recentAttempts may reference only masteredSkillIDs."
+        )
+    for mastered_skill_id in mastered_skill_ids:
+        skill_key = _uuid_key(mastered_skill_id)
+        competency = competency_by_skill_id.get(skill_key)
+        if not competency:
+            raise BadRequestError(
+                "Every masteredSkillID requires a matching competency row."
+            )
+        if (
+            int(competency.get("attempts", 0)) < MIN_EVOLUTION_ATTEMPTS
+            or int(competency.get("masteryPercent", 0))
+            < MIN_EVOLUTION_MASTERY_PERCENT
+            or int(competency.get("currentStreak", 0))
+            < MIN_EVOLUTION_CORRECT_STREAK
+        ):
+            raise BadRequestError(
+                "Every mastered skill requires at least 10 attempts, 85% mastery, "
+                "and a 3-answer correct streak."
+            )
+        _validate_recent_mastery_evidence(mastered_skill_id, recent_attempts)
+        _validate_objective_mastery_evidence(
+            active_skill_ids[skill_key],
+            current_skill_map,
+            recent_attempts,
+        )
+
+    archived_skills = _normalized_archived_skills(
+        payload.get("archivedSkills"),
+        current_skill_map,
+    )
+    archived_skill_name_fingerprints = _normalized_archived_skill_name_fingerprints(
+        payload.get("archivedSkillNameFingerprints")
+    )
+
+    normalized_goal = dict(base_request["goal"])
+    normalized_goal["id"] = goal_id
+    return {
+        "goal": normalized_goal,
+        "baseMapFingerprint": base_fingerprint,
+        "currentSkillMap": current_skill_map,
+        "masteredSkillIDs": mastered_skill_ids,
+        "competencies": competencies,
+        "recentAttempts": recent_attempts,
+        "archivedSkills": archived_skills,
+        "archivedSkillNameFingerprints": archived_skill_name_fingerprints,
+        "sourceDocuments": base_request["sourceDocuments"],
+    }
+
+
+def _skill_map_fingerprint(skill_map: dict[str, Any]) -> str:
+    """Match iOS's FNV-1a fingerprint over its stable map-content signature."""
+    skill_signatures: list[str] = []
+    for skill in skill_map["skills"]:
+        objective_signature = ",".join(
+            sorted(
+                f"{str(uuid.UUID(objective['id'])).upper()}:{objective['name']}"
+                for objective in skill["objectives"]
+            )
+        )
+        skill_signatures.append(
+            f"{str(uuid.UUID(skill['id'])).upper()}:{skill['name']}:{objective_signature}"
+        )
+    signature = "|".join(sorted(skill_signatures))
+    value = 14_695_981_039_346_656_037
+    for byte in signature.encode("utf-8"):
+        value ^= byte
+        value = (value * 1_099_511_628_211) & 0xFFFF_FFFF_FFFF_FFFF
+    return f"{value:016x}"
+
+
+def _skill_name_fingerprint(value: str) -> str:
+    """Return the client-compatible FNV-1a fingerprint for a canonical skill name."""
+    identity = _canonical(value)
+    if not identity:
+        return ""
+    fingerprint = 14_695_981_039_346_656_037
+    for byte in identity.encode("utf-8"):
+        fingerprint ^= byte
+        fingerprint = (fingerprint * 1_099_511_628_211) & 0xFFFF_FFFF_FFFF_FFFF
+    return f"{fingerprint:016x}"
+
+
+def _normalized_archived_skill_name_fingerprints(value: Any) -> list[str]:
+    field = "archivedSkillNameFingerprints"
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise BadRequestError(f"{field} must be an array.")
+    if len(value) > MAX_ARCHIVED_SKILL_NAME_FINGERPRINTS:
+        raise BadRequestError(
+            f"{field} must contain at most "
+            f"{MAX_ARCHIVED_SKILL_NAME_FINGERPRINTS} items."
+        )
+
+    fingerprints: list[str] = []
+    seen: set[str] = set()
+    for index, fingerprint in enumerate(value):
+        if not isinstance(fingerprint, str) or not re.fullmatch(
+            r"[0-9a-f]{16}", fingerprint
+        ):
+            raise BadRequestError(
+                f"{field}[{index}] must be a lowercase 16-character hexadecimal string."
+            )
+        if fingerprint not in seen:
+            seen.add(fingerprint)
+            fingerprints.append(fingerprint)
+    return fingerprints
+
+
 def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
     goal = payload.get("goal")
     if not isinstance(goal, dict):
@@ -207,6 +429,19 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         needs_skill_map_value
         or _topics_need_inference(normalized_topics, learning_target, title)
     )
+    requires_full_objective_coverage = payload.get(
+        "requiresFullObjectiveCoverage",
+        False,
+    )
+    if not isinstance(requires_full_objective_coverage, bool):
+        raise BadRequestError("requiresFullObjectiveCoverage must be a boolean.")
+
+    try:
+        blocked_stem_fingerprints = _validated_blocked_stem_fingerprints(
+            payload.get("blockedStemFingerprints")
+        )
+    except ValueError as error:
+        raise BadRequestError(str(error)) from error
 
     normalized_request = {
         "goal": {
@@ -244,9 +479,11 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
             maximum_items=30,
             maximum_characters=360,
         ),
+        "blockedStemFingerprints": blocked_stem_fingerprints,
         "sourceDocuments": _normalized_source_documents(payload.get("sourceDocuments")),
         "targetCount": target_count,
         "minimumDifficulty": minimum_difficulty,
+        "requiresFullObjectiveCoverage": requires_full_objective_coverage,
         "difficultyGuidance": _validated_text(
             payload.get("difficultyGuidance"),
             "difficultyGuidance",
@@ -519,6 +756,233 @@ def _normalized_source_documents(value: Any) -> list[dict[str, Any]]:
     return normalized
 
 
+def _normalized_archived_skills(
+    value: Any,
+    current_skill_map: dict[str, Any],
+) -> list[dict[str, str]]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise BadRequestError("archivedSkills must be an array.")
+    if len(value) > MAX_ARCHIVED_SKILLS:
+        raise BadRequestError(
+            f"archivedSkills exceeds the {MAX_ARCHIVED_SKILLS}-skill limit."
+        )
+
+    active_ids = {_uuid_key(skill["id"]) for skill in current_skill_map["skills"]}
+    active_names = {_canonical(skill["name"]) for skill in current_skill_map["skills"]}
+    seen_ids = set(active_ids)
+    seen_names = set(active_names)
+    archived: list[dict[str, str]] = []
+    for index, item in enumerate(value):
+        if not isinstance(item, dict):
+            raise BadRequestError(f"archivedSkills[{index}] must be an object.")
+        skill_id = _validated_uuid(item.get("id"), f"archivedSkills[{index}].id")
+        name = _validated_text(
+            item.get("name"),
+            f"archivedSkills[{index}].name",
+            MAX_SKILL_NAME_CHARS,
+        )
+        if not name:
+            raise BadRequestError(f"archivedSkills[{index}].name must not be empty.")
+        if _has_unsupported_skill_name_separator(name):
+            raise BadRequestError(
+                f"archivedSkills[{index}].name must not contain commas or semicolons."
+            )
+        skill_key = _uuid_key(skill_id)
+        name_key = _canonical(name)
+        if skill_key in seen_ids or name_key in seen_names:
+            raise BadRequestError(
+                "Archived and active skills must have distinct IDs and names."
+            )
+        seen_ids.add(skill_key)
+        seen_names.add(name_key)
+        archived.append({"id": skill_id, "name": name})
+    return archived
+
+
+def _normalized_evolution_attempts(
+    value: Any,
+    current_skill_map: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        raise BadRequestError("recentAttempts must be an array.")
+    if len(value) > MAX_RECENT_EVOLUTION_ATTEMPTS:
+        raise BadRequestError(
+            "recentAttempts exceeds the "
+            f"{MAX_RECENT_EVOLUTION_ATTEMPTS}-attempt limit."
+        )
+
+    active_skills = {
+        _uuid_key(skill["id"]): skill for skill in current_skill_map["skills"]
+    }
+    now = datetime.now(timezone.utc)
+    earliest = now - timedelta(days=EVOLUTION_ATTEMPT_MAX_AGE_DAYS)
+    latest = now + timedelta(minutes=5)
+    attempts: list[dict[str, Any]] = []
+    for index, item in enumerate(value):
+        if not isinstance(item, dict):
+            raise BadRequestError(f"recentAttempts[{index}] must be an object.")
+        skill_id = _validated_uuid(
+            item.get("skillID"),
+            f"recentAttempts[{index}].skillID",
+        )
+        skill_key = _uuid_key(skill_id)
+        skill = active_skills.get(skill_key)
+        if not skill:
+            raise BadRequestError(
+                f"recentAttempts[{index}].skillID does not belong to currentSkillMap."
+            )
+
+        objective_id = ""
+        raw_objective_id = item.get("objectiveID")
+        if raw_objective_id is not None:
+            objective_id = _validated_uuid(
+                raw_objective_id,
+                f"recentAttempts[{index}].objectiveID",
+            )
+            objective_ids = {
+                _uuid_key(objective["id"]): objective["id"]
+                for objective in skill["objectives"]
+            }
+            if _uuid_key(objective_id) not in objective_ids:
+                raise BadRequestError(
+                    f"recentAttempts[{index}].objectiveID does not belong to its skill."
+                )
+            objective_id = objective_ids[_uuid_key(objective_id)]
+        elif len(skill["objectives"]) == 1:
+            objective_id = skill["objectives"][0]["id"]
+        else:
+            raise BadRequestError(
+                f"recentAttempts[{index}].objectiveID is required for a multi-objective skill."
+            )
+
+        difficulty = _strict_int(
+            item.get("difficulty"),
+            f"recentAttempts[{index}].difficulty",
+            1,
+            5,
+        )
+        result = _validated_text(
+            item.get("result"),
+            f"recentAttempts[{index}].result",
+            16,
+        ).lower()
+        if result not in {"correct", "partial", "incorrect", "unclear"}:
+            raise BadRequestError(
+                f"recentAttempts[{index}].result is invalid."
+            )
+        occurred_at_text = _validated_text(
+            item.get("occurredAt"),
+            f"recentAttempts[{index}].occurredAt",
+            40,
+        )
+        occurred_at = _parsed_iso8601_datetime(
+            occurred_at_text,
+            f"recentAttempts[{index}].occurredAt",
+        )
+        if occurred_at < earliest or occurred_at > latest:
+            raise BadRequestError(
+                f"recentAttempts[{index}].occurredAt is outside the recent evidence window."
+            )
+
+        attempt = {
+            "skillID": skill["id"],
+            "difficulty": difficulty,
+            "result": result,
+            "occurredAt": occurred_at.isoformat().replace("+00:00", "Z"),
+        }
+        if objective_id:
+            attempt["objectiveID"] = objective_id
+        attempts.append(attempt)
+    return attempts
+
+
+def _validate_recent_mastery_evidence(
+    mastered_skill_id: str,
+    recent_attempts: list[dict[str, Any]],
+) -> None:
+    matching = sorted(
+        (
+            attempt
+            for attempt in recent_attempts
+            if _uuid_key(attempt["skillID"]) == _uuid_key(mastered_skill_id)
+        ),
+        key=lambda attempt: _parsed_iso8601_datetime(
+            attempt["occurredAt"],
+            "recentAttempts.occurredAt",
+        ),
+        reverse=True,
+    )[:MIN_RECENT_EVOLUTION_ATTEMPTS]
+    if len(matching) < MIN_RECENT_EVOLUTION_ATTEMPTS:
+        raise BadRequestError(
+            "Every mastered skill requires at least 4 recent attempt records."
+        )
+
+    result_scores = {"correct": 1.0, "partial": 0.5, "incorrect": 0.0, "unclear": 0.0}
+    weighted_score = sum(result_scores[attempt["result"]] for attempt in matching) / len(
+        matching
+    )
+    miss_count = sum(
+        1 for attempt in matching if attempt["result"] in {"incorrect", "unclear"}
+    )
+    if (
+        weighted_score < MIN_RECENT_EVOLUTION_SCORE
+        or miss_count > MAX_RECENT_EVOLUTION_MISSES
+        or not any(attempt["difficulty"] >= 4 for attempt in matching)
+    ):
+        raise BadRequestError(
+            "Recent mastery evidence must score at least 85%, contain at most one miss, "
+            "and include a difficulty-4-or-harder attempt."
+        )
+
+
+def _validate_objective_mastery_evidence(
+    mastered_skill_id: str,
+    current_skill_map: dict[str, Any],
+    recent_attempts: list[dict[str, Any]],
+) -> None:
+    skill = next(
+        skill
+        for skill in current_skill_map["skills"]
+        if _uuid_key(skill["id"]) == _uuid_key(mastered_skill_id)
+    )
+    result_scores = {"correct": 1.0, "partial": 0.5, "incorrect": 0.0, "unclear": 0.0}
+    attempts_by_objective: dict[str, list[dict[str, Any]]] = {}
+    for attempt in recent_attempts:
+        if _uuid_key(attempt["skillID"]) != _uuid_key(mastered_skill_id):
+            continue
+        objective_key = _uuid_key(attempt["objectiveID"])
+        attempts_by_objective.setdefault(objective_key, []).append(attempt)
+
+    for objective in skill["objectives"]:
+        matching = attempts_by_objective.get(_uuid_key(objective["id"]), [])
+        if not matching:
+            raise BadRequestError(
+                "Every objective in a mastered skill requires recent attempt evidence."
+            )
+        score = sum(result_scores[attempt["result"]] for attempt in matching) / len(
+            matching
+        )
+        if score < MIN_OBJECTIVE_EVOLUTION_SCORE:
+            raise BadRequestError(
+                "Every objective in a mastered skill requires at least 75% recent mastery."
+            )
+
+
+def _parsed_iso8601_datetime(value: str, field_name: str) -> datetime:
+    if not value:
+        raise BadRequestError(f"{field_name} must not be empty.")
+    normalized = f"{value[:-1]}+00:00" if value.endswith(("Z", "z")) else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError as error:
+        raise BadRequestError(f"{field_name} must be an ISO-8601 timestamp.") from error
+    if parsed.tzinfo is None:
+        raise BadRequestError(f"{field_name} must include a time zone.")
+    return parsed.astimezone(timezone.utc)
+
+
 def _source_context_character_limits(documents: list[dict[str, str]]) -> list[int]:
     capacities = [
         min(len(document["text"]), MAX_SOURCE_DOCUMENT_CHARS) for document in documents
@@ -648,6 +1112,12 @@ def _normalized_competencies(value: Any) -> list[dict[str, Any]]:
                 item.get("topic"), f"competencies[{index}].topic", 80
             ),
         }
+        raw_skill_id = item.get("skillID")
+        if raw_skill_id is not None:
+            competency["skillID"] = _validated_uuid(
+                raw_skill_id,
+                f"competencies[{index}].skillID",
+            )
         for key, minimum, maximum in [
             ("estimatedLevel", 0, 5),
             ("masteryPercent", 0, 100),
@@ -655,9 +1125,14 @@ def _normalized_competencies(value: Any) -> list[dict[str, Any]]:
             ("correct", 0, 1_000_000),
             ("partial", 0, 1_000_000),
             ("incorrect", 0, 1_000_000),
+            ("currentStreak", 0, 1_000_000),
         ]:
             raw_value = item.get(key)
             if isinstance(raw_value, (int, float)) and not isinstance(raw_value, bool):
+                if not math.isfinite(raw_value):
+                    raise BadRequestError(
+                        f"competencies[{index}].{key} must be finite."
+                    )
                 competency[key] = max(minimum, min(maximum, raw_value))
         competencies.append(competency)
     return competencies
@@ -796,9 +1271,64 @@ def _duplicate_prompt_key(prompt: str) -> str:
 
 
 def _choice_uniqueness_key(value: str) -> str:
-    normalized = _strip_answer_prefix(_clean_text(value).lower())
+    normalized = _fold_choice_text(_clean_text(value))
+    normalized = _strip_answer_prefix(normalized)
     normalized = _strip_choice_label(normalized)
-    return _canonical(normalized)
+
+    tokens = re.findall(r"[^\W_]+", normalized, flags=re.UNICODE)
+    semantic_tokens = []
+    for token in tokens:
+        semantic_token = _singularized_semantic_choice_token(token)
+        if semantic_token not in _SEMANTIC_CHOICE_STOP_WORDS:
+            semantic_tokens.append(semantic_token)
+
+    semantic_key = "".join(semantic_tokens)
+    return semantic_key or _canonical(normalized)
+
+
+_SEMANTIC_CHOICE_STOP_WORDS = frozenset(
+    {
+        "a",
+        "an",
+        "as",
+        "by",
+        "choice",
+        "for",
+        "it",
+        "of",
+        "option",
+        "that",
+        "the",
+        "this",
+        "those",
+        "to",
+        "which",
+        "with",
+    }
+)
+
+
+def _fold_choice_text(value: str) -> str:
+    """Mirror Foundation's case- and diacritic-insensitive choice folding."""
+    decomposed = unicodedata.normalize("NFD", value.casefold())
+    without_diacritics = "".join(
+        character
+        for character in decomposed
+        if unicodedata.category(character) != "Mn"
+    )
+    return unicodedata.normalize("NFC", without_diacritics).strip()
+
+
+def _singularized_semantic_choice_token(token: str) -> str:
+    # Keep this deliberately conservative and byte-for-byte aligned with the
+    # client sanitizer. Short plurals such as "cats" remain distinct.
+    if len(token) <= 4:
+        return token
+    if token.endswith("ies"):
+        return f"{token[:-3]}y"
+    if token.endswith("s") and not token.endswith("ss"):
+        return token[:-1]
+    return token
 
 
 def _strip_answer_prefix(value: str) -> str:
@@ -825,6 +1355,16 @@ def _strip_choice_label(value: str) -> str:
 
 def _clip(value: str, limit: int) -> str:
     return value[:limit].strip()
+
+
+def _strict_int(value: Any, field_name: str, minimum: int, maximum: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise BadRequestError(f"{field_name} must be an integer.")
+    if not minimum <= value <= maximum:
+        raise BadRequestError(
+            f"{field_name} must be between {minimum} and {maximum}."
+        )
+    return value
 
 
 def _clamped_int(value: Any, minimum: int, maximum: int) -> int:

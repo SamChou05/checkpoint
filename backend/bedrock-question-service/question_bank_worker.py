@@ -9,7 +9,13 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from question_bank_common import LOGGER, MAX_CLAIM_COUNT, QuestionBankError
+from question_bank_common import (
+    DEFAULT_MAX_FAILED_GENERATION_JOBS,
+    LOGGER,
+    MAX_CLAIM_COUNT,
+    ProviderQuotaLimitError,
+    _normalized_stem_identity,
+)
 from question_bank_store import (
     _bank_ttl_seconds,
     _configuration,
@@ -30,101 +36,88 @@ from question_bank_store import (
 )
 
 
-def _consume_worker_quota(
-    client: Any,
-    question_table: str,
-    job_key: dict[str, Any],
-    job: dict[str, Any],
-    owner_digest: str,
-) -> None:
-    rate_table = os.getenv("RATE_LIMIT_TABLE_NAME", "").strip()
-    if not rate_table:
-        if _required_rate_limiting():
-            raise RuntimeError("Rate-limit table is required.")
-        return
-    generation_pass = _number(job, "generationPass")
-    if _number(job, "quotaChargedPass", default=-1) == generation_pass:
-        return
-    day = datetime.now(timezone.utc).strftime("%Y%m%d")
-    expires_at = int(time.time()) + _integer_env("RATE_LIMIT_TTL_SECONDS", 172800)
-    limit = _integer_env("MAX_REQUESTS_PER_INSTALL_PER_DAY", 40)
-    transaction = [
-        {
-            "Update": {
-                "TableName": rate_table,
-                "Key": {"rateKey": _s(f"async-install#{owner_digest}#{day}")},
-                "UpdateExpression": "SET expiresAt = :ttl ADD #count :one",
-                "ConditionExpression": "attribute_not_exists(#count) OR #count < :limit",
-                "ExpressionAttributeNames": {"#count": "count"},
-                "ExpressionAttributeValues": {
-                    ":ttl": _n(expires_at),
-                    ":one": _n(1),
-                    ":limit": _n(limit),
-                },
-            }
-        },
-        {
-            "Update": {
-                "TableName": question_table,
-                "Key": job_key,
-                "UpdateExpression": "SET quotaChargedPass = :pass",
-                "ConditionExpression": "generationPass = :pass AND (attribute_not_exists(quotaChargedPass) OR quotaChargedPass <> :pass)",
-                "ExpressionAttributeValues": {":pass": _n(generation_pass)},
-            }
-        },
-    ]
-    try:
-        client.transact_write_items(TransactItems=transaction)
-    except Exception as error:
-        refreshed = _get_item(client, question_table, job_key, consistent=True)
-        if (
-            refreshed
-            and _number(refreshed, "quotaChargedPass", default=-1) == generation_pass
-        ):
-            return
-        if _is_conditional_failure(error):
-            _mark_rate_limited(client, question_table, job_key)
-            raise QuestionBankError(
-                429, "Daily asynchronous generation limit reached.", "rate_limited"
-            ) from error
-        raise
-
-
 def _reserve_provider_attempt(
     client: Any,
     table_name: str,
     job_key: dict[str, Any],
     lease_token: str,
+    owner_digest: str | None = None,
 ) -> bool:
-    """Atomically reserve one provider call across all duplicate deliveries."""
-    limit = _max_receive_count()
+    """Atomically reserve one imminent provider call and its async quota unit."""
+    provider_limit = _max_receive_count()
+    rate_table = os.getenv("RATE_LIMIT_TABLE_NAME", "").strip()
+    if not rate_table and _required_rate_limiting():
+        raise RuntimeError("Rate-limit table is required.")
+    if rate_table and not owner_digest:
+        raise RuntimeError("Owner digest is required for asynchronous rate limiting.")
+
+    provider_update = {
+        "TableName": table_name,
+        "Key": job_key,
+        "UpdateExpression": (
+            "SET providerAttemptCount = "
+            "if_not_exists(providerAttemptCount, :zero) + :one, updatedAt = :now"
+        ),
+        "ConditionExpression": (
+            "leaseToken = :token AND "
+            "(attribute_not_exists(providerAttemptCount) OR providerAttemptCount < :limit)"
+        ),
+        "ExpressionAttributeValues": {
+            ":zero": _n(0),
+            ":one": _n(1),
+            ":limit": _n(provider_limit),
+            ":token": _s(lease_token),
+            ":now": _n(int(time.time())),
+        },
+    }
+    rate_key: dict[str, Any] | None = None
+    daily_limit = 0
     try:
-        client.update_item(
-            TableName=table_name,
-            Key=job_key,
-            UpdateExpression=(
-                "SET providerAttemptCount = "
-                "if_not_exists(providerAttemptCount, :zero) + :one, updatedAt = :now"
-            ),
-            ConditionExpression=(
-                "leaseToken = :token AND "
-                "(attribute_not_exists(providerAttemptCount) OR providerAttemptCount < :limit)"
-            ),
-            ExpressionAttributeValues={
-                ":zero": _n(0),
-                ":one": _n(1),
-                ":limit": _n(limit),
-                ":token": _s(lease_token),
-                ":now": _n(int(time.time())),
-            },
-        )
+        if rate_table:
+            day = datetime.now(timezone.utc).strftime("%Y%m%d")
+            rate_key = {"rateKey": _s(f"async-install#{owner_digest}#{day}")}
+            daily_limit = _integer_env("MAX_REQUESTS_PER_INSTALL_PER_DAY", 40)
+            expires_at = int(time.time()) + _integer_env(
+                "RATE_LIMIT_TTL_SECONDS", 172800
+            )
+            client.transact_write_items(
+                TransactItems=[
+                    {"Update": provider_update},
+                    {
+                        "Update": {
+                            "TableName": rate_table,
+                            "Key": rate_key,
+                            "UpdateExpression": (
+                                "SET expiresAt = :ttl ADD #count :one"
+                            ),
+                            "ConditionExpression": (
+                                "attribute_not_exists(#count) OR #count < :limit"
+                            ),
+                            "ExpressionAttributeNames": {"#count": "count"},
+                            "ExpressionAttributeValues": {
+                                ":ttl": _n(expires_at),
+                                ":one": _n(1),
+                                ":limit": _n(daily_limit),
+                            },
+                        }
+                    },
+                ]
+            )
+        else:
+            client.update_item(**provider_update)
         return True
     except Exception as error:
-        if not _is_conditional_failure(error):
-            raise
         job = _get_item(client, table_name, job_key, consistent=True)
-        if job and _number(job, "providerAttemptCount") >= limit:
+        if not job or _string(job, "leaseToken") != lease_token:
+            raise
+        if _number(job, "providerAttemptCount") >= provider_limit:
             return False
+        if rate_table and rate_key is not None:
+            quota = _get_item(client, rate_table, rate_key, consistent=True)
+            if quota and _number(quota, "count") >= daily_limit:
+                raise ProviderQuotaLimitError(
+                    "Daily asynchronous provider-call quota reached."
+                ) from error
         raise
 
 
@@ -148,13 +141,12 @@ def _worker_skill_allocation(
         desired_allocation if isinstance(desired_allocation, dict) else {},
         desired_count,
     )
-    relevant_items = (
-        existing_items
-        if low_watermark == 0
-        else [
-            item for item in existing_items if _string(item, "state") in {"", "ready"}
-        ]
-    )
+    relevant_items = [
+        item
+        for item in existing_items
+        if _string(item, "state")
+        in ({"", "ready", "claimed"} if low_watermark == 0 else {"", "ready"})
+    ]
     counts = {skill_id: 0 for skill_id in skill_ids}
     for item in relevant_items:
         try:
@@ -170,6 +162,134 @@ def _worker_skill_allocation(
         for skill_id in skill_ids
     }
     return _allocate_deficit_chunk(deficits, min(target_count, sum(deficits.values())))
+
+
+def _worker_objective_allocation(
+    generation_request: dict[str, Any],
+    existing_items: list[dict[str, Any]],
+    *,
+    desired_count: int,
+    low_watermark: int,
+    requested_skill_allocation: dict[str, int],
+) -> list[dict[str, Any]]:
+    """Nest a worker chunk's skill slots into balanced objective quotas.
+
+    Finite banks count both ready and claimed history so later chunks expand
+    lifetime coverage. Replenishing banks count only currently ready inventory,
+    matching the skill-allocation semantics for a rolling stock of questions.
+    """
+    skills = generation_request.get("skillMap", {}).get("skills", [])
+    if not skills or not requested_skill_allocation:
+        return []
+
+    skill_ids = [skill.get("id", "") for skill in skills if skill.get("id")]
+    desired_allocation = generation_request.get("desiredSkillAllocation", {})
+    whole_bank_skill_targets = _apportion_skill_counts(
+        skill_ids,
+        desired_allocation if isinstance(desired_allocation, dict) else {},
+        desired_count,
+    )
+    relevant_states = (
+        {"", "ready", "claimed"} if low_watermark == 0 else {"", "ready"}
+    )
+
+    objective_owners: dict[str, tuple[str, str]] = {}
+    for skill in skills:
+        skill_id = skill.get("id", "")
+        if not skill_id:
+            continue
+        for objective in skill.get("objectives", []):
+            objective_id = objective.get("id", "")
+            objective_key = _uuid_identity_key(objective_id)
+            if objective_key:
+                objective_owners[objective_key] = (skill_id, objective_id)
+
+    existing_counts: dict[tuple[str, str], int] = {}
+    for item in existing_items:
+        if _string(item, "state") not in relevant_states:
+            continue
+        try:
+            question = _question_from_item(item)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if not isinstance(question, dict):
+            continue
+        objective_owner = objective_owners.get(
+            _uuid_identity_key(question.get("objectiveID"))
+        )
+        if not objective_owner:
+            continue
+        skill_id, objective_id = objective_owner
+        if _uuid_identity_key(question.get("skillID")) != _uuid_identity_key(skill_id):
+            continue
+        pair = (skill_id, objective_id)
+        existing_counts[pair] = existing_counts.get(pair, 0) + 1
+
+    requested_objectives: list[dict[str, Any]] = []
+    for skill in skills:
+        skill_id = skill.get("id", "")
+        batch_slots = requested_skill_allocation.get(skill_id, 0)
+        if isinstance(batch_slots, bool) or not isinstance(batch_slots, int):
+            continue
+        batch_slots = max(0, batch_slots)
+        objective_ids = [
+            objective.get("id", "")
+            for objective in skill.get("objectives", [])
+            if objective.get("id")
+        ]
+        if batch_slots == 0 or not objective_ids:
+            continue
+
+        whole_skill_target = max(0, whole_bank_skill_targets.get(skill_id, 0))
+        whole_objective_targets = _apportion_skill_counts(
+            objective_ids,
+            {},
+            whole_skill_target,
+        )
+        deficits = {
+            objective_id: max(
+                0,
+                whole_objective_targets.get(objective_id, 0)
+                - existing_counts.get((skill_id, objective_id), 0),
+            )
+            for objective_id in objective_ids
+        }
+        chunk_allocation = _allocate_deficit_chunk(deficits, batch_slots)
+
+        # Normalized banks make the target deficits large enough for every
+        # requested skill slot. Keep this fallback deterministic if legacy or
+        # manually repaired rows make their counters disagree.
+        remaining_slots = batch_slots - sum(chunk_allocation.values())
+        while remaining_slots > 0:
+            selected = min(
+                objective_ids,
+                key=lambda objective_id: (
+                    existing_counts.get((skill_id, objective_id), 0)
+                    + chunk_allocation.get(objective_id, 0),
+                    objective_ids.index(objective_id),
+                ),
+            )
+            chunk_allocation[selected] = chunk_allocation.get(selected, 0) + 1
+            remaining_slots -= 1
+
+        requested_objectives.extend(
+            {
+                "skillID": skill_id,
+                "objectiveID": objective_id,
+                "count": chunk_allocation[objective_id],
+            }
+            for objective_id in objective_ids
+            if chunk_allocation.get(objective_id, 0) > 0
+        )
+
+    return requested_objectives
+
+
+def _uuid_identity_key(value: Any) -> str:
+    try:
+        return str(uuid.UUID(str(value)))
+    except (ValueError, AttributeError, TypeError):
+        return ""
 
 
 def _apportion_skill_counts(
@@ -270,20 +390,62 @@ def _prepare_questions(
     existing_items: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     existing_ids = {_string(item, "remoteID") for item in existing_items}
+    existing_stem_identities: set[str] = set()
+    for item in existing_items:
+        try:
+            existing_question = _question_from_item(item)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if not isinstance(existing_question, dict):
+            continue
+        stem_identity = _normalized_stem_identity(existing_question.get("prompt"))
+        if stem_identity:
+            existing_stem_identities.add(stem_identity)
+
     prepared: list[dict[str, Any]] = []
     seen = set(existing_ids)
+    seen_stems = set(existing_stem_identities)
     for question in generated:
+        if not isinstance(question, dict):
+            continue
+        stem_identity = _normalized_stem_identity(question.get("prompt"))
+        if not stem_identity or stem_identity in seen_stems:
+            continue
         canonical = _json(question)
-        remote_id = str(
+        legacy_remote_id = str(
             uuid.uuid5(uuid.NAMESPACE_URL, f"checkpoint:{bank_id}:{canonical}")
         )
-        if remote_id in seen:
+        remote_id = str(
+            uuid.uuid5(
+                uuid.NAMESPACE_URL,
+                f"checkpoint:{bank_id}:stem:{stem_identity}",
+            )
+        )
+        if remote_id in seen or legacy_remote_id in seen:
             continue
         seen.add(remote_id)
+        seen_stems.add(stem_identity)
         prepared.append({**question, "remoteID": remote_id})
         if len(prepared) >= MAX_CLAIM_COUNT:
             break
     return prepared
+
+
+def _recent_question_items(
+    existing_items: list[dict[str, Any]],
+    limit: int,
+) -> list[dict[str, Any]]:
+    """Select deterministic creation-time feedback from UUID-keyed question rows."""
+    if limit <= 0:
+        return []
+    ordered = sorted(
+        existing_items,
+        key=lambda item: (
+            _number(item, "createdAt"),
+            _string(item, "sk"),
+        ),
+    )
+    return ordered[-limit:]
 
 
 def _commit_generated_questions(
@@ -540,14 +702,69 @@ def _mark_job_terminal_failure(
     message: dict[str, Any],
     receive_count: int,
 ) -> None:
-    """Terminally fail a poison job while preserving SQS redrive to the DLQ."""
+    """Fail one exhausted job and terminally block a persistently failing bank."""
     table_name, _ = _configuration()
     bank_pk = _required_internal_string(message.get("bankPK"), "bankPK")
     job_id = _required_internal_string(message.get("jobID"), "jobID")
+    context_revision = _required_internal_string(
+        message.get("contextRevision"), "contextRevision"
+    )
     job_key = {"pk": _s(bank_pk), "sk": _s(f"JOB#{job_id}")}
     bank_key = {"pk": _s(bank_pk), "sk": _s("META")}
     now = int(time.time())
-    retry_at = now + _failure_cooldown_seconds()
+    meta = _get_item(client, table_name, bank_key, consistent=True)
+    if (
+        not meta
+        or meta.get("tombstonedAt")
+        or _string(meta, "generationBlockedReason")
+        or _string(meta, "activeJobID") != job_id
+        or _string(meta, "contextRevision") != context_revision
+    ):
+        return
+
+    observed_failure_count = max(0, _number(meta, "failedGenerationJobCount"))
+    failed_generation_job_count = observed_failure_count + 1
+    reached_bank_failure_limit = (
+        failed_generation_job_count >= _max_failed_generation_jobs()
+    )
+    bank_values = {
+        ":failedCount": _n(failed_generation_job_count),
+        ":observedFailedCount": _n(observed_failure_count),
+        ":now": _n(now),
+        ":job": _s(job_id),
+        ":revision": _s(context_revision),
+    }
+    bank_condition = (
+        "activeJobID = :job AND contextRevision = :revision "
+        "AND attribute_not_exists(tombstonedAt) "
+        "AND attribute_not_exists(generationBlockedReason) "
+        "AND (attribute_not_exists(failedGenerationJobCount) OR "
+        "failedGenerationJobCount = :observedFailedCount)"
+    )
+    if reached_bank_failure_limit:
+        bank_update_expression = (
+            "SET #state = :blocked, generationBlockedReason = :reason, "
+            "generationBlockedAt = :now, failedGenerationJobCount = :failedCount, "
+            "updatedAt = :now REMOVE activeJobID, refillAfter"
+        )
+        bank_values.update(
+            {
+                ":blocked": _s("blocked"),
+                ":reason": _s("provider_failure_limit"),
+            }
+        )
+    else:
+        bank_update_expression = (
+            "SET #state = :failed, refillAfter = :retry, "
+            "failedGenerationJobCount = :failedCount, updatedAt = :now "
+            "REMOVE activeJobID"
+        )
+        bank_values.update(
+            {
+                ":failed": _s("failed"),
+                ":retry": _n(now + _failure_cooldown_seconds()),
+            }
+        )
     try:
         client.transact_write_items(
             TransactItems=[
@@ -577,18 +794,10 @@ def _mark_job_terminal_failure(
                     "Update": {
                         "TableName": table_name,
                         "Key": bank_key,
-                        "UpdateExpression": (
-                            "SET #state = :failed, refillAfter = :retry, updatedAt = :now "
-                            "REMOVE activeJobID"
-                        ),
-                        "ConditionExpression": "activeJobID = :job",
+                        "UpdateExpression": bank_update_expression,
+                        "ConditionExpression": bank_condition,
                         "ExpressionAttributeNames": {"#state": "state"},
-                        "ExpressionAttributeValues": {
-                            ":failed": _s("failed"),
-                            ":retry": _n(retry_at),
-                            ":now": _n(now),
-                            ":job": _s(job_id),
-                        },
+                        "ExpressionAttributeValues": bank_values,
                     }
                 },
             ]
@@ -596,6 +805,13 @@ def _mark_job_terminal_failure(
     except Exception as error:
         if not _is_conditional_failure(error):
             raise
+
+
+def _max_failed_generation_jobs() -> int:
+    return _integer_env(
+        "QUESTION_BANK_MAX_FAILED_GENERATION_JOBS",
+        DEFAULT_MAX_FAILED_GENERATION_JOBS,
+    )
 
 
 def _finish_stale_job(
@@ -621,7 +837,9 @@ def _finish_stale_job(
         LOGGER.exception("Failed to mark stale question-bank job")
 
 
-def _mark_rate_limited(client: Any, table_name: str, job_key: dict[str, Any]) -> None:
+def _mark_rate_limited(
+    client: Any, table_name: str, job_key: dict[str, Any]
+) -> bool:
     bank_key = {"pk": job_key["pk"], "sk": _s("META")}
     now = datetime.now(timezone.utc)
     retry_at = int(
@@ -664,5 +882,7 @@ def _mark_rate_limited(client: Any, table_name: str, job_key: dict[str, Any]) ->
                 },
             ]
         )
+        return True
     except Exception:
         LOGGER.exception("Failed to mark asynchronous generation rate limit")
+        return False

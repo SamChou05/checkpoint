@@ -153,6 +153,21 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.deploy_script,
         )
 
+    def test_worker_has_a_durable_per_bank_failure_ceiling(self):
+        parameter = self.template.split(
+            "  QuestionBankMaxFailedGenerationJobs:", maxsplit=1
+        )[1].split("\n  LogRetentionDays:", maxsplit=1)[0]
+        self.assertIn("Default: 3", parameter)
+        self.assertIn("MinValue: 1", parameter)
+        self.assertIn("MaxValue: 10", parameter)
+        self.assertEqual(
+            self.template.count(
+                "QUESTION_BANK_MAX_FAILED_GENERATION_JOBS: "
+                "!Ref QuestionBankMaxFailedGenerationJobs"
+            ),
+            1,
+        )
+
     def test_list_streams_uses_its_required_wildcard_resource(self):
         self.assertIn(
             'dynamodb:ListStreams\n              Resource: "*"',

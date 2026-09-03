@@ -44,6 +44,7 @@ deployment_environment=(
   "RATE_LIMIT_TTL_SECONDS=172800"
   "QUESTION_BANK_TTL_SECONDS=2592000"
   "QUESTION_BANK_MAX_RECEIVE_COUNT=5"
+  "QUESTION_BANK_MAX_FAILED_GENERATION_JOBS=3"
   "DEPLOYMENT_ENVIRONMENT=testflight"
   "SERVICE_MODE=enabled"
   "SERVICE_RETRY_AFTER_SECONDS=300"
@@ -93,8 +94,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 47 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 47"
+[[ "${#sam_arguments[@]}" -eq 48 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 48"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -115,6 +116,8 @@ done
   fail "API model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankWorkerModelArn=$worker_model "* ]] || \
   fail "worker model override was not forwarded"
+[[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
+  fail "bank failed-job ceiling override was not forwarded"
 for argument in "${sam_arguments[@]:11}"; do
   [[ "$argument" == *=* && "$argument" != *'$'* ]] || \
     fail "unexpanded or malformed parameter override: $argument"

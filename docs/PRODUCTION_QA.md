@@ -55,7 +55,7 @@ Findings:
 ## AI Backend
 
 - [ ] App build has the intended API Gateway `/v1/questions` endpoint; production Automatic has no Apple/local or canned fallback.
-- [ ] The same API stage exposes authenticated `POST /v1/skill-maps/infer`, `POST /v1/question-banks/ensure`, and `POST /v1/question-banks/claim`; no unintended public routes or Lambda Function URL exist.
+- [ ] The same API stage exposes authenticated `POST /v1/skill-maps/infer`, `POST /v1/skill-maps/evolve`, `POST /v1/question-banks/ensure`, and `POST /v1/question-banks/claim`; no unintended public routes or Lambda Function URL exist.
 - [ ] Backend endpoint returns the documented JSON response, not placeholder Lambda text.
 - [ ] Internal/TestFlight backend enforces its rotated bearer on synchronous generation, skill-map inference, ensure, and claim; public production enforces App Attest assertions and replay protection instead of trusting the embedded bearer or install UUID.
 - [ ] `ALLOW_UNAUTHENTICATED_BACKEND` is not enabled on any exposed API Gateway stage.

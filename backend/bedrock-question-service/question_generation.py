@@ -4,11 +4,12 @@ import copy
 import json
 import math
 import os
-from typing import Any
+from typing import Any, Callable
 
 from question_quality import (
     _extract_json_object,
     _question_coverage_payload,
+    _remaining_requested_objective_allocation,
     _remaining_requested_skill_allocation,
     _sanitize_questions,
 )
@@ -21,6 +22,7 @@ from request_contract import (
     _nonnegative_int,
 )
 from service_errors import (
+    DurableProviderCallBudgetExceededError,
     ProviderCallBudgetExceededError,
     ProviderError,
     SafetyInterventionError,
@@ -49,9 +51,15 @@ DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS = 26_000
 
 
 class ProviderCallBudget:
-    def __init__(self, maximum_calls: int, context: Any | None = None):
+    def __init__(
+        self,
+        maximum_calls: int,
+        context: Any | None = None,
+        reserve_call: Callable[[], None] | None = None,
+    ):
         self.maximum_calls = maximum_calls
         self.context = context
+        self.reserve_call = reserve_call
         self.calls = 0
 
     def consume(self) -> None:
@@ -66,10 +74,15 @@ class ProviderCallBudget:
                     "Insufficient request time for another provider call."
                 )
 
+        if self.reserve_call is not None:
+            self.reserve_call()
         self.calls += 1
 
 
-def _new_provider_call_budget(context: Any | None) -> ProviderCallBudget:
+def _new_provider_call_budget(
+    context: Any | None,
+    reserve_call: Callable[[], None] | None = None,
+) -> ProviderCallBudget:
     return ProviderCallBudget(
         _int_env(
             "MAX_PROVIDER_CALLS_PER_REQUEST",
@@ -77,6 +90,7 @@ def _new_provider_call_budget(context: Any | None) -> ProviderCallBudget:
             maximum=20,
         ),
         context=context,
+        reserve_call=reserve_call,
     )
 
 
@@ -163,6 +177,11 @@ def _generate_sanitized_questions(
                 call_budget=call_budget,
                 request_metrics=request_metrics,
             )
+        except DurableProviderCallBudgetExceededError:
+            # A refused durable reservation means the asynchronous job or its
+            # install quota is exhausted. Let the worker persist that terminal
+            # state even when an earlier top-off pass produced useful output.
+            raise
         except ProviderCallBudgetExceededError:
             if questions:
                 break
@@ -187,6 +206,10 @@ def _generate_sanitized_questions(
             current_request["requestedSkillAllocation"] = (
                 _remaining_requested_skill_allocation(request, questions)
             )
+            if "requestedObjectiveAllocation" in request:
+                current_request["requestedObjectiveAllocation"] = (
+                    _remaining_requested_objective_allocation(request, questions)
+                )
 
     return questions[:target_count]
 
@@ -201,11 +224,6 @@ def _generate_with_bedrock(
     request_metrics: dict[str, Any] | None = None,
 ) -> str:
     guardrail_config = _guardrail_config()
-    if call_budget is not None:
-        call_budget.consume()
-    if request_metrics is not None:
-        request_metrics["ProviderCalls"] += 1
-
     client = bedrock_client or _bedrock_client()
     prompt = user_prompt or _user_prompt(normalized_request)
     resolved_system_prompt = system_prompt or _system_prompt()
@@ -253,6 +271,12 @@ def _generate_with_bedrock(
     if guardrail_config is not None:
         request["guardrailConfig"] = guardrail_config
 
+    # Reserve immediately before Converse so the local metric and the durable
+    # asynchronous ledger count provider invocations, not whole generation passes.
+    if call_budget is not None:
+        call_budget.consume()
+    if request_metrics is not None:
+        request_metrics["ProviderCalls"] += 1
     response = client.converse(**request)
     if request_metrics is not None:
         usage = response.get("usage", {})
@@ -478,6 +502,7 @@ Coverage:
 - Generate exactly the requested number of usable questions. Do not stop early.
 - Cover supplied or inferred competencies evenly, prioritizing lower-mastery areas when competency history exists.
 - Honor the requested per-skill batch allocation exactly when one is supplied.
+- Within each requested skill, honor the requested per-objective batch allocation exactly when one is supplied.
 - Before drafting, silently plan a distinct tested objective for every item. Two items are duplicates when recalling the same fact, rule, or mechanism answers both, even if their wording or scenarios differ.
 - When multiple items share a topic, make them test different facts, operations, reasoning paths, or misconceptions rather than paraphrases of one objective.
 - Treat existing and reported questions as an avoid list. Vary the tested objective, source material, reasoning path, correct-answer mechanism, and misconception—not just the wording.
@@ -518,7 +543,11 @@ Prompt experiment variant: compact
 
 
 def _user_prompt(request: dict[str, Any]) -> str:
-    compact_request = json.dumps(request, separators=(",", ":"), ensure_ascii=False)
+    compact_request = json.dumps(
+        _provider_visible_request(request),
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
     return f"""
 <generation_request_json>
 {compact_request}
@@ -534,6 +563,7 @@ Content topics: {", ".join(request["goal"]["contentTopics"])}
 Additional aligned guidance: {request["goal"]["questionDirective"] or "None"}
 Skill map mode: {_question_skill_map_mode(request)}
 Required per-skill allocation for this batch: {_skill_allocation_text(request)}
+Required per-objective allocation for this batch: {_objective_allocation_text(request)}
 Existing coverage by topic: {_coverage_topic_summary(request)}
 Avoid repeating these tested ideas: {_coverage_notes_text(request)}
 Source grounding mode: {_source_grounding_text(request)}
@@ -569,6 +599,27 @@ def _skill_allocation_text(request: dict[str, Any]) -> str:
     return "; ".join(
         f"{skill_names.get(skill_id, skill_id)} ({skill_id}): {count}"
         for skill_id, count in allocation.items()
+    )
+
+
+def _objective_allocation_text(request: dict[str, Any]) -> str:
+    allocation = request.get("requestedObjectiveAllocation", [])
+    if not allocation:
+        return "No structured allocation supplied"
+    skills = request.get("skillMap", {}).get("skills", [])
+    skill_names = {skill["id"]: skill["name"] for skill in skills}
+    objective_names = {
+        (skill["id"], objective["id"]): objective["name"]
+        for skill in skills
+        for objective in skill.get("objectives", [])
+    }
+    return "; ".join(
+        (
+            f"{skill_names.get(entry['skillID'], entry['skillID'])} / "
+            f"{objective_names.get((entry['skillID'], entry['objectiveID']), entry['objectiveID'])} "
+            f"({entry['skillID']} / {entry['objectiveID']}): {entry['count']}"
+        )
+        for entry in allocation
     )
 
 
@@ -650,7 +701,11 @@ def _coverage_notes_text(request: dict[str, Any]) -> str:
 
 
 def _json_retry_prompt(request: dict[str, Any], malformed_text: str) -> str:
-    compact_request = json.dumps(request, separators=(",", ":"), ensure_ascii=False)
+    compact_request = json.dumps(
+        _provider_visible_request(request),
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
     excerpt = _clip(malformed_text, 1200)
     return f"""
 Your previous response could not be parsed as the required JSON.
@@ -672,6 +727,16 @@ Return only one compact JSON object with this exact shape:
 
 Skill-map rules: {_question_skill_map_mode(request)}.
 Required per-skill allocation: {_skill_allocation_text(request)}.
+Required per-objective allocation: {_objective_allocation_text(request)}.
 
 No prose, headings, Markdown, comments, or numbering outside the JSON object.
 """.strip()
+
+
+def _provider_visible_request(request: dict[str, Any]) -> dict[str, Any]:
+    """Remove server-side-only controls before serializing a provider prompt."""
+    return {
+        key: value
+        for key, value in request.items()
+        if key != "blockedStemFingerprints"
+    }
