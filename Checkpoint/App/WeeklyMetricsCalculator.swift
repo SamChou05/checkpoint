@@ -49,16 +49,13 @@ struct WeeklyImpactDetails: Equatable, Sendable {
 struct WeeklyMetricsCalculator {
     private let attempts: [CheckpointAttempt]
     private let unlockEvents: [UnlockEvent]
-    private let competencies: [TopicCompetency]
 
     init(
         attempts: [CheckpointAttempt],
-        unlockEvents: [UnlockEvent],
-        competencies: [TopicCompetency]
+        unlockEvents: [UnlockEvent]
     ) {
         self.attempts = attempts
         self.unlockEvents = unlockEvents
-        self.competencies = competencies
     }
 
     private var attemptsThisWeek: [CheckpointAttempt] {
@@ -70,7 +67,8 @@ struct WeeklyMetricsCalculator {
         id: String,
         title: String,
         goalID: Goal.ID?,
-        isCurrentGoal: Bool
+        isCurrentGoal: Bool,
+        skillCompetencies: [TopicCompetency]
     ) -> WeeklyMetricsSummary {
         let weeklyAttempts = attemptsThisWeek.filter { attempt in
             guard let goalID else { return true }
@@ -78,7 +76,6 @@ struct WeeklyMetricsCalculator {
         }
         let correctAnswers = weeklyAttempts.filter { $0.result == .correct }.count
         let missedAnswers = weeklyAttempts.filter { $0.result != .correct }.count
-        let competencies = visibleCompetencies(for: goalID)
         let scopedUnlockEvents = unlockEvents.filter { event in
             guard let goalID else { return true }
             return event.goalID == goalID
@@ -87,7 +84,7 @@ struct WeeklyMetricsCalculator {
             guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return false }
             return week.contains(event.createdAt)
         }
-        let skillHighlights = skillHighlights(for: competencies)
+        let skillHighlights = skillHighlights(for: skillCompetencies)
 
         return WeeklyMetricsSummary(
             id: id,
@@ -238,13 +235,4 @@ struct WeeklyMetricsCalculator {
         return (strongest.topic, review.topic)
     }
 
-    private func visibleCompetencies(for goalID: Goal.ID?) -> [TopicCompetency] {
-        guard let goalID else {
-            return SkillMapReconciler.mergedCompetenciesForDisplay(competencies)
-        }
-
-        return SkillMapReconciler.mergedCompetenciesForDisplay(
-            competencies.filter { $0.goalID == goalID || $0.goalID == nil }
-        )
-    }
 }

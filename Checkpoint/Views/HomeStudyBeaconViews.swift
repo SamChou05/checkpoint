@@ -1,15 +1,9 @@
 import SwiftUI
 
-struct WeeklyImpactInsight {
-    var text: String
-    var systemImage: String
-    var tint: Color
-}
-
 struct LightStudyBeaconSection: View {
     var metrics: WeeklyMetricsSummary
     var competencies: [TopicCompetency]
-    var insight: WeeklyImpactInsight?
+    var insight: WeeklySignalInsight?
     var action: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -58,25 +52,39 @@ struct LightStudyBeaconSection: View {
         .padding(.horizontal, 4)
     }
 
+    @ViewBuilder
     private var sectionHeader: some View {
-        HStack {
-            Text("WEEKLY SIGNAL")
-                .font(.caption2.weight(.bold))
-                .tracking(0.95)
-                .foregroundStyle(CheckpointTheme.muted)
-                .accessibilityAddTraits(.isHeader)
-
-            Spacer()
-
-            HStack(spacing: 5) {
-                Text("View impact")
-                Image(systemName: "arrow.up.right")
-                    .font(.system(size: 9, weight: .bold))
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 5) {
+                sectionHeaderLabel
+                viewImpactLabel
             }
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.teal)
-            .accessibilityHidden(true)
+        } else {
+            HStack {
+                sectionHeaderLabel
+                Spacer()
+                viewImpactLabel
+            }
         }
+    }
+
+    private var sectionHeaderLabel: some View {
+        Text("WEEKLY SIGNAL")
+            .font(.caption2.weight(.bold))
+            .tracking(0.95)
+            .foregroundStyle(CheckpointTheme.muted)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    private var viewImpactLabel: some View {
+        HStack(spacing: 5) {
+            Text("View impact")
+            Image(systemName: "arrow.up.right")
+                .font(.system(size: 9, weight: .bold))
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(CheckpointTheme.teal)
+        .accessibilityHidden(true)
     }
 
     @ViewBuilder
@@ -167,30 +175,81 @@ struct LightStudyBeaconSection: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func insightRow(_ insight: WeeklyImpactInsight) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: insight.systemImage)
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(insight.tint)
-                .frame(width: 30, height: 30)
-                .background(insight.tint.opacity(0.14), in: RoundedRectangle(cornerRadius: 9))
-                .accessibilityHidden(true)
+    private func insightRow(_ insight: WeeklySignalInsight) -> some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 10) {
+                    insightIcon(insight)
+                    insightText(insight)
+                }
+            } else {
+                HStack(spacing: 10) {
+                    insightIcon(insight)
+                    insightText(insight)
 
-            Text(insight.text)
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(signalText)
-                .multilineTextAlignment(.leading)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 4)
 
-            Spacer(minLength: 4)
-
-            Image(systemName: "chevron.right")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(signalSecondaryText)
-                .accessibilityHidden(true)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(signalSecondaryText)
+                        .accessibilityHidden(true)
+                }
+            }
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(insight.accessibilityLabel)
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: insight
+        )
+    }
+
+    private func insightIcon(_ insight: WeeklySignalInsight) -> some View {
+        Image(systemName: insightSystemImage(for: insight))
+            .font(.system(size: 12, weight: .bold))
+            .foregroundStyle(insightTint(for: insight))
+            .frame(width: 30, height: 30)
+            .background(
+                insightTint(for: insight).opacity(0.14),
+                in: RoundedRectangle(cornerRadius: 9)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private func insightText(_ insight: WeeklySignalInsight) -> some View {
+        Text(insight.text)
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(signalText)
+            .multilineTextAlignment(.leading)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+            .fixedSize(horizontal: false, vertical: true)
+            .contentTransition(.opacity)
+    }
+
+    private func insightSystemImage(for insight: WeeklySignalInsight) -> String {
+        switch insight.role {
+        case .lowestCurrentEstimate:
+            "chart.bar.fill"
+        case .highestCurrentEstimate:
+            "waveform.path.ecg"
+        case .checkpointsCleared:
+            "shield.checkered"
+        case .answersLogged:
+            "point.3.connected.trianglepath.dotted"
+        case .checkpointStreak:
+            "bolt.fill"
+        }
+    }
+
+    private func insightTint(for insight: WeeklySignalInsight) -> Color {
+        switch insight.role {
+        case .lowestCurrentEstimate:
+            CheckpointTheme.amber
+        case .highestCurrentEstimate:
+            CheckpointTheme.blue
+        case .checkpointsCleared, .answersLogged, .checkpointStreak:
+            CheckpointTheme.teal
+        }
     }
 
     private var emptySummary: some View {
@@ -224,14 +283,17 @@ struct LightStudyBeaconSection: View {
 
     private var weeklySignalAccessibilityLabel: String {
         guard metrics.hasWeeklyReviewActivity else {
-            return "Weekly signal. No checkpoint activity yet."
+            return "Weekly signal for \(metrics.title). No checkpoint activity yet."
         }
 
         let questionNoun = metrics.questionsAnswered == 1 ? "question" : "questions"
         let breakNoun = metrics.checkpointsCleared == 1 ? "break" : "breaks"
-        let summary = "Weekly signal. \(metrics.questionsAnswered) \(questionNoun), \(metrics.accuracyText) accuracy, \(metrics.checkpointsCleared) \(breakNoun) earned."
+        let questionSummary = metrics.questionsAnswered > 0
+            ? "\(metrics.questionsAnswered) \(questionNoun), \(metrics.accuracyText) accuracy"
+            : "No questions answered this week"
+        let summary = "Weekly signal for \(metrics.title). \(questionSummary), \(metrics.checkpointsCleared) \(breakNoun) earned."
         guard let insight else { return summary }
-        return "\(summary) \(insight.text)"
+        return "\(summary) \(insight.accessibilityLabel)."
     }
 
     private var signalText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }

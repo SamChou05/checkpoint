@@ -444,7 +444,7 @@ struct HomeView: View {
         return LightStudyBeaconSection(
             metrics: metrics,
             competencies: store.activeProgressCompetencies,
-            insight: weeklyImpactInsight(for: metrics)
+            insight: metrics.weeklySignalInsight
         ) {
             isWeeklyReviewPresented = true
         }
@@ -533,53 +533,6 @@ struct HomeView: View {
             }
             .accessibilityElement(children: .combine)
         }
-    }
-
-    private func weeklyImpactInsight(for metrics: WeeklyMetricsSummary) -> WeeklyImpactInsight? {
-        guard metrics.hasWeeklyReviewActivity else { return nil }
-
-        if metrics.missedAnswers > 0, let reviewSkill = metrics.reviewSkill {
-            return WeeklyImpactInsight(
-                text: "Lowest current estimate: \(reviewSkill).",
-                systemImage: "chart.bar.fill",
-                tint: CheckpointTheme.amber
-            )
-        }
-
-        if let strongestSkill = metrics.strongestSkill {
-            return WeeklyImpactInsight(
-                text: "Strengthening: \(strongestSkill).",
-                systemImage: "sparkles",
-                tint: CheckpointTheme.blue
-            )
-        }
-
-        if metrics.checkpointsCleared > 0 {
-            let noun = metrics.checkpointsCleared == 1 ? "checkpoint" : "checkpoints"
-            return WeeklyImpactInsight(
-                text: "\(metrics.checkpointsCleared) \(noun) cleared this week.",
-                systemImage: "shield.checkered",
-                tint: CheckpointTheme.blue
-            )
-        }
-
-        if metrics.questionsAnswered > 0 {
-            return WeeklyImpactInsight(
-                text: "Your answers are starting to shape the skill map.",
-                systemImage: "point.3.connected.trianglepath.dotted",
-                tint: CheckpointTheme.teal
-            )
-        }
-
-        if metrics.checkpointStreakDays > 0 {
-            return WeeklyImpactInsight(
-                text: "Your \(metrics.checkpointStreakText) checkpoint streak is still going.",
-                systemImage: "flame.fill",
-                tint: CheckpointTheme.coral
-            )
-        }
-
-        return nil
     }
 
     private var screenTimePanel: some View {

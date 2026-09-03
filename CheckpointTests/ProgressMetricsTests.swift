@@ -151,8 +151,7 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         ]
         let details = WeeklyMetricsCalculator(
             attempts: attempts,
-            unlockEvents: unlockEvents,
-            competencies: []
+            unlockEvents: unlockEvents
         ).impactDetails(goalID: goal.id)
 
         XCTAssertEqual(details.practiceDays.count, 7)
@@ -188,8 +187,7 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
                 makeAttempt(goal: goal, result: .correct, createdAt: comparableAttempt),
                 makeAttempt(goal: goal, result: .correct, createdAt: laterPriorWeekAttempt)
             ],
-            unlockEvents: [],
-            competencies: []
+            unlockEvents: []
         ).impactDetails(goalID: goal.id, asOf: now, calendar: calendar)
 
         XCTAssertEqual(details.previousWeekQuestions, 1)
@@ -211,8 +209,7 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
                 makeAttempt(goal: goal, questionID: questionID, result: .correct, createdAt: recovery),
                 makeAttempt(goal: goal, questionID: questionID, result: .partial, createdAt: laterMiss)
             ],
-            unlockEvents: [],
-            competencies: []
+            unlockEvents: []
         ).impactDetails(goalID: goal.id)
 
         XCTAssertEqual(details.recoveredQuestions, 0)
@@ -244,17 +241,19 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
 
         let singleSkill = WeeklyMetricsCalculator(
             attempts: [],
-            unlockEvents: [],
-            competencies: [first]
+            unlockEvents: []
         ).summary(
             id: goal.id.uuidString,
             title: goal.title,
             goalID: goal.id,
-            isCurrentGoal: true
+            isCurrentGoal: true,
+            skillCompetencies: [first]
         )
 
         XCTAssertNil(singleSkill.strongestSkill)
         XCTAssertNil(singleSkill.reviewSkill)
+        XCTAssertTrue(singleSkill.skillSnapshotSignals.isEmpty)
+        XCTAssertNil(singleSkill.weeklySignalInsight)
 
         var tied = TopicCompetency.initial(topic: "Research", goalID: goal.id)
         tied.attempts = first.attempts
@@ -263,17 +262,232 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
 
         let tiedSkills = WeeklyMetricsCalculator(
             attempts: [],
-            unlockEvents: [],
-            competencies: [first, tied]
+            unlockEvents: []
         ).summary(
             id: goal.id.uuidString,
             title: goal.title,
             goalID: goal.id,
-            isCurrentGoal: true
+            isCurrentGoal: true,
+            skillCompetencies: [first, tied]
         )
 
         XCTAssertNil(tiedSkills.strongestSkill)
         XCTAssertNil(tiedSkills.reviewSkill)
+        XCTAssertTrue(tiedSkills.skillSnapshotSignals.isEmpty)
+    }
+
+    @MainActor
+    func testWeeklySkillSnapshotDescribesCurrentRangeWithoutInventingARecommendation() {
+        let goal = makeGoal()
+        var lowest = TopicCompetency.initial(topic: "Positioning", goalID: goal.id)
+        lowest.attempts = 4
+        lowest.correct = 1
+        lowest.incorrect = 3
+
+        var highest = TopicCompetency.initial(topic: "Research synthesis", goalID: goal.id)
+        highest.attempts = 4
+        highest.correct = 4
+
+        let missedWeek = WeeklyMetricsCalculator(
+            attempts: [makeAttempt(goal: goal, result: .incorrect, createdAt: Date())],
+            unlockEvents: []
+        ).summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: [highest, lowest]
+        )
+
+        XCTAssertEqual(
+            missedWeek.skillSnapshotSignals,
+            [
+                .lowestCurrentEstimate("Positioning"),
+                .highestCurrentEstimate("Research synthesis")
+            ]
+        )
+        XCTAssertEqual(
+            missedWeek.weeklySignalInsight,
+            .lowestCurrentEstimate("Positioning")
+        )
+        XCTAssertEqual(
+            missedWeek.weeklySignalInsight?.text,
+            "Lowest current estimate: Positioning."
+        )
+        XCTAssertFalse(missedWeek.weeklySignalInsight?.text.localizedCaseInsensitiveContains("review next") == true)
+
+        let correctWeek = WeeklyMetricsCalculator(
+            attempts: [makeAttempt(goal: goal, result: .correct, createdAt: Date())],
+            unlockEvents: []
+        ).summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: [highest, lowest]
+        )
+
+        XCTAssertEqual(
+            correctWeek.weeklySignalInsight,
+            .highestCurrentEstimate("Research synthesis")
+        )
+        XCTAssertEqual(
+            correctWeek.weeklySignalInsight?.accessibilityLabel,
+            "Highest current mastery estimate, Research synthesis"
+        )
+    }
+
+    @MainActor
+    func testWeeklySkillSnapshotRemainsScopedToTheSelectedGoal() {
+        let store = CheckpointStore(defaults: defaults)
+        let goal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        var currentLow = TopicCompetency.initial(topic: "Positioning", goalID: goal.id)
+        currentLow.attempts = 4
+        currentLow.correct = 1
+        currentLow.incorrect = 3
+        var currentHigh = TopicCompetency.initial(topic: "Research", goalID: goal.id)
+        currentHigh.attempts = 4
+        currentHigh.correct = 4
+        var otherLow = TopicCompetency.initial(topic: "Derivatives", goalID: otherGoal.id)
+        otherLow.attempts = 4
+        otherLow.correct = 1
+        otherLow.incorrect = 3
+        var otherHigh = TopicCompetency.initial(topic: "Integrals", goalID: otherGoal.id)
+        otherHigh.attempts = 4
+        otherHigh.correct = 4
+
+        store.goal = goal
+        store.goalProfiles = [goal, otherGoal]
+        store.competencies = [otherHigh, currentHigh, otherLow, currentLow]
+
+        let metrics = store.weeklyGoalMetrics.first { $0.id == goal.id.uuidString }
+        let otherMetrics = store.weeklyGoalMetrics.first { $0.id == otherGoal.id.uuidString }
+
+        XCTAssertEqual(
+            metrics?.skillSnapshotSignals,
+            [
+                .lowestCurrentEstimate("Positioning"),
+                .highestCurrentEstimate("Research")
+            ]
+        )
+        XCTAssertEqual(
+            otherMetrics?.skillSnapshotSignals,
+            [
+                .lowestCurrentEstimate("Derivatives"),
+                .highestCurrentEstimate("Integrals")
+            ]
+        )
+    }
+
+    @MainActor
+    func testWeeklySkillSnapshotExcludesArchivedAndOffMapSkills() throws {
+        let store = CheckpointStore(defaults: defaults)
+        let positioning = SkillMapTopic(
+            name: "Positioning",
+            aliases: ["Market framing"]
+        )
+        let synthesis = SkillMapTopic(name: "Research synthesis")
+        let archived = SkillMapTopic(name: "Legacy segmentation")
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [positioning, synthesis],
+            archivedTopics: [
+                ArchivedSkillMapTopic(
+                    topic: archived,
+                    reason: .mastered,
+                    archivedAt: Date(),
+                    successorSkillIDs: [positioning.id],
+                    mastery: nil
+                )
+            ],
+            status: .reviewed
+        )
+
+        var aliasedCurrent = TopicCompetency.initial(
+            topic: "Market framing",
+            goalID: goal.id
+        )
+        aliasedCurrent.attempts = 4
+        aliasedCurrent.correct = 1
+        aliasedCurrent.incorrect = 3
+
+        var strongestCurrent = TopicCompetency.initial(
+            topic: synthesis.name,
+            goalID: goal.id,
+            skillID: synthesis.id
+        )
+        strongestCurrent.attempts = 4
+        strongestCurrent.correct = 3
+        strongestCurrent.incorrect = 1
+
+        var archivedExtreme = TopicCompetency.initial(
+            topic: archived.name,
+            goalID: goal.id,
+            skillID: archived.id
+        )
+        archivedExtreme.attempts = 20
+        archivedExtreme.correct = 20
+
+        var offMapExtreme = TopicCompetency.initial(
+            topic: "Market framing",
+            goalID: goal.id,
+            skillID: UUID()
+        )
+        offMapExtreme.attempts = 20
+        offMapExtreme.incorrect = 20
+
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.competencies = [
+            archivedExtreme,
+            offMapExtreme,
+            strongestCurrent,
+            aliasedCurrent
+        ]
+
+        let goalMetrics = try XCTUnwrap(store.weeklyActiveGoalMetrics)
+        XCTAssertEqual(
+            goalMetrics.skillSnapshotSignals,
+            [
+                .lowestCurrentEstimate("Positioning"),
+                .highestCurrentEstimate("Research synthesis")
+            ]
+        )
+        XCTAssertEqual(store.weeklyTotalMetrics.skillSnapshotSignals, goalMetrics.skillSnapshotSignals)
+    }
+
+    func testWeeklySignalFallbacksStayFactual() {
+        var metrics = WeeklyMetricsSummary(
+            id: WeeklyMetricsSummary.allGoalsID,
+            title: "All goals",
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            missedAnswers: 0,
+            checkpointStreakDays: 0,
+            checkpointsCleared: 2,
+            strongestSkill: nil,
+            reviewSkill: nil
+        )
+
+        XCTAssertEqual(metrics.weeklySignalInsight, .checkpointsCleared(2))
+        XCTAssertEqual(metrics.weeklySignalInsight?.text, "2 checkpoints cleared this week.")
+
+        metrics.checkpointsCleared = 0
+        metrics.questionsAnswered = 3
+        XCTAssertEqual(metrics.weeklySignalInsight, .answersLogged)
+
+        metrics.questionsAnswered = 0
+        metrics.checkpointStreakDays = 4
+        XCTAssertEqual(metrics.weeklySignalInsight, .checkpointStreak(4))
+        XCTAssertEqual(metrics.weeklySignalInsight?.accessibilityLabel, "4-day checkpoint streak")
     }
 
     @MainActor

@@ -60,6 +60,101 @@ struct WeeklyMetricsSummary: Identifiable, Equatable, Sendable {
     var hasWeeklyReviewActivity: Bool {
         questionsAnswered > 0 || checkpointsCleared > 0 || checkpointStreakDays > 0
     }
+
+    var skillSnapshotSignals: [WeeklySignalInsight] {
+        var signals: [WeeklySignalInsight] = []
+        if let reviewSkill {
+            signals.append(.lowestCurrentEstimate(reviewSkill))
+        }
+        if let strongestSkill {
+            signals.append(.highestCurrentEstimate(strongestSkill))
+        }
+        return signals
+    }
+
+    var weeklySignalInsight: WeeklySignalInsight? {
+        guard hasWeeklyReviewActivity else { return nil }
+
+        if missedAnswers > 0, let reviewSkill {
+            return .lowestCurrentEstimate(reviewSkill)
+        }
+        if let strongestSkill {
+            return .highestCurrentEstimate(strongestSkill)
+        }
+        if checkpointsCleared > 0 {
+            return .checkpointsCleared(checkpointsCleared)
+        }
+        if questionsAnswered > 0 {
+            return .answersLogged
+        }
+        if checkpointStreakDays > 0 {
+            return .checkpointStreak(checkpointStreakDays)
+        }
+        return nil
+    }
+}
+
+enum WeeklySignalInsight: Equatable, Identifiable, Sendable {
+    case lowestCurrentEstimate(String)
+    case highestCurrentEstimate(String)
+    case checkpointsCleared(Int)
+    case answersLogged
+    case checkpointStreak(Int)
+
+    enum Role: String, Hashable, Sendable {
+        case lowestCurrentEstimate
+        case highestCurrentEstimate
+        case checkpointsCleared
+        case answersLogged
+        case checkpointStreak
+    }
+
+    var id: Role { role }
+
+    var role: Role {
+        switch self {
+        case .lowestCurrentEstimate:
+            .lowestCurrentEstimate
+        case .highestCurrentEstimate:
+            .highestCurrentEstimate
+        case .checkpointsCleared:
+            .checkpointsCleared
+        case .answersLogged:
+            .answersLogged
+        case .checkpointStreak:
+            .checkpointStreak
+        }
+    }
+
+    var text: String {
+        switch self {
+        case let .lowestCurrentEstimate(skill):
+            "Lowest current estimate: \(skill)."
+        case let .highestCurrentEstimate(skill):
+            "Highest current estimate: \(skill)."
+        case let .checkpointsCleared(count):
+            "\(count) \(count == 1 ? "checkpoint" : "checkpoints") cleared this week."
+        case .answersLogged:
+            "Your answers are shaping the skill map."
+        case let .checkpointStreak(days):
+            "Your \(days)-day checkpoint streak is still going."
+        }
+    }
+
+    var accessibilityLabel: String {
+        switch self {
+        case let .lowestCurrentEstimate(skill):
+            "Lowest current mastery estimate, \(skill)"
+        case let .highestCurrentEstimate(skill):
+            "Highest current mastery estimate, \(skill)"
+        case let .checkpointsCleared(count):
+            "\(count) \(count == 1 ? "checkpoint" : "checkpoints") cleared this week"
+        case .answersLogged:
+            "Answers are shaping the skill map"
+        case let .checkpointStreak(days):
+            "\(days)-day checkpoint streak"
+        }
+    }
 }
 
 struct CheckpointSession: Identifiable, Equatable, Sendable {

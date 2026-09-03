@@ -32,8 +32,7 @@ struct WeeklyReviewView: View {
     private var impactDetails: WeeklyImpactDetails {
         WeeklyMetricsCalculator(
             attempts: store.attempts,
-            unlockEvents: store.unlockEvents,
-            competencies: store.competencies
+            unlockEvents: store.unlockEvents
         ).impactDetails(goalID: selectedGoalID)
     }
 
@@ -46,7 +45,7 @@ struct WeeklyReviewView: View {
 
                     if selectedMetrics.hasWeeklyReviewActivity {
                         signalGrid
-                        learningFocus
+                        skillSnapshot
                     } else {
                         emptyGuidance
                     }
@@ -74,27 +73,18 @@ struct WeeklyReviewView: View {
 
     private var reviewHeader: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("YOUR WEEK")
-                        .font(.caption2.weight(.bold))
-                        .tracking(1.0)
-                        .foregroundStyle(CheckpointTheme.muted)
-
-                    Text(weekRangeText)
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(CheckpointTheme.text)
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 12) {
+                    weekIdentity
+                    selectedScope
                 }
+            } else {
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    weekIdentity
 
-                Spacer(minLength: 8)
+                    Spacer(minLength: 8)
 
-                if metricOptions.count > 2 {
-                    goalMenu
-                } else if selectedMetrics.id != WeeklyMetricsSummary.allGoalsID {
-                    Text(selectedMetrics.title)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .lineLimit(1)
+                    selectedScope
                 }
             }
 
@@ -102,6 +92,37 @@ struct WeeklyReviewView: View {
                 .font(.subheadline)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var weekIdentity: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("YOUR WEEK")
+                .font(.caption2.weight(.bold))
+                .tracking(1.0)
+                .foregroundStyle(CheckpointTheme.muted)
+                .accessibilityAddTraits(.isHeader)
+
+            Text(weekRangeText)
+                .font(.title2.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder
+    private var selectedScope: some View {
+        if metricOptions.count > 2 {
+            goalMenu
+        } else if selectedMetrics.id != WeeklyMetricsSummary.allGoalsID {
+            Text(selectedMetrics.title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.muted)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.opacity)
+                .animation(scopeChangeAnimation, value: selectedMetricsID)
+                .accessibilityLabel("Weekly impact for \(selectedMetrics.title)")
         }
     }
 
@@ -135,7 +156,9 @@ struct WeeklyReviewView: View {
         } label: {
             HStack(spacing: 6) {
                 Text(selectedMetrics.title)
-                    .lineLimit(1)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.opacity)
                 Image(systemName: "chevron.down")
                     .font(.system(size: 9, weight: .bold))
             }
@@ -143,10 +166,21 @@ struct WeeklyReviewView: View {
             .foregroundStyle(CheckpointTheme.teal)
             .padding(.horizontal, 11)
             .padding(.vertical, 8)
-            .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+            .background {
+                if dynamicTypeSize.isAccessibilitySize {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(CheckpointTheme.teal.opacity(0.10))
+                } else {
+                    Capsule()
+                        .fill(CheckpointTheme.teal.opacity(0.10))
+                }
+            }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Viewing \(selectedMetrics.title)")
+        .animation(scopeChangeAnimation, value: selectedMetricsID)
+        .accessibilityLabel("Weekly impact scope")
+        .accessibilityValue(selectedMetrics.title)
+        .accessibilityHint("Choose which goal's weekly impact to view.")
     }
 
     private var impactHero: some View {
@@ -254,8 +288,10 @@ struct WeeklyReviewView: View {
             ) {
                 ImpactMetricTile(
                     label: "Accuracy",
-                    value: selectedMetrics.accuracyText,
-                    detail: "\(selectedMetrics.correctAnswers) of \(selectedMetrics.questionsAnswered) correct",
+                    value: selectedMetrics.questionsAnswered > 0 ? selectedMetrics.accuracyText : "—",
+                    detail: selectedMetrics.questionsAnswered > 0
+                        ? "\(selectedMetrics.correctAnswers) of \(selectedMetrics.questionsAnswered) correct"
+                        : "No questions answered this week",
                     systemImage: "scope"
                 )
 
@@ -283,45 +319,43 @@ struct WeeklyReviewView: View {
         }
     }
 
-    @ViewBuilder
-    private var learningFocus: some View {
-        if selectedMetrics.reviewSkill != nil || selectedMetrics.strongestSkill != nil {
-            VStack(alignment: .leading, spacing: 12) {
-                sectionLabel("NEXT SIGNAL")
+    private var skillSnapshot: some View {
+        Group {
+            if !selectedMetrics.skillSnapshotSignals.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    sectionLabel("SKILL SNAPSHOT")
 
-                VStack(spacing: 0) {
-                    if let reviewSkill = selectedMetrics.reviewSkill {
-                        FocusSignalRow(
-                            eyebrow: "REVIEW NEXT",
-                            title: reviewSkill,
-                            systemImage: "arrow.up.right",
-                            tint: CheckpointTheme.amber
-                        )
-                    }
+                    Text("Current mastery estimates reflect all checkpoint evidence, not just this week.")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                    if selectedMetrics.reviewSkill != nil,
-                       selectedMetrics.strongestSkill != nil {
-                        Divider()
-                            .overlay(CheckpointTheme.hairline)
-                            .padding(.leading, 52)
-                    }
+                    VStack(spacing: 0) {
+                        ForEach(
+                            Array(selectedMetrics.skillSnapshotSignals.enumerated()),
+                            id: \.element.id
+                        ) { index, signal in
+                            SkillSnapshotSignalRow(signal: signal)
+                                .transition(scopeChangeTransition)
 
-                    if let strongestSkill = selectedMetrics.strongestSkill {
-                        FocusSignalRow(
-                            eyebrow: "BUILDING",
-                            title: strongestSkill,
-                            systemImage: "waveform.path.ecg",
-                            tint: CheckpointTheme.blue
-                        )
+                            if index < selectedMetrics.skillSnapshotSignals.count - 1 {
+                                Divider()
+                                    .overlay(CheckpointTheme.hairline)
+                                    .padding(.leading, dynamicTypeSize.isAccessibilitySize ? 0 : 52)
+                            }
+                        }
                     }
+                    .background(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .fill(CheckpointTheme.panel.opacity(0.88))
+                            .stroke(CheckpointTheme.hairline, lineWidth: 1)
+                    )
                 }
-                .background(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .fill(CheckpointTheme.panel.opacity(0.88))
-                        .stroke(CheckpointTheme.hairline, lineWidth: 1)
-                )
+                .transition(scopeChangeTransition)
             }
         }
+        .animation(scopeChangeAnimation, value: selectedMetricsID)
+        .animation(scopeChangeAnimation, value: selectedMetrics.skillSnapshotSignals)
     }
 
     private var emptyGuidance: some View {
@@ -371,6 +405,14 @@ struct WeeklyReviewView: View {
             return [GridItem(.flexible())]
         }
         return [GridItem(.adaptive(minimum: 142), spacing: 10)]
+    }
+
+    private var scopeChangeAnimation: Animation? {
+        CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+    }
+
+    private var scopeChangeTransition: AnyTransition {
+        reduceMotion ? .identity : .opacity
     }
 
     private var heroText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }
@@ -488,36 +530,106 @@ private struct ImpactMetricTile: View {
     }
 }
 
-private struct FocusSignalRow: View {
-    var eyebrow: String
-    var title: String
-    var systemImage: String
-    var tint: Color
+private struct SkillSnapshotSignalRow: View {
+    var signal: WeeklySignalInsight
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: systemImage)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(tint)
-                .frame(width: 36, height: 36)
-                .background(tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(eyebrow)
-                    .font(.caption2.weight(.bold))
-                    .tracking(0.65)
-                    .foregroundStyle(CheckpointTheme.muted)
-
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 10) {
+                    signalIcon
+                    signalCopy
+                }
+            } else {
+                HStack(spacing: 12) {
+                    signalIcon
+                    signalCopy
+                    Spacer(minLength: 0)
+                }
             }
-
-            Spacer(minLength: 0)
         }
         .padding(14)
-        .accessibilityElement(children: .combine)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(signal.accessibilityLabel)
+    }
+
+    private var signalIcon: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 14, weight: .bold))
+            .foregroundStyle(tint)
+            .frame(width: 36, height: 36)
+            .background(tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
+            .accessibilityHidden(true)
+    }
+
+    private var signalCopy: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(eyebrow)
+                .font(.caption2.weight(.bold))
+                .tracking(0.65)
+                .foregroundStyle(CheckpointTheme.muted)
+
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.opacity)
+        }
+    }
+
+    private var eyebrow: String {
+        switch signal.role {
+        case .lowestCurrentEstimate:
+            "LOWEST CURRENT ESTIMATE"
+        case .highestCurrentEstimate:
+            "HIGHEST CURRENT ESTIMATE"
+        case .checkpointsCleared:
+            "CHECKPOINTS CLEARED"
+        case .answersLogged:
+            "SKILL MAP"
+        case .checkpointStreak:
+            "CHECKPOINT STREAK"
+        }
+    }
+
+    private var title: String {
+        switch signal {
+        case let .lowestCurrentEstimate(skill),
+             let .highestCurrentEstimate(skill):
+            skill
+        case .checkpointsCleared, .answersLogged, .checkpointStreak:
+            signal.text
+        }
+    }
+
+    private var systemImage: String {
+        switch signal.role {
+        case .lowestCurrentEstimate:
+            "chart.bar.fill"
+        case .highestCurrentEstimate:
+            "waveform.path.ecg"
+        case .checkpointsCleared:
+            "shield.checkered"
+        case .answersLogged:
+            "point.3.connected.trianglepath.dotted"
+        case .checkpointStreak:
+            "flame.fill"
+        }
+    }
+
+    private var tint: Color {
+        switch signal.role {
+        case .lowestCurrentEstimate:
+            CheckpointTheme.amber
+        case .highestCurrentEstimate, .checkpointsCleared:
+            CheckpointTheme.blue
+        case .answersLogged:
+            CheckpointTheme.teal
+        case .checkpointStreak:
+            CheckpointTheme.coral
+        }
     }
 }

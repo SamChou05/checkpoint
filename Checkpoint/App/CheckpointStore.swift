@@ -185,8 +185,7 @@ final class CheckpointStore {
     private var weeklyMetricsCalculator: WeeklyMetricsCalculator {
         WeeklyMetricsCalculator(
             attempts: attempts,
-            unlockEvents: unlockEvents,
-            competencies: competencies
+            unlockEvents: unlockEvents
         )
     }
 
@@ -195,7 +194,8 @@ final class CheckpointStore {
             id: WeeklyMetricsSummary.allGoalsID,
             title: "All goals",
             goalID: nil,
-            isCurrentGoal: false
+            isCurrentGoal: false,
+            skillCompetencies: availableGoalProfiles.flatMap(currentMetricCompetencies)
         )
     }
 
@@ -205,7 +205,8 @@ final class CheckpointStore {
             id: goal.id.uuidString,
             title: goal.title,
             goalID: goal.id,
-            isCurrentGoal: true
+            isCurrentGoal: true,
+            skillCompetencies: currentMetricCompetencies(for: goal)
         )
     }
 
@@ -215,9 +216,27 @@ final class CheckpointStore {
                 id: profile.id.uuidString,
                 title: profile.title,
                 goalID: profile.id,
-                isCurrentGoal: profile.id == goal?.id
+                isCurrentGoal: profile.id == goal?.id,
+                skillCompetencies: currentMetricCompetencies(for: profile)
             )
         }
+    }
+
+    private func currentMetricCompetencies(for profile: Goal) -> [TopicCompetency] {
+        let scopedCompetencies = competencies.filter { competency in
+            competency.goalID == profile.id ||
+                (competency.goalID == nil && profile.id == goal?.id)
+        }
+
+        guard let skillMap = profile.derivedSkillMap else {
+            return SkillMapReconciler.mergedCompetenciesForDisplay(scopedCompetencies)
+        }
+
+        return SkillMapReconciler.orderedCompetencies(
+            for: skillMap,
+            from: scopedCompetencies,
+            goalID: profile.id
+        )
     }
 
     var sortedCompetencies: [TopicCompetency] {
