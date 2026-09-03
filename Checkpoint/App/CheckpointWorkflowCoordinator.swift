@@ -184,10 +184,12 @@ final class CheckpointWorkflowCoordinator {
         reconcileProtectionState()
     }
 
-    func abandon(_ session: CheckpointSession) {
-        guard session.purpose != .preview else { return }
-        guard store.abandonCheckpointRun(sessionID: session.id) else { return }
+    @discardableResult
+    func abandon(_ session: CheckpointSession) -> Bool {
+        guard session.purpose != .preview else { return false }
+        guard store.abandonCheckpointRun(sessionID: session.id) else { return false }
         reconcileProtectionState()
+        return true
     }
 
     func finishPassed(_ session: CheckpointSession) -> String? {

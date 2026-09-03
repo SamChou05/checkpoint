@@ -61,6 +61,33 @@ struct CheckpointAnswerReviewPresentation: Equatable {
     }
 }
 
+struct CheckpointExitConfirmation: Equatable {
+    let title = "Leave checkpoint?"
+    let message: String
+    let cancelButtonTitle = "Keep answering"
+    let confirmButtonTitle = "Leave checkpoint"
+
+    init(cooldownDurationText: String = CheckpointRetryPolicy.cooldownDurationText) {
+        message = "Your completed answers stay saved. Leaving starts a \(cooldownDurationText) retry wait. Any active break continues; otherwise, protection stays on only if another full checkpoint is ready."
+    }
+
+    static func shouldPresent(
+        for purpose: CheckpointSessionPurpose,
+        hasActiveRun: Bool
+    ) -> Bool {
+        purpose != .preview && hasActiveRun
+    }
+}
+
+enum CheckpointExitChoice: Equatable {
+    case keepAnswering
+    case leaveCheckpoint
+
+    var shouldDismiss: Bool {
+        self == .leaveCheckpoint
+    }
+}
+
 enum CheckpointFeedbackRevealBehavior: Equatable {
     case focusOnly
     case focusAndScroll(animated: Bool)
@@ -92,6 +119,8 @@ struct CheckpointAttemptView: View {
     @State private var protectionActionErrorMessage: String?
     @State private var feedbackSequence = 0
     @State private var resolutionFeedback: CheckpointResolutionFeedback?
+    @State private var isExitConfirmationPresented = false
+    @State private var hasFinalizedCheckpoint = false
     @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
 
@@ -131,12 +160,28 @@ struct CheckpointAttemptView: View {
                         closeCheckpoint()
                     }
                     .foregroundStyle(CheckpointTheme.muted)
+                    .accessibilityHint(closeAccessibilityHint)
                 }
             }
         }
         .interactiveDismissDisabled(session.purpose != .preview)
+        .alert(
+            exitConfirmation.title,
+            isPresented: $isExitConfirmationPresented
+        ) {
+            Button(exitConfirmation.cancelButtonTitle, role: .cancel) {
+                handleExitChoice(.keepAnswering)
+            }
+            Button(exitConfirmation.confirmButtonTitle, role: .destructive) {
+                handleExitChoice(.leaveCheckpoint)
+            }
+        } message: {
+            Text(exitConfirmation.message)
+        }
         .onDisappear {
-            workflow.abandon(session)
+            guard !hasFinalizedCheckpoint,
+                  store.activeCheckpointRun?.sessionID == session.id else { return }
+            hasFinalizedCheckpoint = workflow.abandon(session)
         }
         .sensoryFeedback(.success, trigger: resolutionFeedback) { _, newValue in
             newValue == .passed
@@ -466,7 +511,37 @@ struct CheckpointAttemptView: View {
     }
 
     private func closeCheckpoint() {
+        let hasActiveRun = store.activeCheckpointRun?.sessionID == session.id
+        guard !CheckpointExitConfirmation.shouldPresent(
+            for: session.purpose,
+            hasActiveRun: hasActiveRun
+        ) else {
+            isExitConfirmationPresented = true
+            return
+        }
+
         dismiss()
+    }
+
+    private func handleExitChoice(_ choice: CheckpointExitChoice) {
+        guard choice.shouldDismiss else { return }
+        hasFinalizedCheckpoint = workflow.abandon(session)
+        dismiss()
+    }
+
+    private var exitConfirmation: CheckpointExitConfirmation {
+        CheckpointExitConfirmation()
+    }
+
+    private var closeAccessibilityHint: String {
+        guard CheckpointExitConfirmation.shouldPresent(
+            for: session.purpose,
+            hasActiveRun: store.activeCheckpointRun?.sessionID == session.id
+        ) else {
+            return "Closes this checkpoint."
+        }
+
+        return "Shows a confirmation with the effect on protection and the \(CheckpointRetryPolicy.cooldownDurationText) retry wait."
     }
 
     private func resultTint(for tone: CheckpointAnswerResultTone) -> Color {
@@ -486,7 +561,7 @@ struct CheckpointAttemptView: View {
             return "We'll revisit what you missed."
         case .temporaryUnlock, .stopBlocking:
             if store.hasReadyCheckpointSet {
-                return "Protection stays on. Try again in 5 minutes, and we'll revisit what you missed."
+                return "Protection stays on. Try again in \(CheckpointRetryPolicy.cooldownDurationText), and we'll revisit what you missed."
             }
             return "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
         }

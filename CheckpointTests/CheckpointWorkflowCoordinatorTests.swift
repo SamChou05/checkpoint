@@ -164,6 +164,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         store.questions[0].status = .retired
         let protection = FakeAppProtectionController()
         protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
 
         workflow.reconcileProtectionState()
@@ -172,6 +173,59 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertEqual(protection.applyShieldCount, 0)
         XCTAssertEqual(protection.clearShieldCount, 0)
         XCTAssertTrue(protection.isShieldingEnabled)
+    }
+
+    @MainActor
+    func testConfirmedExitAbandonsRunAndStartsCooldown() throws {
+        let store = makeStore(questionCount: 6)
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        XCTAssertTrue(workflow.abandon(session))
+
+        XCTAssertNil(store.activeCheckpointRun)
+        XCTAssertTrue(store.isCheckpointRetryCooldownActive)
+        XCTAssertTrue(protection.isShieldingEnabled)
+        XCTAssertEqual(protection.applyShieldCount, 1)
+    }
+
+    @MainActor
+    func testConfirmedExitTurnsProtectionOffWhenNoFullRetryIsReady() throws {
+        let store = makeStore(questionCount: 5)
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+        store.questions[0].status = .retired
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        XCTAssertFalse(store.hasReadyCheckpointSet)
+        XCTAssertTrue(workflow.abandon(session))
+
+        XCTAssertNil(store.activeCheckpointRun)
+        XCTAssertTrue(store.isCheckpointRetryCooldownActive)
+        XCTAssertFalse(protection.isShieldingEnabled)
+        XCTAssertEqual(protection.clearShieldCount, 1)
+        XCTAssertTrue(store.checkpointNotice?.contains("turned off") ?? false)
+    }
+
+    @MainActor
+    func testPreviewExitDoesNotStartCooldownOrChangeProtection() throws {
+        let store = makeStore(questionCount: 5)
+        let session = try XCTUnwrap(store.startPreviewCheckpointSession())
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        XCTAssertFalse(workflow.abandon(session))
+
+        XCTAssertFalse(store.isCheckpointRetryCooldownActive)
+        XCTAssertTrue(protection.isShieldingEnabled)
+        XCTAssertEqual(protection.applyShieldCount, 0)
+        XCTAssertEqual(protection.clearShieldCount, 0)
     }
 
     @MainActor

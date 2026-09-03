@@ -98,7 +98,6 @@ final class CheckpointStore {
     @ObservationIgnored private static let levelUpMinimumAttemptCount = 5
     @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
     @ObservationIgnored private static let maximumExactQuestionAskCount = 2
-    @ObservationIgnored private static let failedCheckpointCooldown: TimeInterval = 5 * 60
     @ObservationIgnored private static let maximumClaimsPerSync = 4
     @ObservationIgnored private static let maximumEmptyFillCycleRetries = 1
     @ObservationIgnored private static let evolutionMinimumAttempts = 10
@@ -175,7 +174,7 @@ final class CheckpointStore {
     }
 
     var checkpointRetryCooldownRemainingText: String {
-        Self.formattedRetryCooldownDuration(TimeInterval(checkpointRetryCooldownRemainingSeconds))
+        CheckpointRetryPolicy.formattedDuration(TimeInterval(checkpointRetryCooldownRemainingSeconds))
     }
 
     var isCheckpointRetryCooldownActive: Bool {
@@ -2324,7 +2323,7 @@ final class CheckpointStore {
     }
 
     private func applyCheckpointRetryCooldown(now: Date = Date()) {
-        checkpointRetryCooldownUntil = now.addingTimeInterval(Self.failedCheckpointCooldown)
+        checkpointRetryCooldownUntil = now.addingTimeInterval(CheckpointRetryPolicy.cooldownDuration)
         checkpointNotice = "Checkpoint stays protected. Take a short reset, then try again in \(checkpointRetryCooldownRemainingText)."
     }
 
@@ -4157,16 +4156,6 @@ final class CheckpointStore {
         }
 
         return "\(Int(duration.rounded()))s"
-    }
-
-    private static func formattedRetryCooldownDuration(_ duration: TimeInterval) -> String {
-        let remainingSeconds = max(0, Int(ceil(duration)))
-        if remainingSeconds >= 60 {
-            let minutes = Int(ceil(Double(remainingSeconds) / 60.0))
-            return minutes == 1 ? "1 minute" : "\(minutes) minutes"
-        }
-
-        return remainingSeconds == 1 ? "1 second" : "\(remainingSeconds) seconds"
     }
 
     private func recordQuestionGenerationTrace(

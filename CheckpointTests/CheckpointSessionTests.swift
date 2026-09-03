@@ -141,6 +141,55 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
         )
     }
 
+    func testExitConfirmationWarnsOnlyForActiveProtectedSessions() {
+        let presentation = CheckpointExitConfirmation()
+
+        XCTAssertTrue(
+            CheckpointExitConfirmation.shouldPresent(
+                for: .temporaryUnlock,
+                hasActiveRun: true
+            )
+        )
+        XCTAssertTrue(
+            CheckpointExitConfirmation.shouldPresent(
+                for: .stopBlocking,
+                hasActiveRun: true
+            )
+        )
+        XCTAssertFalse(
+            CheckpointExitConfirmation.shouldPresent(
+                for: .preview,
+                hasActiveRun: true
+            )
+        )
+        XCTAssertFalse(
+            CheckpointExitConfirmation.shouldPresent(
+                for: .temporaryUnlock,
+                hasActiveRun: false
+            )
+        )
+
+        XCTAssertEqual(presentation.title, "Leave checkpoint?")
+        XCTAssertEqual(presentation.cancelButtonTitle, "Keep answering")
+        XCTAssertEqual(presentation.confirmButtonTitle, "Leave checkpoint")
+        XCTAssertTrue(presentation.message.contains("completed answers stay saved"))
+        XCTAssertTrue(presentation.message.contains("active break continues"))
+        XCTAssertTrue(presentation.message.contains("full checkpoint is ready"))
+        XCTAssertTrue(presentation.message.contains(CheckpointRetryPolicy.cooldownDurationText))
+    }
+
+    func testExitChoiceDismissesOnlyAfterExplicitConfirmation() {
+        XCTAssertFalse(CheckpointExitChoice.keepAnswering.shouldDismiss)
+        XCTAssertTrue(CheckpointExitChoice.leaveCheckpoint.shouldDismiss)
+    }
+
+    func testRetryPolicyKeepsCanonicalCooldownCopyInSync() {
+        XCTAssertEqual(CheckpointRetryPolicy.cooldownDuration, 5 * 60)
+        XCTAssertEqual(CheckpointRetryPolicy.cooldownDurationText, "5 minutes")
+        XCTAssertEqual(CheckpointRetryPolicy.formattedDuration(61), "2 minutes")
+        XCTAssertEqual(CheckpointRetryPolicy.formattedDuration(1), "1 second")
+    }
+
     // MARK: - Checkpoint selection, grading, and cooldowns
 
     @MainActor

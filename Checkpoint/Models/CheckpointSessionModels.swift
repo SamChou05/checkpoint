@@ -216,6 +216,24 @@ enum StopBlockingPolicy {
     static let requiredCorrectAnswers = 18
 }
 
+enum CheckpointRetryPolicy {
+    static let cooldownDuration: TimeInterval = 5 * 60
+
+    static var cooldownDurationText: String {
+        formattedDuration(cooldownDuration)
+    }
+
+    static func formattedDuration(_ duration: TimeInterval) -> String {
+        let remainingSeconds = max(0, Int(ceil(duration)))
+        if remainingSeconds >= 60 {
+            let minutes = Int(ceil(Double(remainingSeconds) / 60.0))
+            return minutes == 1 ? "1 minute" : "\(minutes) minutes"
+        }
+
+        return remainingSeconds == 1 ? "1 second" : "\(remainingSeconds) seconds"
+    }
+}
+
 struct UnlockPolicy: Codable, Equatable, Sendable {
     static let correctAnswerUnlockMinuteOptions = [5, 10, 15, 30]
     static let minimumQuestionsPerSession = 5
