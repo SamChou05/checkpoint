@@ -117,6 +117,29 @@ enum MultipleChoiceAnswerNormalizer {
 }
 
 enum AnswerGrader {
+    static func correctAnswerText(
+        for question: CheckpointQuestion,
+        after result: AnswerResult
+    ) -> String? {
+        guard result != .correct else { return nil }
+
+        let expectedAnswer = nonEmptyText(question.expectedAnswer)
+        guard question.format == .multipleChoice else {
+            return expectedAnswer
+        }
+
+        let resolvedChoices = question.choices.filter { choice in
+            evaluate(answer: choice, question: question).result == .correct
+        }
+
+        guard resolvedChoices.count == 1,
+              let resolvedChoice = resolvedChoices.first else {
+            return expectedAnswer
+        }
+
+        return nonEmptyText(resolvedChoice) ?? expectedAnswer
+    }
+
     static func evaluate(answer: String, question: CheckpointQuestion) -> AnswerEvaluation {
         let trimmedAnswer = answer.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -220,6 +243,10 @@ enum AnswerGrader {
 
     private static func compact(_ text: String) -> String {
         String(text.lowercased().filter { $0.isLetter || $0.isNumber })
+    }
+
+    private static func nonEmptyText(_ text: String) -> String? {
+        text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : text
     }
 
     private static let stopWords: Set<String> = [

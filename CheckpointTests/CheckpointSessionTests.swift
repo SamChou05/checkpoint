@@ -2,6 +2,62 @@ import XCTest
 @testable import Checkpoint
 
 final class CheckpointSessionTests: CheckpointWorkflowTestCase {
+    // MARK: - Answer review presentation
+
+    func testAnswerReviewPresentationUsesFormatSpecificLabels() throws {
+        let goal = makeGoal()
+        var question = makeQuestion(goal: goal, index: 1)
+
+        var presentation = try XCTUnwrap(
+            CheckpointAnswerReviewPresentation(question: question, result: .incorrect)
+        )
+        XCTAssertEqual(presentation.answerLabel, "Correct answer")
+
+        question.format = .shortAnswer
+        question.choices = []
+        presentation = try XCTUnwrap(
+            CheckpointAnswerReviewPresentation(question: question, result: .partial)
+        )
+        XCTAssertEqual(presentation.answerLabel, "Expected answer")
+
+        question.format = .codeTrace
+        presentation = try XCTUnwrap(
+            CheckpointAnswerReviewPresentation(question: question, result: .unclear)
+        )
+        XCTAssertEqual(presentation.answerLabel, "Expected answer")
+
+        question.format = .reflection
+        presentation = try XCTUnwrap(
+            CheckpointAnswerReviewPresentation(question: question, result: .incorrect)
+        )
+        XCTAssertEqual(presentation.answerLabel, "Example response")
+        XCTAssertNil(CheckpointAnswerReviewPresentation(question: question, result: .correct))
+    }
+
+    func testFeedbackRevealBehaviorRespectsMotionAndAssistiveNavigation() {
+        XCTAssertEqual(
+            CheckpointFeedbackRevealBehavior.resolve(
+                reduceMotion: false,
+                assistiveNavigationEnabled: false
+            ),
+            .focusAndScroll(animated: true)
+        )
+        XCTAssertEqual(
+            CheckpointFeedbackRevealBehavior.resolve(
+                reduceMotion: true,
+                assistiveNavigationEnabled: false
+            ),
+            .focusAndScroll(animated: false)
+        )
+        XCTAssertEqual(
+            CheckpointFeedbackRevealBehavior.resolve(
+                reduceMotion: false,
+                assistiveNavigationEnabled: true
+            ),
+            .focusOnly
+        )
+    }
+
     // MARK: - Checkpoint selection, grading, and cooldowns
 
     @MainActor

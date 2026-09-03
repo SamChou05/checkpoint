@@ -1,5 +1,43 @@
 import SwiftUI
 
+struct CheckpointAnswerReviewPresentation: Equatable {
+    let answerLabel: String
+    let answerText: String
+
+    init?(question: CheckpointQuestion, result: AnswerResult) {
+        guard let answerText = AnswerGrader.correctAnswerText(
+            for: question,
+            after: result
+        ) else {
+            return nil
+        }
+
+        self.answerText = answerText
+        switch question.format {
+        case .multipleChoice:
+            answerLabel = "Correct answer"
+        case .shortAnswer, .codeTrace:
+            answerLabel = "Expected answer"
+        case .reflection:
+            answerLabel = "Example response"
+        }
+    }
+}
+
+enum CheckpointFeedbackRevealBehavior: Equatable {
+    case focusOnly
+    case focusAndScroll(animated: Bool)
+
+    static func resolve(
+        reduceMotion: Bool,
+        assistiveNavigationEnabled: Bool
+    ) -> Self {
+        assistiveNavigationEnabled
+            ? .focusOnly
+            : .focusAndScroll(animated: !reduceMotion)
+    }
+}
+
 struct CheckpointAttemptView: View {
     let store: CheckpointStore
     let workflow: CheckpointWorkflowCoordinator
@@ -7,6 +45,8 @@ struct CheckpointAttemptView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @State private var currentQuestionIndex = 0
     @State private var correctAnswerCount = 0
     @State private var answer = ""
@@ -15,6 +55,7 @@ struct CheckpointAttemptView: View {
     @State private var protectionActionErrorMessage: String?
     @State private var feedbackSequence = 0
     @State private var resolutionFeedback: CheckpointResolutionFeedback?
+    @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
 
     var body: some View {
@@ -36,6 +77,9 @@ struct CheckpointAttemptView: View {
                 .scrollDismissesKeyboard(.interactively)
                 .onChange(of: currentQuestionIndex) { _, _ in
                     scrollToQuestion(using: scrollProxy)
+                }
+                .onChange(of: feedbackSequence) { _, sequence in
+                    revealFeedback(sequence: sequence, using: scrollProxy)
                 }
             }
             .checkpointScreenBackground()
@@ -137,6 +181,7 @@ struct CheckpointAttemptView: View {
             }
         } else {
             TextField("Type your answer", text: $answer, axis: .vertical)
+                .focused($isAnswerFieldFocused)
                 .lineLimit(5, reservesSpace: true)
                 .textFieldStyle(.plain)
                 .foregroundStyle(CheckpointTheme.text)
@@ -312,6 +357,7 @@ struct CheckpointAttemptView: View {
             }
         }
 
+        isAnswerFieldFocused = false
         withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
             correctAnswerCount = updatedCorrectCount
             checkedAnswer = CheckedCheckpointAnswer(
@@ -324,7 +370,6 @@ struct CheckpointAttemptView: View {
         if shouldFinish {
             resolutionFeedback = shouldPass ? .passed : .failed
         }
-        accessibilityFocus = .feedback
     }
 
     private func continueAfterCheckedAnswer() {
@@ -358,6 +403,29 @@ struct CheckpointAttemptView: View {
     private func scrollToQuestion(using proxy: ScrollViewProxy) {
         withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
             proxy.scrollTo(AttemptScrollAnchor.question, anchor: .top)
+        }
+    }
+
+    private func revealFeedback(
+        sequence: Int,
+        using proxy: ScrollViewProxy
+    ) {
+        Task { @MainActor in
+            await Task.yield()
+
+            guard sequence == feedbackSequence, checkedAnswer != nil else { return }
+
+            accessibilityFocus = .feedback
+
+            let behavior = CheckpointFeedbackRevealBehavior.resolve(
+                reduceMotion: reduceMotion,
+                assistiveNavigationEnabled: voiceOverEnabled || switchControlEnabled
+            )
+            guard case let .focusAndScroll(animated) = behavior else { return }
+
+            withAnimation(animated ? CheckpointMotion.change : nil) {
+                proxy.scrollTo(AttemptScrollAnchor.feedback, anchor: .top)
+            }
         }
     }
 
@@ -407,20 +475,30 @@ struct CheckpointAttemptView: View {
                         .font(.headline)
                         .foregroundStyle(resultTint(for: checkedAnswer.result))
                         .accessibilityFocused($accessibilityFocus, equals: .feedback)
+                        .accessibilityAddTraits(.isHeader)
                 }
 
-                VStack(alignment: .leading, spacing: 8) {
-                    if checkedAnswer.result != .correct,
-                       !hasDisplayableCorrectChoice {
-                        Text("Correct answer")
+                VStack(alignment: .leading, spacing: 10) {
+                    if let answerReview = CheckpointAnswerReviewPresentation(
+                        question: question,
+                        result: checkedAnswer.result
+                    ) {
+                        Text(answerReview.answerLabel)
                             .font(.caption.weight(.bold))
                             .foregroundStyle(CheckpointTheme.muted)
 
-                        Text(question.expectedAnswer)
+                        Text(answerReview.answerText)
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.text)
                             .fixedSize(horizontal: false, vertical: true)
+
+                        Divider()
+                            .overlay(CheckpointTheme.hairline)
                     }
+
+                    Text("Explanation")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(CheckpointTheme.muted)
 
                     Text(question.explanation)
                         .font(.footnote)
@@ -447,6 +525,7 @@ struct CheckpointAttemptView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            .id(AttemptScrollAnchor.feedback)
             .transition(feedbackTransition)
         }
     }
@@ -491,12 +570,6 @@ struct CheckpointAttemptView: View {
             return .incorrect
         }
         return .locked
-    }
-
-    private var hasDisplayableCorrectChoice: Bool {
-        question.format == .multipleChoice && question.choices.contains { choice in
-            AnswerGrader.evaluate(answer: choice, question: question).result == .correct
-        }
     }
 
     private func feedbackTitle(for result: AnswerResult) -> String {
@@ -552,6 +625,7 @@ private enum AttemptAccessibilityFocus: Hashable {
 
 private enum AttemptScrollAnchor: Hashable {
     case question
+    case feedback
 }
 
 private enum CheckpointResolutionFeedback: Hashable {

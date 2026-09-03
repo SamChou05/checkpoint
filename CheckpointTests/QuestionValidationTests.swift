@@ -537,6 +537,94 @@ final class QuestionValidationTests: XCTestCase {
             AnswerGrader.evaluate(answer: "The tempting but wrong answer", question: question).result,
             .incorrect
         )
+        XCTAssertEqual(
+            AnswerGrader.correctAnswerText(for: question, after: .incorrect),
+            "The answer supported by the argument"
+        )
+    }
+
+    func testAnswerReviewResolvesCanonicalVisibleChoiceForEveryNonCorrectResult() {
+        let goal = makeGoal()
+        let choices = [
+            "A. Remove the first element",
+            "B. Remove the most recently added element",
+            "C. Remove a random element",
+            "D. Remove every element"
+        ]
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            expectedAnswer: "B",
+            choices: choices
+        )
+
+        for result in [AnswerResult.partial, .incorrect, .unclear] {
+            XCTAssertEqual(
+                AnswerGrader.correctAnswerText(for: question, after: result),
+                choices[1]
+            )
+        }
+        XCTAssertNil(AnswerGrader.correctAnswerText(for: question, after: .correct))
+    }
+
+    func testAnswerReviewFallsBackForMalformedMultipleChoiceQuestions() {
+        let goal = makeGoal()
+        let malformedQuestions = [
+            makeQuestion(
+                goal: goal,
+                index: 1,
+                expectedAnswer: "Stored answer",
+                choices: []
+            ),
+            makeQuestion(
+                goal: goal,
+                index: 2,
+                expectedAnswer: "Stored answer",
+                choices: ["One", "Two", "Three", "Four"]
+            ),
+            makeQuestion(
+                goal: goal,
+                index: 3,
+                expectedAnswer: "D",
+                choices: ["One", "Two", "Three"]
+            ),
+            makeQuestion(
+                goal: goal,
+                index: 4,
+                expectedAnswer: "A",
+                choices: ["Repeated answer", "Repeated answer", "Three", "Four"]
+            )
+        ]
+        let expectedFallbacks = ["Stored answer", "Stored answer", "D", "A"]
+
+        for (question, expectedFallback) in zip(malformedQuestions, expectedFallbacks) {
+            XCTAssertEqual(
+                AnswerGrader.correctAnswerText(for: question, after: .incorrect),
+                expectedFallback
+            )
+        }
+    }
+
+    func testAnswerReviewPreservesTypedExpectedAnswerExactly() {
+        let goal = makeGoal()
+        let expectedAnswer = "  [2, 4, 6]\nPreserve this formatting.  "
+        var question = makeQuestion(
+            goal: goal,
+            index: 1,
+            expectedAnswer: expectedAnswer,
+            choices: []
+        )
+
+        for format in [QuestionFormat.shortAnswer, .codeTrace, .reflection] {
+            question.format = format
+            XCTAssertEqual(
+                AnswerGrader.correctAnswerText(for: question, after: .incorrect),
+                expectedAnswer
+            )
+        }
+
+        question.expectedAnswer = "  \n "
+        XCTAssertNil(AnswerGrader.correctAnswerText(for: question, after: .incorrect))
     }
 
     func testMultipleChoiceGraderKeepsStrictAnswerCueWhitespaceMatching() {
