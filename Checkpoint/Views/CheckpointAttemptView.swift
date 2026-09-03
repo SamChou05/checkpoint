@@ -121,6 +121,7 @@ struct CheckpointAttemptView: View {
     @State private var resolutionFeedback: CheckpointResolutionFeedback?
     @State private var isExitConfirmationPresented = false
     @State private var hasFinalizedCheckpoint = false
+    @State private var questionQualityFeedbackContext: QuestionQualityFeedbackContext?
     @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
 
@@ -177,6 +178,17 @@ struct CheckpointAttemptView: View {
             }
         } message: {
             Text(exitConfirmation.message)
+        }
+        .sheet(item: $questionQualityFeedbackContext) { context in
+            QuestionQualityFeedbackView(context: context) { reason in
+                store.removeQuestionFromFuturePractice(
+                    questionID: context.questionID,
+                    goalID: context.goalID,
+                    reason: reason
+                )
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
         .onDisappear {
             guard !hasFinalizedCheckpoint,
@@ -639,6 +651,12 @@ struct CheckpointAttemptView: View {
                         .foregroundStyle(CheckpointTheme.coral)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+
+                if QuestionQualityFeedbackPresentation.supportsRemoval(in: session.purpose) {
+                    QuestionRemovalControl(report: currentQuestionReport) {
+                        presentQuestionQualityFeedback()
+                    }
+                }
             }
             .id(AttemptScrollAnchor.feedback)
             .transition(feedbackTransition)
@@ -698,6 +716,19 @@ struct CheckpointAttemptView: View {
         case .unclear:
             return "Not sure"
         }
+    }
+
+    private var currentQuestionReport: QuestionQualityReport? {
+        store.questionReport(for: question.id, goalID: question.goalID)
+    }
+
+    private func presentQuestionQualityFeedback() {
+        questionQualityFeedbackContext = QuestionQualityFeedbackContext(
+            questionID: question.id,
+            goalID: question.goalID,
+            prompt: question.prompt,
+            existingReason: currentQuestionReport?.reason
+        )
     }
 }
 

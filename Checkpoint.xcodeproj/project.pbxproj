@@ -31,6 +31,7 @@
 		A10000000000000000000019 /* GoalSourceDocumentImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001D /* GoalSourceDocumentImporter.swift */; };
 		A1000000000000000000001A /* CheckpointWorkflowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001E /* CheckpointWorkflowCoordinator.swift */; };
 		A1000000000000000000001B /* FocusWinsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001F /* FocusWinsView.swift */; };
+		A1000000000000000000001C /* QuestionQualityFeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000020 /* QuestionQualityFeedbackView.swift */; };
 		AB0000000000000000000001 /* AnswerGrader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* AnswerGrader.swift */; };
 		AB0000000000000000000002 /* AppSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* AppSnapshot.swift */; };
 		AB0000000000000000000003 /* CheckpointSessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000003 /* CheckpointSessionModels.swift */; };
@@ -89,6 +90,7 @@
 		CB0000000000000000000017 /* FocusWinsViewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000017 /* FocusWinsViewRenderingTests.swift */; };
 		CB0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */; };
 		CB0000000000000000000019 /* HostedViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000019 /* HostedViewRenderer.swift */; };
+		CB000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift */; };
 		D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* PrivacyInfo.xcprivacy */; };
@@ -177,6 +179,7 @@
 		A2000000000000000000001D /* GoalSourceDocumentImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalSourceDocumentImporter.swift; sourceTree = "<group>"; };
 		A2000000000000000000001E /* CheckpointWorkflowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointWorkflowCoordinator.swift; sourceTree = "<group>"; };
 		A2000000000000000000001F /* FocusWinsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusWinsView.swift; sourceTree = "<group>"; };
+		A20000000000000000000020 /* QuestionQualityFeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionQualityFeedbackView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000001 /* AnswerGrader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerGrader.swift; sourceTree = "<group>"; };
 		AA0000000000000000000002 /* AppSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSnapshot.swift; sourceTree = "<group>"; };
 		AA0000000000000000000003 /* CheckpointSessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointSessionModels.swift; sourceTree = "<group>"; };
@@ -237,6 +240,7 @@
 		CA0000000000000000000017 /* FocusWinsViewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusWinsViewRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFirstCheckpointRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000019 /* HostedViewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostedViewRenderer.swift; sourceTree = "<group>"; };
+		CA000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionQualityFeedbackRenderingTests.swift; sourceTree = "<group>"; };
 		D20000000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -373,6 +377,7 @@
 				AA0000000000000000000013 /* WeeklyReviewView.swift */,
 				A20000000000000000000008 /* OnboardingView.swift */,
 				A20000000000000000000009 /* CheckpointAttemptView.swift */,
+				A20000000000000000000020 /* QuestionQualityFeedbackView.swift */,
 				A2000000000000000000000A /* HistoryView.swift */,
 				A20000000000000000000010 /* CompetencyView.swift */,
 				A2000000000000000000001F /* FocusWinsView.swift */,
@@ -465,6 +470,7 @@
 				CA0000000000000000000016 /* CheckpointThemeTests.swift */,
 				CA0000000000000000000017 /* FocusWinsViewRenderingTests.swift */,
 				CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */,
+				CA000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift */,
 				CA000000000000000000000C /* ScreenTimeCoordinationTests.swift */,
 				CA000000000000000000000A /* QuestionRefillTests.swift */,
 				CA0000000000000000000003 /* AppSnapshotPersistenceTests.swift */,
@@ -747,6 +753,7 @@
 				AB0000000000000000000013 /* WeeklyReviewView.swift in Sources */,
 				A10000000000000000000008 /* OnboardingView.swift in Sources */,
 				A10000000000000000000009 /* CheckpointAttemptView.swift in Sources */,
+				A1000000000000000000001C /* QuestionQualityFeedbackView.swift in Sources */,
 				A1000000000000000000000A /* HistoryView.swift in Sources */,
 				A1000000000000000000000B /* SettingsView.swift in Sources */,
 				AB000000000000000000000F /* PracticeSettingsControls.swift in Sources */,
@@ -798,6 +805,7 @@
 				CB0000000000000000000016 /* CheckpointThemeTests.swift in Sources */,
 				CB0000000000000000000017 /* FocusWinsViewRenderingTests.swift in Sources */,
 				CB0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift in Sources */,
+				CB000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift in Sources */,
 				CB000000000000000000000C /* ScreenTimeCoordinationTests.swift in Sources */,
 				CB000000000000000000000A /* QuestionRefillTests.swift in Sources */,
 				CB0000000000000000000003 /* AppSnapshotPersistenceTests.swift in Sources */,

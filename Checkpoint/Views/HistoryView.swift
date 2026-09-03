@@ -7,6 +7,7 @@ struct HistoryView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selectedFilter: PracticeHistoryFilter = .all
+    @State private var questionQualityFeedbackContext: QuestionQualityFeedbackContext?
 
     private var attempts: [CheckpointAttempt] {
         store.activeAttempts.sorted { lhs, rhs in
@@ -74,6 +75,17 @@ struct HistoryView: View {
                     }
                     .foregroundStyle(CheckpointTheme.teal)
                 }
+            }
+            .sheet(item: $questionQualityFeedbackContext) { context in
+                QuestionQualityFeedbackView(context: context) { reason in
+                    store.removeQuestionFromFuturePractice(
+                        questionID: context.questionID,
+                        goalID: context.goalID,
+                        reason: reason
+                    )
+                }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
             }
             .sensoryFeedback(.selection, trigger: selectedFilter)
         }
@@ -368,10 +380,24 @@ struct HistoryView: View {
 
                         VStack(spacing: 0) {
                             ForEach(Array(group.attempts.enumerated()), id: \.element.id) { index, attempt in
+                                let retainedQuestion = retainedQuestionsByID[attempt.questionID]
+                                let questionReport = store.questionReport(
+                                    for: attempt.questionID,
+                                    goalID: attempt.goalID
+                                )
+
                                 AttemptRow(
                                     attempt: attempt,
-                                    retainedQuestion: retainedQuestionsByID[attempt.questionID]
-                                )
+                                    retainedQuestion: retainedQuestion,
+                                    questionReport: questionReport
+                                ) {
+                                    questionQualityFeedbackContext = QuestionQualityFeedbackContext(
+                                        questionID: attempt.questionID,
+                                        goalID: attempt.goalID,
+                                        prompt: retainedQuestion?.prompt ?? attempt.prompt,
+                                        existingReason: questionReport?.reason
+                                    )
+                                }
 
                                 if index < group.attempts.count - 1 {
                                     Divider()
@@ -610,6 +636,8 @@ struct PracticeHistoryReviewPresentation: Equatable {
 private struct AttemptRow: View {
     var attempt: CheckpointAttempt
     var retainedQuestion: CheckpointQuestion?
+    var questionReport: QuestionQualityReport?
+    var manageQuestion: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -637,11 +665,15 @@ private struct AttemptRow: View {
                         ViewThatFits(in: .horizontal) {
                             HStack(spacing: 8) {
                                 resultLabel
+                                removedBadge
                                 timeLabel
                             }
 
                             VStack(alignment: .leading, spacing: 2) {
-                                resultLabel
+                                HStack(spacing: 7) {
+                                    resultLabel
+                                    removedBadge
+                                }
                                 timeLabel
                             }
                         }
@@ -671,6 +703,7 @@ private struct AttemptRow: View {
             .accessibilityLabel(
                 "\(resultPresentation.label), "
                     + "\(attempt.createdAt.formatted(date: .omitted, time: .shortened)). "
+                    + removalAccessibilityText
                     + attempt.prompt
             )
             .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
@@ -750,6 +783,10 @@ private struct AttemptRow: View {
                     color: CheckpointTheme.muted
                 )
             }
+
+            reviewDivider
+
+            QuestionRemovalControl(report: questionReport, action: manageQuestion)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -828,6 +865,25 @@ private struct AttemptRow: View {
             .font(.caption2.weight(.bold))
             .tracking(0.55)
             .foregroundStyle(resultTint)
+    }
+
+    @ViewBuilder
+    private var removedBadge: some View {
+        if questionReport != nil {
+            Text(QuestionQualityFeedbackPresentation.historyBadgeTitle)
+                .font(.system(size: 9, weight: .bold))
+                .tracking(0.45)
+                .foregroundStyle(CheckpointTheme.teal)
+                .padding(.horizontal, 7)
+                .padding(.vertical, 4)
+                .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+                .accessibilityHidden(true)
+        }
+    }
+
+    private var removalAccessibilityText: String {
+        guard let questionReport else { return "" }
+        return "Removed from future practice, reason \(questionReport.reason.rawValue). "
     }
 
     private var timeLabel: some View {
