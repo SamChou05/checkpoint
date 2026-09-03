@@ -91,6 +91,8 @@
 		CB0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */; };
 		CB0000000000000000000019 /* HostedViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000019 /* HostedViewRenderer.swift */; };
 		CB000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift */; };
+		CB000000000000000000001B /* IssueReportDraftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000001B /* IssueReportDraftTests.swift */; };
+		CB000000000000000000001C /* HelpFeedbackRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000001C /* HelpFeedbackRenderingTests.swift */; };
 		D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* PrivacyInfo.xcprivacy */; };
@@ -241,6 +243,8 @@
 		CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFirstCheckpointRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000019 /* HostedViewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostedViewRenderer.swift; sourceTree = "<group>"; };
 		CA000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionQualityFeedbackRenderingTests.swift; sourceTree = "<group>"; };
+		CA000000000000000000001B /* IssueReportDraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssueReportDraftTests.swift; sourceTree = "<group>"; };
+		CA000000000000000000001C /* HelpFeedbackRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpFeedbackRenderingTests.swift; sourceTree = "<group>"; };
 		D20000000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -471,6 +475,8 @@
 				CA0000000000000000000017 /* FocusWinsViewRenderingTests.swift */,
 				CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */,
 				CA000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift */,
+				CA000000000000000000001B /* IssueReportDraftTests.swift */,
+				CA000000000000000000001C /* HelpFeedbackRenderingTests.swift */,
 				CA000000000000000000000C /* ScreenTimeCoordinationTests.swift */,
 				CA000000000000000000000A /* QuestionRefillTests.swift */,
 				CA0000000000000000000003 /* AppSnapshotPersistenceTests.swift */,
@@ -806,6 +812,8 @@
 				CB0000000000000000000017 /* FocusWinsViewRenderingTests.swift in Sources */,
 				CB0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift in Sources */,
 				CB000000000000000000001A /* QuestionQualityFeedbackRenderingTests.swift in Sources */,
+				CB000000000000000000001B /* IssueReportDraftTests.swift in Sources */,
+				CB000000000000000000001C /* HelpFeedbackRenderingTests.swift in Sources */,
 				CB000000000000000000000C /* ScreenTimeCoordinationTests.swift in Sources */,
 				CB000000000000000000000A /* QuestionRefillTests.swift in Sources */,
 				CB0000000000000000000003 /* AppSnapshotPersistenceTests.swift in Sources */,

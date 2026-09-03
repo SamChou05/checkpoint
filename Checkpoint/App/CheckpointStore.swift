@@ -22,6 +22,14 @@ private enum QuestionRefreshReason {
     }
 }
 
+enum IssueReportDraftSaveResult: Equatable {
+    case saved
+    case emptyMessage
+    case messageTooLong
+    case notRetained
+    case persistenceFailed
+}
+
 @MainActor
 @Observable
 final class CheckpointStore {
@@ -96,7 +104,8 @@ final class CheckpointStore {
     @ObservationIgnored static let maximumFocusWinNoteLength = 280
     @ObservationIgnored static let maximumStoredUnlockEventCountPerGoal = 1_000
     @ObservationIgnored static let maximumStoredQuestionReportCountPerGoal = 250
-    @ObservationIgnored static let maximumStoredIssueReportCount = 100
+    @ObservationIgnored nonisolated static let maximumStoredIssueReportCount = 100
+    @ObservationIgnored nonisolated static let maximumIssueReportMessageLength = 1_000
     @ObservationIgnored private static let levelUpRecentAttemptWindow = 10
     @ObservationIgnored private static let levelUpMinimumAttemptCount = 5
     @ObservationIgnored private static let levelUpAccuracyThreshold = 0.90
@@ -256,6 +265,10 @@ final class CheckpointStore {
 
     var issueReportCount: Int {
         issueReports.count
+    }
+
+    var issueReportDrafts: [UserIssueReport] {
+        issueReports.sorted(by: Self.issueReportComesBefore)
     }
 
     var activeQuestionDifficulty: Int {
@@ -2343,20 +2356,64 @@ final class CheckpointStore {
     }
 
     @discardableResult
-    func submitIssueReport(category: IssueReportCategory, message: String, contact: String) -> Bool {
+    func saveIssueReportDraft(
+        category: IssueReportCategory,
+        message: String,
+        includesCurrentGoal: Bool,
+        createdAt: Date = Date()
+    ) -> IssueReportDraftSaveResult {
         let trimmedMessage = message.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedMessage.isEmpty else { return false }
+        guard !trimmedMessage.isEmpty else { return .emptyMessage }
+        guard trimmedMessage.count <= Self.maximumIssueReportMessageLength else {
+            return .messageTooLong
+        }
+        guard activatePersistenceForAppDataIfNeeded() else {
+            return .persistenceFailed
+        }
+
+        let includedGoal = includesCurrentGoal ? goal : nil
+        let previousIssueReports = issueReports
 
         let report = UserIssueReport(
-            goalID: goal?.id,
-            goalTitle: goal?.title ?? "No goal",
+            goalID: includedGoal?.id,
+            goalTitle: includedGoal?.title ?? "",
+            includesGoalContext: includedGoal != nil,
             category: category,
             message: trimmedMessage,
-            contact: contact.trimmingCharacters(in: .whitespacesAndNewlines)
+            contact: "",
+            createdAt: createdAt
         )
 
-        issueReports.insert(report, at: 0)
-        save()
+        issueReports.append(report)
+        issueReports = Array(
+            issueReports
+                .sorted(by: Self.issueReportComesBefore)
+                .prefix(Self.maximumStoredIssueReportCount)
+        )
+        guard issueReports.contains(where: { $0.id == report.id }) else {
+            issueReports = previousIssueReports
+            return .notRetained
+        }
+        guard save() else {
+            issueReports = previousIssueReports
+            return .persistenceFailed
+        }
+        return .saved
+    }
+
+    @discardableResult
+    func deleteIssueReportDraft(id reportID: UserIssueReport.ID) -> Bool {
+        guard issueReports.contains(where: { $0.id == reportID }),
+              activatePersistenceForAppDataIfNeeded() else {
+            return false
+        }
+
+        let previousIssueReports = issueReports
+        issueReports.removeAll { $0.id == reportID }
+        guard save() else {
+            issueReports = previousIssueReports
+            return false
+        }
         return true
     }
 
@@ -3582,6 +3639,21 @@ final class CheckpointStore {
         }
     }
 
+    @discardableResult
+    private func migrateLegacyIssueReports() -> Bool {
+        var changed = false
+
+        for index in issueReports.indices where issueReports[index].includesGoalContext == nil {
+            issueReports[index].goalID = nil
+            issueReports[index].goalTitle = ""
+            issueReports[index].contact = ""
+            issueReports[index].includesGoalContext = false
+            changed = true
+        }
+
+        return changed
+    }
+
     // MARK: - Persistence and app group state
 
     @discardableResult
@@ -3656,7 +3728,11 @@ final class CheckpointStore {
             limit: Self.maximumStoredQuestionReportCountPerGoal,
             goalID: \QuestionQualityReport.goalID
         )
-        let retainedIssueReports = Array(issueReports.prefix(Self.maximumStoredIssueReportCount))
+        let retainedIssueReports = Array(
+            issueReports
+                .sorted(by: Self.issueReportComesBefore)
+                .prefix(Self.maximumStoredIssueReportCount)
+        )
         let retainedQuestionGenerationTraces = Array(
             questionGenerationTraces.prefix(Self.maximumQuestionGenerationTraceCount)
         )
@@ -3730,6 +3806,16 @@ final class CheckpointStore {
     nonisolated private static func focusWinComesBefore(_ lhs: FocusWin, _ rhs: FocusWin) -> Bool {
         if lhs.loggedAt != rhs.loggedAt {
             return lhs.loggedAt > rhs.loggedAt
+        }
+        return lhs.id.uuidString < rhs.id.uuidString
+    }
+
+    nonisolated private static func issueReportComesBefore(
+        _ lhs: UserIssueReport,
+        _ rhs: UserIssueReport
+    ) -> Bool {
+        if lhs.createdAt != rhs.createdAt {
+            return lhs.createdAt > rhs.createdAt
         }
         return lhs.id.uuidString < rhs.id.uuidString
     }
@@ -4000,6 +4086,7 @@ final class CheckpointStore {
         }
 
         migrateLegacyCompetenciesToActiveGoal()
+        let legacyIssueReportsChanged = migrateLegacyIssueReports()
         let retentionChanged = enforceRetentionLimits()
         if let recoveryMessage {
             persistenceRecoveryMessage = recoveryMessage
@@ -4007,8 +4094,16 @@ final class CheckpointStore {
         }
         let derivedSkillMapsChanged = migrateLegacyDerivedSkillMapsIfNeeded()
         let attemptMetadataChanged = backfillAttemptMetadataIfNeeded()
-        if retentionChanged || derivedSkillMapsChanged || attemptMetadataChanged {
-            save()
+        if retentionChanged ||
+            legacyIssueReportsChanged ||
+            derivedSkillMapsChanged ||
+            attemptMetadataChanged {
+            let migrationSaved = save()
+            if legacyIssueReportsChanged && migrationSaved {
+                // A second verified save replaces the recovery backup that may
+                // still contain goal context captured by an earlier build.
+                _ = save()
+            }
         }
     }
 

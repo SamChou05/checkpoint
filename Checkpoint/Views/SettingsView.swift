@@ -682,12 +682,8 @@ struct SettingsView: View {
         store.activeAttempts.isEmpty ? "No practice yet" : "Review past answers"
     }
 
-    private var issueReportsDetailText: String {
-        if store.issueReportCount == 0 {
-            return "Save or share an issue"
-        }
-
-        return "\(store.issueReportCount) saved"
+    private var feedbackDraftSettingsPresentation: FeedbackDraftSettingsPresentation {
+        FeedbackDraftSettingsPresentation(count: store.issueReportCount)
     }
 
     private var practiceStandardContent: some View {
@@ -772,13 +768,11 @@ struct SettingsView: View {
                 Divider()
 
                 SettingsNavigationRow(
-                    title: "Help & feedback",
-                    detail: issueReportsDetailText,
+                    title: "Support & feedback",
+                    detail: feedbackDraftSettingsPresentation.detail,
                     systemImage: "bubble.left.and.bubble.right",
                     trailingText: "\(store.issueReportCount)",
-                    voiceOverValue: store.issueReportCount == 0
-                        ? "No saved reports"
-                        : "\(store.issueReportCount) saved reports"
+                    voiceOverValue: feedbackDraftSettingsPresentation.voiceOverValue
                 ) {
                     isIssueReportsPresented = true
                 }

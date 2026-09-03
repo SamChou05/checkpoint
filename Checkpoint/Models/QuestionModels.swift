@@ -226,6 +226,7 @@ struct UserIssueReport: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var goalID: Goal.ID?
     var goalTitle: String
+    var includesGoalContext: Bool? = nil
     var category: IssueReportCategory
     var message: String
     var contact: String

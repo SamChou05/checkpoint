@@ -16,7 +16,7 @@ Checkpoint may store the following information locally:
 - Generated questions, choices, expected answers, explanations, topics, and question status.
 - Competency estimates, attempts, answer history, accuracy, progress, and app-break history.
 - User-authored Focus Wins notes and the times they were logged, associated with the relevant goal.
-- Question and issue reports plus limited question-generation diagnostics.
+- Question-quality reports, user-authored feedback drafts, and limited question-generation diagnostics.
 - Protected-app, category, and website selections made through Apple's Screen Time APIs.
 - Current protection and break state used by the main app and its Screen Time extensions.
 - A randomly generated installation identifier used for backend quotas. This is not Apple's advertising identifier and is not an account identifier.
@@ -28,6 +28,8 @@ The current code does not opt these Application Support files out of iOS device 
 
 Screen Time selection and coordination data is stored separately in the app's shared App Group so Checkpoint's extensions can apply and remove shields.
 
+Feedback drafts stay in the local learning snapshot and are not automatically sent to Checkpoint or a support provider. Adding the current goal title to a draft is optional and off by default. When the user chooses **Share**, Checkpoint opens the iOS system share sheet with the draft text and any explicitly included goal title; the destination selected by the user then handles that copy under its own terms. **Open support** opens the configured external support page.
+
 ## Local Retention Limits
 
 Local data remains until it is removed by the user, pruned by the limits below, or removed when Checkpoint is uninstalled. The current implementation keeps at most:
@@ -37,7 +39,7 @@ Local data remains until it is removed by the user, pruned by the limits below, 
 - 500 Focus Wins per goal, keeping the most recently logged notes.
 - 1,000 unlock events per goal.
 - 250 question reports per goal.
-- 100 issue reports across the app.
+- 100 feedback drafts across the app, keeping the newest drafts; each draft can also be deleted individually.
 - 20 question-generation diagnostic traces.
 
 Goals, current competency summaries, and other current configuration do not yet have a time-based expiration. The final policy should confirm whether any additional age-based retention period is required.
@@ -101,6 +103,8 @@ Checkpoint does not use third-party advertising or Apple's advertising identifie
 Using **Erase all data** in Checkpoint removes the local primary and backup learning snapshots, any legacy snapshot, goals and progress in memory, the App Group's Screen Time selection and coordination files, protection diagnostics, and the locally stored installation identifier. It also turns off Checkpoint-managed shields.
 
 When deletion of an individual Focus Win or goal is saved successfully, Checkpoint removes the affected Focus Win or goal-associated Focus Wins from memory and the current primary learning snapshot. The immediately preceding recovery backup can still contain the deleted Focus Win or goal until a later successful save replaces the backup or **Erase all data** removes it. Using **Erase all data** removes Focus Wins for every goal from Checkpoint's active local storage, subject to the device-backup limitation described above.
+
+Deleting an individual feedback draft removes it from memory and the current primary learning snapshot after the change is saved successfully. The immediately preceding recovery backup can still contain that draft until a later successful save replaces the backup or **Erase all data** removes it. Feedback drafts are global rather than tied to the currently selected goal; if a draft explicitly includes a goal title, that saved context remains until the draft is deleted, pruned by the 100-draft limit, or all app data is erased. Drafts created by earlier builds may contain goal details that Checkpoint attached automatically or an optional contact address entered by the user. Checkpoint treats that legacy context as unconsented, excludes it from Saved drafts and Share, and clears it from both current and recovery snapshots when migration saves successfully. If migration cannot be saved, legacy local snapshots may retain those details until a later successful save or **Erase all data**.
 
 Erase all data does not cancel an Apple subscription and does not revoke the Screen Time permission granted in iOS Settings. It also does not currently call an authenticated backend deletion endpoint. Existing server-side question banks, ready and claimed generated questions, source context, idempotent claim records, pseudonymous quota rows, DynamoDB stream records, and already queued generation jobs can therefore remain and queued work can finish after local erasure. Question-bank records rely on their nominal 30-day Time to Live, quota rows rely on their shorter configured Time to Live, and both are deleted asynchronously by AWS after becoming eligible. DynamoDB stream records are available for up to 24 hours, source-queue messages for up to 4 days, and generation dead-letter jobs or outbox failure metadata for up to 14 days. Data already processed by AWS or Amazon Bedrock is subject to the production service-processing terms and retention settings that still need to be finalized.
 

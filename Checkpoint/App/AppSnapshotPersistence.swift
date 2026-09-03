@@ -149,8 +149,14 @@ struct AppSnapshotPersistence {
             }
 
             if decodedSnapshot(from: try? Data(contentsOf: backupURL)) == nil {
-                try encoded.write(to: backupURL, options: [.atomic])
-                applyFileProtection(to: backupURL)
+                do {
+                    try encoded.write(to: backupURL, options: [.atomic])
+                    applyFileProtection(to: backupURL)
+                } catch {
+                    // The verified primary is the committed source of truth.
+                    // Failing to provision its first recovery copy must not make
+                    // callers roll back memory and report a false save failure.
+                }
             }
 
         case .defaults:
