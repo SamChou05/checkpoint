@@ -682,6 +682,302 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testQuestionRemovalPersistsAndLeavesRecordedLearningStateUntouched() throws {
+        let goal = makeGoal()
+        let dueDate = Date(timeIntervalSince1970: 1_800_000_000)
+        let reportedAt = dueDate.addingTimeInterval(60)
+        let questions = (1...5).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                status: index == 1 ? .due : .new,
+                nextReviewAt: index == 1 ? dueDate.addingTimeInterval(-60) : nil
+            )
+        }
+        let removedQuestion = try XCTUnwrap(questions.first)
+        let attempt = makeAttempt(
+            goal: goal,
+            questionID: removedQuestion.id,
+            result: .incorrect,
+            createdAt: dueDate
+        )
+        let competency = TopicCompetency.initial(topic: removedQuestion.topic, goalID: goal.id)
+        let unlockEvent = UnlockEvent(goalID: goal.id, minutes: 15, createdAt: dueDate)
+        let session = CheckpointSession(questions: questions, requiredCorrectAnswers: 4)
+        let activeRun = try XCTUnwrap(ActiveCheckpointRun(session: session, startedAt: dueDate))
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = questions
+        store.attempts = [attempt]
+        store.competencies = [competency]
+        store.unlockEvents = [unlockEvent]
+        store.activeCheckpointRun = activeRun
+        store.updateUnlockMinutes(30)
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertEqual(SharedAppGroup.checkpointReady, true)
+
+        XCTAssertTrue(
+            store.removeQuestionFromFuturePractice(
+                questionID: removedQuestion.id,
+                goalID: goal.id,
+                reason: .wrongAnswer,
+                reportedAt: reportedAt
+            )
+        )
+
+        let storedQuestion = try XCTUnwrap(
+            store.questions.first { $0.id == removedQuestion.id }
+        )
+        XCTAssertEqual(storedQuestion.status, .retired)
+        XCTAssertNil(storedQuestion.nextReviewAt)
+        let report = try XCTUnwrap(
+            store.questionReport(for: removedQuestion.id, goalID: goal.id)
+        )
+        XCTAssertEqual(report.prompt, removedQuestion.prompt)
+        XCTAssertEqual(report.reason, .wrongAnswer)
+        XCTAssertEqual(report.note, "")
+        XCTAssertEqual(report.createdAt, reportedAt)
+        XCTAssertEqual(store.attempts, [attempt])
+        XCTAssertEqual(store.competencies, [competency])
+        XCTAssertEqual(store.unlockEvents, [unlockEvent])
+        XCTAssertEqual(store.activeCheckpointRun, activeRun)
+        XCTAssertFalse(store.hasReadyCheckpointSet)
+        XCTAssertEqual(SharedAppGroup.checkpointReady, false)
+
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(
+            restoredStore.questions.first { $0.id == removedQuestion.id }?.status,
+            .retired
+        )
+        XCTAssertEqual(
+            restoredStore.questionReport(for: removedQuestion.id, goalID: goal.id),
+            report
+        )
+        let restoredAttempt = try XCTUnwrap(restoredStore.attempts.first)
+        XCTAssertEqual(restoredAttempt.id, attempt.id)
+        XCTAssertEqual(restoredAttempt.answer, attempt.answer)
+        XCTAssertEqual(restoredAttempt.result, attempt.result)
+        XCTAssertEqual(restoredAttempt.unlockMinutes, attempt.unlockMinutes)
+        let restoredCompetency = try XCTUnwrap(
+            restoredStore.competencies.first { $0.topic == competency.topic }
+        )
+        XCTAssertEqual(restoredCompetency.attempts, competency.attempts)
+        XCTAssertEqual(restoredCompetency.correct, competency.correct)
+        XCTAssertEqual(restoredCompetency.partial, competency.partial)
+        XCTAssertEqual(restoredCompetency.incorrect, competency.incorrect)
+        XCTAssertEqual(restoredStore.unlockEvents, [unlockEvent])
+        XCTAssertNil(restoredStore.activeCheckpointRun)
+    }
+
+    @MainActor
+    func testQuestionRemovalUpsertsOneGoalScopedReportAndPreservesLocalNote() throws {
+        let activeGoal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let question = makeQuestion(goal: activeGoal, index: 1)
+        let otherQuestion = makeQuestion(goal: otherGoal, index: 2)
+        let originalCreatedAt = Date(timeIntervalSince1970: 100)
+        let originalReport = QuestionQualityReport(
+            questionID: question.id,
+            goalID: activeGoal.id,
+            prompt: "Older prompt copy",
+            reason: .confusing,
+            note: "Local context to keep",
+            createdAt: originalCreatedAt
+        )
+        let duplicateReport = QuestionQualityReport(
+            questionID: question.id,
+            goalID: activeGoal.id,
+            prompt: question.prompt,
+            reason: .tooHard,
+            note: "Duplicate",
+            createdAt: originalCreatedAt.addingTimeInterval(1)
+        )
+        let otherReport = makeQuestionReport(for: otherQuestion, note: "Other goal")
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = activeGoal
+        store.goalProfiles = [activeGoal, otherGoal]
+        store.questions = [question, otherQuestion]
+        store.attempts = [
+            makeAttempt(
+                goal: activeGoal,
+                questionID: question.id,
+                result: .correct,
+                createdAt: Date(timeIntervalSince1970: 200)
+            )
+        ]
+        store.questionReports = [originalReport, duplicateReport, otherReport]
+
+        XCTAssertTrue(
+            store.removeQuestionFromFuturePractice(
+                questionID: question.id,
+                goalID: activeGoal.id,
+                reason: .irrelevant,
+                reportedAt: Date(timeIntervalSince1970: 300)
+            )
+        )
+
+        let matchingReports = store.questionReports.filter {
+            $0.questionID == question.id && $0.goalID == activeGoal.id
+        }
+        XCTAssertEqual(matchingReports.count, 1)
+        XCTAssertEqual(matchingReports.first?.id, originalReport.id)
+        XCTAssertEqual(matchingReports.first?.createdAt, originalCreatedAt)
+        XCTAssertEqual(matchingReports.first?.prompt, question.prompt)
+        XCTAssertEqual(matchingReports.first?.reason, .irrelevant)
+        XCTAssertEqual(matchingReports.first?.note, originalReport.note)
+        XCTAssertEqual(
+            store.questionReport(for: otherQuestion.id, goalID: otherGoal.id),
+            otherReport
+        )
+    }
+
+    @MainActor
+    func testQuestionRemovalRequiresMatchingSavedAnswer() {
+        let goal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let question = makeQuestion(goal: goal, index: 1)
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal, otherGoal]
+        store.questions = [question]
+
+        XCTAssertFalse(
+            store.removeQuestionFromFuturePractice(
+                questionID: question.id,
+                goalID: goal.id,
+                reason: .confusing
+            )
+        )
+
+        store.attempts = [
+            makeAttempt(
+                goal: otherGoal,
+                questionID: question.id,
+                result: .incorrect,
+                createdAt: Date()
+            )
+        ]
+        XCTAssertFalse(
+            store.removeQuestionFromFuturePractice(
+                questionID: question.id,
+                goalID: goal.id,
+                reason: .confusing
+            )
+        )
+        XCTAssertEqual(store.questions, [question])
+        XCTAssertTrue(store.questionReports.isEmpty)
+    }
+
+    @MainActor
+    func testQuestionRemovalFromPrunedHistoryStillRecordsPromptForAvoidance() throws {
+        let goal = makeGoal()
+        let questionID = UUID()
+        let prompt = "Which old prompt should future generation avoid?"
+        let attempt = CheckpointAttempt(
+            questionID: questionID,
+            goalID: goal.id,
+            prompt: prompt,
+            answer: "The saved answer",
+            result: .partial,
+            unlockMinutes: 0,
+            createdAt: Date(timeIntervalSince1970: 100)
+        )
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.attempts = [attempt]
+
+        XCTAssertTrue(
+            store.removeQuestionFromFuturePractice(
+                questionID: questionID,
+                goalID: goal.id,
+                reason: .confusing,
+                reportedAt: Date(timeIntervalSince1970: 200)
+            )
+        )
+
+        XCTAssertTrue(store.questions.isEmpty)
+        let report = try XCTUnwrap(
+            store.questionReport(for: questionID, goalID: goal.id)
+        )
+        XCTAssertEqual(report.prompt, prompt)
+        XCTAssertEqual(report.reason, .confusing)
+
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(
+            restoredStore.questionReport(for: questionID, goalID: goal.id),
+            report
+        )
+    }
+
+    @MainActor
+    func testFailedQuestionRemovalRollsBackQuestionAndReports() throws {
+        try Data("not a directory".utf8).write(to: persistenceDirectory)
+        let goal = makeGoal()
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            status: .incorrect,
+            nextReviewAt: Date(timeIntervalSince1970: 500)
+        )
+        let report = makeQuestionReport(for: question, note: "Keep this report")
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = [question]
+        store.attempts = [
+            makeAttempt(
+                goal: goal,
+                questionID: question.id,
+                result: .incorrect,
+                createdAt: Date(timeIntervalSince1970: 400)
+            )
+        ]
+        store.questionReports = [report]
+
+        XCTAssertFalse(
+            store.removeQuestionFromFuturePractice(
+                questionID: question.id,
+                goalID: goal.id,
+                reason: .wrongAnswer
+            )
+        )
+        XCTAssertEqual(store.questions, [question])
+        XCTAssertEqual(store.questionReports, [report])
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+    }
+
+    @MainActor
     func testLegacySnapshotWithoutFocusWinsRestoresAnEmptyLedger() throws {
         let goal = makeGoal()
         let originalStore = CheckpointStore(defaults: defaults)

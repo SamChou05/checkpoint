@@ -310,6 +310,15 @@ final class CheckpointStore {
         return questionReports.filter { $0.goalID == goalID }
     }
 
+    func questionReport(
+        for questionID: CheckpointQuestion.ID,
+        goalID: Goal.ID
+    ) -> QuestionQualityReport? {
+        questionReports.first {
+            $0.questionID == questionID && $0.goalID == goalID
+        }
+    }
+
     var activeGoalFocusText: String? {
         guard let goal else { return nil }
 
@@ -2349,6 +2358,59 @@ final class CheckpointStore {
         issueReports.insert(report, at: 0)
         save()
         return true
+    }
+
+    @discardableResult
+    func removeQuestionFromFuturePractice(
+        questionID: CheckpointQuestion.ID,
+        goalID: Goal.ID,
+        reason: QuestionReportReason,
+        reportedAt: Date = Date()
+    ) -> Bool {
+        guard let targetGoal = storedGoalProfile(withID: goalID)
+                ?? (goal?.id == goalID ? goal : nil),
+              let matchingAttempt = attempts.first(where: {
+                  $0.questionID == questionID && $0.goalID == goalID
+              }) else {
+            return false
+        }
+
+        let previousQuestions = questions
+        let previousQuestionReports = questionReports
+        let questionIndex = questions.firstIndex {
+            $0.id == questionID && $0.goalID == goalID
+        }
+        let prompt = questionIndex.map { questions[$0].prompt } ?? matchingAttempt.prompt
+        let existingReport = questionReport(for: questionID, goalID: goalID)
+        let report = QuestionQualityReport(
+            id: existingReport?.id ?? UUID(),
+            questionID: questionID,
+            goalID: goalID,
+            prompt: prompt,
+            reason: reason,
+            note: existingReport?.note ?? "",
+            createdAt: existingReport?.createdAt ?? reportedAt
+        )
+
+        questionReports.removeAll {
+            $0.questionID == questionID && $0.goalID == goalID
+        }
+        questionReports.insert(report, at: 0)
+        if let questionIndex {
+            questions[questionIndex].status = .retired
+            questions[questionIndex].nextReviewAt = nil
+        }
+
+        guard save() else {
+            questions = previousQuestions
+            questionReports = previousQuestionReports
+            return false
+        }
+
+        if questionIndex != nil {
+            scheduleQuestionBankMaintenanceIfNeeded(for: targetGoal)
+        }
+        return questionReport(for: questionID, goalID: goalID) != nil
     }
 
     func clearQuestionGenerationDiagnostics() {

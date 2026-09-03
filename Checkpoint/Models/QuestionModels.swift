@@ -18,12 +18,14 @@ enum QuestionStatus: String, Codable, Sendable {
     case retired
 }
 
-enum QuestionReportReason: String, Codable, Sendable {
+enum QuestionReportReason: String, Codable, CaseIterable, Identifiable, Sendable {
+    case wrongAnswer = "Wrong Answer"
+    case confusing = "Confusing"
+    case irrelevant = "Irrelevant"
     case tooEasy = "Too Easy"
     case tooHard = "Too Hard"
-    case confusing = "Confusing"
-    case wrongAnswer = "Wrong Answer"
-    case irrelevant = "Irrelevant"
+
+    var id: Self { self }
 }
 
 enum IssueReportCategory: String, Codable, CaseIterable, Identifiable, Sendable {

@@ -79,6 +79,64 @@ final class QuestionRefillTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testRemovingQuestionTriggersMemberTopOffWithReportedPromptContext() async throws {
+        let goal = makeGoal()
+        let appleEngine = TargetCountQuestionEngine(provider: .appleFoundation)
+        let engine = HybridQuestionEngine(
+            backendEngine: ThrowingQuestionEngine(provider: .backend),
+            appleFoundationEngine: appleEngine
+        )
+        let store = CheckpointStore(questionEngine: engine, defaults: defaults)
+        store.updateAIProviderPreference(.appleFoundation)
+        store.updateMembershipTier(.member)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
+        let removedQuestion = try XCTUnwrap(store.questions.first)
+        store.attempts = [
+            makeAttempt(
+                goal: goal,
+                questionID: removedQuestion.id,
+                result: .incorrect,
+                createdAt: Date()
+            )
+        ]
+
+        XCTAssertTrue(
+            store.removeQuestionFromFuturePractice(
+                questionID: removedQuestion.id,
+                goalID: goal.id,
+                reason: .wrongAnswer
+            )
+        )
+
+        for _ in 0..<100 {
+            if !appleEngine.receivedRequests.isEmpty { break }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+
+        let request = try XCTUnwrap(appleEngine.receivedRequests.first)
+        let report = try XCTUnwrap(request.reportedQuestions.first)
+        XCTAssertEqual(report.questionID, removedQuestion.id)
+        XCTAssertEqual(report.goalID, goal.id)
+        XCTAssertEqual(report.prompt, removedQuestion.prompt)
+        XCTAssertEqual(report.reason, .wrongAnswer)
+        XCTAssertEqual(report.note, "")
+        XCTAssertEqual(
+            store.questions.first { $0.id == removedQuestion.id }?.status,
+            .retired
+        )
+
+        for _ in 0..<100 {
+            if !store.isQuestionBankTopOffInProgress { break }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
+    }
+
+    @MainActor
     func testMemberQuietlyRefillsWhenQuestionsAreUsedUp() async throws {
         let goal = makeGoal()
         let backendEngine = TargetCountQuestionEngine(provider: .backend)
