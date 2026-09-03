@@ -694,13 +694,18 @@ private struct CompactLegalLink: View {
     @ViewBuilder
     var body: some View {
         if let url {
-            Link(title, destination: url)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+            Link(destination: url) {
+                Text(title)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(minWidth: 44, minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
+            }
         } else {
             Text("\(title) — not configured")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.coral)
+                .frame(minHeight: 44, alignment: .leading)
         }
     }
 }
