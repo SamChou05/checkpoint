@@ -154,6 +154,15 @@ struct CompetencyRow: View {
     }
 
     private var standardHeader: some View {
+        ViewThatFits(in: .horizontal) {
+            standardInlineHeader
+                .frame(minWidth: 270)
+
+            accessibilitySizeHeader
+        }
+    }
+
+    private var standardInlineHeader: some View {
         HStack(alignment: .top, spacing: 12) {
             statusIcon
 
@@ -201,12 +210,13 @@ struct CompetencyRow: View {
             statusChip
 
             if competency.attempts > 0 {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                VStack(alignment: .leading, spacing: 2) {
                     masteryValue
 
                     Text(progressBand == .calibrating ? "answers" : "mastery estimate")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(CheckpointTheme.muted)
+                        .multilineTextAlignment(.leading)
                 }
             }
 
@@ -233,7 +243,10 @@ struct CompetencyRow: View {
         Text(progressBand.label)
             .font(.caption.weight(.bold))
             .foregroundStyle(progressBand.tint)
-            .fixedSize(horizontal: false, vertical: true)
+            .fixedSize(
+                horizontal: !usesStackedTypeLayout,
+                vertical: usesStackedTypeLayout
+            )
             .padding(.horizontal, 9)
             .padding(.vertical, 5)
             .background(progressBand.tint.opacity(0.12), in: Capsule())

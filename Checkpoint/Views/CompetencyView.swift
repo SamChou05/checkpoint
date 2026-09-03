@@ -81,8 +81,8 @@ struct ProgressDashboardNarrative: Equatable {
     }
 }
 
-private struct ProgressScreenSnapshot: Equatable {
-    enum Stage: Equatable {
+private struct ProgressScreenSnapshot: Hashable {
+    enum Stage: Hashable {
         case noGoal
         case building
         case generationFailure
@@ -96,6 +96,55 @@ private struct ProgressScreenSnapshot: Equatable {
     var stage: Stage
 }
 
+private enum ProgressScrollAnchor: Hashable {
+    case top
+}
+
+private enum ProgressAccessibilityFocus: Hashable {
+    case goalTitle(Goal.ID)
+    case primaryState(ProgressScreenSnapshot)
+}
+
+enum ProgressStateMotionStyle: Equatable {
+    case choreographed
+    case identity
+}
+
+struct ProgressStateMotionPolicy {
+    var style: ProgressStateMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .choreographed
+    }
+
+    var animation: Animation? {
+        style == .identity ? nil : CheckpointMotion.reveal
+    }
+
+    var transition: AnyTransition {
+        switch style {
+        case .choreographed:
+            .asymmetric(
+                insertion: .opacity.combined(
+                    with: .scale(scale: 0.99, anchor: .top)
+                ),
+                removal: .opacity
+            )
+        case .identity:
+            .identity
+        }
+    }
+}
+
+struct ProgressScreenChangePolicy {
+    static func resetsGoalScopedPresentation(
+        from previousGoalID: Goal.ID?,
+        to currentGoalID: Goal.ID?
+    ) -> Bool {
+        previousGoalID != currentGoalID
+    }
+}
+
 private struct FocusWinsDestination: Identifiable {
     let goalID: Goal.ID
     let goalTitle: String
@@ -105,15 +154,39 @@ private struct FocusWinsDestination: Identifiable {
 
 struct CompetencyView: View {
     let store: CheckpointStore
+    private let reduceMotionOverride: Bool?
+    private let isVisible: Bool
+    private let isCoveredByParentModal: Bool
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .largeTitle) private var heroMetricSize: CGFloat = 54
     @State private var isSkillMapEditorPresented = false
     @State private var isSkillMapRepairPresented = false
+    @State private var isSkillMapModalActive = false
     @State private var isSkillHistoryExpanded = false
-    @State private var isRetryingInitialQuestions = false
+    @State private var retryingInitialQuestionGoalIDs: Set<Goal.ID> = []
     @State private var focusWinsDestination: FocusWinsDestination?
+    @State private var pendingAccessibilityFocus: ProgressAccessibilityFocus?
+    @AccessibilityFocusState(for: .voiceOver)
+    private var accessibilityFocus: ProgressAccessibilityFocus?
+
+    init(
+        store: CheckpointStore,
+        reduceMotionOverride: Bool? = nil,
+        isVisible: Bool = true,
+        isCoveredByParentModal: Bool = false
+    ) {
+        self.store = store
+        self.reduceMotionOverride = reduceMotionOverride
+        self.isVisible = isVisible
+        self.isCoveredByParentModal = isCoveredByParentModal
+    }
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
 
     private var usesStackedTypeLayout: Bool {
         dynamicTypeSize == .xLarge ||
@@ -163,66 +236,77 @@ struct CompetencyView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 20) {
-                    progressHeader
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        progressHeader
+                            .id(ProgressScrollAnchor.top)
+                            .padding(.bottom, 20)
 
-                    if let goal = store.goal {
-                        focusWinsEntry(for: goal)
+                        VStack(alignment: .leading, spacing: 0) {
+                            VStack(alignment: .leading, spacing: 20) {
+                                progressStateContent
+                            }
+                            .id(screenSnapshot)
+                            .transition(progressStateMotionPolicy.transition)
+                        }
+                        .animation(
+                            progressStateMotionPolicy.animation,
+                            value: screenSnapshot
+                        )
                     }
-
-                    if store.goal == nil {
-                        emptyState
-                    } else if store.isPreparingActiveGoalQuestions {
-                        buildingSkillMapState
-                    } else if shouldShowQuestionGenerationFailure {
-                        questionGenerationFailureState
-                    } else if store.activeSkillMapNeedsAttention {
-                        skillMapAttentionState
-
-                        if !competencies.isEmpty {
-                            focusAreasPanel(
-                                title: "Recent signals",
-                                description: "Your existing practice history stays visible while you set up the new map."
-                            )
-                        }
-                    } else if dashboardSummary.totalSkillCount == 0 {
-                        emptyState
-                    } else {
-                        if store.activeDerivedSkillMap?.status == .suggested {
-                            suggestedSkillMapCallout
-                        }
-
-                        progressHero
-
-                        nextFocusPanel
-
-                        focusAreasPanel(title: "Focus areas")
-
-                        if let skillMap = store.activeDerivedSkillMap,
-                           skillMap.status == .reviewed {
-                            skillMapManagementPanel(skillMap)
-                        }
-                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
+                    .padding(.bottom, 56)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 56)
+                .padding(.bottom, 48)
+                .checkpointScreenBackground()
+                .navigationTitle("Progress")
+                .toolbarTitleDisplayMode(.inline)
+                .onChange(of: screenSnapshot) { previous, current in
+                    if ProgressScreenChangePolicy.resetsGoalScopedPresentation(
+                        from: previous.goalID,
+                        to: current.goalID
+                    ) {
+                        isSkillHistoryExpanded = false
+                        resetScrollPosition(
+                            afterSwitchTo: current.goalID,
+                            using: scrollProxy
+                        )
+                    }
+                    respondToScreenChangeAfterLayout(from: previous, to: current)
+                }
+                .sensoryFeedback(.selection, trigger: store.goal?.id)
             }
-            .padding(.bottom, 48)
-            .checkpointScreenBackground()
-            .navigationTitle("Progress")
-            .toolbarTitleDisplayMode(.inline)
-            .onChange(of: screenSnapshot) { previous, current in
-                announceScreenChange(from: previous, to: current)
-            }
-            .sensoryFeedback(.selection, trigger: store.goal?.id)
         }
-        .sheet(isPresented: $isSkillMapEditorPresented) {
+        .onChange(of: isVisible) { _, currentIsVisible in
+            if !currentIsVisible {
+                accessibilityFocus = nil
+                pendingAccessibilityFocus = nil
+            }
+        }
+        .onChange(of: isCoveredByParentModal) { _, isCovered in
+            if !isCovered {
+                applyPendingAccessibilityFocusAfterDismiss()
+            }
+        }
+        .sheet(
+            isPresented: $isSkillMapEditorPresented,
+            onDismiss: finishSkillMapModalPresentation
+        ) {
             SkillMapReviewView(store: store)
+                .onAppear {
+                    isSkillMapModalActive = true
+                }
         }
-        .sheet(isPresented: $isSkillMapRepairPresented) {
+        .sheet(
+            isPresented: $isSkillMapRepairPresented,
+            onDismiss: finishSkillMapModalPresentation
+        ) {
             SkillMapRepairView(store: store)
+                .onAppear {
+                    isSkillMapModalActive = true
+                }
         }
         .sheet(item: $focusWinsDestination) { destination in
             FocusWinsView(
@@ -230,6 +314,81 @@ struct CompetencyView: View {
                 goalID: destination.goalID,
                 goalTitle: destination.goalTitle
             )
+        }
+    }
+
+    @ViewBuilder
+    private var progressStateContent: some View {
+        if store.goal == nil {
+            emptyState
+        } else if store.isPreparingActiveGoalQuestions {
+            buildingSkillMapState
+            activeGoalFocusWinsEntry
+        } else if shouldShowQuestionGenerationFailure {
+            questionGenerationFailureState
+            activeGoalFocusWinsEntry
+        } else if store.activeSkillMapNeedsAttention {
+            skillMapAttentionState
+
+            if !competencies.isEmpty {
+                focusAreasPanel(
+                    title: "Recent signals",
+                    description: "Your existing practice history stays visible while you set up the new map."
+                )
+            }
+
+            activeGoalFocusWinsEntry
+        } else if dashboardSummary.totalSkillCount == 0 {
+            emptyState
+            activeGoalFocusWinsEntry
+        } else {
+            if store.activeDerivedSkillMap?.status == .suggested {
+                suggestedSkillMapCallout
+            }
+
+            progressHero
+            nextFocusPanel
+            activeGoalFocusWinsEntry
+            focusAreasPanel(title: "Focus areas")
+
+            if let skillMap = store.activeDerivedSkillMap,
+               skillMap.status == .reviewed {
+                skillMapManagementPanel(skillMap)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var activeGoalFocusWinsEntry: some View {
+        if let goal = store.goal {
+            focusWinsEntry(for: goal)
+        }
+    }
+
+    private var progressStateMotionPolicy: ProgressStateMotionPolicy {
+        ProgressStateMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var isRetryingInitialQuestions: Bool {
+        guard let goalID = store.goal?.id else { return false }
+        return retryingInitialQuestionGoalIDs.contains(goalID)
+    }
+
+    private func resetScrollPosition(
+        afterSwitchTo goalID: Goal.ID?,
+        using proxy: ScrollViewProxy
+    ) {
+        Task { @MainActor in
+            await Task.yield()
+            guard screenSnapshot.goalID == goalID else { return }
+
+            if reduceMotion {
+                proxy.scrollTo(ProgressScrollAnchor.top, anchor: .top)
+            } else {
+                withAnimation(CheckpointMotion.change) {
+                    proxy.scrollTo(ProgressScrollAnchor.top, anchor: .top)
+                }
+            }
         }
     }
 
@@ -291,6 +450,8 @@ struct CompetencyView: View {
             .foregroundStyle(CheckpointTheme.text)
             .lineLimit(usesStackedTypeLayout ? nil : 3)
             .fixedSize(horizontal: false, vertical: true)
+            .accessibilityFocused($accessibilityFocus, equals: .goalTitle(goal.id))
+            .accessibilityAddTraits(.isHeader)
     }
 
     @ViewBuilder
@@ -352,45 +513,9 @@ struct CompetencyView: View {
             )
         } label: {
             SectionPanel {
-                Group {
-                    if usesStackedTypeLayout {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack(alignment: .center, spacing: 12) {
-                                focusWinsIcon
-
-                                Text("Focus Wins")
-                                    .font(.headline)
-                                    .foregroundStyle(CheckpointTheme.text)
-                            }
-
-                            focusWinsDetail
-
-                            HStack(spacing: 7) {
-                                Spacer(minLength: 0)
-                                focusWinsCount(count)
-                                focusWinsChevron
-                            }
-                        }
-                    } else {
-                        HStack(alignment: .center, spacing: 14) {
-                            focusWinsIcon
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Focus Wins")
-                                    .font(.headline)
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                focusWinsDetail
-                            }
-
-                            Spacer(minLength: 4)
-
-                            HStack(spacing: 7) {
-                                focusWinsCount(count)
-                                focusWinsChevron
-                            }
-                        }
-                    }
+                ViewThatFits(in: .horizontal) {
+                    focusWinsInlineLayout(count: count)
+                    focusWinsStackedLayout(count: count)
                 }
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             }
@@ -400,6 +525,49 @@ struct CompetencyView: View {
         .accessibilityLabel("Focus Wins")
         .accessibilityValue(focusWinsAccessibilityValue(count))
         .accessibilityHint("Opens Focus Wins for \(goal.title).")
+    }
+
+    private func focusWinsInlineLayout(count: Int) -> some View {
+        HStack(alignment: .center, spacing: 14) {
+            focusWinsIcon
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Focus Wins")
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+
+                focusWinsDetail
+            }
+            .frame(minWidth: 145, alignment: .leading)
+            .layoutPriority(1)
+
+            Spacer(minLength: 4)
+
+            HStack(spacing: 7) {
+                focusWinsCount(count)
+                focusWinsChevron
+            }
+        }
+    }
+
+    private func focusWinsStackedLayout(count: Int) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
+                focusWinsIcon
+
+                Text("Focus Wins")
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+            }
+
+            focusWinsDetail
+
+            HStack(spacing: 7) {
+                Spacer(minLength: 0)
+                focusWinsCount(count)
+                focusWinsChevron
+            }
+        }
     }
 
     private var focusWinsIcon: some View {
@@ -499,7 +667,20 @@ struct CompetencyView: View {
         )
     }
 
+    @ViewBuilder
     private var coverageMetric: some View {
+        if screenSnapshot.stage == .reviewed {
+            coverageMetricContent
+                .accessibilityFocused(
+                    $accessibilityFocus,
+                    equals: .primaryState(screenSnapshot)
+                )
+        } else {
+            coverageMetricContent
+        }
+    }
+
+    private var coverageMetricContent: some View {
         Text("\(dashboardSummary.practicedSkillCount)/\(dashboardSummary.totalSkillCount)")
             .font(.system(size: heroMetricSize, weight: .bold, design: .rounded))
             .foregroundStyle(heroText)
@@ -962,6 +1143,10 @@ struct CompetencyView: View {
                     .font(.headline)
                     .foregroundStyle(CheckpointTheme.text)
                     .accessibilityAddTraits(.isHeader)
+                    .accessibilityFocused(
+                        $accessibilityFocus,
+                        equals: .primaryState(screenSnapshot)
+                    )
 
                 Text("A quick review keeps every signal meaningful.")
                     .font(.footnote)
@@ -1212,6 +1397,7 @@ struct CompetencyView: View {
                 ? "Building your skill map. Progress will appear when the first practice set is ready."
                 : "Preparing your first checkpoint. Progress will appear when the first practice set is prepared."
         )
+        .accessibilityFocused($accessibilityFocus, equals: .primaryState(screenSnapshot))
     }
 
     private var questionGenerationFailureState: some View {
@@ -1230,6 +1416,11 @@ struct CompetencyView: View {
                 Text(store.lastQuestionGenerationFailure?.title ?? "Practice isn't ready yet")
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityFocused(
+                        $accessibilityFocus,
+                        equals: .primaryState(screenSnapshot)
+                    )
 
                 Text(
                     store.lastQuestionGenerationFailure?.message
@@ -1276,6 +1467,11 @@ struct CompetencyView: View {
                 Text("Set up your skill map")
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityFocused(
+                        $accessibilityFocus,
+                        equals: .primaryState(screenSnapshot)
+                    )
 
                 Text("Add 3–6 focused skills so Checkpoint can track progress meaningfully and preserve your existing answer history.")
                     .font(.subheadline)
@@ -1305,6 +1501,11 @@ struct CompetencyView: View {
                 Text(store.goal == nil ? "Create your first goal" : "No progress signals yet")
                     .font(.title3.bold())
                     .foregroundStyle(CheckpointTheme.text)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityFocused(
+                        $accessibilityFocus,
+                        equals: .primaryState(screenSnapshot)
+                    )
 
                 Text(
                     store.goal == nil
@@ -1330,11 +1531,81 @@ struct CompetencyView: View {
 
     private func retryInitialQuestionGeneration() {
         Task {
-            guard !isRetryingInitialQuestions else { return }
-            isRetryingInitialQuestions = true
+            guard let goalID = store.goal?.id,
+                  !retryingInitialQuestionGoalIDs.contains(goalID) else {
+                return
+            }
+            retryingInitialQuestionGoalIDs.insert(goalID)
             await store.retryInitialQuestionGeneration()
-            isRetryingInitialQuestions = false
+            retryingInitialQuestionGoalIDs.remove(goalID)
         }
+    }
+
+    private func respondToScreenChangeAfterLayout(
+        from previous: ProgressScreenSnapshot,
+        to current: ProgressScreenSnapshot
+    ) {
+        Task { @MainActor in
+            await Task.yield()
+            guard screenSnapshot == current else { return }
+            guard isVisible else { return }
+
+            if voiceOverEnabled {
+                let nextFocus: ProgressAccessibilityFocus
+                if previous.goalID != current.goalID,
+                   let currentGoalID = current.goalID {
+                    nextFocus = .goalTitle(currentGoalID)
+                } else {
+                    nextFocus = .primaryState(current)
+                }
+
+                if isSkillMapModalActive || isCoveredByParentModal {
+                    pendingAccessibilityFocus = nextFocus
+                    return
+                }
+
+                accessibilityFocus = nextFocus
+                return
+            }
+
+            announceScreenChange(from: previous, to: current)
+        }
+    }
+
+    private func applyPendingAccessibilityFocusAfterDismiss() {
+        guard !isSkillMapModalActive, !isCoveredByParentModal else { return }
+        guard voiceOverEnabled,
+              isVisible,
+              let pendingFocus = pendingAccessibilityFocus else {
+            pendingAccessibilityFocus = nil
+            return
+        }
+
+        pendingAccessibilityFocus = nil
+        Task { @MainActor in
+            await Task.yield()
+            guard isVisible,
+                  accessibilityFocusMatchesCurrentScreen(pendingFocus) else {
+                return
+            }
+            accessibilityFocus = pendingFocus
+        }
+    }
+
+    private func accessibilityFocusMatchesCurrentScreen(
+        _ focus: ProgressAccessibilityFocus
+    ) -> Bool {
+        switch focus {
+        case let .goalTitle(goalID):
+            screenSnapshot.goalID == goalID
+        case let .primaryState(snapshot):
+            screenSnapshot == snapshot
+        }
+    }
+
+    private func finishSkillMapModalPresentation() {
+        isSkillMapModalActive = false
+        applyPendingAccessibilityFocusAfterDismiss()
     }
 
     private func announceScreenChange(

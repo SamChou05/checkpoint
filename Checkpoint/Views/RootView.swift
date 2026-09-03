@@ -45,6 +45,7 @@ struct RootView: View {
     @State private var activeCheckpointSession: CheckpointSession?
     @State private var pendingShieldRetryTask: Task<Void, Never>?
     @State private var isSuggestedSkillMapReviewPresented = false
+    @State private var isSuggestedSkillMapReviewActive = false
     @State private var lastPresentedSkillMapSignature: String?
     @State private var isFirstRunSetupPending = FirstRunSetupProgress.isPending()
     @State private var isOnboardingSheetActive = false
@@ -66,7 +67,13 @@ struct RootView: View {
                 }
                 .tag(AppTab.home)
 
-            CompetencyView(store: store)
+            CompetencyView(
+                store: store,
+                isVisible: selectedTab == .skill,
+                isCoveredByParentModal: isOnboardingSheetActive
+                    || isSuggestedSkillMapReviewPresented
+                    || isSuggestedSkillMapReviewActive
+            )
                 .tabItem {
                     Label("Progress", systemImage: "chart.line.uptrend.xyaxis")
                 }
@@ -119,8 +126,16 @@ struct RootView: View {
             )
             .interactiveDismissDisabled()
         }
-        .sheet(isPresented: $isSuggestedSkillMapReviewPresented) {
+        .sheet(
+            isPresented: $isSuggestedSkillMapReviewPresented,
+            onDismiss: {
+                isSuggestedSkillMapReviewActive = false
+            }
+        ) {
             SkillMapReviewView(store: store)
+                .onAppear {
+                    isSuggestedSkillMapReviewActive = true
+                }
         }
         .task {
             await bootstrap()
