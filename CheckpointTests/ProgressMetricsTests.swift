@@ -86,6 +86,103 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testWeeklyImpactDetailsHighlightAttainableLearningValue() throws {
+        let goal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let calendar = Calendar.current
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: Date()))
+        let firstPracticeDay = week.start.addingTimeInterval(60 * 60)
+        let secondPracticeDay = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 1, to: firstPracticeDay)
+        )
+        let priorWeek = week.start.addingTimeInterval(-(60 * 60))
+        let recoveredFromLastWeekID = UUID()
+        let recoveredWithinWeekID = UUID()
+
+        let attempts = [
+            makeAttempt(
+                goal: goal,
+                questionID: recoveredFromLastWeekID,
+                result: .incorrect,
+                createdAt: priorWeek
+            ),
+            makeAttempt(
+                goal: goal,
+                questionID: recoveredFromLastWeekID,
+                result: .correct,
+                createdAt: firstPracticeDay
+            ),
+            makeAttempt(
+                goal: goal,
+                questionID: recoveredWithinWeekID,
+                result: .partial,
+                createdAt: firstPracticeDay.addingTimeInterval(60)
+            ),
+            makeAttempt(
+                goal: goal,
+                questionID: recoveredWithinWeekID,
+                result: .correct,
+                createdAt: secondPracticeDay
+            ),
+            makeAttempt(
+                goal: goal,
+                result: .correct,
+                createdAt: secondPracticeDay.addingTimeInterval(60)
+            ),
+            makeAttempt(
+                goal: otherGoal,
+                result: .correct,
+                createdAt: firstPracticeDay
+            )
+        ]
+        let unlockEvents = [
+            UnlockEvent(goalID: goal.id, minutes: 30, createdAt: firstPracticeDay),
+            UnlockEvent(goalID: goal.id, minutes: 15, createdAt: secondPracticeDay),
+            UnlockEvent(goalID: otherGoal.id, minutes: 30, createdAt: firstPracticeDay)
+        ]
+        let details = WeeklyMetricsCalculator(
+            attempts: attempts,
+            unlockEvents: unlockEvents,
+            competencies: []
+        ).impactDetails(goalID: goal.id)
+
+        XCTAssertEqual(details.practiceDays.count, 7)
+        XCTAssertEqual(details.practiceDays.map(\.questionsAnswered).reduce(0, +), 4)
+        XCTAssertEqual(details.activePracticeDays, 2)
+        XCTAssertEqual(details.recoveredQuestions, 2)
+        XCTAssertEqual(details.earnedBreakMinutes, 45)
+        XCTAssertEqual(details.earnedBreakTimeText, "45m")
+        XCTAssertEqual(details.previousWeekQuestions, 1)
+        XCTAssertEqual(
+            details.questionTrendText(currentQuestions: 4),
+            "3 more questions than last week"
+        )
+    }
+
+    func testWeeklyImpactTimeFormattingRemainsCompact() {
+        let base = WeeklyImpactDetails(
+            practiceDays: [],
+            earnedBreakMinutes: 60,
+            recoveredQuestions: 0,
+            activePracticeDays: 0,
+            previousWeekQuestions: 0
+        )
+
+        XCTAssertEqual(base.earnedBreakTimeText, "1h")
+
+        var mixed = base
+        mixed.earnedBreakMinutes = 75
+        XCTAssertEqual(mixed.earnedBreakTimeText, "1h 15m")
+    }
+
+    @MainActor
     func testCompoundQuestionTopicUpdatesCanonicalSkills() {
         let store = CheckpointStore(defaults: defaults)
         let goal = Goal(

@@ -1,5 +1,50 @@
 import Foundation
 
+struct WeeklyPracticeDay: Identifiable, Equatable, Sendable {
+    var date: Date
+    var questionsAnswered: Int
+
+    var id: Date { date }
+}
+
+struct WeeklyImpactDetails: Equatable, Sendable {
+    var practiceDays: [WeeklyPracticeDay]
+    var earnedBreakMinutes: Int
+    var recoveredQuestions: Int
+    var activePracticeDays: Int
+    var previousWeekQuestions: Int
+
+    var earnedBreakTimeText: String {
+        let hours = earnedBreakMinutes / 60
+        let minutes = earnedBreakMinutes % 60
+
+        if hours > 0, minutes > 0 {
+            return "\(hours)h \(minutes)m"
+        }
+        if hours > 0 {
+            return "\(hours)h"
+        }
+        return "\(minutes)m"
+    }
+
+    func questionTrendText(currentQuestions: Int) -> String? {
+        guard currentQuestions > 0 || previousWeekQuestions > 0 else { return nil }
+
+        let difference = currentQuestions - previousWeekQuestions
+        if difference == 0 {
+            return "Level with last week"
+        }
+        if previousWeekQuestions == 0 {
+            return "A new weekly baseline"
+        }
+
+        let noun = abs(difference) == 1 ? "question" : "questions"
+        return difference > 0
+            ? "\(difference) more \(noun) than last week"
+            : "\(abs(difference)) fewer \(noun) than last week"
+    }
+}
+
 @MainActor
 struct WeeklyMetricsCalculator {
     private let attempts: [CheckpointAttempt]
@@ -56,6 +101,83 @@ struct WeeklyMetricsCalculator {
             reviewSkill: skillHighlights.review,
             isCurrentGoal: isCurrentGoal
         )
+    }
+
+    func impactDetails(goalID: Goal.ID?) -> WeeklyImpactDetails {
+        let calendar = Calendar.current
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: Date()),
+              let previousWeekStart = calendar.date(byAdding: .weekOfYear, value: -1, to: week.start) else {
+            return WeeklyImpactDetails(
+                practiceDays: [],
+                earnedBreakMinutes: 0,
+                recoveredQuestions: 0,
+                activePracticeDays: 0,
+                previousWeekQuestions: 0
+            )
+        }
+
+        let previousWeek = DateInterval(start: previousWeekStart, end: week.start)
+        let scopedAttempts = attempts.filter { attempt in
+            guard let goalID else { return true }
+            return attempt.goalID == goalID
+        }
+        let weeklyAttempts = scopedAttempts.filter { week.contains($0.createdAt) }
+        let weeklyUnlockEvents = unlockEvents.filter { event in
+            week.contains(event.createdAt) && (goalID == nil || event.goalID == goalID)
+        }
+        let practiceDays = (0..<7).compactMap { offset -> WeeklyPracticeDay? in
+            guard let date = calendar.date(byAdding: .day, value: offset, to: week.start) else {
+                return nil
+            }
+            let day = calendar.startOfDay(for: date)
+            let count = weeklyAttempts.lazy.filter {
+                calendar.isDate($0.createdAt, inSameDayAs: day)
+            }.count
+            return WeeklyPracticeDay(date: day, questionsAnswered: count)
+        }
+
+        return WeeklyImpactDetails(
+            practiceDays: practiceDays,
+            earnedBreakMinutes: weeklyUnlockEvents.reduce(0) { $0 + $1.minutes },
+            recoveredQuestions: recoveredQuestionCount(
+                in: scopedAttempts,
+                during: week
+            ),
+            activePracticeDays: Set(
+                weeklyAttempts.map { calendar.startOfDay(for: $0.createdAt) }
+            ).count,
+            previousWeekQuestions: scopedAttempts.lazy.filter {
+                previousWeek.contains($0.createdAt)
+            }.count
+        )
+    }
+
+    private func recoveredQuestionCount(
+        in attempts: [CheckpointAttempt],
+        during interval: DateInterval
+    ) -> Int {
+        let orderedAttempts = attempts.sorted { lhs, rhs in
+            if lhs.createdAt == rhs.createdAt {
+                return lhs.id.uuidString < rhs.id.uuidString
+            }
+            return lhs.createdAt < rhs.createdAt
+        }
+        var unresolvedQuestionIDs = Set<CheckpointQuestion.ID>()
+        var recoveredQuestionIDs = Set<CheckpointQuestion.ID>()
+
+        for attempt in orderedAttempts {
+            if attempt.result == .correct {
+                if interval.contains(attempt.createdAt),
+                   unresolvedQuestionIDs.contains(attempt.questionID) {
+                    recoveredQuestionIDs.insert(attempt.questionID)
+                }
+                unresolvedQuestionIDs.remove(attempt.questionID)
+            } else {
+                unresolvedQuestionIDs.insert(attempt.questionID)
+            }
+        }
+
+        return recoveredQuestionIDs.count
     }
 
     private func checkpointStreakDays(for unlockEvents: [UnlockEvent]) -> Int {
