@@ -227,7 +227,7 @@ struct HistoryView: View {
 
                     summaryMetric(
                         value: reviewCount,
-                        label: "TO REVIEW",
+                        label: "NON-CORRECT",
                         systemImage: "arrow.triangle.2.circlepath",
                         tint: summaryAmber
                     )
@@ -243,7 +243,7 @@ struct HistoryView: View {
 
                     summaryMetric(
                         value: reviewCount,
-                        label: "TO REVIEW",
+                        label: "NON-CORRECT",
                         systemImage: "arrow.triangle.2.circlepath",
                         tint: summaryAmber
                     )
@@ -348,6 +348,11 @@ struct HistoryView: View {
 
     @ViewBuilder
     private var answerTimeline: some View {
+        let retainedQuestionsByID = Dictionary(
+            store.questions.map { ($0.id, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+
         if dayGroups.isEmpty {
             filteredEmptyState
         } else {
@@ -362,7 +367,10 @@ struct HistoryView: View {
 
                         VStack(spacing: 0) {
                             ForEach(Array(group.attempts.enumerated()), id: \.element.id) { index, attempt in
-                                AttemptRow(attempt: attempt)
+                                AttemptRow(
+                                    attempt: attempt,
+                                    retainedQuestion: retainedQuestionsByID[attempt.questionID]
+                                )
 
                                 if index < group.attempts.count - 1 {
                                     Divider()
@@ -502,7 +510,7 @@ private enum PracticeHistoryFilter: String, CaseIterable, Identifiable {
         switch self {
         case .all: "All"
         case .correct: "Correct"
-        case .review: "Review"
+        case .review: "Revisit"
         }
     }
 
@@ -510,7 +518,7 @@ private enum PracticeHistoryFilter: String, CaseIterable, Identifiable {
         switch self {
         case .all: "No answers yet"
         case .correct: "No correct answers yet"
-        case .review: "Nothing needs review"
+        case .review: "No answers to revisit"
         }
     }
 
@@ -518,7 +526,7 @@ private enum PracticeHistoryFilter: String, CaseIterable, Identifiable {
         switch self {
         case .all: "All answers"
         case .correct: "Correct answers"
-        case .review: "Answers to review"
+        case .review: "Non-correct answers"
         }
     }
 
@@ -549,8 +557,70 @@ private struct PracticeHistoryDay: Identifiable {
     var id: Date { date }
 }
 
+struct PracticeHistoryReviewPresentation: Equatable {
+    let topic: String?
+    let format: QuestionFormat?
+    let userAnswer: String
+    let referenceLabel: String?
+    let referenceAnswer: String?
+    let explanation: String?
+
+    init(
+        attempt: CheckpointAttempt,
+        retainedQuestion: CheckpointQuestion? = nil
+    ) {
+        userAnswer = Self.nonEmpty(attempt.answer) ?? "No answer recorded"
+
+        let candidateReferenceAnswer: String?
+
+        if let snapshot = attempt.reviewSnapshot {
+            // Presence makes the persisted review authoritative, including omitted content.
+            topic = Self.nonEmpty(snapshot.topic)
+            format = snapshot.format
+            candidateReferenceAnswer = Self.nonEmpty(snapshot.referenceAnswer)
+            explanation = Self.nonEmpty(snapshot.explanation)
+        } else if let retainedQuestion,
+                  retainedQuestion.id == attempt.questionID {
+            topic = Self.nonEmpty(retainedQuestion.topic)
+            format = retainedQuestion.format
+            candidateReferenceAnswer = Self.nonEmpty(
+                AnswerGrader.correctAnswerText(
+                    for: retainedQuestion,
+                    after: attempt.result
+                )
+            )
+            explanation = Self.nonEmpty(retainedQuestion.explanation)
+        } else {
+            topic = nil
+            format = nil
+            candidateReferenceAnswer = nil
+            explanation = nil
+        }
+
+        if attempt.result != .correct,
+           let format,
+           let candidateReferenceAnswer {
+            referenceLabel = CheckpointAnswerReviewPresentation.answerLabel(for: format)
+            referenceAnswer = candidateReferenceAnswer
+        } else {
+            referenceLabel = nil
+            referenceAnswer = nil
+        }
+    }
+
+    private static func nonEmpty(_ text: String?) -> String? {
+        guard let text,
+              !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return nil
+        }
+        return text
+    }
+
+}
+
 private struct AttemptRow: View {
     var attempt: CheckpointAttempt
+    var retainedQuestion: CheckpointQuestion?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -566,10 +636,10 @@ private struct AttemptRow: View {
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: resultPresentation.systemImage)
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(resultPresentation.tint)
+                        .foregroundStyle(resultTint)
                         .frame(width: 38, height: 38)
                         .background(
-                            resultPresentation.tint.opacity(0.11),
+                            resultTint.opacity(0.11),
                             in: RoundedRectangle(cornerRadius: 11, style: .continuous)
                         )
                         .accessibilityHidden(true)
@@ -591,7 +661,7 @@ private struct AttemptRow: View {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.text)
                             .multilineTextAlignment(.leading)
-                            .lineLimit(isExpanded || dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                            .lineLimit(isExpanded || usesFullWidthReviewLayout ? nil : 2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
@@ -615,43 +685,160 @@ private struct AttemptRow: View {
                     + attempt.prompt
             )
             .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
-            .accessibilityHint(isExpanded ? "Hides your answer" : "Shows your answer")
+            .accessibilityHint(isExpanded ? "Hides the answer review" : "Shows the answer review")
 
             if isExpanded {
                 Divider()
                     .overlay(CheckpointTheme.hairline)
-                    .padding(.leading, 62)
+                    .padding(.leading, usesFullWidthReviewLayout ? 14 : 64)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("YOUR ANSWER")
-                        .font(.caption2.weight(.bold))
-                        .tracking(0.55)
-                        .foregroundStyle(CheckpointTheme.muted)
+                expandedReview
+                    .transition(reviewTransition)
+            }
+        }
+    }
 
-                    Text(attempt.answer)
-                        .font(.subheadline)
-                        .foregroundStyle(CheckpointTheme.text)
+    private var expandedReview: some View {
+        let review = PracticeHistoryReviewPresentation(
+            attempt: attempt,
+            retainedQuestion: retainedQuestion
+        )
+
+        return VStack(alignment: .leading, spacing: 14) {
+            if let topic = review.topic {
+                Label {
+                    Text(topic)
+                        .lineLimit(usesFullWidthReviewLayout ? nil : 2)
                         .fixedSize(horizontal: false, vertical: true)
+                } icon: {
+                    Image(systemName: "scope")
+                        .accessibilityHidden(true)
                 }
-                .padding(.horizontal, 14)
-                .padding(.leading, dynamicTypeSize.isAccessibilitySize ? 0 : 50)
-                .padding(.top, 12)
-                .padding(.bottom, 16)
-                .accessibilityElement(children: .combine)
-                .transition(
-                    reduceMotion
-                        ? .opacity
-                        : .opacity.combined(with: .move(edge: .top))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background {
+                    if usesFullWidthReviewLayout {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(CheckpointTheme.teal.opacity(0.09))
+                    } else {
+                        Capsule()
+                            .fill(CheckpointTheme.teal.opacity(0.09))
+                    }
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Skill")
+                .accessibilityValue(topic)
+            }
+
+            reviewSection(
+                label: "Your answer",
+                text: review.userAnswer,
+                font: answerFont(for: review.format, emphasized: false),
+                color: CheckpointTheme.text
+            )
+
+            if let referenceLabel = review.referenceLabel,
+               let referenceAnswer = review.referenceAnswer {
+                reviewDivider
+
+                reviewSection(
+                    label: referenceLabel,
+                    text: referenceAnswer,
+                    font: answerFont(for: review.format, emphasized: true),
+                    color: CheckpointTheme.text
+                )
+            }
+
+            if let explanation = review.explanation {
+                reviewDivider
+
+                reviewSection(
+                    label: "Explanation",
+                    text: explanation,
+                    font: .footnote,
+                    color: CheckpointTheme.muted
                 )
             }
         }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.panelRaised.opacity(0.62),
+            in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+        )
+        .padding(.leading, usesFullWidthReviewLayout ? 14 : 64)
+        .padding(.trailing, 14)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+        .accessibilityElement(children: .contain)
+    }
+
+    private func reviewSection(
+        label: String,
+        text: String,
+        font: Font,
+        color: Color
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(label.uppercased())
+                .font(.caption2.weight(.bold))
+                .tracking(0.55)
+                .foregroundStyle(CheckpointTheme.muted)
+
+            Text(text)
+                .font(font)
+                .foregroundStyle(color)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue(text)
+    }
+
+    private var reviewDivider: some View {
+        Divider()
+            .overlay(CheckpointTheme.hairline)
+            .accessibilityHidden(true)
+    }
+
+    private func answerFont(
+        for format: QuestionFormat?,
+        emphasized: Bool
+    ) -> Font {
+        let font: Font = format == .codeTrace
+            ? .system(.subheadline, design: .monospaced)
+            : .subheadline
+        return emphasized ? font.weight(.semibold) : font
+    }
+
+    private var usesFullWidthReviewLayout: Bool {
+        switch dynamicTypeSize {
+        case .xxLarge,
+             .xxxLarge,
+             .accessibility1,
+             .accessibility2,
+             .accessibility3,
+             .accessibility4,
+             .accessibility5:
+            true
+        default:
+            false
+        }
+    }
+
+    private var reviewTransition: AnyTransition {
+        reduceMotion
+            ? .identity
+            : .opacity.combined(with: .scale(scale: 0.985, anchor: .top))
     }
 
     private var resultLabel: some View {
         Text(resultPresentation.label.uppercased())
             .font(.caption2.weight(.bold))
             .tracking(0.55)
-            .foregroundStyle(resultPresentation.tint)
+            .foregroundStyle(resultTint)
     }
 
     private var timeLabel: some View {
@@ -660,16 +847,18 @@ private struct AttemptRow: View {
             .foregroundStyle(CheckpointTheme.muted)
     }
 
-    private var resultPresentation: (label: String, tint: Color, systemImage: String) {
-        switch attempt.result {
-        case .correct:
-            return ("Correct", CheckpointTheme.teal, "checkmark")
-        case .partial:
-            return ("Almost", CheckpointTheme.amber, "circle.lefthalf.filled")
-        case .incorrect:
-            return ("Missed", CheckpointTheme.coral, "xmark")
-        case .unclear:
-            return ("Not sure", CheckpointTheme.coral, "questionmark")
+    private var resultPresentation: CheckpointAnswerResultPresentation {
+        CheckpointAnswerResultPresentation(result: attempt.result)
+    }
+
+    private var resultTint: Color {
+        switch resultPresentation.tone {
+        case .success:
+            CheckpointTheme.teal
+        case .warning:
+            CheckpointTheme.amber
+        case .failure:
+            CheckpointTheme.coral
         }
     }
 }

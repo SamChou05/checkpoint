@@ -34,6 +34,89 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
         XCTAssertNil(CheckpointAnswerReviewPresentation(question: question, result: .correct))
     }
 
+    @MainActor
+    func testSubmitAnswerSnapshotsCanonicalTopicAndVisibleMultipleChoiceAnswer() throws {
+        let canonicalSkill = SkillMapTopic(
+            name: "Argument analysis",
+            aliases: ["argument flaws"],
+            objectives: [SkillMapObjective(name: "Identify supported conclusions")]
+        )
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [canonicalSkill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let explanation = "The answer supported by the argument is correct because it follows from the stated evidence."
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "argument flaws",
+            prompt: "Which persisted answer should the review trust?",
+            expectedAnswer: "The tempting but wrong answer",
+            choices: [
+                "The tempting but wrong answer",
+                "The answer supported by the argument",
+                "An unrelated answer",
+                "A too-broad answer"
+            ],
+            explanation: explanation
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = [question]
+
+        store.submitAnswer(
+            question: question,
+            answer: "The tempting but wrong answer",
+            result: .incorrect,
+            grantsUnlock: false
+        )
+
+        let snapshot = try XCTUnwrap(store.attempts.first?.reviewSnapshot)
+        XCTAssertEqual(snapshot.topic, canonicalSkill.name)
+        XCTAssertEqual(snapshot.format, .multipleChoice)
+        XCTAssertEqual(snapshot.referenceAnswer, "The answer supported by the argument")
+        XCTAssertEqual(snapshot.explanation, explanation)
+    }
+
+    @MainActor
+    func testSubmitAnswerSnapshotsReferenceOnlyForNonCorrectResults() throws {
+        let goal = makeGoal()
+        let choices = [
+            "A. Remove the first element",
+            "B. Remove the most recently added element",
+            "C. Remove a random element",
+            "D. Remove every element"
+        ]
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        for (index, result) in AnswerResult.allCases.enumerated() {
+            let question = makeQuestion(
+                goal: goal,
+                index: index + 1,
+                expectedAnswer: "B",
+                choices: choices,
+                explanation: "A stack removes the most recently added element."
+            )
+            store.questions.append(question)
+
+            store.submitAnswer(
+                question: question,
+                answer: result == .correct ? choices[1] : choices[0],
+                result: result,
+                grantsUnlock: false
+            )
+
+            let snapshot = try XCTUnwrap(store.attempts.first?.reviewSnapshot)
+            XCTAssertEqual(snapshot.format, .multipleChoice)
+            XCTAssertEqual(snapshot.referenceAnswer, result == .correct ? nil : choices[1])
+        }
+    }
+
     func testFeedbackRevealBehaviorRespectsMotionAndAssistiveNavigation() {
         XCTAssertEqual(
             CheckpointFeedbackRevealBehavior.resolve(

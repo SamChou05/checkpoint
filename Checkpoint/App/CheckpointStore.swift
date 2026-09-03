@@ -2003,6 +2003,11 @@ final class CheckpointStore {
         let mappedSkill = questionGoal.derivedSkillMap.flatMap {
             SkillMapReconciler.skillMapTopic(matching: question, in: $0)
         }
+        let reviewSnapshot = attemptReviewSnapshot(
+            for: question,
+            result: result,
+            canonicalTopic: mappedSkill?.name ?? question.topic
+        )
         let attempt = CheckpointAttempt(
             questionID: question.id,
             goalID: question.goalID,
@@ -2012,7 +2017,8 @@ final class CheckpointStore {
             prompt: question.prompt,
             answer: answer,
             result: result,
-            unlockMinutes: unlockMinutes
+            unlockMinutes: unlockMinutes,
+            reviewSnapshot: reviewSnapshot
         )
 
         attempts.insert(attempt, at: 0)
@@ -3988,8 +3994,29 @@ final class CheckpointStore {
                 attempts[index].questionDifficulty = question.difficulty
                 didChange = true
             }
+            if attempts[index].reviewSnapshot == nil {
+                attempts[index].reviewSnapshot = attemptReviewSnapshot(
+                    for: question,
+                    result: attempts[index].result,
+                    canonicalTopic: mappedSkill?.name ?? question.topic
+                )
+                didChange = true
+            }
         }
         return didChange
+    }
+
+    private func attemptReviewSnapshot(
+        for question: CheckpointQuestion,
+        result: AnswerResult,
+        canonicalTopic: String
+    ) -> CheckpointAttemptReviewSnapshot {
+        CheckpointAttemptReviewSnapshot(
+            topic: canonicalTopic,
+            format: question.format,
+            referenceAnswer: AnswerGrader.correctAnswerText(for: question, after: result),
+            explanation: question.explanation
+        )
     }
 
     @discardableResult

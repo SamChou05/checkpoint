@@ -20,6 +20,13 @@ enum CheckpointSessionPurpose: String, Codable, Sendable {
     case stopBlocking
 }
 
+struct CheckpointAttemptReviewSnapshot: Codable, Equatable, Sendable {
+    let topic: String
+    let format: QuestionFormat
+    let referenceAnswer: String?
+    let explanation: String
+}
+
 struct CheckpointAttempt: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var questionID: CheckpointQuestion.ID
@@ -31,6 +38,7 @@ struct CheckpointAttempt: Identifiable, Codable, Equatable, Sendable {
     var answer: String
     var result: AnswerResult
     var unlockMinutes: Int
+    var reviewSnapshot: CheckpointAttemptReviewSnapshot? = nil
     var createdAt = Date()
 }
 

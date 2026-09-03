@@ -71,6 +71,203 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testLegacyAttemptsBackfillReviewSnapshotsAndPersistWhileOrphansRemainReadable() throws {
+        let canonicalSkill = SkillMapTopic(
+            name: "Argument analysis",
+            aliases: ["argument flaws"],
+            objectives: [SkillMapObjective(name: "Identify supported conclusions")]
+        )
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [canonicalSkill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let explanation = "The supported conclusion is correct because it follows from the stated evidence."
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "argument flaws",
+            expectedAnswer: "A",
+            choices: [
+                "A. Tempting distractor",
+                "B. Supported conclusion",
+                "C. Unrelated claim",
+                "D. Overbroad claim"
+            ],
+            explanation: explanation,
+            status: .retired,
+            timesAsked: 2
+        )
+        let retainedAttempt = CheckpointAttempt(
+            questionID: question.id,
+            goalID: goal.id,
+            prompt: question.prompt,
+            answer: "A. Tempting distractor",
+            result: .incorrect,
+            unlockMinutes: 0
+        )
+        let orphanAttempt = CheckpointAttempt(
+            questionID: UUID(),
+            goalID: goal.id,
+            prompt: "Question no longer retained",
+            answer: "Legacy answer",
+            result: .partial,
+            unlockMinutes: 0
+        )
+        let originalStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        originalStore.goal = goal
+        originalStore.goalProfiles = [goal]
+        originalStore.questions = [question]
+        originalStore.attempts = [retainedAttempt, orphanAttempt]
+        originalStore.updateUnlockMinutes(10)
+
+        let primaryURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.primaryFileName
+        )
+        let legacyData = try Data(contentsOf: primaryURL)
+        let legacyEnvelope = try JSONDecoder().decode(AppSnapshotEnvelope.self, from: legacyData)
+        XCTAssertTrue(legacyEnvelope.snapshot.attempts.allSatisfy { $0.reviewSnapshot == nil })
+        let legacyObject = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: legacyData) as? [String: Any]
+        )
+        let legacySnapshotObject = try XCTUnwrap(legacyObject["snapshot"] as? [String: Any])
+        let legacyAttemptObjects = try XCTUnwrap(legacySnapshotObject["attempts"] as? [[String: Any]])
+        XCTAssertTrue(legacyAttemptObjects.allSatisfy { $0["reviewSnapshot"] == nil })
+
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        let restoredRetainedAttempt = try XCTUnwrap(
+            restoredStore.attempts.first { $0.id == retainedAttempt.id }
+        )
+        let restoredSnapshot = try XCTUnwrap(restoredRetainedAttempt.reviewSnapshot)
+        XCTAssertEqual(restoredSnapshot.topic, canonicalSkill.name)
+        XCTAssertEqual(restoredSnapshot.format, .multipleChoice)
+        XCTAssertEqual(restoredSnapshot.referenceAnswer, "B. Supported conclusion")
+        XCTAssertEqual(restoredSnapshot.explanation, explanation)
+        XCTAssertNil(
+            restoredStore.attempts.first { $0.id == orphanAttempt.id }?.reviewSnapshot
+        )
+
+        let persistedEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: primaryURL)
+        )
+        XCTAssertEqual(
+            persistedEnvelope.snapshot.attempts.first { $0.id == retainedAttempt.id }?.reviewSnapshot,
+            restoredSnapshot
+        )
+        XCTAssertNil(
+            persistedEnvelope.snapshot.attempts.first { $0.id == orphanAttempt.id }?.reviewSnapshot
+        )
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(
+            relaunchedStore.attempts.first { $0.id == retainedAttempt.id }?.reviewSnapshot,
+            restoredSnapshot
+        )
+        XCTAssertNil(
+            relaunchedStore.attempts.first { $0.id == orphanAttempt.id }?.reviewSnapshot
+        )
+    }
+
+    @MainActor
+    func testExistingReviewSnapshotSurvivesQuestionAndSkillMapMutations() throws {
+        let originalSkill = SkillMapTopic(
+            name: "Original skill",
+            aliases: ["original topic"],
+            objectives: [SkillMapObjective(name: "Original objective")]
+        )
+        var originalGoal = makeGoal()
+        originalGoal.derivedSkillMap = GoalSkillMap(
+            topics: [originalSkill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let originalQuestion = makeQuestion(
+            goal: originalGoal,
+            index: 1,
+            topic: originalSkill.name,
+            expectedAnswer: "Original expected answer",
+            explanation: "Original explanation",
+            skillID: originalSkill.id
+        )
+        let originalReviewSnapshot = CheckpointAttemptReviewSnapshot(
+            topic: originalSkill.name,
+            format: .multipleChoice,
+            referenceAnswer: "Original expected answer",
+            explanation: "Original explanation"
+        )
+        let attempt = CheckpointAttempt(
+            questionID: originalQuestion.id,
+            goalID: originalGoal.id,
+            skillID: originalSkill.id,
+            questionDifficulty: originalQuestion.difficulty,
+            prompt: originalQuestion.prompt,
+            answer: "Original user answer",
+            result: .incorrect,
+            unlockMinutes: 0,
+            reviewSnapshot: originalReviewSnapshot
+        )
+        let originalStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        originalStore.goal = originalGoal
+        originalStore.goalProfiles = [originalGoal]
+        originalStore.questions = [originalQuestion]
+        originalStore.attempts = [attempt]
+        originalStore.updateUnlockMinutes(10)
+
+        let renamedSkill = SkillMapTopic(
+            id: originalSkill.id,
+            name: "Renamed skill",
+            aliases: ["mutated topic"],
+            objectives: [SkillMapObjective(name: "Renamed objective")]
+        )
+        var mutatedGoal = originalGoal
+        mutatedGoal.derivedSkillMap = GoalSkillMap(
+            topics: [renamedSkill],
+            status: .reviewed,
+            version: 2,
+            provenance: .userEdited
+        )
+        var mutatedQuestion = originalQuestion
+        mutatedQuestion.topic = "mutated topic"
+        mutatedQuestion.format = .reflection
+        mutatedQuestion.expectedAnswer = "Mutated example response"
+        mutatedQuestion.choices = []
+        mutatedQuestion.explanation = "Mutated explanation"
+        originalStore.goal = mutatedGoal
+        originalStore.goalProfiles = [mutatedGoal]
+        originalStore.questions = [mutatedQuestion]
+        originalStore.updateUnlockMinutes(15)
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        let relaunchedQuestion = try XCTUnwrap(
+            relaunchedStore.questions.first { $0.id == originalQuestion.id }
+        )
+        XCTAssertEqual(relaunchedQuestion.topic, renamedSkill.name)
+        XCTAssertEqual(relaunchedQuestion.format, .reflection)
+        XCTAssertEqual(relaunchedQuestion.explanation, "Mutated explanation")
+        XCTAssertEqual(
+            relaunchedStore.attempts.first { $0.id == attempt.id }?.reviewSnapshot,
+            originalReviewSnapshot
+        )
+    }
+
+    @MainActor
     func testCorruptPrimaryRecoversFromAtomicBackup() throws {
         let goal = makeGoal()
         let store = makeFileBackedStore(goal: goal)

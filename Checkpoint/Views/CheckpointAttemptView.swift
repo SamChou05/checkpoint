@@ -1,5 +1,38 @@
 import SwiftUI
 
+enum CheckpointAnswerResultTone: Equatable {
+    case success
+    case warning
+    case failure
+}
+
+struct CheckpointAnswerResultPresentation: Equatable {
+    let label: String
+    let systemImage: String
+    let tone: CheckpointAnswerResultTone
+
+    init(result: AnswerResult) {
+        switch result {
+        case .correct:
+            label = "Correct"
+            systemImage = "checkmark.circle.fill"
+            tone = .success
+        case .partial:
+            label = "Almost"
+            systemImage = "circle.lefthalf.filled"
+            tone = .warning
+        case .incorrect:
+            label = "Not quite"
+            systemImage = "xmark.circle.fill"
+            tone = .failure
+        case .unclear:
+            label = "Needs review"
+            systemImage = "questionmark.circle.fill"
+            tone = .warning
+        }
+    }
+}
+
 struct CheckpointAnswerReviewPresentation: Equatable {
     let answerLabel: String
     let answerText: String
@@ -13,13 +46,17 @@ struct CheckpointAnswerReviewPresentation: Equatable {
         }
 
         self.answerText = answerText
-        switch question.format {
+        answerLabel = Self.answerLabel(for: question.format)
+    }
+
+    static func answerLabel(for format: QuestionFormat) -> String {
+        switch format {
         case .multipleChoice:
-            answerLabel = "Correct answer"
+            "Correct answer"
         case .shortAnswer, .codeTrace:
-            answerLabel = "Expected answer"
+            "Expected answer"
         case .reflection:
-            answerLabel = "Example response"
+            "Example response"
         }
     }
 }
@@ -433,13 +470,13 @@ struct CheckpointAttemptView: View {
         dismiss()
     }
 
-    private func resultTint(for result: AnswerResult) -> Color {
-        switch result {
-        case .correct:
+    private func resultTint(for tone: CheckpointAnswerResultTone) -> Color {
+        switch tone {
+        case .success:
             return CheckpointTheme.teal
-        case .partial, .unclear:
+        case .warning:
             return CheckpointTheme.amber
-        case .incorrect:
+        case .failure:
             return CheckpointTheme.coral
         }
     }
@@ -459,21 +496,25 @@ struct CheckpointAttemptView: View {
     @ViewBuilder
     private var inlineFeedback: some View {
         if let checkedAnswer {
+            let feedbackPresentation = CheckpointAnswerResultPresentation(
+                result: checkedAnswer.result
+            )
+
             Divider()
                 .overlay(CheckpointTheme.hairline)
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
-                    Image(systemName: feedbackSystemImage(for: checkedAnswer.result))
+                    Image(systemName: feedbackPresentation.systemImage)
                         .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(resultTint(for: checkedAnswer.result))
+                        .foregroundStyle(resultTint(for: feedbackPresentation.tone))
                         .symbolEffect(.bounce, options: .nonRepeating, value: feedbackSequence)
                         .symbolEffectsRemoved(reduceMotion)
                         .accessibilityHidden(true)
 
-                    Text(feedbackTitle(for: checkedAnswer.result))
+                    Text(feedbackPresentation.label)
                         .font(.headline)
-                        .foregroundStyle(resultTint(for: checkedAnswer.result))
+                        .foregroundStyle(resultTint(for: feedbackPresentation.tone))
                         .accessibilityFocused($accessibilityFocus, equals: .feedback)
                         .accessibilityAddTraits(.isHeader)
                 }
@@ -570,32 +611,6 @@ struct CheckpointAttemptView: View {
             return .incorrect
         }
         return .locked
-    }
-
-    private func feedbackTitle(for result: AnswerResult) -> String {
-        switch result {
-        case .correct:
-            return "Correct"
-        case .partial:
-            return "Almost"
-        case .incorrect:
-            return "Not quite"
-        case .unclear:
-            return "Needs review"
-        }
-    }
-
-    private func feedbackSystemImage(for result: AnswerResult) -> String {
-        switch result {
-        case .correct:
-            return "checkmark.circle.fill"
-        case .partial:
-            return "circle.lefthalf.filled"
-        case .incorrect:
-            return "xmark.circle.fill"
-        case .unclear:
-            return "questionmark.circle.fill"
-        }
     }
 
     private func selfAssessmentLabel(for result: AnswerResult) -> String {
