@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 import XCTest
 @testable import Checkpoint
 
@@ -77,11 +76,10 @@ final class FocusWinsViewRenderingTests: XCTestCase {
         ]
 
         for fixture in fixtures {
-            let image = render(
-                fixture.content
+            let image = HostedViewRenderer.image(
+                for: fixture.content
                     .environment(\.colorScheme, fixture.colorScheme)
-                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
-                    .preferredColorScheme(fixture.colorScheme),
+                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
                 width: fixture.width,
                 height: fixture.height,
                 colorScheme: fixture.colorScheme
@@ -94,46 +92,6 @@ final class FocusWinsViewRenderingTests: XCTestCase {
             attachment.lifetime = .keepAlways
             add(attachment)
         }
-    }
-
-    @MainActor
-    private func render(
-        _ content: some View,
-        width: CGFloat,
-        height: CGFloat,
-        colorScheme: ColorScheme
-    ) -> UIImage {
-        let size = CGSize(width: width, height: height)
-        let frame = CGRect(origin: .zero, size: size)
-        let hostingController = UIHostingController(rootView: content)
-        let window = UIWindow(frame: frame)
-        let interfaceStyle: UIUserInterfaceStyle = colorScheme == .dark ? .dark : .light
-
-        window.overrideUserInterfaceStyle = interfaceStyle
-        hostingController.overrideUserInterfaceStyle = interfaceStyle
-        window.rootViewController = hostingController
-        window.isHidden = false
-        hostingController.view.frame = frame
-        hostingController.view.setNeedsLayout()
-        hostingController.view.layoutIfNeeded()
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.05))
-        hostingController.view.layoutIfNeeded()
-
-        let format = UIGraphicsImageRendererFormat.preferred()
-        format.scale = 2
-        let renderer = UIGraphicsImageRenderer(size: size, format: format)
-        let image = renderer.image { _ in
-            XCTAssertTrue(
-                hostingController.view.drawHierarchy(
-                    in: hostingController.view.bounds,
-                    afterScreenUpdates: true
-                ),
-                "Failed to draw hosted SwiftUI hierarchy"
-            )
-        }
-
-        window.isHidden = true
-        return image
     }
 }
 

@@ -1,5 +1,188 @@
 import SwiftUI
 
+enum HomeStudyBeaconPresentation: Equatable {
+    case firstCheckpointLaunchpad
+    case weeklySignal
+
+    var showsNextFocus: Bool {
+        self == .weeklySignal
+    }
+
+    init(
+        hasPracticeForActiveGoal: Bool,
+        hasReadyCheckpointSet: Bool,
+        isProtectionActive: Bool
+    ) {
+        self = !hasPracticeForActiveGoal && hasReadyCheckpointSet && isProtectionActive
+            ? .firstCheckpointLaunchpad
+            : .weeklySignal
+    }
+}
+
+struct HomeFirstCheckpointLaunchpad: View {
+    var requiredCorrectAnswers: Int
+    var questionCount: Int
+    var unlockMinutes: Int
+    var protectedAppsSummary: String
+    var reviewApps: () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("NEXT STEP")
+                .font(.caption2.weight(.bold))
+                .tracking(0.95)
+                .foregroundStyle(CheckpointTheme.muted)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 18) {
+                launchIdentity
+
+                Text(instructionText)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel(instructionText)
+
+                Divider()
+                    .overlay(CheckpointTheme.heroDivider)
+
+                protectionControls
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(CheckpointTheme.ink)
+                    .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
+                    .overlay(alignment: .topTrailing) {
+                        Circle()
+                            .fill(CheckpointTheme.mint.opacity(0.09))
+                            .frame(width: 150, height: 150)
+                            .blur(radius: 11)
+                            .offset(x: 64, y: -82)
+                            .allowsHitTesting(false)
+                    }
+            )
+            .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
+        }
+        .padding(.horizontal, 4)
+    }
+
+    @ViewBuilder
+    private var launchIdentity: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                launchIcon
+                launchTitle
+            }
+        } else {
+            HStack(alignment: .center, spacing: 13) {
+                launchIcon
+                launchTitle
+            }
+        }
+    }
+
+    private var launchIcon: some View {
+        Image(systemName: "flag.checkered")
+            .font(.system(size: 19, weight: .bold))
+            .foregroundStyle(CheckpointTheme.ink)
+            .frame(width: 46, height: 46)
+            .background(CheckpointTheme.mint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .fixedSize()
+            .accessibilityHidden(true)
+    }
+
+    private var launchTitle: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("FIRST CHECKPOINT")
+                .font(.caption2.weight(.bold))
+                .tracking(0.8)
+                .foregroundStyle(CheckpointTheme.heroSuccess)
+
+            Text("This goal’s first checkpoint is ready")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Next step. This goal’s first checkpoint is ready")
+        .accessibilityAddTraits(.isHeader)
+    }
+
+    @ViewBuilder
+    private var protectionControls: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                protectionIdentity
+                reviewAppsButton
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 12) {
+                    protectionIdentity
+                    Spacer(minLength: 8)
+                    reviewAppsButton
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    protectionIdentity
+                    reviewAppsButton
+                }
+            }
+        }
+    }
+
+    private var protectionIdentity: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "shield.checkered")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(CheckpointTheme.heroSuccess)
+                .frame(width: 30, height: 30)
+                .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 9))
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Protection on")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.heroText)
+
+                Text(protectedAppsSummary)
+                    .font(.caption)
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Protection on. \(protectedAppsSummary)")
+    }
+
+    private var reviewAppsButton: some View {
+        Button(action: reviewApps) {
+            HStack(spacing: 6) {
+                Text("Review apps")
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .accessibilityHidden(true)
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.heroSuccess)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(CheckpointPressButtonStyle())
+        .accessibilityHint("Opens your protected app selection")
+    }
+
+    private var instructionText: String {
+        let questionNoun = questionCount == 1 ? "question" : "questions"
+        return "Open any protected app. Clear \(requiredCorrectAnswers) of \(questionCount) \(questionNoun) to earn a \(unlockMinutes)-minute break."
+    }
+}
+
 struct LightStudyBeaconSection: View {
     var metrics: WeeklyMetricsSummary
     var competencies: [TopicCompetency]

@@ -38,17 +38,24 @@ struct HomeView: View {
                             screenTimePanel
                             goalHero(goal)
                             homeNextFocusPanel
-                            studyBeaconPanel
+                            homeStudyBeaconSection
                         } else {
                             goalHero(goal)
-                            homeNextFocusPanel
+
+                            if homeStudyBeaconPresentation.showsNextFocus {
+                                homeNextFocusPanel
+                                    .transition(homeNextFocusTransition)
+                            }
 
                             if isHealthyProtectionState {
-                                studyBeaconPanel
-                                compactProtectionRow
+                                homeStudyBeaconSection
+
+                                if homeStudyBeaconPresentation == .weeklySignal {
+                                    compactProtectionRow
+                                }
                             } else {
                                 screenTimePanel
-                                studyBeaconPanel
+                                homeStudyBeaconSection
                             }
                         }
 
@@ -57,6 +64,13 @@ struct HomeView: View {
                         emptyState
                     }
                 }
+                .animation(
+                    CheckpointMotion.animation(
+                        CheckpointMotion.reveal,
+                        reduceMotion: accessibilityReduceMotion
+                    ),
+                    value: homeStudyBeaconPresentation
+                )
                 .padding(.horizontal, 24)
                 .padding(.top, 20)
                 .padding(.bottom, 112)
@@ -448,6 +462,42 @@ struct HomeView: View {
         ) {
             isWeeklyReviewPresented = true
         }
+    }
+
+    @ViewBuilder
+    private var homeStudyBeaconSection: some View {
+        Group {
+            switch homeStudyBeaconPresentation {
+            case .firstCheckpointLaunchpad:
+                HomeFirstCheckpointLaunchpad(
+                    requiredCorrectAnswers: store.unlockPolicy.requiredCorrectAnswers,
+                    questionCount: store.unlockPolicy.questionsPerSession,
+                    unlockMinutes: store.unlockPolicy.unlockMinutes,
+                    protectedAppsSummary: screenTime.restrictedAppsSummary
+                ) {
+                    isRestrictedAppsPresented = true
+                }
+                .transition(homeStudyBeaconTransition)
+
+            case .weeklySignal:
+                studyBeaconPanel
+                    .transition(homeStudyBeaconTransition)
+            }
+        }
+    }
+
+    private var homeStudyBeaconPresentation: HomeStudyBeaconPresentation {
+        HomeStudyBeaconPresentation(
+            hasPracticeForActiveGoal: !store.activeAttempts.isEmpty,
+            hasReadyCheckpointSet: store.hasReadyCheckpointSet,
+            isProtectionActive: isHealthyProtectionState
+        )
+    }
+
+    private var homeStudyBeaconTransition: AnyTransition {
+        accessibilityReduceMotion
+            ? .identity
+            : .opacity.combined(with: .scale(scale: 0.985))
     }
 
     private var homeNextFocusPanel: some View {

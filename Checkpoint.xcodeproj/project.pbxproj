@@ -87,6 +87,8 @@
 		CB0000000000000000000015 /* HomeProtectionControlsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000015 /* HomeProtectionControlsTests.swift */; };
 		CB0000000000000000000016 /* CheckpointThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000016 /* CheckpointThemeTests.swift */; };
 		CB0000000000000000000017 /* FocusWinsViewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000017 /* FocusWinsViewRenderingTests.swift */; };
+		CB0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */; };
+		CB0000000000000000000019 /* HostedViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000019 /* HostedViewRenderer.swift */; };
 		D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* PrivacyInfo.xcprivacy */; };
@@ -233,6 +235,8 @@
 		CA0000000000000000000015 /* HomeProtectionControlsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeProtectionControlsTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000016 /* CheckpointThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointThemeTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000017 /* FocusWinsViewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusWinsViewRenderingTests.swift; sourceTree = "<group>"; };
+		CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFirstCheckpointRenderingTests.swift; sourceTree = "<group>"; };
+		CA0000000000000000000019 /* HostedViewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostedViewRenderer.swift; sourceTree = "<group>"; };
 		D20000000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -460,6 +464,7 @@
 				CA0000000000000000000015 /* HomeProtectionControlsTests.swift */,
 				CA0000000000000000000016 /* CheckpointThemeTests.swift */,
 				CA0000000000000000000017 /* FocusWinsViewRenderingTests.swift */,
+				CA0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift */,
 				CA000000000000000000000C /* ScreenTimeCoordinationTests.swift */,
 				CA000000000000000000000A /* QuestionRefillTests.swift */,
 				CA0000000000000000000003 /* AppSnapshotPersistenceTests.swift */,
@@ -483,6 +488,7 @@
 				CA0000000000000000000011 /* CheckpointWorkflowTestCase.swift */,
 				CA0000000000000000000012 /* QuestionEngineTestDoubles.swift */,
 				CA0000000000000000000013 /* QuestionBankTestDoubles.swift */,
+				CA0000000000000000000019 /* HostedViewRenderer.swift */,
 			);
 			path = TestSupport;
 			sourceTree = "<group>";
@@ -791,6 +797,7 @@
 				CB0000000000000000000015 /* HomeProtectionControlsTests.swift in Sources */,
 				CB0000000000000000000016 /* CheckpointThemeTests.swift in Sources */,
 				CB0000000000000000000017 /* FocusWinsViewRenderingTests.swift in Sources */,
+				CB0000000000000000000018 /* HomeFirstCheckpointRenderingTests.swift in Sources */,
 				CB000000000000000000000C /* ScreenTimeCoordinationTests.swift in Sources */,
 				CB000000000000000000000A /* QuestionRefillTests.swift in Sources */,
 				CB0000000000000000000003 /* AppSnapshotPersistenceTests.swift in Sources */,
@@ -803,6 +810,7 @@
 				CB0000000000000000000011 /* CheckpointWorkflowTestCase.swift in Sources */,
 				CB0000000000000000000012 /* QuestionEngineTestDoubles.swift in Sources */,
 				CB0000000000000000000013 /* QuestionBankTestDoubles.swift in Sources */,
+				CB0000000000000000000019 /* HostedViewRenderer.swift in Sources */,
 				C10000000000000000000004 /* CheckpointWorkflowCoordinatorTests.swift in Sources */,
 				C10000000000000000000005 /* BackendQuestionEngineContractTests.swift in Sources */,
 				C10000000000000000000003 /* StoreKitPaymentTests.swift in Sources */,

@@ -2,6 +2,46 @@ import XCTest
 @testable import Checkpoint
 
 final class HomeProtectionControlsTests: XCTestCase {
+    func testFirstCheckpointLaunchpadRequiresReadyProtectedGoalWithoutPractice() {
+        let presentation = HomeStudyBeaconPresentation(
+            hasPracticeForActiveGoal: false,
+            hasReadyCheckpointSet: true,
+            isProtectionActive: true
+        )
+
+        XCTAssertEqual(presentation, .firstCheckpointLaunchpad)
+        XCTAssertFalse(presentation.showsNextFocus)
+    }
+
+    func testActiveGoalPracticePreventsLaunchpadFromReturningInALaterWeek() {
+        XCTAssertEqual(
+            HomeStudyBeaconPresentation(
+                hasPracticeForActiveGoal: true,
+                hasReadyCheckpointSet: true,
+                isProtectionActive: true
+            ),
+            .weeklySignal
+        )
+    }
+
+    func testFirstCheckpointLaunchpadDoesNotReplaceWeeklySignalWhenNotActionable() {
+        let states: [HomeStudyBeaconPresentation] = [
+            HomeStudyBeaconPresentation(
+                hasPracticeForActiveGoal: false,
+                hasReadyCheckpointSet: false,
+                isProtectionActive: true
+            ),
+            HomeStudyBeaconPresentation(
+                hasPracticeForActiveGoal: false,
+                hasReadyCheckpointSet: true,
+                isProtectionActive: false
+            )
+        ]
+
+        XCTAssertEqual(states, [.weeklySignal, .weeklySignal])
+        XCTAssertTrue(states.allSatisfy(\.showsNextFocus))
+    }
+
     func testBreakRemainingPresentationRoundsUpPartialMinutes() {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
 
