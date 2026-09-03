@@ -66,7 +66,10 @@ struct HomeView: View {
                 RestrictedAppsView(screenTime: screenTime)
             }
             .sheet(isPresented: $isWeeklyReviewPresented) {
-                WeeklyReviewView(store: store)
+                WeeklyReviewView(
+                    store: store,
+                    initialMetricsID: (store.weeklyActiveGoalMetrics ?? store.weeklyTotalMetrics).id
+                )
             }
             .onAppear {
                 handleQuestionRefreshOnActivation()

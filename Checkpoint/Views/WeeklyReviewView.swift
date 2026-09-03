@@ -4,7 +4,17 @@ struct WeeklyReviewView: View {
     let store: CheckpointStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedMetricsID = WeeklyMetricsSummary.allGoalsID
+    @ScaledMetric(relativeTo: .largeTitle) private var heroMetricSize: CGFloat = 64
+
+    init(
+        store: CheckpointStore,
+        initialMetricsID: String = WeeklyMetricsSummary.allGoalsID
+    ) {
+        self.store = store
+        _selectedMetricsID = State(initialValue: initialMetricsID)
+    }
 
     private var metricOptions: [WeeklyMetricsSummary] {
         [store.weeklyTotalMetrics] + store.weeklyGoalMetrics
@@ -67,7 +77,7 @@ struct WeeklyReviewView: View {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("YOUR WEEK")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.caption2.weight(.bold))
                         .tracking(1.0)
                         .foregroundStyle(CheckpointTheme.muted)
 
@@ -141,35 +151,16 @@ struct WeeklyReviewView: View {
 
     private var impactHero: some View {
         VStack(alignment: .leading, spacing: 22) {
-            HStack(alignment: .top, spacing: 14) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("LEARNING OUTPUT")
-                        .font(.system(size: 10, weight: .bold))
-                        .tracking(1.05)
-                        .foregroundStyle(heroSecondaryText)
-
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text("\(selectedMetrics.questionsAnswered)")
-                            .font(.system(size: dynamicTypeSize.isAccessibilitySize ? 48 : 64, weight: .bold, design: .rounded))
-                            .monospacedDigit()
-                            .foregroundStyle(heroText)
-
-                        Text(selectedMetrics.questionsAnswered == 1 ? "question" : "questions")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(heroSecondaryText)
-                    }
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 16) {
+                    learningOutputMetric
+                    streakBadge
                 }
-
-                Spacer(minLength: 0)
-
-                if selectedMetrics.checkpointStreakDays > 0 {
-                    Label("\(selectedMetrics.checkpointStreakDays)d", systemImage: "bolt.fill")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(heroAccent)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 7)
-                        .background(heroAccent.opacity(0.11), in: Capsule())
-                        .accessibilityLabel("\(selectedMetrics.checkpointStreakText) checkpoint streak")
+            } else {
+                HStack(alignment: .top, spacing: 14) {
+                    learningOutputMetric
+                    Spacer(minLength: 0)
+                    streakBadge
                 }
             }
 
@@ -201,12 +192,64 @@ struct WeeklyReviewView: View {
         .accessibilityElement(children: .contain)
     }
 
+    private var learningOutputMetric: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("LEARNING OUTPUT")
+                .font(.caption2.weight(.bold))
+                .tracking(1.05)
+                .foregroundStyle(heroSecondaryText)
+
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 0) {
+                    learningOutputValue
+                    learningOutputNoun
+                }
+            } else {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    learningOutputValue
+                    learningOutputNoun
+                }
+            }
+        }
+    }
+
+    private var learningOutputValue: some View {
+        Text("\(selectedMetrics.questionsAnswered)")
+            .font(.system(size: heroMetricSize, weight: .bold, design: .rounded))
+            .monospacedDigit()
+            .foregroundStyle(heroText)
+            .contentTransition(.numericText(value: Double(selectedMetrics.questionsAnswered)))
+            .animation(
+                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                value: selectedMetrics.questionsAnswered
+            )
+    }
+
+    private var learningOutputNoun: some View {
+        Text(selectedMetrics.questionsAnswered == 1 ? "question" : "questions")
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(heroSecondaryText)
+    }
+
+    @ViewBuilder
+    private var streakBadge: some View {
+        if selectedMetrics.checkpointStreakDays > 0 {
+            Label("\(selectedMetrics.checkpointStreakDays)d", systemImage: "bolt.fill")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(heroAccent)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 7)
+                .background(heroAccent.opacity(0.11), in: Capsule())
+                .accessibilityLabel("\(selectedMetrics.checkpointStreakText) checkpoint streak")
+        }
+    }
+
     private var signalGrid: some View {
         VStack(alignment: .leading, spacing: 12) {
             sectionLabel("SIGNALS")
 
             LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 142), spacing: 10)],
+                columns: signalGridColumns,
                 spacing: 10
             ) {
                 ImpactMetricTile(
@@ -226,7 +269,7 @@ struct WeeklyReviewView: View {
                 ImpactMetricTile(
                     label: "Misses recovered",
                     value: "\(impactDetails.recoveredQuestions)",
-                    detail: "Previously missed, now correct",
+                    detail: "Previously missed, currently correct",
                     systemImage: "arrow.triangle.2.circlepath"
                 )
 
@@ -305,7 +348,7 @@ struct WeeklyReviewView: View {
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 10, weight: .bold))
+            .font(.caption2.weight(.bold))
             .tracking(0.95)
             .foregroundStyle(CheckpointTheme.muted)
             .accessibilityAddTraits(.isHeader)
@@ -323,13 +366,22 @@ struct WeeklyReviewView: View {
         return "\(week.start.formatted(.dateTime.month(.abbreviated).day()))–\(finalDay.formatted(.dateTime.month(.abbreviated).day()))"
     }
 
+    private var signalGridColumns: [GridItem] {
+        if dynamicTypeSize.isAccessibilitySize {
+            return [GridItem(.flexible())]
+        }
+        return [GridItem(.adaptive(minimum: 142), spacing: 10)]
+    }
+
     private var heroText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }
     private var heroSecondaryText: Color { Color(red: 0.66, green: 0.75, blue: 0.71) }
-    private var heroAccent: Color { Color(red: 0.49, green: 0.91, blue: 0.78) }
+    private var heroAccent: Color { CheckpointTheme.mint }
 }
 
 private struct WeeklyPracticeBars: View {
     var days: [WeeklyPracticeDay]
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var maximumCount: Int {
         max(1, days.map(\.questionsAnswered).max() ?? 1)
@@ -346,16 +398,18 @@ private struct WeeklyPracticeBars: View {
                             minHeight: 4,
                             maxHeight: barHeight(for: day)
                         )
+                        .animation(
+                            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion),
+                            value: day.questionsAnswered
+                        )
 
                     Text(day.date.formatted(.dateTime.weekday(.narrow)))
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.caption2.weight(.bold))
                         .foregroundStyle(labelColor(for: day))
                 }
                 .frame(maxWidth: .infinity)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(
-                    "\(day.date.formatted(.dateTime.weekday(.wide))), \(day.questionsAnswered) questions"
-                )
+                .accessibilityLabel(accessibilityLabel(for: day))
             }
         }
         .frame(height: 74, alignment: .bottom)
@@ -370,13 +424,23 @@ private struct WeeklyPracticeBars: View {
 
     private func barColor(for day: WeeklyPracticeDay) -> Color {
         if day.questionsAnswered > 0 {
-            return Color(red: 0.49, green: 0.91, blue: 0.78)
+            return CheckpointTheme.mint
         }
         return Color.white.opacity(day.date > Date() ? 0.07 : 0.14)
     }
 
     private func labelColor(for day: WeeklyPracticeDay) -> Color {
-        Color.white.opacity(day.date > Date() ? 0.24 : 0.54)
+        Color.white.opacity(day.date > Date() ? 0.50 : 0.62)
+    }
+
+    private func accessibilityLabel(for day: WeeklyPracticeDay) -> String {
+        let weekday = day.date.formatted(.dateTime.weekday(.wide))
+        if day.date > Date() {
+            return "\(weekday), not yet"
+        }
+
+        let noun = day.questionsAnswered == 1 ? "question" : "questions"
+        return "\(weekday), \(day.questionsAnswered) \(noun)"
     }
 }
 
@@ -390,7 +454,7 @@ private struct ImpactMetricTile: View {
         VStack(alignment: .leading, spacing: 13) {
             HStack {
                 Text(label.uppercased())
-                    .font(.system(size: 9, weight: .bold))
+                    .font(.caption2.weight(.bold))
                     .tracking(0.65)
                     .foregroundStyle(CheckpointTheme.muted)
 
@@ -441,7 +505,7 @@ private struct FocusSignalRow: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(eyebrow)
-                    .font(.system(size: 9, weight: .bold))
+                    .font(.caption2.weight(.bold))
                     .tracking(0.65)
                     .foregroundStyle(CheckpointTheme.muted)
 

@@ -12,6 +12,10 @@ enum CheckpointTheme {
     static let blue = Color(red: 0.16, green: 0.31, blue: 0.47)
     static let amber = Color(red: 0.55, green: 0.40, blue: 0.15)
     static let coral = Color(red: 0.61, green: 0.29, blue: 0.24)
+    static let mint = Color(red: 0.49, green: 0.91, blue: 0.78)
+
+    static let compactCornerRadius: CGFloat = 12
+    static let cardCornerRadius: CGFloat = 18
 
     static let background = LinearGradient(
         colors: [
@@ -22,6 +26,30 @@ enum CheckpointTheme {
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+}
+
+enum CheckpointMotion {
+    static let press = Animation.snappy(duration: 0.16, extraBounce: 0)
+    static let change = Animation.smooth(duration: 0.28)
+    static let reveal = Animation.smooth(duration: 0.38)
+
+    static func animation(_ animation: Animation, reduceMotion: Bool) -> Animation? {
+        reduceMotion ? nil : animation
+    }
+}
+
+struct CheckpointPressButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.985 : 1)
+            .opacity(configuration.isPressed ? 0.88 : 1)
+            .animation(
+                CheckpointMotion.animation(CheckpointMotion.press, reduceMotion: reduceMotion),
+                value: configuration.isPressed
+            )
+    }
 }
 
 struct PrimaryActionButton: View {
@@ -63,9 +91,21 @@ struct PrimaryActionButton: View {
                 .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 15)
-                .background(CheckpointTheme.teal, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(
+                    LinearGradient(
+                        colors: [CheckpointTheme.teal, CheckpointTheme.ink],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                }
+                .shadow(color: CheckpointTheme.ink.opacity(0.14), radius: 10, y: 5)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
         .opacity(isEnabled ? 1 : 0.58)
         .accessibilityLabel(isLoading ? "\(title), in progress" : title)
     }
@@ -88,9 +128,16 @@ struct SecondaryActionButton: View {
                 .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 13)
-                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(
+                    CheckpointTheme.panelRaised.opacity(0.82),
+                    in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                        .stroke(CheckpointTheme.hairline, lineWidth: 1)
+                }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
         .opacity(isEnabled ? 1 : 0.58)
     }
 }
@@ -118,11 +165,11 @@ struct SectionPanel<Content: View>: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
                 .fill(CheckpointTheme.panel.opacity(0.96))
                 .stroke(CheckpointTheme.hairline, lineWidth: 1)
         )
-        .shadow(color: CheckpointTheme.ink.opacity(0.04), radius: 8, x: 0, y: 3)
+        .shadow(color: CheckpointTheme.ink.opacity(0.055), radius: 12, x: 0, y: 5)
     }
 }
 

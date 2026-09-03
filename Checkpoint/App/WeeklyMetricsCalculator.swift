@@ -32,7 +32,7 @@ struct WeeklyImpactDetails: Equatable, Sendable {
 
         let difference = currentQuestions - previousWeekQuestions
         if difference == 0 {
-            return "Level with last week"
+            return "Level with this point last week"
         }
         if previousWeekQuestions == 0 {
             return "A new weekly baseline"
@@ -40,8 +40,8 @@ struct WeeklyImpactDetails: Equatable, Sendable {
 
         let noun = abs(difference) == 1 ? "question" : "questions"
         return difference > 0
-            ? "\(difference) more \(noun) than last week"
-            : "\(abs(difference)) fewer \(noun) than last week"
+            ? "\(difference) more \(noun) than this point last week"
+            : "\(abs(difference)) fewer \(noun) than this point last week"
     }
 }
 
@@ -103,9 +103,12 @@ struct WeeklyMetricsCalculator {
         )
     }
 
-    func impactDetails(goalID: Goal.ID?) -> WeeklyImpactDetails {
-        let calendar = Calendar.current
-        guard let week = calendar.dateInterval(of: .weekOfYear, for: Date()),
+    func impactDetails(
+        goalID: Goal.ID?,
+        asOf now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> WeeklyImpactDetails {
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: now),
               let previousWeekStart = calendar.date(byAdding: .weekOfYear, value: -1, to: week.start) else {
             return WeeklyImpactDetails(
                 practiceDays: [],
@@ -116,7 +119,15 @@ struct WeeklyMetricsCalculator {
             )
         }
 
-        let previousWeek = DateInterval(start: previousWeekStart, end: week.start)
+        let elapsedThisWeek = now.timeIntervalSince(week.start)
+        let previousComparisonEnd = min(
+            previousWeekStart.addingTimeInterval(elapsedThisWeek),
+            week.start
+        )
+        let previousComparablePeriod = DateInterval(
+            start: previousWeekStart,
+            end: previousComparisonEnd
+        )
         let scopedAttempts = attempts.filter { attempt in
             guard let goalID else { return true }
             return attempt.goalID == goalID
@@ -147,7 +158,7 @@ struct WeeklyMetricsCalculator {
                 weeklyAttempts.map { calendar.startOfDay(for: $0.createdAt) }
             ).count,
             previousWeekQuestions: scopedAttempts.lazy.filter {
-                previousWeek.contains($0.createdAt)
+                previousComparablePeriod.contains($0.createdAt)
             }.count
         )
     }
@@ -174,6 +185,7 @@ struct WeeklyMetricsCalculator {
                 unresolvedQuestionIDs.remove(attempt.questionID)
             } else {
                 unresolvedQuestionIDs.insert(attempt.questionID)
+                recoveredQuestionIDs.remove(attempt.questionID)
             }
         }
 
@@ -207,7 +219,7 @@ struct WeeklyMetricsCalculator {
         for competencies: [TopicCompetency]
     ) -> (strongest: String?, review: String?) {
         let practicedCompetencies = competencies.filter { $0.attempts > 0 }
-        guard !practicedCompetencies.isEmpty else { return (nil, nil) }
+        guard practicedCompetencies.count > 1 else { return (nil, nil) }
 
         let sortedCompetencies = practicedCompetencies.sorted { lhs, rhs in
             if lhs.masteryPercent == rhs.masteryPercent {
@@ -217,7 +229,13 @@ struct WeeklyMetricsCalculator {
             return lhs.masteryPercent < rhs.masteryPercent
         }
 
-        return (sortedCompetencies.last?.topic, sortedCompetencies.first?.topic)
+        guard let review = sortedCompetencies.first,
+              let strongest = sortedCompetencies.last,
+              review.masteryPercent < strongest.masteryPercent else {
+            return (nil, nil)
+        }
+
+        return (strongest.topic, review.topic)
     }
 
     private func visibleCompetencies(for goalID: Goal.ID?) -> [TopicCompetency] {

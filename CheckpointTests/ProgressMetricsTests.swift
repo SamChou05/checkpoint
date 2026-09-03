@@ -102,7 +102,9 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         let secondPracticeDay = try XCTUnwrap(
             calendar.date(byAdding: .day, value: 1, to: firstPracticeDay)
         )
-        let priorWeek = week.start.addingTimeInterval(-(60 * 60))
+        let priorWeek = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: firstPracticeDay)
+        )
         let recoveredFromLastWeekID = UUID()
         let recoveredWithinWeekID = UUID()
 
@@ -162,8 +164,58 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(details.previousWeekQuestions, 1)
         XCTAssertEqual(
             details.questionTrendText(currentQuestions: 4),
-            "3 more questions than last week"
+            "3 more questions than this point last week"
         )
+    }
+
+    @MainActor
+    func testWeeklyImpactTrendComparesMatchingElapsedPeriods() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        let now = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 2, hour: 12))
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: now))
+        let previousWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: week.start)
+        )
+        let comparableAttempt = previousWeekStart.addingTimeInterval(60 * 60)
+        let laterPriorWeekAttempt = previousWeekStart.addingTimeInterval(4 * 24 * 60 * 60)
+
+        let details = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(goal: goal, result: .correct, createdAt: comparableAttempt),
+                makeAttempt(goal: goal, result: .correct, createdAt: laterPriorWeekAttempt)
+            ],
+            unlockEvents: [],
+            competencies: []
+        ).impactDetails(goalID: goal.id, asOf: now, calendar: calendar)
+
+        XCTAssertEqual(details.previousWeekQuestions, 1)
+    }
+
+    @MainActor
+    func testRecoveredMissRequiresTheLatestAttemptToRemainCorrect() throws {
+        let goal = makeGoal()
+        let calendar = Calendar.current
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: Date()))
+        let questionID = UUID()
+        let initialMiss = week.start.addingTimeInterval(60)
+        let recovery = initialMiss.addingTimeInterval(60)
+        let laterMiss = recovery.addingTimeInterval(60)
+
+        let details = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(goal: goal, questionID: questionID, result: .incorrect, createdAt: initialMiss),
+                makeAttempt(goal: goal, questionID: questionID, result: .correct, createdAt: recovery),
+                makeAttempt(goal: goal, questionID: questionID, result: .partial, createdAt: laterMiss)
+            ],
+            unlockEvents: [],
+            competencies: []
+        ).impactDetails(goalID: goal.id)
+
+        XCTAssertEqual(details.recoveredQuestions, 0)
     }
 
     func testWeeklyImpactTimeFormattingRemainsCompact() {
@@ -180,6 +232,48 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         var mixed = base
         mixed.earnedBreakMinutes = 75
         XCTAssertEqual(mixed.earnedBreakTimeText, "1h 15m")
+    }
+
+    @MainActor
+    func testWeeklySkillHighlightsRequireARealDifference() {
+        let goal = makeGoal()
+        var first = TopicCompetency.initial(topic: "Positioning", goalID: goal.id)
+        first.attempts = 4
+        first.correct = 2
+        first.incorrect = 2
+
+        let singleSkill = WeeklyMetricsCalculator(
+            attempts: [],
+            unlockEvents: [],
+            competencies: [first]
+        ).summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true
+        )
+
+        XCTAssertNil(singleSkill.strongestSkill)
+        XCTAssertNil(singleSkill.reviewSkill)
+
+        var tied = TopicCompetency.initial(topic: "Research", goalID: goal.id)
+        tied.attempts = first.attempts
+        tied.correct = first.correct
+        tied.incorrect = first.incorrect
+
+        let tiedSkills = WeeklyMetricsCalculator(
+            attempts: [],
+            unlockEvents: [],
+            competencies: [first, tied]
+        ).summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true
+        )
+
+        XCTAssertNil(tiedSkills.strongestSkill)
+        XCTAssertNil(tiedSkills.reviewSkill)
     }
 
     @MainActor

@@ -13,6 +13,8 @@ struct LightStudyBeaconSection: View {
     var action: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ScaledMetric(relativeTo: .largeTitle) private var primaryMetricSize: CGFloat = 50
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -49,7 +51,8 @@ struct LightStudyBeaconSection: View {
                 )
                 .shadow(color: CheckpointTheme.ink.opacity(0.12), radius: 16, y: 8)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(CheckpointPressButtonStyle())
+            .accessibilityLabel(weeklySignalAccessibilityLabel)
             .accessibilityHint("Opens weekly impact")
         }
         .padding(.horizontal, 4)
@@ -58,9 +61,10 @@ struct LightStudyBeaconSection: View {
     private var sectionHeader: some View {
         HStack {
             Text("WEEKLY SIGNAL")
-                .font(.system(size: 10, weight: .bold))
+                .font(.caption2.weight(.bold))
                 .tracking(0.95)
                 .foregroundStyle(CheckpointTheme.muted)
+                .accessibilityAddTraits(.isHeader)
 
             Spacer()
 
@@ -99,17 +103,22 @@ struct LightStudyBeaconSection: View {
     private var primaryMetric: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("\(metrics.questionsAnswered)")
-                .font(.system(size: 50, weight: .bold, design: .rounded))
+                .font(.system(size: primaryMetricSize, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(signalText)
+                .contentTransition(.numericText(value: Double(metrics.questionsAnswered)))
+                .animation(
+                    CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                    value: metrics.questionsAnswered
+                )
 
             Text(metrics.questionsAnswered == 1 ? "QUESTION" : "QUESTIONS")
-                .font(.system(size: 9, weight: .bold))
+                .font(.caption2.weight(.bold))
                 .tracking(0.8)
                 .foregroundStyle(signalSecondaryText)
 
             if practicedSkillCount > 0 {
-                Text("across \(practicedSkillCount) \(practicedSkillCount == 1 ? "skill" : "skills")")
+                Text("\(practicedSkillCount) \(practicedSkillCount == 1 ? "skill" : "skills") tracked")
                     .font(.caption2.weight(.medium))
                     .foregroundStyle(signalSecondaryText)
                     .padding(.top, 2)
@@ -149,7 +158,7 @@ struct LightStudyBeaconSection: View {
                 .foregroundStyle(signalAccent)
 
             Text(label)
-                .font(.system(size: 8, weight: .bold))
+                .font(.caption2.weight(.bold))
                 .tracking(0.55)
                 .foregroundStyle(signalSecondaryText)
                 .lineLimit(1)
@@ -162,9 +171,9 @@ struct LightStudyBeaconSection: View {
         HStack(spacing: 10) {
             Image(systemName: insight.systemImage)
                 .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(signalAccent)
+                .foregroundStyle(insight.tint)
                 .frame(width: 30, height: 30)
-                .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 9))
+                .background(insight.tint.opacity(0.14), in: RoundedRectangle(cornerRadius: 9))
                 .accessibilityHidden(true)
 
             Text(insight.text)
@@ -213,7 +222,17 @@ struct LightStudyBeaconSection: View {
         competencies.filter { $0.attempts > 0 }.count
     }
 
+    private var weeklySignalAccessibilityLabel: String {
+        guard metrics.hasWeeklyReviewActivity else {
+            return "Weekly signal. No checkpoint activity yet."
+        }
+
+        let questionNoun = metrics.questionsAnswered == 1 ? "question" : "questions"
+        let breakNoun = metrics.checkpointsCleared == 1 ? "break" : "breaks"
+        return "Weekly signal. \(metrics.questionsAnswered) \(questionNoun), \(metrics.accuracyText) accuracy, \(metrics.checkpointsCleared) \(breakNoun) earned."
+    }
+
     private var signalText: Color { Color(red: 0.94, green: 0.98, blue: 0.96) }
     private var signalSecondaryText: Color { Color(red: 0.66, green: 0.75, blue: 0.71) }
-    private var signalAccent: Color { Color(red: 0.49, green: 0.91, blue: 0.78) }
+    private var signalAccent: Color { CheckpointTheme.mint }
 }
