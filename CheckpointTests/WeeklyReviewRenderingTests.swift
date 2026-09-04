@@ -5,7 +5,7 @@ import XCTest
 
 final class WeeklyReviewRenderingTests: XCTestCase {
     @MainActor
-    func testWeeklyReviewRendersGoalPulseAcrossKeyLayouts() throws {
+    func testWeeklyReviewRendersDailyImpactAcrossKeyLayouts() throws {
         let suiteName = "WeeklyReviewRenderingTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer {
@@ -23,41 +23,49 @@ final class WeeklyReviewRenderingTests: XCTestCase {
             referenceDate: referenceDate,
             calendar: calendar
         )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: referenceDate))
+        let monday = week.start
+        let tuesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: monday))
+        let wednesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 2, to: monday))
         let fixtures = [
             WeeklyReviewRenderFixture(
-                name: "weekly-review-goal-pulse-light",
+                name: "weekly-review-daily-impact-light",
                 width: 393,
                 height: 1_250,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialSelectedPracticeDate: tuesday,
                 reduceMotion: false
             ),
             WeeklyReviewRenderFixture(
-                name: "weekly-review-goal-pulse-compact-dark",
+                name: "weekly-review-daily-impact-compact-dark",
                 width: 320,
                 height: 1_200,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
                 initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialSelectedPracticeDate: monday,
                 reduceMotion: false
             ),
             WeeklyReviewRenderFixture(
-                name: "weekly-review-goal-pulse-ax2-dark-reduced",
+                name: "weekly-review-daily-impact-ax5-dark-reduced",
                 width: 393,
-                height: 1_850,
+                height: 2_200,
                 colorScheme: .dark,
-                dynamicTypeSize: .accessibility2,
+                dynamicTypeSize: .accessibility5,
                 initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialSelectedPracticeDate: wednesday,
                 reduceMotion: true
             ),
             WeeklyReviewRenderFixture(
-                name: "weekly-review-selected-goal-light",
+                name: "weekly-review-daily-impact-selected-goal-light",
                 width: 393,
                 height: 1_200,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 initialMetricsID: fixture.otherGoalID.uuidString,
+                initialSelectedPracticeDate: tuesday,
                 reduceMotion: false
             )
         ]
@@ -71,7 +79,8 @@ final class WeeklyReviewRenderingTests: XCTestCase {
                     displayCalendar: calendar,
                     displayLocale: Locale(identifier: "en_US"),
                     displayTimeZone: calendar.timeZone,
-                    reduceMotionOverride: renderFixture.reduceMotion
+                    reduceMotionOverride: renderFixture.reduceMotion,
+                    initialSelectedPracticeDate: renderFixture.initialSelectedPracticeDate
                 )
                 .environment(\.colorScheme, renderFixture.colorScheme)
                 .environment(\.dynamicTypeSize, renderFixture.dynamicTypeSize),
@@ -198,5 +207,6 @@ private struct WeeklyReviewRenderFixture {
     let colorScheme: ColorScheme
     let dynamicTypeSize: DynamicTypeSize
     let initialMetricsID: String
+    let initialSelectedPracticeDate: Date?
     let reduceMotion: Bool
 }

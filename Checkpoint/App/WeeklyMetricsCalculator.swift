@@ -3,8 +3,25 @@ import Foundation
 struct WeeklyPracticeDay: Identifiable, Equatable, Sendable {
     var date: Date
     var questionsAnswered: Int
+    var correctAnswers: Int = 0
+    var checkpointsCleared: Int = 0
+    var earnedBreakMinutes: Int = 0
 
     var id: Date { date }
+
+    var hasActivity: Bool {
+        questionsAnswered > 0 || checkpointsCleared > 0 || earnedBreakMinutes > 0
+    }
+
+    var accuracyPercent: Int? {
+        guard questionsAnswered > 0 else { return nil }
+        let normalizedCorrectAnswers = min(max(correctAnswers, 0), questionsAnswered)
+        return Int(Double(normalizedCorrectAnswers) / Double(questionsAnswered) * 100)
+    }
+
+    var earnedBreakTimeText: String {
+        weeklyDurationText(minutes: earnedBreakMinutes)
+    }
 }
 
 struct WeeklyImpactDetails: Equatable, Sendable {
@@ -15,16 +32,7 @@ struct WeeklyImpactDetails: Equatable, Sendable {
     var previousWeekQuestions: Int
 
     var earnedBreakTimeText: String {
-        let hours = earnedBreakMinutes / 60
-        let minutes = earnedBreakMinutes % 60
-
-        if hours > 0, minutes > 0 {
-            return "\(hours)h \(minutes)m"
-        }
-        if hours > 0 {
-            return "\(hours)h"
-        }
-        return "\(minutes)m"
+        weeklyDurationText(minutes: earnedBreakMinutes)
     }
 
     func questionTrendText(currentQuestions: Int) -> String? {
@@ -148,10 +156,19 @@ struct WeeklyMetricsCalculator {
                 return nil
             }
             let day = calendar.startOfDay(for: date)
-            let count = weeklyAttempts.lazy.filter {
+            let dayAttempts = weeklyAttempts.filter {
                 calendar.isDate($0.createdAt, inSameDayAs: day)
-            }.count
-            return WeeklyPracticeDay(date: day, questionsAnswered: count)
+            }
+            let dayUnlockEvents = weeklyUnlockEvents.filter {
+                calendar.isDate($0.createdAt, inSameDayAs: day)
+            }
+            return WeeklyPracticeDay(
+                date: day,
+                questionsAnswered: dayAttempts.count,
+                correctAnswers: dayAttempts.lazy.filter { $0.result == .correct }.count,
+                checkpointsCleared: dayUnlockEvents.count,
+                earnedBreakMinutes: dayUnlockEvents.reduce(0) { $0 + $1.minutes }
+            )
         }
 
         return WeeklyImpactDetails(
@@ -265,4 +282,18 @@ struct WeeklyMetricsCalculator {
         return (strongest.topic, review.topic)
     }
 
+}
+
+private func weeklyDurationText(minutes: Int) -> String {
+    let normalizedMinutes = max(0, minutes)
+    let hours = normalizedMinutes / 60
+    let remainingMinutes = normalizedMinutes % 60
+
+    if hours > 0, remainingMinutes > 0 {
+        return "\(hours)h \(remainingMinutes)m"
+    }
+    if hours > 0 {
+        return "\(hours)h"
+    }
+    return "\(remainingMinutes)m"
 }

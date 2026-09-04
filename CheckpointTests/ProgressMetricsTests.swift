@@ -162,6 +162,21 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
 
         XCTAssertEqual(formatter.narrowWeekday(for: monday), "M")
         XCTAssertEqual(formatter.wideWeekday(for: monday), "Monday")
+        XCTAssertEqual(formatter.detailDate(for: monday), "Monday, Aug 31")
+        XCTAssertEqual(formatter.uppercaseDetailDate(for: monday), "MONDAY, AUG 31")
+
+        let october = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 10, day: 6))
+        )
+        let turkishFormatter = WeeklyReviewDateLabelFormatter(
+            calendar: calendar,
+            locale: Locale(identifier: "tr_TR"),
+            timeZone: calendar.timeZone
+        )
+        XCTAssertEqual(
+            turkishFormatter.uppercaseDetailDate(for: october),
+            "6 EKİ SALI"
+        )
     }
 
     @MainActor
@@ -381,6 +396,88 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         var mixed = base
         mixed.earnedBreakMinutes = 75
         XCTAssertEqual(mixed.earnedBreakTimeText, "1h 15m")
+    }
+
+    @MainActor
+    func testWeeklyImpactBucketsDailyAccuracyAndUnlockedTimeWithinScope() throws {
+        let goal = makeGoal()
+        let otherGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let asOf = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: asOf))
+        let monday = week.start.addingTimeInterval(9 * 60 * 60)
+        let tuesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: monday))
+        let afterAsOf = asOf.addingTimeInterval(60 * 60)
+        let calculator = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(goal: goal, result: .correct, createdAt: monday),
+                makeAttempt(goal: goal, result: .incorrect, createdAt: monday.addingTimeInterval(60)),
+                makeAttempt(goal: goal, result: .partial, createdAt: monday.addingTimeInterval(120)),
+                makeAttempt(goal: goal, result: .correct, createdAt: tuesday),
+                makeAttempt(goal: otherGoal, result: .correct, createdAt: monday),
+                makeAttempt(goal: goal, result: .correct, createdAt: afterAsOf)
+            ],
+            unlockEvents: [
+                UnlockEvent(goalID: goal.id, minutes: 15, createdAt: monday),
+                UnlockEvent(goalID: goal.id, minutes: 30, createdAt: monday.addingTimeInterval(60)),
+                UnlockEvent(goalID: goal.id, minutes: 20, createdAt: tuesday),
+                UnlockEvent(goalID: otherGoal.id, minutes: 60, createdAt: monday),
+                UnlockEvent(goalID: goal.id, minutes: 30, createdAt: afterAsOf)
+            ],
+            asOf: asOf,
+            calendar: calendar
+        )
+
+        let scopedDetails = calculator.impactDetails(goalID: goal.id)
+        let scopedMonday = try XCTUnwrap(
+            scopedDetails.practiceDays.first {
+                calendar.isDate($0.date, inSameDayAs: monday)
+            }
+        )
+        let scopedTuesday = try XCTUnwrap(
+            scopedDetails.practiceDays.first {
+                calendar.isDate($0.date, inSameDayAs: tuesday)
+            }
+        )
+
+        XCTAssertEqual(scopedMonday.questionsAnswered, 3)
+        XCTAssertEqual(scopedMonday.correctAnswers, 1)
+        XCTAssertEqual(scopedMonday.accuracyPercent, 33)
+        XCTAssertEqual(scopedMonday.checkpointsCleared, 2)
+        XCTAssertEqual(scopedMonday.earnedBreakMinutes, 45)
+        XCTAssertEqual(scopedMonday.earnedBreakTimeText, "45m")
+        XCTAssertTrue(scopedMonday.hasActivity)
+        XCTAssertEqual(scopedTuesday.questionsAnswered, 1)
+        XCTAssertEqual(scopedTuesday.correctAnswers, 1)
+        XCTAssertEqual(scopedTuesday.checkpointsCleared, 1)
+        XCTAssertEqual(scopedTuesday.earnedBreakMinutes, 20)
+        XCTAssertEqual(scopedDetails.earnedBreakMinutes, 65)
+        XCTAssertEqual(scopedDetails.practiceDays.map(\.questionsAnswered).reduce(0, +), 4)
+        XCTAssertEqual(scopedDetails.practiceDays.map(\.checkpointsCleared).reduce(0, +), 3)
+
+        let allGoalsDetails = calculator.impactDetails(goalID: nil)
+        let allGoalsMonday = try XCTUnwrap(
+            allGoalsDetails.practiceDays.first {
+                calendar.isDate($0.date, inSameDayAs: monday)
+            }
+        )
+        XCTAssertEqual(allGoalsMonday.questionsAnswered, 4)
+        XCTAssertEqual(allGoalsMonday.correctAnswers, 2)
+        XCTAssertEqual(allGoalsMonday.accuracyPercent, 50)
+        XCTAssertEqual(allGoalsMonday.checkpointsCleared, 3)
+        XCTAssertEqual(allGoalsMonday.earnedBreakMinutes, 105)
+        XCTAssertEqual(allGoalsDetails.earnedBreakMinutes, 125)
     }
 
     @MainActor
@@ -655,6 +752,186 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
                 selectedMetricsID: UUID().uuidString,
                 currentMetricsID: WeeklyMetricsSummary.allGoalsID
             )
+        )
+    }
+
+    func testWeeklyPracticeSelectionReconcilesToAnElapsedActivityDay() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: referenceDate))
+        let days = try (0..<7).map { offset in
+            WeeklyPracticeDay(
+                date: try XCTUnwrap(
+                    calendar.date(byAdding: .day, value: offset, to: week.start)
+                ),
+                questionsAnswered: offset == 0 || offset == 2 ? offset + 1 : 0
+            )
+        }
+        let mondayID = days[0].id
+        let wednesdayID = days[2].id
+        let fridayID = days[4].id
+
+        XCTAssertEqual(
+            WeeklyPracticeSelectionPolicy.reconciledSelection(
+                preferredDayID: mondayID,
+                days: days,
+                referenceDate: referenceDate
+            ),
+            mondayID
+        )
+        XCTAssertEqual(
+            WeeklyPracticeSelectionPolicy.reconciledSelection(
+                preferredDayID: fridayID,
+                days: days,
+                referenceDate: referenceDate
+            ),
+            wednesdayID,
+            "A future preferred day should fall back to the latest elapsed activity day."
+        )
+        XCTAssertFalse(
+            WeeklyPracticeSelectionPolicy.canSelect(
+                day: days[4],
+                referenceDate: referenceDate
+            )
+        )
+        XCTAssertFalse(
+            WeeklyPracticeSelectionPolicy.reportsSelectionFeedback(
+                selectedDayID: wednesdayID,
+                currentDayID: wednesdayID
+            )
+        )
+        XCTAssertTrue(
+            WeeklyPracticeSelectionPolicy.reportsSelectionFeedback(
+                selectedDayID: mondayID,
+                currentDayID: wednesdayID
+            )
+        )
+
+        let emptyDays = days.map {
+            WeeklyPracticeDay(date: $0.date, questionsAnswered: 0)
+        }
+        XCTAssertEqual(
+            WeeklyPracticeSelectionPolicy.reconciledSelection(
+                preferredDayID: nil,
+                days: emptyDays,
+                referenceDate: referenceDate
+            ),
+            days[3].id,
+            "Without activity, the detail should settle on today instead of a future day."
+        )
+        XCTAssertNil(
+            WeeklyPracticeSelectionPolicy.reconciledSelection(
+                preferredDayID: nil,
+                days: [],
+                referenceDate: referenceDate
+            )
+        )
+    }
+
+    func testWeeklyPracticeDetailPresentsActivityEmptyAndFutureStates() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let formatter = WeeklyReviewDateLabelFormatter(
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let tuesday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 1))
+        )
+        let activity = WeeklyPracticeDayDetailPresentation(
+            day: WeeklyPracticeDay(
+                date: tuesday,
+                questionsAnswered: 3,
+                correctAnswers: 2,
+                checkpointsCleared: 2,
+                earnedBreakMinutes: 75
+            ),
+            referenceDate: referenceDate,
+            dateLabelFormatter: formatter
+        )
+
+        XCTAssertEqual(activity.dateText, "Tuesday, Sep 1")
+        XCTAssertEqual(activity.dateEyebrowText, "TUESDAY, SEP 1")
+        XCTAssertEqual(activity.activityText, "3 questions · 66% correct")
+        XCTAssertEqual(activity.breakText, "2 breaks · 1h 15m unlocked")
+        XCTAssertEqual(
+            activity.accessibilityLabel,
+            "Tuesday, Sep 1. 3 questions · 66% correct. 2 breaks · 1h 15m unlocked"
+        )
+        XCTAssertTrue(activity.hasActivity)
+        XCTAssertFalse(activity.isFuture)
+
+        let singular = WeeklyPracticeDayDetailPresentation(
+            day: WeeklyPracticeDay(
+                date: tuesday,
+                questionsAnswered: 1,
+                correctAnswers: 1,
+                checkpointsCleared: 1,
+                earnedBreakMinutes: 15
+            ),
+            referenceDate: referenceDate,
+            dateLabelFormatter: formatter
+        )
+        XCTAssertEqual(singular.activityText, "1 question · 100% correct")
+        XCTAssertEqual(singular.breakText, "1 break · 15m unlocked")
+
+        let empty = WeeklyPracticeDayDetailPresentation(
+            day: WeeklyPracticeDay(date: tuesday, questionsAnswered: 0),
+            referenceDate: referenceDate,
+            dateLabelFormatter: formatter
+        )
+        XCTAssertEqual(empty.activityText, "No questions answered")
+        XCTAssertEqual(empty.breakText, "No break earned")
+        XCTAssertFalse(empty.hasActivity)
+
+        let friday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 4))
+        )
+        let future = WeeklyPracticeDayDetailPresentation(
+            day: WeeklyPracticeDay(date: friday, questionsAnswered: 4),
+            referenceDate: referenceDate,
+            dateLabelFormatter: formatter
+        )
+        XCTAssertTrue(future.isFuture)
+        XCTAssertEqual(future.activityText, "Not yet")
+        XCTAssertEqual(future.breakText, "This day is still ahead.")
+    }
+
+    func testWeeklyPracticeLayoutAndMotionRespectAccessibilityContracts() {
+        XCTAssertEqual(WeeklyPracticeChartLayoutPolicy.minimumDayWidth, 44)
+        XCTAssertFalse(
+            WeeklyPracticeChartLayoutPolicy.requiresHorizontalScrolling(
+                availableWidth: 308,
+                dayCount: 7
+            )
+        )
+        XCTAssertTrue(
+            WeeklyPracticeChartLayoutPolicy.requiresHorizontalScrolling(
+                availableWidth: 307,
+                dayCount: 7
+            )
+        )
+        XCTAssertFalse(
+            WeeklyPracticeChartLayoutPolicy.requiresHorizontalScrolling(
+                availableWidth: 0,
+                dayCount: 0
+            )
+        )
+        XCTAssertEqual(
+            WeeklyPracticeSelectionMotionPolicy(reduceMotion: false).style,
+            .animated
+        )
+        XCTAssertEqual(
+            WeeklyPracticeSelectionMotionPolicy(reduceMotion: true).style,
+            .identity
         )
     }
 

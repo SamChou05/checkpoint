@@ -13,12 +13,15 @@ struct WeeklyReviewScopeInteractionPolicy {
 struct WeeklyReviewDateLabelFormatter {
     private let narrowWeekdayFormatter: DateFormatter
     private let wideWeekdayFormatter: DateFormatter
+    private let detailDateFormatter: DateFormatter
+    private let locale: Locale
 
     init(
         calendar: Calendar,
         locale: Locale,
         timeZone: TimeZone
     ) {
+        self.locale = locale
         let narrowWeekdayFormatter = DateFormatter()
         narrowWeekdayFormatter.calendar = calendar
         narrowWeekdayFormatter.locale = locale
@@ -32,6 +35,13 @@ struct WeeklyReviewDateLabelFormatter {
         wideWeekdayFormatter.timeZone = timeZone
         wideWeekdayFormatter.setLocalizedDateFormatFromTemplate("EEEE")
         self.wideWeekdayFormatter = wideWeekdayFormatter
+
+        let detailDateFormatter = DateFormatter()
+        detailDateFormatter.calendar = calendar
+        detailDateFormatter.locale = locale
+        detailDateFormatter.timeZone = timeZone
+        detailDateFormatter.setLocalizedDateFormatFromTemplate("EEEEMMMd")
+        self.detailDateFormatter = detailDateFormatter
     }
 
     func narrowWeekday(for date: Date) -> String {
@@ -40,6 +50,112 @@ struct WeeklyReviewDateLabelFormatter {
 
     func wideWeekday(for date: Date) -> String {
         wideWeekdayFormatter.string(from: date)
+    }
+
+    func detailDate(for date: Date) -> String {
+        detailDateFormatter.string(from: date)
+    }
+
+    func uppercaseDetailDate(for date: Date) -> String {
+        detailDate(for: date).uppercased(with: locale)
+    }
+}
+
+struct WeeklyPracticeSelectionPolicy {
+    static func canSelect(day: WeeklyPracticeDay, referenceDate: Date) -> Bool {
+        day.date <= referenceDate
+    }
+
+    static func reconciledSelection(
+        preferredDayID: WeeklyPracticeDay.ID?,
+        days: [WeeklyPracticeDay],
+        referenceDate: Date
+    ) -> WeeklyPracticeDay.ID? {
+        let selectableDays = days.filter { canSelect(day: $0, referenceDate: referenceDate) }
+        if let preferredDayID,
+           selectableDays.contains(where: { $0.id == preferredDayID }) {
+            return preferredDayID
+        }
+
+        return selectableDays.last(where: \.hasActivity)?.id ?? selectableDays.last?.id
+    }
+
+    static func reportsSelectionFeedback(
+        selectedDayID: WeeklyPracticeDay.ID,
+        currentDayID: WeeklyPracticeDay.ID?
+    ) -> Bool {
+        selectedDayID != currentDayID
+    }
+}
+
+enum WeeklyPracticeSelectionMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct WeeklyPracticeSelectionMotionPolicy {
+    let style: WeeklyPracticeSelectionMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+}
+
+struct WeeklyPracticeChartLayoutPolicy {
+    static let minimumDayWidth: CGFloat = 44
+
+    static func requiresHorizontalScrolling(
+        availableWidth: CGFloat,
+        dayCount: Int
+    ) -> Bool {
+        guard dayCount > 0 else { return false }
+        return availableWidth < minimumDayWidth * CGFloat(dayCount)
+    }
+}
+
+struct WeeklyPracticeDayDetailPresentation: Equatable {
+    let id: WeeklyPracticeDay.ID
+    let dateText: String
+    let dateEyebrowText: String
+    let activityText: String
+    let breakText: String
+    let accessibilityLabel: String
+    let isFuture: Bool
+    let hasActivity: Bool
+
+    init(
+        day: WeeklyPracticeDay,
+        referenceDate: Date,
+        dateLabelFormatter: WeeklyReviewDateLabelFormatter
+    ) {
+        id = day.id
+        dateText = dateLabelFormatter.detailDate(for: day.date)
+        dateEyebrowText = dateLabelFormatter.uppercaseDetailDate(for: day.date)
+        isFuture = day.date > referenceDate
+        hasActivity = day.hasActivity
+
+        if isFuture {
+            activityText = "Not yet"
+            breakText = "This day is still ahead."
+        } else {
+            if let accuracyPercent = day.accuracyPercent {
+                let questionNoun = day.questionsAnswered == 1 ? "question" : "questions"
+                activityText = "\(day.questionsAnswered) \(questionNoun) · \(accuracyPercent)% correct"
+            } else {
+                activityText = "No questions answered"
+            }
+
+            if day.checkpointsCleared > 0 {
+                let breakNoun = day.checkpointsCleared == 1 ? "break" : "breaks"
+                breakText = "\(day.checkpointsCleared) \(breakNoun) · \(day.earnedBreakTimeText) unlocked"
+            } else if day.earnedBreakMinutes > 0 {
+                breakText = "\(day.earnedBreakTimeText) unlocked"
+            } else {
+                breakText = "No break earned"
+            }
+        }
+
+        accessibilityLabel = "\(dateText). \(activityText). \(breakText)"
     }
 }
 
@@ -184,7 +300,9 @@ struct WeeklyReviewView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @State private var selectedMetricsID = WeeklyMetricsSummary.allGoalsID
+    @State private var selectedPracticeDayID: WeeklyPracticeDay.ID?
     @State private var scopeSelectionFeedbackSequence = 0
+    @State private var practiceDaySelectionFeedbackSequence = 0
     @ScaledMetric(relativeTo: .largeTitle) private var heroMetricSize: CGFloat = 64
 
     init(
@@ -194,15 +312,23 @@ struct WeeklyReviewView: View {
         displayCalendar: Calendar = .current,
         displayLocale: Locale = .current,
         displayTimeZone: TimeZone = .current,
-        reduceMotionOverride: Bool? = nil
+        reduceMotionOverride: Bool? = nil,
+        initialSelectedPracticeDate: Date? = nil
     ) {
+        var normalizedDisplayCalendar = displayCalendar
+        normalizedDisplayCalendar.timeZone = displayTimeZone
         self.store = store
         self.referenceDate = referenceDate
-        self.displayCalendar = displayCalendar
+        self.displayCalendar = normalizedDisplayCalendar
         self.displayLocale = displayLocale
         self.displayTimeZone = displayTimeZone
         self.reduceMotionOverride = reduceMotionOverride
         _selectedMetricsID = State(initialValue: initialMetricsID)
+        _selectedPracticeDayID = State(
+            initialValue: initialSelectedPracticeDate.map {
+                normalizedDisplayCalendar.startOfDay(for: $0)
+            }
+        )
     }
 
     private var reduceMotion: Bool {
@@ -255,6 +381,36 @@ struct WeeklyReviewView: View {
             asOf: referenceDate,
             calendar: displayCalendar
         ).impactDetails(goalID: selectedGoalID)
+    }
+
+    private var dateLabelFormatter: WeeklyReviewDateLabelFormatter {
+        WeeklyReviewDateLabelFormatter(
+            calendar: displayCalendar,
+            locale: displayLocale,
+            timeZone: displayTimeZone
+        )
+    }
+
+    private var resolvedPracticeDayID: WeeklyPracticeDay.ID? {
+        WeeklyPracticeSelectionPolicy.reconciledSelection(
+            preferredDayID: selectedPracticeDayID,
+            days: impactDetails.practiceDays,
+            referenceDate: referenceDate
+        )
+    }
+
+    private var selectedPracticeDay: WeeklyPracticeDay? {
+        guard let resolvedPracticeDayID else { return nil }
+        return impactDetails.practiceDays.first { $0.id == resolvedPracticeDayID }
+    }
+
+    private var selectedPracticeDayPresentation: WeeklyPracticeDayDetailPresentation? {
+        guard let selectedPracticeDay else { return nil }
+        return WeeklyPracticeDayDetailPresentation(
+            day: selectedPracticeDay,
+            referenceDate: referenceDate,
+            dateLabelFormatter: dateLabelFormatter
+        )
     }
 
     private var goalPulsePresentation: WeeklyGoalPulsePresentation {
@@ -313,6 +469,9 @@ struct WeeklyReviewView: View {
                     selectedMetricsID = WeeklyMetricsSummary.allGoalsID
                 }
             }
+            .onChange(of: selectedMetricsID) { _, _ in
+                selectedPracticeDayID = nil
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
@@ -321,6 +480,7 @@ struct WeeklyReviewView: View {
             }
         }
         .sensoryFeedback(.selection, trigger: scopeSelectionFeedbackSequence)
+        .sensoryFeedback(.selection, trigger: practiceDaySelectionFeedbackSequence)
     }
 
     private var reviewHeader: some View {
@@ -472,12 +632,21 @@ struct WeeklyReviewView: View {
                 days: impactDetails.practiceDays,
                 referenceDate: referenceDate,
                 reduceMotion: reduceMotion,
-                dateLabelFormatter: WeeklyReviewDateLabelFormatter(
-                    calendar: displayCalendar,
-                    locale: displayLocale,
-                    timeZone: displayTimeZone
-                )
+                dateLabelFormatter: dateLabelFormatter,
+                selectedDayID: resolvedPracticeDayID,
+                selectDay: selectPracticeDay
             )
+
+            if let selectedPracticeDayPresentation {
+                Divider()
+                    .overlay(CheckpointTheme.heroDivider)
+
+                WeeklyPracticeDayDetail(
+                    presentation: selectedPracticeDayPresentation
+                )
+                .id("\(selectedMetrics.id)-\(selectedPracticeDayPresentation.id.timeIntervalSinceReferenceDate)")
+                .transition(practiceDayDetailTransition)
+            }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -724,6 +893,31 @@ struct WeeklyReviewView: View {
         ).post()
     }
 
+    private func selectPracticeDay(_ day: WeeklyPracticeDay) {
+        guard WeeklyPracticeSelectionPolicy.canSelect(
+            day: day,
+            referenceDate: referenceDate
+        ), WeeklyPracticeSelectionPolicy.reportsSelectionFeedback(
+            selectedDayID: day.id,
+            currentDayID: resolvedPracticeDayID
+        ) else {
+            return
+        }
+
+        let presentation = WeeklyPracticeDayDetailPresentation(
+            day: day,
+            referenceDate: referenceDate,
+            dateLabelFormatter: dateLabelFormatter
+        )
+        withAnimation(practiceDaySelectionAnimation) {
+            selectedPracticeDayID = day.id
+        }
+        practiceDaySelectionFeedbackSequence += 1
+        AccessibilityNotification.Announcement(
+            "Showing \(presentation.dateText)."
+        ).post()
+    }
+
     private func goalPulseTint(at index: Int) -> Color {
         let tints = [
             CheckpointTheme.teal,
@@ -764,6 +958,24 @@ struct WeeklyReviewView: View {
 
     private var scopeChangeAnimation: Animation? {
         CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+    }
+
+    private var practiceDaySelectionAnimation: Animation? {
+        switch WeeklyPracticeSelectionMotionPolicy(reduceMotion: reduceMotion).style {
+        case .animated:
+            CheckpointMotion.change
+        case .identity:
+            nil
+        }
+    }
+
+    private var practiceDayDetailTransition: AnyTransition {
+        switch WeeklyPracticeSelectionMotionPolicy(reduceMotion: reduceMotion).style {
+        case .animated:
+            .opacity.combined(with: .scale(scale: 0.985, anchor: .top))
+        case .identity:
+            .identity
+        }
     }
 
     private var scopeChangeTransition: AnyTransition {
@@ -958,39 +1170,141 @@ private struct WeeklyPracticeBars: View {
     var referenceDate: Date
     var reduceMotion: Bool
     var dateLabelFormatter: WeeklyReviewDateLabelFormatter
+    var selectedDayID: WeeklyPracticeDay.ID?
+    var selectDay: (WeeklyPracticeDay) -> Void
+
+    @Namespace private var selectionNamespace
 
     private var maximumCount: Int {
         max(1, days.map(\.questionsAnswered).max() ?? 1)
     }
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 8) {
+        GeometryReader { proxy in
+            if WeeklyPracticeChartLayoutPolicy.requiresHorizontalScrolling(
+                availableWidth: proxy.size.width,
+                dayCount: days.count
+            ) {
+                ScrollViewReader { scrollProxy in
+                    ScrollView(.horizontal) {
+                        dayStrip(fillsAvailableWidth: false)
+                    }
+                    .scrollIndicators(.hidden)
+                    .contentMargins(.horizontal, 0, for: .scrollContent)
+                    .onAppear {
+                        scrollToSelectedDay(using: scrollProxy, animated: false)
+                    }
+                    .onChange(of: selectedDayID) { _, _ in
+                        scrollToSelectedDay(using: scrollProxy, animated: !reduceMotion)
+                    }
+                }
+            } else {
+                dayStrip(fillsAvailableWidth: true)
+            }
+        }
+        .frame(height: 86)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Daily practice")
+    }
+
+    private func dayStrip(fillsAvailableWidth: Bool) -> some View {
+        HStack(alignment: .bottom, spacing: 0) {
             ForEach(days) { day in
+                dayButton(for: day, fillsAvailableWidth: fillsAvailableWidth)
+            }
+        }
+        .frame(
+            minWidth: fillsAvailableWidth ? 0 : nil,
+            maxWidth: fillsAvailableWidth ? .infinity : nil,
+            alignment: .leading
+        )
+    }
+
+    private func dayButton(
+        for day: WeeklyPracticeDay,
+        fillsAvailableWidth: Bool
+    ) -> some View {
+        let isSelected = day.id == selectedDayID
+        let isSelectable = WeeklyPracticeSelectionPolicy.canSelect(
+            day: day,
+            referenceDate: referenceDate
+        )
+        let presentation = WeeklyPracticeDayDetailPresentation(
+            day: day,
+            referenceDate: referenceDate,
+            dateLabelFormatter: dateLabelFormatter
+        )
+
+        return Button {
+            selectDay(day)
+        } label: {
+            ZStack {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(CheckpointTheme.heroSuccess.opacity(0.12))
+                        .matchedGeometryEffect(
+                            id: "weekly-practice-selection",
+                            in: selectionNamespace
+                        )
+                }
+
                 VStack(spacing: 7) {
-                    RoundedRectangle(cornerRadius: 3, style: .continuous)
-                        .fill(barColor(for: day))
-                        .frame(
-                            maxWidth: .infinity,
-                            minHeight: 4,
-                            maxHeight: barHeight(for: day)
-                        )
-                        .animation(
-                            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion),
-                            value: day.questionsAnswered
-                        )
+                    ZStack(alignment: .bottom) {
+                        Capsule()
+                            .fill(CheckpointTheme.heroTrack.opacity(isSelectable ? 0.54 : 0.22))
+                            .frame(width: 8, height: 54)
+
+                        Capsule()
+                            .fill(barColor(for: day, isSelected: isSelected))
+                            .frame(width: 8, height: barHeight(for: day))
+                            .animation(
+                                CheckpointMotion.animation(
+                                    CheckpointMotion.reveal,
+                                    reduceMotion: reduceMotion
+                                ),
+                                value: day.questionsAnswered
+                            )
+                    }
+                    .frame(height: 54, alignment: .bottom)
 
                     Text(dateLabelFormatter.narrowWeekday(for: day.date))
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(labelColor(for: day))
+                        .foregroundStyle(labelColor(for: day, isSelected: isSelected))
                 }
-                .frame(maxWidth: .infinity)
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel(accessibilityLabel(for: day))
+                .padding(.vertical, 4)
             }
+            .frame(
+                minWidth: WeeklyPracticeChartLayoutPolicy.minimumDayWidth,
+                maxWidth: fillsAvailableWidth ? .infinity : WeeklyPracticeChartLayoutPolicy.minimumDayWidth,
+                minHeight: 82
+            )
+            .contentShape(Rectangle())
         }
-        .frame(height: 74, alignment: .bottom)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Questions answered by day")
+        .buttonStyle(CheckpointPressButtonStyle())
+        .disabled(!isSelectable)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(presentation.accessibilityLabel)
+        .accessibilityHint(
+            isSelectable
+                ? (isSelected ? "Selected day." : "Shows this day's details.")
+                : "This day is still ahead."
+        )
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .id(day.id)
+    }
+
+    private func scrollToSelectedDay(
+        using proxy: ScrollViewProxy,
+        animated: Bool
+    ) {
+        guard let selectedDayID else { return }
+        if animated {
+            withAnimation(CheckpointMotion.change) {
+                proxy.scrollTo(selectedDayID, anchor: .center)
+            }
+        } else {
+            proxy.scrollTo(selectedDayID, anchor: .center)
+        }
     }
 
     private func barHeight(for day: WeeklyPracticeDay) -> CGFloat {
@@ -998,25 +1312,89 @@ private struct WeeklyPracticeBars: View {
         return 12 + (42 * CGFloat(day.questionsAnswered) / CGFloat(maximumCount))
     }
 
-    private func barColor(for day: WeeklyPracticeDay) -> Color {
+    private func barColor(
+        for day: WeeklyPracticeDay,
+        isSelected: Bool
+    ) -> Color {
         if day.questionsAnswered > 0 {
-            return CheckpointTheme.heroSuccess
+            return isSelected ? CheckpointTheme.heroText : CheckpointTheme.heroSuccess
         }
-        return CheckpointTheme.heroTrack.opacity(day.date > referenceDate ? 0.45 : 1)
+        return CheckpointTheme.heroTrack.opacity(day.date > referenceDate ? 0.28 : 0.72)
     }
 
-    private func labelColor(for day: WeeklyPracticeDay) -> Color {
-        CheckpointTheme.heroMuted.opacity(day.date > referenceDate ? 0.72 : 1)
+    private func labelColor(
+        for day: WeeklyPracticeDay,
+        isSelected: Bool
+    ) -> Color {
+        if isSelected {
+            return CheckpointTheme.heroText
+        }
+        return CheckpointTheme.heroMuted.opacity(day.date > referenceDate ? 0.62 : 1)
+    }
+}
+
+private struct WeeklyPracticeDayDetail: View {
+    let presentation: WeeklyPracticeDayDetailPresentation
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 10) {
+                    detailIcon
+                    detailCopy
+                }
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    detailIcon
+                    detailCopy
+                }
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(CheckpointTheme.heroText.opacity(0.055))
+                .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
+        )
+        .accessibilityHidden(true)
     }
 
-    private func accessibilityLabel(for day: WeeklyPracticeDay) -> String {
-        let weekday = dateLabelFormatter.wideWeekday(for: day.date)
-        if day.date > referenceDate {
-            return "\(weekday), not yet"
-        }
+    private var detailIcon: some View {
+        Image(systemName: presentation.hasActivity ? "chart.bar.fill" : "circle.dashed")
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundStyle(
+                presentation.hasActivity
+                    ? CheckpointTheme.heroSuccess
+                    : CheckpointTheme.heroMuted
+            )
+            .frame(width: 34, height: 34)
+            .background(
+                Circle()
+                    .fill(CheckpointTheme.heroText.opacity(0.07))
+            )
+            .accessibilityHidden(true)
+    }
 
-        let noun = day.questionsAnswered == 1 ? "question" : "questions"
-        return "\(weekday), \(day.questionsAnswered) \(noun)"
+    private var detailCopy: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(presentation.dateEyebrowText)
+                .font(.caption2.weight(.bold))
+                .tracking(0.7)
+                .foregroundStyle(CheckpointTheme.heroMuted)
+
+            Text(presentation.activityText)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(presentation.breakText)
+                .font(.footnote)
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 
