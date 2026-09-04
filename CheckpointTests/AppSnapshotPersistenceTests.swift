@@ -180,6 +180,122 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testLegacyAttemptBackfillScopesDuplicateQuestionIDsToTheirGoals() throws {
+        let sharedQuestionID = UUID()
+        let firstSkillID = UUID()
+        let firstObjectiveID = UUID()
+        let secondSkillID = UUID()
+        let secondObjectiveID = UUID()
+        let firstGoal = Goal(
+            title: "Prepare for systems design",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "",
+            preferredQuestionStyle: .shortAnswer
+        )
+        let secondGoal = Goal(
+            title: "Study philosophy",
+            deadline: Date().addingTimeInterval(86_400 * 45),
+            category: .examPrep,
+            currentLevel: "Beginner",
+            focusAreas: "",
+            preferredQuestionStyle: .reflection
+        )
+        let firstQuestion = CheckpointQuestion(
+            id: sharedQuestionID,
+            goalID: firstGoal.id,
+            prompt: "What does horizontal scaling change?",
+            expectedAnswer: "It adds more service instances.",
+            explanation: "Horizontal scaling distributes work across additional instances.",
+            topic: "System scaling",
+            skillID: firstSkillID,
+            objectiveID: firstObjectiveID,
+            difficulty: 3,
+            format: .shortAnswer,
+            sourcePrompt: "legacy first goal"
+        )
+        var duplicateFirstQuestion = firstQuestion
+        duplicateFirstQuestion.expectedAnswer = "Conflicting duplicate answer"
+        duplicateFirstQuestion.explanation = "Conflicting duplicate explanation"
+        let secondQuestion = CheckpointQuestion(
+            id: sharedQuestionID,
+            goalID: secondGoal.id,
+            prompt: "How might a virtue ethicist frame courage?",
+            expectedAnswer: "As a practiced disposition between extremes.",
+            explanation: "Virtue ethics treats courage as a cultivated character trait.",
+            topic: "Virtue ethics",
+            skillID: secondSkillID,
+            objectiveID: secondObjectiveID,
+            difficulty: 4,
+            format: .reflection,
+            sourcePrompt: "legacy second goal"
+        )
+        let firstAttempt = CheckpointAttempt(
+            questionID: sharedQuestionID,
+            goalID: firstGoal.id,
+            prompt: firstQuestion.prompt,
+            answer: "More servers",
+            result: .incorrect,
+            unlockMinutes: 0
+        )
+        let secondAttempt = CheckpointAttempt(
+            questionID: sharedQuestionID,
+            goalID: secondGoal.id,
+            prompt: secondQuestion.prompt,
+            answer: "A habit",
+            result: .partial,
+            unlockMinutes: 0
+        )
+        let originalStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        originalStore.goal = firstGoal
+        originalStore.goalProfiles = [firstGoal, secondGoal]
+        originalStore.questions = [firstQuestion, duplicateFirstQuestion, secondQuestion]
+        originalStore.attempts = [firstAttempt, secondAttempt]
+        originalStore.updateUnlockMinutes(10)
+
+        let restoredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        let restoredFirstAttempt = try XCTUnwrap(
+            restoredStore.attempts.first { $0.id == firstAttempt.id }
+        )
+        let restoredSecondAttempt = try XCTUnwrap(
+            restoredStore.attempts.first { $0.id == secondAttempt.id }
+        )
+
+        XCTAssertEqual(restoredStore.questions.count, 3)
+        XCTAssertEqual(restoredFirstAttempt.skillID, firstSkillID)
+        XCTAssertEqual(restoredFirstAttempt.objectiveID, firstObjectiveID)
+        XCTAssertEqual(restoredFirstAttempt.questionDifficulty, firstQuestion.difficulty)
+        XCTAssertEqual(restoredFirstAttempt.reviewSnapshot?.topic, firstQuestion.topic)
+        XCTAssertEqual(
+            restoredFirstAttempt.reviewSnapshot?.referenceAnswer,
+            firstQuestion.expectedAnswer
+        )
+        XCTAssertEqual(
+            restoredFirstAttempt.reviewSnapshot?.explanation,
+            firstQuestion.explanation
+        )
+        XCTAssertEqual(restoredSecondAttempt.skillID, secondSkillID)
+        XCTAssertEqual(restoredSecondAttempt.objectiveID, secondObjectiveID)
+        XCTAssertEqual(restoredSecondAttempt.questionDifficulty, secondQuestion.difficulty)
+        XCTAssertEqual(restoredSecondAttempt.reviewSnapshot?.topic, secondQuestion.topic)
+        XCTAssertEqual(
+            restoredSecondAttempt.reviewSnapshot?.referenceAnswer,
+            secondQuestion.expectedAnswer
+        )
+        XCTAssertEqual(
+            restoredSecondAttempt.reviewSnapshot?.explanation,
+            secondQuestion.explanation
+        )
+    }
+
+    @MainActor
     func testExistingReviewSnapshotSurvivesQuestionAndSkillMapMutations() throws {
         let originalSkill = SkillMapTopic(
             name: "Original skill",

@@ -22,6 +22,11 @@ private enum QuestionRefreshReason {
     }
 }
 
+private struct GoalScopedQuestionID: Hashable {
+    let goalID: Goal.ID
+    let questionID: CheckpointQuestion.ID
+}
+
 enum IssueReportDraftSaveResult: Equatable {
     case saved
     case emptyMessage
@@ -4216,10 +4221,25 @@ final class CheckpointStore {
     @discardableResult
     private func backfillAttemptMetadataIfNeeded() -> Bool {
         var didChange = false
-        let questionByID = Dictionary(uniqueKeysWithValues: questions.map { ($0.id, $0) })
+        let questionByScopedID = Dictionary(
+            questions.map { question in
+                (
+                    GoalScopedQuestionID(
+                        goalID: question.goalID,
+                        questionID: question.id
+                    ),
+                    question
+                )
+            },
+            uniquingKeysWith: { first, _ in first }
+        )
 
         for index in attempts.indices {
-            guard let question = questionByID[attempts[index].questionID] else { continue }
+            let questionID = GoalScopedQuestionID(
+                goalID: attempts[index].goalID,
+                questionID: attempts[index].questionID
+            )
+            guard let question = questionByScopedID[questionID] else { continue }
             let targetGoal = storedGoalProfile(withID: attempts[index].goalID)
             let mappedSkill = targetGoal?.derivedSkillMap.flatMap {
                 SkillMapReconciler.skillMapTopic(matching: question, in: $0)
