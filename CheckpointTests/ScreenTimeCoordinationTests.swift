@@ -643,6 +643,189 @@ final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testAuthorizationLossClearsSelectionAndPersistsProtectedAppReselectionRequirement() throws {
+        #if os(iOS) && canImport(FamilyControls)
+        let authorizer = FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: authorizer
+        )
+        let validSelection = try makeValidProtectedAppSelection()
+
+        XCTAssertTrue(screenTime.updateSelection(validSelection))
+        XCTAssertTrue(screenTime.hasSelection)
+        XCTAssertFalse(screenTime.requiresProtectedAppReselection)
+
+        authorizer.authorizationStatus = .denied
+        screenTime.refreshAuthorizationStatus()
+
+        XCTAssertEqual(screenTime.authorizationState, .denied)
+        XCTAssertFalse(screenTime.hasSelection)
+        XCTAssertTrue(screenTime.selection.applicationTokens.isEmpty)
+        XCTAssertTrue(screenTime.selection.categoryTokens.isEmpty)
+        XCTAssertTrue(screenTime.selection.webDomainTokens.isEmpty)
+        XCTAssertTrue(screenTime.requiresProtectedAppReselection)
+        XCTAssertEqual(
+            defaults.object(
+                forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+            ) as? Bool,
+            true
+        )
+
+        let persistedSelectionData = try XCTUnwrap(
+            SharedAppGroup.screenTimeSelectionData()
+        )
+        let persistedSelection = try JSONDecoder().decode(
+            FamilyActivitySelection.self,
+            from: persistedSelectionData
+        )
+        XCTAssertTrue(persistedSelection.applicationTokens.isEmpty)
+        XCTAssertTrue(persistedSelection.categoryTokens.isEmpty)
+        XCTAssertTrue(persistedSelection.webDomainTokens.isEmpty)
+        #endif
+    }
+
+    @MainActor
+    func testProtectedAppReselectionRequirementSurvivesControllerRecreation() throws {
+        #if os(iOS) && canImport(FamilyControls)
+        let screenTime = try makeControllerRequiringProtectedAppReselection()
+        XCTAssertTrue(screenTime.requiresProtectedAppReselection)
+
+        let recreated = ScreenTimeController(
+            defaults: defaults,
+            authorizer: FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        )
+
+        XCTAssertTrue(recreated.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(recreated.hasSelection)
+        XCTAssertTrue(recreated.requiresProtectedAppReselection)
+        XCTAssertEqual(
+            defaults.object(
+                forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+            ) as? Bool,
+            true
+        )
+        #endif
+    }
+
+    @MainActor
+    func testPersistedRecoveryMarkerDiscardsAStaleSelectionAfterRelaunch() throws {
+        #if os(iOS) && canImport(FamilyControls)
+        let staleSelection = try makeValidProtectedAppSelection()
+        SharedAppGroup.publishScreenTimeSelectionData(
+            try JSONEncoder().encode(staleSelection)
+        )
+        defaults.set(
+            true,
+            forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+        )
+
+        let recreated = ScreenTimeController(
+            defaults: defaults,
+            authorizer: FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        )
+
+        XCTAssertTrue(recreated.hasRequiredScreenTimeAuthorization)
+        XCTAssertFalse(recreated.hasSelection)
+        XCTAssertTrue(recreated.requiresProtectedAppReselection)
+
+        let persistedSelectionData = try XCTUnwrap(
+            SharedAppGroup.screenTimeSelectionData()
+        )
+        let persistedSelection = try JSONDecoder().decode(
+            FamilyActivitySelection.self,
+            from: persistedSelectionData
+        )
+        XCTAssertTrue(persistedSelection.applicationTokens.isEmpty)
+        XCTAssertTrue(persistedSelection.categoryTokens.isEmpty)
+        XCTAssertTrue(persistedSelection.webDomainTokens.isEmpty)
+        #endif
+    }
+
+    @MainActor
+    func testChoosingValidSelectionClearsProtectedAppReselectionRequirement() throws {
+        #if os(iOS) && canImport(FamilyControls)
+        let screenTime = try makeControllerRequiringProtectedAppReselection()
+        XCTAssertTrue(screenTime.requiresProtectedAppReselection)
+
+        XCTAssertTrue(
+            screenTime.updateSelection(try makeValidProtectedAppSelection())
+        )
+
+        XCTAssertTrue(screenTime.hasSelection)
+        XCTAssertFalse(screenTime.requiresProtectedAppReselection)
+        XCTAssertNil(
+            defaults.object(
+                forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+            )
+        )
+        #endif
+    }
+
+    @MainActor
+    func testEraseAllScreenTimeDataClearsProtectedAppReselectionRequirement() {
+        defaults.set(
+            true,
+            forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+        )
+        var eraseCallCount = 0
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: FakeScreenTimeAuthorizer(authorizationStatus: .approved),
+            sharedDataEraser: { eraseCallCount += 1 }
+        )
+        XCTAssertTrue(screenTime.requiresProtectedAppReselection)
+
+        screenTime.eraseAllData()
+
+        XCTAssertEqual(eraseCallCount, 1)
+        XCTAssertFalse(screenTime.requiresProtectedAppReselection)
+        XCTAssertNil(
+            defaults.object(
+                forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+            )
+        )
+    }
+
+    @MainActor
+    func testSuccessfulDeferredSharedEraseClearsLoadedProtectedAppReselectionRequirement() {
+        UserDefaults.standard.set(
+            true,
+            forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+        )
+        defer {
+            UserDefaults.standard.removeObject(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        }
+        defaults.set(
+            true,
+            forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+        )
+        var eraseCallCount = 0
+
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: FakeScreenTimeAuthorizer(authorizationStatus: .approved),
+            sharedDataEraser: { eraseCallCount += 1 }
+        )
+
+        XCTAssertEqual(eraseCallCount, 1)
+        XCTAssertFalse(screenTime.requiresSharedDataEraseRecovery)
+        XCTAssertFalse(screenTime.requiresProtectedAppReselection)
+        XCTAssertNil(
+            defaults.object(
+                forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+            )
+        )
+        XCTAssertFalse(
+            UserDefaults.standard.bool(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        )
+    }
+
+    @MainActor
     func testScreenTimeAuthorizationBootstrapWaitsForExplicitRequest() async {
         let authorizer = FakeScreenTimeAuthorizer(
             authorizationStatus: .notDetermined,
@@ -924,6 +1107,36 @@ final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(store.unlockPolicy.questionsPerSession, 8)
         XCTAssertEqual(store.unlockPolicy.requiredCorrectAnswers, 7)
     }
+
+    #if os(iOS) && canImport(FamilyControls)
+    @MainActor
+    private func makeControllerRequiringProtectedAppReselection() throws -> ScreenTimeController {
+        let authorizer = FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: authorizer
+        )
+        XCTAssertTrue(
+            screenTime.updateSelection(try makeValidProtectedAppSelection())
+        )
+
+        authorizer.authorizationStatus = .denied
+        screenTime.refreshAuthorizationStatus()
+
+        XCTAssertFalse(screenTime.hasSelection)
+        return screenTime
+    }
+
+    private func makeValidProtectedAppSelection() throws -> FamilyActivitySelection {
+        let applicationToken = try JSONDecoder().decode(
+            ManagedSettings.ApplicationToken.self,
+            from: Data(#"{"data":"AQIDBA=="}"#.utf8)
+        )
+        var selection = FamilyActivitySelection(includeEntireCategory: true)
+        selection.applicationTokens = [applicationToken]
+        return selection
+    }
+    #endif
 
 }
 

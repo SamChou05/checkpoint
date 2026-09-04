@@ -4,15 +4,187 @@ import SwiftUI
 import UIKit
 #endif
 
+enum ScreenTimeAccessContext: Equatable {
+    case initialSetup
+    case resumeSetup
+    case restoreProtection
+    case eraseRecovery
+
+    static func resolve(
+        requiresEraseRecovery: Bool,
+        isFirstRunPending: Bool,
+        hasGoal: Bool
+    ) -> Self {
+        if requiresEraseRecovery {
+            return .eraseRecovery
+        }
+        if !hasGoal {
+            return .initialSetup
+        }
+        if isFirstRunPending {
+            return .resumeSetup
+        }
+        return .restoreProtection
+    }
+}
+
+enum ScreenTimeAccessPrimaryAction: Equatable {
+    case request
+    case retry
+    case openSettings
+    case erase
+    case unavailable
+    case none
+}
+
+struct ScreenTimeAccessPresentation: Equatable {
+    let stage: String
+    let step: Int?
+    let heading: String
+    let detail: String
+    let primaryAction: ScreenTimeAccessPrimaryAction
+    let primaryTitle: String?
+    let primarySystemImage: String?
+    let isWorking: Bool
+    let showsSetupSequence: Bool
+    let recoveryTitle: String?
+    let recoveryDetail: String?
+    let recoverySystemImage: String?
+    let statusMessage: String?
+
+    init(
+        context: ScreenTimeAccessContext,
+        authorizationState: ScreenTimeController.AuthorizationState,
+        requiresProtectedAppReselection: Bool
+    ) {
+        switch context {
+        case .initialSetup:
+            stage = "Screen Time"
+            step = 1
+            heading = "Practice before you scroll."
+            detail = "Choose apps you want to use more intentionally. Clear a short, goal-based checkpoint to take a timed break."
+            showsSetupSequence = true
+            recoveryTitle = nil
+            recoveryDetail = nil
+            recoverySystemImage = nil
+        case .resumeSetup:
+            stage = "Resume setup"
+            step = nil
+            heading = "Reconnect Screen Time to finish setup"
+            detail = "Your goal is saved. Restore access, then finish choosing the apps it will protect."
+            showsSetupSequence = true
+            recoveryTitle = nil
+            recoveryDetail = nil
+            recoverySystemImage = nil
+        case .restoreProtection:
+            stage = "Protection paused"
+            step = nil
+            heading = "Reconnect app protection"
+            if requiresProtectedAppReselection {
+                detail = "Screen Time access changed, so protection is off and your previous app choices must be selected again."
+                recoveryDetail = "Your goals, answers, and progress stay saved. After access returns, Checkpoint opens your protection list so you can choose apps again."
+            } else {
+                detail = "Restore Screen Time access to keep using app protection."
+                recoveryDetail = "Your goals, answers, and progress stay saved. Restoring access reconnects protection without changing your practice data."
+            }
+            showsSetupSequence = false
+            recoveryTitle = "Your learning data is safe"
+            recoverySystemImage = "lock.shield.fill"
+        case .eraseRecovery:
+            stage = "Data recovery"
+            step = nil
+            heading = "Finish erasing Checkpoint data"
+            detail = "Checkpoint must verify that its local app and Screen Time data are removed before you can continue or create a new goal."
+            showsSetupSequence = false
+            recoveryTitle = nil
+            recoveryDetail = nil
+            recoverySystemImage = nil
+        }
+
+        isWorking = authorizationState == .requesting && context != .eraseRecovery
+
+        if context == .eraseRecovery {
+            primaryAction = .erase
+            primaryTitle = "Retry data erasure"
+            primarySystemImage = "trash"
+            statusMessage = nil
+            return
+        }
+
+        switch authorizationState {
+        case .unresolved, .notDetermined:
+            primaryAction = .request
+            primaryTitle = "Allow Screen Time"
+            primarySystemImage = "checkmark.shield"
+            statusMessage = nil
+        case .requesting:
+            primaryAction = .request
+            primaryTitle = "Requesting access"
+            primarySystemImage = "checkmark.shield"
+            statusMessage = nil
+        case .denied:
+            primaryAction = .openSettings
+            primaryTitle = "Open iPhone Settings"
+            primarySystemImage = "gear"
+            statusMessage = "Screen Time access is off. Open iPhone Settings, allow access for Checkpoint, then return here."
+        case .failed:
+            primaryAction = .retry
+            primaryTitle = "Try Screen Time access again"
+            primarySystemImage = "arrow.clockwise"
+            statusMessage = "Screen Time access wasn’t granted. Try again to continue."
+        case .unavailable:
+            primaryAction = .unavailable
+            primaryTitle = nil
+            primarySystemImage = nil
+            statusMessage = nil
+        case .approved, .approvedWithDataAccess:
+            primaryAction = .none
+            primaryTitle = nil
+            primarySystemImage = nil
+            statusMessage = nil
+        }
+    }
+}
+
+enum ScreenTimeAccessRecoveryRouting {
+    static func shouldPresentProtectedApps(
+        context: ScreenTimeAccessContext,
+        authorizationBecameAvailable: Bool,
+        requiresProtectedAppReselection: Bool
+    ) -> Bool {
+        context == .restoreProtection &&
+            authorizationBecameAvailable &&
+            requiresProtectedAppReselection
+    }
+}
+
 struct RequiredScreenTimeAccessView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    let context: ScreenTimeAccessContext
+    private let reduceMotionOverride: Bool?
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.openURL) private var openURL
+    @AccessibilityFocusState private var isStatusFocused: Bool
     @State private var isEraseConfirmationPresented = false
 
     private let legalLinks = LegalLinks.current
+
+    init(
+        store: CheckpointStore,
+        screenTime: ScreenTimeController,
+        context: ScreenTimeAccessContext = .initialSetup,
+        reduceMotionOverride: Bool? = nil
+    ) {
+        self.store = store
+        self.screenTime = screenTime
+        self.context = context
+        self.reduceMotionOverride = reduceMotionOverride
+    }
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
 
     var body: some View {
         ScrollView {
@@ -20,26 +192,29 @@ struct RequiredScreenTimeAccessView: View {
                 Spacer(minLength: 20)
 
                 CheckpointSetupMark(
-                    stage: requiresDataEraseRecovery ? "Data recovery" : "Screen Time",
-                    step: requiresDataEraseRecovery ? nil : 1,
-                    isWorking: screenTime.isRequestingAuthorization
+                    stage: accessPresentation.stage,
+                    step: accessPresentation.step,
+                    isWorking: accessPresentation.isWorking
                 )
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text(accessHeading)
+                    Text(accessPresentation.heading)
                         .font(.largeTitle.bold())
                         .foregroundStyle(CheckpointTheme.text)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityAddTraits(.isHeader)
 
-                    Text(accessDetail)
+                    Text(accessPresentation.detail)
                         .font(.subheadline)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                .contentTransition(.opacity)
 
-                if !requiresDataEraseRecovery {
+                if accessPresentation.showsSetupSequence {
                     setupSequencePanel
+                } else if accessPresentation.recoveryTitle != nil {
+                    recoveryPanel
                 }
 
                 if let message = accessErrorMessage {
@@ -56,6 +231,8 @@ struct RequiredScreenTimeAccessView: View {
                             )
                         )
                         .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                        .accessibilityFocused($isStatusFocused)
+                        .id(message)
                 }
 
                 privacyFooter
@@ -65,16 +242,20 @@ struct RequiredScreenTimeAccessView: View {
             .frame(maxWidth: .infinity)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            accessActionBar
+            if accessPresentation.primaryAction != .none {
+                accessActionBar
+            }
         }
         .checkpointScreenBackground()
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-            value: accessErrorMessage
+            value: accessPresentation
         )
-        .onChange(of: accessErrorMessage) { _, message in
-            guard let message else { return }
-            AccessibilityNotification.Announcement(message).post()
+        .onAppear {
+            focusAccessErrorIfNeeded()
+        }
+        .onChange(of: accessErrorMessage) { _, _ in
+            focusAccessErrorIfNeeded()
         }
         .alert("Erase all Checkpoint data?", isPresented: $isEraseConfirmationPresented) {
             Button("Cancel", role: .cancel) {}
@@ -93,14 +274,15 @@ struct RequiredScreenTimeAccessView: View {
                 .overlay(CheckpointTheme.hairline)
 
             Group {
-                if requiresDataEraseRecovery {
+                switch accessPresentation.primaryAction {
+                case .erase:
                     PrimaryActionButton(
-                        title: dynamicTypeSize.isAccessibilitySize ? "Retry erase" : "Retry data erasure",
-                        systemImage: "trash"
+                        title: accessPresentation.primaryTitle ?? "Retry data erasure",
+                        systemImage: accessPresentation.primarySystemImage ?? "trash"
                     ) {
                         eraseAllData()
                     }
-                } else if screenTime.setupState == .unavailable {
+                case .unavailable:
                     Label(
                         "Screen Time app protection requires a supported iPhone build.",
                         systemImage: "iphone.slash"
@@ -109,24 +291,26 @@ struct RequiredScreenTimeAccessView: View {
                     .foregroundStyle(CheckpointTheme.amber)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                } else if screenTime.authorizationState == .denied {
+                case .openSettings:
                     PrimaryActionButton(
-                        title: dynamicTypeSize.isAccessibilitySize ? "Open Settings" : "Open iPhone Settings",
-                        systemImage: "gear"
+                        title: accessPresentation.primaryTitle ?? "Open iPhone Settings",
+                        systemImage: accessPresentation.primarySystemImage ?? "gear"
                     ) {
                         openSystemSettings()
                     }
-                } else {
+                case .request, .retry:
                     PrimaryActionButton(
-                        title: authorizationButtonTitle,
-                        systemImage: "checkmark.shield",
-                        isLoading: screenTime.isRequestingAuthorization
+                        title: accessPresentation.primaryTitle ?? "Allow Screen Time",
+                        systemImage: accessPresentation.primarySystemImage ?? "checkmark.shield",
+                        isLoading: accessPresentation.isWorking
                     ) {
                         Task {
                             await screenTime.requestAuthorization()
                         }
                     }
-                    .disabled(screenTime.isRequestingAuthorization)
+                    .disabled(accessPresentation.isWorking)
+                case .none:
+                    EmptyView()
                 }
             }
             .padding(.horizontal, 24)
@@ -134,6 +318,35 @@ struct RequiredScreenTimeAccessView: View {
             .padding(.bottom, 10)
         }
         .background(.ultraThinMaterial)
+    }
+
+    private var recoveryPanel: some View {
+        SectionPanel {
+            HStack(alignment: .top, spacing: 13) {
+                Image(systemName: accessPresentation.recoverySystemImage ?? "lock.shield.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 42, height: 42)
+                    .background(
+                        CheckpointTheme.teal.opacity(0.10),
+                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    )
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(accessPresentation.recoveryTitle ?? "Your learning data is safe")
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    Text(accessPresentation.recoveryDetail ?? "")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .accessibilityElement(children: .combine)
+        }
+        .transition(reduceMotion ? .identity : .opacity.combined(with: .move(edge: .top)))
     }
 
     private var setupSequencePanel: some View {
@@ -202,33 +415,17 @@ struct RequiredScreenTimeAccessView: View {
             .frame(minHeight: 36)
     }
 
-    private var authorizationButtonTitle: String {
-        if screenTime.isRequestingAuthorization {
-            return "Requesting access"
-        }
-
-        if screenTime.setupState == .failed { return "Try Screen Time access again" }
-
-        return "Allow Screen Time"
-    }
-
     private var requiresDataEraseRecovery: Bool {
         screenTime.requiresSharedDataEraseRecovery
             || store.requiresPersistenceEraseRecovery
     }
 
-    private var accessHeading: String {
-        requiresDataEraseRecovery
-            ? "Finish erasing Checkpoint data"
-            : "Practice before you scroll."
-    }
-
-    private var accessDetail: String {
-        if requiresDataEraseRecovery {
-            return "Checkpoint must verify that its local app and Screen Time data are removed before you can continue or create a new goal."
-        }
-
-        return "Choose apps you want to use more intentionally. Clear a short, goal-based checkpoint to take a timed break."
+    private var accessPresentation: ScreenTimeAccessPresentation {
+        ScreenTimeAccessPresentation(
+            context: requiresDataEraseRecovery ? .eraseRecovery : context,
+            authorizationState: screenTime.authorizationState,
+            requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection
+        )
     }
 
     private var accessErrorMessage: String? {
@@ -238,7 +435,18 @@ struct RequiredScreenTimeAccessView: View {
                 ?? "Checkpoint could not finish erasing local data."
         }
 
-        return screenTime.userFacingErrorMessage
+        return accessPresentation.statusMessage ?? screenTime.userFacingErrorMessage
+    }
+
+    private func focusAccessErrorIfNeeded() {
+        isStatusFocused = false
+        guard accessErrorMessage != nil else { return }
+
+        Task { @MainActor in
+            await Task.yield()
+            guard accessErrorMessage != nil else { return }
+            isStatusFocused = true
+        }
     }
 
     private var privacyFooter: some View {

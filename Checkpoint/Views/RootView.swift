@@ -3,6 +3,49 @@ import SwiftUI
 import UIKit
 #endif
 
+struct ScreenTimeAccessRecoveryQueue: Equatable {
+    private(set) var isQueued = false
+    private(set) var isScheduling = false
+
+    mutating func enqueue(if shouldRecover: Bool) {
+        guard shouldRecover else { return }
+        isQueued = true
+    }
+
+    mutating func beginScheduling(
+        shouldRecover: Bool,
+        canPresent: Bool
+    ) -> Bool {
+        guard isQueued else { return false }
+        guard shouldRecover else {
+            isQueued = false
+            isScheduling = false
+            return false
+        }
+        guard canPresent, !isScheduling else { return false }
+
+        isScheduling = true
+        return true
+    }
+
+    mutating func finishScheduling(
+        shouldRecover: Bool,
+        canPresent: Bool
+    ) -> Bool {
+        isScheduling = false
+        guard shouldRecover else {
+            isQueued = false
+            return false
+        }
+        guard canPresent else {
+            return false
+        }
+
+        isQueued = false
+        return true
+    }
+}
+
 struct RootView: View {
     @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
@@ -14,6 +57,8 @@ struct RootView: View {
     @State private var firstRunSetup = FirstRunSetupCoordinator()
     @State private var isOnboardingSheetActive = false
     @State private var isFirstRunAppSelectionQueued = false
+    @State private var isAuthorizationRecoveryAppSelectionPresented = false
+    @State private var authorizationRecoveryQueue = ScreenTimeAccessRecoveryQueue()
     @Environment(\.scenePhase) private var scenePhase
 
     private var store: CheckpointStore { appModel.store }
@@ -54,14 +99,27 @@ struct RootView: View {
                 .tag(AppTab.settings)
         }
         .tint(CheckpointTheme.teal)
-        .fullScreenCover(isPresented: screenTimeAuthorizationRequiredBinding) {
-            RequiredScreenTimeAccessView(store: store, screenTime: screenTime)
+        .fullScreenCover(
+            isPresented: screenTimeAuthorizationRequiredBinding,
+            onDismiss: handleScreenTimeAccessDismissed
+        ) {
+            RequiredScreenTimeAccessView(
+                store: store,
+                screenTime: screenTime,
+                context: screenTimeAccessContext
+            )
                 .interactiveDismissDisabled()
         }
-        .sheet(item: $activeCheckpointSession, onDismiss: handlePendingShieldActivation) { session in
+        .sheet(
+            isPresented: $isAuthorizationRecoveryAppSelectionPresented,
+            onDismiss: presentSuggestedSkillMapReviewIfNeeded
+        ) {
+            RestrictedAppsView(screenTime: screenTime)
+        }
+        .sheet(item: $activeCheckpointSession, onDismiss: handleCheckpointDismissed) { session in
             CheckpointAttemptView(store: store, workflow: workflow, session: session)
         }
-        .sheet(item: membershipPresentationBinding) { context in
+        .sheet(item: membershipPresentationBinding, onDismiss: handleMembershipDismissed) { context in
             MembershipView(context: context, store: store, purchaseController: purchaseController)
         }
         .sheet(
@@ -100,9 +158,7 @@ struct RootView: View {
         }
         .sheet(
             isPresented: $isSuggestedSkillMapReviewPresented,
-            onDismiss: {
-                isSuggestedSkillMapReviewActive = false
-            }
+            onDismiss: handleSuggestedSkillMapReviewDismissed
         ) {
             SkillMapReviewView(store: store)
                 .onAppear {
@@ -158,6 +214,7 @@ struct RootView: View {
 
         await screenTime.bootstrapAuthorizationIfNeeded()
         reconcileProtectionAndHandlePendingAttempt()
+        queueAuthorizationRecoveryAppSelectionIfNeeded()
 
         purchaseController.onMembershipEntitlementChange = { unlocked in
             store.reconcileMembershipEntitlement(isUnlocked: unlocked)
@@ -212,6 +269,9 @@ struct RootView: View {
         guard !firstRunSetup.isPending,
               !store.isOnboardingPresented,
               !isOnboardingSheetActive,
+              !isAuthorizationRecoveryAppSelectionPresented,
+              !authorizationRecoveryQueue.isQueued,
+              !authorizationRecoveryQueue.isScheduling,
               !firstRunSetup.isAppSelectionPresented,
               activeCheckpointSession == nil,
               store.pendingMembershipPresentation == nil,
@@ -231,12 +291,92 @@ struct RootView: View {
     private func handleOnboardingDismissed() {
         isOnboardingSheetActive = false
         resumeFirstRunSetupIfNeeded()
+        presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
         presentSuggestedSkillMapReviewIfNeeded()
     }
 
     private func handleFirstRunAppSelectionDismissed() {
         guard !firstRunSetup.isPending else { return }
         selectedTab = .home
+        presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+    }
+
+    private func handleCheckpointDismissed() {
+        handlePendingShieldActivation()
+        presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+    }
+
+    private func handleMembershipDismissed() {
+        presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+        presentSuggestedSkillMapReviewIfNeeded()
+    }
+
+    private func handleSuggestedSkillMapReviewDismissed() {
+        isSuggestedSkillMapReviewActive = false
+        presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+    }
+
+    private func handleScreenTimeAccessDismissed() {
+        queueAuthorizationRecoveryAppSelectionIfNeeded()
+    }
+
+    private func queueAuthorizationRecoveryAppSelectionIfNeeded() {
+        let shouldRecover = ScreenTimeAccessRecoveryRouting.shouldPresentProtectedApps(
+            context: screenTimeAccessContext,
+            authorizationBecameAvailable: screenTime.hasRequiredScreenTimeAuthorization,
+            requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection
+        )
+        authorizationRecoveryQueue.enqueue(if: shouldRecover)
+
+        presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+    }
+
+    private func presentQueuedAuthorizationRecoveryAppSelectionIfPossible() {
+        let shouldRecover = ScreenTimeAccessRecoveryRouting.shouldPresentProtectedApps(
+            context: screenTimeAccessContext,
+            authorizationBecameAvailable: screenTime.hasRequiredScreenTimeAuthorization,
+            requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection
+        )
+        let canPresent = !isAuthorizationRecoveryAppSelectionPresented &&
+            activeCheckpointSession == nil &&
+            store.pendingMembershipPresentation == nil &&
+            !store.isOnboardingPresented &&
+            !isOnboardingSheetActive &&
+            !firstRunSetup.isAppSelectionPresented &&
+            !isSuggestedSkillMapReviewPresented &&
+            !isSuggestedSkillMapReviewActive
+        guard authorizationRecoveryQueue.beginScheduling(
+            shouldRecover: shouldRecover,
+            canPresent: canPresent
+        ) else {
+            return
+        }
+
+        Task { @MainActor in
+            await Task.yield()
+            let shouldRecover = ScreenTimeAccessRecoveryRouting.shouldPresentProtectedApps(
+                context: screenTimeAccessContext,
+                authorizationBecameAvailable: screenTime.hasRequiredScreenTimeAuthorization,
+                requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection
+            )
+            let canPresent = !isAuthorizationRecoveryAppSelectionPresented &&
+                activeCheckpointSession == nil &&
+                store.pendingMembershipPresentation == nil &&
+                !store.isOnboardingPresented &&
+                !isOnboardingSheetActive &&
+                !firstRunSetup.isAppSelectionPresented &&
+                !isSuggestedSkillMapReviewPresented &&
+                !isSuggestedSkillMapReviewActive
+            guard authorizationRecoveryQueue.finishScheduling(
+                shouldRecover: shouldRecover,
+                canPresent: canPresent
+            ) else {
+                return
+            }
+
+            selectedTab = .home
+            isAuthorizationRecoveryAppSelectionPresented = true
+        }
     }
 
     private func beginFirstRunSetup() {
@@ -364,6 +504,15 @@ struct RootView: View {
                     || store.requiresPersistenceEraseRecovery
             },
             set: { _ in }
+        )
+    }
+
+    private var screenTimeAccessContext: ScreenTimeAccessContext {
+        ScreenTimeAccessContext.resolve(
+            requiresEraseRecovery: screenTime.requiresSharedDataEraseRecovery
+                || store.requiresPersistenceEraseRecovery,
+            isFirstRunPending: firstRunSetup.isPending,
+            hasGoal: store.goal != nil
         )
     }
 }

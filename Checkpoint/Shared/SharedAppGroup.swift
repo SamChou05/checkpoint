@@ -113,6 +113,7 @@ enum SharedAppGroup {
     static let checkpointReadyKey = "checkpoint.protection.checkpointReady"
     static let screenTimeSelectionKey = "checkpoint.screenTime.selection.v1"
     static let screenTimeSelectionSemanticsVersionKey = "checkpoint.screenTime.selectionSemanticsVersion"
+    static let screenTimeSelectionRecoveryRequiredKey = "checkpoint.screenTime.selectionRecoveryRequired"
     static let protectionConfigurationRevisionKey = "checkpoint.protection.configurationRevision"
     static let protectionRevisionKey = "checkpoint.protection.revision"
     static let protectionUpdatedAtKey = "checkpoint.protection.updatedAt"
@@ -145,6 +146,7 @@ enum SharedAppGroup {
         checkpointReadyKey,
         screenTimeSelectionKey,
         screenTimeSelectionSemanticsVersionKey,
+        screenTimeSelectionRecoveryRequiredKey,
         protectionConfigurationRevisionKey,
         protectionRevisionKey,
         protectionUpdatedAtKey,

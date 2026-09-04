@@ -142,6 +142,7 @@ final class ScreenTimeController {
     var lastErrorMessage: String?
     var sharedDataEraseErrorMessage: String?
     var isShieldingEnabled = false
+    private(set) var requiresProtectedAppReselection = false
 
     var hasRequiredScreenTimeAuthorization: Bool {
         authorizationState == .approved || authorizationState == .approvedWithDataAccess
@@ -234,6 +235,9 @@ final class ScreenTimeController {
     var selection = FamilyActivitySelection(includeEntireCategory: true) {
         didSet {
             guard !isRestoringSelection else { return }
+            if hasSelection {
+                clearProtectedAppReselectionRequirement()
+            }
             persistSelection()
             updateSummary()
             handleSelectionChange()
@@ -268,12 +272,16 @@ final class ScreenTimeController {
         self.defaults = defaults
         self.authorizer = authorizer
         self.sharedDataEraser = sharedDataEraser
+        requiresProtectedAppReselection = defaults.bool(
+            forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+        )
         // The system status supersedes this legacy one-time authorization flag.
         defaults.removeObject(forKey: "checkpoint.screenTime.initialAuthorizationRequested")
 
         if UserDefaults.standard.bool(forKey: Self.sharedDataEraseIncompleteKey) {
             do {
                 try sharedDataEraser()
+                clearProtectedAppReselectionRequirement()
                 UserDefaults.standard.removeObject(forKey: Self.sharedDataEraseIncompleteKey)
                 UserDefaults.standard.synchronize()
             } catch {
@@ -292,6 +300,7 @@ final class ScreenTimeController {
         let hadPersistedData = SharedAppGroup.hasPersistedData
         hasErasedAllData = !hadPersistedData
         restoreSelection()
+        discardInvalidatedSelectionIfNeeded()
         updateSummary()
         shouldReconcileAfterAuthorization = hadPersistedData
         refreshAuthorizationStatus()
@@ -490,6 +499,7 @@ final class ScreenTimeController {
         UserDefaults.standard.synchronize()
         hasErasedAllData = true
         shouldReconcileAfterAuthorization = false
+        clearProtectedAppReselectionRequirement()
         deactivateProtection()
 
         #if os(iOS) && canImport(FamilyControls)
@@ -728,8 +738,35 @@ final class ScreenTimeController {
         else { return }
 
         // Revoked authorization invalidates every opaque FamilyActivitySelection token.
+        markProtectedAppReselectionRequired()
         selection = FamilyActivitySelection(includeEntireCategory: true)
         #endif
+    }
+
+    private func markProtectedAppReselectionRequired() {
+        requiresProtectedAppReselection = true
+        defaults.set(true, forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey)
+    }
+
+    private func discardInvalidatedSelectionIfNeeded() {
+        #if os(iOS) && canImport(FamilyControls)
+        guard requiresProtectedAppReselection,
+              !selection.applicationTokens.isEmpty ||
+                !selection.categoryTokens.isEmpty ||
+                !selection.webDomainTokens.isEmpty
+        else { return }
+
+        selection = FamilyActivitySelection(includeEntireCategory: true)
+        #endif
+    }
+
+    private func clearProtectedAppReselectionRequirement() {
+        guard requiresProtectedAppReselection ||
+                defaults.object(forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey) != nil
+        else { return }
+
+        requiresProtectedAppReselection = false
+        defaults.removeObject(forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey)
     }
 
     private func persistSelection(
