@@ -302,17 +302,84 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
             calendar.date(byAdding: .weekOfYear, value: -1, to: week.start)
         )
         let comparableAttempt = previousWeekStart.addingTimeInterval(60 * 60)
+        let exactComparableAttempt = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: now)
+        )
         let laterPriorWeekAttempt = previousWeekStart.addingTimeInterval(4 * 24 * 60 * 60)
 
         let details = WeeklyMetricsCalculator(
             attempts: [
                 makeAttempt(goal: goal, result: .correct, createdAt: comparableAttempt),
+                makeAttempt(goal: goal, result: .correct, createdAt: exactComparableAttempt),
                 makeAttempt(goal: goal, result: .correct, createdAt: laterPriorWeekAttempt)
             ],
             unlockEvents: []
         ).impactDetails(goalID: goal.id, asOf: now, calendar: calendar)
 
-        XCTAssertEqual(details.previousWeekQuestions, 1)
+        XCTAssertEqual(
+            details.previousWeekQuestions,
+            2,
+            "The matching local cutoff should be inclusive while later prior-week activity stays out."
+        )
+    }
+
+    @MainActor
+    func testArchivedWeeklyImpactTrendIncludesTheFullSundayAcrossDST() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "America/Los_Angeles"))
+        let archivedWeekReference = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 3, day: 5, hour: 12))
+        )
+        let archivedWeek = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: archivedWeekReference)
+        )
+        let priorWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: archivedWeek.start)
+        )
+        let priorSunday = try XCTUnwrap(
+            calendar.date(
+                bySettingHour: 23,
+                minute: 30,
+                second: 0,
+                of: try XCTUnwrap(calendar.date(byAdding: .day, value: 6, to: priorWeekStart))
+            )
+        )
+        let archivedSunday = try XCTUnwrap(
+            calendar.date(
+                bySettingHour: 23,
+                minute: 30,
+                second: 0,
+                of: try XCTUnwrap(calendar.date(byAdding: .day, value: 6, to: archivedWeek.start))
+            )
+        )
+        let effectiveAsOf = try XCTUnwrap(
+            calendar.date(byAdding: .second, value: -1, to: archivedWeek.end)
+        )
+
+        let details = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(goal: goal, result: .correct, createdAt: priorSunday),
+                makeAttempt(goal: goal, result: .correct, createdAt: archivedSunday),
+                makeAttempt(goal: goal, result: .correct, createdAt: archivedWeek.end)
+            ],
+            unlockEvents: [],
+            asOf: effectiveAsOf,
+            calendar: calendar
+        ).impactDetails(goalID: goal.id)
+
+        XCTAssertEqual(
+            details.previousWeekQuestions,
+            1,
+            "A completed spring-forward week should compare against the prior week's full Sunday."
+        )
+        XCTAssertEqual(details.practiceDays.last?.questionsAnswered, 1)
+        XCTAssertEqual(details.practiceDays.reduce(0) { $0 + $1.questionsAnswered }, 1)
+        XCTAssertEqual(
+            details.questionTrendText(currentQuestions: 1, isCurrentWeek: false),
+            "Level with the week before"
+        )
     }
 
     @MainActor
@@ -752,6 +819,361 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
                 selectedMetricsID: UUID().uuidString,
                 currentMetricsID: WeeklyMetricsSummary.allGoalsID
             )
+        )
+    }
+
+    @MainActor
+    func testWeeklyReviewPeriodPolicyNormalizesAndClampsArchiveBounds() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let currentWeek = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: referenceDate)
+        )
+        let earliestWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -4, to: currentWeek.start)
+        )
+        let earliestSunday = try XCTUnwrap(
+            calendar.date(
+                bySettingHour: 20,
+                minute: 0,
+                second: 0,
+                of: try XCTUnwrap(calendar.date(byAdding: .day, value: 6, to: earliestWeekStart))
+            )
+        )
+        let selectedWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -2, to: currentWeek.start)
+        )
+        let selectedWednesday = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 2, to: selectedWeekStart)
+        )
+        let futureRecordDate = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 2, to: currentWeek.end)
+        )
+
+        let policy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: selectedWednesday,
+            attempts: [
+                makeAttempt(goal: goal, result: .correct, createdAt: futureRecordDate)
+            ],
+            unlockEvents: [
+                UnlockEvent(goalID: goal.id, minutes: 20, createdAt: earliestSunday),
+                UnlockEvent(goalID: goal.id, minutes: 30, createdAt: futureRecordDate)
+            ],
+            calendar: calendar,
+            reduceMotion: false
+        )
+
+        XCTAssertEqual(policy.currentWeekStart, currentWeek.start)
+        XCTAssertEqual(policy.earliestWeekStart, earliestWeekStart)
+        XCTAssertEqual(policy.selectedWeekStart, selectedWeekStart)
+        XCTAssertFalse(policy.isCurrentWeek)
+        XCTAssertTrue(policy.canGoPrevious)
+        XCTAssertTrue(policy.canGoNext)
+        XCTAssertEqual(policy.motionStyle, .directional)
+
+        let beforeHistory = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -8, to: currentWeek.start)
+        )
+        let clampedToHistory = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: beforeHistory,
+            attempts: [],
+            unlockEvents: [
+                UnlockEvent(goalID: goal.id, minutes: 20, createdAt: earliestSunday)
+            ],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        XCTAssertEqual(clampedToHistory.selectedWeekStart, earliestWeekStart)
+
+        let clampedToCurrent = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: futureRecordDate,
+            attempts: [],
+            unlockEvents: [
+                UnlockEvent(goalID: goal.id, minutes: 20, createdAt: earliestSunday)
+            ],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        XCTAssertEqual(clampedToCurrent.selectedWeekStart, currentWeek.start)
+        XCTAssertTrue(clampedToCurrent.isCurrentWeek)
+
+        let futureOnly = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: beforeHistory,
+            attempts: [
+                makeAttempt(goal: goal, result: .correct, createdAt: futureRecordDate)
+            ],
+            unlockEvents: [
+                UnlockEvent(goalID: goal.id, minutes: 30, createdAt: futureRecordDate)
+            ],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        XCTAssertEqual(futureOnly.earliestWeekStart, currentWeek.start)
+        XCTAssertEqual(futureOnly.selectedWeekStart, currentWeek.start)
+        XCTAssertFalse(futureOnly.canGoPrevious)
+        XCTAssertFalse(futureOnly.canGoNext)
+    }
+
+    @MainActor
+    func testWeeklyReviewPeriodDestinationsAndFeedbackRespectBoundaries() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let currentWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: referenceDate)?.start
+        )
+        let earliestWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -3, to: currentWeekStart)
+        )
+        let selectedWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: currentWeekStart)
+        )
+        let earliestAttempt = makeAttempt(
+            goal: goal,
+            result: .correct,
+            createdAt: earliestWeekStart.addingTimeInterval(3_600)
+        )
+        let policy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: selectedWeekStart,
+            attempts: [earliestAttempt],
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        let expectedPrevious = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: selectedWeekStart)
+        )
+        let expectedNext = currentWeekStart
+
+        XCTAssertEqual(policy.destination(for: .previous), expectedPrevious)
+        XCTAssertEqual(policy.destination(for: .next), expectedNext)
+        XCTAssertTrue(policy.reportsSelectionFeedback(for: .previous))
+        XCTAssertTrue(policy.reportsSelectionFeedback(for: .next))
+
+        let earliestPolicy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: earliestWeekStart,
+            attempts: [earliestAttempt],
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        XCTAssertNil(earliestPolicy.destination(for: .previous))
+        XCTAssertNotNil(earliestPolicy.destination(for: .next))
+        XCTAssertFalse(
+            earliestPolicy.reportsSelectionFeedback(for: .previous),
+            "A boundary tap with no destination should not fire feedback."
+        )
+        XCTAssertTrue(earliestPolicy.reportsSelectionFeedback(for: .next))
+
+        let currentPolicy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: referenceDate,
+            attempts: [earliestAttempt],
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        XCTAssertNil(currentPolicy.destination(for: .next))
+        XCTAssertNotNil(currentPolicy.destination(for: .previous))
+        XCTAssertFalse(
+            currentPolicy.reportsSelectionFeedback(for: .next),
+            "A boundary tap with no destination should not fire feedback."
+        )
+        XCTAssertTrue(currentPolicy.reportsSelectionFeedback(for: .previous))
+    }
+
+    @MainActor
+    func testWeeklyReviewPeriodUsesNowForCurrentAndWeekEndForArchive() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12, minute: 34))
+        )
+        let currentWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: referenceDate)?.start
+        )
+        let archivedWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: currentWeekStart)
+        )
+        let history = [
+            makeAttempt(
+                goal: goal,
+                result: .correct,
+                createdAt: archivedWeekStart.addingTimeInterval(3_600)
+            )
+        ]
+        let current = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: referenceDate,
+            attempts: history,
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        let archived = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: archivedWeekStart,
+            attempts: history,
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: true
+        )
+        let archivedInterval = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: archivedWeekStart)
+        )
+        let finalArchivedInstant = Date(
+            timeIntervalSinceReferenceDate:
+                archivedInterval.end.timeIntervalSinceReferenceDate.nextDown
+        )
+
+        XCTAssertTrue(current.isCurrentWeek)
+        XCTAssertEqual(current.effectiveAsOf, referenceDate)
+        XCTAssertEqual(current.motionStyle, .directional)
+        XCTAssertFalse(archived.isCurrentWeek)
+        XCTAssertEqual(archived.effectiveAsOf, finalArchivedInstant)
+        XCTAssertEqual(archived.motionStyle, .identity)
+
+        let archivedSunday = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 6, to: archivedWeekStart)
+        )
+        XCTAssertTrue(
+            WeeklyPracticeSelectionPolicy.canSelect(
+                day: WeeklyPracticeDay(date: archivedSunday, questionsAnswered: 0),
+                referenceDate: archived.effectiveAsOf
+            ),
+            "Every day in a completed archived week should be selectable."
+        )
+    }
+
+    @MainActor
+    func testWeeklyReviewPeriodPresentationUsesCurrentAndArchiveCopy() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let locale = Locale(identifier: "en_US")
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let currentWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: referenceDate)?.start
+        )
+        let archivedWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -2, to: currentWeekStart)
+        )
+        let history = [
+            makeAttempt(
+                goal: goal,
+                result: .correct,
+                createdAt: archivedWeekStart.addingTimeInterval(3_600)
+            )
+        ]
+        let currentPolicy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: referenceDate,
+            attempts: history,
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        let archivedPolicy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: archivedWeekStart,
+            attempts: history,
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        let current = WeeklyReviewPeriodPresentation(
+            policy: currentPolicy,
+            calendar: calendar,
+            locale: locale,
+            timeZone: calendar.timeZone
+        )
+        let archived = WeeklyReviewPeriodPresentation(
+            policy: archivedPolicy,
+            calendar: calendar,
+            locale: locale,
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(current.eyebrowText, "THIS WEEK")
+        XCTAssertEqual(current.rangeText, "Aug 31–Sep 6")
+        XCTAssertEqual(
+            current.accessibilityLabel,
+            "Week of Monday, August 31 through Sunday, September 6"
+        )
+        XCTAssertEqual(
+            current.summaryText,
+            "A quiet read on what your checkpoints turned into."
+        )
+        XCTAssertEqual(current.emptyTitle, "Your signal starts with one checkpoint")
+        XCTAssertEqual(
+            current.emptyDetail,
+            "Questions, recovered misses, and earned breaks will collect here without any extra setup."
+        )
+
+        XCTAssertEqual(archived.eyebrowText, "WEEKLY ARCHIVE")
+        XCTAssertEqual(archived.rangeText, "Aug 17–23, 2026")
+        XCTAssertEqual(
+            archived.accessibilityLabel,
+            "Week of Monday, August 17, 2026 through Sunday, August 23, 2026"
+        )
+        XCTAssertEqual(
+            archived.summaryText,
+            "A complete read on what your checkpoints turned into that week."
+        )
+        XCTAssertEqual(archived.emptyTitle, "No checkpoint activity that week")
+        XCTAssertEqual(
+            archived.emptyDetail,
+            "Try another week or goal to keep exploring your history."
+        )
+    }
+
+    @MainActor
+    func testWeeklyReviewPeriodPresentationDisambiguatesACrossYearCurrentWeek() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 12, day: 31, hour: 12))
+        )
+        let policy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: referenceDate,
+            attempts: [],
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        let presentation = WeeklyReviewPeriodPresentation(
+            policy: policy,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(presentation.rangeText, "Dec 28, 2026–Jan 3, 2027")
+        XCTAssertEqual(
+            presentation.accessibilityLabel,
+            "Week of Monday, December 28, 2026 through Sunday, January 3, 2027"
         )
     }
 

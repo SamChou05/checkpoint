@@ -27,6 +27,18 @@ final class WeeklyReviewRenderingTests: XCTestCase {
         let monday = week.start
         let tuesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: monday))
         let wednesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 2, to: monday))
+        let priorWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -1, to: monday)
+        )
+        let priorSunday = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 6, to: priorWeekStart)
+        )
+        let pastEmptyWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -2, to: monday)
+        )
+        let pastEmptySunday = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 6, to: pastEmptyWeekStart)
+        )
         let fixtures = [
             WeeklyReviewRenderFixture(
                 name: "weekly-review-daily-impact-light",
@@ -35,6 +47,7 @@ final class WeeklyReviewRenderingTests: XCTestCase {
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialWeekReferenceDate: referenceDate,
                 initialSelectedPracticeDate: tuesday,
                 reduceMotion: false
             ),
@@ -45,6 +58,7 @@ final class WeeklyReviewRenderingTests: XCTestCase {
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
                 initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialWeekReferenceDate: referenceDate,
                 initialSelectedPracticeDate: monday,
                 reduceMotion: false
             ),
@@ -55,6 +69,7 @@ final class WeeklyReviewRenderingTests: XCTestCase {
                 colorScheme: .dark,
                 dynamicTypeSize: .accessibility5,
                 initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialWeekReferenceDate: referenceDate,
                 initialSelectedPracticeDate: wednesday,
                 reduceMotion: true
             ),
@@ -65,8 +80,31 @@ final class WeeklyReviewRenderingTests: XCTestCase {
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 initialMetricsID: fixture.otherGoalID.uuidString,
+                initialWeekReferenceDate: referenceDate,
                 initialSelectedPracticeDate: tuesday,
                 reduceMotion: false
+            ),
+            WeeklyReviewRenderFixture(
+                name: "weekly-review-archive-active-sunday-compact-dark",
+                width: 320,
+                height: 1_350,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialWeekReferenceDate: priorSunday,
+                initialSelectedPracticeDate: priorSunday,
+                reduceMotion: false
+            ),
+            WeeklyReviewRenderFixture(
+                name: "weekly-review-archive-empty-compact-ax5-dark-reduced",
+                width: 320,
+                height: 2_200,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                initialMetricsID: WeeklyMetricsSummary.allGoalsID,
+                initialWeekReferenceDate: pastEmptySunday,
+                initialSelectedPracticeDate: pastEmptySunday,
+                reduceMotion: true
             )
         ]
 
@@ -80,7 +118,8 @@ final class WeeklyReviewRenderingTests: XCTestCase {
                     displayLocale: Locale(identifier: "en_US"),
                     displayTimeZone: calendar.timeZone,
                     reduceMotionOverride: renderFixture.reduceMotion,
-                    initialSelectedPracticeDate: renderFixture.initialSelectedPracticeDate
+                    initialSelectedPracticeDate: renderFixture.initialSelectedPracticeDate,
+                    initialWeekReferenceDate: renderFixture.initialWeekReferenceDate
                 )
                 .environment(\.colorScheme, renderFixture.colorScheme)
                 .environment(\.dynamicTypeSize, renderFixture.dynamicTypeSize),
@@ -140,6 +179,10 @@ final class WeeklyReviewRenderingTests: XCTestCase {
         let tuesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: monday))
         let wednesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 2, to: monday))
         let priorWeek = try XCTUnwrap(calendar.date(byAdding: .day, value: -7, to: monday))
+        let priorSunday = try XCTUnwrap(calendar.date(byAdding: .day, value: 6, to: priorWeek))
+        let oldestSunday = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -2, to: priorSunday)
+        )
         let store = CheckpointStore(defaults: defaults)
         store.membershipTier = .member
         store.goal = activeGoal
@@ -155,12 +198,16 @@ final class WeeklyReviewRenderingTests: XCTestCase {
             makeAttempt(goal: otherGoal, result: .correct, createdAt: tuesday),
             makeAttempt(goal: otherGoal, result: .incorrect, createdAt: tuesday.addingTimeInterval(120)),
             makeAttempt(goal: activeGoal, result: .correct, createdAt: priorWeek),
-            makeAttempt(goal: activeGoal, result: .incorrect, createdAt: priorWeek.addingTimeInterval(120))
+            makeAttempt(goal: activeGoal, result: .incorrect, createdAt: priorWeek.addingTimeInterval(120)),
+            makeAttempt(goal: activeGoal, result: .correct, createdAt: priorSunday),
+            makeAttempt(goal: otherGoal, result: .partial, createdAt: priorSunday.addingTimeInterval(120)),
+            makeAttempt(goal: activeGoal, result: .correct, createdAt: oldestSunday)
         ]
         store.unlockEvents = [
             UnlockEvent(goalID: activeGoal.id, minutes: 30, createdAt: monday),
             UnlockEvent(goalID: activeGoal.id, minutes: 20, createdAt: tuesday),
-            UnlockEvent(goalID: otherGoal.id, minutes: 15, createdAt: tuesday)
+            UnlockEvent(goalID: otherGoal.id, minutes: 15, createdAt: tuesday),
+            UnlockEvent(goalID: activeGoal.id, minutes: 25, createdAt: priorSunday)
         ]
 
         var activeReview = TopicCompetency.initial(
@@ -207,6 +254,7 @@ private struct WeeklyReviewRenderFixture {
     let colorScheme: ColorScheme
     let dynamicTypeSize: DynamicTypeSize
     let initialMetricsID: String
+    let initialWeekReferenceDate: Date
     let initialSelectedPracticeDate: Date?
     let reduceMotion: Bool
 }

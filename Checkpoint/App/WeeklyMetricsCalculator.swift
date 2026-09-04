@@ -35,21 +35,27 @@ struct WeeklyImpactDetails: Equatable, Sendable {
         weeklyDurationText(minutes: earnedBreakMinutes)
     }
 
-    func questionTrendText(currentQuestions: Int) -> String? {
+    func questionTrendText(
+        currentQuestions: Int,
+        isCurrentWeek: Bool = true
+    ) -> String? {
         guard currentQuestions > 0 || previousWeekQuestions > 0 else { return nil }
 
         let difference = currentQuestions - previousWeekQuestions
         if difference == 0 {
-            return "Level with this point last week"
+            return isCurrentWeek
+                ? "Level with this point last week"
+                : "Level with the week before"
         }
         if previousWeekQuestions == 0 {
             return "A new weekly baseline"
         }
 
         let noun = abs(difference) == 1 ? "question" : "questions"
+        let comparison = isCurrentWeek ? "this point last week" : "the week before"
         return difference > 0
-            ? "\(difference) more \(noun) than this point last week"
-            : "\(abs(difference)) fewer \(noun) than this point last week"
+            ? "\(difference) more \(noun) than \(comparison)"
+            : "\(abs(difference)) fewer \(noun) than \(comparison)"
     }
 }
 
@@ -131,9 +137,9 @@ struct WeeklyMetricsCalculator {
             )
         }
 
-        let elapsedThisWeek = asOf.timeIntervalSince(week.start)
         let previousComparisonEnd = min(
-            previousWeekStart.addingTimeInterval(elapsedThisWeek),
+            calendar.date(byAdding: .weekOfYear, value: -1, to: asOf)
+                ?? previousWeekStart,
             week.start
         )
         let previousComparablePeriod = DateInterval(

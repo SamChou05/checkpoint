@@ -61,6 +61,256 @@ struct WeeklyReviewDateLabelFormatter {
     }
 }
 
+enum WeeklyReviewNavigationDirection: Equatable {
+    case previous
+    case next
+}
+
+enum WeeklyReviewPeriodMotionStyle: Equatable {
+    case directional
+    case identity
+}
+
+struct WeeklyReviewPeriodPolicy {
+    let referenceDate: Date
+    let selectedWeekStart: Date
+    let currentWeekStart: Date
+    let earliestWeekStart: Date
+    let effectiveAsOf: Date
+    let isCurrentWeek: Bool
+    let canGoPrevious: Bool
+    let canGoNext: Bool
+    let motionStyle: WeeklyReviewPeriodMotionStyle
+
+    private let calendar: Calendar
+
+    init(
+        referenceDate: Date,
+        selectedWeekReferenceDate: Date,
+        attempts: [CheckpointAttempt],
+        unlockEvents: [UnlockEvent],
+        calendar: Calendar,
+        reduceMotion: Bool
+    ) {
+        self.referenceDate = referenceDate
+        self.calendar = calendar
+
+        let currentWeekStart = Self.weekStart(
+            containing: referenceDate,
+            calendar: calendar
+        )
+        self.currentWeekStart = currentWeekStart
+
+        let earliestActivityDate = (
+            attempts.map(\.createdAt) + unlockEvents.map(\.createdAt)
+        )
+        .filter { $0 <= referenceDate }
+        .min()
+        let unboundedEarliestWeekStart = earliestActivityDate.map {
+            Self.weekStart(containing: $0, calendar: calendar)
+        } ?? currentWeekStart
+        let earliestWeekStart = min(unboundedEarliestWeekStart, currentWeekStart)
+        self.earliestWeekStart = earliestWeekStart
+
+        let requestedWeekStart = Self.weekStart(
+            containing: selectedWeekReferenceDate,
+            calendar: calendar
+        )
+        let selectedWeekStart = min(
+            max(requestedWeekStart, earliestWeekStart),
+            currentWeekStart
+        )
+        self.selectedWeekStart = selectedWeekStart
+        isCurrentWeek = selectedWeekStart == currentWeekStart
+        canGoPrevious = selectedWeekStart > earliestWeekStart
+        canGoNext = selectedWeekStart < currentWeekStart
+        motionStyle = reduceMotion ? .identity : .directional
+
+        if selectedWeekStart == currentWeekStart {
+            effectiveAsOf = referenceDate
+        } else if let followingWeekStart = calendar.date(
+            byAdding: .weekOfYear,
+            value: 1,
+            to: selectedWeekStart
+        ) {
+            effectiveAsOf = Date(
+                timeIntervalSinceReferenceDate:
+                    followingWeekStart.timeIntervalSinceReferenceDate.nextDown
+            )
+        } else {
+            effectiveAsOf = selectedWeekStart
+        }
+    }
+
+    func destination(for direction: WeeklyReviewNavigationDirection) -> Date? {
+        let offset: Int
+        switch direction {
+        case .previous:
+            guard canGoPrevious else { return nil }
+            offset = -1
+        case .next:
+            guard canGoNext else { return nil }
+            offset = 1
+        }
+
+        guard let candidate = calendar.date(
+            byAdding: .weekOfYear,
+            value: offset,
+            to: selectedWeekStart
+        ) else {
+            return nil
+        }
+
+        return min(max(candidate, earliestWeekStart), currentWeekStart)
+    }
+
+    func reportsSelectionFeedback(
+        for direction: WeeklyReviewNavigationDirection
+    ) -> Bool {
+        destination(for: direction) != nil
+    }
+
+    private static func weekStart(
+        containing date: Date,
+        calendar: Calendar
+    ) -> Date {
+        calendar.dateInterval(of: .weekOfYear, for: date)?.start
+            ?? calendar.startOfDay(for: date)
+    }
+}
+
+struct WeeklyReviewPeriodPresentation: Equatable {
+    let eyebrowText: String
+    let rangeText: String
+    let accessibilityLabel: String
+    let summaryText: String
+    let emptyTitle: String
+    let emptyDetail: String
+
+    init(
+        policy: WeeklyReviewPeriodPolicy,
+        calendar: Calendar,
+        locale: Locale,
+        timeZone: TimeZone
+    ) {
+        let start = policy.selectedWeekStart
+        let end = calendar.date(byAdding: .day, value: 6, to: start) ?? start
+        let rangeCrossesYear = calendar.component(.year, from: start)
+            != calendar.component(.year, from: end)
+        let fullDateTemplate = policy.isCurrentWeek && !rangeCrossesYear
+            ? "EEEEMMMMd"
+            : "EEEEMMMMdyyyy"
+
+        eyebrowText = policy.isCurrentWeek ? "THIS WEEK" : "WEEKLY ARCHIVE"
+        rangeText = Self.rangeText(
+            start: start,
+            end: end,
+            includesYear: !policy.isCurrentWeek,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        let fullStart = Self.formatted(
+            start,
+            template: fullDateTemplate,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        let fullEnd = Self.formatted(
+            end,
+            template: fullDateTemplate,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        accessibilityLabel = "Week of \(fullStart) through \(fullEnd)"
+
+        if policy.isCurrentWeek {
+            summaryText = "A quiet read on what your checkpoints turned into."
+            emptyTitle = "Your signal starts with one checkpoint"
+            emptyDetail = "Questions, recovered misses, and earned breaks will collect here without any extra setup."
+        } else {
+            summaryText = "A complete read on what your checkpoints turned into that week."
+            emptyTitle = "No checkpoint activity that week"
+            emptyDetail = "Try another week or goal to keep exploring your history."
+        }
+    }
+
+    private static func rangeText(
+        start: Date,
+        end: Date,
+        includesYear: Bool,
+        calendar: Calendar,
+        locale: Locale,
+        timeZone: TimeZone
+    ) -> String {
+        let sameYear = calendar.component(.year, from: start)
+            == calendar.component(.year, from: end)
+        let sameMonth = sameYear && calendar.component(.month, from: start)
+            == calendar.component(.month, from: end)
+
+        if !sameYear {
+            let startText = formatted(
+                start,
+                template: "MMMdy",
+                calendar: calendar,
+                locale: locale,
+                timeZone: timeZone
+            )
+            let endText = formatted(
+                end,
+                template: "MMMdy",
+                calendar: calendar,
+                locale: locale,
+                timeZone: timeZone
+            )
+            return "\(startText)–\(endText)"
+        }
+
+        let startText = formatted(
+            start,
+            template: "MMMd",
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        let endText = formatted(
+            end,
+            template: sameMonth ? "d" : "MMMd",
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        let range = "\(startText)–\(endText)"
+        guard includesYear else { return range }
+
+        let yearText = formatted(
+            end,
+            template: "y",
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        return "\(range), \(yearText)"
+    }
+
+    private static func formatted(
+        _ date: Date,
+        template: String,
+        calendar: Calendar,
+        locale: Locale,
+        timeZone: TimeZone
+    ) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        formatter.setLocalizedDateFormatFromTemplate(template)
+        return formatter.string(from: date)
+    }
+}
+
 struct WeeklyPracticeSelectionPolicy {
     static func canSelect(day: WeeklyPracticeDay, referenceDate: Date) -> Bool {
         day.date <= referenceDate
@@ -172,6 +422,7 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
     let earnedBreakTimeText: String
     let questionShare: Double
     let hasActivity: Bool
+    let isCurrentWeek: Bool
 
     var activityText: String {
         if questionsAnswered > 0 {
@@ -180,17 +431,22 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
         }
         if checkpointsCleared > 0 {
             let noun = checkpointsCleared == 1 ? "break" : "breaks"
-            return "\(checkpointsCleared) \(noun) earned this week"
+            let period = isCurrentWeek ? "this week" : "that week"
+            return "\(checkpointsCleared) \(noun) earned \(period)"
         }
         if checkpointStreakDays > 0 {
             let day = checkpointStreakDays == 1 ? "day" : "days"
             return "\(checkpointStreakDays) \(day) in your checkpoint streak"
         }
-        return "No checkpoint activity this week"
+        return isCurrentWeek
+            ? "No checkpoint activity this week"
+            : "No checkpoint activity that week"
     }
 
     var supportingText: String {
-        guard hasActivity else { return "Ready for your next checkpoint" }
+        guard hasActivity else {
+            return isCurrentWeek ? "Ready for your next checkpoint" : "No activity recorded"
+        }
 
         var details: [String] = []
         if questionsAnswered > 0 {
@@ -201,7 +457,7 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
             details.append("\(earnedBreakTimeText) unlocked")
         }
         if details.isEmpty, checkpointStreakDays > 0 {
-            details.append("Streak still active")
+            details.append(isCurrentWeek ? "Streak still active" : "Streak at week's end")
         }
         return details.joined(separator: " · ")
     }
@@ -231,7 +487,8 @@ struct WeeklyGoalPulsePresentation: Equatable {
         asOf: Date = Date(),
         calendar: Calendar = .current,
         locale: Locale = .current,
-        timeZone: TimeZone = .current
+        timeZone: TimeZone = .current,
+        isCurrentWeek: Bool = true
     ) {
         let metricsByID = Dictionary(
             metrics.map { ($0.id, $0) },
@@ -270,7 +527,8 @@ struct WeeklyGoalPulsePresentation: Equatable {
                 activePracticeDays: details.activePracticeDays,
                 earnedBreakTimeText: details.earnedBreakTimeText,
                 questionShare: share,
-                hasActivity: metric.hasWeeklyReviewActivity
+                hasActivity: metric.hasWeeklyReviewActivity,
+                isCurrentWeek: isCurrentWeek
             )
             return (index: index, item: item)
         }
@@ -300,9 +558,12 @@ struct WeeklyReviewView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @State private var selectedMetricsID = WeeklyMetricsSummary.allGoalsID
+    @State private var selectedWeekStart: Date
     @State private var selectedPracticeDayID: WeeklyPracticeDay.ID?
+    @State private var weekNavigationDirection = WeeklyReviewNavigationDirection.previous
     @State private var scopeSelectionFeedbackSequence = 0
     @State private var practiceDaySelectionFeedbackSequence = 0
+    @State private var weekSelectionFeedbackSequence = 0
     @ScaledMetric(relativeTo: .largeTitle) private var heroMetricSize: CGFloat = 64
 
     init(
@@ -313,7 +574,8 @@ struct WeeklyReviewView: View {
         displayLocale: Locale = .current,
         displayTimeZone: TimeZone = .current,
         reduceMotionOverride: Bool? = nil,
-        initialSelectedPracticeDate: Date? = nil
+        initialSelectedPracticeDate: Date? = nil,
+        initialWeekReferenceDate: Date? = nil
     ) {
         var normalizedDisplayCalendar = displayCalendar
         normalizedDisplayCalendar.timeZone = displayTimeZone
@@ -324,6 +586,15 @@ struct WeeklyReviewView: View {
         self.displayTimeZone = displayTimeZone
         self.reduceMotionOverride = reduceMotionOverride
         _selectedMetricsID = State(initialValue: initialMetricsID)
+        let initialPeriod = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: initialWeekReferenceDate ?? referenceDate,
+            attempts: store.attempts,
+            unlockEvents: store.unlockEvents,
+            calendar: normalizedDisplayCalendar,
+            reduceMotion: reduceMotionOverride ?? false
+        )
+        _selectedWeekStart = State(initialValue: initialPeriod.selectedWeekStart)
         _selectedPracticeDayID = State(
             initialValue: initialSelectedPracticeDate.map {
                 normalizedDisplayCalendar.startOfDay(for: $0)
@@ -335,8 +606,32 @@ struct WeeklyReviewView: View {
         reduceMotionOverride ?? systemReduceMotion
     }
 
+    private var periodPolicy: WeeklyReviewPeriodPolicy {
+        WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: selectedWeekStart,
+            attempts: store.attempts,
+            unlockEvents: store.unlockEvents,
+            calendar: displayCalendar,
+            reduceMotion: reduceMotion
+        )
+    }
+
+    private var periodPresentation: WeeklyReviewPeriodPresentation {
+        WeeklyReviewPeriodPresentation(
+            policy: periodPolicy,
+            calendar: displayCalendar,
+            locale: displayLocale,
+            timeZone: displayTimeZone
+        )
+    }
+
+    private var periodReferenceDate: Date {
+        periodPolicy.effectiveAsOf
+    }
+
     private var totalMetrics: WeeklyMetricsSummary {
-        store.weeklyTotalMetrics(asOf: referenceDate, calendar: displayCalendar)
+        store.weeklyTotalMetrics(asOf: periodReferenceDate, calendar: displayCalendar)
     }
 
     private var goalMetrics: [WeeklyMetricsSummary] {
@@ -348,7 +643,7 @@ struct WeeklyReviewView: View {
         )
 
         return store.weeklyGoalMetrics(
-            asOf: referenceDate,
+            asOf: periodReferenceDate,
             calendar: displayCalendar
         ).map { metrics in
             guard let goalID = UUID(uuidString: metrics.id),
@@ -378,7 +673,7 @@ struct WeeklyReviewView: View {
         WeeklyMetricsCalculator(
             attempts: store.attempts,
             unlockEvents: store.unlockEvents,
-            asOf: referenceDate,
+            asOf: periodReferenceDate,
             calendar: displayCalendar
         ).impactDetails(goalID: selectedGoalID)
     }
@@ -395,7 +690,7 @@ struct WeeklyReviewView: View {
         WeeklyPracticeSelectionPolicy.reconciledSelection(
             preferredDayID: selectedPracticeDayID,
             days: impactDetails.practiceDays,
-            referenceDate: referenceDate
+            referenceDate: periodReferenceDate
         )
     }
 
@@ -408,7 +703,7 @@ struct WeeklyReviewView: View {
         guard let selectedPracticeDay else { return nil }
         return WeeklyPracticeDayDetailPresentation(
             day: selectedPracticeDay,
-            referenceDate: referenceDate,
+            referenceDate: periodReferenceDate,
             dateLabelFormatter: dateLabelFormatter
         )
     }
@@ -420,10 +715,11 @@ struct WeeklyReviewView: View {
             attempts: store.attempts,
             unlockEvents: store.unlockEvents,
             activeGoalID: store.goal?.id,
-            asOf: referenceDate,
+            asOf: periodReferenceDate,
             calendar: displayCalendar,
             locale: displayLocale,
-            timeZone: displayTimeZone
+            timeZone: displayTimeZone,
+            isCurrentWeek: periodPolicy.isCurrentWeek
         )
     }
 
@@ -438,25 +734,30 @@ struct WeeklyReviewView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     reviewHeader
-                    impactHero
-                        .id("impact-\(selectedMetrics.id)")
-                        .transition(scopeChangeTransition)
-
-                    if selectedMetrics.hasWeeklyReviewActivity {
-                        if let pulsePresentation, displaysGoalPulse {
-                            goalPulse(pulsePresentation)
-                                .transition(scopeChangeTransition)
-                        }
-                        signalGrid
-                            .id("signals-\(selectedMetricsID)")
+                    VStack(alignment: .leading, spacing: 20) {
+                        impactHero
+                            .id("impact-\(selectedMetrics.id)")
                             .transition(scopeChangeTransition)
-                        if !displaysGoalPulse {
-                            skillSnapshot
+
+                        if selectedMetrics.hasWeeklyReviewActivity {
+                            if let pulsePresentation, displaysGoalPulse {
+                                goalPulse(pulsePresentation)
+                                    .transition(scopeChangeTransition)
+                            }
+                            signalGrid
+                                .id("signals-\(selectedMetricsID)")
+                                .transition(scopeChangeTransition)
+                            if !displaysGoalPulse {
+                                skillSnapshot
+                            }
+                        } else {
+                            emptyGuidance
                         }
-                    } else {
-                        emptyGuidance
                     }
+                    .id("week-\(periodPolicy.selectedWeekStart.timeIntervalSinceReferenceDate)")
+                    .transition(periodChangeTransition)
                 }
+                .animation(periodChangeAnimation, value: periodPolicy.selectedWeekStart)
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
                 .padding(.bottom, 36)
@@ -472,6 +773,14 @@ struct WeeklyReviewView: View {
             .onChange(of: selectedMetricsID) { _, _ in
                 selectedPracticeDayID = nil
             }
+            .onChange(of: selectedWeekStart) { _, _ in
+                selectedPracticeDayID = nil
+            }
+            .onChange(of: periodPolicy.selectedWeekStart) { _, reconciledWeekStart in
+                guard selectedWeekStart != reconciledWeekStart else { return }
+                selectedWeekStart = reconciledWeekStart
+                selectedPracticeDayID = nil
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
@@ -481,24 +790,27 @@ struct WeeklyReviewView: View {
         }
         .sensoryFeedback(.selection, trigger: scopeSelectionFeedbackSequence)
         .sensoryFeedback(.selection, trigger: practiceDaySelectionFeedbackSequence)
+        .sensoryFeedback(.selection, trigger: weekSelectionFeedbackSequence)
     }
 
     private var reviewHeader: some View {
         VStack(alignment: .leading, spacing: 12) {
             if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 12) {
-                    weekIdentity
+                    weekEyebrow
                     selectedScope
                 }
             } else {
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    weekIdentity
+                HStack(alignment: .center, spacing: 12) {
+                    weekEyebrow
 
                     Spacer(minLength: 8)
 
                     selectedScope
                 }
             }
+
+            weekNavigationRow
 
             if selectedMetrics.id != WeeklyMetricsSummary.allGoalsID,
                metricOptions.count > 2 {
@@ -510,26 +822,106 @@ struct WeeklyReviewView: View {
                     .accessibilityAddTraits(.isHeader)
             }
 
-            Text("A quiet read on what your checkpoints turned into.")
+            Text(periodPresentation.summaryText)
                 .font(.subheadline)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.opacity)
         }
     }
 
-    private var weekIdentity: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("YOUR WEEK")
-                .font(.caption2.weight(.bold))
-                .tracking(1.0)
-                .foregroundStyle(CheckpointTheme.muted)
-                .accessibilityAddTraits(.isHeader)
+    private var weekEyebrow: some View {
+        Text(periodPresentation.eyebrowText)
+            .font(.caption2.weight(.bold))
+            .tracking(1.0)
+            .foregroundStyle(CheckpointTheme.muted)
+            .contentTransition(.opacity)
+            .accessibilityHidden(true)
+    }
 
-            Text(weekRangeText)
-                .font(.title2.weight(.bold))
-                .foregroundStyle(CheckpointTheme.text)
-                .fixedSize(horizontal: false, vertical: true)
+    private var weekNavigationRow: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: 10) {
+                weekRangeHeading
+                Spacer(minLength: 8)
+                weekNavigationControls
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                weekRangeHeading
+                weekNavigationControls
+            }
         }
+    }
+
+    private var weekRangeHeading: some View {
+        Text(periodPresentation.rangeText)
+            .font(.title2.weight(.bold))
+            .foregroundStyle(CheckpointTheme.text)
+            .fixedSize(horizontal: false, vertical: true)
+            .contentTransition(.opacity)
+            .accessibilityLabel(periodPresentation.accessibilityLabel)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    @ViewBuilder
+    private var weekNavigationControls: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(spacing: 8) {
+                weekNavigationButton(for: .previous, fillsAvailableWidth: true)
+                weekNavigationButton(for: .next, fillsAvailableWidth: true)
+            }
+            .frame(maxWidth: .infinity)
+        } else {
+            HStack(spacing: 8) {
+                weekNavigationButton(for: .previous)
+                weekNavigationButton(for: .next)
+            }
+            .fixedSize(horizontal: true, vertical: false)
+        }
+    }
+
+    private func weekNavigationButton(
+        for direction: WeeklyReviewNavigationDirection,
+        fillsAvailableWidth: Bool = false
+    ) -> some View {
+        let isEnabled = direction == .previous
+            ? periodPolicy.canGoPrevious
+            : periodPolicy.canGoNext
+        let title = direction == .previous ? "Previous" : "Next"
+        let systemImage = direction == .previous ? "chevron.left" : "chevron.right"
+
+        return Button {
+            navigateWeek(direction)
+        } label: {
+            Label(title, systemImage: systemImage)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(isEnabled ? CheckpointTheme.teal : CheckpointTheme.muted)
+                .frame(
+                    maxWidth: fillsAvailableWidth ? .infinity : nil,
+                    minHeight: 44
+                )
+                .padding(.horizontal, 10)
+                .background(
+                    CheckpointTheme.panelRaised.opacity(isEnabled ? 0.78 : 0.45),
+                    in: Capsule()
+                )
+                .overlay {
+                    Capsule()
+                        .stroke(CheckpointTheme.hairline.opacity(0.82), lineWidth: 1)
+                }
+                .contentShape(Capsule())
+        }
+        .buttonStyle(CheckpointPressButtonStyle())
+        .disabled(!isEnabled)
+        .accessibilityLabel("\(title) week")
+        .accessibilityHint(
+            isEnabled
+                ? "Shows the \(direction == .previous ? "previous" : "next") weekly impact."
+                : (direction == .previous
+                    ? "This is the earliest week with retained activity."
+                    : "This is the current week.")
+        )
     }
 
     @ViewBuilder
@@ -621,7 +1013,8 @@ struct WeeklyReviewView: View {
             }
 
             if let trend = impactDetails.questionTrendText(
-                currentQuestions: selectedMetrics.questionsAnswered
+                currentQuestions: selectedMetrics.questionsAnswered,
+                isCurrentWeek: periodPolicy.isCurrentWeek
             ) {
                 Text(trend)
                     .font(.footnote.weight(.semibold))
@@ -630,7 +1023,7 @@ struct WeeklyReviewView: View {
 
             WeeklyPracticeBars(
                 days: impactDetails.practiceDays,
-                referenceDate: referenceDate,
+                referenceDate: periodReferenceDate,
                 reduceMotion: reduceMotion,
                 dateLabelFormatter: dateLabelFormatter,
                 selectedDayID: resolvedPracticeDayID,
@@ -725,7 +1118,11 @@ struct WeeklyReviewView: View {
         VStack(alignment: .leading, spacing: 12) {
             sectionLabel("GOAL PULSE")
 
-            Text("Bars compare each goal's share of this week's questions. Choose one to inspect its own signals.")
+            Text(
+                periodPolicy.isCurrentWeek
+                    ? "Bars compare each goal's share of this week's questions. Choose one to inspect its own signals."
+                    : "Bars compare each goal's share of that week's questions. Choose one to inspect its own signals."
+            )
                 .font(.footnote)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
@@ -779,7 +1176,9 @@ struct WeeklyReviewView: View {
                     value: selectedMetrics.questionsAnswered > 0 ? selectedMetrics.accuracyText : "—",
                     detail: selectedMetrics.questionsAnswered > 0
                         ? "\(selectedMetrics.correctAnswers) of \(selectedMetrics.questionsAnswered) correct"
-                        : "No questions answered this week",
+                        : (periodPolicy.isCurrentWeek
+                            ? "No questions answered this week"
+                            : "No questions answered that week"),
                     systemImage: "scope"
                 )
 
@@ -793,7 +1192,9 @@ struct WeeklyReviewView: View {
                 ImpactMetricTile(
                     label: "Misses recovered",
                     value: "\(impactDetails.recoveredQuestions)",
-                    detail: "Previously missed, currently correct",
+                    detail: periodPolicy.isCurrentWeek
+                        ? "Previously missed, currently correct"
+                        : "Previously missed, correct by week's end",
                     systemImage: "arrow.triangle.2.circlepath"
                 )
 
@@ -813,7 +1214,11 @@ struct WeeklyReviewView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     sectionLabel("SKILL SNAPSHOT")
 
-                    Text("Current mastery estimates reflect all checkpoint evidence, not just this week.")
+                    Text(
+                        periodPolicy.isCurrentWeek
+                            ? "Current mastery estimates reflect all checkpoint evidence, not just this week."
+                            : "Current mastery estimates reflect all checkpoint evidence, not only the selected week."
+                    )
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -853,19 +1258,21 @@ struct WeeklyReviewView: View {
                 .foregroundStyle(CheckpointTheme.teal)
                 .frame(width: 38, height: 38)
                 .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Your signal starts with one checkpoint")
+                Text(periodPresentation.emptyTitle)
                     .font(.headline)
                     .foregroundStyle(CheckpointTheme.text)
 
-                Text("Questions, recovered misses, and earned breaks will collect here without any extra setup.")
+                Text(periodPresentation.emptyDetail)
                     .font(.subheadline)
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
     }
 
     private func sectionLabel(_ text: String) -> some View {
@@ -906,7 +1313,7 @@ struct WeeklyReviewView: View {
 
         let presentation = WeeklyPracticeDayDetailPresentation(
             day: day,
-            referenceDate: referenceDate,
+            referenceDate: periodReferenceDate,
             dateLabelFormatter: dateLabelFormatter
         )
         withAnimation(practiceDaySelectionAnimation) {
@@ -915,6 +1322,38 @@ struct WeeklyReviewView: View {
         practiceDaySelectionFeedbackSequence += 1
         AccessibilityNotification.Announcement(
             "Showing \(presentation.dateText)."
+        ).post()
+    }
+
+    private func navigateWeek(_ direction: WeeklyReviewNavigationDirection) {
+        guard periodPolicy.reportsSelectionFeedback(for: direction),
+              let destination = periodPolicy.destination(for: direction) else {
+            return
+        }
+
+        weekNavigationDirection = direction
+        withAnimation(periodChangeAnimation) {
+            selectedWeekStart = destination
+            selectedPracticeDayID = nil
+        }
+        weekSelectionFeedbackSequence += 1
+
+        let destinationPolicy = WeeklyReviewPeriodPolicy(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: destination,
+            attempts: store.attempts,
+            unlockEvents: store.unlockEvents,
+            calendar: displayCalendar,
+            reduceMotion: reduceMotion
+        )
+        let destinationPresentation = WeeklyReviewPeriodPresentation(
+            policy: destinationPolicy,
+            calendar: displayCalendar,
+            locale: displayLocale,
+            timeZone: displayTimeZone
+        )
+        AccessibilityNotification.Announcement(
+            "Showing \(destinationPresentation.accessibilityLabel)."
         ).post()
     }
 
@@ -928,27 +1367,6 @@ struct WeeklyReviewView: View {
         return tints[index % tints.count]
     }
 
-    private var weekRangeText: String {
-        guard let week = displayCalendar.dateInterval(of: .weekOfYear, for: referenceDate),
-              let finalDay = displayCalendar.date(byAdding: .day, value: -1, to: week.end) else {
-            return "This week"
-        }
-
-        if displayCalendar.component(.month, from: week.start) == displayCalendar.component(.month, from: finalDay) {
-            return "\(formattedWeekDate(week.start, includesMonth: true))–\(formattedWeekDate(finalDay, includesMonth: false))"
-        }
-        return "\(formattedWeekDate(week.start, includesMonth: true))–\(formattedWeekDate(finalDay, includesMonth: true))"
-    }
-
-    private func formattedWeekDate(_ date: Date, includesMonth: Bool) -> String {
-        let formatter = DateFormatter()
-        formatter.calendar = displayCalendar
-        formatter.locale = displayLocale
-        formatter.timeZone = displayTimeZone
-        formatter.setLocalizedDateFormatFromTemplate(includesMonth ? "MMMd" : "d")
-        return formatter.string(from: date)
-    }
-
     private var signalGridColumns: [GridItem] {
         if dynamicTypeSize.isAccessibilitySize {
             return [GridItem(.flexible())]
@@ -958,6 +1376,21 @@ struct WeeklyReviewView: View {
 
     private var scopeChangeAnimation: Animation? {
         CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+    }
+
+    private var periodChangeAnimation: Animation? {
+        periodPolicy.motionStyle == .directional ? CheckpointMotion.change : nil
+    }
+
+    private var periodChangeTransition: AnyTransition {
+        guard periodPolicy.motionStyle == .directional else { return .identity }
+
+        let insertionEdge: Edge = weekNavigationDirection == .previous ? .leading : .trailing
+        let removalEdge: Edge = weekNavigationDirection == .previous ? .trailing : .leading
+        return .asymmetric(
+            insertion: .move(edge: insertionEdge).combined(with: .opacity),
+            removal: .move(edge: removalEdge).combined(with: .opacity)
+        )
     }
 
     private var practiceDaySelectionAnimation: Animation? {
