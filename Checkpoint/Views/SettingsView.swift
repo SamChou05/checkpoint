@@ -35,6 +35,42 @@ struct ProtectionSettingsControlPresentation: Equatable {
     }
 }
 
+struct PracticeHistorySettingsPresentation: Equatable {
+    let answerCount: Int
+    let goalCount: Int
+
+    init(attempts: [CheckpointAttempt]) {
+        answerCount = attempts.count
+        goalCount = Set(attempts.map(\.goalID)).count
+    }
+
+    var detail: String {
+        switch goalCount {
+        case 0:
+            "Saved answers from every goal will appear here"
+        case 1:
+            "All saved answers from 1 goal"
+        default:
+            "All saved answers across \(goalCount) goals"
+        }
+    }
+
+    var trailingText: String {
+        "\(answerCount)"
+    }
+
+    var voiceOverValue: String {
+        guard answerCount > 0 else {
+            return "No saved answers yet. Practice history includes every goal."
+        }
+
+        let answerLabel = answerCount == 1 ? "answer" : "answers"
+        let goalLabel = goalCount == 1 ? "1 goal" : "\(goalCount) goals"
+        let scopePreposition = goalCount == 1 ? "from" : "across"
+        return "\(answerCount) saved \(answerLabel) \(scopePreposition) \(goalLabel). Opens the full practice archive."
+    }
+}
+
 struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
@@ -720,8 +756,8 @@ struct SettingsView: View {
         return uniqueMessages.isEmpty ? nil : uniqueMessages.joined(separator: " ")
     }
 
-    private var historyDetailText: String {
-        store.activeAttempts.isEmpty ? "No practice yet" : "Review past answers"
+    private var practiceHistorySettingsPresentation: PracticeHistorySettingsPresentation {
+        PracticeHistorySettingsPresentation(attempts: store.attempts)
     }
 
     private var feedbackDraftSettingsPresentation: FeedbackDraftSettingsPresentation {
@@ -797,12 +833,10 @@ struct SettingsView: View {
             VStack(spacing: 14) {
                 SettingsNavigationRow(
                     title: "Practice history",
-                    detail: historyDetailText,
+                    detail: practiceHistorySettingsPresentation.detail,
                     systemImage: "clock.arrow.circlepath",
-                    trailingText: "\(store.activeAttempts.count)",
-                    voiceOverValue: store.activeAttempts.isEmpty
-                        ? "No answers yet"
-                        : "\(store.activeAttempts.count) answers. \(historyDetailText)"
+                    trailingText: practiceHistorySettingsPresentation.trailingText,
+                    voiceOverValue: practiceHistorySettingsPresentation.voiceOverValue
                 ) {
                     isHistoryPresented = true
                 }

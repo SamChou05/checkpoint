@@ -124,6 +124,87 @@ final class HelpFeedbackRenderingTests: XCTestCase {
         )
     }
 
+    func testPracticeHistorySettingsSummaryUsesTheFullStoredArchiveAcrossGoals() {
+        let firstGoalID = UUID(uuidString: "00000000-0000-0000-0000-000000000301")!
+        let secondGoalID = UUID(uuidString: "00000000-0000-0000-0000-000000000302")!
+        let firstAttempt = CheckpointAttempt(
+            questionID: UUID(uuidString: "00000000-0000-0000-0000-000000000311")!,
+            goalID: firstGoalID,
+            prompt: "First saved prompt",
+            answer: "First saved answer",
+            result: .correct,
+            unlockMinutes: 0
+        )
+        let secondAttemptForSameGoal = CheckpointAttempt(
+            questionID: UUID(uuidString: "00000000-0000-0000-0000-000000000312")!,
+            goalID: firstGoalID,
+            prompt: "Second saved prompt",
+            answer: "Second saved answer",
+            result: .partial,
+            unlockMinutes: 0
+        )
+        let otherGoalAttempt = CheckpointAttempt(
+            questionID: UUID(uuidString: "00000000-0000-0000-0000-000000000313")!,
+            goalID: secondGoalID,
+            prompt: "Other goal prompt",
+            answer: "Other goal answer",
+            result: .incorrect,
+            unlockMinutes: 0
+        )
+
+        let empty = PracticeHistorySettingsPresentation(attempts: [])
+        XCTAssertEqual(empty.answerCount, 0)
+        XCTAssertEqual(empty.goalCount, 0)
+        XCTAssertEqual(empty.trailingText, "0")
+        XCTAssertEqual(empty.detail, "Saved answers from every goal will appear here")
+        XCTAssertEqual(
+            empty.voiceOverValue,
+            "No saved answers yet. Practice history includes every goal."
+        )
+
+        let oneGoal = PracticeHistorySettingsPresentation(
+            attempts: [firstAttempt, secondAttemptForSameGoal]
+        )
+        XCTAssertEqual(oneGoal.answerCount, 2)
+        XCTAssertEqual(oneGoal.goalCount, 1)
+        XCTAssertEqual(oneGoal.trailingText, "2")
+        XCTAssertEqual(oneGoal.detail, "All saved answers from 1 goal")
+        XCTAssertEqual(
+            oneGoal.voiceOverValue,
+            "2 saved answers from 1 goal. Opens the full practice archive."
+        )
+
+        let multipleGoals = PracticeHistorySettingsPresentation(
+            attempts: [firstAttempt, secondAttemptForSameGoal, otherGoalAttempt]
+        )
+        XCTAssertEqual(multipleGoals.answerCount, 3)
+        XCTAssertEqual(multipleGoals.goalCount, 2)
+        XCTAssertEqual(multipleGoals.trailingText, "3")
+        XCTAssertEqual(multipleGoals.detail, "All saved answers across 2 goals")
+        XCTAssertEqual(
+            multipleGoals.voiceOverValue,
+            "3 saved answers across 2 goals. Opens the full practice archive."
+        )
+    }
+
+    func testPracticeHistorySettingsSummaryUsesSingularAnswerGrammar() {
+        let attempt = CheckpointAttempt(
+            questionID: UUID(uuidString: "00000000-0000-0000-0000-000000000321")!,
+            goalID: UUID(uuidString: "00000000-0000-0000-0000-000000000322")!,
+            prompt: "Saved prompt",
+            answer: "Saved answer",
+            result: .correct,
+            unlockMinutes: 0
+        )
+
+        let presentation = PracticeHistorySettingsPresentation(attempts: [attempt])
+
+        XCTAssertEqual(
+            presentation.voiceOverValue,
+            "1 saved answer from 1 goal. Opens the full practice archive."
+        )
+    }
+
     @MainActor
     func testFeedbackDraftComposerUsesTrimmedInputAndExactCharacterLimit() {
         let empty = FeedbackDraftComposerPresentation(message: "  \n\t  ")
