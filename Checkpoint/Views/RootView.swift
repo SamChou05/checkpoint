@@ -160,7 +160,7 @@ struct RootView: View {
         reconcileProtectionAndHandlePendingAttempt()
 
         purchaseController.onMembershipEntitlementChange = { unlocked in
-            store.updateMembershipTier(unlocked ? .member : .starter)
+            store.reconcileMembershipEntitlement(isUnlocked: unlocked)
         }
         purchaseController.startListeningForTransactions()
         await refreshPlanAccessFromEntitlements()
@@ -325,7 +325,7 @@ struct RootView: View {
     @MainActor
     private func refreshPlanAccessFromEntitlements() async {
         let unlocked = await purchaseController.refreshEntitlements()
-        store.updateMembershipTier(unlocked ? .member : .starter)
+        store.reconcileMembershipEntitlement(isUnlocked: unlocked)
     }
 
     private var membershipFeatureBinding: Binding<MembershipFeature?> {

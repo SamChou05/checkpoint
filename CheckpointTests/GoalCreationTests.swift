@@ -283,6 +283,28 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testUnchangedEntitlementReconciliationKeepsContextualPaywallPresented() {
+        let store = CheckpointStore(defaults: defaults)
+        store.pendingMembershipFeature = .adaptiveStudyAssist
+
+        store.reconcileMembershipEntitlement(isUnlocked: false)
+
+        XCTAssertEqual(store.membershipTier, .starter)
+        XCTAssertEqual(store.pendingMembershipFeature, .adaptiveStudyAssist)
+    }
+
+    @MainActor
+    func testChangedEntitlementReconciliationUnlocksAndDismissesPaywall() {
+        let store = CheckpointStore(defaults: defaults)
+        store.pendingMembershipFeature = .adaptiveStudyAssist
+
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+
+        XCTAssertEqual(store.membershipTier, .member)
+        XCTAssertNil(store.pendingMembershipFeature)
+    }
+
+    @MainActor
     func testCreateGoalCanReturnBeforeInitialQuestionsFinish() async {
         let delayedEngine = DelayedQuestionEngine(
             provider: .appleFoundation,

@@ -107,7 +107,7 @@ final class StoreKitPaymentTests: XCTestCase {
 
         let annual = try XCTUnwrap(presentation.planOptions.first)
         XCTAssertEqual(annual.detail, "$2.50 per month when billed annually.")
-        XCTAssertEqual(annual.valueBadge, "Save 50%")
+        XCTAssertEqual(annual.valueBadge, "Save 49%")
         XCTAssertTrue(annual.isRecommended)
     }
 
@@ -190,6 +190,176 @@ final class StoreKitPaymentTests: XCTestCase {
         )
     }
 
+    func testPendingCheckoutDisablesRepeatPurchaseAndUsesAwaitingApprovalCTA() {
+        let presentation = MembershipCheckoutPresentation(
+            selectedPlan: makeAnnualPlanOption(),
+            isLoadingPlans: false,
+            isRestoringPurchases: false,
+            isPurchasing: false,
+            notice: .pendingApproval
+        )
+
+        XCTAssertTrue(presentation.isActionInProgress)
+        XCTAssertTrue(presentation.isPrimaryActionDisabled)
+        XCTAssertFalse(presentation.showsPrimaryProgress)
+        XCTAssertFalse(presentation.isRestoreActionDisabled)
+        XCTAssertTrue(presentation.shouldShowNoticeInPurchaseBar)
+        XCTAssertEqual(presentation.buttonTitle(accessibilitySize: false), "Awaiting approval")
+        XCTAssertEqual(presentation.buttonSystemImage, "clock.fill")
+        XCTAssertEqual(presentation.restoreButtonTitle, "Check purchase status")
+        XCTAssertEqual(
+            presentation.buttonAccessibilityLabel,
+            "Purchase pending App Store approval"
+        )
+    }
+
+    func testAccessibleCheckoutKeepsVisibleCTACompactAndVoiceOverBillingComplete() {
+        let presentation = MembershipCheckoutPresentation(
+            selectedPlan: makeAnnualPlanOption(),
+            isLoadingPlans: false,
+            isRestoringPurchases: false,
+            isPurchasing: false,
+            notice: nil
+        )
+
+        XCTAssertEqual(
+            presentation.buttonTitle(accessibilitySize: true),
+            "Subscribe — $29.99"
+        )
+        XCTAssertEqual(
+            presentation.buttonAccessibilityLabel,
+            "Subscribe to Checkpoint Pro, Annual plan, $29.99 per year"
+        )
+        XCTAssertFalse(presentation.isPrimaryActionDisabled)
+    }
+
+    func testCatalogRecoveryCTAHasOneClearStateWithoutInlineNotice() {
+        let unavailable = MembershipCheckoutPresentation(
+            selectedPlan: nil,
+            isLoadingPlans: false,
+            isRestoringPurchases: false,
+            isPurchasing: false,
+            notice: .catalogUnavailable("Could not load App Store plans yet.")
+        )
+        let loading = MembershipCheckoutPresentation(
+            selectedPlan: nil,
+            isLoadingPlans: true,
+            isRestoringPurchases: false,
+            isPurchasing: false,
+            notice: nil
+        )
+
+        XCTAssertEqual(unavailable.buttonTitle(accessibilitySize: false), "Reload App Store plans")
+        XCTAssertEqual(unavailable.buttonSystemImage, "arrow.clockwise")
+        XCTAssertFalse(unavailable.isPrimaryActionDisabled)
+        XCTAssertFalse(unavailable.shouldShowNoticeInPurchaseBar)
+
+        XCTAssertEqual(loading.buttonTitle(accessibilitySize: false), "Loading plans")
+        XCTAssertTrue(loading.isActionInProgress)
+        XCTAssertTrue(loading.isPrimaryActionDisabled)
+        XCTAssertTrue(loading.showsPrimaryProgress)
+        XCTAssertTrue(loading.isRestoreActionDisabled)
+    }
+
+    func testCatalogLoadingBlocksRestoreAndSelectionUntilItsNoticeResolutionFinishes() {
+        let presentation = MembershipCheckoutPresentation(
+            selectedPlan: makeAnnualPlanOption(),
+            isLoadingPlans: true,
+            isRestoringPurchases: false,
+            isPurchasing: false,
+            notice: nil
+        )
+
+        XCTAssertTrue(presentation.isActionInProgress)
+        XCTAssertTrue(presentation.isPrimaryActionDisabled)
+        XCTAssertTrue(presentation.showsPrimaryProgress)
+        XCTAssertTrue(presentation.isRestoreActionDisabled)
+        XCTAssertEqual(presentation.buttonTitle(accessibilitySize: false), "Refreshing prices")
+        XCTAssertEqual(
+            presentation.buttonAccessibilityLabel,
+            "Refreshing App Store prices, in progress"
+        )
+    }
+
+    @MainActor
+    func testPurchaseControllerRejectsOverlappingCatalogAndRestoreOperations() async {
+        let loadingController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            initialStoreOperation: .loadingProducts
+        )
+        let restoreStarted = await loadingController.restorePurchases()
+
+        XCTAssertFalse(restoreStarted)
+        XCTAssertTrue(loadingController.isLoadingProducts)
+        XCTAssertFalse(loadingController.isRestoringPurchases)
+
+        let restoringController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            initialStoreOperation: .restoringPurchases
+        )
+        await restoringController.loadProducts()
+
+        XCTAssertTrue(restoringController.isRestoringPurchases)
+        XCTAssertFalse(restoringController.isLoadingProducts)
+    }
+
+    func testPendingApprovalSurvivesCatalogReloadUntilEntitlementUnlocks() {
+        let afterSuccessfulCatalogLoad = MembershipPurchaseNotice.resolvingCatalogLoad(
+            current: .pendingApproval,
+            catalogNotice: nil
+        )
+        let afterFailedCatalogLoad = MembershipPurchaseNotice.resolvingCatalogLoad(
+            current: afterSuccessfulCatalogLoad,
+            catalogNotice: .catalogUnavailable("Could not load App Store plans yet.")
+        )
+        let whileStillLocked = MembershipPurchaseNotice.resolvingEntitlementRefresh(
+            current: afterFailedCatalogLoad,
+            isUnlocked: false
+        )
+        let afterApproval = MembershipPurchaseNotice.resolvingEntitlementRefresh(
+            current: whileStillLocked,
+            isUnlocked: true
+        )
+
+        XCTAssertEqual(afterSuccessfulCatalogLoad, .pendingApproval)
+        XCTAssertEqual(afterFailedCatalogLoad, .pendingApproval)
+        XCTAssertEqual(whileStillLocked, .pendingApproval)
+        XCTAssertNil(afterApproval)
+    }
+
+    func testCatalogReloadReplacesNonpendingNoticeWithCurrentCatalogState() {
+        let unavailable = MembershipPurchaseNotice.resolvingCatalogLoad(
+            current: .failure("A previous purchase failed."),
+            catalogNotice: .catalogUnavailable("Could not load App Store plans yet.")
+        )
+        let recovered = MembershipPurchaseNotice.resolvingCatalogLoad(
+            current: unavailable,
+            catalogNotice: nil
+        )
+
+        XCTAssertEqual(
+            unavailable,
+            .catalogUnavailable("Could not load App Store plans yet.")
+        )
+        XCTAssertNil(recovered)
+    }
+
+    func testOnlyActionableNoCatalogNoticesRenderSeparately() {
+        XCTAssertFalse(MembershipPurchaseNotice.pendingApproval.shouldDisplayWithoutSelectedPlan)
+        XCTAssertFalse(
+            MembershipPurchaseNotice.catalogUnavailable("Catalog unavailable.")
+                .shouldDisplayWithoutSelectedPlan
+        )
+        XCTAssertTrue(
+            MembershipPurchaseNotice.failure("Restore failed.")
+                .shouldDisplayWithoutSelectedPlan
+        )
+        XCTAssertTrue(
+            MembershipPurchaseNotice.information("No subscription found.")
+                .shouldDisplayWithoutSelectedPlan
+        )
+    }
+
     private func localSubscriptions() throws -> [StoreKitSubscription] {
         let url = try XCTUnwrap(
             Bundle(for: StoreKitPaymentTests.self).url(forResource: "CheckpointProducts", withExtension: "storekit")
@@ -214,6 +384,18 @@ final class StoreKitPaymentTests: XCTestCase {
             currencyCode: currencyCode,
             locale: Locale(identifier: "en_US"),
             billingPeriod: billingPeriod
+        )
+    }
+
+    private func makeAnnualPlanOption() -> MembershipPlanOption {
+        MembershipPlanOption(
+            id: MembershipProductID.yearly,
+            title: "Annual",
+            displayPrice: "$29.99",
+            cadence: "per year",
+            detail: "$2.50 per month when billed annually.",
+            valueBadge: "Save 49%",
+            isRecommended: true
         )
     }
 }

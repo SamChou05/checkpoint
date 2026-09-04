@@ -1128,6 +1128,12 @@ final class CheckpointStore {
         pendingMembershipFeature = nil
     }
 
+    func reconcileMembershipEntitlement(isUnlocked: Bool) {
+        let resolvedTier: MembershipTier = isUnlocked ? .member : .starter
+        guard resolvedTier != membershipTier else { return }
+        updateMembershipTier(resolvedTier)
+    }
+
     func updateMembershipTier(_ tier: MembershipTier) {
         guard membershipTier != tier else {
             if pendingMembershipFeature != nil {

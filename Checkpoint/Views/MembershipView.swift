@@ -2,37 +2,93 @@ import Accessibility
 import StoreKit
 import SwiftUI
 
+struct MembershipViewRenderConfiguration {
+    let planOptions: [MembershipPlanOption]
+    let selectedPlanID: String?
+    let legalLinks: LegalLinks
+    let reduceMotion: Bool
+    let purchaseAction: (String?) -> Void
+    let reloadAction: () -> Void
+    let restoreAction: () -> Void
+
+    init(
+        planOptions: [MembershipPlanOption],
+        selectedPlanID: String?,
+        legalLinks: LegalLinks,
+        reduceMotion: Bool = false,
+        purchaseAction: @escaping (String?) -> Void = { _ in },
+        reloadAction: @escaping () -> Void = {},
+        restoreAction: @escaping () -> Void = {}
+    ) {
+        self.planOptions = planOptions
+        self.selectedPlanID = selectedPlanID
+        self.legalLinks = legalLinks
+        self.reduceMotion = reduceMotion
+        self.purchaseAction = purchaseAction
+        self.reloadAction = reloadAction
+        self.restoreAction = restoreAction
+    }
+}
+
 struct MembershipView: View {
     let feature: MembershipFeature
     let store: CheckpointStore
     let purchaseController: PurchaseController
 
-    private let legalLinks = LegalLinks.current
+    private let legalLinks: LegalLinks
+    private let planOptionsOverride: [MembershipPlanOption]?
+    private let performsStoreKitLoading: Bool
+    private let reduceMotionOverride: Bool?
+    private let renderPurchaseAction: ((String?) -> Void)?
+    private let renderReloadAction: (() -> Void)?
+    private let renderRestoreAction: (() -> Void)?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var purchasingProductID: String?
     @State private var selectedProductID: String?
+    @State private var selectionFeedbackSequence = 0
+
+    init(
+        feature: MembershipFeature,
+        store: CheckpointStore,
+        purchaseController: PurchaseController,
+        renderConfiguration: MembershipViewRenderConfiguration? = nil
+    ) {
+        self.feature = feature
+        self.store = store
+        self.purchaseController = purchaseController
+        legalLinks = renderConfiguration?.legalLinks ?? .current
+        planOptionsOverride = renderConfiguration?.planOptions
+        performsStoreKitLoading = renderConfiguration == nil
+        reduceMotionOverride = renderConfiguration?.reduceMotion
+        renderPurchaseAction = renderConfiguration?.purchaseAction
+        renderReloadAction = renderConfiguration?.reloadAction
+        renderRestoreAction = renderConfiguration?.restoreAction
+        _selectedProductID = State(initialValue: renderConfiguration?.selectedPlanID)
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    if !store.isMember {
-                        requestedFeatureBanner
-                    }
-
                     proHero
 
                     if store.isMember {
                         memberManagement
                     } else {
                         planSelection
+
+                        if dynamicTypeSize.isAccessibilitySize {
+                            inlinePurchaseAction
+                        }
                     }
 
-                    if let message = purchaseController.purchaseMessage {
-                        purchaseMessage(message)
+                    proBenefitsPanel
+
+                    if let notice = purchaseController.purchaseNotice,
+                       store.isMember || (planOptions.isEmpty && notice.shouldDisplayWithoutSelectedPlan) {
+                        purchaseNotice(notice)
                     }
 
                     if !store.isMember {
@@ -48,7 +104,7 @@ struct MembershipView: View {
             .scrollDismissesKeyboard(.interactively)
             .checkpointScreenBackground()
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                if !store.isMember {
+                if !store.isMember, !dynamicTypeSize.isAccessibilitySize {
                     purchaseBar
                 }
             }
@@ -63,6 +119,10 @@ struct MembershipView: View {
                 }
             }
             .task {
+                guard performsStoreKitLoading else {
+                    selectDefaultPlanIfNeeded()
+                    return
+                }
                 purchaseController.startListeningForTransactions()
                 await loadEntitlements()
                 selectDefaultPlanIfNeeded()
@@ -70,116 +130,62 @@ struct MembershipView: View {
             .onChange(of: planOptions.map(\.id)) { _, _ in
                 selectDefaultPlanIfNeeded()
             }
-            .onChange(of: purchaseController.purchaseMessage) { _, message in
-                guard let message else { return }
-                AccessibilityNotification.Announcement(message).post()
+            .onChange(of: purchaseController.purchaseNotice) { _, notice in
+                guard let notice else { return }
+                AccessibilityNotification.Announcement(notice.message).post()
             }
-        }
-    }
-
-    @ViewBuilder
-    private var requestedFeatureBanner: some View {
-        Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 10) {
-                    requestedFeatureIcon
-                    requestedFeatureCopy
-                }
-            } else {
-                HStack(alignment: .top, spacing: 12) {
-                    requestedFeatureIcon
-                    requestedFeatureCopy
-                }
-            }
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    private var requestedFeatureIcon: some View {
-        Image(systemName: "sparkles")
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(CheckpointTheme.teal)
-            .frame(width: 36, height: 36)
-            .background(
-                CheckpointTheme.teal.opacity(0.10),
-                in: RoundedRectangle(cornerRadius: 11, style: .continuous)
-            )
-            .fixedSize()
-            .accessibilityHidden(true)
-    }
-
-    private var requestedFeatureCopy: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("UNLOCK \(feature.title.uppercased())")
-                .font(.caption2.weight(.bold))
-                .tracking(0.75)
-                .foregroundStyle(CheckpointTheme.teal)
-
-            Text(feature.detail)
-                .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+            .sensoryFeedback(.selection, trigger: selectionFeedbackSequence)
         }
     }
 
     private var proHero: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            proHeroHeader
+        CheckpointHeroSurface(
+            glowColor: CheckpointTheme.mint,
+            glowDiameter: 190,
+            glowBlurRadius: 14,
+            glowOffset: CGSize(width: 82, height: -96),
+            contentPadding: 20
+        ) {
+            VStack(alignment: .leading, spacing: 18) {
+                proHeroHeader
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text(store.isMember ? "Your practice stays in motion." : "Keep every goal moving.")
-                    .font(.system(.largeTitle, design: .rounded, weight: .bold))
-                    .foregroundStyle(proText)
-                    .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: 9) {
+                    if !store.isMember {
+                        Label("UNLOCK \(feature.title.uppercased())", systemImage: "sparkles")
+                            .font(.caption2.weight(.bold))
+                            .tracking(0.72)
+                            .foregroundStyle(CheckpointTheme.mint)
+                    }
 
-                Text("Fresh, adaptive checkpoints stay ready as your goals and skills evolve.")
+                    Text(store.isMember ? "Your practice stays in motion." : feature.membershipHeadline)
+                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                        .foregroundStyle(proText)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(
+                        store.isMember
+                            ? "Fresh, adaptive checkpoints stay ready as your goals and skills evolve."
+                            : feature.detail
+                    )
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(proSecondaryText)
                     .fixedSize(horizontal: false, vertical: true)
-            }
+                }
 
-            Divider()
-                .overlay(CheckpointTheme.heroDivider)
-
-            VStack(alignment: .leading, spacing: 14) {
-                ProBenefitRow(
-                    title: "Room for every priority",
-                    detail: "Keep up to five goals separate and focused."
-                )
-                ProBenefitRow(
-                    title: "Practice that stays fresh",
-                    detail: "Keep receiving goal-aligned questions as you progress."
-                )
-                ProBenefitRow(
-                    title: "Review that remembers",
-                    detail: "Bring weak spots back into future checkpoints automatically."
-                )
             }
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(CheckpointTheme.ink)
-                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                .overlay(alignment: .topTrailing) {
-                    Circle()
-                        .fill(CheckpointTheme.mint.opacity(0.09))
-                        .frame(width: 190, height: 190)
-                        .blur(radius: 14)
-                        .offset(x: 82, y: -96)
-                        .allowsHitTesting(false)
-                }
-        )
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 20, y: 10)
     }
 
     @ViewBuilder
     private var proHeroHeader: some View {
-        if dynamicTypeSize.isAccessibilitySize && store.isMember {
+        if dynamicTypeSize.isAccessibilitySize {
             VStack(alignment: .leading, spacing: 10) {
                 proEyebrow
-                activePlanBadge
+                if store.isMember {
+                    activePlanBadge
+                } else {
+                    ProMomentumMark(reduceMotion: reduceMotion)
+                }
             }
         } else {
             HStack(alignment: .center, spacing: 10) {
@@ -189,12 +195,43 @@ struct MembershipView: View {
                 if store.isMember {
                     activePlanBadge
                 } else {
-                    Image(systemName: "shield.lefthalf.filled")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(CheckpointTheme.mint)
-                        .accessibilityHidden(true)
+                    ProMomentumMark(reduceMotion: reduceMotion)
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var proBenefitGrid: some View {
+        let benefits = [
+            ProBenefit(title: "Up to five focused goals", systemImage: "square.stack.3d.up.fill"),
+            ProBenefit(title: "Fresh checkpoints", systemImage: "sparkles"),
+            ProBenefit(title: "More question variety", systemImage: "rectangle.stack.badge.plus"),
+            ProBenefit(title: "Adaptive Next Focus", systemImage: "scope")
+        ]
+
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(spacing: 10) {
+                ForEach(benefits) { benefit in
+                    ProBenefitTile(benefit: benefit)
+                }
+            }
+        } else {
+            LazyVGrid(
+                columns: [GridItem(.flexible()), GridItem(.flexible())],
+                alignment: .leading,
+                spacing: 10
+            ) {
+                ForEach(benefits) { benefit in
+                    ProBenefitTile(benefit: benefit)
+                }
+            }
+        }
+    }
+
+    private var proBenefitsPanel: some View {
+        SectionPanel("Everything in Pro") {
+            proBenefitGrid
         }
     }
 
@@ -240,11 +277,16 @@ struct MembershipView: View {
                             option: option,
                             isSelected: selectedProductID == option.id
                         ) {
-                            selectedProductID = option.id
+                            selectPlan(option.id)
                         }
                     }
                 }
                 .disabled(isPurchaseActionInProgress)
+                .opacity(isPurchaseActionInProgress ? 0.72 : 1)
+                .animation(
+                    CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                    value: isPurchaseActionInProgress
+                )
             }
 
             Text(subscriptionDisclosureText)
@@ -263,11 +305,6 @@ struct MembershipView: View {
             Text("Reconnect to the App Store and try loading prices again.")
                 .font(.footnote)
                 .foregroundStyle(CheckpointTheme.muted)
-
-            SecondaryActionButton(title: "Try again", systemImage: "arrow.clockwise") {
-                reloadProducts()
-            }
-            .disabled(isPurchaseActionInProgress)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -318,23 +355,84 @@ struct MembershipView: View {
     }
 
     private var purchaseBar: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 10) {
             Divider()
                 .overlay(CheckpointTheme.hairline)
 
-            PrimaryActionButton(
-                title: purchaseButtonTitle,
-                systemImage: purchaseButtonSystemImage,
-                isLoading: purchasingProductID != nil
-            ) {
-                handlePurchaseButton()
+            if let notice = purchaseController.purchaseNotice,
+               checkoutPresentation.shouldShowNoticeInPurchaseBar {
+                purchaseNotice(notice)
+                    .padding(.horizontal, 20)
             }
-            .disabled(purchaseController.isLoadingProducts || isPurchaseActionInProgress)
+
+            if let selectedOption, !dynamicTypeSize.isAccessibilitySize {
+                selectedPlanSummary(selectedOption)
+                    .padding(.horizontal, 20)
+                    .accessibilityHidden(true)
+            }
+
+            purchaseActionButton
             .padding(.horizontal, 20)
-            .padding(.top, 12)
+            .padding(.top, selectedOption == nil ? 2 : 0)
             .padding(.bottom, 10)
         }
-        .background(.ultraThinMaterial)
+        .background(CheckpointTheme.panel)
+        .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: -4)
+    }
+
+    private var inlinePurchaseAction: some View {
+        VStack(spacing: 10) {
+            if let notice = purchaseController.purchaseNotice,
+               checkoutPresentation.shouldShowNoticeInPurchaseBar {
+                purchaseNotice(notice)
+            }
+
+            purchaseActionButton
+        }
+    }
+
+    private var purchaseActionButton: some View {
+        PrimaryActionButton(
+            title: purchaseButtonTitle,
+            systemImage: purchaseButtonSystemImage,
+            isLoading: checkoutPresentation.showsPrimaryProgress
+        ) {
+            handlePurchaseButton()
+        }
+        .accessibilityLabel(checkoutPresentation.buttonAccessibilityLabel)
+        .disabled(checkoutPresentation.isPrimaryActionDisabled)
+    }
+
+    private func selectedPlanSummary(_ option: MembershipPlanOption) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            selectedPlanIdentity(option)
+            Spacer(minLength: 8)
+            selectedPlanPrice(option)
+        }
+    }
+
+    private func selectedPlanIdentity(_ option: MembershipPlanOption) -> some View {
+        HStack(spacing: 7) {
+            Text("\(option.title) plan")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+
+            if let valueBadge = option.valueBadge {
+                Text(valueBadge.uppercased())
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 4)
+                    .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+            }
+        }
+    }
+
+    private func selectedPlanPrice(_ option: MembershipPlanOption) -> some View {
+        Text("\(option.displayPrice) \(option.cadence)")
+            .font(.footnote.weight(.medium))
+            .foregroundStyle(CheckpointTheme.muted)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     private var restoreButton: some View {
@@ -349,7 +447,7 @@ struct MembershipView: View {
                     Image(systemName: "arrow.clockwise")
                 }
 
-                Text(purchaseController.isRestoringPurchases ? "Restoring purchases" : "Restore purchases")
+                Text(checkoutPresentation.restoreButtonTitle)
             }
             .font(.footnote.weight(.semibold))
             .foregroundStyle(CheckpointTheme.teal)
@@ -357,19 +455,31 @@ struct MembershipView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .disabled(isPurchaseActionInProgress)
+        .disabled(checkoutPresentation.isRestoreActionDisabled)
     }
 
-    private func purchaseMessage(_ message: String) -> some View {
-        let isPending = message == "Purchase is pending approval."
-        let tint = isPending ? CheckpointTheme.amber : CheckpointTheme.coral
+    private func purchaseNotice(_ notice: MembershipPurchaseNotice) -> some View {
+        let tint: Color
+        let systemImage: String
+
+        switch notice.tone {
+        case .pending:
+            tint = CheckpointTheme.amber
+            systemImage = "clock.fill"
+        case .failure:
+            tint = CheckpointTheme.coral
+            systemImage = "exclamationmark.circle.fill"
+        case .information:
+            tint = CheckpointTheme.blue
+            systemImage = "info.circle.fill"
+        }
 
         return HStack(alignment: .top, spacing: 9) {
-            Image(systemName: isPending ? "clock.fill" : "exclamationmark.circle.fill")
+            Image(systemName: systemImage)
                 .foregroundStyle(tint)
                 .accessibilityHidden(true)
 
-            Text(message)
+            Text(notice.message)
                 .font(.footnote)
                 .foregroundStyle(tint)
                 .fixedSize(horizontal: false, vertical: true)
@@ -381,7 +491,7 @@ struct MembershipView: View {
     }
 
     private var planOptions: [MembershipPlanOption] {
-        catalogPresentation.planOptions
+        planOptionsOverride ?? catalogPresentation.planOptions
     }
 
     private var catalogPresentation: MembershipCatalogPresentation {
@@ -397,20 +507,11 @@ struct MembershipView: View {
     }
 
     private var purchaseButtonTitle: String {
-        if purchaseController.isLoadingProducts && planOptions.isEmpty {
-            return "Loading plans"
-        }
-        guard let selectedOption else {
-            return "Reload App Store plans"
-        }
-        if dynamicTypeSize.isAccessibilitySize {
-            return "Subscribe — \(selectedOption.displayPrice)"
-        }
-        return "Subscribe — \(selectedOption.displayPrice) \(selectedOption.cadence)"
+        checkoutPresentation.buttonTitle(accessibilitySize: dynamicTypeSize.isAccessibilitySize)
     }
 
     private var purchaseButtonSystemImage: String {
-        selectedOption == nil ? "arrow.clockwise" : "sparkles"
+        checkoutPresentation.buttonSystemImage
     }
 
     private var subscriptionDisclosureText: String {
@@ -418,7 +519,17 @@ struct MembershipView: View {
     }
 
     private var isPurchaseActionInProgress: Bool {
-        purchaseController.isRestoringPurchases || purchasingProductID != nil
+        checkoutPresentation.isActionInProgress
+    }
+
+    private var checkoutPresentation: MembershipCheckoutPresentation {
+        MembershipCheckoutPresentation(
+            selectedPlan: selectedOption,
+            isLoadingPlans: purchaseController.isLoadingProducts,
+            isRestoringPurchases: purchaseController.isRestoringPurchases,
+            isPurchasing: purchaseController.purchasingProductID != nil,
+            notice: purchaseController.purchaseNotice
+        )
     }
 
     private var paywallLegalLinks: some View {
@@ -457,19 +568,38 @@ struct MembershipView: View {
         }
         guard !planOptions.contains(where: { $0.id == selectedProductID }) else { return }
 
-        let defaultOptionID = catalogPresentation.resolvedSelection(currentID: selectedProductID)
+        let defaultOptionID: String?
+        if planOptionsOverride != nil {
+            defaultOptionID = planOptions.first(where: \.isRecommended)?.id ?? planOptions.first?.id
+        } else {
+            defaultOptionID = catalogPresentation.resolvedSelection(currentID: selectedProductID)
+        }
         withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
             selectedProductID = defaultOptionID
         }
     }
 
+    private func selectPlan(_ productID: String) {
+        guard selectedProductID != productID else { return }
+
+        withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
+            selectedProductID = productID
+        }
+        selectionFeedbackSequence += 1
+    }
+
     private func loadEntitlements() async {
         await purchaseController.loadProducts()
         let unlocked = await purchaseController.refreshEntitlements()
-        store.updateMembershipTier(unlocked ? .member : .starter)
+        store.reconcileMembershipEntitlement(isUnlocked: unlocked)
     }
 
     private func handlePurchaseButton() {
+        if let renderPurchaseAction {
+            renderPurchaseAction(selectedProductID)
+            return
+        }
+
         guard let selectedProduct else {
             reloadProducts()
             return
@@ -478,6 +608,11 @@ struct MembershipView: View {
     }
 
     private func reloadProducts() {
+        if let renderReloadAction {
+            renderReloadAction()
+            return
+        }
+
         Task {
             await purchaseController.loadProducts()
             selectDefaultPlanIfNeeded()
@@ -485,11 +620,8 @@ struct MembershipView: View {
     }
 
     private func purchase(_ product: Product) {
-        purchasingProductID = product.id
-
         Task {
             let unlocked = await purchaseController.purchase(product)
-            purchasingProductID = nil
 
             if unlocked {
                 store.updateMembershipTier(.member)
@@ -499,6 +631,11 @@ struct MembershipView: View {
     }
 
     private func restorePurchases() {
+        if let renderRestoreAction {
+            renderRestoreAction()
+            return
+        }
+
         Task {
             let unlocked = await purchaseController.restorePurchases()
             if unlocked {
@@ -521,6 +658,7 @@ struct MembershipView: View {
 
     private var proText: Color { CheckpointTheme.heroText }
     private var proSecondaryText: Color { CheckpointTheme.heroMuted }
+    private var reduceMotion: Bool { reduceMotionOverride ?? systemReduceMotion }
 }
 
 private struct MembershipPlanRow: View {
@@ -582,9 +720,7 @@ private struct MembershipPlanRow: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 10) {
                 selectionIcon
-                Text(option.title)
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
+                optionTitle
             }
 
             VStack(alignment: .leading, spacing: 2) {
@@ -595,6 +731,8 @@ private struct MembershipPlanRow: View {
                 Text(option.cadence)
                     .font(.caption)
                     .foregroundStyle(CheckpointTheme.muted)
+
+                optionSavings
             }
             .padding(.leading, 32)
 
@@ -617,9 +755,7 @@ private struct MembershipPlanRow: View {
 
     private var optionDescription: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(option.title)
-                .font(.headline)
-                .foregroundStyle(CheckpointTheme.text)
+            optionTitle
 
             Text(option.detail)
                 .font(.footnote)
@@ -637,35 +773,119 @@ private struct MembershipPlanRow: View {
             Text(option.cadence)
                 .font(.caption)
                 .foregroundStyle(CheckpointTheme.muted)
+
+            optionSavings
+        }
+    }
+
+    private var optionTitle: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 6) {
+                    optionTitleText
+                    recommendedBadge
+                }
+            } else {
+                HStack(spacing: 7) {
+                    optionTitleText
+                    recommendedBadge
+                }
+            }
+        }
+    }
+
+    private var optionTitleText: some View {
+        Text(option.title)
+            .font(.headline)
+            .foregroundStyle(CheckpointTheme.text)
+    }
+
+    @ViewBuilder
+    private var recommendedBadge: some View {
+        if option.isRecommended {
+            Text("BEST VALUE")
+                .font(.caption2.weight(.bold))
+                .tracking(0.45)
+                .foregroundStyle(CheckpointTheme.selectionText)
+                .padding(.horizontal, 7)
+                .padding(.vertical, 4)
+                .background(CheckpointTheme.actionTeal, in: Capsule())
+        }
+    }
+
+    @ViewBuilder
+    private var optionSavings: some View {
+        if let valueBadge = option.valueBadge {
+            Text(valueBadge.uppercased())
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .padding(.top, 2)
         }
     }
 }
 
-private struct ProBenefitRow: View {
+private struct ProBenefit: Identifiable {
     let title: String
-    let detail: String
+    let systemImage: String
+
+    var id: String { title }
+}
+
+private struct ProBenefitTile: View {
+    let benefit: ProBenefit
 
     var body: some View {
-        HStack(alignment: .top, spacing: 11) {
-            Image(systemName: "checkmark")
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(CheckpointTheme.ink)
-                .frame(width: 24, height: 24)
-                .background(CheckpointTheme.mint, in: Circle())
+        HStack(alignment: .center, spacing: 9) {
+            Image(systemName: benefit.systemImage)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 27, height: 27)
+                .background(
+                    CheckpointTheme.teal.opacity(0.10),
+                    in: RoundedRectangle(cornerRadius: 8)
+                )
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.heroText)
-
-                Text(detail)
-                    .font(.footnote)
-                    .foregroundStyle(CheckpointTheme.heroMuted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text(benefit.title)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(10)
+        .frame(maxWidth: .infinity, minHeight: 50, alignment: .leading)
+        .background(
+            CheckpointTheme.panelRaised.opacity(0.72),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
         .accessibilityElement(children: .combine)
+    }
+}
+
+private struct ProMomentumMark: View {
+    let reduceMotion: Bool
+    @State private var revealSequence = 0
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(CheckpointTheme.mint.opacity(0.28), lineWidth: 1)
+                .frame(width: 40, height: 40)
+
+            Circle()
+                .fill(CheckpointTheme.heroSubtleFill)
+                .frame(width: 32, height: 32)
+
+            Image(systemName: "sparkles")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(CheckpointTheme.mint)
+                .symbolEffect(.bounce, options: .nonRepeating, value: revealSequence)
+                .symbolEffectsRemoved(reduceMotion)
+        }
+        .accessibilityHidden(true)
+        .onAppear {
+            guard !reduceMotion else { return }
+            revealSequence += 1
+        }
     }
 }
 

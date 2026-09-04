@@ -1,31 +1,51 @@
 import Observation
 import StoreKit
 
+enum MembershipStoreOperation: Equatable, Sendable {
+    case loadingProducts
+    case purchasing(productID: String)
+    case restoringPurchases
+}
+
 @MainActor
 @Observable
 final class PurchaseController {
     var products: [Product] = []
     var purchasedProductIDs: Set<String> = []
-    var isLoadingProducts = false
-    var isRestoringPurchases = false
-    var purchaseMessage: String?
+    var purchaseNotice: MembershipPurchaseNotice?
+    private(set) var storeOperation: MembershipStoreOperation?
 
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
     @ObservationIgnored var onMembershipEntitlementChange: ((Bool) -> Void)?
     @ObservationIgnored private let grantsDebugTesterEntitlement: Bool
 
     init(
-        grantsDebugTesterEntitlement: Bool = DebugMembershipEntitlement.isEnabled()
+        grantsDebugTesterEntitlement: Bool = DebugMembershipEntitlement.isEnabled(),
+        initialStoreOperation: MembershipStoreOperation? = nil
     ) {
         #if DEBUG
         self.grantsDebugTesterEntitlement = grantsDebugTesterEntitlement
         #else
         self.grantsDebugTesterEntitlement = false
         #endif
+        storeOperation = initialStoreOperation
     }
 
     var isMembershipUnlocked: Bool {
         grantsDebugTesterEntitlement || purchasedProductIDs.contains(where: Self.isMembershipProduct)
+    }
+
+    var isLoadingProducts: Bool {
+        storeOperation == .loadingProducts
+    }
+
+    var isRestoringPurchases: Bool {
+        storeOperation == .restoringPurchases
+    }
+
+    var purchasingProductID: String? {
+        guard case .purchasing(let productID) = storeOperation else { return nil }
+        return productID
     }
 
     func startListeningForTransactions() {
@@ -39,17 +59,27 @@ final class PurchaseController {
     }
 
     func loadProducts() async {
-        isLoadingProducts = true
-        defer { isLoadingProducts = false }
+        let operation = MembershipStoreOperation.loadingProducts
+        guard begin(operation) else { return }
+        defer { finish(operation) }
 
         do {
             let loadedProducts = try await Product.products(for: MembershipProductID.all)
             products = MembershipProductID.all.compactMap { productID in
                 loadedProducts.first { $0.id == productID }
             }
-            purchaseMessage = products.isEmpty ? Self.productsUnavailableMessage : nil
+            let catalogNotice: MembershipPurchaseNotice? = products.isEmpty
+                ? .catalogUnavailable(Self.productsUnavailableMessage)
+                : nil
+            purchaseNotice = .resolvingCatalogLoad(
+                current: purchaseNotice,
+                catalogNotice: catalogNotice
+            )
         } catch {
-            purchaseMessage = "Could not load App Store plans yet."
+            purchaseNotice = .resolvingCatalogLoad(
+                current: purchaseNotice,
+                catalogNotice: .catalogUnavailable("Could not load App Store plans yet.")
+            )
         }
     }
 
@@ -57,16 +87,19 @@ final class PurchaseController {
     func refreshEntitlements() async -> Bool {
         if grantsDebugTesterEntitlement {
             purchasedProductIDs = [MembershipProductID.monthly]
+            reconcilePurchaseNoticeWithEntitlement()
             publishMembershipEntitlement()
             return true
         }
 
         var activeProductIDs: Set<String> = []
 
+        // StoreKit includes subscribed and billing-grace-period transactions here,
+        // while excluding revoked or refunded products. Treat that sequence as the
+        // entitlement authority instead of reinterpreting its expiration dates.
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result,
-                  Self.isMembershipProduct(transaction.productID),
-                  Self.isActive(transaction) else {
+                  Self.isMembershipProduct(transaction.productID) else {
                 continue
             }
 
@@ -74,52 +107,65 @@ final class PurchaseController {
         }
 
         purchasedProductIDs = activeProductIDs
+        reconcilePurchaseNoticeWithEntitlement()
         publishMembershipEntitlement()
         return isMembershipUnlocked
     }
 
     @discardableResult
     func purchase(_ product: Product) async -> Bool {
+        let operation = MembershipStoreOperation.purchasing(productID: product.id)
+        guard begin(operation) else { return false }
+        defer { finish(operation) }
+
+        purchaseNotice = nil
+
         do {
             let result = try await product.purchase()
 
             switch result {
             case .success(let verification):
                 guard case .verified(let transaction) = verification else {
-                    purchaseMessage = "The App Store could not verify this purchase."
+                    purchaseNotice = .failure("The App Store could not verify this purchase.")
                     return false
                 }
 
                 await transaction.finish()
-                purchaseMessage = nil
+                purchaseNotice = nil
                 return await refreshEntitlements()
             case .pending:
-                purchaseMessage = "Purchase is pending approval."
+                purchaseNotice = .pendingApproval
                 return false
             case .userCancelled:
-                purchaseMessage = nil
+                purchaseNotice = nil
                 return false
             @unknown default:
-                purchaseMessage = "The App Store returned an unknown purchase state."
+                purchaseNotice = .failure("The App Store returned an unknown purchase state.")
                 return false
             }
         } catch {
-            purchaseMessage = "Purchase failed. Try again from the App Store sheet."
+            purchaseNotice = .failure("Purchase failed. Try again from the App Store sheet.")
             return false
         }
     }
 
     @discardableResult
     func restorePurchases() async -> Bool {
-        isRestoringPurchases = true
-        defer { isRestoringPurchases = false }
+        let operation = MembershipStoreOperation.restoringPurchases
+        guard begin(operation) else { return false }
+        defer { finish(operation) }
+
+        purchaseNotice = nil
 
         do {
             try await AppStore.sync()
-            purchaseMessage = nil
-            return await refreshEntitlements()
+            let unlocked = await refreshEntitlements()
+            if !unlocked {
+                purchaseNotice = .information("No active Checkpoint Pro subscription was found.")
+            }
+            return unlocked
         } catch {
-            purchaseMessage = "Could not restore purchases yet."
+            purchaseNotice = .failure("Could not restore purchases yet.")
             return false
         }
     }
@@ -138,18 +184,26 @@ final class PurchaseController {
         MembershipProductID.all.contains(productID)
     }
 
-    private static func isActive(_ transaction: Transaction) -> Bool {
-        guard transaction.revocationDate == nil else { return false }
-
-        if let expirationDate = transaction.expirationDate {
-            return expirationDate > Date()
-        }
-
+    private func begin(_ operation: MembershipStoreOperation) -> Bool {
+        guard storeOperation == nil else { return false }
+        storeOperation = operation
         return true
+    }
+
+    private func finish(_ operation: MembershipStoreOperation) {
+        guard storeOperation == operation else { return }
+        storeOperation = nil
     }
 
     private func publishMembershipEntitlement() {
         onMembershipEntitlementChange?(isMembershipUnlocked)
+    }
+
+    private func reconcilePurchaseNoticeWithEntitlement() {
+        purchaseNotice = .resolvingEntitlementRefresh(
+            current: purchaseNotice,
+            isUnlocked: isMembershipUnlocked
+        )
     }
 
     private static var productsUnavailableMessage: String {

@@ -47,6 +47,19 @@ enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
             return "Use your answer history and review schedule to surface one clear priority for every checkpoint."
         }
     }
+
+    var membershipHeadline: String {
+        switch self {
+        case .goalProfiles:
+            return "Give every goal its own lane."
+        case .freshQuestionGeneration:
+            return "Keep checkpoints ready."
+        case .largerQuestionBank:
+            return "Keep practice from feeling repetitive."
+        case .adaptiveStudyAssist:
+            return "Know what to practice next."
+        }
+    }
 }
 
 enum MembershipProductID {

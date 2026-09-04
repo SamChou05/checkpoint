@@ -130,6 +130,149 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
     }
 }
 
+enum MembershipPurchaseNotice: Equatable, Sendable {
+    case pendingApproval
+    case catalogUnavailable(String)
+    case failure(String)
+    case information(String)
+
+    var message: String {
+        switch self {
+        case .pendingApproval:
+            "Purchase is pending approval."
+        case .catalogUnavailable(let message),
+             .failure(let message),
+             .information(let message):
+            message
+        }
+    }
+
+    var tone: MembershipPurchaseNoticeTone {
+        switch self {
+        case .pendingApproval:
+            .pending
+        case .catalogUnavailable, .failure:
+            .failure
+        case .information:
+            .information
+        }
+    }
+
+    var isPending: Bool {
+        if case .pendingApproval = self {
+            return true
+        }
+        return false
+    }
+
+    var shouldDisplayWithoutSelectedPlan: Bool {
+        switch self {
+        case .failure, .information:
+            true
+        case .pendingApproval, .catalogUnavailable:
+            false
+        }
+    }
+
+    static func resolvingCatalogLoad(
+        current: MembershipPurchaseNotice?,
+        catalogNotice: MembershipPurchaseNotice?
+    ) -> MembershipPurchaseNotice? {
+        current?.isPending == true ? current : catalogNotice
+    }
+
+    static func resolvingEntitlementRefresh(
+        current: MembershipPurchaseNotice?,
+        isUnlocked: Bool
+    ) -> MembershipPurchaseNotice? {
+        isUnlocked ? nil : current
+    }
+}
+
+enum MembershipPurchaseNoticeTone: Equatable, Sendable {
+    case pending
+    case failure
+    case information
+}
+
+struct MembershipCheckoutPresentation: Equatable, Sendable {
+    let selectedPlan: MembershipPlanOption?
+    let isLoadingPlans: Bool
+    let isRestoringPurchases: Bool
+    let isPurchasing: Bool
+    let notice: MembershipPurchaseNotice?
+
+    var isActionInProgress: Bool {
+        isLoadingPlans || isRestoringPurchases || isPurchasing || notice?.isPending == true
+    }
+
+    var isPrimaryActionDisabled: Bool {
+        isActionInProgress
+    }
+
+    var showsPrimaryProgress: Bool {
+        isLoadingPlans || isPurchasing
+    }
+
+    var isRestoreActionDisabled: Bool {
+        isLoadingPlans || isRestoringPurchases || isPurchasing
+    }
+
+    var shouldShowNoticeInPurchaseBar: Bool {
+        selectedPlan != nil && notice != nil
+    }
+
+    func buttonTitle(accessibilitySize: Bool) -> String {
+        if notice?.isPending == true {
+            return "Awaiting approval"
+        }
+        if isLoadingPlans {
+            return selectedPlan == nil ? "Loading plans" : "Refreshing prices"
+        }
+        guard let selectedPlan else {
+            return "Reload App Store plans"
+        }
+        if accessibilitySize {
+            return "Subscribe — \(selectedPlan.displayPrice)"
+        }
+        return "Subscribe — \(selectedPlan.displayPrice) \(selectedPlan.cadence)"
+    }
+
+    var buttonAccessibilityLabel: String {
+        if notice?.isPending == true {
+            return "Purchase pending App Store approval"
+        }
+        if isLoadingPlans {
+            return selectedPlan == nil
+                ? "Loading App Store plans, in progress"
+                : "Refreshing App Store prices, in progress"
+        }
+        guard let selectedPlan else {
+            return "Reload App Store plans"
+        }
+
+        let label = "Subscribe to Checkpoint Pro, \(selectedPlan.title) plan, \(selectedPlan.displayPrice) \(selectedPlan.cadence)"
+        return isPurchasing ? "\(label), in progress" : label
+    }
+
+    var buttonSystemImage: String {
+        if notice?.isPending == true {
+            return "clock.fill"
+        }
+        return selectedPlan == nil ? "arrow.clockwise" : "sparkles"
+    }
+
+    var restoreButtonTitle: String {
+        if isRestoringPurchases {
+            return "Restoring purchases"
+        }
+        if notice?.isPending == true {
+            return "Check purchase status"
+        }
+        return "Restore purchases"
+    }
+}
+
 struct MembershipCatalogPresentation: Equatable, Sendable {
     let planOptions: [MembershipPlanOption]
     let defaultPlanID: String?
@@ -212,7 +355,7 @@ private struct MembershipAnnualValue {
         let rawSavingsPercentage = NSDecimalNumber(
             decimal: ((twelveMonthlyPayments - annualProduct.price) / twelveMonthlyPayments) * 100
         ).doubleValue
-        let savingsPercentage = Int(rawSavingsPercentage.rounded())
+        let savingsPercentage = Int(rawSavingsPercentage.rounded(.down))
         guard savingsPercentage > 0 else { return nil }
 
         monthlyEquivalentDisplayPrice = annualProduct.priceFormatStyle.format(
