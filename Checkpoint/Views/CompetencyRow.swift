@@ -93,10 +93,35 @@ struct CompetencyRecencyLabel {
 
 struct CompetencyRow: View {
     var competency: TopicCompetency
+    private let expandedCompetencyID: Binding<TopicCompetency.ID?>?
+    let isHighlighted: Bool
+    let accessibilityFocusRequestID: UUID?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var isExpanded = false
+    @AccessibilityFocusState(for: [.voiceOver, .switchControl])
+    private var isAccessibilityFocused: Bool
+    @State private var isLocallyExpanded = false
+    @State private var expansionFeedbackSequence = 0
+
+    init(
+        competency: TopicCompetency,
+        expandedCompetencyID: Binding<TopicCompetency.ID?>? = nil,
+        isHighlighted: Bool = false,
+        accessibilityFocusRequestID: UUID? = nil
+    ) {
+        self.competency = competency
+        self.expandedCompetencyID = expandedCompetencyID
+        self.isHighlighted = isHighlighted
+        self.accessibilityFocusRequestID = accessibilityFocusRequestID
+    }
+
+    private var isExpanded: Bool {
+        if let expandedCompetencyID {
+            return expandedCompetencyID.wrappedValue == competency.id
+        }
+        return isLocallyExpanded
+    }
 
     private var usesStackedTypeLayout: Bool {
         dynamicTypeSize == .xLarge ||
@@ -113,8 +138,9 @@ struct CompetencyRow: View {
         VStack(alignment: .leading, spacing: 0) {
             Button {
                 withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
-                    isExpanded.toggle()
+                    toggleExpansion()
                 }
+                expansionFeedbackSequence += 1
             } label: {
                 VStack(alignment: .leading, spacing: 12) {
                     if usesStackedTypeLayout {
@@ -136,6 +162,7 @@ struct CompetencyRow: View {
             .accessibilityLabel(competency.topic)
             .accessibilityValue(accessibilityValue)
             .accessibilityHint(isExpanded ? "Hides the answer breakdown." : "Shows the answer breakdown.")
+            .accessibilityFocused($isAccessibilityFocused)
 
             if isExpanded {
                 Divider()
@@ -150,7 +177,48 @@ struct CompetencyRow: View {
                     )
             }
         }
-        .sensoryFeedback(.selection, trigger: isExpanded)
+        .background(
+            CheckpointTheme.blue.opacity(isHighlighted ? 0.08 : 0),
+            in: RoundedRectangle(
+                cornerRadius: CheckpointTheme.compactCornerRadius,
+                style: .continuous
+            )
+        )
+        .overlay {
+            RoundedRectangle(
+                cornerRadius: CheckpointTheme.compactCornerRadius,
+                style: .continuous
+            )
+            .stroke(
+                CheckpointTheme.blue.opacity(isHighlighted ? 0.72 : 0),
+                lineWidth: 1.5
+            )
+        }
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: isHighlighted
+        )
+        .sensoryFeedback(.selection, trigger: expansionFeedbackSequence)
+        .task(id: accessibilityFocusRequestID) {
+            guard accessibilityFocusRequestID != nil else {
+                isAccessibilityFocused = false
+                return
+            }
+            await Task.yield()
+            guard !Task.isCancelled,
+                  accessibilityFocusRequestID != nil else {
+                return
+            }
+            isAccessibilityFocused = true
+        }
+    }
+
+    private func toggleExpansion() {
+        if let expandedCompetencyID {
+            expandedCompetencyID.wrappedValue = isExpanded ? nil : competency.id
+        } else {
+            isLocallyExpanded.toggle()
+        }
     }
 
     private var standardHeader: some View {

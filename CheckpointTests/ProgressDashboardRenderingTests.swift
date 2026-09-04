@@ -71,6 +71,168 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testSkillEvidenceTargetIsCreatedOnlyForRecommendations() throws {
+        let goalID = Goal.ID()
+        let skillID = SkillMapTopic.ID()
+        let recommendationState = try makeRecommendationState(
+            goalID: goalID,
+            skillID: skillID,
+            skillName: "Reliability and failure recovery"
+        )
+
+        let target = try XCTUnwrap(
+            ProgressSkillEvidenceRoutingPolicy.target(
+                for: recommendationState,
+                goalID: goalID
+            )
+        )
+
+        XCTAssertEqual(target.goalID, goalID)
+        XCTAssertEqual(target.skillID, skillID)
+        XCTAssertEqual(target.skillName, "Reliability and failure recovery")
+        XCTAssertNil(
+            ProgressSkillEvidenceRoutingPolicy.target(
+                for: .awaitingQuestion,
+                goalID: goalID
+            )
+        )
+        XCTAssertNil(
+            ProgressSkillEvidenceRoutingPolicy.target(
+                for: .caughtUp,
+                goalID: goalID
+            )
+        )
+    }
+
+    @MainActor
+    func testSkillEvidenceRoutingPrefersIDThenFallsBackToCanonicalName() {
+        let goalID = Goal.ID()
+        let exactSkillID = SkillMapTopic.ID()
+        let canonicalNameSkillID = SkillMapTopic.ID()
+        let exactMatch = TopicCompetency.initial(
+            topic: "A different display name",
+            goalID: goalID,
+            skillID: exactSkillID
+        )
+        let canonicalNameMatch = TopicCompetency.initial(
+            topic: "Evidence evaluation",
+            goalID: goalID,
+            skillID: canonicalNameSkillID
+        )
+        let foreignExactMatch = TopicCompetency.initial(
+            topic: "Foreign goal evidence",
+            goalID: Goal.ID(),
+            skillID: exactSkillID
+        )
+        let competencies = [foreignExactMatch, exactMatch, canonicalNameMatch]
+
+        XCTAssertEqual(
+            ProgressSkillEvidenceRoutingPolicy.competencyID(
+                for: ProgressSkillEvidenceTarget(
+                    goalID: goalID,
+                    skillID: exactSkillID,
+                    skillName: canonicalNameMatch.topic
+                ),
+                in: competencies
+            ),
+            exactMatch.id,
+            "A stable skill ID must win even when the fallback name matches another row."
+        )
+        XCTAssertEqual(
+            ProgressSkillEvidenceRoutingPolicy.competencyID(
+                for: ProgressSkillEvidenceTarget(
+                    goalID: goalID,
+                    skillID: SkillMapTopic.ID(),
+                    skillName: "  EVIDENCE\n EVALUATION: "
+                ),
+                in: competencies
+            ),
+            canonicalNameMatch.id,
+            "A missing ID should fall back through the same canonical topic key used by reconciliation."
+        )
+        XCTAssertNil(
+            ProgressSkillEvidenceRoutingPolicy.competencyID(
+                for: ProgressSkillEvidenceTarget(
+                    goalID: goalID,
+                    skillID: nil,
+                    skillName: "Unrepresented skill"
+                ),
+                in: competencies
+            )
+        )
+        XCTAssertNil(
+            ProgressSkillEvidenceRoutingPolicy.competencyID(
+                for: ProgressSkillEvidenceTarget(
+                    goalID: goalID,
+                    skillID: nil,
+                    skillName: "   "
+                ),
+                in: competencies
+            )
+        )
+    }
+
+    @MainActor
+    func testSkillEvidenceRoutingDiscardsRequestsForAnotherGoal() {
+        let requestedGoalID = Goal.ID()
+        let target = ProgressSkillEvidenceTarget(
+            goalID: requestedGoalID,
+            skillID: SkillMapTopic.ID(),
+            skillName: "Reliability and failure recovery"
+        )
+
+        XCTAssertFalse(
+            ProgressSkillEvidenceRoutingPolicy.shouldDiscard(
+                target: target,
+                currentGoalID: requestedGoalID
+            )
+        )
+        XCTAssertTrue(
+            ProgressSkillEvidenceRoutingPolicy.shouldDiscard(
+                target: target,
+                currentGoalID: Goal.ID()
+            )
+        )
+        XCTAssertTrue(
+            ProgressSkillEvidenceRoutingPolicy.shouldDiscard(
+                target: target,
+                currentGoalID: nil
+            )
+        )
+    }
+
+    @MainActor
+    func testSkillEvidenceInteractionPolicyHonorsMotionAndAssistiveNavigation() {
+        let standard = ProgressSkillEvidenceInteractionPolicy(
+            reduceMotion: false,
+            assistiveNavigationEnabled: false
+        )
+        XCTAssertTrue(standard.animatesScroll)
+        XCTAssertTrue(standard.highlightsTarget)
+
+        let reduced = ProgressSkillEvidenceInteractionPolicy(
+            reduceMotion: true,
+            assistiveNavigationEnabled: false
+        )
+        XCTAssertFalse(reduced.animatesScroll)
+        XCTAssertFalse(reduced.highlightsTarget)
+
+        let assistive = ProgressSkillEvidenceInteractionPolicy(
+            reduceMotion: false,
+            assistiveNavigationEnabled: true
+        )
+        XCTAssertFalse(assistive.animatesScroll)
+        XCTAssertFalse(assistive.highlightsTarget)
+
+        let reducedAssistive = ProgressSkillEvidenceInteractionPolicy(
+            reduceMotion: true,
+            assistiveNavigationEnabled: true
+        )
+        XCTAssertFalse(reducedAssistive.animatesScroll)
+        XCTAssertFalse(reducedAssistive.highlightsTarget)
+    }
+
+    @MainActor
     func testWeeklyImpactPresentationSummarizesActivityAndExcludesFutureDays() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.firstWeekday = 2
@@ -494,6 +656,119 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testNextFocusEvidenceHandoffRendersAcrossKeyLayouts() throws {
+        let suiteName = "ProgressDashboardRenderingTests.NextFocusEvidence.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+        let recommendationState = try XCTUnwrap(store.studyFocusState)
+        let target = try XCTUnwrap(
+            ProgressSkillEvidenceRoutingPolicy.target(
+                for: recommendationState,
+                goalID: try XCTUnwrap(store.goal?.id)
+            )
+        )
+        let request = ProgressSkillEvidenceRequest(target: target)
+
+        let fixtures = [
+            ProgressDashboardRenderFixture(
+                name: "next-focus-cards-compact-dark",
+                width: 320,
+                height: 1_050,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    ProgressNextFocusCardsAuditView(
+                        recommendationState: recommendationState,
+                        style: .compact
+                    )
+                )
+            ),
+            ProgressDashboardRenderFixture(
+                name: "next-focus-cards-panel-accessibility5",
+                width: 393,
+                height: 2_500,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    ProgressNextFocusCardsAuditView(
+                        recommendationState: recommendationState,
+                        style: .panel
+                    )
+                )
+            ),
+            ProgressDashboardRenderFixture(
+                name: "progress-next-focus-request-expanded-accessibility5-reduced",
+                width: 393,
+                height: 2_500,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    CompetencyView(
+                        store: store,
+                        reduceMotionOverride: true,
+                        referenceDateOverride: referenceDate,
+                        skillEvidenceRequest: Binding.constant(Optional(request))
+                    )
+                )
+            )
+        ]
+
+        for fixture in fixtures {
+            let image = HostedViewRenderer.image(
+                for: fixture.content
+                    .environment(\.colorScheme, fixture.colorScheme)
+                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.15
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    private func makeRecommendationState(
+        goalID: Goal.ID,
+        skillID: SkillMapTopic.ID?,
+        skillName: String
+    ) throws -> StudyFocusState {
+        let question = CheckpointQuestion(
+            goalID: goalID,
+            prompt: "Explain a recovery decision.",
+            expectedAnswer: "Name the tradeoff and the recovery path.",
+            explanation: "Use the latest failure signal as evidence.",
+            topic: skillName,
+            skillID: skillID,
+            difficulty: 3,
+            format: .shortAnswer,
+            status: .incorrect,
+            sourcePrompt: skillName
+        )
+        let recommendation = try XCTUnwrap(
+            StudyFocusRecommendation(
+                question: question,
+                skillID: skillID,
+                skillName: skillName,
+                hasPracticeHistory: true
+            )
+        )
+        return .recommendation(recommendation)
+    }
+
+    @MainActor
     private func assertReviewedFixtureContract(_ store: CheckpointStore) throws {
         XCTAssertEqual(store.activeDerivedSkillMap?.status, .reviewed)
         XCTAssertEqual(store.availableGoalProfiles.count, 2)
@@ -877,5 +1152,44 @@ private struct ProgressSkillRowsAuditView: View {
             .padding(20)
         }
         .checkpointScreenBackground()
+    }
+}
+
+private struct ProgressNextFocusCardsAuditView: View {
+    let recommendationState: StudyFocusState
+    let style: StudyFocusCardStyle
+
+    private let informationalStates: [(label: String, state: StudyFocusState)] = [
+        ("Awaiting a question", .awaitingQuestion),
+        ("Caught up", .caughtUp)
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                auditedCard(label: "Recommendation", state: recommendationState)
+
+                ForEach(informationalStates, id: \.label) { item in
+                    auditedCard(label: item.label, state: item.state)
+                }
+            }
+            .padding(20)
+        }
+        .checkpointScreenBackground()
+    }
+
+    private func auditedCard(
+        label: String,
+        state: StudyFocusState
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label.uppercased())
+                .font(.caption2.weight(.bold))
+                .tracking(0.8)
+                .foregroundStyle(CheckpointTheme.muted)
+                .accessibilityAddTraits(.isHeader)
+
+            StudyFocusCard(state: state, style: style) {}
+        }
     }
 }

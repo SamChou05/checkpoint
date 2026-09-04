@@ -754,6 +754,158 @@ struct SectionPanel<Content: View>: View {
     }
 }
 
+enum StudyFocusCardStyle: Equatable {
+    case compact
+    case panel
+}
+
+struct StudyFocusCard: View {
+    let state: StudyFocusState
+    let style: StudyFocusCardStyle
+    let action: () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        Group {
+            if state.isRecommendation {
+                Button(action: action) {
+                    surface
+                }
+                .buttonStyle(CheckpointPressButtonStyle())
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Next Focus. \(state.title). \(state.detail)")
+                .accessibilityHint("Shows this skill's answer breakdown and latest signal.")
+            } else {
+                surface
+                    .accessibilityElement(children: .combine)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var surface: some View {
+        switch style {
+        case .compact:
+            cardContent
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    CheckpointTheme.panelRaised.opacity(0.62),
+                    in: RoundedRectangle(
+                        cornerRadius: CheckpointTheme.cardCornerRadius,
+                        style: .continuous
+                    )
+                )
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: CheckpointTheme.cardCornerRadius,
+                        style: .continuous
+                    )
+                    .stroke(accent.opacity(0.16), lineWidth: 1)
+                }
+        case .panel:
+            SectionPanel {
+                cardContent
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var cardContent: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 14) {
+                focusIcon
+
+                focusCopy
+
+                if state.isRecommendation {
+                    accessoryLabel
+                }
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 14) {
+                    focusIcon
+                    focusCopy
+                    Spacer(minLength: 4)
+
+                    if state.isRecommendation {
+                        accessoryLabel
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(alignment: .top, spacing: 14) {
+                        focusIcon
+                        focusCopy
+                    }
+
+                    if state.isRecommendation {
+                        accessoryLabel
+                    }
+                }
+            }
+        }
+    }
+
+    private var focusIcon: some View {
+        Image(systemName: state.systemImage)
+            .font(.system(size: 18, weight: .bold))
+            .foregroundStyle(accent)
+            .frame(width: 44, height: 44)
+            .background(
+                accent.opacity(0.11),
+                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private var focusCopy: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("NEXT FOCUS")
+                .font(.caption2.weight(.bold))
+                .tracking(0.85)
+                .foregroundStyle(accent)
+                .accessibilityAddTraits(.isHeader)
+
+            Text(state.title)
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(state.detail)
+                .font(.subheadline)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var accessoryLabel: some View {
+        HStack(spacing: 6) {
+            Text("View skill")
+                .font(.caption.weight(.bold))
+                .fixedSize(horizontal: true, vertical: true)
+
+            accessoryIcon
+        }
+        .foregroundStyle(CheckpointTheme.blue)
+        .frame(minHeight: 44)
+        .accessibilityHidden(true)
+    }
+
+    private var accessoryIcon: some View {
+        Image(systemName: "chevron.right")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.blue)
+            .accessibilityHidden(true)
+    }
+
+    private var accent: Color {
+        state.isRecommendation ? CheckpointTheme.blue : CheckpointTheme.teal
+    }
+}
+
 struct CheckpointHeroSurface<Content: View>: View {
     var glowColor: Color
     var glowOpacity: Double = 0.09

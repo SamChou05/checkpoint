@@ -69,6 +69,7 @@ struct RootView: View {
     @State private var pendingGoalSwitchConfirmation: GoalSwitchConfirmation?
     @State private var queuedGoalSwitchConfirmation: GoalSwitchConfirmation?
     @State private var goalSwitchFeedbackSequence = 0
+    @State private var progressSkillEvidenceRequest: ProgressSkillEvidenceRequest?
     @Environment(\.scenePhase) private var scenePhase
 
     private var store: CheckpointStore { appModel.store }
@@ -96,7 +97,8 @@ struct RootView: View {
                 isVisible: selectedTab == .skill,
                 isCoveredByParentModal: isOnboardingSheetActive
                     || isSuggestedSkillMapReviewPresented
-                    || isSuggestedSkillMapReviewActive
+                    || isSuggestedSkillMapReviewActive,
+                skillEvidenceRequest: $progressSkillEvidenceRequest
             )
                 .tabItem {
                     Label("Progress", systemImage: "chart.line.uptrend.xyaxis")
@@ -119,6 +121,13 @@ struct RootView: View {
         .environment(
             \.checkpointGoalSelection,
             GoalSelectionAction { requestGoalSwitch(to: $0) }
+        )
+        .environment(
+            \.checkpointProgressSkillEvidenceNavigation,
+            ProgressSkillEvidenceNavigationAction { target in
+                progressSkillEvidenceRequest = ProgressSkillEvidenceRequest(target: target)
+                selectedTab = .skill
+            }
         )
         .sensoryFeedback(.selection, trigger: goalSwitchFeedbackSequence)
         .alert(

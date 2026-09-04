@@ -11,7 +11,8 @@ struct HomeView: View {
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
     @Environment(\.checkpointGoalSelection) private var selectGoal
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.checkpointProgressSkillEvidenceNavigation)
+    private var navigateToProgressSkillEvidence
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
     @State private var isWeeklyReviewPresented = false
@@ -429,10 +430,20 @@ struct HomeView: View {
     private var homeNextFocusPanel: some View {
         Group {
             if let focusState = store.studyFocusState {
+                let target = store.goal.flatMap {
+                    ProgressSkillEvidenceRoutingPolicy.target(
+                        for: focusState,
+                        goalID: $0.id
+                    )
+                }
+
                 switch focusState {
                 case .recommendation, .awaitingQuestion, .caughtUp:
-                    homeStudyFocusCard(focusState)
-                        .transition(homeNextFocusTransition)
+                    StudyFocusCard(state: focusState, style: .compact) {
+                        guard let target else { return }
+                        navigateToProgressSkillEvidence(target)
+                    }
+                    .transition(homeNextFocusTransition)
                 }
             }
         }
@@ -480,66 +491,6 @@ struct HomeView: View {
             hasReadyCheckpointSet: store.hasReadyCheckpointSet,
             sharedCheckpointReady: SharedAppGroup.checkpointReady
         )
-    }
-
-    private func homeStudyFocusCard(_ state: StudyFocusState) -> some View {
-        let tint = state.isRecommendation ? CheckpointTheme.blue : CheckpointTheme.teal
-
-        return Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 12) {
-                    homeStudyFocusIcon(systemImage: state.systemImage, tint: tint)
-                    homeStudyFocusCopy(state: state, tint: tint)
-                }
-            } else {
-                HStack(alignment: .top, spacing: 14) {
-                    homeStudyFocusIcon(systemImage: state.systemImage, tint: tint)
-                    homeStudyFocusCopy(state: state, tint: tint)
-                }
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            CheckpointTheme.panelRaised.opacity(0.62),
-            in: RoundedRectangle(cornerRadius: 18, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(tint.opacity(0.16), lineWidth: 1)
-        }
-    }
-
-    private func homeStudyFocusIcon(systemImage: String, tint: Color) -> some View {
-        Image(systemName: systemImage)
-            .font(.system(size: 17, weight: .bold))
-            .foregroundStyle(tint)
-            .frame(width: 42, height: 42)
-            .background(tint.opacity(0.11), in: RoundedRectangle(cornerRadius: 12))
-            .accessibilityHidden(true)
-    }
-
-    private func homeStudyFocusCopy(state: StudyFocusState, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text("NEXT FOCUS")
-                .font(.caption2.weight(.bold))
-                .tracking(0.85)
-                .foregroundStyle(tint)
-                .accessibilityAddTraits(.isHeader)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(state.title)
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(state.detail)
-                    .font(.subheadline)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .accessibilityElement(children: .combine)
-        }
     }
 
     private var screenTimePanel: some View {
