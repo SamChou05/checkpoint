@@ -161,9 +161,17 @@ private struct FocusWinsDestination: Identifiable {
     var id: Goal.ID { goalID }
 }
 
+private struct ProgressWeeklyImpactDestination: Identifiable {
+    let goalID: Goal.ID
+    let referenceDate: Date
+
+    var id: Goal.ID { goalID }
+}
+
 struct CompetencyView: View {
     let store: CheckpointStore
     private let reduceMotionOverride: Bool?
+    private let referenceDateOverride: Date?
     private let isVisible: Bool
     private let isCoveredByParentModal: Bool
 
@@ -179,6 +187,8 @@ struct CompetencyView: View {
     @State private var isSkillHistoryExpanded = false
     @State private var retryingInitialQuestionGoalIDs: Set<Goal.ID> = []
     @State private var focusWinsDestination: FocusWinsDestination?
+    @State private var weeklyImpactDestination: ProgressWeeklyImpactDestination?
+    @State private var weeklyImpactFeedbackSequence = 0
     @State private var pendingAccessibilityFocus: ProgressAccessibilityFocus?
     @AccessibilityFocusState(for: .voiceOver)
     private var accessibilityFocus: ProgressAccessibilityFocus?
@@ -186,17 +196,23 @@ struct CompetencyView: View {
     init(
         store: CheckpointStore,
         reduceMotionOverride: Bool? = nil,
+        referenceDateOverride: Date? = nil,
         isVisible: Bool = true,
         isCoveredByParentModal: Bool = false
     ) {
         self.store = store
         self.reduceMotionOverride = reduceMotionOverride
+        self.referenceDateOverride = referenceDateOverride
         self.isVisible = isVisible
         self.isCoveredByParentModal = isCoveredByParentModal
     }
 
     private var reduceMotion: Bool {
         reduceMotionOverride ?? systemReduceMotion
+    }
+
+    private var referenceDate: Date {
+        referenceDateOverride ?? Date()
     }
 
     private var usesStackedTypeLayout: Bool {
@@ -280,6 +296,7 @@ struct CompetencyView: View {
                         to: current.goalID
                     ) {
                         isSkillHistoryExpanded = false
+                        weeklyImpactDestination = nil
                         resetScrollPosition(
                             afterSwitchTo: current.goalID,
                             using: scrollProxy
@@ -325,6 +342,14 @@ struct CompetencyView: View {
                 goalTitle: destination.goalTitle
             )
         }
+        .sheet(item: $weeklyImpactDestination) { destination in
+            WeeklyReviewView(
+                store: store,
+                initialMetricsID: destination.goalID.uuidString,
+                referenceDate: destination.referenceDate
+            )
+        }
+        .sensoryFeedback(.selection, trigger: weeklyImpactFeedbackSequence)
     }
 
     @ViewBuilder
@@ -358,6 +383,7 @@ struct CompetencyView: View {
 
             progressHero
             nextFocusPanel
+            activeGoalWeeklyImpactEntry
             activeGoalFocusWinsEntry
             focusAreasPanel(title: "Focus areas")
 
@@ -373,6 +399,80 @@ struct CompetencyView: View {
         if let goal = store.goal {
             focusWinsEntry(for: goal)
         }
+    }
+
+    @ViewBuilder
+    private var activeGoalWeeklyImpactEntry: some View {
+        if let goal = store.goal,
+           store.activeDerivedSkillMap?.status == .reviewed {
+            weeklyImpactEntry(for: goal)
+        }
+    }
+
+    private func weeklyImpactEntry(for goal: Goal) -> some View {
+        let asOf = referenceDate
+        let calendar = Calendar.current
+        let locale = Locale.current
+        let timeZone = calendar.timeZone
+        let resolver = GoalDisplayTitleResolver(
+            goals: store.availableGoalProfiles,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        var metrics = store.weeklyActiveGoalMetrics(
+            asOf: asOf,
+            calendar: calendar
+        ) ?? WeeklyMetricsSummary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            missedAnswers: 0,
+            checkpointStreakDays: 0,
+            checkpointsCleared: 0,
+            strongestSkill: nil,
+            reviewSkill: nil,
+            isCurrentGoal: true
+        )
+        metrics.title = resolver.title(for: goal)
+        let details = WeeklyMetricsCalculator(
+            attempts: store.attempts,
+            unlockEvents: store.unlockEvents,
+            asOf: asOf,
+            calendar: calendar
+        ).impactDetails(goalID: goal.id)
+        let presentation = ProgressWeeklyImpactPresentation(
+            metrics: metrics,
+            details: details,
+            referenceDate: asOf,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+
+        return ProgressWeeklyImpactCard(
+            presentation: presentation,
+            reduceMotion: reduceMotion
+        ) {
+            presentWeeklyImpact(for: goal, referenceDate: asOf)
+        }
+    }
+
+    private func presentWeeklyImpact(
+        for goal: Goal,
+        referenceDate: Date
+    ) {
+        guard let destinationGoalID = ProgressWeeklyImpactRoutingPolicy.destinationGoalID(
+            activeGoalID: goal.id,
+            hasReviewedSkillMap: store.activeDerivedSkillMap?.status == .reviewed
+        ) else { return }
+
+        weeklyImpactDestination = ProgressWeeklyImpactDestination(
+            goalID: destinationGoalID,
+            referenceDate: referenceDate
+        )
+        weeklyImpactFeedbackSequence += 1
     }
 
     private var progressStateMotionPolicy: ProgressStateMotionPolicy {

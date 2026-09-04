@@ -71,31 +71,269 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testWeeklyImpactPresentationSummarizesActivityAndExcludesFutureDays() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: referenceDate))
+        let days = try (0..<7).map { offset -> WeeklyPracticeDay in
+            let date = try XCTUnwrap(
+                calendar.date(byAdding: .day, value: offset, to: week.start)
+            )
+            switch offset {
+            case 0:
+                return WeeklyPracticeDay(
+                    date: date,
+                    questionsAnswered: 4,
+                    correctAnswers: 3,
+                    checkpointsCleared: 1,
+                    earnedBreakMinutes: 30
+                )
+            case 2:
+                return WeeklyPracticeDay(
+                    date: date,
+                    questionsAnswered: 5,
+                    correctAnswers: 3,
+                    checkpointsCleared: 1,
+                    earnedBreakMinutes: 20
+                )
+            case 4:
+                return WeeklyPracticeDay(
+                    date: date,
+                    questionsAnswered: 99,
+                    correctAnswers: 99
+                )
+            default:
+                return WeeklyPracticeDay(date: date, questionsAnswered: 0)
+            }
+        }
+        let metrics = WeeklyMetricsSummary(
+            id: Goal.ID().uuidString,
+            title: "Lead a production architecture review",
+            questionsAnswered: 9,
+            correctAnswers: 6,
+            missedAnswers: 3,
+            checkpointStreakDays: 2,
+            checkpointsCleared: 2,
+            strongestSkill: nil,
+            reviewSkill: nil,
+            isCurrentGoal: true
+        )
+        let details = WeeklyImpactDetails(
+            practiceDays: days,
+            earnedBreakMinutes: 50,
+            recoveredQuestions: 1,
+            activePracticeDays: 2,
+            previousWeekQuestions: 4
+        )
+
+        let presentation = ProgressWeeklyImpactPresentation(
+            metrics: metrics,
+            details: details,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertTrue(presentation.hasActivity)
+        XCTAssertEqual(
+            presentation.summaryText,
+            "9 questions · 66% correct · 2 breaks earned"
+        )
+        XCTAssertEqual(
+            presentation.accessibilityValue,
+            "9 questions, 66% correct, 2 breaks earned, across 2 active days. "
+                + "Activity by day: Monday, 4 questions; Wednesday, 5 questions."
+        )
+        XCTAssertEqual(
+            presentation.days.map(\.state),
+            [.active, .inactive, .active, .inactive, .future, .future, .future]
+        )
+        XCTAssertEqual(presentation.days[0].activityLevel, 0.8, accuracy: 0.001)
+        XCTAssertEqual(presentation.days[2].activityLevel, 1, accuracy: 0.001)
+        XCTAssertEqual(presentation.days[4].activityLevel, 0, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testWeeklyImpactEmptyRoutingAndMotionPoliciesStayTruthful() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: referenceDate))
+        let days = try (0..<7).map { offset in
+            WeeklyPracticeDay(
+                date: try XCTUnwrap(
+                    calendar.date(byAdding: .day, value: offset, to: week.start)
+                ),
+                questionsAnswered: 0
+            )
+        }
+        let goalID = Goal.ID()
+        let metrics = WeeklyMetricsSummary(
+            id: goalID.uuidString,
+            title: "Reach conversational Spanish",
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            missedAnswers: 0,
+            checkpointStreakDays: 0,
+            checkpointsCleared: 0,
+            strongestSkill: nil,
+            reviewSkill: nil,
+            isCurrentGoal: true
+        )
+        let presentation = ProgressWeeklyImpactPresentation(
+            metrics: metrics,
+            details: WeeklyImpactDetails(
+                practiceDays: days,
+                earnedBreakMinutes: 0,
+                recoveredQuestions: 0,
+                activePracticeDays: 0,
+                previousWeekQuestions: 0
+            ),
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertFalse(presentation.hasActivity)
+        XCTAssertEqual(
+            presentation.summaryText,
+            "Your next checkpoint will start this week’s timeline."
+        )
+        XCTAssertEqual(
+            presentation.accessibilityValue,
+            "No checkpoint activity this week."
+        )
+
+        var breakOnlyDays = days
+        breakOnlyDays[0].checkpointsCleared = 1
+        breakOnlyDays[0].earnedBreakMinutes = 15
+        var breakOnlyMetrics = metrics
+        breakOnlyMetrics.checkpointsCleared = 1
+        let breakOnlyPresentation = ProgressWeeklyImpactPresentation(
+            metrics: breakOnlyMetrics,
+            details: WeeklyImpactDetails(
+                practiceDays: breakOnlyDays,
+                earnedBreakMinutes: 15,
+                recoveredQuestions: 0,
+                activePracticeDays: 0,
+                previousWeekQuestions: 0
+            ),
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        XCTAssertTrue(breakOnlyPresentation.hasActivity)
+        XCTAssertEqual(breakOnlyPresentation.summaryText, "1 break earned this week")
+        XCTAssertEqual(
+            breakOnlyPresentation.accessibilityValue,
+            "0 questions, no accuracy yet, 1 break earned, across 1 active day. "
+                + "Activity by day: Monday, 1 break earned."
+        )
+        XCTAssertEqual(
+            breakOnlyPresentation.days[0].activityLevel,
+            0.45,
+            accuracy: 0.001
+        )
+
+        let standard = ProgressWeeklyImpactMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertNotNil(standard.animation)
+        let reduced = ProgressWeeklyImpactMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.animation)
+
+        XCTAssertEqual(
+            ProgressWeeklyImpactRoutingPolicy.destinationGoalID(
+                activeGoalID: goalID,
+                hasReviewedSkillMap: true
+            ),
+            goalID
+        )
+        XCTAssertNil(
+            ProgressWeeklyImpactRoutingPolicy.destinationGoalID(
+                activeGoalID: goalID,
+                hasReviewedSkillMap: false
+            )
+        )
+        XCTAssertNil(
+            ProgressWeeklyImpactRoutingPolicy.destinationGoalID(
+                activeGoalID: nil,
+                hasReviewedSkillMap: true
+            )
+        )
+    }
+
+    @MainActor
     func testProgressDashboardRendersPrimaryStatesAcrossKeyLayouts() throws {
         let reviewedSuiteName = "ProgressDashboardRenderingTests.Reviewed.\(UUID().uuidString)"
+        let reviewedEmptySuiteName = "ProgressDashboardRenderingTests.ReviewedEmpty.\(UUID().uuidString)"
         let repairSuiteName = "ProgressDashboardRenderingTests.Repair.\(UUID().uuidString)"
         let buildingSuiteName = "ProgressDashboardRenderingTests.Building.\(UUID().uuidString)"
         let suggestedSuiteName = "ProgressDashboardRenderingTests.Suggested.\(UUID().uuidString)"
         let failureSuiteName = "ProgressDashboardRenderingTests.Failure.\(UUID().uuidString)"
         let reviewedDefaults = try XCTUnwrap(UserDefaults(suiteName: reviewedSuiteName))
+        let reviewedEmptyDefaults = try XCTUnwrap(UserDefaults(suiteName: reviewedEmptySuiteName))
         let repairDefaults = try XCTUnwrap(UserDefaults(suiteName: repairSuiteName))
         let buildingDefaults = try XCTUnwrap(UserDefaults(suiteName: buildingSuiteName))
         let suggestedDefaults = try XCTUnwrap(UserDefaults(suiteName: suggestedSuiteName))
         let failureDefaults = try XCTUnwrap(UserDefaults(suiteName: failureSuiteName))
         defer {
             reviewedDefaults.removePersistentDomain(forName: reviewedSuiteName)
+            reviewedEmptyDefaults.removePersistentDomain(forName: reviewedEmptySuiteName)
             repairDefaults.removePersistentDomain(forName: repairSuiteName)
             buildingDefaults.removePersistentDomain(forName: buildingSuiteName)
             suggestedDefaults.removePersistentDomain(forName: suggestedSuiteName)
             failureDefaults.removePersistentDomain(forName: failureSuiteName)
         }
 
-        let reviewedStore = makeReviewedStore(defaults: reviewedDefaults)
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let reviewedStore = makeReviewedStore(
+            defaults: reviewedDefaults,
+            referenceDate: referenceDate
+        )
+        let reviewedEmptyStore = makeReviewedStore(
+            defaults: reviewedEmptyDefaults,
+            referenceDate: referenceDate,
+            includesWeeklyActivity: false
+        )
         let repairStore = makeRepairStore(defaults: repairDefaults)
         let buildingStore = makeBuildingStore(defaults: buildingDefaults)
         let suggestedStore = makeSuggestedStore(defaults: suggestedDefaults)
         let failureStore = makeFailureStore(defaults: failureDefaults)
         try assertReviewedFixtureContract(reviewedStore)
+        let reviewedMetrics = try XCTUnwrap(
+            reviewedStore.weeklyActiveGoalMetrics(
+                asOf: referenceDate,
+                calendar: .current
+            )
+        )
+        let reviewedEmptyMetrics = try XCTUnwrap(
+            reviewedEmptyStore.weeklyActiveGoalMetrics(
+                asOf: referenceDate,
+                calendar: .current
+            )
+        )
+        XCTAssertEqual(reviewedMetrics.questionsAnswered, 6)
+        XCTAssertEqual(reviewedMetrics.checkpointsCleared, 2)
+        XCTAssertFalse(reviewedEmptyMetrics.hasWeeklyReviewActivity)
         XCTAssertTrue(repairStore.activeSkillMapNeedsAttention)
         XCTAssertEqual(repairStore.activeProgressCompetencies.count, 1)
         XCTAssertGreaterThan(
@@ -119,7 +357,11 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    CompetencyView(store: reviewedStore, reduceMotionOverride: false)
+                    CompetencyView(
+                        store: reviewedStore,
+                        reduceMotionOverride: false,
+                        referenceDateOverride: referenceDate
+                    )
                 )
             ),
             ProgressDashboardRenderFixture(
@@ -129,7 +371,11 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    CompetencyView(store: reviewedStore, reduceMotionOverride: false)
+                    CompetencyView(
+                        store: reviewedStore,
+                        reduceMotionOverride: false,
+                        referenceDateOverride: referenceDate
+                    )
                 )
             ),
             ProgressDashboardRenderFixture(
@@ -139,7 +385,11 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    CompetencyView(store: reviewedStore, reduceMotionOverride: false)
+                    CompetencyView(
+                        store: reviewedStore,
+                        reduceMotionOverride: false,
+                        referenceDateOverride: referenceDate
+                    )
                 )
             ),
             ProgressDashboardRenderFixture(
@@ -149,7 +399,25 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 colorScheme: .dark,
                 dynamicTypeSize: .accessibility2,
                 content: AnyView(
-                    CompetencyView(store: reviewedStore, reduceMotionOverride: true)
+                    CompetencyView(
+                        store: reviewedStore,
+                        reduceMotionOverride: true,
+                        referenceDateOverride: referenceDate
+                    )
+                )
+            ),
+            ProgressDashboardRenderFixture(
+                name: "progress-reviewed-empty-week-light",
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    CompetencyView(
+                        store: reviewedEmptyStore,
+                        reduceMotionOverride: false,
+                        referenceDateOverride: referenceDate
+                    )
                 )
             ),
             ProgressDashboardRenderFixture(
@@ -241,8 +509,12 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
-    private func makeReviewedStore(defaults: UserDefaults) -> CheckpointStore {
-        let now = Date()
+    private func makeReviewedStore(
+        defaults: UserDefaults,
+        referenceDate: Date,
+        includesWeeklyActivity: Bool = true
+    ) -> CheckpointStore {
+        let now = referenceDate
         let topics = [
             SkillMapTopic(name: "Requirements and constraint discovery"),
             SkillMapTopic(name: "Distributed data modeling"),
@@ -297,6 +569,52 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 nextReviewAt: index == 2 ? now.addingTimeInterval(-300) : nil,
                 sourcePrompt: topic.name
             )
+        }
+        if includesWeeklyActivity,
+           let week = Calendar.current.dateInterval(of: .weekOfYear, for: referenceDate) {
+            let availablePracticeDates = (0..<7).compactMap { offset -> Date? in
+                guard let day = Calendar.current.date(
+                    byAdding: .day,
+                    value: offset,
+                    to: week.start
+                ),
+                let practiceDate = Calendar.current.date(
+                    byAdding: .hour,
+                    value: 9,
+                    to: day
+                ),
+                practiceDate <= referenceDate else { return nil }
+                return practiceDate
+            }
+            let firstDate = availablePracticeDates.first ?? referenceDate
+            let secondDate = availablePracticeDates.dropFirst().first
+                ?? firstDate.addingTimeInterval(300)
+            let thirdDate = availablePracticeDates.dropFirst(2).first
+                ?? secondDate.addingTimeInterval(300)
+            store.attempts = [
+                makeAttempt(goal: goal, result: .correct, createdAt: firstDate),
+                makeAttempt(
+                    goal: goal,
+                    result: .incorrect,
+                    createdAt: firstDate.addingTimeInterval(60)
+                ),
+                makeAttempt(goal: goal, result: .correct, createdAt: secondDate),
+                makeAttempt(
+                    goal: goal,
+                    result: .partial,
+                    createdAt: secondDate.addingTimeInterval(60)
+                ),
+                makeAttempt(goal: goal, result: .correct, createdAt: thirdDate),
+                makeAttempt(
+                    goal: goal,
+                    result: .correct,
+                    createdAt: thirdDate.addingTimeInterval(60)
+                )
+            ]
+            store.unlockEvents = [
+                UnlockEvent(goalID: goal.id, minutes: 30, createdAt: firstDate),
+                UnlockEvent(goalID: goal.id, minutes: 20, createdAt: thirdDate)
+            ]
         }
         store.focusWins = [
             FocusWin(

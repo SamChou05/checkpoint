@@ -56,6 +56,7 @@
 		AB0000000000000000000015 /* CheckpointQuestionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* CheckpointQuestionSelector.swift */; };
 		AB0000000000000000000016 /* SkillMapReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000016 /* SkillMapReconciler.swift */; };
 		AB0000000000000000000017 /* MembershipPlanPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000017 /* MembershipPlanPresentation.swift */; };
+		F30000000000000000000001 /* ProgressWeeklyImpactCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40000000000000000000001 /* ProgressWeeklyImpactCard.swift */; };
 		B10000000000000000000001 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
 		B10000000000000000000002 /* ShieldConfigurationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* ShieldConfigurationExtension.swift */; };
 		B10000000000000000000003 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
@@ -216,6 +217,7 @@
 		AA0000000000000000000015 /* CheckpointQuestionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointQuestionSelector.swift; sourceTree = "<group>"; };
 		AA0000000000000000000016 /* SkillMapReconciler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillMapReconciler.swift; sourceTree = "<group>"; };
 		AA0000000000000000000017 /* MembershipPlanPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipPlanPresentation.swift; sourceTree = "<group>"; };
+		F40000000000000000000001 /* ProgressWeeklyImpactCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressWeeklyImpactCard.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* SharedAppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedAppGroup.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* ShieldConfigurationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldConfigurationExtension.swift; sourceTree = "<group>"; };
 		B20000000000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -406,6 +408,7 @@
 				A20000000000000000000020 /* QuestionQualityFeedbackView.swift */,
 				A2000000000000000000000A /* HistoryView.swift */,
 				A20000000000000000000010 /* CompetencyView.swift */,
+				F40000000000000000000001 /* ProgressWeeklyImpactCard.swift */,
 				A2000000000000000000001F /* FocusWinsView.swift */,
 				AA0000000000000000000012 /* SkillMapEditorViews.swift */,
 				AA000000000000000000000C /* CompetencyRow.swift */,
@@ -799,6 +802,7 @@
 				A10000000000000000000014 /* SettingsSupportViews.swift in Sources */,
 				A10000000000000000000013 /* QuestionReportsView.swift in Sources */,
 				A10000000000000000000010 /* CompetencyView.swift in Sources */,
+				F30000000000000000000001 /* ProgressWeeklyImpactCard.swift in Sources */,
 				A1000000000000000000001B /* FocusWinsView.swift in Sources */,
 				AB0000000000000000000012 /* SkillMapEditorViews.swift in Sources */,
 				AB000000000000000000000C /* CompetencyRow.swift in Sources */,
