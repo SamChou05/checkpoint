@@ -1,26 +1,301 @@
 import SwiftUI
 
+struct FocusWinsWeekDayPresentation: Identifiable, Equatable {
+    let id: Date
+    let label: String
+    let winCount: Int
+    let isToday: Bool
+    let isFuture: Bool
+
+    var hasWins: Bool {
+        winCount > 0
+    }
+}
+
+struct FocusWinsWeeklySnapshotPresentation: Equatable {
+    let days: [FocusWinsWeekDayPresentation]
+    let winCount: Int
+    let activeDayCount: Int
+    let headline: String
+    let detail: String
+    let badgeText: String
+    let accessibilityValue: String
+
+    var hasWins: Bool {
+        winCount > 0
+    }
+
+    init(
+        focusWins: [FocusWin],
+        referenceDate: Date,
+        calendar: Calendar,
+        locale: Locale,
+        timeZone: TimeZone
+    ) {
+        var calendar = calendar
+        calendar.timeZone = timeZone
+        let privacyBoundary = "Based only on private notes you log. Focus Wins never affect progress scores, practice recommendations, questions, or app breaks."
+        let referenceDay = calendar.startOfDay(for: referenceDate)
+        let weekStart = calendar.dateInterval(
+            of: .weekOfYear,
+            for: referenceDate
+        )?.start ?? referenceDay
+        let weekEnd = calendar.date(
+            byAdding: .day,
+            value: 7,
+            to: weekStart
+        ) ?? weekStart.addingTimeInterval(7 * 86_400)
+        let dateLabelFormatter = WeeklyReviewDateLabelFormatter(
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+
+        let winsThisWeek = focusWins.filter { focusWin in
+            let loggedDay = calendar.startOfDay(for: focusWin.loggedAt)
+            return focusWin.loggedAt >= weekStart &&
+                focusWin.loggedAt < weekEnd &&
+                loggedDay <= referenceDay
+        }
+        let winsByDay = Dictionary(grouping: winsThisWeek) {
+            calendar.startOfDay(for: $0.loggedAt)
+        }
+
+        days = (0..<7).map { offset in
+            let date = calendar.date(
+                byAdding: .day,
+                value: offset,
+                to: weekStart
+            ) ?? weekStart.addingTimeInterval(Double(offset) * 86_400)
+            let normalizedDate = calendar.startOfDay(for: date)
+            return FocusWinsWeekDayPresentation(
+                id: normalizedDate,
+                label: dateLabelFormatter
+                    .narrowWeekday(for: normalizedDate)
+                    .uppercased(with: locale),
+                winCount: winsByDay[normalizedDate]?.count ?? 0,
+                isToday: normalizedDate == referenceDay,
+                isFuture: normalizedDate > referenceDay
+            )
+        }
+
+        winCount = winsThisWeek.count
+        activeDayCount = winsByDay.count
+
+        switch winCount {
+        case 0:
+            headline = "Your week is ready"
+            detail = "Capture the small proof that your work is moving."
+            badgeText = "PRIVATE"
+            accessibilityValue = "No Focus Wins logged this week. \(privacyBoundary)"
+
+        case 1:
+            headline = "1 win this week"
+            detail = "Captured on one day, in your own words."
+            badgeText = "1 DAY"
+            let activeDay = days.first(where: \.hasWins)
+            let dayDetail = activeDay.map {
+                dateLabelFormatter.wideWeekday(for: $0.id)
+            } ?? "one day"
+            accessibilityValue = "1 Focus Win logged this week on \(dayDetail). \(privacyBoundary)"
+
+        default:
+            headline = "\(winCount) wins this week"
+            let dayNoun = activeDayCount == 1 ? "day" : "days"
+            detail = "Captured across \(activeDayCount) \(dayNoun), in your own words."
+            badgeText = "\(activeDayCount) \(dayNoun.uppercased())"
+            let activeDayDetails = days.compactMap { day -> String? in
+                guard day.hasWins else { return nil }
+                let noun = day.winCount == 1 ? "win" : "wins"
+                return "\(dateLabelFormatter.wideWeekday(for: day.id)), \(day.winCount) \(noun)"
+            }
+            accessibilityValue = "\(winCount) Focus Wins across \(activeDayCount) \(dayNoun) this week. "
+                + activeDayDetails.joined(separator: "; ")
+                + ". \(privacyBoundary)"
+        }
+    }
+}
+
+struct FocusWinsComposerPolicy {
+    static func startsExpanded(
+        focusWinCount: Int,
+        override: Bool?
+    ) -> Bool {
+        override ?? (focusWinCount == 0)
+    }
+}
+
+enum FocusWinsPostDeleteFocusTarget: Equatable {
+    case composer
+    case composerLauncher
+    case ledgerTitle
+}
+
+struct FocusWinsPostDeleteFocusPolicy {
+    static func target(
+        remainingWinCount: Int,
+        isComposerExpanded: Bool
+    ) -> FocusWinsPostDeleteFocusTarget {
+        if remainingWinCount > 0 {
+            return .ledgerTitle
+        }
+        return isComposerExpanded ? .composer : .composerLauncher
+    }
+}
+
+struct FocusWinsEntryPresentation: Equatable {
+    let detail: String
+    let trailingText: String
+    let accessibilityValue: String
+
+    init(
+        focusWins: [FocusWin],
+        referenceDate: Date,
+        calendar: Calendar,
+        locale: Locale,
+        timeZone: TimeZone
+    ) {
+        var calendar = calendar
+        calendar.timeZone = timeZone
+        let weeklySnapshot = FocusWinsWeeklySnapshotPresentation(
+            focusWins: focusWins,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        let totalCount = focusWins.count
+
+        guard let latestWin = focusWins.max(by: { $0.loggedAt < $1.loggedAt }) else {
+            detail = "Start a private record of progress you noticed."
+            trailingText = "No notes"
+            accessibilityValue = "No entries logged by you. Opens a private reflection ledger."
+            return
+        }
+
+        let latestText = Self.recencyText(
+            for: latestWin.loggedAt,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        if weeklySnapshot.winCount == 0 {
+            detail = "Your private reflection ledger · Latest \(latestText)"
+        } else {
+            let noun = weeklySnapshot.winCount == 1 ? "reflection" : "reflections"
+            detail = "\(weeklySnapshot.winCount) \(noun) this week · Latest \(latestText)"
+        }
+        trailingText = totalCount == 1 ? "1 total" : "\(totalCount) total"
+
+        let entryNoun = totalCount == 1 ? "entry" : "entries"
+        let weeklyNoun = weeklySnapshot.winCount == 1 ? "entry" : "entries"
+        accessibilityValue = "\(totalCount) \(entryNoun) logged by you. "
+            + "\(weeklySnapshot.winCount) \(weeklyNoun) this week. "
+            + "Latest logged \(latestText)."
+    }
+
+    private static func recencyText(
+        for date: Date,
+        referenceDate: Date,
+        calendar: Calendar,
+        locale: Locale,
+        timeZone: TimeZone
+    ) -> String {
+        let referenceDay = calendar.startOfDay(for: referenceDate)
+        let dateDay = calendar.startOfDay(for: date)
+        if dateDay == referenceDay {
+            return "today"
+        }
+        if let yesterday = calendar.date(byAdding: .day, value: -1, to: referenceDay),
+           dateDay == calendar.startOfDay(for: yesterday) {
+            return "yesterday"
+        }
+
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        let includesYear = calendar.component(.year, from: date)
+            != calendar.component(.year, from: referenceDate)
+        formatter.setLocalizedDateFormatFromTemplate(includesYear ? "MMMdyyyy" : "MMMd")
+        return formatter.string(from: date)
+    }
+}
+
 struct FocusWinsView: View {
     let store: CheckpointStore
     let goalID: Goal.ID
     let goalTitle: String
+    private let reduceMotionOverride: Bool?
+    private let referenceDateOverride: Date?
+    private let calendar: Calendar
+    private let locale: Locale
+    private let timeZone: TimeZone
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @FocusState private var isDraftFocused: Bool
+    @AccessibilityFocusState(for: [.voiceOver, .switchControl])
+    private var isComposerAccessibilityFocused: Bool
+    @AccessibilityFocusState(for: [.voiceOver, .switchControl])
+    private var postMutationAccessibilityFocus: FocusWinsPostMutationAccessibilityFocus?
     @AccessibilityFocusState private var focusedFailure: FocusWinsFailure?
 
-    @State private var draft = ""
+    @State private var draft: String
+    @State private var isComposerExpanded: Bool
     @State private var confirmation: FocusWinsConfirmation?
     @State private var failure: FocusWinsFailure?
     @State private var successFeedbackTrigger = 0
+    @State private var deletionFeedbackTrigger = 0
     @State private var errorFeedbackTrigger = 0
+    @State private var celebratedWinID: FocusWin.ID?
+    @State private var celebrationRequestID: UUID?
+    @State private var celebrationTask: Task<Void, Never>?
+    @State private var revealRequest: FocusWinRevealRequest?
+    @State private var focusedWinID: FocusWin.ID?
+    @State private var winAccessibilityFocusRequestID: UUID?
 
-    init(store: CheckpointStore, goalID: Goal.ID, goalTitle: String) {
+    init(
+        store: CheckpointStore,
+        goalID: Goal.ID,
+        goalTitle: String,
+        reduceMotionOverride: Bool? = nil,
+        referenceDate: Date? = nil,
+        calendar: Calendar = .current,
+        locale: Locale = .current,
+        timeZone: TimeZone = .current,
+        initialDraft: String = "",
+        initiallyComposerExpanded: Bool? = nil
+    ) {
         self.store = store
         self.goalID = goalID
         self.goalTitle = goalTitle
+        self.reduceMotionOverride = reduceMotionOverride
+        referenceDateOverride = referenceDate
+        var resolvedCalendar = calendar
+        resolvedCalendar.timeZone = timeZone
+        self.calendar = resolvedCalendar
+        self.locale = locale
+        self.timeZone = timeZone
+        _draft = State(initialValue: initialDraft)
+        _isComposerExpanded = State(
+            initialValue: FocusWinsComposerPolicy.startsExpanded(
+                focusWinCount: store.focusWins(for: goalID).count,
+                override: initiallyComposerExpanded
+            )
+        )
+    }
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
+
+    private var referenceDate: Date {
+        referenceDateOverride ?? Date()
     }
 
     private var focusWins: [FocusWin] {
@@ -28,7 +303,6 @@ struct FocusWinsView: View {
     }
 
     private var dayGroups: [FocusWinsDayGroup] {
-        let calendar = Calendar.current
         return Dictionary(grouping: focusWins) {
             calendar.startOfDay(for: $0.loggedAt)
         }
@@ -39,6 +313,16 @@ struct FocusWinsView: View {
             )
         }
         .sorted { $0.date > $1.date }
+    }
+
+    private var weeklySnapshotPresentation: FocusWinsWeeklySnapshotPresentation {
+        FocusWinsWeeklySnapshotPresentation(
+            focusWins: focusWins,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
     }
 
     private var trimmedDraft: String {
@@ -66,24 +350,35 @@ struct FocusWinsView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 20) {
-                    header
-                    composer
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 18) {
+                        header
+                        weeklySnapshot
 
-                    if focusWins.isEmpty {
-                        emptyState
-                    } else {
-                        ledger
+                        if isComposerExpanded {
+                            composer
+                                .transition(composerTransition)
+                        } else {
+                            composerLauncher
+                                .transition(composerTransition)
+                        }
+
+                        if !focusWins.isEmpty {
+                            ledger
+                        }
+
+                        storageFootnote
                     }
-
-                    storageFootnote
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
+                    .padding(.bottom, 36)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 36)
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: revealRequest) { _, request in
+                    reveal(request, with: proxy)
+                }
             }
-            .scrollDismissesKeyboard(.interactively)
             .checkpointScreenBackground()
             .navigationTitle("Focus Wins")
             .toolbarTitleDisplayMode(.inline)
@@ -106,10 +401,21 @@ struct FocusWinsView: View {
                 CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
                 value: focusWins.map(\.id)
             )
+            .animation(
+                CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion),
+                value: isComposerExpanded
+            )
             .sensoryFeedback(.success, trigger: successFeedbackTrigger)
+            .sensoryFeedback(.success, trigger: deletionFeedbackTrigger)
             .sensoryFeedback(.error, trigger: errorFeedbackTrigger)
         }
         .interactiveDismissDisabled(hasUnsavedDraft)
+        .onDisappear {
+            celebrationTask?.cancel()
+            celebrationTask = nil
+            celebrationRequestID = nil
+            revealRequest = nil
+        }
     }
 
     private var header: some View {
@@ -137,43 +443,52 @@ struct FocusWinsView: View {
                 .font(.subheadline)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
-
-            truthfulnessNote
-                .padding(.top, 2)
         }
     }
 
-    private var truthfulnessNote: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "person.crop.circle.badge.checkmark")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 24, height: 24)
-                .accessibilityHidden(true)
-
-            Text("Focus Wins are logged by you. They don’t affect progress metrics, practice recommendations, questions, or app breaks.")
-                .font(.footnote)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            CheckpointTheme.teal.opacity(0.08),
-            in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+    private var weeklySnapshot: some View {
+        FocusWinsWeeklySnapshotCard(
+            presentation: weeklySnapshotPresentation,
+            reduceMotion: reduceMotion
         )
-        .overlay {
-            RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
-                .stroke(CheckpointTheme.teal.opacity(0.22), lineWidth: 1)
-        }
     }
 
     private var composer: some View {
-        SectionPanel("Log a Focus Win") {
+        SectionPanel {
             VStack(alignment: .leading, spacing: 12) {
-                Text("What moved forward?")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
+                HStack(alignment: .center, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("LOG A FOCUS WIN")
+                            .font(.caption2.weight(.bold))
+                            .tracking(0.9)
+                            .foregroundStyle(CheckpointTheme.teal)
+
+                        Text("What moved forward?")
+                            .font(.headline)
+                            .foregroundStyle(CheckpointTheme.text)
+                    }
+                    .accessibilityElement(children: .combine)
+
+                    Spacer(minLength: 8)
+
+                    Button(action: requestComposerCollapse) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .frame(width: 44, height: 44)
+                            .background(
+                                CheckpointTheme.panelRaised,
+                                in: Circle()
+                            )
+                    }
+                    .buttonStyle(CheckpointPressButtonStyle())
+                    .accessibilityLabel("Close win composer")
+                    .accessibilityHint(
+                        hasUnsavedDraft
+                            ? "Asks before discarding your draft"
+                            : "Returns to your Focus Wins"
+                    )
+                }
 
                 ZStack(alignment: .topLeading) {
                     if draft.isEmpty {
@@ -193,6 +508,7 @@ struct FocusWinsView: View {
                         .padding(10)
                         .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 156 : 124)
                         .focused($isDraftFocused)
+                        .accessibilityFocused($isComposerAccessibilityFocused)
                         .accessibilityLabel("What moved forward?")
                         .accessibilityHint("Write a private note in your own words")
                 }
@@ -232,6 +548,93 @@ struct FocusWinsView: View {
         }
     }
 
+    private var composerLauncher: some View {
+        Button(action: expandComposer) {
+            SectionPanel {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 12) {
+                        composerLauncherIcon
+                        composerLauncherCopy
+                        composerLauncherAccessory
+                    }
+                } else {
+                    HStack(spacing: 14) {
+                        composerLauncherIcon
+                        composerLauncherCopy
+                        Spacer(minLength: 4)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(CheckpointTheme.teal)
+                            .accessibilityHidden(true)
+                    }
+                }
+            }
+        }
+        .buttonStyle(CheckpointPressButtonStyle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(composerLauncherAccessibilityLabel)
+        .accessibilityHint("Opens a private note editor")
+        .accessibilityFocused(
+            $postMutationAccessibilityFocus,
+            equals: .composerLauncher
+        )
+    }
+
+    private var composerLauncherIcon: some View {
+        Image(systemName: "plus")
+            .font(.system(size: 17, weight: .bold))
+            .foregroundStyle(CheckpointTheme.heroText)
+            .frame(width: 44, height: 44)
+            .background(
+                LinearGradient(
+                    colors: [CheckpointTheme.actionTeal, CheckpointTheme.actionDeep],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private var composerLauncherCopy: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(
+                focusWins.isEmpty
+                    ? "Capture your first win"
+                    : "Capture another win"
+            )
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+
+            Text(
+                focusWins.isEmpty
+                    ? "Start your private reflection ledger."
+                    : "Add the moment while it’s fresh."
+            )
+                .font(.subheadline)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var composerLauncherAccessibilityLabel: String {
+        focusWins.isEmpty
+            ? "Log your first Focus Win"
+            : "Log another Focus Win"
+    }
+
+    private var composerLauncherAccessory: some View {
+        HStack(spacing: 5) {
+            Text("Write")
+            Image(systemName: "arrow.up.right")
+                .font(.system(size: 9, weight: .bold))
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(CheckpointTheme.teal)
+        .accessibilityHidden(true)
+    }
+
     @ViewBuilder
     private var composerStatus: some View {
         if usesStackedLayout {
@@ -264,39 +667,6 @@ struct FocusWinsView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.coral)
                 .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    private var emptyState: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "note.text")
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 52, height: 52)
-                .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
-                .accessibilityHidden(true)
-
-            Text("No Focus Wins yet")
-                .font(.headline)
-                .foregroundStyle(CheckpointTheme.text)
-                .accessibilityAddTraits(.isHeader)
-
-            Text("When you notice something move forward, log it here in your own words.")
-                .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.horizontal, 22)
-        .padding(.vertical, 28)
-        .frame(maxWidth: .infinity)
-        .background(
-            CheckpointTheme.panel.opacity(0.82),
-            in: RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
-                .stroke(CheckpointTheme.hairline, lineWidth: 1)
         }
     }
 
@@ -339,14 +709,31 @@ struct FocusWinsView: View {
                     ForEach(group.wins) { focusWin in
                         FocusWinRow(
                             focusWin: focusWin,
-                            usesStackedLayout: usesStackedLayout
-                        ) {
-                            isDraftFocused = false
-                            failure = nil
-                            focusedFailure = nil
-                            confirmation = .delete(focusWin)
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                            usesStackedLayout: usesStackedLayout,
+                            isCelebrated: focusWin.id == celebratedWinID,
+                            celebrationSequence: successFeedbackTrigger,
+                            accessibilityFocusRequestID: focusedWinID == focusWin.id
+                                ? winAccessibilityFocusRequestID
+                                : nil,
+                            reduceMotion: reduceMotion,
+                            calendar: calendar,
+                            locale: locale,
+                            timeZone: timeZone,
+                            consumeAccessibilityFocusRequest: { requestID in
+                                consumeAccessibilityFocusRequest(
+                                    requestID,
+                                    for: focusWin.id
+                                )
+                            },
+                            requestDeletion: {
+                                isDraftFocused = false
+                                failure = nil
+                                focusedFailure = nil
+                                confirmation = .delete(focusWin)
+                            }
+                        )
+                        .id(focusWin.id)
+                        .transition(rowTransition)
                     }
                 }
             }
@@ -374,6 +761,10 @@ struct FocusWinsView: View {
             .font(.title3.weight(.bold))
             .foregroundStyle(CheckpointTheme.text)
             .accessibilityAddTraits(.isHeader)
+            .accessibilityFocused(
+                $postMutationAccessibilityFocus,
+                equals: .ledgerTitle
+            )
     }
 
     private var ledgerCount: some View {
@@ -412,9 +803,22 @@ struct FocusWinsView: View {
         return "\(-difference) characters over the limit"
     }
 
+    private var composerTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .opacity.combined(with: .move(edge: .top))
+    }
+
+    private var rowTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .opacity.combined(with: .move(edge: .top))
+    }
+
     private func logFocusWin() {
         guard canLogDraft else { return }
 
+        let previousWinIDs = Set(focusWins.map(\.id))
         let wasAtCapacity = focusWins.count >= CheckpointStore.maximumStoredFocusWinCountPerGoal
         let didSave = store.recordFocusWin(note: draft, goalID: goalID)
         guard didSave else {
@@ -424,11 +828,26 @@ struct FocusWinsView: View {
             return
         }
 
-        draft = ""
-        failure = nil
-        focusedFailure = nil
-        isDraftFocused = false
+        let loggedWin = focusWins.first(where: { !previousWinIDs.contains($0.id) })
+            ?? focusWins.first
+
+        withAnimation(
+            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+        ) {
+            draft = ""
+            failure = nil
+            focusedFailure = nil
+            isDraftFocused = false
+            isComposerAccessibilityFocused = false
+            postMutationAccessibilityFocus = nil
+            isComposerExpanded = false
+            celebratedWinID = loggedWin?.id
+        }
         successFeedbackTrigger += 1
+        if let loggedWin {
+            requestReveal(of: loggedWin.id)
+            scheduleCelebrationDismissal(for: loggedWin.id)
+        }
 
         let announcement = wasAtCapacity
             ? "Focus Win logged. Your oldest Focus Win was removed to keep the 500 most recent for this goal."
@@ -439,9 +858,109 @@ struct FocusWinsView: View {
     private func requestClose() {
         isDraftFocused = false
         if hasUnsavedDraft {
-            confirmation = .discardDraft
+            confirmation = .discardDraftAndDismiss
         } else {
             dismiss()
+        }
+    }
+
+    private func expandComposer() {
+        failure = nil
+        focusedFailure = nil
+        postMutationAccessibilityFocus = nil
+        withAnimation(
+            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+        ) {
+            isComposerExpanded = true
+        }
+
+        Task { @MainActor in
+            await Task.yield()
+            guard isComposerExpanded else { return }
+            isDraftFocused = true
+            isComposerAccessibilityFocused = true
+        }
+    }
+
+    private func requestComposerCollapse() {
+        isDraftFocused = false
+        isComposerAccessibilityFocused = false
+        if hasUnsavedDraft {
+            confirmation = .discardDraftAndCollapse
+        } else {
+            collapseComposer()
+        }
+    }
+
+    private func collapseComposer() {
+        failure = nil
+        focusedFailure = nil
+        withAnimation(
+            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+        ) {
+            isComposerExpanded = false
+        }
+    }
+
+    private func requestReveal(of focusWinID: FocusWin.ID) {
+        focusedWinID = focusWinID
+        winAccessibilityFocusRequestID = UUID()
+        revealRequest = FocusWinRevealRequest(focusWinID: focusWinID)
+    }
+
+    private func consumeAccessibilityFocusRequest(
+        _ requestID: UUID,
+        for focusWinID: FocusWin.ID
+    ) {
+        guard focusedWinID == focusWinID,
+              winAccessibilityFocusRequestID == requestID else { return }
+
+        focusedWinID = nil
+        winAccessibilityFocusRequestID = nil
+    }
+
+    private func reveal(
+        _ request: FocusWinRevealRequest?,
+        with proxy: ScrollViewProxy
+    ) {
+        guard let request else { return }
+
+        Task { @MainActor in
+            await Task.yield()
+            guard revealRequest == request else { return }
+
+            if reduceMotion || voiceOverEnabled || switchControlEnabled {
+                proxy.scrollTo(request.focusWinID, anchor: .center)
+            } else {
+                withAnimation(CheckpointMotion.reveal) {
+                    proxy.scrollTo(request.focusWinID, anchor: .center)
+                }
+            }
+
+            guard revealRequest == request else { return }
+            revealRequest = nil
+        }
+    }
+
+    private func scheduleCelebrationDismissal(for focusWinID: FocusWin.ID) {
+        celebrationTask?.cancel()
+        let requestID = UUID()
+        celebrationRequestID = requestID
+
+        celebrationTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1.4))
+            guard !Task.isCancelled,
+                  celebrationRequestID == requestID,
+                  celebratedWinID == focusWinID else { return }
+
+            withAnimation(
+                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+            ) {
+                celebratedWinID = nil
+            }
+            guard celebrationRequestID == requestID else { return }
+            celebrationRequestID = nil
+            celebrationTask = nil
         }
     }
 
@@ -456,13 +975,38 @@ struct FocusWinsView: View {
 
         failure = nil
         focusedFailure = nil
-        successFeedbackTrigger += 1
+        if celebratedWinID == focusWin.id {
+            celebrationTask?.cancel()
+            celebrationTask = nil
+            celebrationRequestID = nil
+            celebratedWinID = nil
+        }
+        if focusedWinID == focusWin.id {
+            focusedWinID = nil
+            winAccessibilityFocusRequestID = nil
+        }
+        deletionFeedbackTrigger += 1
         AccessibilityNotification.Announcement("Focus Win deleted.").post()
+        Task { @MainActor in
+            await Task.yield()
+            switch FocusWinsPostDeleteFocusPolicy.target(
+                remainingWinCount: focusWins.count,
+                isComposerExpanded: isComposerExpanded
+            ) {
+            case .composer:
+                isComposerAccessibilityFocused = true
+                postMutationAccessibilityFocus = nil
+            case .composerLauncher:
+                postMutationAccessibilityFocus = .composerLauncher
+            case .ledgerTitle:
+                postMutationAccessibilityFocus = .ledgerTitle
+            }
+        }
     }
 
     private func confirmationAlert(_ confirmation: FocusWinsConfirmation) -> Alert {
         switch confirmation {
-        case .discardDraft:
+        case .discardDraftAndDismiss:
             return Alert(
                 title: Text("Discard this draft?"),
                 message: Text("This Focus Win hasn’t been logged."),
@@ -472,7 +1016,34 @@ struct FocusWinsView: View {
                     focusedFailure = nil
                     dismiss()
                 },
-                secondaryButton: .cancel(Text("Keep writing"))
+                secondaryButton: .cancel(Text("Keep writing")) {
+                    Task { @MainActor in
+                        await Task.yield()
+                        guard isComposerExpanded else { return }
+                        isDraftFocused = true
+                        isComposerAccessibilityFocused = true
+                    }
+                }
+            )
+
+        case .discardDraftAndCollapse:
+            return Alert(
+                title: Text("Discard this draft?"),
+                message: Text("This Focus Win hasn’t been logged."),
+                primaryButton: .destructive(Text("Discard")) {
+                    draft = ""
+                    failure = nil
+                    focusedFailure = nil
+                    collapseComposer()
+                },
+                secondaryButton: .cancel(Text("Keep writing")) {
+                    Task { @MainActor in
+                        await Task.yield()
+                        guard isComposerExpanded else { return }
+                        isDraftFocused = true
+                        isComposerAccessibilityFocused = true
+                    }
+                }
             )
 
         case let .delete(focusWin):
@@ -488,17 +1059,23 @@ struct FocusWinsView: View {
     }
 
     private func dayTitle(for date: Date) -> String {
-        let calendar = Calendar.current
-        if calendar.isDateInToday(date) {
+        let referenceDay = calendar.startOfDay(for: referenceDate)
+        let dateDay = calendar.startOfDay(for: date)
+        if dateDay == referenceDay {
             return "Today"
         }
-        if calendar.isDateInYesterday(date) {
+        if let yesterday = calendar.date(byAdding: .day, value: -1, to: referenceDay),
+           dateDay == calendar.startOfDay(for: yesterday) {
             return "Yesterday"
         }
-        if calendar.component(.year, from: date) == calendar.component(.year, from: Date()) {
-            return date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day())
-        }
-        return date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year())
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        let includesYear = calendar.component(.year, from: date)
+            != calendar.component(.year, from: referenceDate)
+        formatter.setLocalizedDateFormatFromTemplate(includesYear ? "EEEEMMMdy" : "EEEEMMMd")
+        return formatter.string(from: date)
     }
 
     private static func winComesBefore(_ lhs: FocusWin, _ rhs: FocusWin) -> Bool {
@@ -509,23 +1086,253 @@ struct FocusWinsView: View {
     }
 }
 
+private struct FocusWinsWeeklySnapshotCard: View {
+    let presentation: FocusWinsWeeklySnapshotPresentation
+    let reduceMotion: Bool
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            snapshotHeader
+            weekRail
+
+            Divider()
+                .overlay(CheckpointTheme.heroDivider)
+
+            privacyBoundary
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(CheckpointTheme.ink)
+                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
+                .overlay(alignment: .topTrailing) {
+                    Circle()
+                        .fill(CheckpointTheme.heroSuccess.opacity(0.09))
+                        .frame(width: 160, height: 160)
+                        .blur(radius: 12)
+                        .offset(x: 72, y: -92)
+                        .allowsHitTesting(false)
+                }
+        )
+        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 9)
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: presentation
+        )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Your Focus Wins this week")
+        .accessibilityValue(presentation.accessibilityValue)
+    }
+
+    @ViewBuilder
+    private var snapshotHeader: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                snapshotIcon
+                snapshotCopy
+                snapshotBadge
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 14) {
+                    snapshotIdentity
+                    Spacer(minLength: 8)
+                    snapshotBadge
+                }
+                .frame(minWidth: 300, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(alignment: .center, spacing: 12) {
+                        snapshotIcon
+                        Spacer(minLength: 8)
+                        snapshotBadge
+                    }
+
+                    snapshotCopy
+                }
+            }
+        }
+    }
+
+    private var snapshotIdentity: some View {
+        HStack(alignment: .top, spacing: 12) {
+            snapshotIcon
+            snapshotCopy
+        }
+    }
+
+    private var snapshotIcon: some View {
+        Image(systemName: presentation.hasWins ? "checkmark.seal.fill" : "sparkles")
+            .symbolRenderingMode(.hierarchical)
+            .font(.system(size: 21, weight: .bold))
+            .foregroundStyle(CheckpointTheme.heroSuccess)
+            .frame(width: 44, height: 44)
+            .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 13))
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffectsRemoved(reduceMotion)
+            .accessibilityHidden(true)
+    }
+
+    private var snapshotCopy: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("YOUR WEEK")
+                .font(.caption2.weight(.bold))
+                .tracking(1)
+                .foregroundStyle(CheckpointTheme.heroMuted)
+
+            Text(presentation.headline)
+                .font(.title2.weight(.bold))
+                .fontDesign(.rounded)
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.numericText())
+
+            Text(presentation.detail)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var snapshotBadge: some View {
+        Text(presentation.badgeText)
+            .font(.caption2.weight(.bold))
+            .tracking(0.6)
+            .foregroundStyle(CheckpointTheme.heroSuccess)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+            .background(CheckpointTheme.heroSuccess.opacity(0.11), in: Capsule())
+            .contentTransition(.numericText())
+    }
+
+    private var weekRail: some View {
+        HStack(spacing: 6) {
+            ForEach(presentation.days) { day in
+                FocusWinsWeekDayMark(day: day)
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var privacyBoundary: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 9) {
+                privacyIcon
+                privacyCopy
+            }
+        } else {
+            HStack(alignment: .top, spacing: 9) {
+                privacyIcon
+                privacyCopy
+            }
+        }
+    }
+
+    private var privacyIcon: some View {
+        Image(systemName: "lock.fill")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.heroSuccess)
+            .frame(width: 18, height: 18)
+            .accessibilityHidden(true)
+    }
+
+    private var privacyCopy: some View {
+        Text("Logged by you. Never used for progress scores, recommendations, questions, or app breaks.")
+            .font(.footnote)
+            .foregroundStyle(CheckpointTheme.heroMuted)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct FocusWinsWeekDayMark: View {
+    let day: FocusWinsWeekDayPresentation
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Text(day.label)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(labelColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            ZStack {
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .fill(markFill)
+
+                if day.winCount == 1 {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 11, weight: .black))
+                        .foregroundStyle(CheckpointTheme.ink)
+                } else if day.winCount > 1 {
+                    Text("\(day.winCount)")
+                        .font(.caption2.monospacedDigit().weight(.black))
+                        .foregroundStyle(CheckpointTheme.ink)
+                        .contentTransition(.numericText())
+                } else if day.isToday {
+                    Circle()
+                        .fill(CheckpointTheme.heroMuted)
+                        .frame(width: 4, height: 4)
+                }
+            }
+            .frame(height: 31)
+            .overlay {
+                if day.isToday {
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .stroke(CheckpointTheme.heroSuccess.opacity(0.66), lineWidth: 1)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .opacity(day.isFuture ? 0.42 : 1)
+        .dynamicTypeSize(...DynamicTypeSize.large)
+    }
+
+    private var labelColor: Color {
+        day.hasWins
+            ? CheckpointTheme.heroText
+            : CheckpointTheme.heroMuted
+    }
+
+    private var markFill: Color {
+        day.hasWins
+            ? CheckpointTheme.heroSuccess
+            : CheckpointTheme.heroSubtleFill
+    }
+}
+
 private enum FocusWinsConfirmation: Identifiable {
-    case discardDraft
+    case discardDraftAndDismiss
+    case discardDraftAndCollapse
     case delete(FocusWin)
 
     var id: String {
         switch self {
-        case .discardDraft:
-            return "discard-draft"
+        case .discardDraftAndDismiss:
+            return "discard-draft-and-dismiss"
+        case .discardDraftAndCollapse:
+            return "discard-draft-and-collapse"
         case let .delete(focusWin):
             return "delete-\(focusWin.id.uuidString)"
         }
     }
 }
 
+private struct FocusWinRevealRequest: Equatable {
+    let id = UUID()
+    let focusWinID: FocusWin.ID
+}
+
 private enum FocusWinsFailure: Hashable {
     case save
     case delete
+}
+
+private enum FocusWinsPostMutationAccessibilityFocus: Hashable {
+    case composerLauncher
+    case ledgerTitle
 }
 
 private struct FocusWinsDayGroup: Identifiable {
@@ -537,7 +1344,18 @@ private struct FocusWinsDayGroup: Identifiable {
 private struct FocusWinRow: View {
     var focusWin: FocusWin
     var usesStackedLayout: Bool
+    var isCelebrated: Bool
+    var celebrationSequence: Int
+    var accessibilityFocusRequestID: UUID?
+    var reduceMotion: Bool
+    var calendar: Calendar
+    var locale: Locale
+    var timeZone: TimeZone
+    var consumeAccessibilityFocusRequest: (UUID) -> Void
     var requestDeletion: () -> Void
+
+    @AccessibilityFocusState(for: [.voiceOver, .switchControl])
+    private var isAccessibilityFocused: Bool
 
     var body: some View {
         Group {
@@ -565,30 +1383,71 @@ private struct FocusWinRow: View {
         .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            CheckpointTheme.panel.opacity(0.94),
+            rowBackground,
             in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
         )
         .overlay {
             RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
-                .stroke(CheckpointTheme.hairline, lineWidth: 1)
+                .stroke(
+                    isCelebrated
+                        ? CheckpointTheme.teal.opacity(0.72)
+                        : CheckpointTheme.hairline,
+                    lineWidth: isCelebrated ? 1.5 : 1
+                )
+        }
+        .shadow(
+            color: isCelebrated ? CheckpointTheme.teal.opacity(0.13) : .clear,
+            radius: 10,
+            y: 4
+        )
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: isCelebrated
+        )
+        .task(id: accessibilityFocusRequestID) {
+            guard let requestID = accessibilityFocusRequestID else { return }
+            await Task.yield()
+            guard !Task.isCancelled,
+                  accessibilityFocusRequestID == requestID else { return }
+            isAccessibilityFocused = true
+            consumeAccessibilityFocusRequest(requestID)
         }
     }
 
     private var noteAndMetadata: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(focusWin.note)
-                .font(.body)
-                .foregroundStyle(CheckpointTheme.text)
-                .fixedSize(horizontal: false, vertical: true)
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: isCelebrated ? "sparkles" : "quote.bubble.fill")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 22, height: 22)
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(.bounce, options: .nonRepeating, value: celebrationSequence)
+                .symbolEffectsRemoved(reduceMotion || !isCelebrated)
+                .accessibilityHidden(true)
 
-            Text("Logged by you · \(focusWin.loggedAt.formatted(.dateTime.hour().minute()))")
-                .font(.caption)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(focusWin.note)
+                    .font(.body)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("Logged by you · \(loggedTimeText)")
+                    .font(.caption)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(rowAccessibilityLabel)
+        .accessibilityFocused($isAccessibilityFocused)
+    }
+
+    private var rowBackground: Color {
+        isCelebrated
+            ? CheckpointTheme.teal.opacity(0.10)
+            : CheckpointTheme.panel.opacity(0.94)
     }
 
     private var actionsMenu: some View {
@@ -611,16 +1470,21 @@ private struct FocusWinRow: View {
         "\(focusWin.note). Logged by you \(fullDateText)"
     }
 
+    private var loggedTimeText: String {
+        formattedDate(template: "jm")
+    }
+
     private var fullDateText: String {
-        focusWin.loggedAt.formatted(
-            .dateTime
-                .weekday(.wide)
-                .month(.wide)
-                .day()
-                .year()
-                .hour()
-                .minute()
-        )
+        formattedDate(template: "EEEEMMMMdyjm")
+    }
+
+    private func formattedDate(template: String) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        formatter.setLocalizedDateFormatFromTemplate(template)
+        return formatter.string(from: focusWin.loggedAt)
     }
 }
 

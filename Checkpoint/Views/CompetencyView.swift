@@ -908,7 +908,14 @@ struct CompetencyView: View {
     }
 
     private func focusWinsEntry(for goal: Goal) -> some View {
-        let count = store.focusWins(for: goal.id).count
+        let calendar = Calendar.current
+        let presentation = FocusWinsEntryPresentation(
+            focusWins: store.focusWins(for: goal.id),
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: .current,
+            timeZone: calendar.timeZone
+        )
 
         return Button {
             focusWinsDestination = FocusWinsDestination(
@@ -918,8 +925,8 @@ struct CompetencyView: View {
         } label: {
             SectionPanel {
                 ViewThatFits(in: .horizontal) {
-                    focusWinsInlineLayout(count: count)
-                    focusWinsStackedLayout(count: count)
+                    focusWinsInlineLayout(presentation: presentation)
+                    focusWinsStackedLayout(presentation: presentation)
                 }
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             }
@@ -927,11 +934,13 @@ struct CompetencyView: View {
         .buttonStyle(CheckpointPressButtonStyle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Focus Wins")
-        .accessibilityValue(focusWinsAccessibilityValue(count))
+        .accessibilityValue(presentation.accessibilityValue)
         .accessibilityHint("Opens Focus Wins for \(goal.title).")
     }
 
-    private func focusWinsInlineLayout(count: Int) -> some View {
+    private func focusWinsInlineLayout(
+        presentation: FocusWinsEntryPresentation
+    ) -> some View {
         HStack(alignment: .center, spacing: 14) {
             focusWinsIcon
 
@@ -940,7 +949,7 @@ struct CompetencyView: View {
                     .font(.headline)
                     .foregroundStyle(CheckpointTheme.text)
 
-                focusWinsDetail
+                focusWinsDetail(presentation.detail)
             }
             .frame(minWidth: 145, alignment: .leading)
             .layoutPriority(1)
@@ -948,13 +957,15 @@ struct CompetencyView: View {
             Spacer(minLength: 4)
 
             HStack(spacing: 7) {
-                focusWinsCount(count)
+                focusWinsCount(presentation.trailingText)
                 focusWinsChevron
             }
         }
     }
 
-    private func focusWinsStackedLayout(count: Int) -> some View {
+    private func focusWinsStackedLayout(
+        presentation: FocusWinsEntryPresentation
+    ) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 12) {
                 focusWinsIcon
@@ -964,11 +975,11 @@ struct CompetencyView: View {
                     .foregroundStyle(CheckpointTheme.text)
             }
 
-            focusWinsDetail
+            focusWinsDetail(presentation.detail)
 
             HStack(spacing: 7) {
                 Spacer(minLength: 0)
-                focusWinsCount(count)
+                focusWinsCount(presentation.trailingText)
                 focusWinsChevron
             }
         }
@@ -986,18 +997,19 @@ struct CompetencyView: View {
             .accessibilityHidden(true)
     }
 
-    private var focusWinsDetail: some View {
-        Text("Keep a private note of progress you noticed toward this goal.")
+    private func focusWinsDetail(_ detail: String) -> some View {
+        Text(detail)
             .font(.subheadline)
             .foregroundStyle(CheckpointTheme.muted)
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    private func focusWinsCount(_ count: Int) -> some View {
-        Text(focusWinsCountLabel(count))
+    private func focusWinsCount(_ text: String) -> some View {
+        Text(text)
             .font(.caption.weight(.semibold))
             .foregroundStyle(CheckpointTheme.muted)
             .fixedSize(horizontal: false, vertical: true)
+            .contentTransition(.numericText())
     }
 
     private var focusWinsChevron: some View {
@@ -1005,20 +1017,6 @@ struct CompetencyView: View {
             .font(.caption.weight(.bold))
             .foregroundStyle(CheckpointTheme.teal)
             .accessibilityHidden(true)
-    }
-
-    private func focusWinsCountLabel(_ count: Int) -> String {
-        switch count {
-        case 0: "No notes"
-        case 1: "1 note"
-        default: "\(count) notes"
-        }
-    }
-
-    private func focusWinsAccessibilityValue(_ count: Int) -> String {
-        count == 0
-            ? "No entries logged by you"
-            : "\(count) \(count == 1 ? "entry" : "entries") logged by you"
     }
 
     private var progressHero: some View {
