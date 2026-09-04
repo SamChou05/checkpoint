@@ -1,3 +1,4 @@
+import SwiftUI
 import XCTest
 @testable import Checkpoint
 
@@ -18,6 +19,449 @@ final class PracticeHistoryReviewPresentationTests: XCTestCase {
             XCTAssertEqual(presentation.label, expectedLabel, result.rawValue)
             XCTAssertEqual(presentation.systemImage, expectedSystemImage, result.rawValue)
             XCTAssertEqual(presentation.tone, expectedTone, result.rawValue)
+        }
+    }
+
+    func testArchiveDefaultsToAllGoalsAndKeepsMetricsScopedBeforeFiltering() {
+        let fixture = makeArchiveFixture()
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: fixture.attempts,
+            goalProfiles: [fixture.activeGoal, fixture.otherGoal, fixture.emptyGoal],
+            activeGoalID: fixture.activeGoal.id,
+            requestedScope: nil,
+            filter: .review
+        )
+
+        XCTAssertEqual(presentation.scope, .all)
+        XCTAssertEqual(
+            presentation.goalOptions.map(\.id),
+            [fixture.activeGoal.id, fixture.otherGoal.id, fixture.emptyGoal.id]
+        )
+        XCTAssertEqual(presentation.goalOptions.map(\.isCurrent), [true, false, false])
+        XCTAssertEqual(
+            presentation.scopedAttempts.map(\.prompt),
+            [
+                "Which launch constraint should be verified first?",
+                "Choose the correct past-tense response.",
+                "Which dependency creates the largest recovery risk?",
+                "Translate the customer greeting."
+            ]
+        )
+        XCTAssertEqual(
+            presentation.filteredAttempts.map(\.prompt),
+            [
+                "Choose the correct past-tense response.",
+                "Which dependency creates the largest recovery risk?"
+            ]
+        )
+        XCTAssertEqual(presentation.correctCount, 2)
+        XCTAssertEqual(presentation.reviewCount, 2)
+        XCTAssertEqual(presentation.accuracyPercent, 50)
+        XCTAssertEqual(presentation.scopeTitle, "All goals")
+        XCTAssertEqual(presentation.summaryContext, "Across 2 goals")
+        XCTAssertTrue(presentation.showsScopePicker)
+        XCTAssertTrue(presentation.showsGoalIdentity)
+        XCTAssertFalse(presentation.isGloballyEmpty)
+        XCTAssertFalse(presentation.isScopeEmpty)
+        XCTAssertEqual(presentation.filteredEmptyTitle, "Nothing to revisit")
+        XCTAssertEqual(presentation.filteredEmptyDetail, "Every recorded answer is correct.")
+    }
+
+    func testArchivePerGoalScopeComposesWithFilterWithoutChangingSummaryMetrics() {
+        let fixture = makeArchiveFixture()
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: fixture.attempts,
+            goalProfiles: [fixture.activeGoal, fixture.otherGoal, fixture.emptyGoal],
+            activeGoalID: fixture.activeGoal.id,
+            requestedScope: .goal(fixture.otherGoal.id),
+            filter: .correct
+        )
+
+        XCTAssertEqual(presentation.scope, .goal(fixture.otherGoal.id))
+        XCTAssertEqual(
+            presentation.scopedAttempts.map(\.prompt),
+            ["Choose the correct past-tense response.", "Translate the customer greeting."]
+        )
+        XCTAssertEqual(
+            presentation.filteredAttempts.map(\.prompt),
+            ["Translate the customer greeting."]
+        )
+        XCTAssertEqual(presentation.correctCount, 1)
+        XCTAssertEqual(presentation.reviewCount, 1)
+        XCTAssertEqual(presentation.accuracyPercent, 50)
+        XCTAssertEqual(presentation.scopeTitle, fixture.otherGoal.title)
+        XCTAssertEqual(presentation.summaryContext, "For this goal")
+        XCTAssertFalse(presentation.showsGoalIdentity)
+        XCTAssertFalse(presentation.isScopeEmpty)
+        XCTAssertTrue(presentation.supportingCopy.contains(fixture.otherGoal.title))
+    }
+
+    func testArchiveUsesDescendingUUIDAsDeterministicTieBreakerForSameDate() {
+        let goal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000401"),
+            title: "Practice deterministic ordering",
+            deadline: fixedReferenceDate.addingTimeInterval(86_400 * 30),
+            createdAt: fixedReferenceDate
+        )
+        let sharedDate = fixedReferenceDate.addingTimeInterval(-3_600)
+        let low = makeArchiveAttempt(
+            id: fixedUUID("00000000-0000-0000-0000-000000000001"),
+            questionID: fixedUUID("00000000-0000-0000-0000-000000000411"),
+            goalID: goal.id,
+            prompt: "Low UUID",
+            result: .correct,
+            createdAt: sharedDate
+        )
+        let middle = makeArchiveAttempt(
+            id: fixedUUID("00000000-0000-0000-0000-00000000000A"),
+            questionID: fixedUUID("00000000-0000-0000-0000-000000000412"),
+            goalID: goal.id,
+            prompt: "Middle UUID",
+            result: .correct,
+            createdAt: sharedDate
+        )
+        let high = makeArchiveAttempt(
+            id: fixedUUID("00000000-0000-0000-0000-00000000000F"),
+            questionID: fixedUUID("00000000-0000-0000-0000-000000000413"),
+            goalID: goal.id,
+            prompt: "High UUID",
+            result: .correct,
+            createdAt: sharedDate
+        )
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: [middle, low, high],
+            goalProfiles: [goal],
+            activeGoalID: goal.id,
+            requestedScope: .goal(goal.id),
+            filter: .all
+        )
+
+        XCTAssertEqual(presentation.scopedAttempts.map(\.id), [high.id, middle.id, low.id])
+    }
+
+    func testArchiveDisambiguatesEquivalentGoalTitlesWithDueDates() throws {
+        let goals = makeDuplicateTitleGoals()
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: [],
+            goalProfiles: [goals.first, goals.second],
+            activeGoalID: goals.first.id,
+            requestedScope: .all,
+            filter: .all
+        )
+
+        let firstTitle = try XCTUnwrap(
+            presentation.goalOptions.first { $0.id == goals.first.id }?.title
+        )
+        let secondTitle = try XCTUnwrap(
+            presentation.goalOptions.first { $0.id == goals.second.id }?.title
+        )
+        XCTAssertTrue(firstTitle.hasPrefix("Résumé mastery · due "))
+        XCTAssertTrue(secondTitle.hasPrefix("resume mastery · due "))
+        XCTAssertNotEqual(firstTitle, secondTitle)
+        XCTAssertEqual(presentation.goalTitle(for: goals.first.id), firstTitle)
+        XCTAssertEqual(presentation.goalTitle(for: goals.second.id), secondTitle)
+    }
+
+    func testArchiveGuaranteesUniqueLabelsForIdenticalNamesAndDeadlines() {
+        let sharedDeadline = fixedReferenceDate.addingTimeInterval(86_400 * 30)
+        let firstGoal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000731"),
+            title: "Complete the launch review",
+            deadline: sharedDeadline,
+            createdAt: fixedReferenceDate.addingTimeInterval(-200)
+        )
+        let secondGoal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000732"),
+            title: "Complete the launch review",
+            deadline: sharedDeadline,
+            createdAt: fixedReferenceDate.addingTimeInterval(-100)
+        )
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: [],
+            goalProfiles: [secondGoal, firstGoal],
+            activeGoalID: secondGoal.id,
+            requestedScope: .all,
+            filter: .all
+        )
+        let titles = presentation.goalOptions.map(\.title)
+
+        XCTAssertEqual(Set(titles).count, 2)
+        XCTAssertTrue(titles.allSatisfy { $0.contains("· profile ") })
+        XCTAssertEqual(presentation.goalTitle(for: firstGoal.id), titles[1])
+        XCTAssertEqual(presentation.goalTitle(for: secondGoal.id), titles[0])
+    }
+
+    func testAllGoalsScopeKeepsRowIdentityWhenOnlyOneProfileHasAnswers() {
+        let fixture = makeArchiveFixture()
+        let singleAttempt = fixture.attempts[0]
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: [singleAttempt],
+            goalProfiles: [fixture.activeGoal, fixture.otherGoal],
+            activeGoalID: fixture.activeGoal.id,
+            requestedScope: .all,
+            filter: .all
+        )
+
+        XCTAssertEqual(presentation.summaryContext, "Across 1 goal")
+        XCTAssertTrue(presentation.showsGoalIdentity)
+        XCTAssertEqual(
+            presentation.goalTitle(for: singleAttempt.goalID),
+            fixture.activeGoal.title
+        )
+    }
+
+    func testArchiveAttemptTimesRespectTheInjectedTimeZone() throws {
+        let goal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000741"),
+            title: "Verify localized history",
+            deadline: fixedReferenceDate,
+            createdAt: fixedReferenceDate
+        )
+        let attempt = makeArchiveAttempt(
+            id: fixedUUID("00000000-0000-0000-0000-000000000742"),
+            questionID: fixedUUID("00000000-0000-0000-0000-000000000743"),
+            goalID: goal.id,
+            prompt: "Which time should the archive display?",
+            result: .correct,
+            createdAt: Date(timeIntervalSince1970: 0)
+        )
+        let locale = Locale(identifier: "en_US_POSIX")
+        let timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = locale
+        calendar.timeZone = timeZone
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: [attempt],
+            goalProfiles: [goal],
+            activeGoalID: goal.id,
+            requestedScope: .goal(goal.id),
+            filter: .all,
+            displayCalendar: calendar,
+            displayLocale: locale,
+            displayTimeZone: timeZone
+        )
+
+        XCTAssertEqual(
+            presentation.timeText(for: attempt)
+                .replacingOccurrences(of: "\u{202F}", with: " "),
+            "12:00 AM"
+        )
+    }
+
+    func testArchiveFallsBackFromMissingScopeAndLabelsUnavailableGoalHistory() {
+        let fixture = makeArchiveFixture()
+        let unavailableGoalID = fixedUUID("00000000-0000-0000-0000-000000000499")
+        let unavailableAttempt = makeArchiveAttempt(
+            id: fixedUUID("00000000-0000-0000-0000-000000000498"),
+            questionID: fixedUUID("00000000-0000-0000-0000-000000000497"),
+            goalID: unavailableGoalID,
+            prompt: "Saved answer for an unavailable goal",
+            result: .incorrect,
+            createdAt: fixedReferenceDate.addingTimeInterval(60)
+        )
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: fixture.attempts + [unavailableAttempt],
+            goalProfiles: [fixture.activeGoal, fixture.otherGoal],
+            activeGoalID: fixture.activeGoal.id,
+            requestedScope: .goal(unavailableGoalID),
+            filter: .all
+        )
+
+        XCTAssertEqual(presentation.scope, .all)
+        XCTAssertEqual(presentation.scopeTitle, "All goals")
+        XCTAssertEqual(presentation.goalTitle(for: unavailableGoalID), "Unavailable goal")
+        XCTAssertTrue(presentation.scopedAttempts.contains { $0.goalID == unavailableGoalID })
+        XCTAssertTrue(presentation.showsGoalIdentity)
+    }
+
+    func testArchiveKeepsASelectedKnownGoalWithNoAnswersAsAnEmptyScope() {
+        let fixture = makeArchiveFixture()
+
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: fixture.attempts,
+            goalProfiles: [fixture.activeGoal, fixture.otherGoal, fixture.emptyGoal],
+            activeGoalID: fixture.activeGoal.id,
+            requestedScope: .goal(fixture.emptyGoal.id),
+            filter: .all
+        )
+
+        XCTAssertEqual(presentation.scope, .goal(fixture.emptyGoal.id))
+        XCTAssertTrue(presentation.scopedAttempts.isEmpty)
+        XCTAssertTrue(presentation.filteredAttempts.isEmpty)
+        XCTAssertFalse(presentation.isGloballyEmpty)
+        XCTAssertTrue(presentation.isScopeEmpty)
+        XCTAssertEqual(presentation.correctCount, 0)
+        XCTAssertEqual(presentation.reviewCount, 0)
+        XCTAssertEqual(presentation.accuracyPercent, 0)
+        XCTAssertEqual(presentation.scopeTitle, fixture.emptyGoal.title)
+        XCTAssertEqual(presentation.scopeEmptyTitle, "No answers for this goal yet")
+        XCTAssertEqual(
+            presentation.scopeEmptyDetail,
+            "Complete a checkpoint for \(fixture.emptyGoal.title) to start its history."
+        )
+    }
+
+    func testHistoryMotionPolicyRemovesSpatialMotionWhenReduceMotionIsEnabled() {
+        let standard = PracticeHistoryMotionPolicy(reduceMotion: false)
+        XCTAssertTrue(standard.usesMatchedGeometry)
+        XCTAssertTrue(standard.usesRevealTransition)
+
+        let reduced = PracticeHistoryMotionPolicy(reduceMotion: true)
+        XCTAssertFalse(reduced.usesMatchedGeometry)
+        XCTAssertFalse(reduced.usesRevealTransition)
+    }
+
+    @MainActor
+    func testPracticeHistoryArchiveRendersAcrossScopeTypeAndMotionStates() throws {
+        let archiveFixture = makeArchiveFixture()
+        let duplicateGoals = makeDuplicateTitleGoals()
+        let archiveSuiteName = "PracticeHistoryArchiveRenderingTests.Archive.\(UUID().uuidString)"
+        let duplicateSuiteName = "PracticeHistoryArchiveRenderingTests.Duplicate.\(UUID().uuidString)"
+        let archiveDefaults = try XCTUnwrap(UserDefaults(suiteName: archiveSuiteName))
+        let duplicateDefaults = try XCTUnwrap(UserDefaults(suiteName: duplicateSuiteName))
+        defer {
+            archiveDefaults.removePersistentDomain(forName: archiveSuiteName)
+            duplicateDefaults.removePersistentDomain(forName: duplicateSuiteName)
+        }
+
+        let archiveStore = makeArchiveStore(
+            defaults: archiveDefaults,
+            fixture: archiveFixture
+        )
+        let duplicateStore = makeDuplicateTitleStore(
+            defaults: duplicateDefaults,
+            goals: duplicateGoals
+        )
+        let expandedAttemptID = try XCTUnwrap(
+            archiveFixture.attempts.first {
+                $0.goalID == archiveFixture.otherGoal.id && $0.result == .partial
+            }?.id
+        )
+        let fixtures = [
+            PracticeHistoryRenderFixture(
+                name: "practice-history-all-goals-light",
+                store: archiveStore,
+                configuration: HistoryViewRenderConfiguration(
+                    initialScope: .all,
+                    reduceMotion: false,
+                    referenceDate: fixedReferenceDate
+                ),
+                width: 393,
+                height: 1_500,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            PracticeHistoryRenderFixture(
+                name: "practice-history-selected-revisit-expanded-dark",
+                store: archiveStore,
+                configuration: HistoryViewRenderConfiguration(
+                    initialScope: .goal(archiveFixture.otherGoal.id),
+                    initialFilter: .review,
+                    initiallyExpandedAttemptIDs: [expandedAttemptID],
+                    reduceMotion: false,
+                    referenceDate: fixedReferenceDate
+                ),
+                width: 393,
+                height: 1_500,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            ),
+            PracticeHistoryRenderFixture(
+                name: "practice-history-duplicate-title-compact",
+                store: duplicateStore,
+                configuration: HistoryViewRenderConfiguration(
+                    initialScope: .goal(duplicateGoals.first.id),
+                    reduceMotion: false,
+                    referenceDate: fixedReferenceDate
+                ),
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            PracticeHistoryRenderFixture(
+                name: "practice-history-all-goals-accessibility2",
+                store: archiveStore,
+                configuration: HistoryViewRenderConfiguration(
+                    initialScope: .all,
+                    reduceMotion: false,
+                    referenceDate: fixedReferenceDate
+                ),
+                width: 393,
+                height: 2_000,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility2
+            ),
+            PracticeHistoryRenderFixture(
+                name: "practice-history-selected-empty-goal",
+                store: archiveStore,
+                configuration: HistoryViewRenderConfiguration(
+                    initialScope: .goal(archiveFixture.emptyGoal.id),
+                    reduceMotion: false,
+                    referenceDate: fixedReferenceDate
+                ),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            PracticeHistoryRenderFixture(
+                name: "practice-history-reduce-motion-dark",
+                store: archiveStore,
+                configuration: HistoryViewRenderConfiguration(
+                    initialScope: .all,
+                    initialFilter: .correct,
+                    reduceMotion: true,
+                    referenceDate: fixedReferenceDate
+                ),
+                width: 393,
+                height: 1_300,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            )
+        ]
+        let locale = Locale(identifier: "en_US_POSIX")
+        let timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = locale
+        calendar.timeZone = timeZone
+
+        for fixture in fixtures {
+            autoreleasepool {
+                let view = HistoryView(
+                    store: fixture.store,
+                    renderConfiguration: fixture.configuration
+                )
+                .environment(\.calendar, calendar)
+                .environment(\.locale, locale)
+                .environment(\.timeZone, timeZone)
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+
+                let image = HostedViewRenderer.image(
+                    for: view,
+                    width: fixture.width,
+                    height: fixture.height,
+                    colorScheme: fixture.colorScheme,
+                    settlingTime: fixture.configuration.reduceMotion == true ? 0.05 : 0.55,
+                    renderScale: 0.5
+                )
+
+                XCTAssertEqual(image.size.width, fixture.width, accuracy: 1, fixture.name)
+                XCTAssertEqual(image.size.height, fixture.height, accuracy: 1, fixture.name)
+                let attachment = XCTAttachment(image: image)
+                attachment.name = fixture.name
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
         }
     }
 
@@ -187,6 +631,35 @@ final class PracticeHistoryReviewPresentationTests: XCTestCase {
         )
     }
 
+    func testSameQuestionIDDifferentGoalDoesNotProvideLegacyReviewFallback() {
+        let sharedQuestionID = fixedUUID("00000000-0000-0000-0000-000000000501")
+        let attemptGoalID = fixedUUID("00000000-0000-0000-0000-000000000502")
+        let retainedQuestion = makeRetainedQuestion(
+            id: sharedQuestionID,
+            goalID: fixedUUID("00000000-0000-0000-0000-000000000503"),
+            topic: "Wrong goal topic",
+            expectedAnswer: "Wrong goal answer",
+            explanation: "Wrong goal explanation",
+            format: .reflection
+        )
+        let attempt = makeAttempt(
+            questionID: sharedQuestionID,
+            goalID: attemptGoalID,
+            answer: "Recorded answer for the intended goal",
+            result: .incorrect
+        )
+
+        let presentation = PracticeHistoryReviewPresentation(
+            attempt: attempt,
+            retainedQuestion: retainedQuestion
+        )
+
+        assertUserAnswerOnly(
+            presentation,
+            expectedAnswer: "Recorded answer for the intended goal"
+        )
+    }
+
     func testMismatchedRetainedQuestionLeavesLegacyAttemptAtUserAnswerOnly() {
         let attempt = makeAttempt(answer: "Recorded learner answer", result: .incorrect)
         let retainedQuestion = makeRetainedQuestion(
@@ -212,6 +685,221 @@ final class PracticeHistoryReviewPresentationTests: XCTestCase {
         let presentation = PracticeHistoryReviewPresentation(attempt: attempt)
 
         assertUserAnswerOnly(presentation, expectedAnswer: "Orphaned learner answer")
+    }
+
+    private var fixedReferenceDate: Date {
+        Date(timeIntervalSince1970: 1_788_458_400)
+    }
+
+    private func fixedUUID(_ value: String) -> UUID {
+        guard let id = UUID(uuidString: value) else {
+            preconditionFailure("Invalid fixed test UUID: \(value)")
+        }
+        return id
+    }
+
+    private func makeArchiveFixture() -> PracticeHistoryArchiveFixture {
+        let referenceDate = fixedReferenceDate
+        let activeGoal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000601"),
+            title: "Lead production architecture reviews",
+            deadline: referenceDate.addingTimeInterval(86_400 * 45),
+            createdAt: referenceDate.addingTimeInterval(-86_400 * 10)
+        )
+        let otherGoal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000602"),
+            title: "Build fluent Spanish conversation",
+            deadline: referenceDate.addingTimeInterval(86_400 * 75),
+            createdAt: referenceDate.addingTimeInterval(-86_400 * 20)
+        )
+        let emptyGoal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000603"),
+            title: "Prepare a product strategy portfolio",
+            deadline: referenceDate.addingTimeInterval(86_400 * 100),
+            createdAt: referenceDate.addingTimeInterval(-86_400 * 30)
+        )
+        let sharedQuestionID = fixedUUID("00000000-0000-0000-0000-000000000610")
+        let activeQuestion = CheckpointQuestion(
+            id: sharedQuestionID,
+            goalID: activeGoal.id,
+            prompt: "Which launch constraint should be verified first?",
+            expectedAnswer: "Verify the irreversible dependency before committing rollout state.",
+            explanation: "The highest-cost irreversible dependency should be validated before rollout.",
+            topic: "Launch reliability",
+            difficulty: 3,
+            format: .shortAnswer,
+            sourcePrompt: "fixed history fixture"
+        )
+        let otherQuestion = CheckpointQuestion(
+            id: sharedQuestionID,
+            goalID: otherGoal.id,
+            prompt: "Choose the correct past-tense response.",
+            expectedAnswer: "Ayer hablé con el cliente.",
+            explanation: "Hablé is the first-person preterite form used for a completed action.",
+            topic: "Past-tense conversation",
+            difficulty: 2,
+            format: .shortAnswer,
+            sourcePrompt: "fixed history fixture"
+        )
+        let attempts = [
+            makeArchiveAttempt(
+                id: fixedUUID("00000000-0000-0000-0000-000000000621"),
+                questionID: sharedQuestionID,
+                goalID: activeGoal.id,
+                prompt: activeQuestion.prompt,
+                answer: activeQuestion.expectedAnswer,
+                result: .correct,
+                createdAt: referenceDate.addingTimeInterval(-600)
+            ),
+            makeArchiveAttempt(
+                id: fixedUUID("00000000-0000-0000-0000-000000000622"),
+                questionID: sharedQuestionID,
+                goalID: otherGoal.id,
+                prompt: otherQuestion.prompt,
+                answer: "Ayer hablo con el cliente.",
+                result: .partial,
+                createdAt: referenceDate.addingTimeInterval(-1_800)
+            ),
+            makeArchiveAttempt(
+                id: fixedUUID("00000000-0000-0000-0000-000000000623"),
+                questionID: fixedUUID("00000000-0000-0000-0000-000000000613"),
+                goalID: activeGoal.id,
+                prompt: "Which dependency creates the largest recovery risk?",
+                answer: "The easiest dependency to replace",
+                result: .incorrect,
+                createdAt: referenceDate.addingTimeInterval(-7_200),
+                reviewSnapshot: CheckpointAttemptReviewSnapshot(
+                    topic: "Failure recovery",
+                    format: .shortAnswer,
+                    referenceAnswer: "The dependency with irreversible external state.",
+                    explanation: "Irreversible state makes rollback and recovery substantially harder."
+                )
+            ),
+            makeArchiveAttempt(
+                id: fixedUUID("00000000-0000-0000-0000-000000000624"),
+                questionID: fixedUUID("00000000-0000-0000-0000-000000000614"),
+                goalID: otherGoal.id,
+                prompt: "Translate the customer greeting.",
+                answer: "Buenos días, ¿cómo puedo ayudarle?",
+                result: .correct,
+                createdAt: referenceDate.addingTimeInterval(-86_400 - 1_800),
+                reviewSnapshot: CheckpointAttemptReviewSnapshot(
+                    topic: "Customer greetings",
+                    format: .shortAnswer,
+                    referenceAnswer: nil,
+                    explanation: "The greeting and formal pronoun fit a customer conversation."
+                )
+            )
+        ]
+        return PracticeHistoryArchiveFixture(
+            activeGoal: activeGoal,
+            otherGoal: otherGoal,
+            emptyGoal: emptyGoal,
+            questions: [activeQuestion, otherQuestion],
+            attempts: attempts
+        )
+    }
+
+    private func makeDuplicateTitleGoals() -> (first: Goal, second: Goal) {
+        (
+            first: makeArchiveGoal(
+                id: fixedUUID("00000000-0000-0000-0000-000000000701"),
+                title: "Résumé mastery",
+                deadline: fixedReferenceDate.addingTimeInterval(86_400 * 30),
+                createdAt: fixedReferenceDate.addingTimeInterval(-86_400)
+            ),
+            second: makeArchiveGoal(
+                id: fixedUUID("00000000-0000-0000-0000-000000000702"),
+                title: "resume mastery",
+                deadline: fixedReferenceDate.addingTimeInterval(86_400 * 60),
+                createdAt: fixedReferenceDate.addingTimeInterval(-86_400 * 2)
+            )
+        )
+    }
+
+    private func makeArchiveGoal(
+        id: Goal.ID,
+        title: String,
+        deadline: Date,
+        createdAt: Date
+    ) -> Goal {
+        Goal(
+            id: id,
+            title: title,
+            deadline: deadline,
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "A deterministic test focus",
+            preferredQuestionStyle: .shortAnswer,
+            createdAt: createdAt
+        )
+    }
+
+    private func makeArchiveAttempt(
+        id: CheckpointAttempt.ID,
+        questionID: CheckpointQuestion.ID,
+        goalID: Goal.ID,
+        prompt: String,
+        answer: String = "Recorded learner answer",
+        result: AnswerResult,
+        createdAt: Date,
+        reviewSnapshot: CheckpointAttemptReviewSnapshot? = nil
+    ) -> CheckpointAttempt {
+        CheckpointAttempt(
+            id: id,
+            questionID: questionID,
+            goalID: goalID,
+            prompt: prompt,
+            answer: answer,
+            result: result,
+            unlockMinutes: 0,
+            reviewSnapshot: reviewSnapshot,
+            createdAt: createdAt
+        )
+    }
+
+    @MainActor
+    private func makeArchiveStore(
+        defaults: UserDefaults,
+        fixture: PracticeHistoryArchiveFixture
+    ) -> CheckpointStore {
+        let store = CheckpointStore(defaults: defaults)
+        store.membershipTier = .member
+        store.goal = fixture.activeGoal
+        store.goalProfiles = [fixture.activeGoal, fixture.otherGoal, fixture.emptyGoal]
+        store.questions = fixture.questions
+        store.attempts = fixture.attempts
+        return store
+    }
+
+    @MainActor
+    private func makeDuplicateTitleStore(
+        defaults: UserDefaults,
+        goals: (first: Goal, second: Goal)
+    ) -> CheckpointStore {
+        let store = CheckpointStore(defaults: defaults)
+        store.membershipTier = .member
+        store.goal = goals.first
+        store.goalProfiles = [goals.first, goals.second]
+        store.attempts = [
+            makeArchiveAttempt(
+                id: fixedUUID("00000000-0000-0000-0000-000000000711"),
+                questionID: fixedUUID("00000000-0000-0000-0000-000000000712"),
+                goalID: goals.first.id,
+                prompt: "Which portfolio detail makes the outcome concrete?",
+                result: .correct,
+                createdAt: fixedReferenceDate.addingTimeInterval(-900)
+            ),
+            makeArchiveAttempt(
+                id: fixedUUID("00000000-0000-0000-0000-000000000713"),
+                questionID: fixedUUID("00000000-0000-0000-0000-000000000714"),
+                goalID: goals.second.id,
+                prompt: "Which revision best clarifies the impact?",
+                result: .partial,
+                createdAt: fixedReferenceDate.addingTimeInterval(-1_800)
+            )
+        ]
+        return store
     }
 
     private func makeAttempt(
@@ -268,4 +956,23 @@ final class PracticeHistoryReviewPresentationTests: XCTestCase {
         XCTAssertNil(presentation.referenceAnswer, file: file, line: line)
         XCTAssertNil(presentation.explanation, file: file, line: line)
     }
+}
+
+private struct PracticeHistoryArchiveFixture {
+    let activeGoal: Goal
+    let otherGoal: Goal
+    let emptyGoal: Goal
+    let questions: [CheckpointQuestion]
+    let attempts: [CheckpointAttempt]
+}
+
+@MainActor
+private struct PracticeHistoryRenderFixture {
+    let name: String
+    let store: CheckpointStore
+    let configuration: HistoryViewRenderConfiguration
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
 }
