@@ -2,10 +2,296 @@ import Accessibility
 import SwiftUI
 import UniformTypeIdentifiers
 
-private enum GoalSetupMode: Equatable {
+enum GoalSetupMode: Equatable {
     case firstGoal
     case newGoal
     case editGoal
+
+    func preferredQuestionStyle(from existingGoal: Goal?) -> QuestionFormat {
+        guard self == .editGoal else { return .multipleChoice }
+        return existingGoal?.preferredQuestionStyle ?? .multipleChoice
+    }
+}
+
+enum GoalSetupHeroState: Equatable {
+    case awaitingGoal
+    case ready
+    case upToDate
+    case unsavedChanges
+    case working
+}
+
+enum GoalSetupEditImpact: Equatable {
+    case none
+    case deadlineOnly
+    case practiceSetup
+
+    init(
+        baseline: GoalSetupEditBaseline?,
+        title: String,
+        deadline: Date,
+        currentLevel: String,
+        focusAreas: String,
+        sourceDocuments: [GoalSourceDocument],
+        preferredQuestionStyle: QuestionFormat,
+        minimumQuestionDifficulty: Int,
+        calendar: Calendar = .current
+    ) {
+        guard let baseline else {
+            self = .none
+            return
+        }
+
+        let practiceSetupChanged =
+            title.trimmingCharacters(in: .whitespacesAndNewlines) != baseline.title ||
+            currentLevel.trimmingCharacters(in: .whitespacesAndNewlines) != baseline.currentLevel ||
+            focusAreas.trimmingCharacters(in: .whitespacesAndNewlines) != baseline.focusAreas ||
+            GoalSourceDocument.normalizedDocuments(sourceDocuments) != baseline.sourceDocuments ||
+            preferredQuestionStyle != baseline.preferredQuestionStyle ||
+            UnlockPolicy.normalizedQuestionDifficulty(minimumQuestionDifficulty) != baseline.minimumQuestionDifficulty
+
+        if practiceSetupChanged {
+            self = .practiceSetup
+        } else if !calendar.isDate(deadline, inSameDayAs: baseline.deadline) {
+            self = .deadlineOnly
+        } else {
+            self = .none
+        }
+    }
+}
+
+struct GoalSetupEditBaseline: Equatable {
+    let title: String
+    let deadline: Date
+    let currentLevel: String
+    let focusAreas: String
+    let sourceDocuments: [GoalSourceDocument]
+    let preferredQuestionStyle: QuestionFormat
+    let minimumQuestionDifficulty: Int
+
+    init(goal: Goal) {
+        title = goal.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        deadline = goal.deadline
+        currentLevel = goal.currentLevel.trimmingCharacters(in: .whitespacesAndNewlines)
+        focusAreas = goal.focusAreas.trimmingCharacters(in: .whitespacesAndNewlines)
+        sourceDocuments = GoalSourceDocument.normalizedDocuments(goal.sourceDocuments)
+        preferredQuestionStyle = goal.preferredQuestionStyle
+        minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(
+            goal.minimumQuestionDifficulty
+        )
+    }
+}
+
+struct GoalSetupHeroPresentation: Equatable {
+    let state: GoalSetupHeroState
+    let eyebrow: String
+    let title: String
+    let subtitle: String
+    let status: String
+    let systemImage: String
+    let guidanceSystemImage: String
+    let guidance: String
+    let accessibilityContext: String
+
+    init(
+        mode: GoalSetupMode,
+        hasGoalTitle: Bool,
+        editImpact: GoalSetupEditImpact = .none,
+        isWorking: Bool
+    ) {
+        if isWorking {
+            state = .working
+        } else if !hasGoalTitle {
+            state = .awaitingGoal
+        } else if mode != .editGoal {
+            state = .ready
+        } else {
+            state = editImpact == .none ? .upToDate : .unsavedChanges
+        }
+
+        switch mode {
+        case .firstGoal:
+            eyebrow = "SETUP · STEP 2 OF 3"
+            accessibilityContext = "Checkpoint setup, step 2 of 3"
+            title = "What are you working toward?"
+            subtitle = "Name one outcome. Turn it into short practice before selected apps open."
+        case .newGoal:
+            eyebrow = "NEW GOAL"
+            accessibilityContext = "New goal"
+            title = "What else are you working toward?"
+            subtitle = "Give this priority a dedicated skill map with its own checkpoints and progress."
+        case .editGoal:
+            eyebrow = "EDIT GOAL"
+            accessibilityContext = "Edit goal"
+            title = "Refine your practice direction."
+            subtitle = "Saved changes guide future checkpoints for this goal."
+        }
+
+        switch state {
+        case .awaitingGoal:
+            status = "Goal needed"
+            systemImage = "scope"
+        case .ready:
+            status = "Ready"
+            systemImage = "sparkles"
+        case .upToDate:
+            status = "Up to date"
+            systemImage = "checkmark.circle.fill"
+        case .unsavedChanges:
+            status = "Unsaved changes"
+            systemImage = "pencil.line"
+        case .working:
+            status = mode == .editGoal ? "Saving…" : "Preparing…"
+            systemImage = "hourglass"
+        }
+
+        if state == .awaitingGoal {
+            guidanceSystemImage = "arrow.down"
+            guidance = mode == .editGoal
+                ? "Enter a goal before saving."
+                : "Enter one outcome to continue."
+        } else {
+            switch mode {
+            case .firstGoal:
+                guidanceSystemImage = "arrow.right"
+                guidance = "Next: choose the apps this goal protects."
+            case .newGoal:
+                guidanceSystemImage = "checkmark.circle"
+                guidance = "This goal becomes active. Your other goals stay available."
+            case .editGoal:
+                switch editImpact {
+                case .none:
+                    guidanceSystemImage = "checkmark.circle"
+                    guidance = "Your current goal is saved."
+                case .deadlineOnly:
+                    guidanceSystemImage = "calendar"
+                    guidance = "Only the target date will change."
+                case .practiceSetup:
+                    guidanceSystemImage = "arrow.triangle.2.circlepath"
+                    guidance = "Future questions will use the updated practice setup."
+                }
+            }
+        }
+    }
+}
+
+struct GoalSetupDirectionPresentation: Equatable {
+    let title: String
+    let detail: String
+    let topics: [String]
+    let systemImage: String
+    let accessibilityAnnouncement: String
+
+    init?(goalTitle: String, focusAreas: String) {
+        let target = GoalQuestionContext.learningTarget(fromTitle: goalTitle)
+        guard !target.isEmpty else { return nil }
+
+        let meaningfulTopics = GoalQuestionContext.meaningfulFocusTopics(from: focusAreas)
+        if meaningfulTopics.isEmpty {
+            guard let interpretation = GoalSetupGuidance(
+                title: goalTitle,
+                focusAreas: focusAreas
+            ).interpretation else {
+                return nil
+            }
+            title = "Starting with “\(target)”"
+            detail = "Checkpoint will use this as the starting direction for an editable skill map."
+            topics = []
+            systemImage = "sparkles"
+            accessibilityAnnouncement = "Checkpoint will prepare \(interpretation)."
+        } else {
+            let count = meaningfulTopics.count
+            title = "Using \(count) \(count == 1 ? "topic" : "topics") you chose"
+            detail = "These topics will seed an editable skill map for future questions."
+            topics = meaningfulTopics
+            systemImage = "list.bullet.rectangle"
+            accessibilityAnnouncement = "Practice direction updated: \(meaningfulTopics.joined(separator: ", "))."
+        }
+    }
+}
+
+struct GoalSetupDirectionPreviewState: Equatable {
+    private(set) var presentation: GoalSetupDirectionPresentation?
+    private(set) var lastAnnouncement: String?
+
+    init(initialPresentation: GoalSetupDirectionPresentation? = nil) {
+        presentation = initialPresentation
+        lastAnnouncement = nil
+    }
+
+    mutating func commit(goalTitle: String, focusAreas: String) -> String? {
+        let nextPresentation = GoalSetupDirectionPresentation(
+            goalTitle: goalTitle,
+            focusAreas: focusAreas
+        )
+        presentation = nextPresentation
+
+        guard let announcement = nextPresentation?.accessibilityAnnouncement else {
+            lastAnnouncement = nil
+            return nil
+        }
+        guard announcement != lastAnnouncement else { return nil }
+
+        lastAnnouncement = announcement
+        return announcement
+    }
+}
+
+struct GoalSetupCustomizationSummary: Equatable {
+    let text: String
+
+    init(
+        focusAreas: String,
+        hasCurrentLevel: Bool,
+        sourceDocumentCount: Int,
+        minimumQuestionDifficulty: Int
+    ) {
+        var parts: [String] = []
+        let focusAreaCount = GoalQuestionContext.meaningfulFocusTopics(from: focusAreas).count
+        if focusAreaCount > 0 {
+            parts.append("\(focusAreaCount) \(focusAreaCount == 1 ? "topic" : "topics")")
+        }
+        if hasCurrentLevel {
+            parts.append("Experience noted")
+        }
+        if sourceDocumentCount > 0 {
+            parts.append(
+                "\(sourceDocumentCount) \(sourceDocumentCount == 1 ? "source" : "sources")"
+            )
+        }
+        if minimumQuestionDifficulty != UnlockPolicy.default.minimumQuestionDifficulty {
+            parts.append("Level \(UnlockPolicy.normalizedQuestionDifficulty(minimumQuestionDifficulty))")
+        }
+
+        text = parts.isEmpty ? "Automatic" : parts.joined(separator: " · ")
+    }
+}
+
+enum GoalSetupMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct GoalSetupMotionPolicy {
+    let style: GoalSetupMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var revealAnimation: Animation? {
+        style == .animated ? CheckpointMotion.reveal : nil
+    }
+
+    var transition: AnyTransition {
+        style == .animated
+            ? .opacity.combined(with: .move(edge: .top))
+            : .identity
+    }
 }
 
 private enum GoalSetupField: Hashable {
@@ -17,9 +303,12 @@ private enum GoalSetupField: Hashable {
 struct OnboardingView: View {
     let store: CheckpointStore
     private let mode: GoalSetupMode
+    private let editBaseline: GoalSetupEditBaseline?
+    private let preferredQuestionStyle: QuestionFormat
     private let onFirstGoalCreated: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: GoalSetupField?
     @State private var title = ""
@@ -33,6 +322,7 @@ struct OnboardingView: View {
     @State private var isSourceImporterPresented = false
     @State private var isImportingSources = false
     @State private var sourceImportMessage: String?
+    @State private var directionPreviewState = GoalSetupDirectionPreviewState()
 
     init(
         store: CheckpointStore,
@@ -41,26 +331,43 @@ struct OnboardingView: View {
         self.store = store
         self.onFirstGoalCreated = onFirstGoalCreated
 
+        let resolvedMode: GoalSetupMode
         if store.goal == nil {
-            mode = .firstGoal
+            resolvedMode = .firstGoal
         } else if store.isCreatingGoalProfile {
-            mode = .newGoal
+            resolvedMode = .newGoal
         } else {
-            mode = .editGoal
+            resolvedMode = .editGoal
         }
+        mode = resolvedMode
+        preferredQuestionStyle = resolvedMode.preferredQuestionStyle(from: store.goal)
 
-        if let goal = store.goal, mode == .editGoal {
+        if let goal = store.goal, resolvedMode == .editGoal {
+            let presentedDeadline = max(goal.deadline, Date())
+            editBaseline = GoalSetupEditBaseline(goal: goal)
             _title = State(initialValue: goal.title)
-            _deadline = State(initialValue: max(goal.deadline, Date()))
+            _deadline = State(initialValue: presentedDeadline)
             _focusAreas = State(initialValue: goal.focusAreas)
             _currentLevel = State(initialValue: goal.currentLevel)
             _sourceDocuments = State(initialValue: goal.sourceDocuments)
             _minimumQuestionDifficulty = State(initialValue: goal.minimumQuestionDifficulty)
-            let hasCustomizations = !goal.focusAreas.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            _directionPreviewState = State(
+                initialValue: GoalSetupDirectionPreviewState(
+                    initialPresentation: GoalSetupDirectionPresentation(
+                        goalTitle: goal.title,
+                        focusAreas: goal.focusAreas
+                    )
+                )
+            )
+            let hasCustomizations = !GoalQuestionContext.meaningfulFocusTopics(
+                from: goal.focusAreas
+            ).isEmpty
                 || !goal.currentLevel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 || !goal.sourceDocuments.isEmpty
                 || goal.minimumQuestionDifficulty != UnlockPolicy.default.minimumQuestionDifficulty
             _isCustomizationExpanded = State(initialValue: hasCustomizations)
+        } else {
+            editBaseline = nil
         }
     }
 
@@ -85,7 +392,7 @@ struct OnboardingView: View {
                             )
                     }
 
-                    SectionPanel {
+                    SectionPanel("Goal and timing") {
                         Text("Learning goal")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.text)
@@ -113,22 +420,13 @@ struct OnboardingView: View {
                                 focusedField = nil
                             }
 
-                        DatePicker("Target date", selection: $deadline, in: Date()..., displayedComponents: .date)
-                            .foregroundStyle(CheckpointTheme.text)
-
-                        if shouldShowGoalInterpretation,
-                           let interpretation = setupGuidance.interpretation {
-                            Label("We'll prepare \(interpretation.lowercased()).", systemImage: "sparkles")
-                                .font(.footnote.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.teal)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .transition(.opacity.combined(with: .scale(scale: 0.98)))
-                        }
+                        targetDatePicker
                     }
-                    .animation(
-                        CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion),
-                        value: setupGuidance.interpretation
-                    )
+
+                    if let direction = directionPreviewState.presentation {
+                        GoalSetupDirectionCard(presentation: direction)
+                            .transition(goalSetupMotionPolicy.transition)
+                    }
 
                     SectionPanel {
                         DisclosureGroup(isExpanded: $isCustomizationExpanded) {
@@ -144,7 +442,7 @@ struct OnboardingView: View {
                                         .fixedSize(horizontal: false, vertical: true)
 
                                     TextField("For example: contracts, vocabulary", text: $focusAreas, axis: .vertical)
-                                        .lineLimit(3, reservesSpace: true)
+                                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                                         .textFieldStyle(.plain)
                                         .foregroundStyle(CheckpointTheme.text)
                                         .padding(12)
@@ -157,17 +455,6 @@ struct OnboardingView: View {
                                         )
                                         .focused($focusedField, equals: .focusAreas)
                                         .submitLabel(.done)
-
-                                    if !parsedFocusAreas.isEmpty {
-                                        ScrollView(.horizontal, showsIndicators: false) {
-                                            HStack(spacing: 8) {
-                                                ForEach(parsedFocusAreas, id: \.self) { focusArea in
-                                                    FocusAreaChip(text: focusArea)
-                                                }
-                                            }
-                                            .padding(.vertical, 2)
-                                        }
-                                    }
                                 }
 
                                 Divider()
@@ -187,7 +474,7 @@ struct OnboardingView: View {
                                         text: $currentLevel,
                                         axis: .vertical
                                     )
-                                    .lineLimit(3, reservesSpace: true)
+                                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                                     .textFieldStyle(.plain)
                                     .foregroundStyle(CheckpointTheme.text)
                                     .padding(12)
@@ -208,26 +495,24 @@ struct OnboardingView: View {
 
                                 Divider()
 
-                                Stepper(
-                                    "Starting level: \(Goal.difficultyLabel(for: minimumQuestionDifficulty))",
-                                    value: $minimumQuestionDifficulty,
-                                    in: 1...5
-                                )
-                                .foregroundStyle(CheckpointTheme.text)
+                                startingLevelControl
                             }
                             .padding(.top, 12)
                         } label: {
                             VStack(alignment: .leading, spacing: 3) {
-                                Text("Topics, level, and study materials")
+                                Text("Fine-tune practice")
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(CheckpointTheme.text)
 
-                                Text("Optional details for more tailored questions")
+                                Text(customizationSummary.text)
                                     .font(.footnote)
                                     .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
+                            .padding(.trailing, dynamicTypeSize.isAccessibilitySize ? 24 : 0)
                         }
                         .tint(CheckpointTheme.teal)
+                        .sensoryFeedback(.selection, trigger: isCustomizationExpanded)
                     }
 
                 }
@@ -264,15 +549,9 @@ struct OnboardingView: View {
             }
         }
         .onChange(of: focusedField) { previousField, currentField in
-            guard previousField == .title,
-                  currentField != .title,
-                  shouldShowGoalInterpretation,
-                  let interpretation = setupGuidance.interpretation else {
-                return
-            }
-            AccessibilityNotification.Announcement(
-                "Checkpoint will prepare \(interpretation.lowercased())."
-            ).post()
+            guard previousField != currentField,
+                  previousField == .title || previousField == .focusAreas else { return }
+            commitDirectionPreview()
         }
         .onChange(of: sourceImportMessage) { _, message in
             guard let message else { return }
@@ -281,24 +560,10 @@ struct OnboardingView: View {
     }
 
     private var goalSetupHeader: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            if mode == .firstGoal {
-                CheckpointSetupMark(stage: "Your goal", step: 2, isWorking: isCreating)
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text(headerTitle)
-                    .font(.largeTitle.bold())
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
-
-                Text(headerSubtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
+        GoalSetupHero(
+            presentation: heroPresentation,
+            reduceMotion: reduceMotion
+        )
     }
 
     private var saveActionBar: some View {
@@ -320,28 +585,6 @@ struct OnboardingView: View {
             .padding(.bottom, 10)
         }
         .background(.ultraThinMaterial)
-    }
-
-    private var headerTitle: String {
-        switch mode {
-        case .firstGoal:
-            "What are you working toward?"
-        case .newGoal:
-            "Add another goal."
-        case .editGoal:
-            "Refine your goal."
-        }
-    }
-
-    private var headerSubtitle: String {
-        switch mode {
-        case .firstGoal:
-            "Checkpoint will turn your goal into short practice before selected apps open."
-        case .newGoal:
-            "Keep this priority separate with its own topics, practice, and progress."
-        case .editGoal:
-            "Update the direction and level of your future checkpoints."
-        }
     }
 
     private var primaryButtonTitle: String {
@@ -374,19 +617,107 @@ struct OnboardingView: View {
         title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private var setupGuidance: GoalSetupGuidance {
-        GoalSetupGuidance(title: title, focusAreas: focusAreas)
+    private var heroPresentation: GoalSetupHeroPresentation {
+        GoalSetupHeroPresentation(
+            mode: mode,
+            hasGoalTitle: !isTitleEmpty,
+            editImpact: editImpact,
+            isWorking: isCreating
+        )
     }
 
-    private var shouldShowGoalInterpretation: Bool {
-        parsedFocusAreas.isEmpty && setupGuidance.interpretation != nil
+    private var customizationSummary: GoalSetupCustomizationSummary {
+        GoalSetupCustomizationSummary(
+            focusAreas: focusAreas,
+            hasCurrentLevel: !currentLevel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            sourceDocumentCount: sourceDocuments.count,
+            minimumQuestionDifficulty: minimumQuestionDifficulty
+        )
     }
 
-    private var parsedFocusAreas: [String] {
-        focusAreas
-            .components(separatedBy: CharacterSet(charactersIn: ",;\n"))
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
+    private var editImpact: GoalSetupEditImpact {
+        GoalSetupEditImpact(
+            baseline: editBaseline,
+            title: title,
+            deadline: deadline,
+            currentLevel: currentLevel,
+            focusAreas: focusAreas,
+            sourceDocuments: sourceDocuments,
+            preferredQuestionStyle: preferredQuestionStyle,
+            minimumQuestionDifficulty: minimumQuestionDifficulty
+        )
+    }
+
+    private var goalSetupMotionPolicy: GoalSetupMotionPolicy {
+        GoalSetupMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private func commitDirectionPreview() {
+        var updatedState = directionPreviewState
+        let announcement = updatedState.commit(
+            goalTitle: title,
+            focusAreas: focusAreas
+        )
+        withAnimation(goalSetupMotionPolicy.revealAnimation) {
+            directionPreviewState = updatedState
+        }
+        if let announcement {
+            AccessibilityNotification.Announcement(announcement).post()
+        }
+    }
+
+    @ViewBuilder
+    private var targetDatePicker: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Target date")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .accessibilityHidden(true)
+
+                DatePicker(
+                    "Target date",
+                    selection: $deadline,
+                    in: Date()...,
+                    displayedComponents: .date
+                )
+                .labelsHidden()
+                .datePickerStyle(.compact)
+                .accessibilityLabel("Target date")
+            }
+        } else {
+            DatePicker(
+                "Target date",
+                selection: $deadline,
+                in: Date()...,
+                displayedComponents: .date
+            )
+            .foregroundStyle(CheckpointTheme.text)
+        }
+    }
+
+    @ViewBuilder
+    private var startingLevelControl: some View {
+        let label = "Starting level: \(Goal.difficultyLabel(for: minimumQuestionDifficulty))"
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(label)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityHidden(true)
+
+                Stepper(value: $minimumQuestionDifficulty, in: 1...5) {
+                    EmptyView()
+                }
+                .labelsHidden()
+                .accessibilityLabel(label)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+        } else {
+            Stepper(label, value: $minimumQuestionDifficulty, in: 1...5)
+                .foregroundStyle(CheckpointTheme.text)
+        }
     }
 
     private func saveGoal() {
@@ -401,7 +732,7 @@ struct OnboardingView: View {
                     currentLevel: currentLevel,
                     focusAreas: focusAreas,
                     sourceDocuments: sourceDocuments,
-                    preferredQuestionStyle: .multipleChoice,
+                    preferredQuestionStyle: preferredQuestionStyle,
                     minimumQuestionDifficulty: minimumQuestionDifficulty,
                     createsNewProfile: true,
                     waitForQuestionGeneration: false
@@ -413,7 +744,7 @@ struct OnboardingView: View {
                     currentLevel: currentLevel,
                     focusAreas: focusAreas,
                     sourceDocuments: sourceDocuments,
-                    preferredQuestionStyle: .multipleChoice,
+                    preferredQuestionStyle: preferredQuestionStyle,
                     minimumQuestionDifficulty: minimumQuestionDifficulty,
                     waitForQuestionGeneration: false
                 )
@@ -553,14 +884,312 @@ struct OnboardingView: View {
     }
 }
 
+struct GoalSetupDirectionCard: View {
+    let presentation: GoalSetupDirectionPresentation
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        SectionPanel {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 12) {
+                    directionIcon
+                    directionCopy
+                }
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    directionIcon
+                    directionCopy
+                }
+            }
+
+            if !presentation.topics.isEmpty {
+                GoalSetupTopicList(topics: presentation.topics)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var directionIcon: some View {
+        Image(systemName: presentation.systemImage)
+            .symbolRenderingMode(.hierarchical)
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .frame(width: 38, height: 38)
+            .background(
+                CheckpointTheme.teal.opacity(0.11),
+                in: RoundedRectangle(
+                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                    style: .continuous
+                )
+            )
+            .contentTransition(.symbolEffect(.replace))
+            .accessibilityHidden(true)
+    }
+
+    private var directionCopy: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("PRACTICE DIRECTION")
+                .font(.caption2.weight(.bold))
+                .tracking(0.8)
+                .foregroundStyle(CheckpointTheme.teal)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(presentation.title)
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.opacity)
+
+            Text(presentation.detail)
+                .font(.footnote)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.opacity)
+        }
+    }
+}
+
+private struct GoalSetupTopicList: View {
+    let topics: [String]
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        LazyVGrid(
+            columns: [
+                GridItem(
+                    .adaptive(minimum: dynamicTypeSize.isAccessibilitySize ? 180 : 104),
+                    spacing: 8,
+                    alignment: .leading
+                )
+            ],
+            alignment: .leading,
+            spacing: 8
+        ) {
+            ForEach(topics, id: \.self) { topic in
+                FocusAreaChip(text: topic)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct GoalSetupHero: View {
+    let presentation: GoalSetupHeroPresentation
+    let reduceMotion: Bool
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        CheckpointHeroSurface(
+            glowColor: accent,
+            glowOpacity: presentation.state == .working ? 0.14 : 0.10,
+            contentPadding: dynamicTypeSize.isAccessibilitySize ? 16 : 18
+        ) {
+            VStack(alignment: .leading, spacing: dynamicTypeSize.isAccessibilitySize ? 16 : 14) {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 12) {
+                        accessibilityIdentity
+                        statusBadge
+                    }
+                } else {
+                    ViewThatFits(in: .horizontal) {
+                        HStack(alignment: .center, spacing: 12) {
+                            identity
+                            Spacer(minLength: 8)
+                            statusBadge
+                        }
+
+                        HStack(alignment: .center, spacing: 10) {
+                            compactIdentity
+                            Spacer(minLength: 6)
+                            statusBadge
+                        }
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 7) {
+                    Text(presentation.title)
+                        .font(dynamicTypeSize.isAccessibilitySize ? .title2.bold() : .largeTitle.bold())
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityAddTraits(.isHeader)
+
+                    Text(presentation.subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Divider()
+                    .overlay(CheckpointTheme.heroDivider)
+
+                guidanceRow
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(accent)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .animation(motionAnimation, value: presentation.state)
+                    .accessibilityElement(children: .combine)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var guidanceRow: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                guidanceIcon
+                guidanceText
+            }
+        } else {
+            Label {
+                guidanceText
+            } icon: {
+                guidanceIcon
+            }
+        }
+    }
+
+    private var guidanceIcon: some View {
+        Image(systemName: presentation.guidanceSystemImage)
+            .frame(width: 18)
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffectsRemoved(reduceMotion)
+            .accessibilityHidden(true)
+    }
+
+    private var guidanceText: some View {
+        Text(presentation.guidance)
+            .contentTransition(.opacity)
+    }
+
+    private var identity: some View {
+        HStack(spacing: 11) {
+            identityIcon
+            identityCopy
+                .fixedSize(horizontal: true, vertical: true)
+        }
+        .animation(motionPolicy.animation, value: presentation.state)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(presentation.accessibilityContext)
+    }
+
+    private var accessibilityIdentity: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            identityIcon
+            identityCopy
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        }
+        .animation(motionPolicy.animation, value: presentation.state)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(presentation.accessibilityContext)
+    }
+
+    private var compactIdentity: some View {
+        HStack(spacing: 9) {
+            identityIcon
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("CHECKPOINT")
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(0.7)
+                    .foregroundStyle(CheckpointTheme.heroText)
+
+                Text(compactEyebrow)
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(0.3)
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .lineLimit(1)
+            }
+            .fixedSize(horizontal: true, vertical: true)
+        }
+        .animation(motionPolicy.animation, value: presentation.state)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(presentation.accessibilityContext)
+    }
+
+    private var compactEyebrow: String {
+        presentation.eyebrow == "SETUP · STEP 2 OF 3"
+            ? "STEP 2 OF 3"
+            : presentation.eyebrow
+    }
+
+    private var identityIcon: some View {
+        Image(systemName: presentation.systemImage)
+            .symbolRenderingMode(.hierarchical)
+            .font(.system(size: 20, weight: .semibold))
+            .foregroundStyle(accent)
+            .frame(width: 42, height: 42)
+            .background(accent.opacity(0.14), in: RoundedRectangle(cornerRadius: 13))
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffect(.bounce, options: .nonRepeating, value: presentation.state)
+            .symbolEffect(
+                .pulse,
+                options: .repeating,
+                isActive: presentation.state == .working && !reduceMotion
+            )
+            .symbolEffectsRemoved(reduceMotion)
+            .accessibilityHidden(true)
+    }
+
+    private var identityCopy: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("CHECKPOINT")
+                .font(.caption2.weight(.bold))
+                .tracking(1.05)
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(presentation.eyebrow)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var statusBadge: some View {
+        StatusBadge(text: presentation.status, tint: accent)
+            .contentTransition(.opacity)
+            .animation(motionAnimation, value: presentation.state)
+            .accessibilityLabel("Status: \(presentation.status)")
+    }
+
+    private var accent: Color {
+        switch presentation.state {
+        case .awaitingGoal:
+            CheckpointTheme.heroInfo
+        case .ready:
+            CheckpointTheme.heroSuccess
+        case .upToDate:
+            CheckpointTheme.heroSuccess
+        case .unsavedChanges:
+            CheckpointTheme.amber
+        case .working:
+            CheckpointTheme.heroInfo
+        }
+    }
+
+    private var motionAnimation: Animation? {
+        motionPolicy.animation
+    }
+
+    private var motionPolicy: GoalSetupMotionPolicy {
+        GoalSetupMotionPolicy(reduceMotion: reduceMotion)
+    }
+}
+
 private struct FocusAreaChip: View {
     var text: String
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Text(text)
             .font(.caption.weight(.semibold))
             .foregroundStyle(CheckpointTheme.teal)
-            .lineLimit(1)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
