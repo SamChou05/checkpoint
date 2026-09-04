@@ -3,6 +3,7 @@ import XCTest
 
 #if os(iOS) && canImport(FamilyControls)
 import FamilyControls
+import ManagedSettings
 #endif
 
 final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
@@ -448,6 +449,199 @@ final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(screenTime.restrictedAppsSummary, "No protected apps selected")
     }
 
+    func testProtectedAppsSelectionSummaryCountsOnlyEnforcedItems() {
+        let currentSelection = ProtectedAppsSelectionSummary(
+            applicationCount: 3,
+            enforcedCategoryCount: 0,
+            webDomainCount: 2
+        )
+        XCTAssertEqual(currentSelection.text, "3 apps, 2 sites selected")
+
+        let legacySelection = ProtectedAppsSelectionSummary(
+            applicationCount: 1,
+            enforcedCategoryCount: 2,
+            webDomainCount: 1
+        )
+        XCTAssertEqual(
+            legacySelection.text,
+            "1 app, 2 categories, 1 site selected"
+        )
+
+        let emptySelection = ProtectedAppsSelectionSummary(
+            applicationCount: 0,
+            enforcedCategoryCount: 0,
+            webDomainCount: 0
+        )
+        XCTAssertEqual(emptySelection.text, "No protected apps selected")
+    }
+
+    @MainActor
+    func testScreenTimeSummaryExcludesModernCategoryShortcutsButReportsLegacyEnforcement() throws {
+        #if os(iOS) && canImport(FamilyControls)
+        let applicationToken = try JSONDecoder().decode(
+            ManagedSettings.ApplicationToken.self,
+            from: Data(#"{"data":"AQIDBA=="}"#.utf8)
+        )
+        let categoryToken = try JSONDecoder().decode(
+            ManagedSettings.ActivityCategoryToken.self,
+            from: Data(#"{"data":"BQYHCA=="}"#.utf8)
+        )
+        let authorizer = FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: authorizer
+        )
+        var currentSelection = FamilyActivitySelection(includeEntireCategory: true)
+        currentSelection.applicationTokens = [applicationToken]
+        currentSelection.categoryTokens = [categoryToken]
+
+        XCTAssertTrue(screenTime.updateSelection(currentSelection))
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "1 app selected")
+        XCTAssertFalse(screenTime.usesLegacyCategoryEnforcement)
+
+        var legacySelection = FamilyActivitySelection(includeEntireCategory: true)
+        legacySelection.categoryTokens = [categoryToken]
+        SharedAppGroup.publishScreenTimeSelectionData(
+            try JSONEncoder().encode(legacySelection),
+            semanticsVersion: 0
+        )
+        let restoredLegacy = ScreenTimeController(
+            defaults: defaults,
+            authorizer: authorizer
+        )
+        XCTAssertTrue(restoredLegacy.hasSelection)
+        XCTAssertTrue(restoredLegacy.usesLegacyCategoryEnforcement)
+        XCTAssertEqual(restoredLegacy.restrictedAppsSummary, "1 category selected")
+        #endif
+    }
+
+    func testProtectionSettingsControlsKeepEditorReachableAcrossStates() {
+        let unavailable = ProtectionSettingsControlPresentation(
+            isProtectionUnavailable: true,
+            isRequestingAuthorization: false,
+            requiresScreenTimeAuthorization: false,
+            hasSelection: true,
+            canStopBlocking: false
+        )
+        XCTAssertEqual(unavailable.layout, .unavailable)
+
+        let requesting = ProtectionSettingsControlPresentation(
+            isProtectionUnavailable: false,
+            isRequestingAuthorization: true,
+            requiresScreenTimeAuthorization: true,
+            hasSelection: false,
+            canStopBlocking: false
+        )
+        XCTAssertEqual(requesting.layout, .requestingAuthorization)
+
+        let authorizationRequired = ProtectionSettingsControlPresentation(
+            isProtectionUnavailable: false,
+            isRequestingAuthorization: false,
+            requiresScreenTimeAuthorization: true,
+            hasSelection: true,
+            canStopBlocking: false
+        )
+        XCTAssertEqual(authorizationRequired.layout, .authorizationRequired)
+
+        let empty = ProtectionSettingsControlPresentation(
+            isProtectionUnavailable: false,
+            isRequestingAuthorization: false,
+            requiresScreenTimeAuthorization: false,
+            hasSelection: false,
+            canStopBlocking: false
+        )
+        XCTAssertEqual(empty.layout, .chooseApps)
+
+        let savedAndOff = ProtectionSettingsControlPresentation(
+            isProtectionUnavailable: false,
+            isRequestingAuthorization: false,
+            requiresScreenTimeAuthorization: false,
+            hasSelection: true,
+            canStopBlocking: false
+        )
+        XCTAssertEqual(savedAndOff.layout, .startAndEditApps)
+
+        let active = ProtectionSettingsControlPresentation(
+            isProtectionUnavailable: false,
+            isRequestingAuthorization: false,
+            requiresScreenTimeAuthorization: false,
+            hasSelection: true,
+            canStopBlocking: true
+        )
+        XCTAssertEqual(active.layout, .editApps)
+    }
+
+    @MainActor
+    func testProtectedAppsPickerCannotClearActiveProtectionIntent() throws {
+        #if os(iOS) && canImport(FamilyControls)
+        let screenTime = ScreenTimeController(defaults: defaults)
+        let applicationToken = try JSONDecoder().decode(
+            ManagedSettings.ApplicationToken.self,
+            from: Data(#"{"data":"AQIDBA=="}"#.utf8)
+        )
+        var populatedSelection = FamilyActivitySelection(includeEntireCategory: true)
+        populatedSelection.applicationTokens = [applicationToken]
+        let emptySelection = FamilyActivitySelection(includeEntireCategory: true)
+        let expectedMessage =
+            "Protection requires at least one app or website. Turn it off in Settings before clearing the list."
+
+        XCTAssertTrue(screenTime.updateSelection(populatedSelection))
+        XCTAssertEqual(screenTime.selection, populatedSelection)
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "1 app selected")
+        let persistedSelection = try XCTUnwrap(
+            SharedAppGroup.screenTimeSelectionData()
+        )
+        XCTAssertEqual(
+            try JSONDecoder().decode(
+                FamilyActivitySelection.self,
+                from: persistedSelection
+            ),
+            populatedSelection
+        )
+
+        screenTime.setupState = .shieldActive
+        screenTime.isShieldingEnabled = true
+        XCTAssertFalse(screenTime.updateSelection(emptySelection))
+        XCTAssertTrue(screenTime.isShieldingEnabled)
+        XCTAssertEqual(screenTime.selection, populatedSelection)
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "1 app selected")
+        XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), persistedSelection)
+        XCTAssertEqual(screenTime.lastErrorMessage, expectedMessage)
+        XCTAssertEqual(screenTime.userFacingErrorMessage, expectedMessage)
+
+        screenTime.lastErrorMessage = nil
+        screenTime.setupState = .temporarilyUnlocked
+        screenTime.isShieldingEnabled = false
+        XCTAssertFalse(screenTime.updateSelection(emptySelection))
+        XCTAssertEqual(screenTime.setupState, .temporarilyUnlocked)
+        XCTAssertEqual(screenTime.selection, populatedSelection)
+        XCTAssertEqual(SharedAppGroup.screenTimeSelectionData(), persistedSelection)
+        XCTAssertEqual(screenTime.userFacingErrorMessage, expectedMessage)
+
+        screenTime.lastErrorMessage = nil
+        screenTime.setupState = .authorized
+        XCTAssertTrue(screenTime.updateSelection(emptySelection))
+        XCTAssertFalse(screenTime.hasSelection)
+        XCTAssertEqual(screenTime.restrictedAppsSummary, "No protected apps selected")
+        let clearedSelectionData = try XCTUnwrap(
+            SharedAppGroup.screenTimeSelectionData()
+        )
+        XCTAssertEqual(
+            try JSONDecoder().decode(
+                FamilyActivitySelection.self,
+                from: clearedSelectionData
+            ),
+            emptySelection
+        )
+        let restored = ScreenTimeController(
+            defaults: defaults,
+            authorizer: FakeScreenTimeAuthorizer(authorizationStatus: .approved)
+        )
+        XCTAssertFalse(restored.hasSelection)
+        XCTAssertEqual(restored.restrictedAppsSummary, "No protected apps selected")
+        #endif
+    }
+
     @MainActor
     func testScreenTimeAuthorizationBootstrapWaitsForExplicitRequest() async {
         let authorizer = FakeScreenTimeAuthorizer(
@@ -715,7 +909,7 @@ final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
         XCTAssertFalse(screenTime.isShieldingEnabled)
         XCTAssertEqual(
             screenTime.lastErrorMessage,
-            "Choose at least one protected app, category, or website before starting app protection."
+            "Choose at least one protected app or website before starting app protection."
         )
         XCTAssertFalse(SharedAppGroup.desiredShieldActive)
     }

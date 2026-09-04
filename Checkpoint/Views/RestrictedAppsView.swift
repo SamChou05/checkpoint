@@ -10,6 +10,158 @@ enum RestrictedAppsPresentationMode: Equatable {
     case firstRun
 }
 
+enum RestrictedAppsErrorFeedbackPolicy {
+    static func reportsScreenTimeError(
+        presentationMode: RestrictedAppsPresentationMode,
+        firstRunPhase: FirstRunProtectionPhase
+    ) -> Bool {
+        presentationMode == .management || firstRunPhase == .selecting
+    }
+}
+
+enum ProtectedAppsManagementTone: Equatable {
+    case live
+    case breakInProgress
+    case ready
+    case empty
+    case attention
+}
+
+enum ProtectedAppsManagementChrome: Equatable {
+    case brandedHeader
+    case systemPickerCopy
+
+    init(dynamicTypeSize: DynamicTypeSize, availableHeight: CGFloat) {
+        self = dynamicTypeSize >= .xLarge || availableHeight < 620
+            ? .systemPickerCopy
+            : .brandedHeader
+    }
+}
+
+struct ProtectedAppsManagementPresentation: Equatable {
+    let eyebrow: String
+    let status: String
+    let title: String
+    let detail: String
+    let selectionSummary: String
+    let systemImage: String
+    let tone: ProtectedAppsManagementTone
+
+    init(
+        selectionSummary: String,
+        hasSelection: Bool,
+        hasRequiredScreenTimeAuthorization: Bool,
+        isShieldingEnabled: Bool,
+        isBreakInProgress: Bool,
+        errorMessage: String?
+    ) {
+        eyebrow = "PROTECTION LIST"
+        self.selectionSummary = selectionSummary
+
+        if !hasRequiredScreenTimeAuthorization {
+            status = "ACCESS NEEDED"
+            title = "Screen Time access needed"
+            detail = errorMessage
+                ?? "Allow Screen Time access to choose and protect apps."
+            systemImage = "exclamationmark.shield.fill"
+            tone = .attention
+        } else if let errorMessage {
+            status = "NEEDS ATTENTION"
+            title = "Selection needs attention"
+            detail = errorMessage
+            systemImage = "exclamationmark.shield.fill"
+            tone = .attention
+        } else if !hasSelection {
+            status = "NOT SET"
+            title = "Choose your pause points"
+            detail = "Protection is off because no apps or websites are selected. Choose at least one below; changes save automatically."
+            systemImage = "shield.slash.fill"
+            tone = .empty
+        } else if isShieldingEnabled {
+            status = "ACTIVE"
+            title = "Protection list is live"
+            detail = "Changes apply immediately. Turn protection off in Settings before clearing the list."
+            systemImage = "checkmark.shield.fill"
+            tone = .live
+        } else if isBreakInProgress {
+            status = "BREAK ACTIVE"
+            title = "Ready for the next lock"
+            detail = "Changes save now and apply when this break ends. Turn protection off in Settings before clearing the list."
+            systemImage = "timer"
+            tone = .breakInProgress
+        } else {
+            status = "SAVED"
+            title = "Your list is ready"
+            detail = "Your choices save automatically. Start protection from Home or Settings when you're ready."
+            systemImage = "checkmark.circle.fill"
+            tone = .ready
+        }
+    }
+
+    var accessibilityLabel: String {
+        "\(title). \(status). \(selectionSummary). \(detail)"
+    }
+
+    var pickerHeaderText: String {
+        "\(status.capitalized) · \(title)\n\(selectionSummary)\n\n\(detail)"
+    }
+
+    func pickerHeaderText(isCondensed: Bool) -> String {
+        guard isCondensed else { return pickerHeaderText }
+
+        let condensedTitle: String
+        let condensedDetail: String
+        switch tone {
+        case .live:
+            condensedTitle = "Protection active"
+            condensedDetail = "Changes apply immediately. Use Settings to turn protection off."
+        case .breakInProgress:
+            condensedTitle = "Break active"
+            condensedDetail = "Changes apply when the break ends. Use Settings to turn protection off."
+        case .ready:
+            condensedTitle = "List saved"
+            condensedDetail = "Start protection from Home or Settings."
+        case .empty:
+            condensedTitle = "Choose apps"
+            condensedDetail = "Protection is off. Choices save automatically."
+        case .attention:
+            condensedTitle = status == "ACCESS NEEDED"
+                ? "Screen Time access needed"
+                : "Needs attention"
+            condensedDetail = detail
+        }
+
+        return "\(condensedTitle)\n\(selectionSummary)\n\n\(condensedDetail)"
+    }
+
+    func pickerFooterText(categorySelectionDetail: String?) -> String? {
+        categorySelectionDetail
+    }
+}
+
+struct ProtectedAppsCategorySelectionPresentation: Equatable {
+    let detail: String?
+
+    init(
+        hasCategorySelection: Bool,
+        hasProtectedItems: Bool,
+        usesLegacyCategoryEnforcement: Bool
+    ) {
+        guard hasCategorySelection else {
+            detail = nil
+            return
+        }
+
+        if usesLegacyCategoryEnforcement {
+            detail = "This older selection protects the whole category. Change a choice below to update it to the current app and website list."
+        } else if hasProtectedItems {
+            detail = "Category shortcuts add their apps and websites to this list. Your individual changes take precedence."
+        } else {
+            detail = "Keep at least one app selected from the category, or choose a website, so Checkpoint has something to protect."
+        }
+    }
+}
+
 enum FirstRunProtectionPhase: Equatable, Hashable {
     case selecting
     case preparing(selectionSummary: String)
@@ -379,7 +531,9 @@ struct RestrictedAppsView: View {
                             Button("Done") {
                                 dismiss()
                             }
+                            .fontWeight(.semibold)
                             .foregroundStyle(CheckpointTheme.teal)
+                            .accessibilityHint("Your protected-app choices are saved automatically.")
                         }
                     }
                 }
@@ -399,6 +553,15 @@ struct RestrictedAppsView: View {
             case .selecting, .preparing:
                 break
             }
+        }
+        .onChange(of: screenTime.userFacingErrorMessage) { _, message in
+            guard RestrictedAppsErrorFeedbackPolicy.reportsScreenTimeError(
+                presentationMode: presentationMode,
+                firstRunPhase: firstRunFlow.phase
+            ),
+                  let message else { return }
+            errorFeedbackSequence += 1
+            AccessibilityNotification.Announcement(message).post()
         }
         .task {
             if screenTime.setupState == .notStarted || screenTime.setupState == .failed {
@@ -885,6 +1048,233 @@ struct FirstRunProtectionStatusView: View {
     }
 }
 
+struct ProtectedAppsManagementHeader: View {
+    let presentation: ProtectedAppsManagementPresentation
+    let categorySelectionDetail: String?
+    var changeSequence = 0
+    var compact = false
+    var reduceMotionOverride: Bool? = nil
+
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: compact ? 8 : 10) {
+            CheckpointHeroSurface(
+                glowColor: accent,
+                glowOpacity: presentation.tone == .live ? 0.13 : 0.09,
+                contentPadding: compact ? 10 : (dynamicTypeSize.isAccessibilitySize ? 14 : 16)
+            ) {
+                VStack(alignment: .leading, spacing: compact ? 8 : (dynamicTypeSize.isAccessibilitySize ? 14 : 12)) {
+                    identity
+
+                    Text(presentation.detail)
+                        .font(compact ? .caption.weight(.medium) : .subheadline.weight(.medium))
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Divider()
+                        .overlay(CheckpointTheme.heroDivider)
+
+                    Label {
+                        Text(presentation.selectionSummary)
+                            .contentTransition(.numericText())
+                    } icon: {
+                        Image(systemName: "checklist")
+                    }
+                    .font(compact ? .caption.weight(.bold) : .subheadline.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.heroText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 11)
+                    .padding(.vertical, compact ? 6 : 8)
+                    .background(
+                        CheckpointTheme.heroSubtleFill,
+                        in: RoundedRectangle(
+                            cornerRadius: dynamicTypeSize.isAccessibilitySize
+                                ? CheckpointTheme.compactCornerRadius
+                                : 100,
+                            style: .continuous
+                        )
+                    )
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(presentation.accessibilityLabel)
+            .accessibilityAddTraits(.isHeader)
+
+            if let categorySelectionDetail {
+                Label(categorySelectionDetail, systemImage: "square.stack.3d.up.fill")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.amber)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(compact ? 8 : 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        CheckpointTheme.amber.opacity(0.08),
+                        in: RoundedRectangle(
+                            cornerRadius: CheckpointTheme.compactCornerRadius,
+                            style: .continuous
+                        )
+                    )
+            }
+        }
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: presentation
+        )
+    }
+
+    @ViewBuilder
+    private var identity: some View {
+        if compact {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .center, spacing: 10) {
+                    managementIcon
+                    Spacer(minLength: 8)
+                    statusBadge
+                }
+                identityCopy
+            }
+        } else if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 10) {
+                managementIcon
+                identityCopy
+                statusBadge
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 13) {
+                    managementIcon
+                    identityCopy
+                    Spacer(minLength: 8)
+                    statusBadge
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    managementIcon
+                    identityCopy
+                    statusBadge
+                }
+            }
+        }
+    }
+
+    private var managementIcon: some View {
+        Image(systemName: presentation.systemImage)
+            .font(.system(size: compact ? 17 : (dynamicTypeSize.isAccessibilitySize ? 20 : 21), weight: .bold))
+            .foregroundStyle(CheckpointTheme.ink)
+            .frame(
+                width: compact ? 40 : (dynamicTypeSize.isAccessibilitySize ? 48 : 50),
+                height: compact ? 40 : (dynamicTypeSize.isAccessibilitySize ? 48 : 50)
+            )
+            .background(
+                accent,
+                in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+            )
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffect(.bounce, options: .nonRepeating, value: changeSequence)
+            .symbolEffectsRemoved(reduceMotion)
+            .fixedSize()
+            .accessibilityHidden(true)
+    }
+
+    private var identityCopy: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(presentation.eyebrow)
+                .font(.caption2.weight(.bold))
+                .tracking(0.85)
+                .foregroundStyle(accent)
+
+            Text(presentation.title)
+                .font(compact ? .headline : (dynamicTypeSize.isAccessibilitySize ? .title3.bold() : .title2.bold()))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var statusBadge: some View {
+        Text(presentation.status)
+            .font(.caption2.weight(.bold))
+            .tracking(0.65)
+            .foregroundStyle(accent)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 6)
+            .background(
+                accent.opacity(0.14),
+                in: RoundedRectangle(
+                    cornerRadius: dynamicTypeSize.isAccessibilitySize
+                        ? CheckpointTheme.compactCornerRadius
+                        : 100,
+                    style: .continuous
+                )
+            )
+    }
+
+    private var accent: Color {
+        switch presentation.tone {
+        case .live:
+            CheckpointTheme.heroSuccess
+        case .breakInProgress:
+            CheckpointTheme.heroInfo
+        case .ready:
+            CheckpointTheme.heroSuccess
+        case .empty:
+            CheckpointTheme.heroWarning
+        case .attention:
+            CheckpointTheme.heroDanger
+        }
+    }
+}
+
+struct ProtectedAppsManagementShell<PickerContent: View>: View {
+    let presentation: ProtectedAppsManagementPresentation
+    let categorySelectionDetail: String?
+    let changeSequence: Int
+    let reduceMotionOverride: Bool?
+    let pickerContent: PickerContent
+
+    init(
+        presentation: ProtectedAppsManagementPresentation,
+        categorySelectionDetail: String?,
+        changeSequence: Int,
+        reduceMotionOverride: Bool? = nil,
+        @ViewBuilder pickerContent: () -> PickerContent
+    ) {
+        self.presentation = presentation
+        self.categorySelectionDetail = categorySelectionDetail
+        self.changeSequence = changeSequence
+        self.reduceMotionOverride = reduceMotionOverride
+        self.pickerContent = pickerContent()
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            VStack(spacing: 0) {
+                ProtectedAppsManagementHeader(
+                    presentation: presentation,
+                    categorySelectionDetail: categorySelectionDetail,
+                    changeSequence: changeSequence,
+                    compact: proxy.size.height < 700,
+                    reduceMotionOverride: reduceMotionOverride
+                )
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 14)
+                .background(CheckpointTheme.background)
+
+                pickerContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .layoutPriority(1)
+            }
+        }
+    }
+}
+
 struct FirstRunAppSelectionHeader: View {
     let selectionSummary: String
     let categorySelectionDetail: String?
@@ -946,84 +1336,111 @@ private struct FamilyPickerContent: View {
     let screenTime: ScreenTimeController
     let presentationMode: RestrictedAppsPresentationMode
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var selectionFeedbackSequence = 0
+    @State private var selectionRejectionFeedbackSequence = 0
+
+    @ViewBuilder
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 10) {
-                if presentationMode == .firstRun {
-                    FirstRunAppSelectionHeader(
-                        selectionSummary: selectionSummary,
-                        categorySelectionDetail: screenTime.selection.categoryTokens.isEmpty
-                            ? nil
-                            : categorySelectionDetail,
-                        errorMessage: screenTime.userFacingErrorMessage
+        Group {
+            if presentationMode == .firstRun {
+                VStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        FirstRunAppSelectionHeader(
+                            selectionSummary: selectionSummary,
+                            categorySelectionDetail: categorySelectionDetail,
+                            errorMessage: screenTime.userFacingErrorMessage
+                        )
+                    }
+                    .padding(16)
+                    .background(CheckpointTheme.panel)
+
+                    FamilyActivityPicker(selection: selectionBinding)
+                }
+            } else {
+                GeometryReader { proxy in
+                    managementPicker(
+                        chrome: ProtectedAppsManagementChrome(
+                            dynamicTypeSize: dynamicTypeSize,
+                            availableHeight: proxy.size.height
+                        )
                     )
-                } else {
-                    Text("Choose what Checkpoint should protect.")
-                        .font(.subheadline)
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Label(selectionSummary, systemImage: "checklist")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.text)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    if !screenTime.selection.categoryTokens.isEmpty {
-                        Text(categorySelectionDetail)
-                            .font(.caption)
-                            .foregroundStyle(CheckpointTheme.amber)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
-                    if let errorMessage = screenTime.userFacingErrorMessage {
-                        Text(errorMessage)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.coral)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
                 }
             }
-            .padding(16)
-            .background(CheckpointTheme.panel)
+        }
+        .sensoryFeedback(.selection, trigger: selectionFeedbackSequence)
+        .sensoryFeedback(.error, trigger: selectionRejectionFeedbackSequence)
+    }
 
-            FamilyActivityPicker(selection: selectionBinding)
+    @ViewBuilder
+    private func managementPicker(
+        chrome: ProtectedAppsManagementChrome
+    ) -> some View {
+        switch chrome {
+        case .brandedHeader:
+            ProtectedAppsManagementShell(
+                presentation: managementPresentation,
+                categorySelectionDetail: categorySelectionDetail,
+                changeSequence: selectionFeedbackSequence
+            ) {
+                FamilyActivityPicker(selection: selectionBinding)
+            }
+        case .systemPickerCopy:
+            FamilyActivityPicker(
+                headerText: managementPresentation.pickerHeaderText(
+                    isCondensed: dynamicTypeSize.isAccessibilitySize
+                ),
+                footerText: managementPresentation.pickerFooterText(
+                    categorySelectionDetail: categorySelectionDetail
+                ),
+                selection: selectionBinding
+            )
         }
     }
 
     private var selectionBinding: Binding<FamilyActivitySelection> {
         Binding(
             get: { screenTime.selection },
-            set: { _ = screenTime.updateSelection($0) }
+            set: { selection in
+                let previousSelection = screenTime.selection
+                let previousError = screenTime.userFacingErrorMessage
+                if screenTime.updateSelection(selection) {
+                    if presentationMode == .management,
+                       screenTime.selection != previousSelection {
+                        selectionFeedbackSequence += 1
+                    }
+                    return
+                }
+                guard let currentError = screenTime.userFacingErrorMessage,
+                      currentError == previousError else { return }
+                selectionRejectionFeedbackSequence += 1
+                AccessibilityNotification.Announcement(currentError).post()
+            }
         )
     }
 
     private var selectionSummary: String {
-        let parts = [
-            selectionCountText(screenTime.selection.applicationTokens.count, singular: "app", plural: "apps"),
-            selectionCountText(screenTime.selection.webDomainTokens.count, singular: "site", plural: "sites")
-        ].compactMap { $0 }
-
-        if parts.isEmpty, !screenTime.selection.categoryTokens.isEmpty {
-            return "No individual apps selected yet"
-        }
-        guard !parts.isEmpty else { return "Nothing selected yet" }
-        return parts.joined(separator: ", ") + " selected"
+        screenTime.restrictedAppsSummary
     }
 
-    private var categorySelectionDetail: String {
-        if screenTime.selection.applicationTokens.isEmpty {
-            return "Keep at least one app selected inside the category so Checkpoint has something to protect."
-        }
-        return "Category shortcuts add their apps to this list. Your individual app changes take precedence."
+    private var managementPresentation: ProtectedAppsManagementPresentation {
+        ProtectedAppsManagementPresentation(
+            selectionSummary: selectionSummary,
+            hasSelection: screenTime.hasSelection,
+            hasRequiredScreenTimeAuthorization: screenTime.hasRequiredScreenTimeAuthorization,
+            isShieldingEnabled: screenTime.isShieldingEnabled,
+            isBreakInProgress: screenTime.setupState == .temporarilyUnlocked,
+            errorMessage: screenTime.userFacingErrorMessage
+        )
     }
 
-    private func selectionCountText(
-        _ count: Int,
-        singular: String,
-        plural: String
-    ) -> String? {
-        guard count > 0 else { return nil }
-        return "\(count) \(count == 1 ? singular : plural)"
+    private var categorySelectionDetail: String? {
+        ProtectedAppsCategorySelectionPresentation(
+            hasCategorySelection: !screenTime.selection.categoryTokens.isEmpty,
+            hasProtectedItems: screenTime.hasSelection,
+            usesLegacyCategoryEnforcement: screenTime.usesLegacyCategoryEnforcement
+        ).detail
     }
+
 }
 #endif

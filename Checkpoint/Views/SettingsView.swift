@@ -1,5 +1,40 @@
 import SwiftUI
 
+enum ProtectionSettingsControlLayout: Equatable {
+    case unavailable
+    case requestingAuthorization
+    case authorizationRequired
+    case chooseApps
+    case startAndEditApps
+    case editApps
+}
+
+struct ProtectionSettingsControlPresentation: Equatable {
+    let layout: ProtectionSettingsControlLayout
+
+    init(
+        isProtectionUnavailable: Bool,
+        isRequestingAuthorization: Bool,
+        requiresScreenTimeAuthorization: Bool,
+        hasSelection: Bool,
+        canStopBlocking: Bool
+    ) {
+        if isProtectionUnavailable {
+            layout = .unavailable
+        } else if isRequestingAuthorization {
+            layout = .requestingAuthorization
+        } else if requiresScreenTimeAuthorization {
+            layout = .authorizationRequired
+        } else if !hasSelection {
+            layout = .chooseApps
+        } else if canStopBlocking {
+            layout = .editApps
+        } else {
+            layout = .startAndEditApps
+        }
+    }
+}
+
 struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
@@ -248,9 +283,10 @@ struct SettingsView: View {
 
     @ViewBuilder
     private var protectionPrimaryControl: some View {
-        if screenTime.setupState == .unavailable {
+        switch protectionControlPresentation.layout {
+        case .unavailable:
             EmptyView()
-        } else if screenTime.isRequestingAuthorization {
+        case .requestingAuthorization:
             PrimaryActionButton(
                 title: "Requesting Screen Time access",
                 systemImage: "shield",
@@ -258,29 +294,37 @@ struct SettingsView: View {
                 action: {}
             )
             .disabled(true)
-        } else if screenTime.requiresScreenTimeAuthorization {
+        case .authorizationRequired:
             PrimaryActionButton(title: "Allow Screen Time", systemImage: "shield") {
                 requestScreenTimeAuthorization()
             }
-        } else if !screenTime.hasSelection {
+        case .chooseApps:
             PrimaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
                 protectionActionMessage = nil
                 isRestrictedAppsPresented = true
             }
-        } else if !canStopBlocking {
-            PrimaryActionButton(
-                title: isProtectionStartBusy ? "Checking checkpoint" : "Start protection",
-                systemImage: "checkmark.shield",
-                isLoading: isProtectionStartBusy
-            ) {
-                prepareAndStartProtection()
+        case .startAndEditApps:
+            VStack(spacing: 10) {
+                PrimaryActionButton(
+                    title: isProtectionStartBusy ? "Checking checkpoint" : "Start protection",
+                    systemImage: "checkmark.shield",
+                    isLoading: isProtectionStartBusy
+                ) {
+                    prepareAndStartProtection()
+                }
+                .disabled(isProtectionStartBusy)
+
+                editProtectedAppsButton
             }
-            .disabled(isProtectionStartBusy)
-        } else {
-            SecondaryActionButton(title: "Choose protected apps", systemImage: "checklist") {
-                protectionActionMessage = nil
-                isRestrictedAppsPresented = true
-            }
+        case .editApps:
+            editProtectedAppsButton
+        }
+    }
+
+    private var editProtectedAppsButton: some View {
+        SecondaryActionButton(title: "Edit protected apps", systemImage: "checklist") {
+            protectionActionMessage = nil
+            isRestrictedAppsPresented = true
         }
     }
 
@@ -561,6 +605,16 @@ struct SettingsView: View {
 
     private var canStopBlocking: Bool {
         screenTime.isShieldingEnabled || screenTime.setupState == .temporarilyUnlocked
+    }
+
+    private var protectionControlPresentation: ProtectionSettingsControlPresentation {
+        ProtectionSettingsControlPresentation(
+            isProtectionUnavailable: screenTime.setupState == .unavailable,
+            isRequestingAuthorization: screenTime.isRequestingAuthorization,
+            requiresScreenTimeAuthorization: screenTime.requiresScreenTimeAuthorization,
+            hasSelection: screenTime.hasSelection,
+            canStopBlocking: canStopBlocking
+        )
     }
 
     private func requestScreenTimeAuthorization() {

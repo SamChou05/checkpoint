@@ -298,7 +298,253 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testProtectedAppsManagementPresentationExplainsEverySaveAndProtectionState() {
+        XCTAssertNil(
+            ProtectedAppsCategorySelectionPresentation(
+                hasCategorySelection: false,
+                hasProtectedItems: false,
+                usesLegacyCategoryEnforcement: false
+            ).detail
+        )
+        XCTAssertEqual(
+            ProtectedAppsCategorySelectionPresentation(
+                hasCategorySelection: true,
+                hasProtectedItems: false,
+                usesLegacyCategoryEnforcement: false
+            ).detail,
+            "Keep at least one app selected from the category, or choose a website, so Checkpoint has something to protect."
+        )
+        XCTAssertEqual(
+            ProtectedAppsCategorySelectionPresentation(
+                hasCategorySelection: true,
+                hasProtectedItems: true,
+                usesLegacyCategoryEnforcement: false
+            ).detail,
+            "Category shortcuts add their apps and websites to this list. Your individual changes take precedence."
+        )
+        XCTAssertEqual(
+            ProtectedAppsCategorySelectionPresentation(
+                hasCategorySelection: true,
+                hasProtectedItems: true,
+                usesLegacyCategoryEnforcement: true
+            ).detail,
+            "This older selection protects the whole category. Change a choice below to update it to the current app and website list."
+        )
+
+        XCTAssertEqual(
+            ProtectedAppsManagementChrome(
+                dynamicTypeSize: .large,
+                availableHeight: 800
+            ),
+            .brandedHeader
+        )
+        XCTAssertEqual(
+            ProtectedAppsManagementChrome(
+                dynamicTypeSize: .large,
+                availableHeight: 568
+            ),
+            .systemPickerCopy
+        )
+        XCTAssertEqual(
+            ProtectedAppsManagementChrome(
+                dynamicTypeSize: .xLarge,
+                availableHeight: 800
+            ),
+            .systemPickerCopy
+        )
+        XCTAssertEqual(
+            ProtectedAppsManagementChrome(
+                dynamicTypeSize: .xxLarge,
+                availableHeight: 800
+            ),
+            .systemPickerCopy
+        )
+        XCTAssertEqual(
+            ProtectedAppsManagementChrome(
+                dynamicTypeSize: .xxxLarge,
+                availableHeight: 800
+            ),
+            .systemPickerCopy
+        )
+        XCTAssertEqual(
+            ProtectedAppsManagementChrome(
+                dynamicTypeSize: .accessibility1,
+                availableHeight: 800
+            ),
+            .systemPickerCopy
+        )
+
+        let accessNeeded = ProtectedAppsManagementPresentation(
+            selectionSummary: "No protected apps selected",
+            hasSelection: false,
+            hasRequiredScreenTimeAuthorization: false,
+            isShieldingEnabled: false,
+            isBreakInProgress: false,
+            errorMessage: nil
+        )
+        XCTAssertEqual(accessNeeded.status, "ACCESS NEEDED")
+        XCTAssertEqual(accessNeeded.title, "Screen Time access needed")
+        XCTAssertEqual(accessNeeded.systemImage, "exclamationmark.shield.fill")
+        XCTAssertEqual(accessNeeded.tone, .attention)
+        XCTAssertEqual(
+            accessNeeded.pickerHeaderText(isCondensed: true),
+            "Screen Time access needed\nNo protected apps selected\n\nAllow Screen Time access to choose and protect apps."
+        )
+
+        let attention = ProtectedAppsManagementPresentation(
+            selectionSummary: "3 apps selected",
+            hasSelection: true,
+            hasRequiredScreenTimeAuthorization: true,
+            isShieldingEnabled: true,
+            isBreakInProgress: false,
+            errorMessage: "Choose fewer apps so iPhone can apply the full list."
+        )
+        XCTAssertEqual(attention.status, "NEEDS ATTENTION")
+        XCTAssertEqual(attention.title, "Selection needs attention")
+        XCTAssertEqual(
+            attention.detail,
+            "Choose fewer apps so iPhone can apply the full list."
+        )
+        XCTAssertEqual(attention.tone, .attention)
+        XCTAssertEqual(
+            attention.pickerHeaderText(isCondensed: true),
+            "Needs attention\n3 apps selected\n\nChoose fewer apps so iPhone can apply the full list."
+        )
+
+        let empty = ProtectedAppsManagementPresentation(
+            selectionSummary: "No protected apps selected",
+            hasSelection: false,
+            hasRequiredScreenTimeAuthorization: true,
+            isShieldingEnabled: false,
+            isBreakInProgress: false,
+            errorMessage: nil
+        )
+        XCTAssertEqual(empty.status, "NOT SET")
+        XCTAssertEqual(empty.title, "Choose your pause points")
+        XCTAssertTrue(empty.detail.contains("Protection is off"))
+        XCTAssertEqual(empty.tone, .empty)
+        XCTAssertEqual(
+            empty.pickerHeaderText(isCondensed: true),
+            "Choose apps\nNo protected apps selected\n\nProtection is off. Choices save automatically."
+        )
+
+        let live = ProtectedAppsManagementPresentation(
+            selectionSummary: "3 apps, 2 sites selected",
+            hasSelection: true,
+            hasRequiredScreenTimeAuthorization: true,
+            isShieldingEnabled: true,
+            isBreakInProgress: true,
+            errorMessage: nil
+        )
+        XCTAssertEqual(live.status, "ACTIVE")
+        XCTAssertEqual(live.title, "Protection list is live")
+        XCTAssertEqual(
+            live.detail,
+            "Changes apply immediately. Turn protection off in Settings before clearing the list."
+        )
+        XCTAssertEqual(live.tone, .live)
+        XCTAssertEqual(
+            live.pickerHeaderText,
+            "Active · Protection list is live\n3 apps, 2 sites selected\n\nChanges apply immediately. Turn protection off in Settings before clearing the list."
+        )
+        XCTAssertEqual(live.pickerHeaderText(isCondensed: false), live.pickerHeaderText)
+        XCTAssertEqual(
+            live.pickerHeaderText(isCondensed: true),
+            "Protection active\n3 apps, 2 sites selected\n\nChanges apply immediately. Use Settings to turn protection off."
+        )
+        XCTAssertEqual(
+            live.accessibilityLabel,
+            "Protection list is live. ACTIVE. 3 apps, 2 sites selected. Changes apply immediately. Turn protection off in Settings before clearing the list."
+        )
+
+        let breakInProgress = ProtectedAppsManagementPresentation(
+            selectionSummary: "3 apps, 2 sites selected",
+            hasSelection: true,
+            hasRequiredScreenTimeAuthorization: true,
+            isShieldingEnabled: false,
+            isBreakInProgress: true,
+            errorMessage: nil
+        )
+        XCTAssertEqual(breakInProgress.status, "BREAK ACTIVE")
+        XCTAssertEqual(breakInProgress.title, "Ready for the next lock")
+        XCTAssertEqual(
+            breakInProgress.detail,
+            "Changes save now and apply when this break ends. Turn protection off in Settings before clearing the list."
+        )
+        XCTAssertEqual(breakInProgress.tone, .breakInProgress)
+        XCTAssertEqual(
+            breakInProgress.pickerHeaderText,
+            "Break Active · Ready for the next lock\n3 apps, 2 sites selected\n\nChanges save now and apply when this break ends. Turn protection off in Settings before clearing the list."
+        )
+        XCTAssertEqual(
+            breakInProgress.pickerHeaderText(isCondensed: true),
+            "Break active\n3 apps, 2 sites selected\n\nChanges apply when the break ends. Use Settings to turn protection off."
+        )
+
+        let saved = ProtectedAppsManagementPresentation(
+            selectionSummary: "3 apps, 2 sites selected",
+            hasSelection: true,
+            hasRequiredScreenTimeAuthorization: true,
+            isShieldingEnabled: false,
+            isBreakInProgress: false,
+            errorMessage: nil
+        )
+        XCTAssertEqual(saved.status, "SAVED")
+        XCTAssertEqual(saved.title, "Your list is ready")
+        XCTAssertTrue(saved.detail.contains("save automatically"))
+        XCTAssertEqual(saved.systemImage, "checkmark.circle.fill")
+        XCTAssertEqual(saved.tone, .ready)
+        XCTAssertEqual(
+            saved.pickerHeaderText,
+            "Saved · Your list is ready\n3 apps, 2 sites selected\n\nYour choices save automatically. Start protection from Home or Settings when you're ready."
+        )
+        XCTAssertEqual(
+            saved.pickerHeaderText(isCondensed: true),
+            "List saved\n3 apps, 2 sites selected\n\nStart protection from Home or Settings."
+        )
+        XCTAssertEqual(
+            saved.pickerFooterText(
+                categorySelectionDetail: "Category shortcuts add apps and websites."
+            ),
+            "Category shortcuts add apps and websites."
+        )
+        XCTAssertNil(saved.pickerFooterText(categorySelectionDetail: nil))
+        XCTAssertEqual(
+            saved.accessibilityLabel,
+            "Your list is ready. SAVED. 3 apps, 2 sites selected. Your choices save automatically. Start protection from Home or Settings when you're ready."
+        )
+    }
+
+    @MainActor
     func testFirstRunProtectionMotionAndFocusPoliciesRespectReduceMotion() {
+        XCTAssertTrue(
+            RestrictedAppsErrorFeedbackPolicy.reportsScreenTimeError(
+                presentationMode: .management,
+                firstRunPhase: .protected(selectionSummary: "3 apps selected")
+            )
+        )
+        XCTAssertTrue(
+            RestrictedAppsErrorFeedbackPolicy.reportsScreenTimeError(
+                presentationMode: .firstRun,
+                firstRunPhase: .selecting
+            )
+        )
+        XCTAssertFalse(
+            RestrictedAppsErrorFeedbackPolicy.reportsScreenTimeError(
+                presentationMode: .firstRun,
+                firstRunPhase: .preparing(selectionSummary: "3 apps selected")
+            )
+        )
+        XCTAssertFalse(
+            RestrictedAppsErrorFeedbackPolicy.reportsScreenTimeError(
+                presentationMode: .firstRun,
+                firstRunPhase: .failed(
+                    selectionSummary: "3 apps selected",
+                    message: "Protection could not start."
+                )
+            )
+        )
+
         let standard = FirstRunProtectionMotionPolicy(reduceMotion: false)
         XCTAssertEqual(standard.style, .choreographed)
         XCTAssertNotNil(standard.animation)
@@ -355,6 +601,133 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
                 hasActiveProtectionIntent: false
             ).isValid
         )
+    }
+
+    @MainActor
+    func testProtectedAppsManagementPreservesPickerSpaceAcrossCompactAndExpandedTextLayouts() {
+        let categoryDetail =
+            "Category shortcuts add their apps and websites to this list. Your individual changes take precedence."
+        let fixtures = [
+            ProtectedAppsManagementRenderFixture(
+                name: "protected-apps-empty-short-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                presentation: ProtectedAppsManagementPresentation(
+                    selectionSummary: "No protected apps selected",
+                    hasSelection: false,
+                    hasRequiredScreenTimeAuthorization: true,
+                    isShieldingEnabled: false,
+                    isBreakInProgress: false,
+                    errorMessage: nil
+                ),
+                categorySelectionDetail: nil,
+                minimumPickerHeight: 400
+            ),
+            ProtectedAppsManagementRenderFixture(
+                name: "protected-apps-active-short-category-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                presentation: ProtectedAppsManagementPresentation(
+                    selectionSummary: "12 apps, 3 sites selected",
+                    hasSelection: true,
+                    hasRequiredScreenTimeAuthorization: true,
+                    isShieldingEnabled: true,
+                    isBreakInProgress: false,
+                    errorMessage: nil
+                ),
+                categorySelectionDetail: categoryDetail,
+                minimumPickerHeight: 400
+            ),
+            ProtectedAppsManagementRenderFixture(
+                name: "protected-apps-active-standard-dark",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                presentation: ProtectedAppsManagementPresentation(
+                    selectionSummary: "3 apps, 2 sites selected",
+                    hasSelection: true,
+                    hasRequiredScreenTimeAuthorization: true,
+                    isShieldingEnabled: true,
+                    isBreakInProgress: false,
+                    errorMessage: nil
+                ),
+                categorySelectionDetail: categoryDetail,
+                minimumPickerHeight: 260
+            ),
+            ProtectedAppsManagementRenderFixture(
+                name: "protected-apps-break-xlarge-dark-reduced",
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .xLarge,
+                reduceMotion: true,
+                presentation: ProtectedAppsManagementPresentation(
+                    selectionSummary: "3 apps, 2 sites selected",
+                    hasSelection: true,
+                    hasRequiredScreenTimeAuthorization: true,
+                    isShieldingEnabled: false,
+                    isBreakInProgress: true,
+                    errorMessage: nil
+                ),
+                categorySelectionDetail: categoryDetail,
+                minimumPickerHeight: 400
+            ),
+            ProtectedAppsManagementRenderFixture(
+                name: "protected-apps-attention-accessibility5-light-reduced",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                presentation: ProtectedAppsManagementPresentation(
+                    selectionSummary: "3 apps selected",
+                    hasSelection: true,
+                    hasRequiredScreenTimeAuthorization: true,
+                    isShieldingEnabled: true,
+                    isBreakInProgress: false,
+                    errorMessage: "Protection requires at least one app or website. Turn it off in Settings before clearing the list."
+                ),
+                categorySelectionDetail: nil,
+                minimumPickerHeight: 600
+            )
+        ]
+
+        for fixture in fixtures {
+            let capture = ProtectedAppsPickerViewportCapture()
+            let image = HostedViewRenderer.image(
+                for: ProtectedAppsManagementRenderScene(
+                    fixture: fixture,
+                    viewportCapture: capture
+                )
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.15,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+            XCTAssertGreaterThanOrEqual(
+                capture.size.height,
+                fixture.minimumPickerHeight,
+                "\(fixture.name) left only \(capture.size.height) points for the picker"
+            )
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
     }
 
     @MainActor
@@ -624,6 +997,186 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
     }
 }
 
+private struct ProtectedAppsManagementRenderFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let reduceMotion: Bool
+    let presentation: ProtectedAppsManagementPresentation
+    let categorySelectionDetail: String?
+    let minimumPickerHeight: CGFloat
+
+    var chrome: ProtectedAppsManagementChrome {
+        ProtectedAppsManagementChrome(
+            dynamicTypeSize: dynamicTypeSize,
+            availableHeight: height
+        )
+    }
+}
+
+@MainActor
+private final class ProtectedAppsPickerViewportCapture {
+    var size = CGSize.zero
+}
+
+private struct ProtectedAppsManagementRenderScene: View {
+    let fixture: ProtectedAppsManagementRenderFixture
+    let viewportCapture: ProtectedAppsPickerViewportCapture
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                switch fixture.chrome {
+                case .brandedHeader:
+                    ProtectedAppsManagementShell(
+                        presentation: fixture.presentation,
+                        categorySelectionDetail: fixture.categorySelectionDetail,
+                        changeSequence: 0,
+                        reduceMotionOverride: fixture.reduceMotion
+                    ) {
+                        ProtectedAppsPickerSkeleton(
+                            viewportCapture: viewportCapture
+                        )
+                    }
+                case .systemPickerCopy:
+                    ProtectedAppsSystemPickerSkeleton(
+                        headerText: fixture.presentation.pickerHeaderText(
+                            isCondensed: fixture.dynamicTypeSize.isAccessibilitySize
+                        ),
+                        footerText: fixture.presentation.pickerFooterText(
+                            categorySelectionDetail: fixture.categorySelectionDetail
+                        ),
+                        viewportCapture: viewportCapture
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .checkpointScreenBackground()
+            .navigationTitle("Protected Apps")
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {}
+                        .fontWeight(.semibold)
+                        .foregroundStyle(CheckpointTheme.teal)
+                }
+            }
+        }
+    }
+}
+
+private struct ProtectedAppsSystemPickerSkeleton: View {
+    let headerText: String
+    let footerText: String?
+    let viewportCapture: ProtectedAppsPickerViewportCapture
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                Text(headerText)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 18)
+
+                ProtectedAppsPickerRows()
+
+                if let footerText {
+                    Text(footerText)
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 18)
+                }
+            }
+            .padding(.vertical, 12)
+        }
+        .background(CheckpointTheme.panel.opacity(0.58))
+        .reportProtectedAppsViewport(to: viewportCapture)
+    }
+}
+
+private struct ProtectedAppsPickerSkeleton: View {
+    var viewportCapture: ProtectedAppsPickerViewportCapture?
+
+    init(viewportCapture: ProtectedAppsPickerViewportCapture? = nil) {
+        self.viewportCapture = viewportCapture
+    }
+
+    var body: some View {
+        ScrollView {
+            ProtectedAppsPickerRows()
+        }
+        .scrollDisabled(true)
+        .background(CheckpointTheme.panel.opacity(0.58))
+        .reportProtectedAppsViewport(to: viewportCapture)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct ProtectedAppsPickerRows: View {
+    var body: some View {
+        LazyVStack(spacing: 0) {
+            ForEach(0..<4, id: \.self) { index in
+                HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(CheckpointTheme.panelRaised)
+                        .frame(width: 38, height: 38)
+
+                    VStack(alignment: .leading, spacing: 7) {
+                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                            .fill(CheckpointTheme.hairline)
+                            .frame(width: index.isMultiple(of: 2) ? 132 : 104, height: 8)
+                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                            .fill(CheckpointTheme.panelRaised)
+                            .frame(width: 76, height: 7)
+                    }
+
+                    Spacer()
+
+                    Circle()
+                        .stroke(CheckpointTheme.controlStroke, lineWidth: 1.5)
+                        .frame(width: 22, height: 22)
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
+
+                Divider()
+                    .overlay(CheckpointTheme.hairline)
+                    .padding(.leading, 68)
+            }
+        }
+    }
+}
+
+private struct ProtectedAppsViewportReporter: ViewModifier {
+    let capture: ProtectedAppsPickerViewportCapture?
+
+    func body(content: Content) -> some View {
+        content.background {
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        capture?.size = proxy.size
+                    }
+                    .onChange(of: proxy.size) { _, size in
+                        capture?.size = size
+                    }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportProtectedAppsViewport(
+        to capture: ProtectedAppsPickerViewportCapture?
+    ) -> some View {
+        modifier(ProtectedAppsViewportReporter(capture: capture))
+    }
+}
+
 private struct FirstRunProtectionRenderFixture {
     let name: String
     let width: CGFloat
@@ -677,7 +1230,7 @@ private struct FirstRunProtectionRenderScene: View {
                     ? "3 apps and 2 websites selected"
                     : "Nothing selected yet",
                 categorySelectionDetail: fixture.categoryOnlySelection
-                    ? "Keep at least one app selected inside the category so Checkpoint has something to protect."
+                    ? "Keep at least one app selected from the category, or choose a website, so Checkpoint has something to protect."
                     : nil,
                 errorMessage: nil
             )
@@ -689,41 +1242,7 @@ private struct FirstRunProtectionRenderScene: View {
     }
 
     private var pickerSkeleton: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(0..<4, id: \.self) { index in
-                    HStack(spacing: 12) {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(CheckpointTheme.panelRaised)
-                            .frame(width: 38, height: 38)
-
-                        VStack(alignment: .leading, spacing: 7) {
-                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                .fill(CheckpointTheme.hairline)
-                                .frame(width: index.isMultiple(of: 2) ? 132 : 104, height: 8)
-                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                .fill(CheckpointTheme.panelRaised)
-                                .frame(width: 76, height: 7)
-                        }
-
-                        Spacer()
-
-                        Circle()
-                            .stroke(CheckpointTheme.controlStroke, lineWidth: 1.5)
-                            .frame(width: 22, height: 22)
-                    }
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 12)
-
-                    Divider()
-                        .overlay(CheckpointTheme.hairline)
-                        .padding(.leading, 68)
-                }
-            }
-        }
-        .scrollDisabled(true)
-        .background(CheckpointTheme.panel.opacity(0.58))
-        .accessibilityHidden(true)
+        ProtectedAppsPickerSkeleton()
     }
 }
 

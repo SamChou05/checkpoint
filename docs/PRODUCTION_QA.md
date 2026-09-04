@@ -99,7 +99,8 @@ Findings:
 - [ ] Install a new app from a previously selected category and confirm the documented snapshot behavior: it stays unprotected until the picker selection is refreshed.
 - [ ] Select more than 50 websites and verify protection stays off with a clear limit message instead of applying a partial list.
 - [ ] Select more than 50 apps and verify protection stays off with a clear limit message instead of applying a partial list.
-- [ ] Remove the final protected app and verify protection turns off, the break timer is canceled, and no stale checkpoint opens.
+- [ ] While protection is active, try to remove the final protected app or website and verify Checkpoint preserves the last selection, keeps it blocked, and directs you to turn protection off in Settings before clearing the list.
+- [ ] During a break, try to remove the final protected app or website and verify Checkpoint preserves the last selection and re-locks it when the break ends.
 - [ ] Turn protection off, force-quit and relaunch Checkpoint, and verify no previously selected app remains blocked.
 - [ ] Open a protected app and confirm the custom Checkpoint shield appears.
 - [ ] Confirm the shield shows the current goal after switching goals.

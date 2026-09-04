@@ -21,6 +21,32 @@ enum ScreenTimeAuthorizationStatus: Equatable, Sendable {
     case unavailable
 }
 
+struct ProtectedAppsSelectionSummary: Equatable {
+    let applicationCount: Int
+    let enforcedCategoryCount: Int
+    let webDomainCount: Int
+
+    var text: String {
+        let parts = [
+            countText(applicationCount, singular: "app", plural: "apps"),
+            countText(enforcedCategoryCount, singular: "category", plural: "categories"),
+            countText(webDomainCount, singular: "site", plural: "sites")
+        ].compactMap { $0 }
+
+        guard !parts.isEmpty else { return "No protected apps selected" }
+        return parts.joined(separator: ", ") + " selected"
+    }
+
+    private func countText(
+        _ count: Int,
+        singular: String,
+        plural: String
+    ) -> String? {
+        guard count > 0 else { return nil }
+        return "\(count) \(count == 1 ? singular : plural)"
+    }
+}
+
 @MainActor
 protocol ScreenTimeAuthorizing: AnyObject {
     var authorizationStatus: ScreenTimeAuthorizationStatus { get }
@@ -84,6 +110,8 @@ final class ScreenTimeController {
             "Checkpoint could not remove all shared Screen Time data. Try Erase all data again."
         static let applicationLimitExceeded = "The selected apps exceed iPhone's protection limit."
         static let webDomainLimitExceeded = "The selected websites exceed iPhone's protection limit."
+        static let activeProtectionSelectionRequired =
+            "Protection requires at least one app or website. Turn it off in Settings before clearing the list."
         static let authorizationRequired =
             "Screen Time access is not approved yet. Allow Screen Time access before starting app protection."
     }
@@ -172,11 +200,15 @@ final class ScreenTimeController {
             return "The break couldn't start, so protection stayed on. Try again."
         }
 
+        if lastErrorMessage == Message.activeProtectionSelectionRequired {
+            return Message.activeProtectionSelectionRequired
+        }
+
         switch setupState {
         case .failed:
             return "Allow Screen Time so Checkpoint can protect the apps you choose."
         case .authorized where !hasSelection:
-            return "Choose at least one app, category, or website to protect."
+            return "Choose at least one app or website to protect."
         default:
             return "App protection needs attention. Try again."
         }
@@ -367,7 +399,7 @@ final class ScreenTimeController {
         }
         guard !hasErasedAllData || hasSelection else {
             isShieldingEnabled = false
-            lastErrorMessage = "Choose at least one protected app, category, or website before starting app protection."
+            lastErrorMessage = "Choose at least one protected app or website before starting app protection."
             updateSummary()
             return
         }
@@ -392,7 +424,7 @@ final class ScreenTimeController {
 
         guard hasSelection else {
             deactivateProtection(
-                errorMessage: "Choose at least one protected app, category, or website before starting app protection."
+                errorMessage: "Choose at least one protected app or website before starting app protection."
             )
             return
         }
@@ -617,6 +649,16 @@ final class ScreenTimeController {
     func updateSelection(_ newSelection: FamilyActivitySelection) -> Bool {
         guard !blockForPendingSharedDataErase() else { return false }
         let normalizedSelection = SharedAppGroup.categoryInclusiveSelection(newSelection)
+        let proposedSelectionHasProtectedItems =
+            !normalizedSelection.applicationTokens.isEmpty ||
+            !normalizedSelection.webDomainTokens.isEmpty
+        let hasActiveProtectionIntent = isShieldingEnabled ||
+            setupState == .temporarilyUnlocked ||
+            SharedAppGroup.desiredShieldActive
+        guard proposedSelectionHasProtectedItems || !hasActiveProtectionIntent else {
+            lastErrorMessage = Message.activeProtectionSelectionRequired
+            return false
+        }
         let applicationCountIsAllowed = SharedAppGroup.canAcceptShieldTokenCount(
             normalizedSelection.applicationTokens.count,
             currentCount: selection.applicationTokens.count,
@@ -640,7 +682,8 @@ final class ScreenTimeController {
         if let selectionLimitError = Self.selectionLimitError(for: normalizedSelection) {
             lastErrorMessage = selectionLimitError
         } else if lastErrorMessage == Message.applicationLimitExceeded ||
-                    lastErrorMessage == Message.webDomainLimitExceeded {
+                    lastErrorMessage == Message.webDomainLimitExceeded ||
+                    lastErrorMessage == Message.activeProtectionSelectionRequired {
             lastErrorMessage = nil
         } else if !normalizedSelection.applicationTokens.isEmpty ||
                     !normalizedSelection.webDomainTokens.isEmpty ||
@@ -660,25 +703,18 @@ final class ScreenTimeController {
 
     private func updateSummary() {
         #if os(iOS) && canImport(FamilyControls)
-        let appCount = selection.applicationTokens.count
-        let categoryCount = selection.categoryTokens.count
-        let webCount = selection.webDomainTokens.count
-
-        if !hasSelection {
-            restrictedAppsSummary = "No protected apps selected"
-        } else {
-            var parts: [String] = []
-            if appCount > 0 {
-                parts.append("\(appCount) \(appCount == 1 ? "app" : "apps")")
-            }
-            if categoryCount > 0 {
-                parts.append("\(categoryCount) \(categoryCount == 1 ? "category" : "categories")")
-            }
-            if webCount > 0 {
-                parts.append("\(webCount) \(webCount == 1 ? "site" : "sites")")
-            }
-            restrictedAppsSummary = parts.joined(separator: ", ") + " selected"
-        }
+        #if canImport(ManagedSettings)
+        let enforcedCategoryCount = usesLegacyCategoryEnforcement
+            ? selection.categoryTokens.count
+            : 0
+        #else
+        let enforcedCategoryCount = 0
+        #endif
+        restrictedAppsSummary = ProtectedAppsSelectionSummary(
+            applicationCount: selection.applicationTokens.count,
+            enforcedCategoryCount: enforcedCategoryCount,
+            webDomainCount: selection.webDomainTokens.count
+        ).text
         #else
         restrictedAppsSummary = Message.screenTimeUnavailable
         #endif
@@ -790,7 +826,7 @@ final class ScreenTimeController {
     }
 
     #if os(iOS) && canImport(FamilyControls) && canImport(ManagedSettings)
-    private var usesLegacyCategoryEnforcement: Bool {
+    var usesLegacyCategoryEnforcement: Bool {
         SharedAppGroup.usesLegacyCategoryEnforcement(
             semanticsVersion: selectionSemanticsVersion,
             applicationTokenCount: selection.applicationTokens.count,
