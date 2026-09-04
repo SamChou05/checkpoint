@@ -172,6 +172,12 @@ struct MembershipView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 }
 
+                if !store.isMember {
+                    MembershipValuePreview(
+                        presentation: MembershipValuePreviewPresentation(context: context),
+                        reduceMotion: reduceMotion
+                    )
+                }
             }
         }
     }
@@ -184,7 +190,7 @@ struct MembershipView: View {
                 if store.isMember {
                     activePlanBadge
                 } else {
-                    ProMomentumMark(reduceMotion: reduceMotion)
+                    ProMomentumMark()
                 }
             }
         } else {
@@ -195,7 +201,7 @@ struct MembershipView: View {
                 if store.isMember {
                     activePlanBadge
                 } else {
-                    ProMomentumMark(reduceMotion: reduceMotion)
+                    ProMomentumMark()
                 }
             }
         }
@@ -669,6 +675,259 @@ struct MembershipView: View {
     private var reduceMotion: Bool { reduceMotionOverride ?? systemReduceMotion }
 }
 
+enum MembershipValuePreviewMotionStyle: Equatable {
+    case stagedReveal
+    case identity
+}
+
+struct MembershipValuePreviewMotionPolicy: Equatable {
+    let style: MembershipValuePreviewMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .stagedReveal
+    }
+
+    var animatesReveal: Bool { style == .stagedReveal }
+    var animatesSymbol: Bool { style == .stagedReveal }
+    var hiddenOpacity: Double { style == .stagedReveal ? 0 : 1 }
+    var hiddenScale: CGFloat { style == .stagedReveal ? 0.92 : 1 }
+
+    func nodeAnimation(at index: Int) -> Animation? {
+        guard style == .stagedReveal else { return nil }
+        return .smooth(duration: 0.34).delay(Double(index) * 0.09)
+    }
+
+    func connectorAnimation(after index: Int) -> Animation? {
+        guard style == .stagedReveal else { return nil }
+        return .smooth(duration: 0.3).delay(0.08 + (Double(index) * 0.09))
+    }
+}
+
+struct MembershipValuePreview: View {
+    let presentation: MembershipValuePreviewPresentation
+    let reduceMotion: Bool
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var isRevealed = false
+    @State private var symbolRevealSequence = 0
+
+    private var motionPolicy: MembershipValuePreviewMotionPolicy {
+        MembershipValuePreviewMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 11) {
+            Text("PRO IN ACTION")
+                .font(.caption2.weight(.bold))
+                .tracking(dynamicTypeSize.isAccessibilitySize ? 0 : 0.72)
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityHidden(true)
+
+            if dynamicTypeSize.isAccessibilitySize {
+                verticalWorkflow
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    standardWorkflow
+                        .fixedSize(horizontal: true, vertical: false)
+
+                    compactWorkflow
+                }
+            }
+
+            Text(presentation.outcome)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(13)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.heroSubtleFill,
+            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(presentation.accessibilityLabel)
+        .onAppear {
+            reveal()
+        }
+    }
+
+    private var standardWorkflow: some View {
+        HStack(spacing: 5) {
+            ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
+                if index > 0 {
+                    horizontalConnector(after: index - 1)
+                }
+
+                VStack(spacing: 6) {
+                    nodeMark(node)
+
+                    Text(node.title)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(nodeTextColor(node))
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(width: 74)
+                }
+                .opacity(isRevealed ? 1 : motionPolicy.hiddenOpacity)
+                .scaleEffect(isRevealed ? 1 : motionPolicy.hiddenScale)
+                .animation(motionPolicy.nodeAnimation(at: index), value: isRevealed)
+            }
+        }
+    }
+
+    private var compactWorkflow: some View {
+        ZStack(alignment: .top) {
+            compactConnector
+                .padding(.horizontal, 34)
+                .padding(.top, 15)
+
+            HStack(alignment: .top, spacing: 4) {
+                ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
+                    VStack(spacing: 5) {
+                        nodeMark(node)
+
+                        Text(node.compactTitle)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(nodeTextColor(node))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .opacity(isRevealed ? 1 : motionPolicy.hiddenOpacity)
+                    .scaleEffect(isRevealed ? 1 : motionPolicy.hiddenScale)
+                    .animation(motionPolicy.nodeAnimation(at: index), value: isRevealed)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var compactConnector: some View {
+        ZStack(alignment: .leading) {
+            Capsule()
+                .fill(CheckpointTheme.heroDivider)
+
+            Capsule()
+                .fill(CheckpointTheme.mint.opacity(0.54))
+                .scaleEffect(x: isRevealed ? 1 : 0, anchor: .leading)
+                .animation(motionPolicy.connectorAnimation(after: 0), value: isRevealed)
+        }
+        .frame(height: 2)
+        .accessibilityHidden(true)
+    }
+
+    private var verticalWorkflow: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
+                if index > 0 {
+                    verticalConnector(after: index - 1)
+                }
+
+                HStack(spacing: 11) {
+                    nodeMark(node)
+
+                    Text(node.title)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(nodeTextColor(node))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .opacity(isRevealed ? 1 : motionPolicy.hiddenOpacity)
+                .scaleEffect(
+                    isRevealed ? 1 : motionPolicy.hiddenScale,
+                    anchor: .leading
+                )
+                .animation(motionPolicy.nodeAnimation(at: index), value: isRevealed)
+            }
+        }
+    }
+
+    private func nodeMark(_ node: MembershipValuePreviewNode) -> some View {
+        let highlighted = isHighlighted(node)
+        let animated = isAnimatedDestination(node)
+
+        return Image(systemName: node.systemImage)
+            .font(.system(size: 13, weight: .bold))
+            .foregroundStyle(highlighted ? CheckpointTheme.mint : CheckpointTheme.heroMuted)
+            .frame(width: 32, height: 32)
+            .background(
+                highlighted
+                    ? CheckpointTheme.mint.opacity(0.14)
+                    : CheckpointTheme.heroSubtleFill,
+                in: Circle()
+            )
+            .overlay {
+                Circle()
+                    .stroke(
+                        highlighted
+                            ? CheckpointTheme.mint.opacity(0.5)
+                            : CheckpointTheme.heroDivider,
+                        lineWidth: 1
+                    )
+            }
+            .symbolEffect(.bounce, options: .nonRepeating, value: symbolRevealSequence)
+            .symbolEffectsRemoved(!motionPolicy.animatesSymbol || !animated)
+            .accessibilityHidden(true)
+    }
+
+    private func horizontalConnector(after index: Int) -> some View {
+        ZStack(alignment: .leading) {
+            Capsule()
+                .fill(CheckpointTheme.heroDivider)
+
+            Capsule()
+                .fill(CheckpointTheme.mint.opacity(0.54))
+                .scaleEffect(x: isRevealed ? 1 : 0, anchor: .leading)
+                .animation(motionPolicy.connectorAnimation(after: index), value: isRevealed)
+        }
+        .frame(width: 14, height: 2)
+        .accessibilityHidden(true)
+    }
+
+    private func verticalConnector(after index: Int) -> some View {
+        ZStack(alignment: .top) {
+            Capsule()
+                .fill(CheckpointTheme.heroDivider)
+
+            Capsule()
+                .fill(CheckpointTheme.mint.opacity(0.54))
+                .scaleEffect(y: isRevealed ? 1 : 0, anchor: .top)
+                .animation(motionPolicy.connectorAnimation(after: index), value: isRevealed)
+        }
+        .frame(width: 2, height: 12)
+        .padding(.leading, 15)
+        .accessibilityHidden(true)
+    }
+
+    private func isHighlighted(_ node: MembershipValuePreviewNode) -> Bool {
+        presentation.highlightedNodeID == nil || presentation.highlightedNodeID == node.id
+    }
+
+    private func isAnimatedDestination(_ node: MembershipValuePreviewNode) -> Bool {
+        if let highlightedNodeID = presentation.highlightedNodeID {
+            return highlightedNodeID == node.id
+        }
+        return node.id == presentation.nodes.last?.id
+    }
+
+    private func nodeTextColor(_ node: MembershipValuePreviewNode) -> Color {
+        isHighlighted(node) ? CheckpointTheme.heroText : CheckpointTheme.heroMuted
+    }
+
+    private func reveal() {
+        isRevealed = true
+        guard motionPolicy.animatesSymbol else { return }
+        symbolRevealSequence += 1
+    }
+}
+
 private struct MembershipPlanRow: View {
     let option: MembershipPlanOption
     let isSelected: Bool
@@ -870,9 +1129,6 @@ private struct ProBenefitTile: View {
 }
 
 private struct ProMomentumMark: View {
-    let reduceMotion: Bool
-    @State private var revealSequence = 0
-
     var body: some View {
         ZStack {
             Circle()
@@ -886,14 +1142,8 @@ private struct ProMomentumMark: View {
             Image(systemName: "sparkles")
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(CheckpointTheme.mint)
-                .symbolEffect(.bounce, options: .nonRepeating, value: revealSequence)
-                .symbolEffectsRemoved(reduceMotion)
         }
         .accessibilityHidden(true)
-        .onAppear {
-            guard !reduceMotion else { return }
-            revealSequence += 1
-        }
     }
 }
 

@@ -108,6 +108,88 @@ enum MembershipPresentationContext: Equatable, Identifiable, Sendable {
     }
 }
 
+struct MembershipValuePreviewNode: Equatable, Identifiable, Sendable {
+    enum ID: String, CaseIterable, Hashable, Sendable {
+        case focusedGoals
+        case freshCheckpoints
+        case nextFocus
+    }
+
+    let id: ID
+    let title: String
+    let compactTitle: String
+    let detail: String
+    let systemImage: String
+}
+
+struct MembershipValuePreviewPresentation: Equatable, Sendable {
+    let nodes: [MembershipValuePreviewNode]
+    let highlightedNodeID: MembershipValuePreviewNode.ID?
+    let outcome: String
+    let accessibilityLabel: String
+
+    init(context: MembershipPresentationContext) {
+        let nodes = [
+            MembershipValuePreviewNode(
+                id: .focusedGoals,
+                title: "Focused goals",
+                compactTitle: "Goals",
+                detail: "Up to \(ProductLimits.memberGoalProfileLimit) separate goals",
+                systemImage: "square.stack.3d.up.fill"
+            ),
+            MembershipValuePreviewNode(
+                id: .freshCheckpoints,
+                title: "Fresh checkpoints",
+                compactTitle: "Fresh sets",
+                detail: "\(ProductLimits.memberQuestionBankTargetCount)-question practice target",
+                systemImage: "sparkles"
+            ),
+            MembershipValuePreviewNode(
+                id: .nextFocus,
+                title: "Clear Next Focus",
+                compactTitle: "Next focus",
+                detail: "One priority from your progress",
+                systemImage: "scope"
+            )
+        ]
+
+        let highlightedNodeID: MembershipValuePreviewNode.ID?
+        let outcome: String
+
+        switch context {
+        case .overview:
+            highlightedNodeID = nil
+            outcome = "Focused goals flow into fresh checkpoints and a clear Next Focus."
+        case .feature(.goalProfiles):
+            highlightedNodeID = .focusedGoals
+            outcome = "Keep up to \(ProductLimits.memberGoalProfileLimit) goals separate and focused."
+        case .feature(.freshQuestionGeneration):
+            highlightedNodeID = .freshCheckpoints
+            outcome = "Keep new checkpoints coming as your ready set runs low."
+        case .feature(.largerQuestionBank):
+            highlightedNodeID = .freshCheckpoints
+            outcome = "Build toward a \(ProductLimits.memberQuestionBankTargetCount)-question bank for broader practice."
+        case .feature(.adaptiveStudyAssist):
+            highlightedNodeID = .nextFocus
+            outcome = "Turn answer history into one clear next step."
+        }
+
+        self.nodes = nodes
+        self.highlightedNodeID = highlightedNodeID
+        self.outcome = outcome
+
+        let workflowSummary = nodes
+            .map { "\($0.title): \($0.detail)" }
+            .joined(separator: ". ")
+        if let highlightedNodeID,
+           let highlightedNode = nodes.first(where: { $0.id == highlightedNodeID }) {
+            accessibilityLabel = "Pro workflow. \(workflowSummary). \(highlightedNode.title) highlighted. \(outcome)"
+        } else {
+            accessibilityLabel = "Pro workflow. \(workflowSummary). \(outcome)"
+        }
+    }
+}
+
 enum MembershipProductID {
     static let monthly = "checkpoint.membership.monthly"
     static let yearly = "checkpoint.membership.yearly"

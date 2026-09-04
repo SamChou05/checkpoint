@@ -168,6 +168,161 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(feature.feature, .adaptiveStudyAssist)
     }
 
+    func testMembershipValuePreviewOverviewShowsTheCompleteWorkflowWithoutASpotlight() {
+        let presentation = MembershipValuePreviewPresentation(context: .overview)
+
+        XCTAssertEqual(presentation.nodes.map(\.id), [.focusedGoals, .freshCheckpoints, .nextFocus])
+        XCTAssertEqual(presentation.nodes.map(\.title), ["Focused goals", "Fresh checkpoints", "Clear Next Focus"])
+        XCTAssertEqual(presentation.nodes.map(\.compactTitle), ["Goals", "Fresh sets", "Next focus"])
+        XCTAssertEqual(
+            presentation.nodes.map(\.systemImage),
+            ["square.stack.3d.up.fill", "sparkles", "scope"]
+        )
+        XCTAssertNil(presentation.highlightedNodeID)
+        XCTAssertEqual(
+            presentation.outcome,
+            "Focused goals flow into fresh checkpoints and a clear Next Focus."
+        )
+        XCTAssertEqual(
+            presentation.accessibilityLabel,
+            "Pro workflow. Focused goals: Up to \(ProductLimits.memberGoalProfileLimit) separate goals. Fresh checkpoints: \(ProductLimits.memberQuestionBankTargetCount)-question practice target. Clear Next Focus: One priority from your progress. Focused goals flow into fresh checkpoints and a clear Next Focus."
+        )
+    }
+
+    func testMembershipValuePreviewSpotlightsTheFeatureWorkflowNode() {
+        let expectations: [(MembershipFeature, MembershipValuePreviewNode.ID, String)] = [
+            (
+                .goalProfiles,
+                .focusedGoals,
+                "Keep up to \(ProductLimits.memberGoalProfileLimit) goals separate and focused."
+            ),
+            (
+                .freshQuestionGeneration,
+                .freshCheckpoints,
+                "Keep new checkpoints coming as your ready set runs low."
+            ),
+            (
+                .largerQuestionBank,
+                .freshCheckpoints,
+                "Build toward a \(ProductLimits.memberQuestionBankTargetCount)-question bank for broader practice."
+            ),
+            (
+                .adaptiveStudyAssist,
+                .nextFocus,
+                "Turn answer history into one clear next step."
+            )
+        ]
+
+        for (feature, expectedNodeID, expectedOutcome) in expectations {
+            let presentation = MembershipValuePreviewPresentation(context: .feature(feature))
+
+            XCTAssertEqual(presentation.highlightedNodeID, expectedNodeID, feature.id)
+            XCTAssertEqual(presentation.outcome, expectedOutcome, feature.id)
+            let highlightedTitle = presentation.nodes.first(where: { $0.id == expectedNodeID })?.title ?? ""
+            XCTAssertEqual(
+                presentation.accessibilityLabel,
+                "Pro workflow. Focused goals: Up to \(ProductLimits.memberGoalProfileLimit) separate goals. Fresh checkpoints: \(ProductLimits.memberQuestionBankTargetCount)-question practice target. Clear Next Focus: One priority from your progress. \(highlightedTitle) highlighted. \(expectedOutcome)",
+                feature.id
+            )
+        }
+    }
+
+    func testMembershipValuePreviewCopyUsesProductLimits() throws {
+        let overview = MembershipValuePreviewPresentation(context: .overview)
+        let goalNode = try XCTUnwrap(overview.nodes.first(where: { $0.id == .focusedGoals }))
+        let checkpointNode = try XCTUnwrap(overview.nodes.first(where: { $0.id == .freshCheckpoints }))
+
+        XCTAssertEqual(goalNode.detail, "Up to \(ProductLimits.memberGoalProfileLimit) separate goals")
+        XCTAssertEqual(
+            checkpointNode.detail,
+            "\(ProductLimits.memberQuestionBankTargetCount)-question practice target"
+        )
+        XCTAssertTrue(overview.accessibilityLabel.contains(goalNode.detail))
+        XCTAssertTrue(overview.accessibilityLabel.contains(checkpointNode.detail))
+    }
+
+    func testMembershipValuePreviewMotionPolicyHonorsReduceMotion() {
+        let animated = MembershipValuePreviewMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(animated.style, .stagedReveal)
+        XCTAssertTrue(animated.animatesReveal)
+        XCTAssertTrue(animated.animatesSymbol)
+        XCTAssertEqual(animated.hiddenOpacity, 0)
+        XCTAssertLessThan(animated.hiddenScale, 1)
+        XCTAssertNotNil(animated.nodeAnimation(at: 0))
+        XCTAssertNotNil(animated.connectorAnimation(after: 0))
+
+        let reduced = MembershipValuePreviewMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertFalse(reduced.animatesReveal)
+        XCTAssertFalse(reduced.animatesSymbol)
+        XCTAssertEqual(reduced.hiddenOpacity, 1)
+        XCTAssertEqual(reduced.hiddenScale, 1)
+        XCTAssertNil(reduced.nodeAnimation(at: 0))
+        XCTAssertNil(reduced.connectorAnimation(after: 0))
+    }
+
+    @MainActor
+    func testMembershipValuePreviewRendersAcrossKeyLayouts() {
+        let fixtures = [
+            MembershipValuePreviewRenderFixture(
+                name: "membership-value-preview-overview-light",
+                context: .overview,
+                width: 353,
+                height: 300,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            MembershipValuePreviewRenderFixture(
+                name: "membership-value-preview-feature-compact-dark",
+                context: .feature(.largerQuestionBank),
+                width: 280,
+                height: 300,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            ),
+            MembershipValuePreviewRenderFixture(
+                name: "membership-value-preview-accessibility5-reduced-motion",
+                context: .feature(.adaptiveStudyAssist),
+                width: 353,
+                height: 900,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
+            )
+        ]
+
+        for fixture in fixtures {
+            autoreleasepool {
+                let view = MembershipValuePreview(
+                    presentation: MembershipValuePreviewPresentation(context: fixture.context),
+                    reduceMotion: fixture.reduceMotion
+                )
+                .padding(20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(CheckpointTheme.ink)
+                .ignoresSafeArea()
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+
+                let image = HostedViewRenderer.image(
+                    for: view,
+                    width: fixture.width,
+                    height: fixture.height,
+                    colorScheme: fixture.colorScheme,
+                    settlingTime: fixture.reduceMotion ? 0.05 : 0.55,
+                    renderScale: 1
+                )
+
+                XCTAssertEqual(image.size.width, fixture.width, accuracy: 1, fixture.name)
+                XCTAssertEqual(image.size.height, fixture.height, accuracy: 1, fixture.name)
+                let attachment = XCTAttachment(image: image)
+                attachment.name = fixture.name
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
+        }
+    }
+
     @MainActor
     func testStoreRoutesSettingsOverviewWithoutMasqueradingAsAFeatureGate() throws {
         let suiteName = "MembershipViewRenderingTests.route.\(UUID().uuidString)"
@@ -442,6 +597,16 @@ private struct MembershipRenderFixture {
     var isLoading = false
     var purchaseNotice: MembershipPurchaseNotice?
     var isMember = false
+}
+
+private struct MembershipValuePreviewRenderFixture {
+    let name: String
+    let context: MembershipPresentationContext
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    var reduceMotion = false
 }
 
 private struct SettingsPlanRenderFixture {
