@@ -52,12 +52,17 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
 
         XCTAssertEqual(initial.stage, "Screen Time")
         XCTAssertEqual(initial.step, 1)
+        XCTAssertEqual(initial.state, .permissionRequired)
+        XCTAssertEqual(initial.state.status, "Permission needed")
+        XCTAssertEqual(initial.state.systemImage, "checkmark.shield")
+        XCTAssertEqual(initial.state.tone, .informational)
         XCTAssertEqual(initial.heading, "Practice before you scroll.")
         XCTAssertEqual(initial.primaryAction, .request)
         XCTAssertEqual(initial.primaryTitle, "Allow Screen Time")
         XCTAssertEqual(initial.primarySystemImage, "checkmark.shield")
         XCTAssertFalse(initial.isWorking)
         XCTAssertTrue(initial.showsSetupSequence)
+        XCTAssertTrue(initial.showsPrivacyProofInHero)
         XCTAssertNil(initial.recoveryTitle)
         XCTAssertNil(initial.statusMessage)
 
@@ -83,6 +88,10 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         )
         XCTAssertEqual(requesting.primaryAction, .request)
         XCTAssertEqual(requesting.primaryTitle, "Requesting access")
+        XCTAssertEqual(requesting.state, .requesting)
+        XCTAssertEqual(requesting.state.status, "Requesting")
+        XCTAssertEqual(requesting.state.systemImage, "hourglass")
+        XCTAssertEqual(requesting.state.tone, .working)
         XCTAssertTrue(requesting.isWorking)
         XCTAssertNil(requesting.statusMessage)
 
@@ -94,6 +103,9 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(denied.primaryAction, .openSettings)
         XCTAssertEqual(denied.primaryTitle, "Open iPhone Settings")
         XCTAssertEqual(denied.primarySystemImage, "gear")
+        XCTAssertEqual(denied.state, .accessOff)
+        XCTAssertEqual(denied.state.status, "Access off")
+        XCTAssertEqual(denied.state.tone, .warning)
         XCTAssertNotNil(denied.statusMessage)
 
         let failed = ScreenTimeAccessPresentation(
@@ -104,16 +116,37 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(failed.primaryAction, .retry)
         XCTAssertEqual(failed.primaryTitle, "Try Screen Time access again")
         XCTAssertEqual(failed.primarySystemImage, "arrow.clockwise")
-        XCTAssertNotNil(failed.statusMessage)
+        XCTAssertEqual(failed.state, .requestFailed)
+        XCTAssertEqual(failed.state.status, "Request failed")
+        XCTAssertEqual(failed.state.tone, .failure)
+        XCTAssertEqual(
+            failed.statusMessage,
+            "Checkpoint couldn’t complete the Screen Time request. Try again."
+        )
 
         let unavailable = ScreenTimeAccessPresentation(
             context: .restoreProtection,
             authorizationState: .unavailable,
             requiresProtectedAppReselection: false
         )
-        XCTAssertEqual(unavailable.primaryAction, .unavailable)
+        XCTAssertEqual(unavailable.primaryAction, .none)
+        XCTAssertEqual(unavailable.state, .unavailable)
+        XCTAssertEqual(unavailable.state.status, "iPhone required")
+        XCTAssertEqual(unavailable.state.systemImage, "iphone.slash")
+        XCTAssertEqual(unavailable.heading, "App protection needs an iPhone")
+        XCTAssertFalse(unavailable.showsSetupSequence)
+        XCTAssertFalse(unavailable.showsPrivacyProofInHero)
         XCTAssertNil(unavailable.primaryTitle)
         XCTAssertNil(unavailable.primarySystemImage)
+
+        let initialUnavailable = ScreenTimeAccessPresentation(
+            context: .initialSetup,
+            authorizationState: .unavailable,
+            requiresProtectedAppReselection: false
+        )
+        XCTAssertEqual(initialUnavailable.heading, "Screen Time access needs an iPhone")
+        XCTAssertFalse(initialUnavailable.showsSetupSequence)
+        XCTAssertTrue(initialUnavailable.showsPrivacyProofInHero)
 
         for approvedState in [
             ScreenTimeController.AuthorizationState.approved,
@@ -125,6 +158,9 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 requiresProtectedAppReselection: true
             )
             XCTAssertEqual(approved.primaryAction, .none)
+            XCTAssertEqual(approved.state, .connected)
+            XCTAssertEqual(approved.state.status, "Connected")
+            XCTAssertEqual(approved.state.tone, .success)
             XCTAssertFalse(approved.isWorking)
             XCTAssertNil(approved.statusMessage)
         }
@@ -160,11 +196,26 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             requiresProtectedAppReselection: true
         )
         XCTAssertEqual(eraseRecovery.primaryAction, .erase)
+        XCTAssertEqual(eraseRecovery.state, .eraseRecovery)
+        XCTAssertEqual(eraseRecovery.state.status, "Recovery needed")
+        XCTAssertEqual(eraseRecovery.state.systemImage, "trash")
         XCTAssertEqual(eraseRecovery.primaryTitle, "Retry data erasure")
         XCTAssertEqual(eraseRecovery.primarySystemImage, "trash")
         XCTAssertFalse(eraseRecovery.showsSetupSequence)
         XCTAssertNil(eraseRecovery.recoveryTitle)
         XCTAssertNil(eraseRecovery.statusMessage)
+    }
+
+    func testAccessMotionPolicyKeepsWorkingStatePurposefulAndReduceMotionStatic() {
+        let standard = ScreenTimeAccessMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertNotNil(standard.animation)
+        XCTAssertTrue(standard.permitsWorkingPulse)
+
+        let reduced = ScreenTimeAccessMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.animation)
+        XCTAssertFalse(reduced.permitsWorkingPulse)
     }
 
     func testRecoveryRoutingOnlyOpensProtectedAppsForCompletedReturningRecovery() {
@@ -274,6 +325,28 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 hasGoal: false
             ),
             ScreenTimeAccessRenderFixture(
+                name: "screen-time-access-initial-accessibility5-dark-reduced",
+                width: 393,
+                height: 1_650,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                context: .initialSetup,
+                controllerState: .status(.notDetermined),
+                hasGoal: false
+            ),
+            ScreenTimeAccessRenderFixture(
+                name: "screen-time-access-resume-failed-light",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                context: .resumeSetup,
+                controllerState: .failed,
+                hasGoal: true
+            ),
+            ScreenTimeAccessRenderFixture(
                 name: "screen-time-access-returning-denied-dark",
                 width: 393,
                 height: 852,
@@ -283,6 +356,17 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 context: .restoreProtection,
                 controllerState: .status(.denied),
                 hasGoal: true
+            ),
+            ScreenTimeAccessRenderFixture(
+                name: "screen-time-access-unavailable-compact-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                context: .initialSetup,
+                controllerState: .status(.unavailable),
+                hasGoal: false
             ),
             ScreenTimeAccessRenderFixture(
                 name: "screen-time-access-selection-recovery-ax2-light-reduced",
@@ -323,7 +407,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             switch fixture.controllerState {
             case let .status(status):
                 initialStatus = status
-            case .requesting:
+            case .requesting, .failed:
                 initialStatus = .notDetermined
             case .selectionLost:
                 initialStatus = .approved
@@ -331,7 +415,8 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
 
             let authorizer = ScreenTimeAccessRenderAuthorizer(
                 authorizationStatus: initialStatus,
-                suspendsRequests: fixture.controllerState == .requesting
+                suspendsRequests: fixture.controllerState == .requesting,
+                failsRequests: fixture.controllerState == .failed
             )
             let screenTime = ScreenTimeController(
                 defaults: defaults,
@@ -349,6 +434,9 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 }
                 XCTAssertTrue(authorizer.hasSuspendedRequest, fixture.name)
                 XCTAssertTrue(screenTime.isRequestingAuthorization, fixture.name)
+            case .failed:
+                await screenTime.requestAuthorization()
+                XCTAssertEqual(screenTime.authorizationState, .failed, fixture.name)
             case .selectionLost:
                 try configureSelectionLoss(
                     screenTime: screenTime,
@@ -429,6 +517,7 @@ private struct ScreenTimeAccessRenderFixture {
 private enum ScreenTimeAccessRenderControllerState: Equatable {
     case status(ScreenTimeAuthorizationStatus)
     case requesting
+    case failed
     case selectionLost
 }
 
@@ -438,17 +527,23 @@ private final class ScreenTimeAccessRenderAuthorizer: ScreenTimeAuthorizing {
     private(set) var hasSuspendedRequest = false
 
     private var suspendsRequests: Bool
+    private let failsRequests: Bool
     private var requestContinuation: CheckedContinuation<Void, Never>?
 
     init(
         authorizationStatus: ScreenTimeAuthorizationStatus,
-        suspendsRequests: Bool = false
+        suspendsRequests: Bool = false,
+        failsRequests: Bool = false
     ) {
         self.authorizationStatus = authorizationStatus
         self.suspendsRequests = suspendsRequests
+        self.failsRequests = failsRequests
     }
 
     func requestAuthorization() async throws {
+        if failsRequests {
+            throw ScreenTimeAccessRenderError.authorizationFailed
+        }
         guard suspendsRequests else { return }
         await withCheckedContinuation { continuation in
             hasSuspendedRequest = true
@@ -463,4 +558,8 @@ private final class ScreenTimeAccessRenderAuthorizer: ScreenTimeAuthorizing {
         requestContinuation?.resume()
         requestContinuation = nil
     }
+}
+
+private enum ScreenTimeAccessRenderError: Error {
+    case authorizationFailed
 }

@@ -33,11 +33,116 @@ enum ScreenTimeAccessPrimaryAction: Equatable {
     case retry
     case openSettings
     case erase
-    case unavailable
     case none
 }
 
+enum ScreenTimeAccessState: Equatable {
+    case permissionRequired
+    case requesting
+    case accessOff
+    case requestFailed
+    case unavailable
+    case connected
+    case eraseRecovery
+
+    var status: String {
+        switch self {
+        case .permissionRequired:
+            "Permission needed"
+        case .requesting:
+            "Requesting"
+        case .accessOff:
+            "Access off"
+        case .requestFailed:
+            "Request failed"
+        case .unavailable:
+            "iPhone required"
+        case .connected:
+            "Connected"
+        case .eraseRecovery:
+            "Recovery needed"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .permissionRequired:
+            "checkmark.shield"
+        case .requesting:
+            "hourglass"
+        case .accessOff:
+            "exclamationmark.shield.fill"
+        case .requestFailed:
+            "arrow.clockwise"
+        case .unavailable:
+            "iphone.slash"
+        case .connected:
+            "checkmark.shield.fill"
+        case .eraseRecovery:
+            "trash"
+        }
+    }
+
+    var tone: ScreenTimeAccessTone {
+        switch self {
+        case .permissionRequired:
+            .informational
+        case .requesting:
+            .working
+        case .accessOff, .eraseRecovery:
+            .warning
+        case .requestFailed:
+            .failure
+        case .unavailable:
+            .warning
+        case .connected:
+            .success
+        }
+    }
+}
+
+enum ScreenTimeAccessTone: Equatable {
+    case informational
+    case working
+    case warning
+    case failure
+    case success
+}
+
+enum ScreenTimeAccessMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct ScreenTimeAccessMotionPolicy {
+    let style: ScreenTimeAccessMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var transition: AnyTransition {
+        style == .animated
+            ? .opacity.combined(with: .scale(scale: 0.98, anchor: .top))
+            : .identity
+    }
+
+    var permitsWorkingPulse: Bool {
+        style == .animated
+    }
+}
+
+private enum ScreenTimeAccessPrivacyCopy {
+    static let title = "Private by design"
+    static let detail = "Checkpoint never reads or stores Screen Time activity."
+}
+
 struct ScreenTimeAccessPresentation: Equatable {
+    let state: ScreenTimeAccessState
     let stage: String
     let step: Int?
     let heading: String
@@ -51,39 +156,77 @@ struct ScreenTimeAccessPresentation: Equatable {
     let recoveryDetail: String?
     let recoverySystemImage: String?
     let statusMessage: String?
+    let showsPrivacyProofInHero: Bool
 
     init(
         context: ScreenTimeAccessContext,
         authorizationState: ScreenTimeController.AuthorizationState,
         requiresProtectedAppReselection: Bool
     ) {
+        if context == .eraseRecovery {
+            state = .eraseRecovery
+        } else {
+            switch authorizationState {
+            case .unresolved, .notDetermined:
+                state = .permissionRequired
+            case .requesting:
+                state = .requesting
+            case .denied:
+                state = .accessOff
+            case .failed:
+                state = .requestFailed
+            case .unavailable:
+                state = .unavailable
+            case .approved, .approvedWithDataAccess:
+                state = .connected
+            }
+        }
+        showsPrivacyProofInHero = context == .initialSetup || context == .resumeSetup
+
         switch context {
         case .initialSetup:
             stage = "Screen Time"
             step = 1
-            heading = "Practice before you scroll."
-            detail = "Choose apps you want to use more intentionally. Clear a short, goal-based checkpoint to take a timed break."
-            showsSetupSequence = true
+            if authorizationState == .unavailable {
+                heading = "Screen Time access needs an iPhone"
+                detail = "Open Checkpoint on a supported iPhone to finish setup and choose the apps you want to protect."
+                showsSetupSequence = false
+            } else {
+                heading = "Practice before you scroll."
+                detail = "Choose apps. Clear a checkpoint for a timed break."
+                showsSetupSequence = true
+            }
             recoveryTitle = nil
             recoveryDetail = nil
             recoverySystemImage = nil
         case .resumeSetup:
             stage = "Resume setup"
             step = nil
-            heading = "Reconnect Screen Time to finish setup"
-            detail = "Your goal is saved. Restore access, then finish choosing the apps it will protect."
-            showsSetupSequence = true
+            if authorizationState == .unavailable {
+                heading = "Finish setup on a supported iPhone"
+                detail = "Your goal is saved. Open Checkpoint on an iPhone to reconnect Screen Time and choose protected apps."
+                showsSetupSequence = false
+            } else {
+                heading = "Reconnect Screen Time to finish setup"
+                detail = "Your goal is saved. Restore access, then finish choosing the apps it will protect."
+                showsSetupSequence = true
+            }
             recoveryTitle = nil
             recoveryDetail = nil
             recoverySystemImage = nil
         case .restoreProtection:
             stage = "Protection paused"
             step = nil
-            heading = "Reconnect app protection"
-            if requiresProtectedAppReselection {
+            if authorizationState == .unavailable {
+                heading = "App protection needs an iPhone"
+                detail = "Open Checkpoint on a supported iPhone to reconnect Screen Time and restore app protection."
+                recoveryDetail = "Your goals, answers, and progress stay saved until you can reconnect protection on an iPhone."
+            } else if requiresProtectedAppReselection {
+                heading = "Reconnect app protection"
                 detail = "Screen Time access changed, so protection is off and your previous app choices must be selected again."
                 recoveryDetail = "Your goals, answers, and progress stay saved. After access returns, Checkpoint opens your protection list so you can choose apps again."
             } else {
+                heading = "Reconnect app protection"
                 detail = "Restore Screen Time access to keep using app protection."
                 recoveryDetail = "Your goals, answers, and progress stay saved. Restoring access reconnects protection without changing your practice data."
             }
@@ -131,9 +274,9 @@ struct ScreenTimeAccessPresentation: Equatable {
             primaryAction = .retry
             primaryTitle = "Try Screen Time access again"
             primarySystemImage = "arrow.clockwise"
-            statusMessage = "Screen Time access wasn’t granted. Try again to continue."
+            statusMessage = "Checkpoint couldn’t complete the Screen Time request. Try again."
         case .unavailable:
-            primaryAction = .unavailable
+            primaryAction = .none
             primaryTitle = nil
             primarySystemImage = nil
             statusMessage = nil
@@ -188,32 +331,14 @@ struct RequiredScreenTimeAccessView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                Spacer(minLength: 20)
-
-                CheckpointSetupMark(
-                    stage: accessPresentation.stage,
-                    step: accessPresentation.step,
-                    isWorking: accessPresentation.isWorking
+            VStack(alignment: .leading, spacing: 16) {
+                ScreenTimeAccessHero(
+                    presentation: accessPresentation,
+                    reduceMotion: reduceMotion
                 )
 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(accessPresentation.heading)
-                        .font(.largeTitle.bold())
-                        .foregroundStyle(CheckpointTheme.text)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityAddTraits(.isHeader)
-
-                    Text(accessPresentation.detail)
-                        .font(.subheadline)
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .contentTransition(.opacity)
-
-                if accessPresentation.showsSetupSequence {
-                    setupSequencePanel
-                } else if accessPresentation.recoveryTitle != nil {
+                if !accessPresentation.showsSetupSequence,
+                   accessPresentation.recoveryTitle != nil {
                     recoveryPanel
                 }
 
@@ -230,14 +355,16 @@ struct RequiredScreenTimeAccessView: View {
                                 style: .continuous
                             )
                         )
-                        .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                        .transition(accessMotionPolicy.transition)
                         .accessibilityFocused($isStatusFocused)
                         .id(message)
                 }
 
                 privacyFooter
             }
-            .padding(24)
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 32)
             .frame(maxWidth: 620, alignment: .leading)
             .frame(maxWidth: .infinity)
         }
@@ -248,7 +375,7 @@ struct RequiredScreenTimeAccessView: View {
         }
         .checkpointScreenBackground()
         .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            accessMotionPolicy.animation,
             value: accessPresentation
         )
         .onAppear {
@@ -282,15 +409,6 @@ struct RequiredScreenTimeAccessView: View {
                     ) {
                         eraseAllData()
                     }
-                case .unavailable:
-                    Label(
-                        "Screen Time app protection requires a supported iPhone build.",
-                        systemImage: "iphone.slash"
-                    )
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.amber)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 case .openSettings:
                     PrimaryActionButton(
                         title: accessPresentation.primaryTitle ?? "Open iPhone Settings",
@@ -313,7 +431,7 @@ struct RequiredScreenTimeAccessView: View {
                     EmptyView()
                 }
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, 20)
             .padding(.top, 12)
             .padding(.bottom, 10)
         }
@@ -347,72 +465,6 @@ struct RequiredScreenTimeAccessView: View {
             .accessibilityElement(children: .combine)
         }
         .transition(reduceMotion ? .identity : .opacity.combined(with: .move(edge: .top)))
-    }
-
-    private var setupSequencePanel: some View {
-        SectionPanel {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("HOW IT WORKS")
-                    .font(.caption2.weight(.bold))
-                    .tracking(0.9)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .accessibilityAddTraits(.isHeader)
-
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .top, spacing: 10) {
-                        sequenceStep(title: "Choose apps", systemImage: "square.grid.2x2")
-                        sequenceArrow
-                        sequenceStep(title: "Clear a checkpoint", systemImage: "checkmark.circle")
-                        sequenceArrow
-                        sequenceStep(title: "Unlock a timed break", systemImage: "timer")
-                    }
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        verticalSequenceStep(title: "Choose apps", systemImage: "square.grid.2x2")
-                        verticalSequenceStep(title: "Clear a checkpoint", systemImage: "checkmark.circle")
-                        verticalSequenceStep(title: "Unlock a timed break", systemImage: "timer")
-                    }
-                }
-            }
-        }
-    }
-
-    private func sequenceStep(title: String, systemImage: String) -> some View {
-        VStack(spacing: 7) {
-            Image(systemName: systemImage)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 36, height: 36)
-                .background(
-                    CheckpointTheme.teal.opacity(0.10),
-                    in: RoundedRectangle(cornerRadius: 11, style: .continuous)
-                )
-
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.text)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
-    }
-
-    private var sequenceArrow: some View {
-        Image(systemName: "chevron.right")
-            .font(.caption2.weight(.bold))
-            .foregroundStyle(CheckpointTheme.muted.opacity(0.7))
-            .padding(.top, 12)
-            .accessibilityHidden(true)
-    }
-
-    private func verticalSequenceStep(title: String, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.text)
-            .symbolRenderingMode(.hierarchical)
-            .tint(CheckpointTheme.teal)
-            .frame(minHeight: 36)
     }
 
     private var requiresDataEraseRecovery: Bool {
@@ -451,14 +503,16 @@ struct RequiredScreenTimeAccessView: View {
 
     private var privacyFooter: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Uses Apple Screen Time", systemImage: "hand.raised.fill")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.text)
+            if !accessPresentation.showsPrivacyProofInHero {
+                Label(ScreenTimeAccessPrivacyCopy.title, systemImage: "hand.raised.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
 
-            Text("You choose what to protect. Checkpoint does not read or store your Screen Time activity history.")
-                .font(.footnote)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+                Text(ScreenTimeAccessPrivacyCopy.detail)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 16) {
@@ -535,4 +589,339 @@ struct RequiredScreenTimeAccessView: View {
         store.eraseAllData()
     }
 
+    private var accessMotionPolicy: ScreenTimeAccessMotionPolicy {
+        ScreenTimeAccessMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+}
+
+struct ScreenTimeAccessHero: View {
+    let presentation: ScreenTimeAccessPresentation
+    let reduceMotion: Bool
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        CheckpointHeroSurface(
+            glowColor: accent,
+            glowOpacity: presentation.state == .requesting ? 0.15 : 0.10,
+            contentPadding: dynamicTypeSize.isAccessibilitySize ? 16 : 12
+        ) {
+            VStack(alignment: .leading, spacing: dynamicTypeSize.isAccessibilitySize ? 16 : 8) {
+                heroIdentity
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(presentation.heading)
+                        .font(.title2.bold())
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.opacity)
+                        .accessibilityAddTraits(.isHeader)
+
+                    Text(presentation.detail)
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.opacity)
+                }
+
+                if presentation.showsSetupSequence {
+                    Divider()
+                        .overlay(CheckpointTheme.heroDivider)
+
+                    setupJourney
+                }
+
+                if presentation.showsPrivacyProofInHero {
+                    Divider()
+                        .overlay(CheckpointTheme.heroDivider)
+
+                    privacyPromise
+                }
+            }
+        }
+        .animation(motionPolicy.animation, value: presentation.state)
+    }
+
+    @ViewBuilder
+    private var heroIdentity: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                identity
+                statusBadge
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 12) {
+                    identity
+                    Spacer(minLength: 6)
+                    statusBadge
+                }
+
+                HStack(alignment: .center, spacing: 8) {
+                    compactIdentity
+                    Spacer(minLength: 4)
+                    statusBadge
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    identity
+                    statusBadge
+                }
+            }
+        }
+    }
+
+    private var identity: some View {
+        HStack(spacing: 11) {
+            Image(systemName: presentation.state.systemImage)
+                .symbolRenderingMode(.hierarchical)
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(accent)
+                .frame(width: 42, height: 42)
+                .background(
+                    accent.opacity(0.14),
+                    in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+                )
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(
+                    .pulse,
+                    options: .repeating,
+                    isActive: presentation.state == .requesting
+                        && motionPolicy.permitsWorkingPulse
+                )
+                .symbolEffectsRemoved(reduceMotion)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("CHECKPOINT")
+                    .font(.caption2.weight(.bold))
+                    .tracking(1.05)
+                    .foregroundStyle(CheckpointTheme.heroText)
+
+                Text(stageText)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityContext)
+    }
+
+    private var compactIdentity: some View {
+        HStack(spacing: 9) {
+            Image(systemName: presentation.state.systemImage)
+                .symbolRenderingMode(.hierarchical)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(accent)
+                .frame(width: 38, height: 38)
+                .background(
+                    accent.opacity(0.14),
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(
+                    .pulse,
+                    options: .repeating,
+                    isActive: presentation.state == .requesting
+                        && motionPolicy.permitsWorkingPulse
+                )
+                .symbolEffectsRemoved(reduceMotion)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("CHECKPOINT")
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(0.7)
+                    .foregroundStyle(CheckpointTheme.heroText)
+
+                Text(compactStageText)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .lineLimit(1)
+            }
+            .fixedSize(horizontal: true, vertical: true)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityContext)
+    }
+
+    private var statusBadge: some View {
+        StatusBadge(text: presentation.state.status, tint: accent)
+            .contentTransition(.opacity)
+            .accessibilityLabel("Status: \(presentation.state.status)")
+    }
+
+    private var privacyPromise: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 10) {
+                privacyIcon
+                privacyCopy
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                privacyIcon
+                privacyCopy
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var setupJourney: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("HOW IT WORKS")
+                .font(.caption2.weight(.bold))
+                .tracking(0.9)
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .accessibilityAddTraits(.isHeader)
+
+            if usesStackedJourneyLayout {
+                VStack(alignment: .leading, spacing: 8) {
+                    verticalJourneyStep(
+                        title: "Choose apps",
+                        systemImage: "square.grid.2x2"
+                    )
+                    verticalJourneyStep(
+                        title: "Clear a checkpoint",
+                        systemImage: "checkmark.circle"
+                    )
+                    verticalJourneyStep(
+                        title: "Unlock a timed break",
+                        systemImage: "timer"
+                    )
+                }
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    journeyStep(title: "Choose apps", systemImage: "square.grid.2x2")
+                    journeyArrow
+                    journeyStep(title: "Checkpoint", systemImage: "checkmark.circle")
+                    journeyArrow
+                    journeyStep(title: "Timed break", systemImage: "timer")
+                }
+            }
+        }
+    }
+
+    private func journeyStep(title: String, systemImage: String) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: systemImage)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(accent)
+                .frame(width: 32, height: 32)
+                .background(
+                    CheckpointTheme.heroSubtleFill,
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
+                .accessibilityHidden(true)
+
+            Text(title)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(fullJourneyTitle(for: title))
+    }
+
+    private var journeyArrow: some View {
+        Image(systemName: "chevron.right")
+            .font(.system(size: 9, weight: .bold))
+            .foregroundStyle(CheckpointTheme.heroMuted)
+            .padding(.top, 11)
+            .accessibilityHidden(true)
+    }
+
+    private func verticalJourneyStep(title: String, systemImage: String) -> some View {
+        Label(title, systemImage: systemImage)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.heroText)
+            .symbolRenderingMode(.hierarchical)
+            .tint(accent)
+            .frame(minHeight: 34)
+    }
+
+    private var usesStackedJourneyLayout: Bool {
+        dynamicTypeSize == .xLarge ||
+            dynamicTypeSize == .xxLarge ||
+            dynamicTypeSize == .xxxLarge ||
+            dynamicTypeSize.isAccessibilitySize
+    }
+
+    private func fullJourneyTitle(for compactTitle: String) -> String {
+        switch compactTitle {
+        case "Checkpoint":
+            "Clear a checkpoint"
+        case "Timed break":
+            "Unlock a timed break"
+        default:
+            compactTitle
+        }
+    }
+
+    private var privacyIcon: some View {
+        Image(systemName: "hand.raised.fill")
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(accent)
+            .frame(width: 30, height: 30)
+            .background(accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 9))
+            .accessibilityHidden(true)
+    }
+
+    private var privacyCopy: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(ScreenTimeAccessPrivacyCopy.title)
+                .font(.footnote.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+
+            Text(ScreenTimeAccessPrivacyCopy.detail)
+                .font(.caption)
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var stageText: String {
+        guard let step = presentation.step else {
+            return presentation.stage.uppercased()
+        }
+        return "\(presentation.stage.uppercased()) · STEP \(step) OF 3"
+    }
+
+    private var compactStageText: String {
+        guard let step = presentation.step else {
+            return presentation.stage.uppercased()
+        }
+        return "STEP \(step) OF 3"
+    }
+
+    private var accessibilityContext: String {
+        guard let step = presentation.step else {
+            return "Checkpoint, \(presentation.stage)"
+        }
+        return "Checkpoint setup, step \(step) of 3, \(presentation.stage)"
+    }
+
+    private var accent: Color {
+        switch presentation.state.tone {
+        case .informational:
+            CheckpointTheme.heroInfo
+        case .working:
+            CheckpointTheme.heroInfo
+        case .warning:
+            CheckpointTheme.heroWarning
+        case .failure:
+            CheckpointTheme.heroDanger
+        case .success:
+            CheckpointTheme.heroSuccess
+        }
+    }
+
+    private var motionPolicy: ScreenTimeAccessMotionPolicy {
+        ScreenTimeAccessMotionPolicy(reduceMotion: reduceMotion)
+    }
 }
