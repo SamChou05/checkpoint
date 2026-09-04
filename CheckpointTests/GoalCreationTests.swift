@@ -446,7 +446,10 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
         store.goal = firstGoal
         store.goalProfiles = [firstGoal, secondGoal]
 
-        XCTAssertTrue(store.switchActiveGoal(to: secondGoal.id))
+        XCTAssertEqual(
+            activatePreparedGoal(in: store, to: secondGoal.id),
+            .activated(from: firstGoal.id, to: secondGoal.id)
+        )
 
         XCTAssertEqual(store.goal?.id, secondGoal.id)
         XCTAssertEqual(store.questionBatchState, .generating)
@@ -618,6 +621,170 @@ final class GoalSetupPresentationTests: XCTestCase {
         )
         XCTAssertEqual(editWorking.state, .working)
         XCTAssertEqual(editWorking.status, "Saving…")
+    }
+
+    func testCreateProtectionConfirmationPresentationUsesExactCopy() {
+        let deadline = Date(timeIntervalSince1970: 1_800_000_000)
+        let sourceGoal = Goal(
+            title: "Prepare for interviews",
+            deadline: deadline,
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "systems",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let draft = GoalProfileDraft(
+            title: "Learn Japanese",
+            deadline: deadline,
+            currentLevel: "Beginner",
+            focusAreas: "conversation",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        let targetGoal = Goal(
+            title: draft.title,
+            deadline: draft.deadline,
+            category: draft.category,
+            currentLevel: draft.currentLevel,
+            focusAreas: draft.focusAreas,
+            preferredQuestionStyle: draft.preferredQuestionStyle,
+            minimumQuestionDifficulty: draft.minimumQuestionDifficulty
+        )
+        let request = GoalProfileMutationRequest(
+            id: UUID(uuidString: "70F110D8-289B-4C84-82D2-D73CEFC6E038")!,
+            createdAt: deadline,
+            operation: .create(draft)
+        )
+        let immediatePlan = GoalProfileMutationPlan(
+            request: request,
+            sourceGoal: sourceGoal,
+            sourceReadiness: .ready(selectableCount: 5, requiredCount: 5),
+            targetGoal: targetGoal,
+            resultingActiveGoal: targetGoal,
+            resultingReadiness: .incomplete(selectableCount: 2, requiredCount: 5)
+        )
+        let breakPlan = GoalProfileMutationPlan(
+            request: request,
+            sourceGoal: sourceGoal,
+            sourceReadiness: .ready(selectableCount: 5, requiredCount: 5),
+            targetGoal: targetGoal,
+            resultingActiveGoal: targetGoal,
+            resultingReadiness: .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+
+        let immediate = GoalSetupProtectionConfirmationPresentation(
+            confirmation: GoalProfileMutationConfirmation(
+                plan: immediatePlan,
+                consent: .protection(.turnsOffImmediately),
+                activeBreakAtRequest: false
+            )
+        )
+        XCTAssertEqual(immediate.title, "Create goal and turn off protection?")
+        XCTAssertEqual(
+            immediate.message,
+            "The new goal has 2 of 5 checkpoint questions ready. Creating it now makes it current and turns off app protection. Start protection again after a full checkpoint is ready."
+        )
+        XCTAssertEqual(immediate.confirmationButtonTitle, "Create and turn off")
+        XCTAssertEqual(immediate.cancelButtonTitle, "Keep editing")
+
+        let duringBreak = GoalSetupProtectionConfirmationPresentation(
+            confirmation: GoalProfileMutationConfirmation(
+                plan: breakPlan,
+                consent: .protection(.preventsRelockAfterBreak),
+                activeBreakAtRequest: true
+            )
+        )
+        XCTAssertEqual(duringBreak.title, "Create goal before this break ends?")
+        XCTAssertEqual(
+            duringBreak.message,
+            "Your current break will continue. Protection will return when it ends only if the new goal has a full checkpoint ready; otherwise it will turn off and you'll need to start it again. Right now, it has 4 of 5 checkpoint questions ready."
+        )
+        XCTAssertEqual(duringBreak.confirmationButtonTitle, "Create goal")
+        XCTAssertEqual(duringBreak.cancelButtonTitle, "Keep editing")
+    }
+
+    func testEditProtectionConfirmationPresentationUsesExactCopy() {
+        let deadline = Date(timeIntervalSince1970: 1_800_000_000)
+        let sourceGoal = Goal(
+            title: "Prepare for interviews",
+            deadline: deadline,
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "systems",
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        let draft = GoalProfileDraft(
+            title: sourceGoal.title,
+            deadline: sourceGoal.deadline,
+            category: sourceGoal.category,
+            currentLevel: sourceGoal.currentLevel,
+            focusAreas: sourceGoal.focusAreas,
+            preferredQuestionStyle: sourceGoal.preferredQuestionStyle,
+            minimumQuestionDifficulty: 4
+        )
+        let targetGoal = Goal(
+            id: sourceGoal.id,
+            title: draft.title,
+            deadline: draft.deadline,
+            category: draft.category,
+            currentLevel: draft.currentLevel,
+            focusAreas: draft.focusAreas,
+            preferredQuestionStyle: draft.preferredQuestionStyle,
+            minimumQuestionDifficulty: draft.minimumQuestionDifficulty,
+            createdAt: sourceGoal.createdAt
+        )
+        let request = GoalProfileMutationRequest(
+            id: UUID(uuidString: "31EB2AAA-E8AA-4DBA-932A-832E378EF4A3")!,
+            createdAt: deadline,
+            operation: .edit(expectedGoalID: sourceGoal.id, draft: draft)
+        )
+        let immediatePlan = GoalProfileMutationPlan(
+            request: request,
+            sourceGoal: sourceGoal,
+            sourceReadiness: .ready(selectableCount: 5, requiredCount: 5),
+            targetGoal: targetGoal,
+            resultingActiveGoal: targetGoal,
+            resultingReadiness: .incomplete(selectableCount: 1, requiredCount: 5)
+        )
+        let breakPlan = GoalProfileMutationPlan(
+            request: request,
+            sourceGoal: sourceGoal,
+            sourceReadiness: .ready(selectableCount: 5, requiredCount: 5),
+            targetGoal: targetGoal,
+            resultingActiveGoal: targetGoal,
+            resultingReadiness: .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+
+        let immediate = GoalSetupProtectionConfirmationPresentation(
+            confirmation: GoalProfileMutationConfirmation(
+                plan: immediatePlan,
+                consent: .protection(.turnsOffImmediately),
+                activeBreakAtRequest: false
+            )
+        )
+        XCTAssertEqual(immediate.title, "Save changes and turn off protection?")
+        XCTAssertEqual(
+            immediate.message,
+            "These changes leave 1 of 5 checkpoint questions ready. Saving now turns off app protection. Start protection again after a full checkpoint is ready."
+        )
+        XCTAssertEqual(immediate.confirmationButtonTitle, "Save and turn off")
+        XCTAssertEqual(immediate.cancelButtonTitle, "Keep editing")
+
+        let duringBreak = GoalSetupProtectionConfirmationPresentation(
+            confirmation: GoalProfileMutationConfirmation(
+                plan: breakPlan,
+                consent: .protection(.preventsRelockAfterBreak),
+                activeBreakAtRequest: true
+            )
+        )
+        XCTAssertEqual(duringBreak.title, "Save changes before this break ends?")
+        XCTAssertEqual(
+            duringBreak.message,
+            "Your current break will continue. Protection will return when it ends only if this goal has a full checkpoint ready; otherwise it will turn off and you'll need to start it again. These changes leave 4 of 5 checkpoint questions ready."
+        )
+        XCTAssertEqual(duringBreak.confirmationButtonTitle, "Save changes")
+        XCTAssertEqual(duringBreak.cancelButtonTitle, "Keep editing")
     }
 
     func testEditImpactMatchesSavedDraftSemantics() throws {
@@ -892,6 +1059,19 @@ final class GoalSetupPresentationTests: XCTestCase {
         editStore.goal = editGoal
         editStore.goalProfiles = [editGoal]
 
+        let firstWorkflow = CheckpointWorkflowCoordinator(
+            store: firstStore,
+            protection: InertGoalSetupProtectionController()
+        )
+        let newWorkflow = CheckpointWorkflowCoordinator(
+            store: newStore,
+            protection: InertGoalSetupProtectionController()
+        )
+        let editWorkflow = CheckpointWorkflowCoordinator(
+            store: editStore,
+            protection: InertGoalSetupProtectionController()
+        )
+
         let fixtures = [
             GoalSetupRenderFixture(
                 name: "goal-setup-first-compact-light",
@@ -899,7 +1079,9 @@ final class GoalSetupPresentationTests: XCTestCase {
                 height: 568,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
-                content: AnyView(OnboardingView(store: firstStore))
+                content: AnyView(
+                    OnboardingView(store: firstStore, workflow: firstWorkflow)
+                )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-new-standard-dark",
@@ -907,7 +1089,9 @@ final class GoalSetupPresentationTests: XCTestCase {
                 height: 852,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
-                content: AnyView(OnboardingView(store: newStore))
+                content: AnyView(
+                    OnboardingView(store: newStore, workflow: newWorkflow)
+                )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-edit-customized-dark",
@@ -915,7 +1099,9 @@ final class GoalSetupPresentationTests: XCTestCase {
                 height: 1_000,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
-                content: AnyView(OnboardingView(store: editStore))
+                content: AnyView(
+                    OnboardingView(store: editStore, workflow: editWorkflow)
+                )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-edit-customized-ax2-light",
@@ -923,7 +1109,9 @@ final class GoalSetupPresentationTests: XCTestCase {
                 height: 1_800,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility2,
-                content: AnyView(OnboardingView(store: editStore))
+                content: AnyView(
+                    OnboardingView(store: editStore, workflow: editWorkflow)
+                )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-edit-customized-ax5-light",
@@ -931,7 +1119,9 @@ final class GoalSetupPresentationTests: XCTestCase {
                 height: 1_850,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility5,
-                content: AnyView(OnboardingView(store: editStore))
+                content: AnyView(
+                    OnboardingView(store: editStore, workflow: editWorkflow)
+                )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-ready-ax5-reduced-motion",
@@ -1028,6 +1218,25 @@ private struct GoalSetupRenderFixture {
     let colorScheme: ColorScheme
     let dynamicTypeSize: DynamicTypeSize
     let content: AnyView
+}
+
+@MainActor
+private final class InertGoalSetupProtectionController: AppProtectionControlling {
+    let hasSelection = false
+    let isShieldingEnabled = false
+    let userFacingErrorMessage: String? = nil
+
+    func applyShield() {}
+
+    func clearShield() {}
+
+    func temporarilyUnshield(until expiration: Date) -> Bool {
+        true
+    }
+
+    func reconcileShieldState(protectionShouldRemainActive: Bool?) {}
+
+    func refreshActiveShieldConfiguration() {}
 }
 
 private struct GoalSetupInferredDirectionScene: View {

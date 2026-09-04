@@ -71,6 +71,75 @@ struct PracticeHistorySettingsPresentation: Equatable {
     }
 }
 
+struct GoalDeletionConfirmationPresentation: Equatable {
+    let title: String
+    let message: String
+    let confirmationButtonTitle: String
+    let cancelButtonTitle = "Keep goal"
+
+    init(
+        confirmation: GoalProfileMutationConfirmation,
+        goals: [Goal]
+    ) {
+        let plan = confirmation.plan
+        let resolver = GoalDisplayTitleResolver(goals: goals)
+        let targetTitle = resolver.title(for: plan.targetGoal)
+        let resultingTitle = plan.resultingActiveGoal.map(resolver.title(for:))
+
+        guard let resultingGoal = plan.resultingActiveGoal,
+              let resultingTitle else {
+            title = confirmation.activeBreakAtRequest
+                ? "Delete goal and end this break?"
+                : "Delete your only goal?"
+            if confirmation.activeBreakAtRequest {
+                message = "Delete “\(targetTitle)” and all of its progress? Because this is your only goal, app protection and your current break will end. This can't be undone."
+                confirmationButtonTitle = "Delete and end break"
+            } else if case .deletionAndProtection = confirmation.consent {
+                message = "Delete “\(targetTitle)” and all of its progress? Because this is your only goal, app protection will turn off. This can't be undone."
+                confirmationButtonTitle = "Delete and turn off"
+            } else {
+                message = "Delete “\(targetTitle)” and all of its progress? You'll return to goal setup. This can't be undone."
+                confirmationButtonTitle = "Delete goal"
+            }
+            return
+        }
+
+        let deletesActiveGoal = plan.sourceGoal?.id == plan.targetGoal.id
+        guard deletesActiveGoal else {
+            title = "Delete goal?"
+            message = "Delete “\(targetTitle)” and all of its progress? This can't be undone."
+            confirmationButtonTitle = "Delete goal"
+            return
+        }
+
+        switch confirmation.consent {
+        case .deletion:
+            title = "Delete current goal?"
+            message = "Delete “\(targetTitle)” and make “\(resultingTitle)” current? All progress for the deleted goal will be removed. This can't be undone."
+            confirmationButtonTitle = "Delete goal"
+
+        case .deletionAndProtection(.turnsOffImmediately):
+            let readiness = plan.resultingReadiness
+                ?? .incomplete(selectableCount: 0, requiredCount: 0)
+            title = "Delete goal and turn off protection?"
+            message = "Deleting “\(targetTitle)” makes “\(resultingTitle)” current. It has \(readiness.selectableCount) of \(readiness.requiredCount) checkpoint questions ready, so app protection will turn off. Start it again after a full checkpoint is ready. This can't be undone."
+            confirmationButtonTitle = "Delete and turn off"
+
+        case .deletionAndProtection(.preventsRelockAfterBreak):
+            let readiness = plan.resultingReadiness
+                ?? .incomplete(selectableCount: 0, requiredCount: 0)
+            title = "Delete goal before this break ends?"
+            message = "Your current break will continue. Protection will return when it ends only if “\(resultingTitle)” has a full checkpoint ready; otherwise it will turn off and you'll need to start it again. Right now, it has \(readiness.selectableCount) of \(readiness.requiredCount) questions ready. Deleting “\(targetTitle)” can't be undone."
+            confirmationButtonTitle = "Delete goal"
+
+        case .protection:
+            title = "Delete current goal?"
+            message = "Delete “\(targetTitle)” and make “\(resultingGoal.title)” current? This can't be undone."
+            confirmationButtonTitle = "Delete goal"
+        }
+    }
+}
+
 struct SettingsView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
@@ -81,6 +150,7 @@ struct SettingsView: View {
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.checkpointGoalSelection) private var selectGoal
 
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
@@ -97,7 +167,8 @@ struct SettingsView: View {
     @State private var isPreparingStopChallenge = false
     @State private var isStopProtectionConfirmationPresented = false
     @State private var isStopWithoutReviewConfirmationPresented = false
-    @State private var pendingGoalDeletion: Goal?
+    @State private var pendingGoalDeletionConfirmation: GoalProfileMutationConfirmation?
+    @State private var queuedGoalDeletionConfirmation: GoalProfileMutationConfirmation?
 
     var body: some View {
         NavigationStack {
@@ -160,16 +231,30 @@ struct SettingsView: View {
             } message: {
                 Text("The review could not be prepared. You can turn protection off now and restart it after a full checkpoint is ready.")
             }
-            .alert("Delete goal?", isPresented: goalDeletionConfirmationBinding) {
-                Button("Delete goal", role: .destructive) {
-                    confirmGoalDeletion()
+            .alert(
+                pendingGoalDeletionPresentation?.title ?? "Delete goal?",
+                isPresented: goalDeletionConfirmationBinding,
+                presenting: pendingGoalDeletionConfirmation
+            ) { confirmation in
+                let presentation = GoalDeletionConfirmationPresentation(
+                    confirmation: confirmation,
+                    goals: store.availableGoalProfiles
+                )
+                Button(presentation.confirmationButtonTitle, role: .destructive) {
+                    confirmGoalDeletion(confirmation)
                 }
 
-                Button("Cancel", role: .cancel) {
-                    pendingGoalDeletion = nil
+                Button(presentation.cancelButtonTitle, role: .cancel) {
+                    queuedGoalDeletionConfirmation = nil
+                    pendingGoalDeletionConfirmation = nil
                 }
-            } message: {
-                Text(goalDeletionConfirmationMessage)
+            } message: { confirmation in
+                Text(
+                    GoalDeletionConfirmationPresentation(
+                        confirmation: confirmation,
+                        goals: store.availableGoalProfiles
+                    ).message
+                )
             }
             .onChange(of: screenTime.userFacingProtectionStatus) { _, status in
                 guard advancedAction == nil else { return }
@@ -361,10 +446,18 @@ struct SettingsView: View {
     }
 
     private var goalsPanel: some View {
-        SectionPanel("Goals") {
+        let switchPresentation = GoalSwitchMenuPresentation(store: store)
+
+        return SectionPanel("Goals") {
             if let goal = store.goal {
                 VStack(alignment: .leading, spacing: 10) {
-                    goalSummary(goal)
+                    goalSummary(
+                        goal,
+                        presentation: goalSwitchOption(
+                            for: goal,
+                            in: switchPresentation
+                        )
+                    )
 
                     if store.availableGoalProfiles.count > 1 {
                         Divider()
@@ -376,7 +469,13 @@ struct SettingsView: View {
                                 .padding(.bottom, 4)
 
                             ForEach(otherGoalProfiles) { profile in
-                                goalProfileRow(profile)
+                                goalProfileRow(
+                                    profile,
+                                    presentation: goalSwitchOption(
+                                        for: profile,
+                                        in: switchPresentation
+                                    )
+                                )
 
                                 if profile.id != otherGoalProfiles.last?.id {
                                     Divider()
@@ -412,9 +511,12 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
-    private func goalSummary(_ goal: Goal) -> some View {
+    private func goalSummary(
+        _ goal: Goal,
+        presentation: GoalSwitchMenuOptionPresentation
+    ) -> some View {
         let summary = VStack(alignment: .leading, spacing: 5) {
-            Text(goal.title)
+            Text(presentation.title)
                 .font(.headline)
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
@@ -430,25 +532,28 @@ struct SettingsView: View {
         if dynamicTypeSize.isAccessibilitySize {
             VStack(alignment: .leading, spacing: 10) {
                 summary
-                goalSummaryAccessories(goal)
+                goalSummaryAccessories(goal, displayTitle: presentation.title)
             }
         } else {
             HStack(alignment: .top, spacing: 12) {
                 summary
                 Spacer(minLength: 8)
-                goalSummaryAccessories(goal)
+                goalSummaryAccessories(goal, displayTitle: presentation.title)
             }
         }
     }
 
-    private func goalSummaryAccessories(_ goal: Goal) -> some View {
+    private func goalSummaryAccessories(
+        _ goal: Goal,
+        displayTitle: String
+    ) -> some View {
         HStack(spacing: 8) {
             goalCapacityBadge
 
             if store.availableGoalProfiles.count > 1 {
                 Menu {
                     Button(role: .destructive) {
-                        pendingGoalDeletion = goal
+                        requestGoalDeletion(goal.id)
                     } label: {
                         Label("Delete current goal", systemImage: "trash")
                     }
@@ -459,7 +564,7 @@ struct SettingsView: View {
                         .frame(width: 44, height: 44)
                         .background(CheckpointTheme.panelRaised.opacity(0.72), in: RoundedRectangle(cornerRadius: 10))
                 }
-                .accessibilityLabel("More options for \(goal.title)")
+                .accessibilityLabel("More options for \(displayTitle)")
             }
         }
     }
@@ -500,61 +605,73 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
-    private func goalProfileRow(_ profile: Goal) -> some View {
-        let isActive = profile.id == store.goal?.id
-
+    private func goalProfileRow(
+        _ profile: Goal,
+        presentation: GoalSwitchMenuOptionPresentation
+    ) -> some View {
         if dynamicTypeSize.isAccessibilitySize {
             VStack(alignment: .leading, spacing: 8) {
-                goalProfileSelectionButton(profile, isActive: isActive)
-                goalProfileDeleteButton(profile, expanded: true)
+                goalProfileSelectionButton(profile, presentation: presentation)
+                goalProfileDeleteButton(
+                    profile,
+                    displayTitle: presentation.title,
+                    expanded: true
+                )
             }
             .padding(.vertical, 10)
         } else {
             HStack(spacing: 10) {
-                goalProfileSelectionButton(profile, isActive: isActive)
-                goalProfileDeleteButton(profile, expanded: false)
+                goalProfileSelectionButton(profile, presentation: presentation)
+                goalProfileDeleteButton(
+                    profile,
+                    displayTitle: presentation.title,
+                    expanded: false
+                )
             }
             .padding(.vertical, 10)
         }
     }
 
-    private func goalProfileSelectionButton(_ profile: Goal, isActive: Bool) -> some View {
+    private func goalProfileSelectionButton(
+        _ profile: Goal,
+        presentation: GoalSwitchMenuOptionPresentation
+    ) -> some View {
         Button {
-            store.switchActiveGoal(to: profile.id)
+            selectGoal(profile.id)
         } label: {
             Group {
                 if dynamicTypeSize.isAccessibilitySize {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 12) {
-                            goalSelectionIcon(isActive: isActive)
+                            goalSelectionIcon(for: presentation)
 
-                            Text(profile.title)
+                            Text(presentation.title)
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(CheckpointTheme.text)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
 
-                        Text(goalProfileDetailText(for: profile))
+                        Text(goalProfileDetailText(for: profile, presentation: presentation))
                             .font(.footnote)
                             .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
 
-                        if isActive {
+                        if presentation.isCurrent {
                             StatusBadge(text: "Current", tint: CheckpointTheme.teal)
                         }
                     }
                 } else {
                     HStack(spacing: 12) {
-                        goalSelectionIcon(isActive: isActive)
+                        goalSelectionIcon(for: presentation)
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(profile.title)
+                            Text(presentation.title)
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(CheckpointTheme.text)
                                 .lineLimit(2)
                                 .fixedSize(horizontal: false, vertical: true)
 
-                            Text(goalProfileDetailText(for: profile))
+                            Text(goalProfileDetailText(for: profile, presentation: presentation))
                                 .font(.footnote)
                                 .foregroundStyle(CheckpointTheme.muted)
                                 .lineLimit(2)
@@ -563,7 +680,7 @@ struct SettingsView: View {
 
                         Spacer(minLength: 0)
 
-                        if isActive {
+                        if presentation.isCurrent {
                             StatusBadge(text: "Current", tint: CheckpointTheme.teal)
                         }
                     }
@@ -573,25 +690,31 @@ struct SettingsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .disabled(isActive)
+        .disabled(presentation.isCurrent)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(profile.title)
-        .accessibilityValue("\(isActive ? "Current goal. " : "")\(goalProfileDetailText(for: profile))")
-        .accessibilityHint(isActive ? "Current goal." : "Activates this goal.")
-        .accessibilityAddTraits(isActive ? .isSelected : [])
+        .accessibilityLabel(presentation.title)
+        .accessibilityValue(goalProfileAccessibilityValue(for: profile, presentation: presentation))
+        .accessibilityHint(goalProfileAccessibilityHint(for: presentation))
+        .accessibilityAddTraits(presentation.isCurrent ? .isSelected : [])
     }
 
-    private func goalSelectionIcon(isActive: Bool) -> some View {
-        Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
+    private func goalSelectionIcon(
+        for presentation: GoalSwitchMenuOptionPresentation
+    ) -> some View {
+        Image(systemName: presentation.systemImage)
             .font(.system(size: 18, weight: .semibold))
-            .foregroundStyle(isActive ? CheckpointTheme.teal : CheckpointTheme.muted)
+            .foregroundStyle(goalSelectionTint(for: presentation.state))
             .frame(width: 32, height: 32)
             .accessibilityHidden(true)
     }
 
-    private func goalProfileDeleteButton(_ profile: Goal, expanded: Bool) -> some View {
+    private func goalProfileDeleteButton(
+        _ profile: Goal,
+        displayTitle: String,
+        expanded: Bool
+    ) -> some View {
         Button {
-            pendingGoalDeletion = profile
+            requestGoalDeletion(profile.id)
         } label: {
             Group {
                 if expanded {
@@ -608,12 +731,12 @@ struct SettingsView: View {
             .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Delete \(profile.title)")
+        .accessibilityLabel("Delete \(displayTitle)")
     }
 
     private func deleteGoalButton(_ goal: Goal) -> some View {
         Button {
-            pendingGoalDeletion = goal
+            requestGoalDeletion(goal.id)
         } label: {
             Label("Delete goal", systemImage: "trash")
                 .font(.subheadline.weight(.semibold))
@@ -627,12 +750,96 @@ struct SettingsView: View {
         .buttonStyle(.plain)
     }
 
-    private func goalProfileDetailText(for profile: Goal) -> String {
-        if let readinessWarning = store.questionBankReadinessWarning(for: profile) {
-            return readinessWarning
+    private func goalSwitchOption(
+        for profile: Goal,
+        in presentation: GoalSwitchMenuPresentation
+    ) -> GoalSwitchMenuOptionPresentation {
+        presentation.options.first(where: { $0.id == profile.id })
+            ?? GoalSwitchMenuOptionPresentation(
+                id: profile.id,
+                title: profile.title,
+                state: .unavailable
+            )
+    }
+
+    private func goalProfileDetailText(
+        for profile: Goal,
+        presentation: GoalSwitchMenuOptionPresentation
+    ) -> String {
+        let dueText = goalDeadlineDetail(for: profile, presentation: presentation)
+
+        switch presentation.state {
+        case .current:
+            return dueText ?? "Current goal"
+        case .ready:
+            return joinedGoalDetail("Checkpoint ready", dueText)
+        case let .preparing(selectableCount, requiredCount):
+            return joinedGoalDetail(
+                "Preparing · \(selectableCount) of \(requiredCount) questions ready",
+                dueText
+            )
+        case let .notReady(selectableCount, requiredCount):
+            return joinedGoalDetail(
+                "Not ready · \(selectableCount) of \(requiredCount) questions ready",
+                dueText
+            )
+        case .locked:
+            return joinedGoalDetail("Requires Pro", dueText)
+        case .unavailable:
+            return "Unavailable"
         }
+    }
+
+    private func goalProfileAccessibilityValue(
+        for profile: Goal,
+        presentation: GoalSwitchMenuOptionPresentation
+    ) -> String {
+        let dueText = goalDeadlineDetail(for: profile, presentation: presentation)
+        return joinedGoalDetail(presentation.accessibilityValue, dueText)
+    }
+
+    private func goalProfileAccessibilityHint(
+        for presentation: GoalSwitchMenuOptionPresentation
+    ) -> String {
+        switch presentation.state {
+        case .current:
+            "This goal is already active."
+        case .ready:
+            "Switches to this goal."
+        case .preparing, .notReady:
+            "Switches to this goal. If protection would turn off, you will be asked to confirm."
+        case .locked:
+            "Shows Pro access options for multiple goals."
+        case .unavailable:
+            "Checks whether this goal can be selected now."
+        }
+    }
+
+    private func goalSelectionTint(
+        for state: GoalSwitchMenuOptionState
+    ) -> Color {
+        switch state {
+        case .current, .ready:
+            CheckpointTheme.teal
+        case .preparing, .notReady:
+            CheckpointTheme.amber
+        case .locked, .unavailable:
+            CheckpointTheme.muted
+        }
+    }
+
+    private func goalDeadlineDetail(
+        for profile: Goal,
+        presentation: GoalSwitchMenuOptionPresentation
+    ) -> String? {
+        guard presentation.title == profile.title else { return nil }
 
         return "Due \(profile.deadline.formatted(.dateTime.month(.abbreviated).day().year()))"
+    }
+
+    private func joinedGoalDetail(_ leading: String, _ trailing: String?) -> String {
+        guard let trailing else { return leading }
+        return "\(leading) · \(trailing)"
     }
 
     private var canStopBlocking: Bool {
@@ -1025,31 +1232,84 @@ struct SettingsView: View {
 
     private var goalDeletionConfirmationBinding: Binding<Bool> {
         Binding {
-            pendingGoalDeletion != nil
+            pendingGoalDeletionConfirmation != nil
         } set: { isPresented in
             if !isPresented {
-                pendingGoalDeletion = nil
+                pendingGoalDeletionConfirmation = nil
+                promoteQueuedGoalDeletionConfirmationAfterDismissal()
             }
         }
     }
 
-    private var goalDeletionConfirmationMessage: String {
-        guard let pendingGoalDeletion else {
-            return "This removes the goal and its saved practice data."
+    private var pendingGoalDeletionPresentation: GoalDeletionConfirmationPresentation? {
+        pendingGoalDeletionConfirmation.map {
+            GoalDeletionConfirmationPresentation(
+                confirmation: $0,
+                goals: store.availableGoalProfiles
+            )
         }
-
-        return "Delete “\(pendingGoalDeletion.title)” and all of its progress? This can't be undone."
     }
 
-    private func confirmGoalDeletion() {
-        guard let pendingGoalDeletion else { return }
-        if store.deleteGoalProfile(pendingGoalDeletion.id) {
-            if store.goal == nil {
-                screenTime.clearShield()
+    private func requestGoalDeletion(
+        _ goalID: Goal.ID,
+        authorization: GoalProfileMutationAuthorization = .none
+    ) {
+        let request: GoalProfileMutationRequest
+        if case let .confirmed(confirmation) = authorization {
+            request = confirmation.plan.request
+        } else {
+            request = GoalProfileMutationRequest(
+                operation: .delete(goalID: goalID)
+            )
+        }
+
+        let outcome = workflow.requestGoalProfileMutation(
+            request,
+            authorization: authorization
+        )
+        switch outcome {
+        case let .confirmationRequired(confirmation):
+            if case .confirmed = authorization {
+                queuedGoalDeletionConfirmation = confirmation
             } else {
-                screenTime.reconcileShieldState()
+                pendingGoalDeletionConfirmation = confirmation
             }
+        case .committed, .alreadyCommitted:
+            queuedGoalDeletionConfirmation = nil
+            pendingGoalDeletionConfirmation = nil
+        case .targetNotFound, .staleRequest:
+            queuedGoalDeletionConfirmation = nil
+            pendingGoalDeletionConfirmation = nil
+            store.checkpointNotice = "That goal changed before it could be deleted. Review your goals and try again."
+        case .invalidTitle, .membershipRequired, .profileLimitReached:
+            queuedGoalDeletionConfirmation = nil
+            pendingGoalDeletionConfirmation = nil
+        case .persistenceFailed:
+            queuedGoalDeletionConfirmation = nil
+            pendingGoalDeletionConfirmation = nil
         }
-        self.pendingGoalDeletion = nil
+    }
+
+    private func confirmGoalDeletion(
+        _ confirmation: GoalProfileMutationConfirmation
+    ) {
+        requestGoalDeletion(
+            confirmation.plan.targetGoal.id,
+            authorization: .confirmed(confirmation)
+        )
+    }
+
+    private func promoteQueuedGoalDeletionConfirmationAfterDismissal() {
+        guard let queuedConfirmation = queuedGoalDeletionConfirmation else { return }
+
+        Task { @MainActor in
+            await Task.yield()
+            guard pendingGoalDeletionConfirmation == nil,
+                  queuedGoalDeletionConfirmation == queuedConfirmation else {
+                return
+            }
+            queuedGoalDeletionConfirmation = nil
+            pendingGoalDeletionConfirmation = queuedConfirmation
+        }
     }
 }

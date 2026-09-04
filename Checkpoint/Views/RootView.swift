@@ -1,3 +1,4 @@
+import Accessibility
 import SwiftUI
 #if canImport(UIKit)
 import UIKit
@@ -46,6 +47,12 @@ struct ScreenTimeAccessRecoveryQueue: Equatable {
     }
 }
 
+private struct ProtectionReconciliationKey: Equatable {
+    let goalID: Goal.ID?
+    let goalTitle: String?
+    let hasReadyCheckpoint: Bool
+}
+
 struct RootView: View {
     @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
@@ -59,12 +66,22 @@ struct RootView: View {
     @State private var isFirstRunAppSelectionQueued = false
     @State private var isAuthorizationRecoveryAppSelectionPresented = false
     @State private var authorizationRecoveryQueue = ScreenTimeAccessRecoveryQueue()
+    @State private var pendingGoalSwitchConfirmation: GoalSwitchConfirmation?
+    @State private var queuedGoalSwitchConfirmation: GoalSwitchConfirmation?
+    @State private var goalSwitchFeedbackSequence = 0
     @Environment(\.scenePhase) private var scenePhase
 
     private var store: CheckpointStore { appModel.store }
     private var screenTime: ScreenTimeController { appModel.screenTime }
     private var purchaseController: PurchaseController { appModel.purchaseController }
     private var workflow: CheckpointWorkflowCoordinator { appModel.workflow }
+    private var protectionReconciliationKey: ProtectionReconciliationKey {
+        ProtectionReconciliationKey(
+            goalID: store.goal?.id,
+            goalTitle: store.goal?.title,
+            hasReadyCheckpoint: store.hasReadyCheckpointSet
+        )
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -99,6 +116,28 @@ struct RootView: View {
                 .tag(AppTab.settings)
         }
         .tint(CheckpointTheme.teal)
+        .environment(
+            \.checkpointGoalSelection,
+            GoalSelectionAction { requestGoalSwitch(to: $0) }
+        )
+        .sensoryFeedback(.selection, trigger: goalSwitchFeedbackSequence)
+        .alert(
+            pendingGoalSwitchAlertTitle,
+            isPresented: goalSwitchConfirmationIsPresented,
+            presenting: pendingGoalSwitchConfirmation
+        ) { confirmation in
+            let presentation = goalSwitchConfirmationPresentation(for: confirmation)
+
+            Button(presentation.confirmationButtonTitle, role: .destructive) {
+                confirmGoalSwitch(confirmation)
+            }
+            Button(presentation.cancelButtonTitle, role: .cancel) {
+                queuedGoalSwitchConfirmation = nil
+                pendingGoalSwitchConfirmation = nil
+            }
+        } message: { confirmation in
+            Text(goalSwitchConfirmationPresentation(for: confirmation).message)
+        }
         .fullScreenCover(
             isPresented: screenTimeAuthorizationRequiredBinding,
             onDismiss: handleScreenTimeAccessDismissed
@@ -126,7 +165,7 @@ struct RootView: View {
             isPresented: onboardingPresentationBinding,
             onDismiss: handleOnboardingDismissed
         ) {
-            OnboardingView(store: store) {
+            OnboardingView(store: store, workflow: workflow) {
                 beginFirstRunSetup()
             }
                 .onAppear {
@@ -181,8 +220,11 @@ struct RootView: View {
             if store.goal == nil {
                 beginFirstRunSetup()
             }
-            workflow.goalDidChange()
             presentSuggestedSkillMapReviewIfNeeded()
+        }
+        .onChange(of: protectionReconciliationKey) { _, _ in
+            guard activeCheckpointSession == nil else { return }
+            reconcileProtectionAndHandlePendingAttempt()
         }
         .onChange(of: store.activeDerivedSkillMap) { _, _ in
             presentSuggestedSkillMapReviewIfNeeded()
@@ -198,12 +240,105 @@ struct RootView: View {
                 workflow.protectionDidRelock()
             }
         }
-        .onChange(of: store.hasReadyCheckpointSet) { _, _ in
-            guard activeCheckpointSession == nil else { return }
-            reconcileProtectionAndHandlePendingAttempt()
-        }
         .onReceive(NotificationCenter.default.publisher(for: .checkpointShieldContextDidChange)) { _ in
             workflow.refreshProtectionConfiguration()
+        }
+    }
+
+    private var goalSwitchConfirmationIsPresented: Binding<Bool> {
+        Binding(
+            get: { pendingGoalSwitchConfirmation != nil },
+            set: { isPresented in
+                if !isPresented {
+                    pendingGoalSwitchConfirmation = nil
+                    promoteQueuedGoalSwitchConfirmationAfterDismissal()
+                }
+            }
+        )
+    }
+
+    private var pendingGoalSwitchAlertTitle: String {
+        guard let pendingGoalSwitchConfirmation else {
+            return "Switch goal?"
+        }
+        return goalSwitchConfirmationPresentation(
+            for: pendingGoalSwitchConfirmation
+        ).title
+    }
+
+    private func goalSwitchConfirmationPresentation(
+        for confirmation: GoalSwitchConfirmation
+    ) -> GoalSwitchConfirmationPresentation {
+        GoalSwitchConfirmationPresentation(
+            confirmation: confirmation,
+            goals: store.availableGoalProfiles
+        )
+    }
+
+    private func requestGoalSwitch(to targetGoalID: Goal.ID) {
+        handleGoalSwitchOutcome(
+            workflow.requestGoalSwitch(to: targetGoalID)
+        )
+    }
+
+    private func confirmGoalSwitch(_ confirmation: GoalSwitchConfirmation) {
+        let outcome = workflow.requestGoalSwitch(
+            to: confirmation.targetGoalID,
+            authorization: .confirmed(confirmation)
+        )
+        if case let .confirmationRequired(refreshedConfirmation) = outcome {
+            queuedGoalSwitchConfirmation = refreshedConfirmation
+        } else {
+            handleGoalSwitchOutcome(outcome)
+        }
+    }
+
+    private func handleGoalSwitchOutcome(_ outcome: GoalSwitchOutcome) {
+        switch outcome {
+        case let .switched(_, targetGoalID):
+            queuedGoalSwitchConfirmation = nil
+            pendingGoalSwitchConfirmation = nil
+            goalSwitchFeedbackSequence += 1
+            let goals = store.availableGoalProfiles
+            let resolver = GoalDisplayTitleResolver(goals: goals)
+            let targetTitle = goals.first {
+                $0.id == targetGoalID
+            }.map(resolver.title(for:)) ?? "the selected goal"
+            AccessibilityNotification.Announcement(
+                "Switched to \(targetTitle)."
+            ).post()
+        case let .confirmationRequired(confirmation):
+            queuedGoalSwitchConfirmation = nil
+            pendingGoalSwitchConfirmation = confirmation
+        case .alreadyActive, .membershipRequired:
+            queuedGoalSwitchConfirmation = nil
+            pendingGoalSwitchConfirmation = nil
+        case .targetNotFound, .staleRequest:
+            queuedGoalSwitchConfirmation = nil
+            pendingGoalSwitchConfirmation = nil
+            AccessibilityNotification.Announcement(
+                "That goal changed. Choose it again."
+            ).post()
+        case .persistenceFailed:
+            queuedGoalSwitchConfirmation = nil
+            pendingGoalSwitchConfirmation = nil
+            AccessibilityNotification.Announcement(
+                "Checkpoint couldn't save the goal change. Your current goal is unchanged."
+            ).post()
+        }
+    }
+
+    private func promoteQueuedGoalSwitchConfirmationAfterDismissal() {
+        guard let queuedConfirmation = queuedGoalSwitchConfirmation else { return }
+
+        Task { @MainActor in
+            await Task.yield()
+            guard pendingGoalSwitchConfirmation == nil,
+                  queuedGoalSwitchConfirmation == queuedConfirmation else {
+                return
+            }
+            queuedGoalSwitchConfirmation = nil
+            pendingGoalSwitchConfirmation = queuedConfirmation
         }
     }
 

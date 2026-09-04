@@ -17,6 +17,7 @@ final class SkillMapMigrationTests: CheckpointWorkflowTestCase {
             defaults: defaults
         )
         store.updateAIProviderPreference(.backend)
+        store.updateMembershipTier(.member)
 
         await store.createGoal(
             title: "Study for the LSAT",
@@ -72,7 +73,12 @@ final class SkillMapMigrationTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(renamedCompetency.attempts, 1)
         XCTAssertEqual(renamedCompetency.correct, 1)
 
-        try? await Task.sleep(nanoseconds: 800_000_000)
+        let didFinishTopOff = await waitUntil {
+            !store.isQuestionBankTopOffInProgress &&
+                backendEngine.receivedRequests.count == 3 &&
+                store.activeQuestions.count > UnlockPolicy.default.questionsPerSession
+        }
+        XCTAssertTrue(didFinishTopOff, "Expected the reviewed skill map top-off to finish.")
 
         renamedCompetency = try XCTUnwrap(
             store.sortedCompetencies.first(where: { $0.skillID == originalSkill.id })
@@ -123,7 +129,13 @@ final class SkillMapMigrationTests: CheckpointWorkflowTestCase {
             waitForQuestionGeneration: true
         )
 
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        let didSurfaceSkillMapAttention = await waitUntil {
+            store.activeSkillMapNeedsAttention
+        }
+        XCTAssertTrue(
+            didSurfaceSkillMapAttention,
+            "Expected failed broad inference to surface an actionable skill-map state."
+        )
 
         XCTAssertNil(store.goal?.derivedSkillMap)
         XCTAssertTrue(store.sortedCompetencies.isEmpty)
@@ -747,6 +759,18 @@ final class SkillMapMigrationTests: CheckpointWorkflowTestCase {
             ["process scheduling", "virtual memory", "concurrency", "file systems"]
         )
         XCTAssertTrue(backendEngine.receivedRequests.first?.questionContext.needsGeneratedSkillMap ?? false)
+    }
+
+    @MainActor
+    private func waitUntil(
+        timeoutIterations: Int = 200,
+        _ condition: @MainActor () -> Bool
+    ) async -> Bool {
+        for _ in 0..<timeoutIterations {
+            if condition() { return true }
+            try? await Task.sleep(nanoseconds: 20_000_000)
+        }
+        return condition()
     }
 
 }

@@ -210,6 +210,251 @@ enum CheckpointMotion {
     }
 }
 
+struct GoalSelectionAction: Sendable {
+    private let action: @MainActor @Sendable (Goal.ID) -> Void
+
+    init(_ action: @escaping @MainActor @Sendable (Goal.ID) -> Void) {
+        self.action = action
+    }
+
+    @MainActor
+    func callAsFunction(_ goalID: Goal.ID) {
+        action(goalID)
+    }
+}
+
+private struct GoalSelectionActionKey: EnvironmentKey {
+    static let defaultValue = GoalSelectionAction { _ in }
+}
+
+extension EnvironmentValues {
+    var checkpointGoalSelection: GoalSelectionAction {
+        get { self[GoalSelectionActionKey.self] }
+        set { self[GoalSelectionActionKey.self] = newValue }
+    }
+}
+
+enum GoalSwitchMenuOptionState: Equatable {
+    case current
+    case ready
+    case preparing(selectableCount: Int, requiredCount: Int)
+    case notReady(selectableCount: Int, requiredCount: Int)
+    case locked
+    case unavailable
+}
+
+struct GoalSwitchMenuOptionPresentation: Identifiable, Equatable {
+    let id: Goal.ID
+    let title: String
+    let state: GoalSwitchMenuOptionState
+
+    var menuTitle: String {
+        switch state {
+        case .current:
+            title
+        case .ready:
+            "\(title) · Ready"
+        case .preparing:
+            "\(title) · Preparing"
+        case .notReady:
+            "\(title) · Not ready"
+        case .locked:
+            "\(title) · Pro"
+        case .unavailable:
+            "\(title) · Unavailable"
+        }
+    }
+
+    var systemImage: String {
+        switch state {
+        case .current:
+            "checkmark.circle.fill"
+        case .ready:
+            "circle"
+        case .preparing:
+            "hourglass"
+        case .notReady:
+            "exclamationmark.circle"
+        case .locked:
+            "lock.fill"
+        case .unavailable:
+            "questionmark.circle"
+        }
+    }
+
+    var isCurrent: Bool {
+        state == .current
+    }
+
+    var accessibilityValue: String {
+        switch state {
+        case .current:
+            "Current goal"
+        case .ready:
+            "Checkpoint ready"
+        case let .preparing(selectableCount, requiredCount):
+            "Preparing, \(selectableCount) of \(requiredCount) questions ready"
+        case let .notReady(selectableCount, requiredCount):
+            "Not ready, \(selectableCount) of \(requiredCount) questions ready"
+        case .locked:
+            "Requires Pro"
+        case .unavailable:
+            "Unavailable"
+        }
+    }
+}
+
+@MainActor
+struct GoalSwitchMenuPresentation: Equatable {
+    let options: [GoalSwitchMenuOptionPresentation]
+
+    init(
+        store: CheckpointStore,
+        calendar: Calendar = .current,
+        locale: Locale = .current,
+        timeZone: TimeZone = .current
+    ) {
+        let goals = store.availableGoalProfiles
+        let resolver = GoalDisplayTitleResolver(
+            goals: goals,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        options = goals.map { goal in
+            let state: GoalSwitchMenuOptionState
+            switch store.prepareGoalActivation(to: goal.id) {
+            case let .eligible(plan):
+                switch plan.readiness {
+                case .ready:
+                    state = .ready
+                case let .preparing(selectableCount, requiredCount):
+                    state = .preparing(
+                        selectableCount: selectableCount,
+                        requiredCount: requiredCount
+                    )
+                case let .incomplete(selectableCount, requiredCount):
+                    state = .notReady(
+                        selectableCount: selectableCount,
+                        requiredCount: requiredCount
+                    )
+                }
+            case .alreadyActive:
+                state = .current
+            case .membershipRequired:
+                state = .locked
+            case .targetNotFound:
+                state = .unavailable
+            }
+
+            return GoalSwitchMenuOptionPresentation(
+                id: goal.id,
+                title: resolver.title(for: goal),
+                state: state
+            )
+        }
+    }
+}
+
+struct GoalSwitchConfirmationPresentation: Equatable {
+    let sourceTitle: String?
+    let targetTitle: String
+    let title: String
+    let message: String
+    let confirmationButtonTitle: String
+    let cancelButtonTitle = "Keep current goal"
+    let readinessText: String
+
+    init(
+        confirmation: GoalSwitchConfirmation,
+        goals: [Goal],
+        calendar: Calendar = .current,
+        locale: Locale = .current,
+        timeZone: TimeZone = .current
+    ) {
+        let resolver = GoalDisplayTitleResolver(
+            goals: goals,
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        )
+        sourceTitle = confirmation.sourceGoalID.map {
+            resolver.title(for: $0, fallback: confirmation.sourceTitle ?? "Current goal")
+        }
+        targetTitle = resolver.title(
+            for: confirmation.targetGoalID,
+            fallback: confirmation.targetTitle
+        )
+
+        let selectableCount = confirmation.readiness.selectableCount
+        let requiredCount = confirmation.readiness.requiredCount
+        let questionNoun = requiredCount == 1 ? "question" : "questions"
+        readinessText = "\(selectableCount) of \(requiredCount) \(questionNoun) ready"
+
+        switch confirmation.impact {
+        case .turnsOffImmediately:
+            title = "Switch goal and turn off protection?"
+            message = "\(targetTitle) has \(readinessText). Switching now turns off app protection. Start protection again after a full checkpoint is ready."
+            confirmationButtonTitle = "Switch and turn off"
+        case .preventsRelockAfterBreak:
+            title = "Switch goal before this break ends?"
+            message = "Your break will continue, but protection won't return when it ends because \(targetTitle) has only \(readinessText). Start protection again after a full checkpoint is ready."
+            confirmationButtonTitle = "Switch goal"
+        }
+    }
+}
+
+enum GoalIdentityMotionStyle: Equatable {
+    case crossfade
+    case identity
+}
+
+struct GoalIdentityMotionPolicy {
+    let style: GoalIdentityMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .crossfade
+    }
+
+    var animation: Animation? {
+        style == .crossfade ? CheckpointMotion.change : nil
+    }
+
+    var transition: AnyTransition {
+        switch style {
+        case .crossfade:
+            .asymmetric(
+                insertion: .opacity.combined(
+                    with: .scale(scale: 0.99, anchor: .top)
+                ),
+                removal: .opacity
+            )
+        case .identity:
+            .identity
+        }
+    }
+}
+
+struct GoalSwitcherCapsuleLabel: View {
+    var title = "Current goal"
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Text(title)
+            Image(systemName: "chevron.down")
+                .font(.caption2.weight(.bold))
+                .accessibilityHidden(true)
+        }
+        .font(.caption.weight(.bold))
+        .foregroundStyle(CheckpointTheme.teal)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, 11)
+        .frame(minHeight: 44)
+        .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+        .contentShape(Capsule())
+    }
+}
+
 enum PrimaryActionIconState: Equatable {
     case loading
     case symbol(String)

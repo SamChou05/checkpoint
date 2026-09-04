@@ -51,7 +51,11 @@ struct CheckpointQuestionSelector {
         nextQuestion(excluding: [], avoidingSimilarityTo: [])
     }
 
-    func nextQuestions(limit: Int, allowsEarlyCorrectReuse: Bool = false) -> [CheckpointQuestion] {
+    func nextQuestions(
+        limit: Int,
+        allowsEarlyCorrectReuse: Bool = false,
+        enforcesDifficultyFloor: Bool = false
+    ) -> [CheckpointQuestion] {
         let maximumSessionQuestionCount = max(
             UnlockPolicy.maximumQuestionsPerSession,
             StopBlockingPolicy.questionsPerSession
@@ -65,6 +69,7 @@ struct CheckpointQuestionSelector {
                 excluding: excludedQuestionIDs,
                 avoidingSimilarityTo: selectedQuestions,
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse,
+                enforcesDifficultyFloor: enforcesDifficultyFloor,
                 prefersMasteredMaintenance: selectedQuestions.count == targetCount - 1,
                 forcesSkillBreadth: shouldForceSkillBreadth(
                     for: selectedQuestions,
@@ -82,17 +87,19 @@ struct CheckpointQuestionSelector {
         excluding excludedQuestionIDs: Set<CheckpointQuestion.ID>,
         avoidingSimilarityTo selectedQuestions: [CheckpointQuestion],
         allowsEarlyCorrectReuse: Bool = false,
+        enforcesDifficultyFloor: Bool = false,
         prefersMasteredMaintenance: Bool = false,
         forcesSkillBreadth: Bool = false
     ) -> CheckpointQuestion? {
         let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
+        let fallbackQuestions = enforcesDifficultyFloor ? [] : availableQuestions
         if prefersMasteredMaintenance,
            let maintenanceQuestion = masteredMaintenanceQuestion(
                from: preferredQuestions,
                avoidingSimilarityTo: selectedQuestions
            ) ?? masteredMaintenanceQuestion(
-               from: availableQuestions,
+               from: fallbackQuestions,
                avoidingSimilarityTo: selectedQuestions
            ) {
             return maintenanceQuestion
@@ -102,7 +109,7 @@ struct CheckpointQuestionSelector {
                from: preferredQuestions,
                avoidingSimilarityTo: selectedQuestions
            ) ?? skillBreadthQuestion(
-               from: availableQuestions,
+               from: fallbackQuestions,
                avoidingSimilarityTo: selectedQuestions
            ) {
             return breadthQuestion
@@ -112,7 +119,7 @@ struct CheckpointQuestionSelector {
             avoidingSimilarityTo: selectedQuestions
         )
             ?? prioritizedNonCorrectQuestion(
-                from: availableQuestions,
+                from: fallbackQuestions,
                 avoidingSimilarityTo: selectedQuestions
             )
             ?? prioritizedCorrectQuestion(
@@ -121,7 +128,7 @@ struct CheckpointQuestionSelector {
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
             )
             ?? prioritizedCorrectQuestion(
-                from: availableQuestions,
+                from: fallbackQuestions,
                 avoidingSimilarityTo: selectedQuestions,
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
             )

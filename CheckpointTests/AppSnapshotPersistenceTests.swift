@@ -49,6 +49,177 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testFailedGoalActivationRollsBackBeforePublishingOrStartingGeneration() async throws {
+        try Data("not a directory".utf8).write(to: persistenceDirectory)
+        let sourceGoal = makeGoal()
+        let targetGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let capturingEngine = CapturingQuestionEngine(provider: .appleFoundation)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: capturingEngine
+            ),
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.membershipTier = .member
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal, targetGoal]
+        store.questions = [
+            makeQuestion(goal: sourceGoal, index: 1, topic: "arrays")
+        ] + (1...store.unlockPolicy.questionsPerSession).map { index in
+            makeQuestion(goal: targetGoal, index: index, topic: "integrals")
+        }
+        store.competencies = [
+            TopicCompetency.initial(topic: "arrays", goalID: sourceGoal.id),
+            TopicCompetency.initial(topic: "integrals", goalID: targetGoal.id)
+        ]
+        store.lastQuestionProvider = .localTemplates
+        store.questionBatchState = .failed
+        store.isQuestionBankTopOffInProgress = true
+        store.questionBankTopOffStartedAt = Date(timeIntervalSinceReferenceDate: 9_000)
+        store.checkpointNotice = "Keep this recovery notice."
+        SharedAppGroup.publishShieldContext(
+            goalTitle: sourceGoal.title,
+            promptPreview: "Source question preview"
+        )
+
+        let originalProfiles = store.goalProfiles
+        let originalQuestions = store.questions
+        let originalCompetencies = store.competencies
+        let originalBatchState = store.questionBatchState
+        let originalTopOffState = store.isQuestionBankTopOffInProgress
+        let originalTopOffStartedAt = store.questionBankTopOffStartedAt
+        let originalNotice = store.checkpointNotice
+        let originalShieldContext = SharedAppGroup.currentShieldContext()
+        let preflight = store.prepareGoalActivation(to: targetGoal.id)
+        guard case let .eligible(plan) = preflight else {
+            return XCTFail("Expected an eligible activation plan, got \(preflight)")
+        }
+        XCTAssertEqual(
+            plan.readiness,
+            .incomplete(selectableCount: 0, requiredCount: 5)
+        )
+
+        let result = store.activateGoal(using: plan)
+
+        XCTAssertEqual(result, .persistenceFailed)
+        XCTAssertEqual(store.goal?.id, sourceGoal.id)
+        XCTAssertEqual(store.goalProfiles, originalProfiles)
+        XCTAssertEqual(store.questions, originalQuestions)
+        XCTAssertEqual(store.competencies, originalCompetencies)
+        XCTAssertEqual(store.questionBatchState, originalBatchState)
+        XCTAssertEqual(store.isQuestionBankTopOffInProgress, originalTopOffState)
+        XCTAssertEqual(store.questionBankTopOffStartedAt, originalTopOffStartedAt)
+        XCTAssertEqual(store.checkpointNotice, originalNotice)
+        XCTAssertEqual(SharedAppGroup.currentShieldContext(), originalShieldContext)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+
+        try await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertTrue(capturingEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
+    func testFailedGoalProfileDeletionRollsBackDataAndBreakWithoutStartingGeneration() async throws {
+        try Data("not a directory".utf8).write(to: persistenceDirectory)
+        let now = Date()
+        let breakExpiration = now.addingTimeInterval(600)
+        let sourceGoal = makeGoal()
+        let replacementGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "derivatives, integrals",
+            preferredQuestionStyle: .multipleChoice,
+            createdAt: sourceGoal.createdAt.addingTimeInterval(60)
+        )
+        let capturingEngine = CapturingQuestionEngine(provider: .appleFoundation)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: capturingEngine
+            ),
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.membershipTier = .member
+        store.aiProviderPreference = .appleFoundation
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal, replacementGoal]
+        store.questions = (1...5).map {
+            makeQuestion(goal: sourceGoal, index: $0, topic: "arrays")
+        } + (1...4).map {
+            makeQuestion(goal: replacementGoal, index: $0 + 100, topic: "integrals")
+        }
+        store.attempts = [
+            makeAttempt(goal: sourceGoal, result: .correct, createdAt: now)
+        ]
+        store.competencies = [
+            TopicCompetency.initial(topic: "arrays", goalID: sourceGoal.id),
+            TopicCompetency.initial(topic: "integrals", goalID: replacementGoal.id)
+        ]
+        store.focusWins = [FocusWin(goalID: sourceGoal.id, note: "Keep this win")]
+        store.unlockEvents = [UnlockEvent(goalID: sourceGoal.id, minutes: 10)]
+        store.questionBatchState = .failed
+        store.checkpointNotice = "Keep this recovery notice."
+        store.unlockSession = UnlockSession(startedAt: now, expiresAt: breakExpiration)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: breakExpiration
+        )
+        SharedAppGroup.publishShieldContext(
+            goalTitle: sourceGoal.title,
+            promptPreview: "Source question preview"
+        )
+
+        let originalProfiles = store.goalProfiles
+        let originalQuestions = store.questions
+        let originalAttempts = store.attempts
+        let originalCompetencies = store.competencies
+        let originalFocusWins = store.focusWins
+        let originalUnlockEvents = store.unlockEvents
+        let originalBatchState = store.questionBatchState
+        let originalNotice = store.checkpointNotice
+        let originalShieldContext = SharedAppGroup.currentShieldContext()
+        let originalProtectionSnapshot = SharedAppGroup.currentProtectionSnapshot()
+        let request = GoalProfileMutationRequest(
+            operation: .delete(goalID: sourceGoal.id)
+        )
+        let preflight = store.prepareGoalProfileMutation(request)
+        guard case let .eligible(plan) = preflight else {
+            return XCTFail("Expected an eligible deletion plan, got \(preflight)")
+        }
+
+        let result = store.commitGoalProfileMutation(using: plan)
+
+        XCTAssertEqual(result, .persistenceFailed)
+        XCTAssertEqual(store.goal, sourceGoal)
+        XCTAssertEqual(store.goalProfiles, originalProfiles)
+        XCTAssertEqual(store.questions, originalQuestions)
+        XCTAssertEqual(store.attempts, originalAttempts)
+        XCTAssertEqual(store.competencies, originalCompetencies)
+        XCTAssertEqual(store.focusWins, originalFocusWins)
+        XCTAssertEqual(store.unlockEvents, originalUnlockEvents)
+        XCTAssertEqual(store.questionBatchState, originalBatchState)
+        XCTAssertEqual(store.checkpointNotice, originalNotice)
+        XCTAssertEqual(store.unlockSession?.expiresAt, breakExpiration)
+        XCTAssertEqual(SharedAppGroup.currentShieldContext(), originalShieldContext)
+        XCTAssertEqual(SharedAppGroup.currentProtectionSnapshot(), originalProtectionSnapshot)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+
+        try await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertTrue(capturingEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
     func testSuccessfulSnapshotLoadSeedsSharedQuestionReadiness() {
         let goal = makeGoal()
         let originalStore = CheckpointStore(

@@ -394,6 +394,762 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertTrue(restoredStore.isCheckpointRetryCooldownActive)
     }
 
+    // MARK: - Goal switching
+
+    @MainActor
+    func testProtectedUnreadyGoalRequiresConfirmationWithoutMutatingState() {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        store.questionBatchState = .failed
+        store.checkpointNotice = "Keep this recovery context."
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let outcome = workflow.requestGoalSwitch(to: targetGoal.id)
+
+        guard case let .confirmationRequired(confirmation) = outcome else {
+            return XCTFail("Expected a protection-impact confirmation, got \(outcome)")
+        }
+        XCTAssertEqual(confirmation.sourceGoalID, sourceGoalID)
+        XCTAssertEqual(confirmation.targetGoalID, targetGoal.id)
+        XCTAssertEqual(
+            confirmation.readiness,
+            .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+        XCTAssertEqual(confirmation.impact, .turnsOffImmediately)
+        XCTAssertEqual(store.goal?.id, sourceGoalID)
+        XCTAssertEqual(store.questionBatchState, .failed)
+        XCTAssertEqual(store.checkpointNotice, "Keep this recovery context.")
+        XCTAssertEqual(protection.clearShieldCount, 0)
+        XCTAssertTrue(protection.isShieldingEnabled)
+    }
+
+    @MainActor
+    func testProtectedLegacyLocalTargetWarnsUsingPostCommitReadiness() {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 5)
+        store.lastQuestionProvider = .localTemplates
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let outcome = workflow.requestGoalSwitch(to: targetGoal.id)
+
+        guard case let .confirmationRequired(confirmation) = outcome else {
+            return XCTFail("Expected a legacy-bank protection warning, got \(outcome)")
+        }
+        XCTAssertEqual(
+            confirmation.readiness,
+            .incomplete(selectableCount: 0, requiredCount: 5)
+        )
+        XCTAssertEqual(confirmation.impact, .turnsOffImmediately)
+        XCTAssertEqual(store.goal?.id, sourceGoalID)
+        XCTAssertEqual(
+            store.questions.filter { $0.goalID == targetGoal.id }.count,
+            5,
+            "Preflight must describe the post-commit bank without mutating the cached legacy questions."
+        )
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testConfirmedUnreadyGoalSwitchCommitsBeforeRootReconciliationClearsProtection() {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let initialOutcome = workflow.requestGoalSwitch(to: targetGoal.id)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected a protection-impact confirmation, got \(initialOutcome)")
+        }
+
+        let confirmedOutcome = workflow.requestGoalSwitch(
+            to: targetGoal.id,
+            authorization: .confirmed(confirmation)
+        )
+
+        XCTAssertEqual(
+            confirmedOutcome,
+            .switched(from: sourceGoalID, to: targetGoal.id)
+        )
+        XCTAssertEqual(store.goal?.id, targetGoal.id)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+
+        workflow.goalDidChange()
+
+        XCTAssertEqual(protection.clearShieldCount, 1)
+        XCTAssertFalse(protection.isShieldingEnabled)
+    }
+
+    @MainActor
+    func testReadyGoalSwitchNeedsNoConfirmationAndPreservesDesiredProtection() {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 5)
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let outcome = workflow.requestGoalSwitch(to: targetGoal.id)
+
+        XCTAssertEqual(outcome, .switched(from: sourceGoalID, to: targetGoal.id))
+        XCTAssertEqual(store.goal?.id, targetGoal.id)
+        workflow.goalDidChange()
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+        XCTAssertTrue(protection.isShieldingEnabled)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+        XCTAssertEqual(protection.applyShieldCount, 1)
+    }
+
+    @MainActor
+    func testUnreadyGoalDuringActiveBreakWarnsThatProtectionWillNotRelock() {
+        let now = Date(timeIntervalSinceReferenceDate: 10_000)
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        let breakExpiration = now.addingTimeInterval(600)
+        store.unlockSession = UnlockSession(startedAt: now, expiresAt: breakExpiration)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: breakExpiration
+        )
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: protection,
+            now: { now }
+        )
+
+        let outcome = workflow.requestGoalSwitch(to: targetGoal.id)
+
+        guard case let .confirmationRequired(confirmation) = outcome else {
+            return XCTFail("Expected an active-break confirmation, got \(outcome)")
+        }
+        XCTAssertEqual(confirmation.impact, .preventsRelockAfterBreak)
+        XCTAssertEqual(store.goal?.id, sourceGoalID)
+        XCTAssertEqual(store.unlockSession?.expiresAt, breakExpiration)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testSharedOnlyBreakSurvivesConfirmedUnreadyGoalSwitchAndReconciliation() {
+        let now = Date(timeIntervalSinceReferenceDate: 10_000)
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        XCTAssertNil(store.unlockSession)
+        let breakExpiration = now.addingTimeInterval(600)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: breakExpiration
+        )
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: protection,
+            now: { now }
+        )
+        let initialOutcome = workflow.requestGoalSwitch(to: targetGoal.id)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected a shared-break confirmation, got \(initialOutcome)")
+        }
+        XCTAssertEqual(confirmation.impact, .preventsRelockAfterBreak)
+
+        let confirmedOutcome = workflow.requestGoalSwitch(
+            to: targetGoal.id,
+            authorization: .confirmed(confirmation)
+        )
+        XCTAssertEqual(
+            confirmedOutcome,
+            .switched(from: sourceGoalID, to: targetGoal.id)
+        )
+
+        workflow.goalDidChange()
+
+        XCTAssertEqual(protection.clearShieldCount, 0)
+        XCTAssertTrue(SharedAppGroup.desiredShieldActive)
+        XCTAssertEqual(SharedAppGroup.unlockExpiration, breakExpiration)
+        XCTAssertNil(store.unlockSession)
+    }
+
+    @MainActor
+    func testGoalSwitchConfirmationBecomesStaleWhenSourceGoalChanges() {
+        let store = makeStore(questionCount: 5)
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        let replacementSource = makeCoordinatorTargetGoal(title: "A different current goal")
+        store.goalProfiles.append(replacementSource)
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let initialOutcome = workflow.requestGoalSwitch(to: targetGoal.id)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected a protection-impact confirmation, got \(initialOutcome)")
+        }
+        store.goal = replacementSource
+
+        let confirmedOutcome = workflow.requestGoalSwitch(
+            to: targetGoal.id,
+            authorization: .confirmed(confirmation)
+        )
+
+        XCTAssertEqual(confirmedOutcome, .staleRequest)
+        XCTAssertEqual(store.goal?.id, replacementSource.id)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testConfirmedGoalSwitchRevalidatesTargetThatBecameReady() {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let initialOutcome = workflow.requestGoalSwitch(to: targetGoal.id)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected a protection-impact confirmation, got \(initialOutcome)")
+        }
+        store.questions.append(
+            makeCoordinatorTestQuestion(goal: targetGoal, index: 105)
+        )
+
+        let confirmedOutcome = workflow.requestGoalSwitch(
+            to: targetGoal.id,
+            authorization: .confirmed(confirmation)
+        )
+
+        XCTAssertEqual(
+            confirmedOutcome,
+            .switched(from: sourceGoalID, to: targetGoal.id)
+        )
+        XCTAssertEqual(store.goal?.id, targetGoal.id)
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testGoalSwitchReadinessDegradationReturnsRefreshedConfirmation() {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = store.goal?.id
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let initialOutcome = workflow.requestGoalSwitch(to: targetGoal.id)
+        guard case let .confirmationRequired(initialConfirmation) = initialOutcome else {
+            return XCTFail("Expected an initial protection warning, got \(initialOutcome)")
+        }
+        guard let degradedIndex = store.questions.lastIndex(where: {
+            $0.goalID == targetGoal.id
+        }) else {
+            return XCTFail("Expected a target question to degrade")
+        }
+        store.questions[degradedIndex].status = .retired
+
+        let refreshedOutcome = workflow.requestGoalSwitch(
+            to: targetGoal.id,
+            authorization: .confirmed(initialConfirmation)
+        )
+
+        guard case let .confirmationRequired(refreshedConfirmation) = refreshedOutcome else {
+            return XCTFail("Expected refreshed confirmation, got \(refreshedOutcome)")
+        }
+        XCTAssertEqual(
+            initialConfirmation.readiness,
+            .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+        XCTAssertEqual(
+            refreshedConfirmation.readiness,
+            .incomplete(selectableCount: 3, requiredCount: 5)
+        )
+        XCTAssertNotEqual(refreshedConfirmation, initialConfirmation)
+        XCTAssertEqual(refreshedConfirmation.impact, .turnsOffImmediately)
+        XCTAssertEqual(store.goal?.id, sourceGoalID)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    // MARK: - Goal profile mutations
+
+    @MainActor
+    func testProtectedGoalCreationPreflightIsPureAndConfirmedRequestCommitsOnce() async {
+        let capturingEngine = CapturingQuestionEngine(provider: .appleFoundation)
+        let store = makeStore(
+            questionCount: 5,
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: capturingEngine
+            )
+        )
+        store.membershipTier = .member
+        store.aiProviderPreference = .appleFoundation
+        store.questionBatchState = .failed
+        store.checkpointNotice = "Keep this recovery context."
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let request = GoalProfileMutationRequest(
+            id: UUID(uuidString: "F107750C-3304-498B-BF23-6B11D0DFAB5B")!,
+            createdAt: Date(timeIntervalSinceReferenceDate: 20_000),
+            operation: .create(makeCoordinatorDraft())
+        )
+        let originalGoal = store.goal
+        let originalProfiles = store.goalProfiles
+        let originalQuestions = store.questions
+
+        let initialOutcome = workflow.requestGoalProfileMutation(request)
+
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected a protection confirmation, got \(initialOutcome)")
+        }
+        XCTAssertEqual(confirmation.consent, .protection(.turnsOffImmediately))
+        XCTAssertEqual(
+            confirmation.plan.resultingReadiness,
+            .incomplete(selectableCount: 0, requiredCount: 5)
+        )
+        XCTAssertEqual(store.goal, originalGoal)
+        XCTAssertEqual(store.goalProfiles, originalProfiles)
+        XCTAssertEqual(store.questions, originalQuestions)
+        XCTAssertEqual(store.questionBatchState, .failed)
+        XCTAssertEqual(store.checkpointNotice, "Keep this recovery context.")
+        XCTAssertEqual(protection.clearShieldCount, 0)
+
+        let confirmedOutcome = workflow.requestGoalProfileMutation(
+            request,
+            authorization: .confirmed(confirmation)
+        )
+        let replayOutcome = workflow.requestGoalProfileMutation(
+            request,
+            authorization: .confirmed(confirmation)
+        )
+
+        XCTAssertEqual(confirmedOutcome, .committed(resultingGoalID: request.id))
+        XCTAssertEqual(replayOutcome, .alreadyCommitted)
+        XCTAssertEqual(store.goal?.id, request.id)
+        XCTAssertEqual(
+            store.availableGoalProfiles.filter { $0.id == request.id }.count,
+            1
+        )
+
+        for _ in 0..<20 where capturingEngine.receivedRequests.isEmpty {
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertEqual(
+            capturingEngine.receivedRequests.filter {
+                $0.goal.id == request.id
+                    && $0.targetCount == store.unlockPolicy.questionsPerSession
+            }.count,
+            1,
+            "Replaying a committed creation must not start a second initial generation."
+        )
+
+        let collidingRequest = GoalProfileMutationRequest(
+            id: request.id,
+            createdAt: request.createdAt,
+            operation: .create(
+                makeCoordinatorDraft(title: "A different goal using the same token")
+            )
+        )
+        XCTAssertEqual(
+            workflow.requestGoalProfileMutation(collidingRequest),
+            .staleRequest
+        )
+
+        store.goal = originalGoal
+        XCTAssertEqual(
+            workflow.requestGoalProfileMutation(
+                request,
+                authorization: .confirmed(confirmation)
+            ),
+            .staleRequest,
+            "A creation replay is only idempotent while its committed goal remains current."
+        )
+    }
+
+    @MainActor
+    func testGoalCreationDuringActiveBreakPreservesLocalAndSharedExpiration() {
+        let now = Date()
+        let breakExpiration = now.addingTimeInterval(600)
+        let store = makeStore(
+            questionCount: 5,
+            questionEngine: HybridQuestionEngine(
+                backendEngine: FailingCoordinatorQuestionEngine(),
+                appleFoundationEngine: FailingCoordinatorQuestionEngine()
+            )
+        )
+        store.membershipTier = .member
+        store.unlockSession = UnlockSession(startedAt: now, expiresAt: breakExpiration)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: breakExpiration
+        )
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: protection,
+            now: { now }
+        )
+        let request = GoalProfileMutationRequest(
+            id: UUID(uuidString: "01427050-03C2-4A88-A104-B068EABAE465")!,
+            createdAt: now,
+            operation: .create(makeCoordinatorDraft())
+        )
+
+        let initialOutcome = workflow.requestGoalProfileMutation(request)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected an active-break confirmation, got \(initialOutcome)")
+        }
+        XCTAssertEqual(
+            confirmation.consent,
+            .protection(.preventsRelockAfterBreak)
+        )
+        XCTAssertTrue(confirmation.activeBreakAtRequest)
+
+        XCTAssertEqual(
+            workflow.requestGoalProfileMutation(
+                request,
+                authorization: .confirmed(confirmation)
+            ),
+            .committed(resultingGoalID: request.id)
+        )
+        workflow.goalDidChange()
+
+        XCTAssertEqual(store.unlockSession?.expiresAt, breakExpiration)
+        XCTAssertEqual(SharedAppGroup.unlockExpiration, breakExpiration)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testRaisingMinimumDifficultyUsesExactReadinessAndChangedActiveGoalIsStale() throws {
+        let store = makeStore(questionCount: 0)
+        store.membershipTier = .member
+        let sourceGoal = try XCTUnwrap(store.goal)
+        store.questions = (1...5).map { index in
+            makeCoordinatorTestQuestion(
+                goal: sourceGoal,
+                index: index,
+                difficulty: index == 5 ? 3 : 4
+            )
+        }
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let request = GoalProfileMutationRequest(
+            id: UUID(uuidString: "9B18EA1B-E089-46CC-AC40-C3705AC93623")!,
+            createdAt: Date(timeIntervalSinceReferenceDate: 40_000),
+            operation: .edit(
+                expectedGoalID: sourceGoal.id,
+                draft: makeCoordinatorEditDraft(
+                    from: sourceGoal,
+                    minimumQuestionDifficulty: 4
+                )
+            )
+        )
+
+        let initialOutcome = workflow.requestGoalProfileMutation(request)
+
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected an exact-readiness warning, got \(initialOutcome)")
+        }
+        XCTAssertEqual(
+            confirmation.plan.sourceReadiness,
+            .ready(selectableCount: 5, requiredCount: 5)
+        )
+        XCTAssertEqual(
+            confirmation.plan.resultingReadiness,
+            .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+        XCTAssertEqual(confirmation.consent, .protection(.turnsOffImmediately))
+        XCTAssertEqual(store.goal?.minimumQuestionDifficulty, sourceGoal.minimumQuestionDifficulty)
+
+        let replacementSource = makeCoordinatorTargetGoal(
+            title: "A different current goal",
+            createdAt: Date(timeIntervalSinceReferenceDate: 50_000)
+        )
+        store.goalProfiles.append(replacementSource)
+        store.goal = replacementSource
+
+        XCTAssertEqual(
+            workflow.requestGoalProfileMutation(
+                request,
+                authorization: .confirmed(confirmation)
+            ),
+            .staleRequest
+        )
+        XCTAssertEqual(store.goal?.id, replacementSource.id)
+        XCTAssertEqual(
+            store.goalProfiles.first { $0.id == sourceGoal.id }?.minimumQuestionDifficulty,
+            sourceGoal.minimumQuestionDifficulty
+        )
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testConfirmedProtectedEditRejectsInterveningUserEditEvenWhenNowSafe() throws {
+        let store = makeStore(questionCount: 0)
+        store.membershipTier = .member
+        let sourceGoal = try XCTUnwrap(store.goal)
+        store.questions = (1...5).map { index in
+            makeCoordinatorTestQuestion(
+                goal: sourceGoal,
+                index: index,
+                difficulty: index == 5 ? 3 : 4
+            )
+        }
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let request = GoalProfileMutationRequest(
+            id: UUID(uuidString: "5AD7FC77-EB00-48A4-9D61-6BFC9F7A734A")!,
+            createdAt: Date(timeIntervalSinceReferenceDate: 110_000),
+            operation: .edit(
+                expectedGoalID: sourceGoal.id,
+                draft: makeCoordinatorEditDraft(
+                    from: sourceGoal,
+                    minimumQuestionDifficulty: 4
+                )
+            )
+        )
+        let initialOutcome = workflow.requestGoalProfileMutation(request)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected an initial protection warning, got \(initialOutcome)")
+        }
+        XCTAssertEqual(
+            confirmation.plan.resultingReadiness,
+            .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+
+        var interveningGoal = sourceGoal
+        interveningGoal.focusAreas = "queues, caching, and incident response"
+        store.goal = interveningGoal
+        store.questions.append(
+            makeCoordinatorTestQuestion(
+                goal: interveningGoal,
+                index: 6,
+                difficulty: 4
+            )
+        )
+        guard case let .eligible(currentPlan) = store.prepareGoalProfileMutation(request) else {
+            return XCTFail("Expected the original request to remain structurally eligible")
+        }
+        XCTAssertEqual(
+            currentPlan.resultingReadiness,
+            .ready(selectableCount: 5, requiredCount: 5),
+            "Readiness alone is now safe and must not be the reason confirmation is rejected."
+        )
+
+        let confirmedOutcome = workflow.requestGoalProfileMutation(
+            request,
+            authorization: .confirmed(confirmation)
+        )
+
+        XCTAssertEqual(confirmedOutcome, .staleRequest)
+        XCTAssertEqual(store.goal, interveningGoal)
+        XCTAssertEqual(
+            store.goalProfiles.first { $0.id == sourceGoal.id }?.focusAreas,
+            interveningGoal.focusAreas
+        )
+        XCTAssertEqual(
+            store.goal?.minimumQuestionDifficulty,
+            sourceGoal.minimumQuestionDifficulty
+        )
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testDeletingActiveGoalWithReadyReplacementNeedsDeletionOnlyAndPreservesBreak() throws {
+        let now = Date()
+        let breakExpiration = now.addingTimeInterval(600)
+        let store = makeStore(questionCount: 5)
+        store.membershipTier = .member
+        let sourceGoal = try XCTUnwrap(store.goal)
+        let replacementGoal = makeCoordinatorTargetGoal(
+            createdAt: Date(timeIntervalSinceReferenceDate: 70_000)
+        )
+        store.goalProfiles.append(replacementGoal)
+        store.questions += (1...5).map {
+            makeCoordinatorTestQuestion(goal: replacementGoal, index: $0 + 100)
+        }
+        store.unlockSession = UnlockSession(startedAt: now, expiresAt: breakExpiration)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: breakExpiration
+        )
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: protection,
+            now: { now }
+        )
+        let request = GoalProfileMutationRequest(
+            operation: .delete(goalID: sourceGoal.id)
+        )
+
+        let initialOutcome = workflow.requestGoalProfileMutation(request)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected deletion consent, got \(initialOutcome)")
+        }
+        XCTAssertEqual(confirmation.consent, .deletion)
+        XCTAssertEqual(confirmation.plan.resultingActiveGoal?.id, replacementGoal.id)
+        XCTAssertEqual(
+            confirmation.plan.resultingReadiness,
+            .ready(selectableCount: 5, requiredCount: 5)
+        )
+        XCTAssertTrue(store.availableGoalProfiles.contains { $0.id == sourceGoal.id })
+
+        XCTAssertEqual(
+            workflow.requestGoalProfileMutation(
+                request,
+                authorization: .confirmed(confirmation)
+            ),
+            .committed(resultingGoalID: replacementGoal.id)
+        )
+        workflow.goalDidChange()
+
+        XCTAssertEqual(store.goal?.id, replacementGoal.id)
+        XCTAssertFalse(store.availableGoalProfiles.contains { $0.id == sourceGoal.id })
+        XCTAssertTrue(store.questions.allSatisfy { $0.goalID == replacementGoal.id })
+        XCTAssertEqual(store.unlockSession?.expiresAt, breakExpiration)
+        XCTAssertEqual(SharedAppGroup.unlockExpiration, breakExpiration)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testDeletingActiveGoalRefreshesCombinedConsentWhenReplacementChanges() throws {
+        let store = makeStore(questionCount: 5)
+        store.membershipTier = .member
+        let sourceGoal = try XCTUnwrap(store.goal)
+        let firstReplacement = makeCoordinatorTargetGoal(
+            title: "First replacement",
+            createdAt: Date(timeIntervalSinceReferenceDate: 80_000)
+        )
+        store.goalProfiles.append(firstReplacement)
+        store.questions += (1...4).map {
+            makeCoordinatorTestQuestion(goal: firstReplacement, index: $0 + 100)
+        }
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        let request = GoalProfileMutationRequest(
+            operation: .delete(goalID: sourceGoal.id)
+        )
+
+        let initialOutcome = workflow.requestGoalProfileMutation(request)
+        guard case let .confirmationRequired(initialConfirmation) = initialOutcome else {
+            return XCTFail("Expected combined deletion consent, got \(initialOutcome)")
+        }
+        XCTAssertEqual(
+            initialConfirmation.consent,
+            .deletionAndProtection(.turnsOffImmediately)
+        )
+        XCTAssertEqual(initialConfirmation.plan.resultingActiveGoal?.id, firstReplacement.id)
+        XCTAssertEqual(
+            initialConfirmation.plan.resultingReadiness,
+            .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+
+        let newerReplacement = makeCoordinatorTargetGoal(
+            title: "Newer replacement",
+            createdAt: Date(timeIntervalSinceReferenceDate: 90_000)
+        )
+        store.goalProfiles.append(newerReplacement)
+        store.questions += (1...3).map {
+            makeCoordinatorTestQuestion(goal: newerReplacement, index: $0 + 200)
+        }
+
+        let refreshedOutcome = workflow.requestGoalProfileMutation(
+            request,
+            authorization: .confirmed(initialConfirmation)
+        )
+
+        guard case let .confirmationRequired(refreshedConfirmation) = refreshedOutcome else {
+            return XCTFail("Expected refreshed combined consent, got \(refreshedOutcome)")
+        }
+        XCTAssertEqual(
+            refreshedConfirmation.consent,
+            .deletionAndProtection(.turnsOffImmediately)
+        )
+        XCTAssertEqual(refreshedConfirmation.plan.resultingActiveGoal?.id, newerReplacement.id)
+        XCTAssertEqual(
+            refreshedConfirmation.plan.resultingReadiness,
+            .incomplete(selectableCount: 3, requiredCount: 5)
+        )
+        XCTAssertNotEqual(refreshedConfirmation, initialConfirmation)
+        XCTAssertEqual(store.goal?.id, sourceGoal.id)
+        XCTAssertTrue(store.availableGoalProfiles.contains { $0.id == sourceGoal.id })
+        XCTAssertEqual(store.questions.filter { $0.goalID == sourceGoal.id }.count, 5)
+        XCTAssertEqual(store.questions.filter { $0.goalID == firstReplacement.id }.count, 4)
+        XCTAssertEqual(store.questions.filter { $0.goalID == newerReplacement.id }.count, 3)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
+    @MainActor
+    func testDeletingFinalGoalRequiresCombinedConsentAndEndsBreakAfterReconciliation() throws {
+        let now = Date()
+        let breakExpiration = now.addingTimeInterval(600)
+        let store = makeStore(questionCount: 5)
+        let sourceGoal = try XCTUnwrap(store.goal)
+        store.unlockSession = UnlockSession(startedAt: now, expiresAt: breakExpiration)
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: breakExpiration
+        )
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: protection,
+            now: { now }
+        )
+        let request = GoalProfileMutationRequest(
+            operation: .delete(goalID: sourceGoal.id)
+        )
+
+        let initialOutcome = workflow.requestGoalProfileMutation(request)
+        guard case let .confirmationRequired(confirmation) = initialOutcome else {
+            return XCTFail("Expected combined deletion consent, got \(initialOutcome)")
+        }
+        XCTAssertEqual(
+            confirmation.consent,
+            .deletionAndProtection(.turnsOffImmediately)
+        )
+        XCTAssertTrue(confirmation.activeBreakAtRequest)
+        XCTAssertNil(confirmation.plan.resultingActiveGoal)
+        XCTAssertEqual(store.unlockSession?.expiresAt, breakExpiration)
+        XCTAssertEqual(SharedAppGroup.unlockExpiration, breakExpiration)
+
+        XCTAssertEqual(
+            workflow.requestGoalProfileMutation(
+                request,
+                authorization: .confirmed(confirmation)
+            ),
+            .committed(resultingGoalID: nil)
+        )
+        workflow.goalDidChange()
+
+        XCTAssertNil(store.goal)
+        XCTAssertTrue(store.availableGoalProfiles.isEmpty)
+        XCTAssertTrue(store.questions.isEmpty)
+        XCTAssertNil(store.unlockSession)
+        XCTAssertNil(SharedAppGroup.unlockExpiration)
+        XCTAssertFalse(protection.isShieldingEnabled)
+        XCTAssertEqual(protection.clearShieldCount, 1)
+    }
+
     // MARK: - Goal edits
 
     @MainActor
@@ -512,15 +1268,35 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
     }
 
     @MainActor
-    private func makeStore(questionCount: Int) -> CheckpointStore {
+    private func makeStore(
+        questionCount: Int,
+        questionEngine: HybridQuestionEngine = HybridQuestionEngine()
+    ) -> CheckpointStore {
         let goal = makeCoordinatorTestGoal()
-        let store = CheckpointStore(defaults: defaults)
+        let store = CheckpointStore(
+            questionEngine: questionEngine,
+            defaults: defaults
+        )
         store.goal = goal
         store.goalProfiles = [goal]
         store.questions = (0..<questionCount).map {
             makeCoordinatorTestQuestion(goal: goal, index: $0 + 1)
         }
         return store
+    }
+
+    @MainActor
+    private func addGoalSwitchTarget(
+        to store: CheckpointStore,
+        questionCount: Int
+    ) -> Goal {
+        let targetGoal = makeCoordinatorTargetGoal()
+        store.membershipTier = .member
+        store.goalProfiles.append(targetGoal)
+        store.questions += (0..<questionCount).map { index in
+            makeCoordinatorTestQuestion(goal: targetGoal, index: index + 101)
+        }
+        return targetGoal
     }
 }
 
@@ -586,7 +1362,56 @@ private func makeCoordinatorTestGoal() -> Goal {
     )
 }
 
-private func makeCoordinatorTestQuestion(goal: Goal, index: Int) -> CheckpointQuestion {
+private func makeCoordinatorTargetGoal(
+    title: String = "Prepare for calculus final",
+    createdAt: Date = Date()
+) -> Goal {
+    Goal(
+        title: title,
+        deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+        category: .examPrep,
+        currentLevel: "Intermediate",
+        focusAreas: "derivatives, integrals",
+        preferredQuestionStyle: .multipleChoice,
+        createdAt: createdAt
+    )
+}
+
+private func makeCoordinatorDraft(
+    title: String = "Learn conversational Japanese"
+) -> GoalProfileDraft {
+    GoalProfileDraft(
+        title: title,
+        deadline: Date(timeIntervalSinceReferenceDate: 2_000_000),
+        category: .custom,
+        currentLevel: "Beginner",
+        focusAreas: "conversation, listening",
+        preferredQuestionStyle: .multipleChoice,
+        minimumQuestionDifficulty: 2
+    )
+}
+
+private func makeCoordinatorEditDraft(
+    from goal: Goal,
+    minimumQuestionDifficulty: Int
+) -> GoalProfileDraft {
+    GoalProfileDraft(
+        title: goal.title,
+        deadline: goal.deadline,
+        category: goal.category,
+        currentLevel: goal.currentLevel,
+        focusAreas: goal.focusAreas,
+        sourceDocuments: goal.sourceDocuments,
+        preferredQuestionStyle: goal.preferredQuestionStyle,
+        minimumQuestionDifficulty: minimumQuestionDifficulty
+    )
+}
+
+private func makeCoordinatorTestQuestion(
+    goal: Goal,
+    index: Int,
+    difficulty: Int = 2
+) -> CheckpointQuestion {
     CheckpointQuestion(
         goalID: goal.id,
         prompt: "Question \(index)",
@@ -594,7 +1419,7 @@ private func makeCoordinatorTestQuestion(goal: Goal, index: Int) -> CheckpointQu
         choices: ["Answer \(index)", "A", "B", "C"],
         explanation: "Explanation \(index)",
         topic: "arrays",
-        difficulty: 2,
+        difficulty: difficulty,
         format: .multipleChoice,
         sourcePrompt: "test"
     )

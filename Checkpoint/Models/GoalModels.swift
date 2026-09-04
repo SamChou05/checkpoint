@@ -649,3 +649,146 @@ struct GoalDisplayTitleResolver {
         return formatter.string(from: date)
     }
 }
+
+enum GoalCheckpointReadiness: Equatable, Sendable {
+    case ready(selectableCount: Int, requiredCount: Int)
+    case preparing(selectableCount: Int, requiredCount: Int)
+    case incomplete(selectableCount: Int, requiredCount: Int)
+
+    var selectableCount: Int {
+        switch self {
+        case let .ready(selectableCount, _),
+             let .preparing(selectableCount, _),
+             let .incomplete(selectableCount, _):
+            selectableCount
+        }
+    }
+
+    var requiredCount: Int {
+        switch self {
+        case let .ready(_, requiredCount),
+             let .preparing(_, requiredCount),
+             let .incomplete(_, requiredCount):
+            requiredCount
+        }
+    }
+
+    var hasFullCheckpoint: Bool {
+        selectableCount >= requiredCount
+    }
+
+    var remainingCount: Int {
+        max(0, requiredCount - selectableCount)
+    }
+}
+
+struct GoalActivationPlan: Equatable, Sendable {
+    let sourceGoalID: Goal.ID?
+    let targetGoalID: Goal.ID
+    let targetTitle: String
+    let readiness: GoalCheckpointReadiness
+}
+
+enum GoalActivationPreflight: Equatable, Sendable {
+    case eligible(GoalActivationPlan)
+    case alreadyActive
+    case targetNotFound
+    case membershipRequired
+}
+
+enum GoalActivationResult: Equatable, Sendable {
+    case activated(from: Goal.ID?, to: Goal.ID)
+    case alreadyActive
+    case targetNotFound
+    case membershipRequired
+    case stalePlan
+    case persistenceFailed
+}
+
+struct GoalProfileDraft: Equatable, Sendable {
+    let title: String
+    let deadline: Date
+    let category: GoalCategory
+    let currentLevel: String
+    let focusAreas: String
+    let sourceDocuments: [GoalSourceDocument]
+    let preferredQuestionStyle: QuestionFormat
+    let minimumQuestionDifficulty: Int
+
+    init(
+        title: String,
+        deadline: Date,
+        category: GoalCategory = .custom,
+        currentLevel: String,
+        focusAreas: String,
+        sourceDocuments: [GoalSourceDocument] = [],
+        preferredQuestionStyle: QuestionFormat,
+        minimumQuestionDifficulty: Int
+    ) {
+        self.title = title
+        self.deadline = deadline
+        self.category = category
+        self.currentLevel = currentLevel
+        self.focusAreas = focusAreas
+        self.sourceDocuments = sourceDocuments
+        self.preferredQuestionStyle = preferredQuestionStyle
+        self.minimumQuestionDifficulty = minimumQuestionDifficulty
+    }
+}
+
+struct GoalProfileMutationRequest: Identifiable, Equatable, Sendable {
+    enum Operation: Equatable, Sendable {
+        case create(GoalProfileDraft)
+        case edit(expectedGoalID: Goal.ID, draft: GoalProfileDraft)
+        case delete(goalID: Goal.ID)
+    }
+
+    let id: UUID
+    let createdAt: Date
+    let operation: Operation
+
+    init(
+        id: UUID = UUID(),
+        createdAt: Date = Date(),
+        operation: Operation
+    ) {
+        self.id = id
+        self.createdAt = createdAt
+        self.operation = operation
+    }
+}
+
+struct GoalProfileMutationPlan: Equatable, Sendable {
+    let request: GoalProfileMutationRequest
+    let sourceGoal: Goal?
+    let sourceReadiness: GoalCheckpointReadiness?
+    let targetGoal: Goal
+    let resultingActiveGoal: Goal?
+    let resultingReadiness: GoalCheckpointReadiness?
+
+    var isDeletion: Bool {
+        if case .delete = request.operation { return true }
+        return false
+    }
+}
+
+enum GoalProfileMutationPreflight: Equatable, Sendable {
+    case eligible(GoalProfileMutationPlan)
+    case alreadyCommitted
+    case invalidTitle
+    case membershipRequired
+    case profileLimitReached
+    case targetNotFound
+    case staleRequest
+}
+
+enum GoalProfileMutationCommitResult: Equatable, Sendable {
+    case committed(resultingGoalID: Goal.ID?)
+    case alreadyCommitted
+    case invalidTitle
+    case membershipRequired
+    case profileLimitReached
+    case targetNotFound
+    case stalePlan
+    case persistenceFailed
+}

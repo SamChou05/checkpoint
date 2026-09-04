@@ -13,6 +13,59 @@ enum GoalSetupMode: Equatable {
     }
 }
 
+struct GoalSetupProtectionConfirmationPresentation: Equatable {
+    let title: String
+    let message: String
+    let confirmationButtonTitle: String
+    let cancelButtonTitle = "Keep editing"
+
+    init(confirmation: GoalProfileMutationConfirmation) {
+        let readiness = confirmation.plan.resultingReadiness
+            ?? .incomplete(selectableCount: 0, requiredCount: 0)
+        let selectableCount = readiness.selectableCount
+        let requiredCount = readiness.requiredCount
+        let readinessText = "\(selectableCount) of \(requiredCount) checkpoint questions ready"
+        let impact: GoalSwitchProtectionImpact?
+        switch confirmation.consent {
+        case let .protection(value), let .deletionAndProtection(value):
+            impact = value
+        case .deletion:
+            impact = nil
+        }
+
+        switch (confirmation.plan.request.operation, impact) {
+        case (.create, .turnsOffImmediately):
+            title = "Create goal and turn off protection?"
+            message = "The new goal has \(readinessText). Creating it now makes it current and turns off app protection. Start protection again after a full checkpoint is ready."
+            confirmationButtonTitle = "Create and turn off"
+        case (.create, .preventsRelockAfterBreak):
+            title = "Create goal before this break ends?"
+            message = "Your current break will continue. Protection will return when it ends only if the new goal has a full checkpoint ready; otherwise it will turn off and you'll need to start it again. Right now, it has \(readinessText)."
+            confirmationButtonTitle = "Create goal"
+        case (.edit, .turnsOffImmediately):
+            title = "Save changes and turn off protection?"
+            message = "These changes leave \(readinessText). Saving now turns off app protection. Start protection again after a full checkpoint is ready."
+            confirmationButtonTitle = "Save and turn off"
+        case (.edit, .preventsRelockAfterBreak):
+            title = "Save changes before this break ends?"
+            message = "Your current break will continue. Protection will return when it ends only if this goal has a full checkpoint ready; otherwise it will turn off and you'll need to start it again. These changes leave \(readinessText)."
+            confirmationButtonTitle = "Save changes"
+        case (.delete, _):
+            title = "Delete goal?"
+            message = "Delete this goal and all of its progress? This can't be undone."
+            confirmationButtonTitle = "Delete goal"
+        case (.create, nil):
+            title = "Create goal?"
+            message = "Create this goal and prepare its first checkpoint."
+            confirmationButtonTitle = "Create goal"
+        case (.edit, nil):
+            title = "Save changes?"
+            message = "Save these changes to the current goal."
+            confirmationButtonTitle = "Save changes"
+        }
+    }
+}
+
 enum GoalSetupHeroState: Equatable {
     case awaitingGoal
     case ready
@@ -61,8 +114,10 @@ enum GoalSetupEditImpact: Equatable {
 }
 
 struct GoalSetupEditBaseline: Equatable {
+    let goalID: Goal.ID
     let title: String
     let deadline: Date
+    let category: GoalCategory
     let currentLevel: String
     let focusAreas: String
     let sourceDocuments: [GoalSourceDocument]
@@ -70,8 +125,10 @@ struct GoalSetupEditBaseline: Equatable {
     let minimumQuestionDifficulty: Int
 
     init(goal: Goal) {
+        goalID = goal.id
         title = goal.title.trimmingCharacters(in: .whitespacesAndNewlines)
         deadline = goal.deadline
+        category = goal.category
         currentLevel = goal.currentLevel.trimmingCharacters(in: .whitespacesAndNewlines)
         focusAreas = goal.focusAreas.trimmingCharacters(in: .whitespacesAndNewlines)
         sourceDocuments = GoalSourceDocument.normalizedDocuments(goal.sourceDocuments)
@@ -302,6 +359,7 @@ private enum GoalSetupField: Hashable {
 
 struct OnboardingView: View {
     let store: CheckpointStore
+    private let workflow: CheckpointWorkflowCoordinator
     private let mode: GoalSetupMode
     private let editBaseline: GoalSetupEditBaseline?
     private let preferredQuestionStyle: QuestionFormat
@@ -323,13 +381,21 @@ struct OnboardingView: View {
     @State private var isImportingSources = false
     @State private var sourceImportMessage: String?
     @State private var directionPreviewState = GoalSetupDirectionPreviewState()
+    @State private var pendingProtectionConfirmation: GoalProfileMutationConfirmation?
+    @State private var queuedProtectionConfirmation: GoalProfileMutationConfirmation?
+    @State private var mutationRequestID: UUID
+    @State private var mutationCreatedAt: Date
 
     init(
         store: CheckpointStore,
+        workflow: CheckpointWorkflowCoordinator,
         onFirstGoalCreated: @escaping () -> Void = {}
     ) {
         self.store = store
+        self.workflow = workflow
         self.onFirstGoalCreated = onFirstGoalCreated
+        _mutationRequestID = State(initialValue: UUID())
+        _mutationCreatedAt = State(initialValue: Date())
 
         let resolvedMode: GoalSetupMode
         if store.goal == nil {
@@ -543,6 +609,28 @@ struct OnboardingView: View {
         ) { result in
             handleSourceImport(result)
         }
+        .alert(
+            pendingProtectionConfirmationPresentation?.title ?? "Save goal?",
+            isPresented: protectionConfirmationIsPresented,
+            presenting: pendingProtectionConfirmation
+        ) { confirmation in
+            let presentation = GoalSetupProtectionConfirmationPresentation(
+                confirmation: confirmation
+            )
+            Button(presentation.confirmationButtonTitle, role: .destructive) {
+                confirmProtectedGoalSave(confirmation)
+            }
+            Button(presentation.cancelButtonTitle, role: .cancel) {
+                queuedProtectionConfirmation = nil
+                pendingProtectionConfirmation = nil
+            }
+        } message: { confirmation in
+            Text(
+                GoalSetupProtectionConfirmationPresentation(
+                    confirmation: confirmation
+                ).message
+            )
+        }
         .onDisappear {
             if !store.isOnboardingPresented {
                 store.isCreatingGoalProfile = false
@@ -577,7 +665,7 @@ struct OnboardingView: View {
                 isLoading: isCreating
             ) {
                 focusedField = nil
-                saveGoal()
+                requestGoalSave()
             }
             .disabled(isCreating || isTitleEmpty)
             .padding(.horizontal, 20)
@@ -720,44 +808,123 @@ struct OnboardingView: View {
         }
     }
 
-    private func saveGoal() {
-        Task {
-            guard !isCreating else { return }
-            isCreating = true
+    private func requestGoalSave(
+        authorization: GoalProfileMutationAuthorization = .none
+    ) {
+        guard !isCreating, let request = currentGoalMutationRequest else { return }
+        isCreating = true
+        let outcome = workflow.requestGoalProfileMutation(
+            request,
+            authorization: authorization
+        )
+        isCreating = false
 
-            if mode != .editGoal {
-                await store.createGoal(
-                    title: title,
-                    deadline: deadline,
-                    currentLevel: currentLevel,
-                    focusAreas: focusAreas,
-                    sourceDocuments: sourceDocuments,
-                    preferredQuestionStyle: preferredQuestionStyle,
-                    minimumQuestionDifficulty: minimumQuestionDifficulty,
-                    createsNewProfile: true,
-                    waitForQuestionGeneration: false
-                )
+        switch outcome {
+        case .committed:
+            finishGoalSave()
+        case .alreadyCommitted:
+            store.isCreatingGoalProfile = false
+            store.isOnboardingPresented = false
+            finishGoalSave()
+        case let .confirmationRequired(confirmation):
+            if case .confirmed = authorization {
+                queuedProtectionConfirmation = confirmation
             } else {
-                await store.updateActiveGoal(
-                    title: title,
-                    deadline: deadline,
-                    currentLevel: currentLevel,
-                    focusAreas: focusAreas,
-                    sourceDocuments: sourceDocuments,
-                    preferredQuestionStyle: preferredQuestionStyle,
-                    minimumQuestionDifficulty: minimumQuestionDifficulty,
-                    waitForQuestionGeneration: false
-                )
+                pendingProtectionConfirmation = confirmation
             }
-
-            isCreating = false
-            if !store.isOnboardingPresented {
-                if mode == .firstGoal, store.goal != nil {
-                    onFirstGoalCreated()
-                }
-                dismiss()
-            }
+        case .invalidTitle:
+            queuedProtectionConfirmation = nil
+            store.checkpointNotice = "Enter a goal before saving."
+        case .membershipRequired, .profileLimitReached:
+            queuedProtectionConfirmation = nil
+            break
+        case .targetNotFound, .staleRequest:
+            queuedProtectionConfirmation = nil
+            store.checkpointNotice = "This goal changed while the editor was open. Close it and try again."
+        case .persistenceFailed:
+            queuedProtectionConfirmation = nil
+            break
         }
+    }
+
+    private func confirmProtectedGoalSave(
+        _ confirmation: GoalProfileMutationConfirmation
+    ) {
+        requestGoalSave(authorization: .confirmed(confirmation))
+    }
+
+    private func finishGoalSave() {
+        guard !store.isOnboardingPresented else { return }
+        if mode == .firstGoal, store.goal != nil {
+            onFirstGoalCreated()
+        }
+        dismiss()
+    }
+
+    private var protectionConfirmationIsPresented: Binding<Bool> {
+        Binding(
+            get: { pendingProtectionConfirmation != nil },
+            set: { isPresented in
+                if !isPresented {
+                    pendingProtectionConfirmation = nil
+                    promoteQueuedProtectionConfirmationAfterDismissal()
+                }
+            }
+        )
+    }
+
+    private func promoteQueuedProtectionConfirmationAfterDismissal() {
+        guard let queuedConfirmation = queuedProtectionConfirmation else { return }
+
+        Task { @MainActor in
+            await Task.yield()
+            guard pendingProtectionConfirmation == nil,
+                  queuedProtectionConfirmation == queuedConfirmation else {
+                return
+            }
+            queuedProtectionConfirmation = nil
+            pendingProtectionConfirmation = queuedConfirmation
+        }
+    }
+
+    private var pendingProtectionConfirmationPresentation: GoalSetupProtectionConfirmationPresentation? {
+        pendingProtectionConfirmation.map {
+            GoalSetupProtectionConfirmationPresentation(confirmation: $0)
+        }
+    }
+
+    private var currentGoalMutationRequest: GoalProfileMutationRequest? {
+        let category: GoalCategory
+        if mode == .editGoal {
+            guard let editBaseline else { return nil }
+            category = editBaseline.category
+        } else {
+            category = .custom
+        }
+
+        let draft = GoalProfileDraft(
+            title: title,
+            deadline: deadline,
+            category: category,
+            currentLevel: currentLevel,
+            focusAreas: focusAreas,
+            sourceDocuments: sourceDocuments,
+            preferredQuestionStyle: preferredQuestionStyle,
+            minimumQuestionDifficulty: minimumQuestionDifficulty
+        )
+        let operation: GoalProfileMutationRequest.Operation
+        if mode == .editGoal {
+            guard let editBaseline else { return nil }
+            operation = .edit(expectedGoalID: editBaseline.goalID, draft: draft)
+        } else {
+            operation = .create(draft)
+        }
+
+        return GoalProfileMutationRequest(
+            id: mutationRequestID,
+            createdAt: mutationCreatedAt,
+            operation: operation
+        )
     }
 
     private var studyMaterialsSection: some View {

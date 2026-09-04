@@ -23,6 +23,82 @@ enum CheckpointFailureProtectionOutcome: Equatable {
     case protectionIsOff
 }
 
+enum GoalSwitchProtectionImpact: Hashable, Sendable {
+    case turnsOffImmediately
+    case preventsRelockAfterBreak
+}
+
+struct GoalSwitchConfirmation: Identifiable, Equatable, Sendable {
+    struct ID: Hashable, Sendable {
+        let sourceGoalID: Goal.ID?
+        let targetGoalID: Goal.ID
+        let impact: GoalSwitchProtectionImpact
+    }
+
+    let sourceGoalID: Goal.ID?
+    let sourceTitle: String?
+    let targetGoalID: Goal.ID
+    let targetTitle: String
+    let readiness: GoalCheckpointReadiness
+    let impact: GoalSwitchProtectionImpact
+
+    var id: ID {
+        ID(
+            sourceGoalID: sourceGoalID,
+            targetGoalID: targetGoalID,
+            impact: impact
+        )
+    }
+}
+
+enum GoalSwitchAuthorization: Equatable, Sendable {
+    case none
+    case confirmed(GoalSwitchConfirmation)
+}
+
+enum GoalSwitchOutcome: Equatable, Sendable {
+    case switched(from: Goal.ID?, to: Goal.ID)
+    case confirmationRequired(GoalSwitchConfirmation)
+    case alreadyActive
+    case targetNotFound
+    case membershipRequired
+    case staleRequest
+    case persistenceFailed
+}
+
+enum GoalProfileMutationConsent: Equatable, Sendable {
+    case deletion
+    case protection(GoalSwitchProtectionImpact)
+    case deletionAndProtection(GoalSwitchProtectionImpact)
+}
+
+struct GoalProfileMutationConfirmation: Identifiable, Equatable, Sendable {
+    let plan: GoalProfileMutationPlan
+    let consent: GoalProfileMutationConsent
+    let activeBreakAtRequest: Bool
+
+    var id: GoalProfileMutationRequest.ID {
+        plan.request.id
+    }
+}
+
+enum GoalProfileMutationAuthorization: Equatable, Sendable {
+    case none
+    case confirmed(GoalProfileMutationConfirmation)
+}
+
+enum GoalProfileMutationOutcome: Equatable, Sendable {
+    case committed(resultingGoalID: Goal.ID?)
+    case confirmationRequired(GoalProfileMutationConfirmation)
+    case alreadyCommitted
+    case invalidTitle
+    case membershipRequired
+    case profileLimitReached
+    case targetNotFound
+    case staleRequest
+    case persistenceFailed
+}
+
 @MainActor
 @Observable
 final class CheckpointWorkflowCoordinator {
@@ -49,6 +125,249 @@ final class CheckpointWorkflowCoordinator {
 
     var isStartingProtection: Bool {
         operation == .startingProtection
+    }
+
+    func requestGoalSwitch(
+        to targetGoalID: Goal.ID,
+        authorization: GoalSwitchAuthorization = .none
+    ) -> GoalSwitchOutcome {
+        if case let .confirmed(confirmation) = authorization,
+           (confirmation.targetGoalID != targetGoalID
+            || confirmation.sourceGoalID != store.goal?.id) {
+            return .staleRequest
+        }
+
+        switch store.prepareGoalActivation(to: targetGoalID) {
+        case let .eligible(plan):
+            let impact = goalTransitionProtectionImpact(for: plan.readiness)
+
+            switch authorization {
+            case .none:
+                if let impact {
+                    return .confirmationRequired(
+                        goalSwitchConfirmation(for: plan, impact: impact)
+                    )
+                }
+            case let .confirmed(confirmation):
+                if let impact,
+                   confirmation.impact != impact
+                    || confirmation.readiness != plan.readiness {
+                    return .confirmationRequired(
+                        goalSwitchConfirmation(for: plan, impact: impact)
+                    )
+                }
+            }
+
+            return activationOutcome(for: store.activateGoal(using: plan))
+        case .alreadyActive:
+            return .alreadyActive
+        case .targetNotFound:
+            return .targetNotFound
+        case .membershipRequired:
+            store.requestMembership(for: .goalProfiles)
+            return .membershipRequired
+        }
+    }
+
+    func requestGoalProfileMutation(
+        _ request: GoalProfileMutationRequest,
+        authorization: GoalProfileMutationAuthorization = .none
+    ) -> GoalProfileMutationOutcome {
+        if case let .confirmed(confirmation) = authorization,
+           confirmation.plan.request != request {
+            return .staleRequest
+        }
+
+        switch store.prepareGoalProfileMutation(request) {
+        case let .eligible(plan):
+            let confirmation = goalProfileMutationConfirmation(for: plan)
+
+            switch authorization {
+            case .none:
+                if let confirmation {
+                    return .confirmationRequired(confirmation)
+                }
+            case let .confirmed(previousConfirmation):
+                guard mutationSourceIsCurrent(
+                    previousConfirmation.plan.sourceGoal,
+                    plan.sourceGoal
+                ) else {
+                    return .staleRequest
+                }
+                if let confirmation,
+                   confirmation != previousConfirmation {
+                    return .confirmationRequired(confirmation)
+                }
+            }
+
+            return goalProfileMutationOutcome(
+                for: store.commitGoalProfileMutation(using: plan)
+            )
+
+        case .alreadyCommitted:
+            return .alreadyCommitted
+        case .invalidTitle:
+            return .invalidTitle
+        case .membershipRequired:
+            store.requestMembership(for: .goalProfiles)
+            return .membershipRequired
+        case .profileLimitReached:
+            store.checkpointNotice = store.goalProfileLimitMessage
+            return .profileLimitReached
+        case .targetNotFound:
+            return .targetNotFound
+        case .staleRequest:
+            return .staleRequest
+        }
+    }
+
+    private func mutationSourceIsCurrent(
+        _ authorizedSource: Goal?,
+        _ currentSource: Goal?
+    ) -> Bool {
+        switch (authorizedSource, currentSource) {
+        case (nil, nil):
+            return true
+        case let (authorizedSource?, currentSource?):
+            return authorizedSource.id == currentSource.id
+                && authorizedSource.title == currentSource.title
+                && authorizedSource.deadline == currentSource.deadline
+                && authorizedSource.category == currentSource.category
+                && authorizedSource.currentLevel == currentSource.currentLevel
+                && authorizedSource.focusAreas == currentSource.focusAreas
+                && authorizedSource.sourceDocuments == currentSource.sourceDocuments
+                && authorizedSource.preferredQuestionStyle == currentSource.preferredQuestionStyle
+                && authorizedSource.minimumQuestionDifficulty == currentSource.minimumQuestionDifficulty
+                && authorizedSource.createdAt == currentSource.createdAt
+        case (.some, nil), (nil, .some):
+            return false
+        }
+    }
+
+    private func goalProfileMutationConfirmation(
+        for plan: GoalProfileMutationPlan
+    ) -> GoalProfileMutationConfirmation? {
+        let protectionImpact = goalProfileMutationProtectionImpact(for: plan)
+        let consent: GoalProfileMutationConsent?
+
+        if plan.isDeletion {
+            consent = protectionImpact.map {
+                .deletionAndProtection($0)
+            } ?? .deletion
+        } else {
+            consent = protectionImpact.map(GoalProfileMutationConsent.protection)
+        }
+
+        return consent.map {
+            GoalProfileMutationConfirmation(
+                plan: plan,
+                consent: $0,
+                activeBreakAtRequest: isCanonicalBreakActive
+            )
+        }
+    }
+
+    private func goalProfileMutationProtectionImpact(
+        for plan: GoalProfileMutationPlan
+    ) -> GoalSwitchProtectionImpact? {
+        let affectsActiveGoal: Bool
+        switch plan.request.operation {
+        case .create:
+            affectsActiveGoal = true
+        case .edit:
+            guard plan.sourceReadiness?.hasFullCheckpoint == true else {
+                return nil
+            }
+            affectsActiveGoal = true
+        case .delete:
+            affectsActiveGoal = plan.sourceGoal?.id == plan.targetGoal.id
+        }
+        guard affectsActiveGoal else { return nil }
+
+        if let readiness = plan.resultingReadiness {
+            return goalTransitionProtectionImpact(for: readiness)
+        }
+
+        guard SharedAppGroup.desiredShieldActive || protection.isShieldingEnabled else {
+            return nil
+        }
+        return .turnsOffImmediately
+    }
+
+    private func goalProfileMutationOutcome(
+        for result: GoalProfileMutationCommitResult
+    ) -> GoalProfileMutationOutcome {
+        switch result {
+        case let .committed(resultingGoalID):
+            return .committed(resultingGoalID: resultingGoalID)
+        case .alreadyCommitted:
+            return .alreadyCommitted
+        case .invalidTitle:
+            return .invalidTitle
+        case .membershipRequired:
+            store.requestMembership(for: .goalProfiles)
+            return .membershipRequired
+        case .profileLimitReached:
+            store.checkpointNotice = store.goalProfileLimitMessage
+            return .profileLimitReached
+        case .targetNotFound:
+            return .targetNotFound
+        case .stalePlan:
+            return .staleRequest
+        case .persistenceFailed:
+            return .persistenceFailed
+        }
+    }
+
+    func goalTransitionProtectionImpact(
+        for readiness: GoalCheckpointReadiness
+    ) -> GoalSwitchProtectionImpact? {
+        guard !readiness.hasFullCheckpoint,
+              SharedAppGroup.desiredShieldActive || protection.isShieldingEnabled else {
+            return nil
+        }
+
+        if isCanonicalBreakActive {
+            return .preventsRelockAfterBreak
+        }
+        return .turnsOffImmediately
+    }
+
+    private func goalSwitchConfirmation(
+        for plan: GoalActivationPlan,
+        impact: GoalSwitchProtectionImpact
+    ) -> GoalSwitchConfirmation {
+        let sourceTitle = store.availableGoalProfiles.first {
+            $0.id == plan.sourceGoalID
+        }?.title
+        return GoalSwitchConfirmation(
+            sourceGoalID: plan.sourceGoalID,
+            sourceTitle: sourceTitle,
+            targetGoalID: plan.targetGoalID,
+            targetTitle: plan.targetTitle,
+            readiness: plan.readiness,
+            impact: impact
+        )
+    }
+
+    private func activationOutcome(
+        for result: GoalActivationResult
+    ) -> GoalSwitchOutcome {
+        switch result {
+        case let .activated(from, to):
+            return .switched(from: from, to: to)
+        case .alreadyActive:
+            return .alreadyActive
+        case .targetNotFound:
+            return .targetNotFound
+        case .membershipRequired:
+            store.requestMembership(for: .goalProfiles)
+            return .membershipRequired
+        case .stalePlan:
+            return .staleRequest
+        case .persistenceFailed:
+            return .persistenceFailed
+        }
     }
 
     @discardableResult
@@ -88,7 +407,7 @@ final class CheckpointWorkflowCoordinator {
 
         if SharedAppGroup.desiredShieldActive,
            !store.hasReadyCheckpointSet,
-           store.unlockSession?.isActive != true {
+           !isCanonicalBreakActive {
             protection.clearShield()
             store.checkpointNotice = Self.unavailableCheckpointMessage
             return
@@ -109,6 +428,13 @@ final class CheckpointWorkflowCoordinator {
             store.unlockSession?.isActive != true) {
             store.clearUnlockSession()
         }
+    }
+
+    private var isCanonicalBreakActive: Bool {
+        guard SharedAppGroup.desiredShieldActive else { return false }
+        let expiration = SharedAppGroup.unlockExpiration
+            ?? store.unlockSession?.expiresAt
+        return expiration.map { $0 > now() } == true
     }
 
     func reconcileEmptyGoalState() {

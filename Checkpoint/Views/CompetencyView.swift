@@ -152,14 +152,6 @@ struct ProgressGoalSwitchInteractionPolicy {
     ) -> Bool {
         !reduceMotion && !assistiveNavigationEnabled
     }
-
-    static func reportsSelectionFeedback(
-        selectedGoalID: Goal.ID,
-        currentGoalID: Goal.ID,
-        didSwitch: Bool
-    ) -> Bool {
-        didSwitch && selectedGoalID != currentGoalID
-    }
 }
 
 private struct FocusWinsDestination: Identifiable {
@@ -179,6 +171,7 @@ struct CompetencyView: View {
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.checkpointGoalSelection) private var selectGoal
     @ScaledMetric(relativeTo: .largeTitle) private var heroMetricSize: CGFloat = 54
     @State private var isSkillMapEditorPresented = false
     @State private var isSkillMapRepairPresented = false
@@ -187,7 +180,6 @@ struct CompetencyView: View {
     @State private var retryingInitialQuestionGoalIDs: Set<Goal.ID> = []
     @State private var focusWinsDestination: FocusWinsDestination?
     @State private var pendingAccessibilityFocus: ProgressAccessibilityFocus?
-    @State private var goalSelectionFeedbackSequence = 0
     @AccessibilityFocusState(for: .voiceOver)
     private var accessibilityFocus: ProgressAccessibilityFocus?
 
@@ -295,7 +287,6 @@ struct CompetencyView: View {
                     }
                     respondToScreenChangeAfterLayout(from: previous, to: current)
                 }
-                .sensoryFeedback(.selection, trigger: goalSelectionFeedbackSequence)
             }
         }
         .onChange(of: isVisible) { _, currentIsVisible in
@@ -415,19 +406,22 @@ struct CompetencyView: View {
     private var progressHeader: some View {
         if let goal = store.goal {
             VStack(alignment: .leading, spacing: 10) {
-                if usesStackedTypeLayout {
+                ViewThatFits(in: .horizontal) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(alignment: .center, spacing: 12) {
+                            goalEyebrow
+                                .fixedSize(horizontal: true, vertical: false)
+                            Spacer(minLength: 8)
+                            goalSwitcherIfNeeded(currentGoal: goal)
+                        }
+
+                        goalTitle(goal)
+                    }
+
                     VStack(alignment: .leading, spacing: 12) {
                         goalIdentity(goal)
                         goalSwitcherIfNeeded(currentGoal: goal)
                     }
-                } else {
-                    HStack(alignment: .center, spacing: 12) {
-                        goalEyebrow
-                        Spacer(minLength: 8)
-                        goalSwitcherIfNeeded(currentGoal: goal)
-                    }
-
-                    goalTitle(goal)
                 }
 
                 Text("A live view of what is taking hold and where the next checkpoint can help most.")
@@ -475,59 +469,31 @@ struct CompetencyView: View {
 
     @ViewBuilder
     private func goalSwitcherIfNeeded(currentGoal: Goal) -> some View {
-        if store.availableGoalProfiles.count > 1 {
+        let presentation = GoalSwitchMenuPresentation(store: store)
+
+        if presentation.options.count > 1 {
             Menu {
-                ForEach(store.availableGoalProfiles) { profile in
+                ForEach(presentation.options) { option in
                     Button {
-                        guard profile.id != currentGoal.id else { return }
-                        let didSwitch = store.switchActiveGoal(to: profile.id)
-                        if ProgressGoalSwitchInteractionPolicy.reportsSelectionFeedback(
-                            selectedGoalID: profile.id,
-                            currentGoalID: currentGoal.id,
-                            didSwitch: didSwitch
-                        ) {
-                            goalSelectionFeedbackSequence += 1
-                        }
+                        selectGoal(option.id)
                     } label: {
                         Label(
-                            goalMenuTitle(profile),
-                            systemImage: goalMenuSystemImage(profile, currentGoal: currentGoal)
+                            option.menuTitle,
+                            systemImage: option.systemImage
                         )
                     }
+                    .disabled(option.isCurrent)
+                    .accessibilityLabel(option.title)
+                    .accessibilityValue(option.accessibilityValue)
                 }
             } label: {
-                HStack(spacing: 6) {
-                    Text("Current goal")
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 9, weight: .bold))
-                }
-                .font(.caption.weight(.bold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 11)
-                .frame(minHeight: 44)
-                .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+                GoalSwitcherCapsuleLabel()
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Current goal: \(currentGoal.title)")
+            .accessibilityLabel("Switch goal")
+            .accessibilityValue(currentGoal.title)
             .accessibilityHint("Changes the active goal throughout Checkpoint.")
         }
-    }
-
-    private func goalMenuTitle(_ profile: Goal) -> String {
-        let duplicateTitleCount = store.availableGoalProfiles.filter {
-            $0.title.compare(profile.title, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
-        }.count
-        guard duplicateTitleCount > 1 else { return profile.title }
-        let dueDate = profile.deadline.formatted(.dateTime.month(.abbreviated).day())
-        return "\(profile.title) · due \(dueDate)"
-    }
-
-    private func goalMenuSystemImage(_ profile: Goal, currentGoal: Goal) -> String {
-        if profile.id == currentGoal.id {
-            return "checkmark.circle.fill"
-        }
-        return store.isMember ? "circle" : "lock.fill"
     }
 
     private func focusWinsEntry(for goal: Goal) -> some View {
@@ -646,16 +612,16 @@ struct CompetencyView: View {
 
     private var progressHero: some View {
         VStack(alignment: .leading, spacing: 18) {
-            if usesStackedTypeLayout {
-                VStack(alignment: .leading, spacing: 12) {
-                    coverageMetric
-                    coverageLabel
-                }
-            } else {
+            ViewThatFits(in: .horizontal) {
                 HStack(alignment: .firstTextBaseline, spacing: 9) {
                     coverageMetric
                     coverageLabel
                     Spacer(minLength: 0)
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    coverageMetric
+                    coverageLabel
                 }
             }
 
@@ -762,13 +728,7 @@ struct CompetencyView: View {
 
     @ViewBuilder
     private var heroSupportingMetrics: some View {
-        if usesStackedTypeLayout {
-            VStack(alignment: .leading, spacing: 14) {
-                strongHeroMetric
-                calibratingHeroMetric
-                lastPracticedHeroMetric
-            }
-        } else {
+        ViewThatFits(in: .horizontal) {
             HStack(alignment: .top, spacing: 12) {
                 if dashboardSummary.strongSkillCount > 0 {
                     strongHeroMetric
@@ -778,6 +738,12 @@ struct CompetencyView: View {
                     calibratingHeroMetric
                     Spacer(minLength: 4)
                 }
+                lastPracticedHeroMetric
+            }
+
+            VStack(alignment: .leading, spacing: 14) {
+                strongHeroMetric
+                calibratingHeroMetric
                 lastPracticedHeroMetric
             }
         }

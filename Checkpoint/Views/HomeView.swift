@@ -5,8 +5,11 @@ struct HomeView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
     let workflow: CheckpointWorkflowCoordinator
+    private let refreshesQuestionsOnActivation: Bool
+    private let reduceMotionOverride: Bool?
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
+    @Environment(\.checkpointGoalSelection) private var selectGoal
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.scenePhase) private var scenePhase
     @State private var isRestrictedAppsPresented = false
@@ -21,6 +24,20 @@ struct HomeView: View {
     private static let questionsReadyConfirmationText = "Your questions are ready."
     private static let questionsReadyConfirmationDurationNanoseconds: UInt64 = 4_000_000_000
 
+    init(
+        store: CheckpointStore,
+        screenTime: ScreenTimeController,
+        workflow: CheckpointWorkflowCoordinator,
+        refreshesQuestionsOnActivation: Bool = true,
+        reduceMotionOverride: Bool? = nil
+    ) {
+        self.store = store
+        self.screenTime = screenTime
+        self.workflow = workflow
+        self.refreshesQuestionsOnActivation = refreshesQuestionsOnActivation
+        self.reduceMotionOverride = reduceMotionOverride
+    }
+
     private struct QuestionPreparationSnapshot: Equatable {
         let goalID: Goal.ID?
         let isPreparing: Bool
@@ -34,33 +51,9 @@ struct HomeView: View {
                     checkpointNoticePanel
 
                     if let goal = store.goal {
-                        if isTemporarilyUnblocked {
-                            activeBreakCard
-                                .transition(homeActiveBreakTransition)
-                            goalHero(goal)
-                            homeNextFocusPanel
-                            homeStudyBeaconSection
-                        } else {
-                            goalHero(goal)
-
-                            if homeStudyBeaconPresentation.showsNextFocus {
-                                homeNextFocusPanel
-                                    .transition(homeNextFocusTransition)
-                            }
-
-                            if isHealthyProtectionState {
-                                homeStudyBeaconSection
-
-                                if homeStudyBeaconPresentation == .weeklySignal {
-                                    compactProtectionRow
-                                }
-                            } else {
-                                screenTimePanel
-                                homeStudyBeaconSection
-                            }
-                        }
-
-                        levelRecommendationPanel
+                        goalScopedContent(goal)
+                            .id(goal.id)
+                            .transition(goalIdentityMotionPolicy.transition)
                     } else {
                         emptyState
                     }
@@ -68,16 +61,20 @@ struct HomeView: View {
                 .animation(
                     CheckpointMotion.animation(
                         CheckpointMotion.reveal,
-                        reduceMotion: accessibilityReduceMotion
+                        reduceMotion: reduceMotion
                     ),
                     value: homeStudyBeaconPresentation
                 )
                 .animation(
                     CheckpointMotion.animation(
                         CheckpointMotion.reveal,
-                        reduceMotion: accessibilityReduceMotion
+                        reduceMotion: reduceMotion
                     ),
                     value: isTemporarilyUnblocked
+                )
+                .animation(
+                    goalIdentityMotionPolicy.animation,
+                    value: store.goal?.id
                 )
                 .padding(.horizontal, 24)
                 .padding(.top, 20)
@@ -121,122 +118,69 @@ struct HomeView: View {
         }
     }
 
-    @ViewBuilder
-    private func goalHero(_ goal: Goal) -> some View {
-        if store.isPreparingActiveGoalQuestions ||
-            store.isQuestionGenerationBlockingPractice ||
-            isQuestionsReadyConfirmationVisible {
-            expandedGoalHero(goal)
-        } else {
-            compactGoalHeader(goal)
-        }
-    }
+    private func goalScopedContent(_ goal: Goal) -> some View {
+        VStack(alignment: .leading, spacing: 24) {
+            if isTemporarilyUnblocked {
+                activeBreakCard
+                    .transition(homeActiveBreakTransition)
+                goalHero(goal)
+                homeNextFocusPanel
+                homeStudyBeaconSection
+            } else {
+                goalHero(goal)
 
-    @ViewBuilder
-    private func compactGoalHeader(_ goal: Goal) -> some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 8) {
-                compactGoalIdentity(goal)
-                dueDateLabel(goal.deadline)
-                    .padding(.leading, 47)
-            }
-            .padding(.horizontal, 4)
-            .accessibilityElement(children: .combine)
-        } else {
-            HStack(alignment: .center, spacing: 11) {
-                compactGoalIdentity(goal)
-
-                Spacer(minLength: 10)
-
-                dueDateLabel(goal.deadline)
-            }
-            .padding(.horizontal, 4)
-            .accessibilityElement(children: .combine)
-        }
-    }
-
-    private func compactGoalIdentity(_ goal: Goal) -> some View {
-        HStack(alignment: .center, spacing: 11) {
-            Image(systemName: "scope")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 36, height: 36)
-                .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("CURRENT FOCUS")
-                    .font(.system(size: 10, weight: .bold))
-                    .tracking(0.8)
-                    .foregroundStyle(CheckpointTheme.muted)
-
-                compactGoalTitle(goal)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func compactGoalTitle(_ goal: Goal) -> some View {
-        if store.availableGoalProfiles.count > 1 {
-            Menu {
-                goalSwitcherMenuContent
-            } label: {
-                HStack(spacing: 5) {
-                    Text(goal.title)
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 9, weight: .bold))
+                if homeStudyBeaconPresentation.showsNextFocus {
+                    homeNextFocusPanel
+                        .transition(homeNextFocusTransition)
                 }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.text)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                .fixedSize(horizontal: false, vertical: true)
+
+                if isHealthyProtectionState {
+                    homeStudyBeaconSection
+
+                    if homeStudyBeaconPresentation == .weeklySignal {
+                        compactProtectionRow
+                    }
+                } else {
+                    screenTimePanel
+                    homeStudyBeaconSection
+                }
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Current goal: \(goal.title)")
-        } else {
-            Text(goal.title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.text)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                .fixedSize(horizontal: false, vertical: true)
+
+            levelRecommendationPanel
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func expandedGoalHero(_ goal: Goal) -> some View {
+    private func goalHero(_ goal: Goal) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             ViewThatFits(in: .horizontal) {
-                HStack {
-                    currentFocusLabel(goal)
+                HStack(alignment: .center, spacing: 12) {
+                    currentFocusIdentity
                     Spacer(minLength: 12)
-                    dueDateLabel(goal.deadline)
+                    goalSwitcherMenu(currentGoal: goal)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    currentFocusLabel(goal)
-                    dueDateLabel(goal.deadline)
+                    currentFocusIdentity
+                    goalSwitcherMenu(currentGoal: goal)
                 }
             }
 
             Text(goal.title)
                 .font(.title2.bold())
                 .foregroundStyle(CheckpointTheme.text)
-                .lineLimit(2)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                 .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+
+            dueDateLabel(goal.deadline)
 
             Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) to unlock")
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(CheckpointTheme.muted)
 
             if store.isPreparingActiveGoalQuestions {
-                HStack(spacing: 10) {
-                    ProgressView()
-                        .tint(CheckpointTheme.teal)
-
-                    Text(store.questionGenerationStatusText)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                questionPreparationStatus(for: goal)
                 .padding(12)
                 .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 12))
             } else if store.isQuestionGenerationBlockingPractice {
@@ -293,17 +237,88 @@ struct HomeView: View {
         .padding(.horizontal, 4)
     }
 
-    @ViewBuilder
-    private func currentFocusLabel(_ goal: Goal) -> some View {
-        if store.availableGoalProfiles.count > 1 {
-            currentGoalMenu(goal)
-        } else {
+    private var currentFocusIdentity: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "scope")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 36, height: 36)
+                .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
+                .accessibilityHidden(true)
+
             Text("CURRENT FOCUS")
                 .font(.caption2.weight(.bold))
                 .tracking(0.9)
                 .foregroundStyle(CheckpointTheme.muted)
                 .accessibilityAddTraits(.isHeader)
         }
+    }
+
+    @ViewBuilder
+    private func goalSwitcherMenu(currentGoal: Goal) -> some View {
+        if store.availableGoalProfiles.count > 1 {
+            let presentation = GoalSwitchMenuPresentation(store: store)
+            Menu {
+                ForEach(presentation.options) { option in
+                    Button {
+                        selectGoal(option.id)
+                    } label: {
+                        Label(option.menuTitle, systemImage: option.systemImage)
+                    }
+                    .disabled(option.isCurrent || option.state == .unavailable)
+                    .accessibilityValue(option.accessibilityValue)
+                }
+
+                Divider()
+
+                if !store.isMember || !store.hasReachedGoalProfileLimit {
+                    Button {
+                        store.presentGoalProfileCreator()
+                    } label: {
+                        Label("New goal", systemImage: "plus")
+                    }
+                }
+            } label: {
+                GoalSwitcherCapsuleLabel()
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Switch goal")
+            .accessibilityValue(currentGoal.title)
+            .accessibilityHint("Changes the active goal throughout Checkpoint")
+        }
+    }
+
+    private func questionPreparationStatus(for goal: Goal) -> some View {
+        let readiness = store.checkpointReadiness(for: goal)
+        let selectableCount = readiness.selectableCount
+        let requiredCount = readiness.requiredCount
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                ProgressView()
+                    .tint(CheckpointTheme.teal)
+
+                Text(store.questionGenerationStatusText)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            ProgressView(
+                value: Double(selectableCount),
+                total: Double(max(1, requiredCount))
+            )
+            .tint(CheckpointTheme.teal)
+
+            Text("\(selectableCount) of \(requiredCount) checkpoint questions ready")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "\(store.questionGenerationStatusText) \(selectableCount) of \(requiredCount) checkpoint questions ready."
+        )
     }
 
     private func dueDateLabel(_ deadline: Date) -> some View {
@@ -341,7 +356,7 @@ struct HomeView: View {
     }
 
     private var questionsReadyConfirmationTransition: AnyTransition {
-        accessibilityReduceMotion
+        reduceMotion
             ? .identity
             : .opacity.combined(with: .scale(scale: 0.98))
     }
@@ -363,7 +378,7 @@ struct HomeView: View {
     }
 
     private func setQuestionsReadyConfirmationVisible(_ isVisible: Bool) {
-        if accessibilityReduceMotion {
+        if reduceMotion {
             isQuestionsReadyConfirmationVisible = isVisible
         } else {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -503,7 +518,7 @@ struct HomeView: View {
     }
 
     private var homeStudyBeaconTransition: AnyTransition {
-        accessibilityReduceMotion
+        reduceMotion
             ? .identity
             : .opacity.combined(with: .scale(scale: 0.985))
     }
@@ -521,14 +536,14 @@ struct HomeView: View {
         .animation(
             CheckpointMotion.animation(
                 CheckpointMotion.reveal,
-                reduceMotion: accessibilityReduceMotion
+                reduceMotion: reduceMotion
             ),
             value: store.studyFocusState
         )
     }
 
     private var homeNextFocusTransition: AnyTransition {
-        accessibilityReduceMotion
+        reduceMotion
             ? .identity
             : .opacity.combined(with: .scale(scale: 0.985))
     }
@@ -548,7 +563,7 @@ struct HomeView: View {
     }
 
     private var homeActiveBreakTransition: AnyTransition {
-        HomeActiveBreakMotionPolicy(reduceMotion: accessibilityReduceMotion).transition
+        HomeActiveBreakMotionPolicy(reduceMotion: reduceMotion).transition
     }
 
     private var activeBreakExpiration: Date? {
@@ -753,53 +768,9 @@ struct HomeView: View {
         }
     }
 
-    @ViewBuilder
-    private func currentGoalMenu(_ goal: Goal) -> some View {
-        Menu {
-            goalSwitcherMenuContent
-        } label: {
-            HStack(spacing: 6) {
-                Text("Current goal")
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .bold))
-            }
-            .font(.caption.weight(.bold))
-            .foregroundStyle(CheckpointTheme.teal)
-            .lineLimit(1)
-            .minimumScaleFactor(0.85)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Current goal: \(goal.title)")
-    }
-
-    @ViewBuilder
-    private var goalSwitcherMenuContent: some View {
-        ForEach(store.availableGoalProfiles) { profile in
-            Button {
-                store.switchActiveGoal(to: profile.id)
-            } label: {
-                Label(
-                    profile.title,
-                    systemImage: profile.id == store.goal?.id ? "checkmark.circle.fill" : "circle"
-                )
-            }
-        }
-
-        Divider()
-
-        if !store.isMember || !store.hasReachedGoalProfileLimit {
-            Button {
-                store.presentGoalProfileCreator()
-            } label: {
-                Label("New goal", systemImage: "plus")
-            }
-        }
-    }
-
     private func handleQuestionRefreshOnActivation() {
+        guard refreshesQuestionsOnActivation else { return }
+
         let now = Date()
         if let lastActivationRefreshAt,
            now.timeIntervalSince(lastActivationRefreshAt) < Self.activationRefreshDebounceInterval {
@@ -811,6 +782,14 @@ struct HomeView: View {
             _ = await store.refreshQuestionBatchIfNeeded()
             await store.prepareProtectionReviewQuestionBankIfNeeded()
         }
+    }
+
+    private var goalIdentityMotionPolicy: GoalIdentityMotionPolicy {
+        GoalIdentityMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? accessibilityReduceMotion
     }
 
     private func retryInitialQuestionGeneration() {

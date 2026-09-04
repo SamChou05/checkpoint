@@ -1,4 +1,5 @@
 import Foundation
+import XCTest
 @testable import Checkpoint
 
 // MARK: - Fixtures
@@ -140,6 +141,26 @@ func makeAttempt(
     )
     attempt.createdAt = createdAt
     return attempt
+}
+
+@MainActor
+@discardableResult
+func activatePreparedGoal(
+    in store: CheckpointStore,
+    to targetGoalID: Goal.ID,
+    file: StaticString = #filePath,
+    line: UInt = #line
+) -> GoalActivationResult {
+    let preflight = store.prepareGoalActivation(to: targetGoalID)
+    guard case let .eligible(plan) = preflight else {
+        XCTFail(
+            "Expected an eligible goal activation, got \(preflight)",
+            file: file,
+            line: line
+        )
+        return .stalePlan
+    }
+    return store.activateGoal(using: plan)
 }
 
 func makeRequest(

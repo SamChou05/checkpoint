@@ -421,7 +421,10 @@ final class IssueReportDraftTests: XCTestCase {
         )
         let expectedDrafts = store.issueReportDrafts
 
-        XCTAssertTrue(store.switchActiveGoal(to: secondGoal.id))
+        XCTAssertEqual(
+            activatePreparedGoal(in: store, to: secondGoal.id),
+            .activated(from: firstGoal.id, to: secondGoal.id)
+        )
         XCTAssertEqual(store.goal?.id, secondGoal.id)
         XCTAssertEqual(store.issueReportDrafts, expectedDrafts)
         XCTAssertEqual(
@@ -429,7 +432,10 @@ final class IssueReportDraftTests: XCTestCase {
             firstGoal.id
         )
 
-        XCTAssertTrue(store.switchActiveGoal(to: firstGoal.id))
+        XCTAssertEqual(
+            activatePreparedGoal(in: store, to: firstGoal.id),
+            .activated(from: secondGoal.id, to: firstGoal.id)
+        )
         XCTAssertEqual(store.issueReportDrafts, expectedDrafts)
     }
 

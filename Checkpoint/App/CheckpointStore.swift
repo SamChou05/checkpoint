@@ -27,6 +27,50 @@ private struct GoalScopedQuestionID: Hashable {
     let questionID: CheckpointQuestion.ID
 }
 
+private enum GoalProfileQuestionPreparation {
+    case initial(Goal)
+    case topOff(Goal, starterQuestionIDs: Set<CheckpointQuestion.ID>)
+}
+
+private struct GoalProfileMutationRollbackState {
+    let goal: Goal?
+    let goalProfiles: [Goal]
+    let questions: [CheckpointQuestion]
+    let attempts: [CheckpointAttempt]
+    let competencies: [TopicCompetency]
+    let focusWins: [FocusWin]
+    let unlockEvents: [UnlockEvent]
+    let questionReports: [QuestionQualityReport]
+    let issueReports: [UserIssueReport]
+    let questionGenerationTraces: [QuestionGenerationTrace]
+    let questionBatchState: QuestionBatchState
+    let lastAIErrorMessage: String?
+    let lastQuestionGenerationFailure: QuestionGenerationFailureKind?
+    let questionGenerationStartedAt: Date?
+    let lastQuestionGenerationDuration: TimeInterval?
+    let isQuestionBankTopOffInProgress: Bool
+    let questionBankTopOffStartedAt: Date?
+    let lastQuestionBankTopOffDuration: TimeInterval?
+    let checkpointNotice: String?
+    let unlockSession: UnlockSession?
+    let isOnboardingPresented: Bool
+    let isCreatingGoalProfile: Bool
+    let pendingMembershipPresentation: MembershipPresentationContext?
+    let questionRefreshesUsed: Int
+    let questionBankSyncIntents: [QuestionBankSyncIntent]
+    let skillMapEvolutionIntents: [SkillMapEvolutionIntent]
+    let backgroundGenerationGoalIDs: Set<Goal.ID>
+    let questionBankTopOffGoalIDs: Set<Goal.ID>
+    let questionBankPollingGoalIDs: Set<Goal.ID>
+    let questionBankPollingTokens: [Goal.ID: UUID]
+    let questionBankSynchronizationGoalIDs: Set<Goal.ID>
+    let skillMapEvolutionGoalIDs: Set<Goal.ID>
+    let permitsPersistenceWrites: Bool
+    let hasNoPersistedAppData: Bool
+    let requiresPersistenceEraseRecovery: Bool
+    let dataLifecycleID: UUID
+}
+
 enum IssueReportDraftSaveResult: Equatable {
     case saved
     case emptyMessage
@@ -95,8 +139,8 @@ final class CheckpointStore {
     @ObservationIgnored private let snapshotPersistence: AppSnapshotPersistence
     @ObservationIgnored private var permitsPersistenceWrites = false
     @ObservationIgnored private var dataLifecycleID = UUID()
-    @ObservationIgnored private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
-    @ObservationIgnored private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
+    private var backgroundGenerationGoalIDs: Set<Goal.ID> = []
+    private var questionBankTopOffGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankPollingGoalIDs: Set<Goal.ID> = []
     @ObservationIgnored private var questionBankPollingTokens: [Goal.ID: UUID] = [:]
     @ObservationIgnored private var questionBankSynchronizationGoalIDs: Set<Goal.ID> = []
@@ -755,7 +799,8 @@ final class CheckpointStore {
     }
 
     var hasReadyCheckpointSet: Bool {
-        goal != nil && nextQuestions(limit: unlockPolicy.questionsPerSession).count >= unlockPolicy.questionsPerSession
+        guard let goal else { return false }
+        return checkpointReadiness(for: goal).hasFullCheckpoint
     }
 
     func usableQuestionCount(for profile: Goal) -> Int {
@@ -793,11 +838,22 @@ final class CheckpointStore {
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
             )
         )
+        let exactCheckpointDeficit = max(
+            0,
+            unlockPolicy.questionsPerSession - questionSelector(for: profile).nextQuestions(
+                limit: unlockPolicy.questionsPerSession,
+                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse,
+                enforcesDifficultyFloor: true
+            ).count
+        )
         return max(
             inventoryDeficit,
-            skillQuestionCoverageDeficit(
-                for: profile,
-                allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            max(
+                exactCheckpointDeficit,
+                skillQuestionCoverageDeficit(
+                    for: profile,
+                    allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+                )
             )
         )
     }
@@ -858,13 +914,18 @@ final class CheckpointStore {
 
         guard readyCount < unlockPolicy.questionsPerSession else { return nil }
 
-        if backgroundGenerationGoalIDs.contains(profile.id)
-            || questionBankTopOffGoalIDs.contains(profile.id)
-            || hasPendingQuestionBankSync(for: profile) {
+        if isQuestionPreparationInProgress(for: profile) {
             return readyCount > 0 ? "Preparing more practice" : "Preparing practice"
         }
 
         return readyCount > 0 ? "Practice set low" : "No practice ready yet"
+    }
+
+    private func isQuestionPreparationInProgress(for profile: Goal) -> Bool {
+        (goal?.id == profile.id && questionBatchState == .generating)
+            || backgroundGenerationGoalIDs.contains(profile.id)
+            || questionBankTopOffGoalIDs.contains(profile.id)
+            || hasPendingQuestionBankSync(for: profile)
     }
 
     var isPreparingActiveGoalQuestions: Bool {
@@ -1023,6 +1084,577 @@ final class CheckpointStore {
 
     // MARK: - Goal profiles
 
+    func checkpointReadiness(for targetGoal: Goal) -> GoalCheckpointReadiness {
+        let requiredCount = unlockPolicy.questionsPerSession
+        if hasLegacyLocalQuestionBank(for: targetGoal) {
+            return isQuestionPreparationInProgress(for: targetGoal)
+                ? .preparing(selectableCount: 0, requiredCount: requiredCount)
+                : .incomplete(selectableCount: 0, requiredCount: requiredCount)
+        }
+
+        let selectableCount = questionSelector(for: targetGoal).nextQuestions(
+            limit: requiredCount,
+            enforcesDifficultyFloor: true
+        ).count
+
+        if selectableCount >= requiredCount {
+            return .ready(
+                selectableCount: selectableCount,
+                requiredCount: requiredCount
+            )
+        }
+        if isQuestionPreparationInProgress(for: targetGoal) {
+            return .preparing(
+                selectableCount: selectableCount,
+                requiredCount: requiredCount
+            )
+        }
+        return .incomplete(
+            selectableCount: selectableCount,
+            requiredCount: requiredCount
+        )
+    }
+
+    func prepareGoalProfileMutation(
+        _ request: GoalProfileMutationRequest
+    ) -> GoalProfileMutationPreflight {
+        switch request.operation {
+        case let .create(draft):
+            let candidate = resolvedGoal(
+                from: draft,
+                id: request.id,
+                createdAt: request.createdAt,
+                minimumDeadline: request.createdAt
+            )
+            guard !candidate.title.isEmpty else { return .invalidTitle }
+
+            if let existingGoal = availableGoalProfiles.first(where: {
+                $0.id == request.id
+            }) {
+                let replayCandidate = resolvedGoal(
+                    from: draft,
+                    id: request.id,
+                    createdAt: request.createdAt,
+                    minimumDeadline: request.createdAt,
+                    existingGoal: existingGoal
+                )
+                guard let currentGoal = goal,
+                      currentGoal.id == request.id,
+                      currentGoal == existingGoal,
+                      replayCandidate == existingGoal else {
+                    return .staleRequest
+                }
+                return .alreadyCommitted
+            }
+            guard goal == nil || canUse(.goalProfiles) else {
+                return .membershipRequired
+            }
+            guard goal == nil || canCreateAdditionalGoalProfile else {
+                return .profileLimitReached
+            }
+
+            return .eligible(
+                GoalProfileMutationPlan(
+                    request: request,
+                    sourceGoal: goal,
+                    sourceReadiness: nil,
+                    targetGoal: candidate,
+                    resultingActiveGoal: candidate,
+                    resultingReadiness: checkpointReadiness(for: candidate)
+                )
+            )
+
+        case let .edit(expectedGoalID, draft):
+            guard let currentGoal = goal,
+                  currentGoal.id == expectedGoalID else {
+                return .staleRequest
+            }
+
+            let candidate = resolvedGoal(
+                from: draft,
+                id: currentGoal.id,
+                createdAt: currentGoal.createdAt,
+                minimumDeadline: request.createdAt,
+                existingGoal: currentGoal
+            )
+            guard !candidate.title.isEmpty else { return .invalidTitle }
+            guard candidate != currentGoal else { return .alreadyCommitted }
+
+            return .eligible(
+                GoalProfileMutationPlan(
+                    request: request,
+                    sourceGoal: currentGoal,
+                    sourceReadiness: checkpointReadiness(for: currentGoal),
+                    targetGoal: candidate,
+                    resultingActiveGoal: candidate,
+                    resultingReadiness: checkpointReadiness(for: candidate)
+                )
+            )
+
+        case let .delete(goalID):
+            guard let targetGoal = availableGoalProfiles.first(where: {
+                $0.id == goalID
+            }) else {
+                return .targetNotFound
+            }
+
+            let sourceGoal = goal
+            let resultingGoal: Goal?
+            if sourceGoal?.id == goalID {
+                resultingGoal = availableGoalProfiles
+                    .filter { $0.id != goalID }
+                    .sorted {
+                        if $0.createdAt == $1.createdAt {
+                            return $0.id.uuidString < $1.id.uuidString
+                        }
+                        return $0.createdAt > $1.createdAt
+                    }
+                    .first
+            } else {
+                resultingGoal = sourceGoal
+            }
+            let resultingReadiness = sourceGoal?.id == goalID
+                ? resultingGoal.map(checkpointReadiness(for:))
+                : nil
+
+            return .eligible(
+                GoalProfileMutationPlan(
+                    request: request,
+                    sourceGoal: sourceGoal,
+                    sourceReadiness: nil,
+                    targetGoal: targetGoal,
+                    resultingActiveGoal: resultingGoal,
+                    resultingReadiness: resultingReadiness
+                )
+            )
+        }
+    }
+
+    func commitGoalProfileMutation(
+        using plan: GoalProfileMutationPlan
+    ) -> GoalProfileMutationCommitResult {
+        switch prepareGoalProfileMutation(plan.request) {
+        case let .eligible(validatedPlan):
+            guard validatedPlan == plan else { return .stalePlan }
+        case .alreadyCommitted:
+            return .alreadyCommitted
+        case .invalidTitle:
+            return .invalidTitle
+        case .membershipRequired:
+            return .membershipRequired
+        case .profileLimitReached:
+            return .profileLimitReached
+        case .targetNotFound:
+            return .targetNotFound
+        case .staleRequest:
+            return .stalePlan
+        }
+
+        guard activatePersistenceForAppDataIfNeeded() else {
+            return .persistenceFailed
+        }
+        let rollbackState = goalProfileMutationRollbackState()
+        var questionPreparation: GoalProfileQuestionPreparation?
+        var shouldClearSharedUnlockExpiration = false
+
+        switch plan.request.operation {
+        case .create:
+            commitGoalCreation(plan.targetGoal)
+            questionPreparation = .initial(plan.targetGoal)
+
+        case .edit:
+            questionPreparation = commitGoalEdit(
+                from: plan.sourceGoal,
+                to: plan.targetGoal
+            )
+
+        case .delete:
+            let deletionResult = commitGoalDeletion(plan)
+            questionPreparation = deletionResult.questionPreparation
+            shouldClearSharedUnlockExpiration = deletionResult.clearsUnlockExpiration
+        }
+
+        guard save() else {
+            restoreGoalProfileMutationState(rollbackState)
+            return .persistenceFailed
+        }
+
+        if shouldClearSharedUnlockExpiration {
+            SharedAppGroup.publishUnlockExpiration(nil)
+        }
+        publishShieldContext()
+
+        switch questionPreparation {
+        case let .initial(goalToPrepare):
+            prepareInitialQuestionsInBackground(for: goalToPrepare)
+        case let .topOff(goalToPrepare, starterQuestionIDs):
+            topOffQuestionBankInBackground(
+                for: goalToPrepare,
+                starterQuestionIDs: starterQuestionIDs
+            )
+        case nil:
+            break
+        }
+
+        return .committed(resultingGoalID: goal?.id)
+    }
+
+    private func resolvedGoal(
+        from draft: GoalProfileDraft,
+        id: Goal.ID,
+        createdAt: Date,
+        minimumDeadline: Date,
+        existingGoal: Goal? = nil
+    ) -> Goal {
+        let normalizedTitle = draft.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedLevel = draft.currentLevel.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedFocus = draft.focusAreas.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedDocuments = GoalSourceDocument.normalizedDocuments(draft.sourceDocuments)
+        var preservedSkillMap = existingGoal?.derivedSkillMap
+
+        if let existingGoal,
+           normalizedTitle != existingGoal.title
+            || draft.category != existingGoal.category
+            || normalizedLevel != existingGoal.currentLevel
+            || normalizedFocus != existingGoal.focusAreas
+            || normalizedDocuments != existingGoal.sourceDocuments {
+            preservedSkillMap = nil
+        }
+
+        return Goal(
+            id: id,
+            title: normalizedTitle,
+            deadline: max(draft.deadline, minimumDeadline),
+            category: draft.category,
+            currentLevel: normalizedLevel,
+            focusAreas: normalizedFocus,
+            sourceDocuments: normalizedDocuments,
+            derivedSkillMap: preservedSkillMap,
+            preferredQuestionStyle: draft.preferredQuestionStyle,
+            minimumQuestionDifficulty: draft.minimumQuestionDifficulty,
+            createdAt: createdAt
+        )
+    }
+
+    private func commitGoalCreation(_ newGoal: Goal) {
+        let isFirstGoal = goal == nil
+        questionRefreshesUsed = 0
+        questionBatchState = .generating
+        goal = newGoal
+        isQuestionBankTopOffInProgress = false
+        questionBankTopOffStartedAt = nil
+        questions.removeAll { $0.goalID == newGoal.id }
+        competencies.removeAll { $0.goalID == newGoal.id }
+        competencies.append(
+            contentsOf: SkillMapReconciler.initialCompetencies(
+                for: newGoal,
+                questions: []
+            )
+        )
+        lastAIErrorMessage = nil
+        lastQuestionGenerationFailure = nil
+        questionGenerationStartedAt = nil
+        lastQuestionGenerationDuration = nil
+        checkpointNotice = nil
+        if isFirstGoal {
+            unlockSession = nil
+        }
+        isOnboardingPresented = false
+        isCreatingGoalProfile = false
+        pendingMembershipPresentation = nil
+    }
+
+    private func commitGoalEdit(
+        from currentGoal: Goal?,
+        to updatedGoal: Goal
+    ) -> GoalProfileQuestionPreparation? {
+        guard let currentGoal else { return nil }
+        let starterPracticeWasConsumed = hasConsumedStarterPractice
+        let skillContextChanged =
+            updatedGoal.title != currentGoal.title
+                || updatedGoal.category != currentGoal.category
+                || updatedGoal.currentLevel != currentGoal.currentLevel
+                || updatedGoal.focusAreas != currentGoal.focusAreas
+                || updatedGoal.sourceDocuments != currentGoal.sourceDocuments
+        let generationContextChanged =
+            skillContextChanged
+                || updatedGoal.preferredQuestionStyle != currentGoal.preferredQuestionStyle
+                || updatedGoal.minimumQuestionDifficulty != currentGoal.minimumQuestionDifficulty
+        let canRegenerateForEdit = isMember || !starterPracticeWasConsumed
+
+        goal = updatedGoal
+        isOnboardingPresented = false
+        isCreatingGoalProfile = false
+        pendingMembershipPresentation = nil
+
+        guard generationContextChanged else { return nil }
+
+        questionBankSyncIntents.removeAll { $0.goalID == updatedGoal.id }
+        skillMapEvolutionIntents.removeAll { $0.goalID == updatedGoal.id }
+        questionBankPollingGoalIDs.remove(updatedGoal.id)
+        questionBankPollingTokens.removeValue(forKey: updatedGoal.id)
+
+        if checkpointReadiness(for: updatedGoal).hasFullCheckpoint {
+            checkpointNotice = "Goal updated. Your current questions stay available; future questions will use these changes."
+            questionBatchState = .ready
+            return nil
+        }
+
+        guard canRegenerateForEdit else {
+            questionBatchState = .idle
+            checkpointNotice = "Goal updated. Pro can prepare more questions after your Free set is used."
+            pendingMembershipPresentation = .feature(.freshQuestionGeneration)
+            return nil
+        }
+
+        questionBatchState = .generating
+        lastAIErrorMessage = nil
+        lastQuestionGenerationFailure = nil
+        checkpointNotice = nil
+        guard !backgroundGenerationGoalIDs.contains(updatedGoal.id),
+              !questionBankTopOffGoalIDs.contains(updatedGoal.id) else {
+            return nil
+        }
+        let selector = questionSelector(for: updatedGoal)
+        let retainedQuestionIDs = Set(
+            questions.lazy
+                .filter { $0.goalID == updatedGoal.id && selector.isSelectableQuestion($0) }
+                .map(\.id)
+        )
+        if retainedQuestionIDs.isEmpty {
+            return .initial(updatedGoal)
+        }
+        return .topOff(
+            updatedGoal,
+            starterQuestionIDs: retainedQuestionIDs
+        )
+    }
+
+    private func commitGoalDeletion(
+        _ plan: GoalProfileMutationPlan
+    ) -> (
+        questionPreparation: GoalProfileQuestionPreparation?,
+        clearsUnlockExpiration: Bool
+    ) {
+        let deletedGoal = plan.targetGoal
+        let wasActiveGoal = plan.sourceGoal?.id == deletedGoal.id
+
+        backgroundGenerationGoalIDs.remove(deletedGoal.id)
+        questionBankTopOffGoalIDs.remove(deletedGoal.id)
+        removeGoalData(
+            for: deletedGoal.id,
+            includeLegacyCompetencies: wasActiveGoal
+        )
+        goalProfiles.removeAll { $0.id == deletedGoal.id }
+
+        guard wasActiveGoal else {
+            checkpointNotice = "\(deletedGoal.title) was deleted."
+            pendingMembershipPresentation = nil
+            isCreatingGoalProfile = false
+            return (nil, false)
+        }
+
+        goal = plan.resultingActiveGoal
+        questionGenerationStartedAt = nil
+        lastQuestionGenerationDuration = nil
+        lastAIErrorMessage = nil
+        lastQuestionGenerationFailure = nil
+
+        var questionPreparation: GoalProfileQuestionPreparation?
+        var replacementNeedsMembership = false
+        var replacementPreparationIsBlocked = false
+        var clearsUnlockExpiration = false
+
+        if let replacementGoal = plan.resultingActiveGoal {
+            if hasLegacyLocalQuestionBank(for: replacementGoal) {
+                clearQuestionBank(for: replacementGoal.id)
+            }
+
+            let readiness = checkpointReadiness(for: replacementGoal)
+            questionBatchState = readiness.hasFullCheckpoint ? .ready : .generating
+            isQuestionBankTopOffInProgress = questionBankTopOffGoalIDs.contains(
+                replacementGoal.id
+            )
+            questionBankTopOffStartedAt = isQuestionBankTopOffInProgress
+                ? questionBankTopOffStartedAt ?? Date()
+                : nil
+
+            let isAlreadyPreparing = backgroundGenerationGoalIDs.contains(
+                replacementGoal.id
+            ) || questionBankTopOffGoalIDs.contains(replacementGoal.id)
+            if !readiness.hasFullCheckpoint && !isAlreadyPreparing {
+                if hasBlockedQuestionBankSyncIntent(for: replacementGoal) {
+                    questionBatchState = .failed
+                    replacementPreparationIsBlocked = true
+                } else if isMember || !hasConsumedStarterPractice {
+                    let selector = questionSelector(for: replacementGoal)
+                    let retainedQuestionIDs = Set(
+                        questions.lazy
+                            .filter {
+                                $0.goalID == replacementGoal.id
+                                    && selector.isSelectableQuestion($0)
+                            }
+                            .map(\.id)
+                    )
+                    questionPreparation = retainedQuestionIDs.isEmpty
+                        ? .initial(replacementGoal)
+                        : .topOff(
+                            replacementGoal,
+                            starterQuestionIDs: retainedQuestionIDs
+                        )
+                } else {
+                    questionBatchState = .idle
+                    replacementNeedsMembership = true
+                }
+            }
+        } else {
+            questionBatchState = .idle
+            isQuestionBankTopOffInProgress = false
+            questionBankTopOffStartedAt = nil
+            unlockSession = nil
+            isOnboardingPresented = true
+            clearsUnlockExpiration = true
+        }
+
+        if replacementNeedsMembership {
+            checkpointNotice = "\(deletedGoal.title) was deleted. \(starterQuestionLimitMessage)"
+            pendingMembershipPresentation = .feature(.freshQuestionGeneration)
+        } else if replacementPreparationIsBlocked {
+            checkpointNotice = "\(deletedGoal.title) was deleted. Practice for \(plan.resultingActiveGoal?.title ?? "the replacement goal") still needs attention before protection can restart."
+            pendingMembershipPresentation = nil
+        } else {
+            checkpointNotice = "\(deletedGoal.title) was deleted."
+            pendingMembershipPresentation = nil
+        }
+        isCreatingGoalProfile = false
+        return (questionPreparation, clearsUnlockExpiration)
+    }
+
+    private func goalProfileMutationRollbackState() -> GoalProfileMutationRollbackState {
+        GoalProfileMutationRollbackState(
+            goal: goal,
+            goalProfiles: goalProfiles,
+            questions: questions,
+            attempts: attempts,
+            competencies: competencies,
+            focusWins: focusWins,
+            unlockEvents: unlockEvents,
+            questionReports: questionReports,
+            issueReports: issueReports,
+            questionGenerationTraces: questionGenerationTraces,
+            questionBatchState: questionBatchState,
+            lastAIErrorMessage: lastAIErrorMessage,
+            lastQuestionGenerationFailure: lastQuestionGenerationFailure,
+            questionGenerationStartedAt: questionGenerationStartedAt,
+            lastQuestionGenerationDuration: lastQuestionGenerationDuration,
+            isQuestionBankTopOffInProgress: isQuestionBankTopOffInProgress,
+            questionBankTopOffStartedAt: questionBankTopOffStartedAt,
+            lastQuestionBankTopOffDuration: lastQuestionBankTopOffDuration,
+            checkpointNotice: checkpointNotice,
+            unlockSession: unlockSession,
+            isOnboardingPresented: isOnboardingPresented,
+            isCreatingGoalProfile: isCreatingGoalProfile,
+            pendingMembershipPresentation: pendingMembershipPresentation,
+            questionRefreshesUsed: questionRefreshesUsed,
+            questionBankSyncIntents: questionBankSyncIntents,
+            skillMapEvolutionIntents: skillMapEvolutionIntents,
+            backgroundGenerationGoalIDs: backgroundGenerationGoalIDs,
+            questionBankTopOffGoalIDs: questionBankTopOffGoalIDs,
+            questionBankPollingGoalIDs: questionBankPollingGoalIDs,
+            questionBankPollingTokens: questionBankPollingTokens,
+            questionBankSynchronizationGoalIDs: questionBankSynchronizationGoalIDs,
+            skillMapEvolutionGoalIDs: skillMapEvolutionGoalIDs,
+            permitsPersistenceWrites: permitsPersistenceWrites,
+            hasNoPersistedAppData: hasNoPersistedAppData,
+            requiresPersistenceEraseRecovery: requiresPersistenceEraseRecovery,
+            dataLifecycleID: dataLifecycleID
+        )
+    }
+
+    private func restoreGoalProfileMutationState(
+        _ state: GoalProfileMutationRollbackState
+    ) {
+        goalProfiles = state.goalProfiles
+        goal = state.goal
+        questions = state.questions
+        attempts = state.attempts
+        competencies = state.competencies
+        focusWins = state.focusWins
+        unlockEvents = state.unlockEvents
+        questionReports = state.questionReports
+        issueReports = state.issueReports
+        questionGenerationTraces = state.questionGenerationTraces
+        questionBatchState = state.questionBatchState
+        lastAIErrorMessage = state.lastAIErrorMessage
+        lastQuestionGenerationFailure = state.lastQuestionGenerationFailure
+        questionGenerationStartedAt = state.questionGenerationStartedAt
+        lastQuestionGenerationDuration = state.lastQuestionGenerationDuration
+        isQuestionBankTopOffInProgress = state.isQuestionBankTopOffInProgress
+        questionBankTopOffStartedAt = state.questionBankTopOffStartedAt
+        lastQuestionBankTopOffDuration = state.lastQuestionBankTopOffDuration
+        checkpointNotice = state.checkpointNotice
+        unlockSession = state.unlockSession
+        isOnboardingPresented = state.isOnboardingPresented
+        isCreatingGoalProfile = state.isCreatingGoalProfile
+        pendingMembershipPresentation = state.pendingMembershipPresentation
+        questionRefreshesUsed = state.questionRefreshesUsed
+        questionBankSyncIntents = state.questionBankSyncIntents
+        skillMapEvolutionIntents = state.skillMapEvolutionIntents
+        backgroundGenerationGoalIDs = state.backgroundGenerationGoalIDs
+        questionBankTopOffGoalIDs = state.questionBankTopOffGoalIDs
+        questionBankPollingGoalIDs = state.questionBankPollingGoalIDs
+        questionBankPollingTokens = state.questionBankPollingTokens
+        questionBankSynchronizationGoalIDs = state.questionBankSynchronizationGoalIDs
+        skillMapEvolutionGoalIDs = state.skillMapEvolutionGoalIDs
+        permitsPersistenceWrites = state.permitsPersistenceWrites
+        hasNoPersistedAppData = state.hasNoPersistedAppData
+        requiresPersistenceEraseRecovery = state.requiresPersistenceEraseRecovery
+        dataLifecycleID = state.dataLifecycleID
+    }
+
+    func prepareGoalActivation(to targetGoalID: Goal.ID) -> GoalActivationPreflight {
+        guard let targetGoal = availableGoalProfiles.first(where: {
+            $0.id == targetGoalID
+        }) else {
+            return .targetNotFound
+        }
+        guard targetGoal.id != goal?.id else {
+            return .alreadyActive
+        }
+        guard canUse(.goalProfiles) else {
+            return .membershipRequired
+        }
+
+        return .eligible(
+            GoalActivationPlan(
+                sourceGoalID: goal?.id,
+                targetGoalID: targetGoal.id,
+                targetTitle: targetGoal.title,
+                readiness: checkpointReadiness(for: targetGoal)
+            )
+        )
+    }
+
+    func activateGoal(using plan: GoalActivationPlan) -> GoalActivationResult {
+        guard plan.sourceGoalID == goal?.id else {
+            return .stalePlan
+        }
+
+        switch prepareGoalActivation(to: plan.targetGoalID) {
+        case let .eligible(validatedPlan):
+            guard validatedPlan.sourceGoalID == plan.sourceGoalID else {
+                return .stalePlan
+            }
+            return commitGoalActivation(using: validatedPlan)
+        case .alreadyActive:
+            return .alreadyActive
+        case .targetNotFound:
+            return .targetNotFound
+        case .membershipRequired:
+            return .membershipRequired
+        }
+    }
+
     func presentGoalProfileCreator() {
         guard goal == nil || canUse(.goalProfiles) else {
             requestMembership(for: .goalProfiles)
@@ -1044,14 +1676,16 @@ final class CheckpointStore {
         isOnboardingPresented = true
     }
 
-    @discardableResult
-    func switchActiveGoal(to goalID: Goal.ID) -> Bool {
-        guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return false }
-        guard selectedGoal.id != goal?.id else { return false }
-        guard canUse(.goalProfiles) else {
-            requestMembership(for: .goalProfiles)
-            return false
+    private func commitGoalActivation(
+        using plan: GoalActivationPlan
+    ) -> GoalActivationResult {
+        guard let selectedGoal = availableGoalProfiles.first(where: {
+            $0.id == plan.targetGoalID
+        }) else {
+            return .targetNotFound
         }
+
+        let rollbackState = goalProfileMutationRollbackState()
 
         goal = selectedGoal
         if hasLegacyLocalQuestionBank(for: selectedGoal) {
@@ -1063,7 +1697,10 @@ final class CheckpointStore {
         isQuestionBankTopOffInProgress = questionBankTopOffGoalIDs.contains(selectedGoal.id)
         questionBankTopOffStartedAt = isQuestionBankTopOffInProgress ? questionBankTopOffStartedAt ?? Date() : nil
         checkpointNotice = nil
-        save()
+        guard save() else {
+            restoreGoalProfileMutationState(rollbackState)
+            return .persistenceFailed
+        }
         publishShieldContext()
 
         if hasActiveQuestions {
@@ -1076,53 +1713,18 @@ final class CheckpointStore {
             _ = scheduleSkillMapEvolutionIfNeeded(for: selectedGoal)
             prepareInitialQuestionsInBackground(for: selectedGoal)
         }
-        return true
+        return .activated(from: plan.sourceGoalID, to: selectedGoal.id)
     }
 
     @discardableResult
     func deleteGoalProfile(_ goalID: Goal.ID) -> Bool {
-        guard let deletedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return false }
-
-        let wasActiveGoal = goal?.id == goalID
-        backgroundGenerationGoalIDs.remove(goalID)
-        questionBankTopOffGoalIDs.remove(goalID)
-        removeGoalData(for: goalID, includeLegacyCompetencies: wasActiveGoal)
-        goalProfiles.removeAll { $0.id == goalID }
-
-        if wasActiveGoal {
-            let replacementGoal = goalProfiles
-                .sorted { $0.createdAt > $1.createdAt }
-                .first
-            goal = replacementGoal
-            unlockSession = nil
-            SharedAppGroup.publishUnlockExpiration(nil)
-
-            if let replacementGoal {
-                let hasReplacementQuestions = questions.contains { question in
-                    question.goalID == replacementGoal.id && question.status != .retired
-                }
-                let isPreparingReplacementQuestions = backgroundGenerationGoalIDs.contains(replacementGoal.id)
-                    || questionBankTopOffGoalIDs.contains(replacementGoal.id)
-                questionBatchState = hasReplacementQuestions ? .ready : .generating
-                isQuestionBankTopOffInProgress = questionBankTopOffGoalIDs.contains(replacementGoal.id)
-                questionBankTopOffStartedAt = isQuestionBankTopOffInProgress ? questionBankTopOffStartedAt ?? Date() : nil
-
-                if !hasReplacementQuestions && !isPreparingReplacementQuestions {
-                    prepareInitialQuestionsInBackground(for: replacementGoal)
-                }
-            } else {
-                questionBatchState = .idle
-                isQuestionBankTopOffInProgress = false
-                questionBankTopOffStartedAt = nil
-                isOnboardingPresented = true
-            }
+        let request = GoalProfileMutationRequest(
+            operation: .delete(goalID: goalID)
+        )
+        guard case let .eligible(plan) = prepareGoalProfileMutation(request),
+              case .committed = commitGoalProfileMutation(using: plan) else {
+            return false
         }
-
-        checkpointNotice = "\(deletedGoal.title) was deleted."
-        pendingMembershipPresentation = nil
-        isCreatingGoalProfile = false
-        save()
-        publishShieldContext()
         return true
     }
 
@@ -1284,10 +1886,12 @@ final class CheckpointStore {
         lastAIErrorMessage = nil
         lastQuestionGenerationFailure = nil
         checkpointNotice = nil
-        unlockSession = nil
+        if previousGoalID == nil {
+            unlockSession = nil
+        }
         isOnboardingPresented = false
         isCreatingGoalProfile = false
-        if permitsPersistenceWrites {
+        if previousGoalID == nil, permitsPersistenceWrites {
             SharedAppGroup.publishUnlockExpiration(nil)
         }
         save()
@@ -1367,10 +1971,8 @@ final class CheckpointStore {
 
         questionBankSyncIntents.removeAll { $0.goalID == updatedGoal.id }
         skillMapEvolutionIntents.removeAll { $0.goalID == updatedGoal.id }
-        skillMapEvolutionGoalIDs.remove(updatedGoal.id)
         questionBankPollingGoalIDs.remove(updatedGoal.id)
         questionBankPollingTokens.removeValue(forKey: updatedGoal.id)
-        questionBankSynchronizationGoalIDs.remove(updatedGoal.id)
 
         if hasReadyCheckpointSet {
             checkpointNotice = "Goal updated. Your current questions stay available; future questions will use these changes."
@@ -1451,7 +2053,7 @@ final class CheckpointStore {
 
             if syncOutcome.serviceSupported {
                 if goal?.id == newGoal.id {
-                    questionBatchState = readyQuestionCount(for: newGoal) >= unlockPolicy.questionsPerSession
+                    questionBatchState = checkpointReadiness(for: latestGoal).hasFullCheckpoint
                         ? .ready
                         : (hasPendingActiveQuestionBankSync ? .idle : .failed)
                     finishQuestionGeneration(for: newGoal.id)
@@ -1463,13 +2065,18 @@ final class CheckpointStore {
             }
         }
 
+        let existingGoalQuestions = questions.filter {
+            $0.goalID == generationGoal.id
+        }
         let checkpointReadyRequest = generationRequest(
             goal: generationGoal,
-            existingQuestions: [],
+            existingQuestions: existingGoalQuestions,
             competencies: competencies.filter {
                 ($0.goalID ?? generationGoal.id) == generationGoal.id
             },
-            reportedQuestions: [],
+            reportedQuestions: questionReports.filter {
+                $0.goalID == generationGoal.id
+            },
             targetCount: unlockPolicy.questionsPerSession
         )
 
@@ -1507,7 +2114,10 @@ final class CheckpointStore {
             let existingCompetencies = competencies.filter {
                 ($0.goalID ?? resolvedGoal.id) == resolvedGoal.id
             }
-            questions.removeAll { $0.goalID == newGoal.id }
+            for index in questions.indices where questions[index].goalID == newGoal.id {
+                questions[index].status = .retired
+                questions[index].nextReviewAt = nil
+            }
             questions.append(contentsOf: acceptedQuestions)
             replaceCompetencies(
                 for: resolvedGoal.id,
@@ -1720,10 +2330,26 @@ final class CheckpointStore {
                         .filter { $0.goalID == latestGoal.id && selector.isSelectableQuestion($0) }
                         .map(\.id)
                 )
-                topOffQuestionBankInBackground(
-                    for: latestGoal,
-                    starterQuestionIDs: retainedQuestionIDs
-                )
+                if isMember {
+                    topOffQuestionBankInBackground(
+                        for: latestGoal,
+                        starterQuestionIDs: retainedQuestionIDs
+                    )
+                } else if goal?.id == latestGoal.id {
+                    let starterPracticeWasConsumed = hasConsumedStarterPractice
+                    if !applyStarterGenerationLimitIfNeeded(
+                        starterPracticeWasConsumed: starterPracticeWasConsumed
+                    ) {
+                        if retainedQuestionIDs.isEmpty {
+                            prepareInitialQuestionsInBackground(for: latestGoal)
+                        } else {
+                            topOffQuestionBankInBackground(
+                                for: latestGoal,
+                                starterQuestionIDs: retainedQuestionIDs
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -1732,6 +2358,7 @@ final class CheckpointStore {
                 || !starterQuestionIDs.isEmpty
                 || questionBankSyncIntents.contains(where: { $0.goalID == targetGoal.id }) else {
             if goal?.id == targetGoal.id {
+                questionBatchState = hasReadyCheckpointSet ? .ready : .idle
                 checkpointNotice = starterQuestionLimitMessage
                 requestMembership(for: .freshQuestionGeneration)
                 save()
@@ -1747,7 +2374,8 @@ final class CheckpointStore {
             if syncOutcome.serviceSupported {
                 if goal?.id == targetGoal.id,
                    !backgroundGenerationGoalIDs.contains(targetGoal.id) {
-                    questionBatchState = readyQuestionCount(for: targetGoal) >= unlockPolicy.questionsPerSession
+                    let latestGoal = storedGoalProfile(withID: targetGoal.id) ?? targetGoal
+                    questionBatchState = checkpointReadiness(for: latestGoal).hasFullCheckpoint
                         ? .ready
                         : (hasPendingActiveQuestionBankSync ? .idle : .failed)
                 }
@@ -1836,7 +2464,7 @@ final class CheckpointStore {
         )
         if goal?.id == targetGoal.id,
            !backgroundGenerationGoalIDs.contains(targetGoal.id) {
-            questionBatchState = readyQuestionCount(for: resolvedTargetGoal) >= unlockPolicy.questionsPerSession
+            questionBatchState = checkpointReadiness(for: resolvedTargetGoal).hasFullCheckpoint
                 ? .ready
                 : .failed
         }
@@ -2063,12 +2691,24 @@ final class CheckpointStore {
     // MARK: - Question selection
 
     private var questionSelector: CheckpointQuestionSelector {
-        CheckpointQuestionSelector(
+        questionSelector(for: goal)
+    }
+
+    private func questionSelector(for targetGoal: Goal?) -> CheckpointQuestionSelector {
+        let resolvedProfiles: [Goal]
+        if let targetGoal {
+            resolvedProfiles = goalProfiles.filter { $0.id != targetGoal.id } + [targetGoal]
+        } else {
+            resolvedProfiles = goalProfiles
+        }
+
+        return CheckpointQuestionSelector(
             questions: questions,
-            goalProfiles: goalProfiles,
-            currentGoal: goal,
+            goalProfiles: resolvedProfiles,
+            currentGoal: targetGoal,
             competencies: competencies,
-            activeQuestionDifficulty: activeQuestionDifficulty,
+            activeQuestionDifficulty: targetGoal?.minimumQuestionDifficulty
+                ?? unlockPolicy.minimumQuestionDifficulty,
             maximumExactQuestionAskCount: Self.maximumExactQuestionAskCount
         )
     }
@@ -2083,7 +2723,10 @@ final class CheckpointStore {
 
     private func nextCheckpointSession(requiresFullSet: Bool) -> CheckpointSession? {
         let questionCount = unlockPolicy.questionsPerSession
-        let selectedQuestions = nextQuestions(limit: questionCount)
+        let selectedQuestions = nextQuestions(
+            limit: questionCount,
+            enforcesDifficultyFloor: requiresFullSet
+        )
         guard !selectedQuestions.isEmpty else { return nil }
         guard !requiresFullSet || selectedQuestions.count >= questionCount else { return nil }
 
@@ -2093,10 +2736,15 @@ final class CheckpointStore {
         )
     }
 
-    func nextQuestions(limit: Int, allowsEarlyCorrectReuse: Bool = false) -> [CheckpointQuestion] {
+    func nextQuestions(
+        limit: Int,
+        allowsEarlyCorrectReuse: Bool = false,
+        enforcesDifficultyFloor: Bool = false
+    ) -> [CheckpointQuestion] {
         questionSelector.nextQuestions(
             limit: limit,
-            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
+            allowsEarlyCorrectReuse: allowsEarlyCorrectReuse,
+            enforcesDifficultyFloor: enforcesDifficultyFloor
         )
     }
 
@@ -2384,7 +3032,8 @@ final class CheckpointStore {
 
         let selectedQuestions = nextQuestions(
             limit: StopBlockingPolicy.questionsPerSession,
-            allowsEarlyCorrectReuse: true
+            allowsEarlyCorrectReuse: true,
+            enforcesDifficultyFloor: true
         )
         guard selectedQuestions.count >= StopBlockingPolicy.questionsPerSession else {
             checkpointNotice = "Checkpoint is preparing enough questions for the protection review. Try again in a moment or lower the minimum level."
@@ -5072,7 +5721,7 @@ final class CheckpointStore {
                 }
 
                 if self.goal?.id == currentGoal.id {
-                    self.questionBatchState = self.readyQuestionCount(for: currentGoal) >= self.unlockPolicy.questionsPerSession
+                    self.questionBatchState = self.checkpointReadiness(for: currentGoal).hasFullCheckpoint
                         ? .ready
                         : (self.hasPendingQuestionBankSync(for: currentGoal) ? .idle : .failed)
                 }
