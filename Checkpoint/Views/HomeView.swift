@@ -35,7 +35,8 @@ struct HomeView: View {
 
                     if let goal = store.goal {
                         if isTemporarilyUnblocked {
-                            screenTimePanel
+                            activeBreakCard
+                                .transition(homeActiveBreakTransition)
                             goalHero(goal)
                             homeNextFocusPanel
                             homeStudyBeaconSection
@@ -70,6 +71,13 @@ struct HomeView: View {
                         reduceMotion: accessibilityReduceMotion
                     ),
                     value: homeStudyBeaconPresentation
+                )
+                .animation(
+                    CheckpointMotion.animation(
+                        CheckpointMotion.reveal,
+                        reduceMotion: accessibilityReduceMotion
+                    ),
+                    value: isTemporarilyUnblocked
                 )
                 .padding(.horizontal, 24)
                 .padding(.top, 20)
@@ -525,6 +533,37 @@ struct HomeView: View {
             : .opacity.combined(with: .scale(scale: 0.985))
     }
 
+    private var activeBreakCard: some View {
+        HomeActiveBreakCard(
+            startedAt: store.unlockSession?.startedAt,
+            expiresAt: activeBreakExpiration,
+            relockReadiness: activeBreakRelockReadiness,
+            areProtectedAppsAvailable: screenTime.setupState == .temporarilyUnlocked,
+            protectedAppsSummary: screenTime.restrictedAppsSummary
+        ) {
+            isRestrictedAppsPresented = true
+        } endBreakEarly: {
+            workflow.endBreakEarly()
+        }
+    }
+
+    private var homeActiveBreakTransition: AnyTransition {
+        HomeActiveBreakMotionPolicy(reduceMotion: accessibilityReduceMotion).transition
+    }
+
+    private var activeBreakExpiration: Date? {
+        SharedAppGroup.unlockExpiration ?? store.unlockSession?.expiresAt
+    }
+
+    private var activeBreakRelockReadiness: HomeActiveBreakRelockReadiness {
+        HomeActiveBreakRelockReadiness.resolve(
+            hasRequiredScreenTimeAuthorization: screenTime.hasRequiredScreenTimeAuthorization,
+            hasSelection: screenTime.hasSelection,
+            hasReadyCheckpointSet: store.hasReadyCheckpointSet,
+            sharedCheckpointReady: SharedAppGroup.checkpointReady
+        )
+    }
+
     private func homeStudyFocusCard(_ state: StudyFocusState) -> some View {
         let tint = state.isRecommendation ? CheckpointTheme.blue : CheckpointTheme.teal
 
@@ -593,21 +632,7 @@ struct HomeView: View {
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
 
-                if isTemporarilyUnblocked {
-                    BreakRemainingStat(
-                        expiresAt: store.unlockSession?.expiresAt ?? SharedAppGroup.unlockExpiration
-                    )
-
-                    HStack(spacing: 10) {
-                        HomeProtectionActionButton(title: "Choose apps", systemImage: "checklist") {
-                            isRestrictedAppsPresented = true
-                        }
-
-                        HomeProtectionActionButton(title: "End break early", systemImage: "shield") {
-                            workflow.endBreakEarly()
-                        }
-                    }
-                } else if screenTime.isShieldingEnabled {
+                if screenTime.isShieldingEnabled {
                     HStack(spacing: 10) {
                         HomeProtectionActionButton(title: "Change apps", systemImage: "checklist") {
                             isRestrictedAppsPresented = true
