@@ -145,6 +145,23 @@ struct ProgressScreenChangePolicy {
     }
 }
 
+struct ProgressGoalSwitchInteractionPolicy {
+    static func animatesScroll(
+        reduceMotion: Bool,
+        assistiveNavigationEnabled: Bool
+    ) -> Bool {
+        !reduceMotion && !assistiveNavigationEnabled
+    }
+
+    static func reportsSelectionFeedback(
+        selectedGoalID: Goal.ID,
+        currentGoalID: Goal.ID,
+        didSwitch: Bool
+    ) -> Bool {
+        didSwitch && selectedGoalID != currentGoalID
+    }
+}
+
 private struct FocusWinsDestination: Identifiable {
     let goalID: Goal.ID
     let goalTitle: String
@@ -160,6 +177,7 @@ struct CompetencyView: View {
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .largeTitle) private var heroMetricSize: CGFloat = 54
     @State private var isSkillMapEditorPresented = false
@@ -169,6 +187,7 @@ struct CompetencyView: View {
     @State private var retryingInitialQuestionGoalIDs: Set<Goal.ID> = []
     @State private var focusWinsDestination: FocusWinsDestination?
     @State private var pendingAccessibilityFocus: ProgressAccessibilityFocus?
+    @State private var goalSelectionFeedbackSequence = 0
     @AccessibilityFocusState(for: .voiceOver)
     private var accessibilityFocus: ProgressAccessibilityFocus?
 
@@ -276,7 +295,7 @@ struct CompetencyView: View {
                     }
                     respondToScreenChangeAfterLayout(from: previous, to: current)
                 }
-                .sensoryFeedback(.selection, trigger: store.goal?.id)
+                .sensoryFeedback(.selection, trigger: goalSelectionFeedbackSequence)
             }
         }
         .onChange(of: isVisible) { _, currentIsVisible in
@@ -382,12 +401,12 @@ struct CompetencyView: View {
             await Task.yield()
             guard screenSnapshot.goalID == goalID else { return }
 
-            if reduceMotion {
+            let shouldAnimate = ProgressGoalSwitchInteractionPolicy.animatesScroll(
+                reduceMotion: reduceMotion,
+                assistiveNavigationEnabled: voiceOverEnabled || switchControlEnabled
+            )
+            withAnimation(shouldAnimate ? CheckpointMotion.change : nil) {
                 proxy.scrollTo(ProgressScrollAnchor.top, anchor: .top)
-            } else {
-                withAnimation(CheckpointMotion.change) {
-                    proxy.scrollTo(ProgressScrollAnchor.top, anchor: .top)
-                }
             }
         }
     }
@@ -460,7 +479,15 @@ struct CompetencyView: View {
             Menu {
                 ForEach(store.availableGoalProfiles) { profile in
                     Button {
-                        store.switchActiveGoal(to: profile.id)
+                        guard profile.id != currentGoal.id else { return }
+                        let didSwitch = store.switchActiveGoal(to: profile.id)
+                        if ProgressGoalSwitchInteractionPolicy.reportsSelectionFeedback(
+                            selectedGoalID: profile.id,
+                            currentGoalID: currentGoal.id,
+                            didSwitch: didSwitch
+                        ) {
+                            goalSelectionFeedbackSequence += 1
+                        }
                     } label: {
                         Label(
                             goalMenuTitle(profile),

@@ -210,6 +210,38 @@ enum CheckpointMotion {
     }
 }
 
+enum PrimaryActionIconState: Equatable {
+    case loading
+    case symbol(String)
+
+    init(systemImage: String, isLoading: Bool) {
+        self = isLoading ? .loading : .symbol(systemImage)
+    }
+}
+
+enum PrimaryActionIconMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct PrimaryActionIconMotionPolicy: Equatable {
+    let style: PrimaryActionIconMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var transition: AnyTransition {
+        style == .animated
+            ? .opacity.combined(with: .scale(scale: 0.94))
+            : .identity
+    }
+}
+
 struct CheckpointSetupMark: View {
     let stage: String
     var step: Int?
@@ -375,21 +407,34 @@ struct PrimaryActionButton: View {
     }
 
     private var actionIcon: some View {
-        Group {
-            if isLoading {
+        ZStack {
+            switch actionIconState {
+            case .loading:
                 ProgressView()
                     .tint(CheckpointTheme.paper)
-            } else {
+                    .transition(actionIconMotionPolicy.transition)
+            case let .symbol(systemImage):
                 Image(systemName: systemImage)
                     .font(.system(size: dynamicTypeSize.isAccessibilitySize ? 24 : 17, weight: .semibold))
                     .contentTransition(.symbolEffect(.replace))
                     .symbolEffectsRemoved(reduceMotion)
+                    .transition(actionIconMotionPolicy.transition)
             }
         }
         .frame(
             width: dynamicTypeSize.isAccessibilitySize ? 28 : 20,
             height: dynamicTypeSize.isAccessibilitySize ? 28 : 20
         )
+        .animation(actionIconMotionPolicy.animation, value: actionIconState)
+        .accessibilityHidden(true)
+    }
+
+    private var actionIconState: PrimaryActionIconState {
+        PrimaryActionIconState(systemImage: systemImage, isLoading: isLoading)
+    }
+
+    private var actionIconMotionPolicy: PrimaryActionIconMotionPolicy {
+        PrimaryActionIconMotionPolicy(reduceMotion: reduceMotion)
     }
 
     private var actionTitle: some View {

@@ -1,7 +1,75 @@
+import SwiftUI
+import UIKit
 import XCTest
 @testable import Checkpoint
 
 final class CheckpointThemeTests: XCTestCase {
+    func testPrimaryActionIconMotionTracksLoadingAndReduceMotion() {
+        XCTAssertEqual(
+            PrimaryActionIconState(systemImage: "arrow.right", isLoading: false),
+            .symbol("arrow.right")
+        )
+        XCTAssertEqual(
+            PrimaryActionIconState(systemImage: "arrow.right", isLoading: true),
+            .loading
+        )
+
+        let standard = PrimaryActionIconMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertNotNil(standard.animation)
+
+        let reduced = PrimaryActionIconMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.animation)
+    }
+
+    @MainActor
+    func testPrimaryActionButtonsPreserveGeometryAcrossIconStates() throws {
+        let fixtures = [
+            PrimaryActionRenderFixture(
+                name: "primary-actions-standard-light",
+                width: 393,
+                height: 300,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            PrimaryActionRenderFixture(
+                name: "primary-actions-accessibility5-dark",
+                width: 393,
+                height: 700,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5
+            )
+        ]
+
+        for fixture in fixtures {
+            let capture = PrimaryActionSizeCapture()
+            let image = HostedViewRenderer.image(
+                for: PrimaryActionRenderScene(capture: capture)
+                    .environment(\.colorScheme, fixture.colorScheme)
+                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.2,
+                renderScale: 1
+            )
+
+            let idleSize = try XCTUnwrap(capture.sizes[.idle], fixture.name)
+            let loadingSize = try XCTUnwrap(capture.sizes[.loading], fixture.name)
+            let changedSymbolSize = try XCTUnwrap(capture.sizes[.changedSymbol], fixture.name)
+            XCTAssertEqual(idleSize.width, loadingSize.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(idleSize.height, loadingSize.height, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(idleSize.width, changedSymbolSize.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(idleSize.height, changedSymbolSize.height, accuracy: 0.5, fixture.name)
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
     func testSemanticTextAndAccentRolesMeetContrastContract() {
         let roles: [(String, CheckpointAdaptiveColor)] = [
             ("text", CheckpointPalette.text),
@@ -195,5 +263,81 @@ final class CheckpointThemeTests: XCTestCase {
             blue: (foreground.blue * amount) + (background.blue * (1 - amount)),
             alpha: 1
         )
+    }
+}
+
+private struct PrimaryActionRenderFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+}
+
+private enum PrimaryActionCaptureKey: Hashable {
+    case idle
+    case loading
+    case changedSymbol
+}
+
+@MainActor
+private final class PrimaryActionSizeCapture {
+    var sizes: [PrimaryActionCaptureKey: CGSize] = [:]
+}
+
+private struct PrimaryActionRenderScene: View {
+    let capture: PrimaryActionSizeCapture
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("PRIMARY ACTIONS")
+                .font(.caption2.weight(.bold))
+                .tracking(1)
+                .foregroundStyle(CheckpointTheme.muted)
+
+            measuredButton(
+                key: .idle,
+                title: "Continue",
+                systemImage: "arrow.right",
+                isLoading: false
+            )
+            measuredButton(
+                key: .loading,
+                title: "Continue",
+                systemImage: "arrow.right",
+                isLoading: true
+            )
+            measuredButton(
+                key: .changedSymbol,
+                title: "Continue",
+                systemImage: "checkmark",
+                isLoading: false
+            )
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .checkpointScreenBackground()
+    }
+
+    private func measuredButton(
+        key: PrimaryActionCaptureKey,
+        title: String,
+        systemImage: String,
+        isLoading: Bool
+    ) -> some View {
+        PrimaryActionButton(
+            title: title,
+            systemImage: systemImage,
+            isLoading: isLoading
+        ) {}
+        .disabled(isLoading)
+        .background {
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        capture.sizes[key] = proxy.size
+                    }
+            }
+        }
     }
 }

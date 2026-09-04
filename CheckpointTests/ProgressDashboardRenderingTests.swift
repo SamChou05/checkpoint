@@ -49,6 +49,46 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 to: nil
             )
         )
+
+        XCTAssertTrue(
+            ProgressGoalSwitchInteractionPolicy.animatesScroll(
+                reduceMotion: false,
+                assistiveNavigationEnabled: false
+            )
+        )
+        XCTAssertFalse(
+            ProgressGoalSwitchInteractionPolicy.animatesScroll(
+                reduceMotion: true,
+                assistiveNavigationEnabled: false
+            )
+        )
+        XCTAssertFalse(
+            ProgressGoalSwitchInteractionPolicy.animatesScroll(
+                reduceMotion: false,
+                assistiveNavigationEnabled: true
+            )
+        )
+        XCTAssertTrue(
+            ProgressGoalSwitchInteractionPolicy.reportsSelectionFeedback(
+                selectedGoalID: secondGoalID,
+                currentGoalID: firstGoalID,
+                didSwitch: true
+            )
+        )
+        XCTAssertFalse(
+            ProgressGoalSwitchInteractionPolicy.reportsSelectionFeedback(
+                selectedGoalID: firstGoalID,
+                currentGoalID: firstGoalID,
+                didSwitch: true
+            )
+        )
+        XCTAssertFalse(
+            ProgressGoalSwitchInteractionPolicy.reportsSelectionFeedback(
+                selectedGoalID: secondGoalID,
+                currentGoalID: firstGoalID,
+                didSwitch: false
+            )
+        )
     }
 
     @MainActor
