@@ -178,8 +178,11 @@ struct SettingsView: View {
                     planPanel
                     goalsPanel
 
-                    SectionPanel("Practice standard") {
-                        practiceStandardContent
+                    SettingsPracticeStandardCard(
+                        presentation: practiceStandardPresentation,
+                        isExpanded: $isPracticeStandardExpanded
+                    ) {
+                        practiceStandardControls
                     }
 
                     activityPanel
@@ -971,67 +974,44 @@ struct SettingsView: View {
         FeedbackDraftSettingsPresentation(count: store.issueReportCount)
     }
 
-    private var practiceStandardContent: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Passing standard")
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
+    private var practiceStandardPresentation: SettingsPracticeStandardPresentation {
+        SettingsPracticeStandardPresentation(unlockPolicy: store.unlockPolicy)
+    }
 
-                Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) correct starts a \(store.unlockPolicy.unlockMinutes)-minute break.")
-                    .font(.subheadline)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            DisclosureGroup(isExpanded: $isPracticeStandardExpanded) {
-                VStack(alignment: .leading, spacing: 12) {
-                    PracticeStandardStepperRow(
-                        title: "Questions per checkpoint",
-                        value: store.unlockPolicy.questionsPerSession,
-                        decrementDisabled: store.unlockPolicy.questionsPerSession <= UnlockPolicy.minimumQuestionsPerSession,
-                        incrementDisabled: store.unlockPolicy.questionsPerSession >= UnlockPolicy.maximumQuestionsPerSession,
-                        decrementAction: {
-                            store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession - 1)
-                        },
-                        incrementAction: {
-                            store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession + 1)
-                        }
-                    )
-
-                    PracticeStandardStepperRow(
-                        title: "Correct answers needed",
-                        value: store.unlockPolicy.requiredCorrectAnswers,
-                        decrementDisabled: store.unlockPolicy.requiredCorrectAnswers <= UnlockPolicy.minimumRequiredCorrectAnswers,
-                        incrementDisabled: store.unlockPolicy.requiredCorrectAnswers >= store.unlockPolicy.questionsPerSession,
-                        decrementAction: {
-                            store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers - 1)
-                        },
-                        incrementAction: {
-                            store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers + 1)
-                        }
-                    )
-
-                    BreakDurationMenu(
-                        selectedMinutes: store.unlockPolicy.unlockMinutes,
-                        options: UnlockPolicy.correctAnswerUnlockMinuteOptions
-                    ) { minutes in
-                        store.updateUnlockMinutes(minutes)
-                    }
+    private var practiceStandardControls: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            PracticeStandardStepperRow(
+                title: "Questions per checkpoint",
+                value: store.unlockPolicy.questionsPerSession,
+                decrementDisabled: store.unlockPolicy.questionsPerSession <= UnlockPolicy.minimumQuestionsPerSession,
+                incrementDisabled: store.unlockPolicy.questionsPerSession >= UnlockPolicy.maximumQuestionsPerSession,
+                decrementAction: {
+                    store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession - 1)
+                },
+                incrementAction: {
+                    store.updateQuestionsPerSession(store.unlockPolicy.questionsPerSession + 1)
                 }
-                .padding(.top, 10)
-            } label: {
-                HStack {
-                    Text("Customize")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.teal)
-                    Spacer(minLength: 8)
+            )
+
+            PracticeStandardStepperRow(
+                title: "Correct answers needed",
+                value: store.unlockPolicy.requiredCorrectAnswers,
+                decrementDisabled: store.unlockPolicy.requiredCorrectAnswers <= UnlockPolicy.minimumRequiredCorrectAnswers,
+                incrementDisabled: store.unlockPolicy.requiredCorrectAnswers >= store.unlockPolicy.questionsPerSession,
+                decrementAction: {
+                    store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers - 1)
+                },
+                incrementAction: {
+                    store.updateRequiredCorrectAnswers(store.unlockPolicy.requiredCorrectAnswers + 1)
                 }
-                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                .contentShape(Rectangle())
+            )
+
+            BreakDurationMenu(
+                selectedMinutes: store.unlockPolicy.unlockMinutes,
+                options: UnlockPolicy.correctAnswerUnlockMinuteOptions
+            ) { minutes in
+                store.updateUnlockMinutes(minutes)
             }
-            .tint(CheckpointTheme.teal)
-            .accessibilityHint(isPracticeStandardExpanded ? "Collapses practice controls." : "Expands practice controls.")
         }
     }
 

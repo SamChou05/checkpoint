@@ -104,6 +104,7 @@
 		CB0000000000000000000022 /* MembershipViewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000022 /* MembershipViewRenderingTests.swift */; };
 		CB0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */; };
 		CB0000000000000000000024 /* WeeklyReviewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */; };
+		CB0000000000000000000025 /* SettingsViewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000025 /* SettingsViewRenderingTests.swift */; };
 		D10000000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* PrivacyInfo.xcprivacy */; };
 		D10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* PrivacyInfo.xcprivacy */; };
@@ -267,6 +268,7 @@
 		CA0000000000000000000022 /* MembershipViewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipViewRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeAccessRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyReviewRenderingTests.swift; sourceTree = "<group>"; };
+		CA0000000000000000000025 /* SettingsViewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewRenderingTests.swift; sourceTree = "<group>"; };
 		D20000000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D20000000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -510,6 +512,7 @@
 				CA0000000000000000000022 /* MembershipViewRenderingTests.swift */,
 				CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */,
 				CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */,
+				CA0000000000000000000025 /* SettingsViewRenderingTests.swift */,
 				CA000000000000000000000C /* ScreenTimeCoordinationTests.swift */,
 				CA000000000000000000000A /* QuestionRefillTests.swift */,
 				CA0000000000000000000003 /* AppSnapshotPersistenceTests.swift */,
@@ -858,6 +861,7 @@
 				CB0000000000000000000022 /* MembershipViewRenderingTests.swift in Sources */,
 				CB0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift in Sources */,
 				CB0000000000000000000024 /* WeeklyReviewRenderingTests.swift in Sources */,
+				CB0000000000000000000025 /* SettingsViewRenderingTests.swift in Sources */,
 				CB000000000000000000000C /* ScreenTimeCoordinationTests.swift in Sources */,
 				CB000000000000000000000A /* QuestionRefillTests.swift in Sources */,
 				CB0000000000000000000003 /* AppSnapshotPersistenceTests.swift in Sources */,
