@@ -205,6 +205,43 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testChoiceSelectionOnlyChangesUnlockedAnswersAndRespectsReduceMotion() {
+        let standard = CheckpointChoiceSelectionPolicy(reduceMotion: false)
+        XCTAssertTrue(standard.usesLinkedSelectionPlate)
+        XCTAssertNotNil(standard.animation)
+
+        let reduced = CheckpointChoiceSelectionPolicy(reduceMotion: true)
+        XCTAssertFalse(reduced.usesLinkedSelectionPlate)
+        XCTAssertNil(reduced.animation)
+
+        XCTAssertEqual(
+            CheckpointChoiceSelectionPolicy.decision(
+                currentAnswer: "First",
+                requestedAnswer: "Second",
+                isLocked: false
+            ),
+            CheckpointChoiceSelectionDecision(
+                answer: "Second",
+                reportsSelectionFeedback: true
+            )
+        )
+        XCTAssertNil(
+            CheckpointChoiceSelectionPolicy.decision(
+                currentAnswer: "First",
+                requestedAnswer: "First",
+                isLocked: false
+            )
+        )
+        XCTAssertNil(
+            CheckpointChoiceSelectionPolicy.decision(
+                currentAnswer: "First",
+                requestedAnswer: "Second",
+                isLocked: true
+            )
+        )
+    }
+
+    @MainActor
     func testAnswerProgressionEndsImpossibleAttemptsButCompletesPassingQuestionSet() {
         let goal = makeGoal()
         let questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
@@ -240,7 +277,7 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testResolvedAttemptsRenderAcrossCompactAndAccessibleLayouts() throws {
+    func testAttemptsRenderAcrossSelectionResolutionAndAccessibleLayouts() throws {
         let suiteName = "CheckpointAttemptRenderingTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
@@ -278,6 +315,44 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             protection: InertAttemptProtectionController()
         )
         let fixtures = [
+            CheckpointAttemptRenderFixture(
+                name: "attempt-selected-answer-full-light",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .selected(
+                            questionIndex: 0,
+                            answer: questions[0].choices[1]
+                        ),
+                        reduceMotionOverride: false
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
+                name: "attempt-selected-answer-narrow-accessibility5-dark-reduced",
+                width: 320,
+                height: 1_800,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .selected(
+                            questionIndex: 0,
+                            answer: questions[0].choices[1]
+                        ),
+                        reduceMotionOverride: true
+                    )
+                )
+            ),
             CheckpointAttemptRenderFixture(
                 name: "attempt-pass-final-miss-compact-light",
                 width: 320,

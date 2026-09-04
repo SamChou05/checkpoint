@@ -308,6 +308,35 @@ struct CheckpointResolutionMotionPolicy {
     }
 }
 
+struct CheckpointChoiceSelectionDecision: Equatable {
+    let answer: String
+    let reportsSelectionFeedback: Bool
+}
+
+struct CheckpointChoiceSelectionPolicy {
+    let reduceMotion: Bool
+
+    var usesLinkedSelectionPlate: Bool {
+        !reduceMotion
+    }
+
+    var animation: Animation? {
+        CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+    }
+
+    static func decision(
+        currentAnswer: String,
+        requestedAnswer: String,
+        isLocked: Bool
+    ) -> CheckpointChoiceSelectionDecision? {
+        guard !isLocked, currentAnswer != requestedAnswer else { return nil }
+        return CheckpointChoiceSelectionDecision(
+            answer: requestedAnswer,
+            reportsSelectionFeedback: true
+        )
+    }
+}
+
 enum CheckpointFeedbackDestination: Hashable {
     case answerFeedback
     case protectionActionFailure
@@ -320,6 +349,7 @@ enum CheckpointFeedbackDestination: Hashable {
 
 enum CheckpointAttemptInitialPresentation: Equatable {
     case unanswered
+    case selected(questionIndex: Int, answer: String)
     case terminal(
         questionIndex: Int,
         correctAnswerCount: Int,
@@ -537,6 +567,7 @@ struct CheckpointAttemptView: View {
     @State private var protectionActionErrorMessage: String?
     @State private var protectionActionErrorSequence = 0
     @State private var feedbackSequence = 0
+    @State private var choiceSelectionFeedbackSequence = 0
     @State private var resolutionFeedback: CheckpointResolutionFeedback?
     @State private var isExitConfirmationPresented = false
     @State private var hasFinalizedCheckpoint = false
@@ -544,6 +575,7 @@ struct CheckpointAttemptView: View {
     @State private var questionQualityFeedbackContext: QuestionQualityFeedbackContext?
     @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
+    @Namespace private var choiceSelectionNamespace
 
     init(
         store: CheckpointStore,
@@ -557,40 +589,53 @@ struct CheckpointAttemptView: View {
         self.session = session
         self.reduceMotionOverride = reduceMotionOverride
 
-        guard case let .terminal(
+        switch initialPresentation {
+        case .unanswered:
+            return
+        case let .selected(questionIndex, answer):
+            _currentQuestionIndex = State(
+                initialValue: Self.boundedQuestionIndex(questionIndex, in: session)
+            )
+            _answer = State(initialValue: answer)
+        case let .terminal(
             questionIndex,
             correctAnswerCount,
             answer,
             result,
             didPass,
             actionErrorMessage
-        ) = initialPresentation else { return }
-
-        let boundedQuestionIndex = min(
-            max(0, questionIndex),
-            max(0, session.questions.count - 1)
-        )
-        let boundedCorrectAnswerCount = min(
-            max(0, correctAnswerCount),
-            session.questions.count
-        )
-        _currentQuestionIndex = State(initialValue: boundedQuestionIndex)
-        _correctAnswerCount = State(initialValue: boundedCorrectAnswerCount)
-        _answer = State(initialValue: answer)
-        _result = State(initialValue: result)
-        _checkedAnswer = State(
-            initialValue: CheckedCheckpointAnswer(
-                result: result,
-                shouldFinish: true,
-                shouldPass: didPass,
-                failureProtectionOutcome: !didPass && session.purpose != .preview
-                    ? (store.hasReadyCheckpointSet
-                        ? .protectionRemainsOn
-                        : .protectionTurnedOffForUnavailableCheckpoint)
-                    : nil
+        ):
+            let boundedCorrectAnswerCount = min(
+                max(0, correctAnswerCount),
+                session.questions.count
             )
-        )
-        _protectionActionErrorMessage = State(initialValue: actionErrorMessage)
+            _currentQuestionIndex = State(
+                initialValue: Self.boundedQuestionIndex(questionIndex, in: session)
+            )
+            _correctAnswerCount = State(initialValue: boundedCorrectAnswerCount)
+            _answer = State(initialValue: answer)
+            _result = State(initialValue: result)
+            _checkedAnswer = State(
+                initialValue: CheckedCheckpointAnswer(
+                    result: result,
+                    shouldFinish: true,
+                    shouldPass: didPass,
+                    failureProtectionOutcome: !didPass && session.purpose != .preview
+                        ? (store.hasReadyCheckpointSet
+                            ? .protectionRemainsOn
+                            : .protectionTurnedOffForUnavailableCheckpoint)
+                        : nil
+                )
+            )
+            _protectionActionErrorMessage = State(initialValue: actionErrorMessage)
+        }
+    }
+
+    private static func boundedQuestionIndex(
+        _ questionIndex: Int,
+        in session: CheckpointSession
+    ) -> Int {
+        min(max(0, questionIndex), max(0, session.questions.count - 1))
     }
 
     private var reduceMotion: Bool {
@@ -713,6 +758,7 @@ struct CheckpointAttemptView: View {
         .sensoryFeedback(.warning, trigger: resolutionFeedback) { _, newValue in
             newValue == .failed
         }
+        .sensoryFeedback(.selection, trigger: choiceSelectionFeedbackSequence)
         .sensoryFeedback(.error, trigger: protectionActionErrorSequence)
     }
 
@@ -778,10 +824,12 @@ struct CheckpointAttemptView: View {
                 ForEach(question.choices, id: \.self) { choice in
                     ChoiceButton(
                         title: choice,
-                        state: choiceState(for: choice)
+                        state: choiceState(for: choice),
+                        selectionNamespace: choiceSelectionNamespace,
+                        selectionID: "choice-selection-\(question.id.uuidString)",
+                        selectionPolicy: choiceSelectionPolicy
                     ) {
-                        guard checkedAnswer == nil else { return }
-                        answer = choice
+                        selectChoice(choice)
                     }
                 }
             }
@@ -896,6 +944,10 @@ struct CheckpointAttemptView: View {
 
     private var resolutionMotionPolicy: CheckpointResolutionMotionPolicy {
         CheckpointResolutionMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var choiceSelectionPolicy: CheckpointChoiceSelectionPolicy {
+        CheckpointChoiceSelectionPolicy(reduceMotion: reduceMotion)
     }
 
     private var chromePresentation: CheckpointAttemptChromePresentation {
@@ -1035,6 +1087,21 @@ struct CheckpointAttemptView: View {
             checkedAnswer = nil
         }
         accessibilityFocus = .question
+    }
+
+    private func selectChoice(_ choice: String) {
+        guard let decision = CheckpointChoiceSelectionPolicy.decision(
+            currentAnswer: answer,
+            requestedAnswer: choice,
+            isLocked: checkedAnswer != nil
+        ) else { return }
+
+        withAnimation(choiceSelectionPolicy.animation) {
+            answer = decision.answer
+        }
+        if decision.reportsSelectionFeedback {
+            choiceSelectionFeedbackSequence += 1
+        }
     }
 
     private func scrollToQuestion(using proxy: ScrollViewProxy) {
@@ -1343,9 +1410,10 @@ private enum CheckpointChoiceState: Hashable {
 private struct ChoiceButton: View {
     var title: String
     var state: CheckpointChoiceState
+    var selectionNamespace: Namespace.ID
+    var selectionID: String
+    var selectionPolicy: CheckpointChoiceSelectionPolicy
     var action: () -> Void
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: action) {
@@ -1355,6 +1423,7 @@ private struct ChoiceButton: View {
                     .foregroundStyle(iconTint)
                     .frame(width: 22)
                     .contentTransition(.symbolEffect(.replace))
+                    .symbolEffectsRemoved(selectionPolicy.reduceMotion)
 
                 Text(title)
                     .font(.subheadline.weight(.semibold))
@@ -1365,10 +1434,7 @@ private struct ChoiceButton: View {
             }
             .padding(12)
             .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
-            .background(
-                backgroundColor,
-                in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
-            )
+            .background { choiceBackground }
             .overlay(
                 RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
                     .stroke(borderColor, lineWidth: state == .idle || state == .locked ? 1 : 1.4)
@@ -1378,13 +1444,39 @@ private struct ChoiceButton: View {
         .disabled(state.isLocked)
         .opacity(state == .locked ? 0.58 : 1)
         .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            selectionPolicy.animation,
             value: state
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue(accessibilityValue)
         .accessibilityAddTraits(state == .selected ? .isSelected : [])
+    }
+
+    @ViewBuilder
+    private var choiceBackground: some View {
+        let shape = RoundedRectangle(
+            cornerRadius: CheckpointTheme.compactCornerRadius,
+            style: .continuous
+        )
+
+        ZStack {
+            shape.fill(backgroundColor)
+
+            if state == .selected {
+                if selectionPolicy.usesLinkedSelectionPlate {
+                    shape
+                        .fill(CheckpointTheme.teal.opacity(0.12))
+                        .matchedGeometryEffect(
+                            id: selectionID,
+                            in: selectionNamespace
+                        )
+                        .transition(.opacity)
+                } else {
+                    shape.fill(CheckpointTheme.teal.opacity(0.12))
+                }
+            }
+        }
     }
 
     private var systemImage: String {
@@ -1411,11 +1503,11 @@ private struct ChoiceButton: View {
 
     private var backgroundColor: Color {
         switch state {
-        case .selected, .correct:
-            return CheckpointTheme.teal.opacity(state == .correct ? 0.18 : 0.12)
+        case .correct:
+            return CheckpointTheme.teal.opacity(0.18)
         case .incorrect:
             return CheckpointTheme.coral.opacity(0.12)
-        case .idle, .locked:
+        case .idle, .selected, .locked:
             return CheckpointTheme.panelRaised.opacity(0.72)
         }
     }
