@@ -7,6 +7,7 @@ struct HomeView: View {
     let workflow: CheckpointWorkflowCoordinator
     private let refreshesQuestionsOnActivation: Bool
     private let reduceMotionOverride: Bool?
+    private let referenceDateOverride: Date?
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
     @Environment(\.checkpointGoalSelection) private var selectGoal
@@ -19,6 +20,7 @@ struct HomeView: View {
     @State private var isQuestionsReadyConfirmationVisible = false
     @State private var questionsReadyConfirmationDismissTask: Task<Void, Never>?
     @State private var lastActivationRefreshAt: Date?
+    @State private var liveReferenceDate = Date()
 
     private static let activationRefreshDebounceInterval: TimeInterval = 20
     private static let questionsReadyConfirmationText = "Your questions are ready."
@@ -29,13 +31,15 @@ struct HomeView: View {
         screenTime: ScreenTimeController,
         workflow: CheckpointWorkflowCoordinator,
         refreshesQuestionsOnActivation: Bool = true,
-        reduceMotionOverride: Bool? = nil
+        reduceMotionOverride: Bool? = nil,
+        referenceDate: Date? = nil
     ) {
         self.store = store
         self.screenTime = screenTime
         self.workflow = workflow
         self.refreshesQuestionsOnActivation = refreshesQuestionsOnActivation
         self.reduceMotionOverride = reduceMotionOverride
+        referenceDateOverride = referenceDate
     }
 
     private struct QuestionPreparationSnapshot: Equatable {
@@ -93,12 +97,19 @@ struct HomeView: View {
                 )
             }
             .onAppear {
+                refreshDeadlineReferenceDate()
                 handleQuestionRefreshOnActivation()
             }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
+                    refreshDeadlineReferenceDate()
                     handleQuestionRefreshOnActivation()
                 }
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .NSCalendarDayChanged)
+            ) { _ in
+                refreshDeadlineReferenceDate()
             }
             .onChange(of: questionPreparationSnapshot) { previous, current in
                 guard previous.goalID == current.goalID else {
@@ -152,105 +163,62 @@ struct HomeView: View {
     }
 
     private func goalHero(_ goal: Goal) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .center, spacing: 12) {
-                    currentFocusIdentity
-                    Spacer(minLength: 12)
-                    goalSwitcherMenu(currentGoal: goal)
-                }
+        let presentation = HomeGoalOverviewPresentation(
+            goal: goal,
+            readiness: store.checkpointReadiness(for: goal),
+            isGenerationBlockingPractice: store.isQuestionGenerationBlockingPractice,
+            generationFailure: store.lastQuestionGenerationFailure,
+            isRetryingGeneration: isRetryingInitialQuestions,
+            readyDisclosure: homeStudyBeaconPresentation == .firstCheckpointLaunchpad
+                ? .suppressedByFirstCheckpointLaunchpad
+                : .visible,
+            isNewlyPrepared: isQuestionsReadyConfirmationVisible,
+            unlockPolicy: store.unlockPolicy,
+            availableGoalCount: store.availableGoalProfiles.count,
+            generationStatusText: store.questionGenerationStatusText,
+            referenceDate: referenceDate
+        )
 
-                VStack(alignment: .leading, spacing: 8) {
-                    currentFocusIdentity
-                    goalSwitcherMenu(currentGoal: goal)
-                }
-            }
-
-            Text(goal.title)
-                .font(.title2.bold())
-                .foregroundStyle(CheckpointTheme.text)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
-                .fixedSize(horizontal: false, vertical: true)
-                .accessibilityAddTraits(.isHeader)
-
-            dueDateLabel(goal.deadline)
-
-            Text("\(store.unlockPolicy.requiredCorrectAnswers) of \(store.unlockPolicy.questionsPerSession) to unlock")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(CheckpointTheme.muted)
-
-            if store.isPreparingActiveGoalQuestions {
-                questionPreparationStatus(for: goal)
-                .padding(12)
-                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 12))
-            } else if store.isQuestionGenerationBlockingPractice {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(CheckpointTheme.amber)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(store.lastQuestionGenerationFailure?.title ?? "Questions aren't ready")
-                                .font(.footnote.weight(.bold))
-                                .foregroundStyle(CheckpointTheme.text)
-
-                            Text(store.questionGenerationStatusText)
-                                .font(.footnote)
-                                .foregroundStyle(CheckpointTheme.muted)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-
-                    ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 10) {
-                            questionRecoveryActions
-                        }
-
-                        VStack(spacing: 10) {
-                            questionRecoveryActions
-                        }
-                    }
-                }
-                .padding(12)
-                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 12))
-            } else if isQuestionsReadyConfirmationVisible {
-                HStack(spacing: 10) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(CheckpointTheme.teal)
-                        .accessibilityHidden(true)
-
-                    Text(Self.questionsReadyConfirmationText)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.text)
-
-                    Spacer(minLength: 0)
-                }
-                .padding(12)
-                .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel(Self.questionsReadyConfirmationText)
-                .transition(questionsReadyConfirmationTransition)
-            }
+        return HomeGoalOverviewCard(
+            presentation: presentation,
+            reduceMotion: reduceMotion,
+            retryQuestions: retryInitialQuestionGeneration,
+            editGoal: store.presentActiveGoalEditor
+        ) {
+            goalManagementControl(
+                currentGoal: goal,
+                action: presentation.goalAction
+            )
         }
         .padding(.horizontal, 4)
     }
 
-    private var currentFocusIdentity: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "scope")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 36, height: 36)
-                .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
-                .accessibilityHidden(true)
-
-            Text("CURRENT FOCUS")
-                .font(.caption2.weight(.bold))
-                .tracking(0.9)
-                .foregroundStyle(CheckpointTheme.muted)
-                .accessibilityAddTraits(.isHeader)
+    @ViewBuilder
+    private func goalManagementControl(
+        currentGoal: Goal,
+        action: HomeGoalOverviewGoalAction
+    ) -> some View {
+        switch action {
+        case .none:
+            EmptyView()
+        case .editGoal:
+            Button {
+                store.presentActiveGoalEditor()
+            } label: {
+                Label("Edit", systemImage: "pencil")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .padding(.horizontal, 11)
+                    .frame(minHeight: 44)
+                    .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Edit goal")
+            .accessibilityValue(currentGoal.title)
+            .accessibilityHint("Opens this goal's details")
+        case .switchGoal:
+            goalSwitcherMenu(currentGoal: currentGoal)
         }
     }
 
@@ -279,71 +247,12 @@ struct HomeView: View {
                     }
                 }
             } label: {
-                GoalSwitcherCapsuleLabel()
+                GoalSwitcherCapsuleLabel(title: "Switch")
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Switch goal")
             .accessibilityValue(currentGoal.title)
             .accessibilityHint("Changes the active goal throughout Checkpoint")
-        }
-    }
-
-    private func questionPreparationStatus(for goal: Goal) -> some View {
-        let readiness = store.checkpointReadiness(for: goal)
-        let selectableCount = readiness.selectableCount
-        let requiredCount = readiness.requiredCount
-
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 10) {
-                ProgressView()
-                    .tint(CheckpointTheme.teal)
-
-                Text(store.questionGenerationStatusText)
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            ProgressView(
-                value: Double(selectableCount),
-                total: Double(max(1, requiredCount))
-            )
-            .tint(CheckpointTheme.teal)
-
-            Text("\(selectableCount) of \(requiredCount) checkpoint questions ready")
-                .font(.caption.weight(.medium))
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(
-            "\(store.questionGenerationStatusText) \(selectableCount) of \(requiredCount) checkpoint questions ready."
-        )
-    }
-
-    private func dueDateLabel(_ deadline: Date) -> some View {
-        Text("Due \(deadline.formatted(.dateTime.month(.abbreviated).day()))")
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.muted)
-            .lineLimit(1)
-    }
-
-    @ViewBuilder
-    private var questionRecoveryActions: some View {
-        if store.lastQuestionGenerationFailure?.allowsRetryWithoutChanges != false {
-            SecondaryActionButton(
-                title: isRetryingInitialQuestions ? "Trying again" : "Try again",
-                systemImage: "arrow.clockwise"
-            ) {
-                retryInitialQuestionGeneration()
-            }
-            .disabled(isRetryingInitialQuestions)
-        }
-
-        if store.lastQuestionGenerationFailure?.allowsEditingTopics == true {
-            SecondaryActionButton(title: "Edit topics", systemImage: "pencil") {
-                store.presentActiveGoalEditor()
-            }
         }
     }
 
@@ -353,12 +262,6 @@ struct HomeView: View {
             isPreparing: store.isPreparingActiveGoalQuestions,
             hasReadyCheckpointSet: store.hasReadyCheckpointSet
         )
-    }
-
-    private var questionsReadyConfirmationTransition: AnyTransition {
-        reduceMotion
-            ? .identity
-            : .opacity.combined(with: .scale(scale: 0.98))
     }
 
     private func showQuestionsReadyConfirmation() {
@@ -790,6 +693,15 @@ struct HomeView: View {
 
     private var reduceMotion: Bool {
         reduceMotionOverride ?? accessibilityReduceMotion
+    }
+
+    private var referenceDate: Date {
+        referenceDateOverride ?? liveReferenceDate
+    }
+
+    private func refreshDeadlineReferenceDate() {
+        guard referenceDateOverride == nil else { return }
+        liveReferenceDate = Date()
     }
 
     private func retryInitialQuestionGeneration() {

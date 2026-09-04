@@ -194,15 +194,280 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testGoalSwitcherRendersAcrossKeyLayoutsAndStates() throws {
+    func testGoalOverviewResolvesCheckpointStateWithReadinessPrecedence() {
+        let ready = makeGoalOverviewPresentation(
+            readiness: .ready(selectableCount: 5, requiredCount: 5),
+            isGenerationBlockingPractice: true,
+            generationFailure: .qualityRejected
+        )
+        XCTAssertEqual(
+            ready.checkpointState,
+            .ready(
+                requiredCount: 5,
+                disclosure: .visible,
+                isNewlyPrepared: false
+            )
+        )
+
+        let contradictoryPreparing = makeGoalOverviewPresentation(
+            readiness: .preparing(selectableCount: 5, requiredCount: 5),
+            isGenerationBlockingPractice: true,
+            generationFailure: .serviceUnavailable
+        )
+        XCTAssertEqual(
+            contradictoryPreparing.checkpointState,
+            .ready(
+                requiredCount: 5,
+                disclosure: .visible,
+                isNewlyPrepared: false
+            )
+        )
+
+        let suppressedReady = makeGoalOverviewPresentation(
+            readiness: .ready(selectableCount: 5, requiredCount: 5),
+            readyDisclosure: .suppressedByFirstCheckpointLaunchpad,
+            isNewlyPrepared: true
+        )
+        XCTAssertEqual(
+            suppressedReady.checkpointState,
+            .ready(
+                requiredCount: 5,
+                disclosure: .suppressedByFirstCheckpointLaunchpad,
+                isNewlyPrepared: true
+            )
+        )
+
+        let preparing = makeGoalOverviewPresentation(
+            readiness: .preparing(selectableCount: 2, requiredCount: 5),
+            generationStatusText: "Getting your next checkpoint ready."
+        )
+        XCTAssertEqual(
+            preparing.checkpointState,
+            .preparing(
+                selectableCount: 2,
+                requiredCount: 5,
+                detail: "Getting your next checkpoint ready."
+            )
+        )
+
+        let recovery = makeGoalOverviewPresentation(
+            readiness: .incomplete(selectableCount: 0, requiredCount: 5),
+            isGenerationBlockingPractice: true,
+            generationFailure: .qualityRejected
+        )
+        XCTAssertEqual(
+            recovery.checkpointState,
+            .recovery(
+                title: QuestionGenerationFailureKind.qualityRejected.title,
+                message: QuestionGenerationFailureKind.qualityRejected.message,
+                actions: [.retry(isInProgress: false), .editGoal]
+            )
+        )
+
+        let incomplete = makeGoalOverviewPresentation(
+            readiness: .incomplete(selectableCount: 2, requiredCount: 5),
+            isGenerationBlockingPractice: false,
+            generationFailure: .qualityRejected
+        )
+        XCTAssertEqual(
+            incomplete.checkpointState,
+            .incomplete(selectableCount: 2, requiredCount: 5)
+        )
+    }
+
+    @MainActor
+    func testGoalOverviewRecoveryActionsMatchFailureCapabilities() {
+        let cases: [(
+            failure: QuestionGenerationFailureKind?,
+            expectedActions: [HomeGoalOverviewRecoveryAction]
+        )] = [
+            (.serviceUnavailable, [.retry(isInProgress: false)]),
+            (.transientProviderFailure, [.retry(isInProgress: false)]),
+            (.qualityRejected, [.retry(isInProgress: false), .editGoal]),
+            (.safetyIntervention, [.editGoal]),
+            (nil, [.retry(isInProgress: false)])
+        ]
+
+        for item in cases {
+            let presentation = makeGoalOverviewPresentation(
+                readiness: .incomplete(selectableCount: 0, requiredCount: 5),
+                isGenerationBlockingPractice: true,
+                generationFailure: item.failure
+            )
+            guard case let .recovery(title, message, actions) = presentation.checkpointState else {
+                return XCTFail("Expected a recovery state for \(String(describing: item.failure))")
+            }
+
+            XCTAssertFalse(title.isEmpty)
+            XCTAssertFalse(message.isEmpty)
+            XCTAssertEqual(actions, item.expectedActions)
+        }
+
+        let retrying = makeGoalOverviewPresentation(
+            readiness: .incomplete(selectableCount: 0, requiredCount: 5),
+            isGenerationBlockingPractice: true,
+            generationFailure: .serviceUnavailable,
+            isRetryingGeneration: true
+        )
+        guard case let .recovery(_, _, retryingActions) = retrying.checkpointState else {
+            return XCTFail("Expected a retrying recovery state")
+        }
+        XCTAssertEqual(retryingActions, [.retry(isInProgress: true)])
+        XCTAssertEqual(retryingActions.first?.title, "Trying again")
+        XCTAssertEqual(retryingActions.first?.isEnabled, false)
+    }
+
+    @MainActor
+    func testGoalOverviewActionDispatcherRoutesEnabledActions() {
+        var retryCount = 0
+        var editCount = 0
+        let dispatcher = HomeGoalOverviewActionDispatcher(
+            retryQuestions: { retryCount += 1 },
+            editGoal: { editCount += 1 }
+        )
+
+        dispatcher.perform(.retry(isInProgress: false))
+        dispatcher.perform(.editGoal)
+        dispatcher.perform(.retry(isInProgress: true))
+
+        XCTAssertEqual(retryCount, 1)
+        XCTAssertEqual(editCount, 1)
+    }
+
+    @MainActor
+    func testGoalOverviewGoalActionAndPassTargetUseProductPolicy() {
+        XCTAssertEqual(
+            makeGoalOverviewPresentation(availableGoalCount: 0).goalAction,
+            .none
+        )
+        XCTAssertEqual(
+            makeGoalOverviewPresentation(availableGoalCount: 1).goalAction,
+            .editGoal
+        )
+        XCTAssertEqual(
+            makeGoalOverviewPresentation(availableGoalCount: 2).goalAction,
+            .switchGoal
+        )
+
+        let customPolicy = UnlockPolicy(
+            unlockMinutes: 30,
+            partialUnlockMinutes: 15,
+            unlockOnPartial: false,
+            questionsPerSession: 10,
+            requiredCorrectAnswers: 7,
+            minimumQuestionDifficulty: 3
+        )
+        let customTarget = makeGoalOverviewPresentation(unlockPolicy: customPolicy)
+        XCTAssertEqual(customTarget.passTargetText, "7 of 10 correct")
+        XCTAssertEqual(
+            customTarget.passTargetAccessibilityLabel,
+            "Pass target, 7 correct answers out of 10 questions."
+        )
+    }
+
+    @MainActor
+    func testGoalOverviewDeadlineUsesCalendarDaysAndRelevantYear() {
+        var calendar = Calendar(identifier: .gregorian)
+        let locale = Locale(identifier: "en_US_POSIX")
+        let timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        calendar.locale = locale
+        calendar.timeZone = timeZone
+
+        func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Date {
+            calendar.date(
+                from: DateComponents(year: year, month: month, day: day, hour: hour)
+            )!
+        }
+
+        let dueToday = makeGoalOverviewPresentation(
+            deadline: date(2027, 9, 4, 23),
+            referenceDate: date(2027, 9, 4, 1),
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        ).deadline
+        XCTAssertEqual(dueToday.state, .dueToday)
+        XCTAssertEqual(dueToday.text, "Due today")
+        XCTAssertEqual(dueToday.accessibilityLabel, "Due today, September 4, 2027.")
+
+        let overdueAcrossDST = makeGoalOverviewPresentation(
+            deadline: date(2027, 3, 13, 12),
+            referenceDate: date(2027, 3, 15, 12),
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        ).deadline
+        XCTAssertEqual(overdueAcrossDST.state, .overdue(days: 2))
+        XCTAssertEqual(overdueAcrossDST.text, "Overdue · Mar 13")
+        XCTAssertEqual(
+            overdueAcrossDST.accessibilityLabel,
+            "Overdue by 2 days. Due March 13, 2027."
+        )
+
+        let upcoming = makeGoalOverviewPresentation(
+            deadline: date(2027, 10, 3, 12),
+            referenceDate: date(2027, 9, 4, 12),
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        ).deadline
+        XCTAssertEqual(upcoming.state, .upcoming(daysRemaining: 29))
+        XCTAssertEqual(upcoming.text, "Due Oct 3")
+        XCTAssertEqual(
+            upcoming.accessibilityLabel,
+            "Due in 29 days. Due October 3, 2027."
+        )
+
+        let nextYear = makeGoalOverviewPresentation(
+            deadline: date(2028, 1, 1, 12),
+            referenceDate: date(2027, 12, 31, 12),
+            calendar: calendar,
+            locale: locale,
+            timeZone: timeZone
+        ).deadline
+        XCTAssertEqual(nextYear.state, .upcoming(daysRemaining: 1))
+        XCTAssertEqual(nextYear.text, "Due Jan 1, 2028")
+        XCTAssertEqual(
+            nextYear.accessibilityLabel,
+            "Due in 1 day. Due January 1, 2028."
+        )
+    }
+
+    @MainActor
+    func testGoalOverviewMotionPolicyHonorsReduceMotion() {
+        let standard = HomeGoalOverviewMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertNotNil(standard.animation)
+
+        let reduced = HomeGoalOverviewMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.animation)
+    }
+
+    @MainActor
+    func testGoalOverviewRendersAcrossKeyLayoutsAndStates() throws {
         let fixtures = [
             HomeGoalSwitchRenderFixture(
-                name: "home-goal-switch-ready-light",
+                name: "home-goal-overview-ready-overdue-single-light",
                 width: 393,
                 height: 1_000,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
-                state: .ready
+                state: .singleReadyOverdue,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 15)
+            ),
+            HomeGoalSwitchRenderFixture(
+                name: "home-goal-overview-cross-year-overdue-xxxlarge",
+                width: 375,
+                height: 1_400,
+                colorScheme: .light,
+                dynamicTypeSize: .xxxLarge,
+                state: .singleReadyOverdue,
+                referenceDate: fixedGoalSwitchDate(
+                    year: 2028,
+                    month: 1,
+                    day: 15
+                )
             ),
             HomeGoalSwitchRenderFixture(
                 name: "home-goal-switch-ready-dark",
@@ -210,15 +475,27 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 height: 1_000,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
-                state: .ready
+                state: .ready,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5)
             ),
             HomeGoalSwitchRenderFixture(
-                name: "home-goal-switch-compact-long-duplicate",
-                width: 320,
-                height: 852,
+                name: "home-goal-overview-ready-first-checkpoint-launchpad",
+                width: 393,
+                height: 1_200,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
-                state: .ready
+                state: .ready,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5),
+                isProtectionActive: true
+            ),
+            HomeGoalSwitchRenderFixture(
+                name: "home-goal-overview-preparing-compact-dark",
+                width: 320,
+                height: 1_000,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                state: .preparing,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5)
             ),
             HomeGoalSwitchRenderFixture(
                 name: "home-goal-switch-preparing-accessibility5",
@@ -226,15 +503,18 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 height: 1_800,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility5,
-                state: .preparing
+                state: .preparing,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5)
             ),
             HomeGoalSwitchRenderFixture(
-                name: "home-goal-switch-failure-dark",
+                name: "home-goal-overview-failure-accessibility5-reduced-motion",
                 width: 393,
-                height: 1_150,
+                height: 2_200,
                 colorScheme: .dark,
-                dynamicTypeSize: .accessibility2,
-                state: .failed
+                dynamicTypeSize: .accessibility5,
+                state: .failed,
+                reduceMotion: true,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5)
             ),
             HomeGoalSwitchRenderFixture(
                 name: "home-goal-switch-starter-locked-reduced-motion",
@@ -243,7 +523,17 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 state: .starterLocked,
-                reduceMotion: true
+                reduceMotion: true,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5)
+            ),
+            HomeGoalSwitchRenderFixture(
+                name: "home-goal-overview-incomplete-single-light",
+                width: 393,
+                height: 1_000,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                state: .incomplete,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5)
             )
         ]
 
@@ -268,6 +558,11 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 defaults: screenTimeDefaults,
                 authorizer: HomeRenderScreenTimeAuthorizer()
             )
+            if fixture.isProtectionActive {
+                screenTime.setupState = .shieldActive
+                screenTime.isShieldingEnabled = true
+                screenTime.restrictedAppsSummary = "3 apps and 2 websites selected"
+            }
             let workflow = CheckpointWorkflowCoordinator(
                 store: store,
                 protection: screenTime
@@ -278,7 +573,8 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                     screenTime: screenTime,
                     workflow: workflow,
                     refreshesQuestionsOnActivation: false,
-                    reduceMotionOverride: fixture.reduceMotion
+                    reduceMotionOverride: fixture.reduceMotion,
+                    referenceDate: fixture.referenceDate
                 )
                 .environment(\.colorScheme, fixture.colorScheme)
                 .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
@@ -463,13 +759,62 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     }
 
     @MainActor
+    private func makeGoalOverviewPresentation(
+        deadline: Date? = nil,
+        readiness: GoalCheckpointReadiness = .ready(
+            selectableCount: 5,
+            requiredCount: 5
+        ),
+        isGenerationBlockingPractice: Bool = false,
+        generationFailure: QuestionGenerationFailureKind? = nil,
+        isRetryingGeneration: Bool = false,
+        readyDisclosure: HomeGoalOverviewReadyDisclosure = .visible,
+        isNewlyPrepared: Bool = false,
+        unlockPolicy: UnlockPolicy = .default,
+        availableGoalCount: Int = 1,
+        generationStatusText: String = "Getting your checkpoint ready.",
+        referenceDate: Date? = nil,
+        calendar: Calendar? = nil,
+        locale: Locale = Locale(identifier: "en_US_POSIX"),
+        timeZone: TimeZone? = nil
+    ) -> HomeGoalOverviewPresentation {
+        let resolvedCalendar = calendar ?? fixedGoalSwitchCalendar
+        let resolvedTimeZone = timeZone ?? resolvedCalendar.timeZone
+        let goal = Goal(
+            title: "Build a durable learning habit",
+            deadline: deadline ?? fixedGoalSwitchDate(month: 1, day: 10),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "system design",
+            preferredQuestionStyle: .multipleChoice
+        )
+
+        return HomeGoalOverviewPresentation(
+            goal: goal,
+            readiness: readiness,
+            isGenerationBlockingPractice: isGenerationBlockingPractice,
+            generationFailure: generationFailure,
+            isRetryingGeneration: isRetryingGeneration,
+            readyDisclosure: readyDisclosure,
+            isNewlyPrepared: isNewlyPrepared,
+            unlockPolicy: unlockPolicy,
+            availableGoalCount: availableGoalCount,
+            generationStatusText: generationStatusText,
+            referenceDate: referenceDate ?? fixedGoalSwitchDate(month: 1, day: 5),
+            calendar: resolvedCalendar,
+            locale: locale,
+            timeZone: resolvedTimeZone
+        )
+    }
+
+    @MainActor
     private func makeGoalSwitchRenderStore(
         defaults: UserDefaults,
         state: HomeGoalSwitchRenderState
     ) -> CheckpointStore {
         let firstGoal = Goal(
             title: "Build a polished, production-ready learning system",
-            deadline: Date(timeIntervalSinceReferenceDate: 820_454_400),
+            deadline: fixedGoalSwitchDate(month: 1, day: 10),
             category: .codingInterview,
             currentLevel: "Intermediate",
             focusAreas: "system design, reliability, communication",
@@ -477,7 +822,7 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         )
         let secondGoal = Goal(
             title: firstGoal.title,
-            deadline: Date(timeIntervalSinceReferenceDate: 828_230_400),
+            deadline: fixedGoalSwitchDate(month: 1, day: 20),
             category: .writing,
             currentLevel: "Intermediate",
             focusAreas: "structure, editing, clarity",
@@ -486,10 +831,15 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         let store = CheckpointStore(defaults: defaults)
         store.membershipTier = state == .starterLocked ? .starter : .member
         store.goal = firstGoal
-        store.goalProfiles = [firstGoal, secondGoal]
+        store.goalProfiles = switch state {
+        case .singleReadyOverdue, .failed, .incomplete:
+            [firstGoal]
+        case .ready, .preparing, .starterLocked:
+            [firstGoal, secondGoal]
+        }
 
         switch state {
-        case .ready, .starterLocked:
+        case .ready, .singleReadyOverdue, .starterLocked:
             store.questions = (1...store.unlockPolicy.questionsPerSession).map {
                 makeQuestion(goal: firstGoal, index: $0, topic: "system design")
             }
@@ -503,6 +853,11 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
             store.questions = []
             store.questionBatchState = .failed
             store.lastQuestionGenerationFailure = .qualityRejected
+        case .incomplete:
+            store.questions = [
+                makeQuestion(goal: firstGoal, index: 1, topic: "system design")
+            ]
+            store.questionBatchState = .idle
         }
 
         return store
@@ -519,9 +874,14 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         return calendar
     }
 
-    private func fixedGoalSwitchDate(month: Int, day: Int) -> Date {
+    private func fixedGoalSwitchDate(
+        year: Int = 2027,
+        month: Int,
+        day: Int,
+        hour: Int = 12
+    ) -> Date {
         fixedGoalSwitchCalendar.date(
-            from: DateComponents(year: 2027, month: month, day: day, hour: 12)
+            from: DateComponents(year: year, month: month, day: day, hour: hour)
         )!
     }
 }
@@ -554,12 +914,16 @@ private struct HomeGoalSwitchRenderFixture {
     var dynamicTypeSize: DynamicTypeSize
     var state: HomeGoalSwitchRenderState
     var reduceMotion = false
+    var referenceDate: Date
+    var isProtectionActive = false
 }
 
 private enum HomeGoalSwitchRenderState {
     case ready
+    case singleReadyOverdue
     case preparing
     case failed
+    case incomplete
     case starterLocked
 }
 
