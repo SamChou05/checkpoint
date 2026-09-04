@@ -81,6 +81,115 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertEqual(yearly.recurringSubscriptionPeriod, "P1Y")
     }
 
+    func testCatalogDerivesLocalizedAnnualValueAndRecommendsIt() throws {
+        let presentation = MembershipCatalogPresentation(
+            storeProducts: [
+                makeStoreProduct(
+                    id: MembershipProductID.monthly,
+                    price: "4.99",
+                    displayPrice: "$4.99",
+                    billingPeriod: .month
+                ),
+                makeStoreProduct(
+                    id: MembershipProductID.yearly,
+                    price: "29.99",
+                    displayPrice: "$29.99",
+                    billingPeriod: .year
+                )
+            ]
+        )
+
+        XCTAssertEqual(presentation.planOptions.map(\.id), [
+            MembershipProductID.yearly,
+            MembershipProductID.monthly
+        ])
+        XCTAssertEqual(presentation.defaultPlanID, MembershipProductID.yearly)
+
+        let annual = try XCTUnwrap(presentation.planOptions.first)
+        XCTAssertEqual(annual.detail, "$2.50 per month when billed annually.")
+        XCTAssertEqual(annual.valueBadge, "Save 50%")
+        XCTAssertTrue(annual.isRecommended)
+    }
+
+    func testCatalogOmitsSavingsWhenComparisonWouldMislead() throws {
+        let mismatchedCurrency = MembershipCatalogPresentation(
+            storeProducts: [
+                makeStoreProduct(
+                    id: MembershipProductID.monthly,
+                    price: "4.99",
+                    displayPrice: "$4.99",
+                    billingPeriod: .month
+                ),
+                makeStoreProduct(
+                    id: MembershipProductID.yearly,
+                    price: "29.99",
+                    displayPrice: "€29.99",
+                    currencyCode: "EUR",
+                    billingPeriod: .year
+                )
+            ]
+        )
+        let noDiscount = MembershipCatalogPresentation(
+            storeProducts: [
+                makeStoreProduct(
+                    id: MembershipProductID.monthly,
+                    price: "4.99",
+                    displayPrice: "$4.99",
+                    billingPeriod: .month
+                ),
+                makeStoreProduct(
+                    id: MembershipProductID.yearly,
+                    price: "59.88",
+                    displayPrice: "$59.88",
+                    billingPeriod: .year
+                )
+            ]
+        )
+
+        for presentation in [mismatchedCurrency, noDiscount] {
+            XCTAssertEqual(presentation.defaultPlanID, MembershipProductID.monthly)
+            let annual = try XCTUnwrap(
+                presentation.planOptions.first { $0.id == MembershipProductID.yearly }
+            )
+            XCTAssertNil(annual.valueBadge)
+            XCTAssertFalse(annual.isRecommended)
+            XCTAssertEqual(
+                annual.detail,
+                "Billed annually through Apple for uninterrupted practice."
+            )
+        }
+    }
+
+    func testCatalogRejectsMislabeledPeriodsAndPreservesValidSelection() {
+        let presentation = MembershipCatalogPresentation(
+            storeProducts: [
+                makeStoreProduct(
+                    id: MembershipProductID.monthly,
+                    price: "4.99",
+                    displayPrice: "$4.99",
+                    billingPeriod: .year
+                ),
+                makeStoreProduct(
+                    id: MembershipProductID.yearly,
+                    price: "29.99",
+                    displayPrice: "$29.99",
+                    billingPeriod: .year
+                )
+            ]
+        )
+
+        XCTAssertEqual(presentation.planOptions.map(\.id), [MembershipProductID.yearly])
+        XCTAssertEqual(presentation.defaultPlanID, MembershipProductID.yearly)
+        XCTAssertEqual(
+            presentation.resolvedSelection(currentID: MembershipProductID.yearly),
+            MembershipProductID.yearly
+        )
+        XCTAssertEqual(
+            presentation.resolvedSelection(currentID: MembershipProductID.monthly),
+            MembershipProductID.yearly
+        )
+    }
+
     private func localSubscriptions() throws -> [StoreKitSubscription] {
         let url = try XCTUnwrap(
             Bundle(for: StoreKitPaymentTests.self).url(forResource: "CheckpointProducts", withExtension: "storekit")
@@ -89,6 +198,23 @@ final class StoreKitPaymentTests: XCTestCase {
         let config = try JSONDecoder().decode(StoreKitConfiguration.self, from: data)
 
         return config.subscriptionGroups.flatMap(\.subscriptions)
+    }
+
+    private func makeStoreProduct(
+        id: String,
+        price: String,
+        displayPrice: String,
+        currencyCode: String = "USD",
+        billingPeriod: MembershipBillingPeriod
+    ) -> MembershipStoreProduct {
+        MembershipStoreProduct(
+            id: id,
+            price: Decimal(string: price)!,
+            displayPrice: displayPrice,
+            currencyCode: currencyCode,
+            locale: Locale(identifier: "en_US"),
+            billingPeriod: billingPeriod
+        )
     }
 }
 

@@ -55,6 +55,7 @@
 		AB0000000000000000000014 /* WeeklyMetricsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000014 /* WeeklyMetricsCalculator.swift */; };
 		AB0000000000000000000015 /* CheckpointQuestionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* CheckpointQuestionSelector.swift */; };
 		AB0000000000000000000016 /* SkillMapReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000016 /* SkillMapReconciler.swift */; };
+		AB0000000000000000000017 /* MembershipPlanPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000017 /* MembershipPlanPresentation.swift */; };
 		B10000000000000000000001 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
 		B10000000000000000000002 /* ShieldConfigurationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* ShieldConfigurationExtension.swift */; };
 		B10000000000000000000003 /* SharedAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* SharedAppGroup.swift */; };
@@ -211,6 +212,7 @@
 		AA0000000000000000000014 /* WeeklyMetricsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyMetricsCalculator.swift; sourceTree = "<group>"; };
 		AA0000000000000000000015 /* CheckpointQuestionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointQuestionSelector.swift; sourceTree = "<group>"; };
 		AA0000000000000000000016 /* SkillMapReconciler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillMapReconciler.swift; sourceTree = "<group>"; };
+		AA0000000000000000000017 /* MembershipPlanPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipPlanPresentation.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* SharedAppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedAppGroup.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* ShieldConfigurationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldConfigurationExtension.swift; sourceTree = "<group>"; };
 		B20000000000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 				AA0000000000000000000006 /* QuestionModels.swift */,
 				AA0000000000000000000003 /* CheckpointSessionModels.swift */,
 				AA0000000000000000000005 /* ProductAccessModels.swift */,
+				AA0000000000000000000017 /* MembershipPlanPresentation.swift */,
 				AA0000000000000000000002 /* AppSnapshot.swift */,
 				AA0000000000000000000001 /* AnswerGrader.swift */,
 			);
@@ -756,6 +759,7 @@
 				AB0000000000000000000006 /* QuestionModels.swift in Sources */,
 				AB0000000000000000000003 /* CheckpointSessionModels.swift in Sources */,
 				AB0000000000000000000005 /* ProductAccessModels.swift in Sources */,
+				AB0000000000000000000017 /* MembershipPlanPresentation.swift in Sources */,
 				AB0000000000000000000002 /* AppSnapshot.swift in Sources */,
 				AB0000000000000000000001 /* AnswerGrader.swift in Sources */,
 				A10000000000000000000004 /* QuestionEngine.swift in Sources */,

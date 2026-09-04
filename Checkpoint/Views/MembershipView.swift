@@ -2,27 +2,6 @@ import Accessibility
 import StoreKit
 import SwiftUI
 
-struct MembershipPlanOption: Identifiable, Equatable {
-    let id: String
-    let title: String
-    let displayPrice: String
-    let cadence: String
-    let detail: String
-
-    init?(product: Product) {
-        let isAnnual = product.id == MembershipProductID.yearly
-        guard isAnnual || product.id == MembershipProductID.monthly else { return nil }
-
-        id = product.id
-        title = isAnnual ? "Annual" : "Monthly"
-        displayPrice = product.displayPrice
-        cadence = isAnnual ? "per year" : "per month"
-        detail = isAnnual
-            ? "Billed annually through Apple for uninterrupted practice."
-            : "Flexible monthly access, billed through Apple."
-    }
-}
-
 struct MembershipView: View {
     let feature: MembershipFeature
     let store: CheckpointStore
@@ -402,7 +381,11 @@ struct MembershipView: View {
     }
 
     private var planOptions: [MembershipPlanOption] {
-        purchaseController.products.compactMap { MembershipPlanOption(product: $0) }
+        catalogPresentation.planOptions
+    }
+
+    private var catalogPresentation: MembershipCatalogPresentation {
+        MembershipCatalogPresentation(products: purchaseController.products)
     }
 
     private var selectedOption: MembershipPlanOption? {
@@ -474,10 +457,9 @@ struct MembershipView: View {
         }
         guard !planOptions.contains(where: { $0.id == selectedProductID }) else { return }
 
-        let defaultOption = planOptions.first { $0.id == MembershipProductID.monthly }
-            ?? planOptions.first
+        let defaultOptionID = catalogPresentation.resolvedSelection(currentID: selectedProductID)
         withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
-            selectedProductID = defaultOption?.id
+            selectedProductID = defaultOptionID
         }
     }
 
