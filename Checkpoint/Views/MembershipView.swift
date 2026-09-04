@@ -31,7 +31,7 @@ struct MembershipViewRenderConfiguration {
 }
 
 struct MembershipView: View {
-    let feature: MembershipFeature
+    let context: MembershipPresentationContext
     let store: CheckpointStore
     let purchaseController: PurchaseController
 
@@ -50,12 +50,12 @@ struct MembershipView: View {
     @State private var selectionFeedbackSequence = 0
 
     init(
-        feature: MembershipFeature,
+        context: MembershipPresentationContext,
         store: CheckpointStore,
         purchaseController: PurchaseController,
         renderConfiguration: MembershipViewRenderConfiguration? = nil
     ) {
-        self.feature = feature
+        self.context = context
         self.store = store
         self.purchaseController = purchaseController
         legalLinks = renderConfiguration?.legalLinks ?? .current
@@ -151,13 +151,13 @@ struct MembershipView: View {
 
                 VStack(alignment: .leading, spacing: 9) {
                     if !store.isMember {
-                        Label("UNLOCK \(feature.title.uppercased())", systemImage: "sparkles")
+                        Label(context.heroLabel, systemImage: "sparkles")
                             .font(.caption2.weight(.bold))
                             .tracking(0.72)
                             .foregroundStyle(CheckpointTheme.mint)
                     }
 
-                    Text(store.isMember ? "Your practice stays in motion." : feature.membershipHeadline)
+                    Text(store.isMember ? "Your practice stays in motion." : context.membershipHeadline)
                         .font(.system(.largeTitle, design: .rounded, weight: .bold))
                         .foregroundStyle(proText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -165,7 +165,7 @@ struct MembershipView: View {
                     Text(
                         store.isMember
                             ? "Fresh, adaptive checkpoints stay ready as your goals and skills evolve."
-                            : feature.detail
+                            : context.detail
                     )
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(proSecondaryText)
@@ -236,10 +236,18 @@ struct MembershipView: View {
     }
 
     private var proEyebrow: some View {
-        Text("CHECKPOINT PRO")
-            .font(.caption2.weight(.bold))
-            .tracking(1.0)
-            .foregroundStyle(proSecondaryText)
+        ViewThatFits(in: .horizontal) {
+            Text("CHECKPOINT PRO")
+                .fixedSize()
+
+            VStack(alignment: .leading, spacing: 0) {
+                Text("CHECKPOINT")
+                Text("PRO")
+            }
+        }
+        .font(.caption2.weight(.bold))
+        .tracking(1.0)
+        .foregroundStyle(proSecondaryText)
     }
 
     private var activePlanBadge: some View {
@@ -343,7 +351,7 @@ struct MembershipView: View {
 
     private var memberPlanSummary: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text("Pro is active")
+            Text("Pro access is active")
                 .font(.headline)
                 .foregroundStyle(CheckpointTheme.text)
 

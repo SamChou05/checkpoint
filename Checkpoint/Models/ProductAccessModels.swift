@@ -62,6 +62,52 @@ enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+enum MembershipPresentationContext: Equatable, Identifiable, Sendable {
+    case overview
+    case feature(MembershipFeature)
+
+    var id: String {
+        switch self {
+        case .overview:
+            "overview"
+        case .feature(let feature):
+            "feature.\(feature.id)"
+        }
+    }
+
+    var heroLabel: String {
+        switch self {
+        case .overview:
+            "THE FULL EXPERIENCE"
+        case .feature(let feature):
+            "UNLOCK \(feature.title.uppercased())"
+        }
+    }
+
+    var membershipHeadline: String {
+        switch self {
+        case .overview:
+            "Practice that keeps pace with you."
+        case .feature(let feature):
+            feature.membershipHeadline
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .overview:
+            "Build up to \(ProductLimits.memberGoalProfileLimit) focused goals, keep checkpoints fresh, and get a clear Next Focus from your progress."
+        case .feature(let feature):
+            feature.detail
+        }
+    }
+
+    var feature: MembershipFeature? {
+        guard case .feature(let feature) = self else { return nil }
+        return feature
+    }
+}
+
 enum MembershipProductID {
     static let monthly = "checkpoint.membership.monthly"
     static let yearly = "checkpoint.membership.yearly"

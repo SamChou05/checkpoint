@@ -61,8 +61,8 @@ struct RootView: View {
         .sheet(item: $activeCheckpointSession, onDismiss: handlePendingShieldActivation) { session in
             CheckpointAttemptView(store: store, workflow: workflow, session: session)
         }
-        .sheet(item: membershipFeatureBinding) { feature in
-            MembershipView(feature: feature, store: store, purchaseController: purchaseController)
+        .sheet(item: membershipPresentationBinding) { context in
+            MembershipView(context: context, store: store, purchaseController: purchaseController)
         }
         .sheet(
             isPresented: onboardingPresentationBinding,
@@ -214,7 +214,7 @@ struct RootView: View {
               !isOnboardingSheetActive,
               !firstRunSetup.isAppSelectionPresented,
               activeCheckpointSession == nil,
-              store.pendingMembershipFeature == nil,
+              store.pendingMembershipPresentation == nil,
               let goalID = store.goal?.id,
               goalID != firstRunSetup.suppressedSuggestedSkillMapGoalID,
               let skillMap = store.activeDerivedSkillMap,
@@ -328,12 +328,12 @@ struct RootView: View {
         store.reconcileMembershipEntitlement(isUnlocked: unlocked)
     }
 
-    private var membershipFeatureBinding: Binding<MembershipFeature?> {
+    private var membershipPresentationBinding: Binding<MembershipPresentationContext?> {
         Binding(
-            get: { store.pendingMembershipFeature },
-            set: { feature in
-                if let feature {
-                    store.pendingMembershipFeature = feature
+            get: { store.pendingMembershipPresentation },
+            set: { context in
+                if let context {
+                    store.pendingMembershipPresentation = context
                 } else {
                     store.dismissMembershipPrompt()
                 }

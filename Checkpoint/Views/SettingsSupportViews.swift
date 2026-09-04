@@ -165,6 +165,374 @@ struct AdvancedConfirmationView: View {
     }
 }
 
+enum SettingsPlanState: Equatable, Sendable {
+    case free
+    case pendingPurchase
+    case pro
+}
+
+struct SettingsPlanPresentation: Equatable, Sendable {
+    let state: SettingsPlanState
+
+    init(
+        membershipTier: MembershipTier,
+        purchaseNotice: MembershipPurchaseNotice?
+    ) {
+        if membershipTier == .member {
+            state = .pro
+        } else if purchaseNotice?.isPending == true {
+            state = .pendingPurchase
+        } else {
+            state = .free
+        }
+    }
+
+    var planName: String {
+        switch state {
+        case .free:
+            "Checkpoint Free"
+        case .pendingPurchase, .pro:
+            "Checkpoint Pro"
+        }
+    }
+
+    var badgeText: String {
+        switch state {
+        case .free:
+            "FREE"
+        case .pendingPurchase:
+            "PENDING"
+        case .pro:
+            "PRO ACTIVE"
+        }
+    }
+
+    var headline: String {
+        switch state {
+        case .free:
+            "Protection for one focused goal."
+        case .pendingPurchase:
+            "Your purchase is awaiting approval."
+        case .pro:
+            "Your practice stays in motion."
+        }
+    }
+
+    var detail: String {
+        switch state {
+        case .free:
+            "Explore Pro for up to \(ProductLimits.memberGoalProfileLimit) goals, fresh checkpoints, and adaptive Next Focus."
+        case .pendingPurchase:
+            "Pro unlocks as soon as the App Store confirms it."
+        case .pro:
+            "Up to \(ProductLimits.memberGoalProfileLimit) focused goals, fresh checkpoints, and adaptive Next Focus are unlocked."
+        }
+    }
+
+    var actionTitle: String {
+        switch state {
+        case .free:
+            "Explore Checkpoint Pro"
+        case .pendingPurchase:
+            "Check purchase status"
+        case .pro:
+            "View plan & billing"
+        }
+    }
+
+    var systemImage: String {
+        switch state {
+        case .free:
+            "shield.lefthalf.filled"
+        case .pendingPurchase:
+            "clock.fill"
+        case .pro:
+            "sparkles"
+        }
+    }
+
+    var actionSystemImage: String {
+        switch state {
+        case .free:
+            "arrow.up.right"
+        case .pendingPurchase:
+            "clock.arrow.circlepath"
+        case .pro:
+            "creditcard"
+        }
+    }
+
+    var accessibilityLabel: String {
+        switch state {
+        case .free:
+            "Checkpoint Free"
+        case .pendingPurchase:
+            "Checkpoint Pro purchase"
+        case .pro:
+            "Checkpoint Pro"
+        }
+    }
+
+    var accessibilityValue: String {
+        switch state {
+        case .free:
+            "Current plan. App protection for one focused goal. Checkpoint Pro adds up to \(ProductLimits.memberGoalProfileLimit) goals, fresh checkpoints, and adaptive Next Focus."
+        case .pendingPurchase:
+            "Pending App Store approval. Pro unlocks after confirmation."
+        case .pro:
+            "Active access. Up to \(ProductLimits.memberGoalProfileLimit) focused goals, fresh checkpoints, and adaptive Next Focus are unlocked."
+        }
+    }
+
+    var accessibilityHint: String {
+        switch state {
+        case .free:
+            "Opens Checkpoint Pro plans."
+        case .pendingPurchase:
+            "Opens purchase status and plan options."
+        case .pro:
+            "Opens plan and billing."
+        }
+    }
+}
+
+enum SettingsPlanMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct SettingsPlanMotionPolicy: Equatable {
+    let style: SettingsPlanMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var animatesSymbol: Bool {
+        style == .animated
+    }
+
+    var pressedScale: CGFloat {
+        style == .animated ? 0.99 : 1
+    }
+}
+
+struct SettingsPlanCard: View {
+    let presentation: SettingsPlanPresentation
+    let action: () -> Void
+
+    private let reduceMotionOverride: Bool?
+
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var symbolEffectSequence = 0
+
+    init(
+        presentation: SettingsPlanPresentation,
+        reduceMotionOverride: Bool? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.presentation = presentation
+        self.reduceMotionOverride = reduceMotionOverride
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            CheckpointHeroSurface(
+                glowColor: accentTint,
+                glowOpacity: 0.11,
+                glowDiameter: 132,
+                glowBlurRadius: 12,
+                glowOffset: CGSize(width: 58, height: -72),
+                contentPadding: 17
+            ) {
+                VStack(alignment: .leading, spacing: 16) {
+                    planHeader
+
+                    VStack(alignment: .leading, spacing: 7) {
+                        Text(presentation.headline)
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(CheckpointTheme.heroText)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .contentTransition(.interpolate)
+
+                        Text(presentation.detail)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(CheckpointTheme.heroMuted)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .contentTransition(.interpolate)
+                    }
+
+                    Divider()
+                        .overlay(CheckpointTheme.heroBorder)
+                        .accessibilityHidden(true)
+
+                    planAction
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(SettingsPlanCardButtonStyle(motionPolicy: motionPolicy))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(presentation.accessibilityLabel)
+        .accessibilityValue(presentation.accessibilityValue)
+        .accessibilityHint(presentation.accessibilityHint)
+        .animation(motionPolicy.animation, value: presentation.state)
+        .onAppear {
+            triggerSymbolEffectIfNeeded()
+        }
+        .onChange(of: presentation.state) { _, _ in
+            triggerSymbolEffectIfNeeded()
+        }
+    }
+
+    @ViewBuilder
+    private var planHeader: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 10) {
+                planIdentity
+                planBadge
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 12) {
+                    planIdentity
+                    Spacer(minLength: 8)
+                    planBadge
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    planIdentity
+                    planBadge
+                }
+            }
+        }
+    }
+
+    private var planIdentity: some View {
+        HStack(spacing: 11) {
+            Image(systemName: presentation.systemImage)
+                .symbolRenderingMode(.hierarchical)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(accentTint)
+                .frame(width: 40, height: 40)
+                .background(
+                    CheckpointTheme.heroSubtleFill,
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(.bounce, options: .nonRepeating, value: symbolEffectSequence)
+                .symbolEffectsRemoved(!motionPolicy.animatesSymbol)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("YOUR PLAN")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.9)
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+
+                Text(presentation.planName)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.heroText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.interpolate)
+            }
+        }
+    }
+
+    private var planBadge: some View {
+        Text(presentation.badgeText)
+            .font(.caption2.weight(.bold))
+            .tracking(0.4)
+            .foregroundStyle(accentTint)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 6)
+            .background(accentTint.opacity(0.12), in: Capsule())
+            .contentTransition(.interpolate)
+            .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var planAction: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                planActionTitle
+                planActionIcon
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 10) {
+                    planActionTitle
+                    Spacer(minLength: 8)
+                    planActionIcon
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    planActionTitle
+                    planActionIcon
+                }
+            }
+        }
+    }
+
+    private var planActionTitle: some View {
+        Text(presentation.actionTitle)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.mint)
+            .fixedSize(horizontal: false, vertical: true)
+            .contentTransition(.interpolate)
+    }
+
+    private var planActionIcon: some View {
+        Image(systemName: presentation.actionSystemImage)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.mint)
+            .contentTransition(.symbolEffect(.replace))
+            .accessibilityHidden(true)
+    }
+
+    private var accentTint: Color {
+        switch presentation.state {
+        case .free:
+            CheckpointTheme.blue
+        case .pendingPurchase:
+            CheckpointTheme.amber
+        case .pro:
+            CheckpointTheme.mint
+        }
+    }
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
+
+    private var motionPolicy: SettingsPlanMotionPolicy {
+        SettingsPlanMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private func triggerSymbolEffectIfNeeded() {
+        guard motionPolicy.animatesSymbol else { return }
+        symbolEffectSequence += 1
+    }
+}
+
+private struct SettingsPlanCardButtonStyle: ButtonStyle {
+    let motionPolicy: SettingsPlanMotionPolicy
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? motionPolicy.pressedScale : 1)
+            .opacity(configuration.isPressed ? 0.9 : 1)
+            .animation(motionPolicy.animation, value: configuration.isPressed)
+    }
+}
+
 struct SettingsNavigationRow: View {
     var title: String
     var detail: String

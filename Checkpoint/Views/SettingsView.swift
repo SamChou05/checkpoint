@@ -50,7 +50,6 @@ struct SettingsView: View {
     @State private var isHistoryPresented = false
     @State private var isIssueReportsPresented = false
     @State private var isGenerationDiagnosticsPresented = false
-    @State private var isPlanPresented = false
     @State private var isPracticeStandardExpanded = false
     @State private var isAppDataExpanded = false
     @State private var isDeveloperToolsExpanded = false
@@ -69,6 +68,7 @@ struct SettingsView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     protectionPanel
+                    planPanel
                     goalsPanel
 
                     SectionPanel("Practice standard") {
@@ -76,7 +76,6 @@ struct SettingsView: View {
                     }
 
                     activityPanel
-                    planPanel
                     privacyAndSupportPanel
                     appDataPanel
 
@@ -102,9 +101,6 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $isGenerationDiagnosticsPresented) {
                 QuestionGenerationDiagnosticsView(store: store)
-            }
-            .sheet(isPresented: $isPlanPresented) {
-                MembershipView(feature: .freshQuestionGeneration, store: store, purchaseController: purchaseController)
             }
             .sheet(item: $advancedAction) { action in
                 AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
@@ -724,14 +720,6 @@ struct SettingsView: View {
         return uniqueMessages.isEmpty ? nil : uniqueMessages.joined(separator: " ")
     }
 
-    private var planDetailText: String {
-        if store.isMember {
-            return "Pro is active: multiple goals, ongoing practice, and Next Focus."
-        }
-
-        return "Free includes one goal and app protection."
-    }
-
     private var historyDetailText: String {
         store.activeAttempts.isEmpty ? "No practice yet" : "Review past answers"
     }
@@ -835,16 +823,13 @@ struct SettingsView: View {
     }
 
     private var planPanel: some View {
-        SectionPanel("Plan") {
-            SettingsNavigationRow(
-                title: "Free and Pro",
-                detail: planDetailText,
-                systemImage: "creditcard",
-                trailingText: store.membershipTier.displayName,
-                voiceOverValue: "\(store.membershipTier.displayName) plan. \(planDetailText)"
-            ) {
-                isPlanPresented = true
-            }
+        SettingsPlanCard(
+            presentation: SettingsPlanPresentation(
+                membershipTier: store.membershipTier,
+                purchaseNotice: purchaseController.purchaseNotice
+            )
+        ) {
+            store.requestMembershipOverview()
         }
     }
 

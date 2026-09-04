@@ -5,11 +5,342 @@ import XCTest
 final class MembershipViewRenderingTests: XCTestCase {
     @MainActor
     func testMembershipJourneyRendersAcrossKeyLayoutsAndStates() throws {
-        let legalLinks = LegalLinks(
+        let legalLinks = try makeLegalLinks()
+        let planOptions = try makePlanOptions()
+
+        let fixtures = [
+            MembershipRenderFixture(
+                name: "membership-annual-light",
+                context: .feature(.adaptiveStudyAssist),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            ),
+            MembershipRenderFixture(
+                name: "membership-monthly-compact-dark",
+                context: .feature(.goalProfiles),
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.monthly
+            ),
+            MembershipRenderFixture(
+                name: "membership-annual-accessibility",
+                context: .feature(.largerQuestionBank),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility2,
+                reduceMotion: true,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            ),
+            MembershipRenderFixture(
+                name: "membership-compact-accessibility5",
+                context: .feature(.goalProfiles),
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            ),
+            MembershipRenderFixture(
+                name: "membership-loading",
+                context: .feature(.freshQuestionGeneration),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                isLoading: true
+            ),
+            MembershipRenderFixture(
+                name: "membership-unavailable",
+                context: .feature(.freshQuestionGeneration),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                purchaseNotice: .catalogUnavailable("Could not load App Store plans yet.")
+            ),
+            MembershipRenderFixture(
+                name: "membership-pending-dark",
+                context: .feature(.adaptiveStudyAssist),
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly,
+                purchaseNotice: .pendingApproval
+            ),
+            MembershipRenderFixture(
+                name: "membership-purchase-failure",
+                context: .feature(.goalProfiles),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.monthly,
+                purchaseNotice: .failure("Purchase failed. Try again from the App Store sheet.")
+            ),
+            MembershipRenderFixture(
+                name: "membership-restore-information",
+                context: .feature(.freshQuestionGeneration),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly,
+                purchaseNotice: .information("No active Checkpoint Pro subscription was found.")
+            ),
+            MembershipRenderFixture(
+                name: "membership-active-accessibility",
+                context: .feature(.freshQuestionGeneration),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility2,
+                reduceMotion: true,
+                isMember: true
+            )
+        ]
+
+        try renderMembershipFixtures(fixtures, legalLinks: legalLinks)
+    }
+
+    @MainActor
+    func testMembershipOverviewRendersAcrossKeyLayouts() throws {
+        let legalLinks = try makeLegalLinks()
+        let planOptions = try makePlanOptions()
+        let fixtures = [
+            MembershipRenderFixture(
+                name: "membership-overview-light",
+                context: .overview,
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            ),
+            MembershipRenderFixture(
+                name: "membership-overview-accessibility5-dark",
+                context: .overview,
+                width: 393,
+                height: 2_200,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            )
+        ]
+
+        try renderMembershipFixtures(fixtures, legalLinks: legalLinks)
+    }
+
+    func testMembershipPresentationContextKeepsOverviewAndFeatureCopyDistinct() {
+        let overview = MembershipPresentationContext.overview
+        let feature = MembershipPresentationContext.feature(.adaptiveStudyAssist)
+
+        XCTAssertEqual(overview.id, "overview")
+        XCTAssertEqual(overview.heroLabel, "THE FULL EXPERIENCE")
+        XCTAssertEqual(overview.membershipHeadline, "Practice that keeps pace with you.")
+        XCTAssertEqual(
+            overview.detail,
+            "Build up to 5 focused goals, keep checkpoints fresh, and get a clear Next Focus from your progress."
+        )
+        XCTAssertNil(overview.feature)
+
+        XCTAssertEqual(feature.id, "feature.adaptiveStudyAssist")
+        XCTAssertEqual(feature.heroLabel, "UNLOCK NEXT FOCUS")
+        XCTAssertEqual(feature.membershipHeadline, MembershipFeature.adaptiveStudyAssist.membershipHeadline)
+        XCTAssertEqual(feature.detail, MembershipFeature.adaptiveStudyAssist.detail)
+        XCTAssertEqual(feature.feature, .adaptiveStudyAssist)
+    }
+
+    @MainActor
+    func testStoreRoutesSettingsOverviewWithoutMasqueradingAsAFeatureGate() throws {
+        let suiteName = "MembershipViewRenderingTests.route.\(UUID().uuidString)"
+        defer { UserDefaults.standard.removePersistentDomain(forName: suiteName) }
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        let store = CheckpointStore(defaults: defaults)
+
+        store.requestMembershipOverview()
+        XCTAssertEqual(store.pendingMembershipPresentation, .overview)
+        XCTAssertNil(store.pendingMembershipFeature)
+
+        store.requestMembership(for: .goalProfiles)
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertEqual(store.pendingMembershipFeature, .goalProfiles)
+
+        store.dismissMembershipPrompt()
+        XCTAssertNil(store.pendingMembershipPresentation)
+        XCTAssertNil(store.pendingMembershipFeature)
+    }
+
+    func testSettingsPlanPresentationIsStateHonestAndPrioritizesProAccess() {
+        let free = SettingsPlanPresentation(
+            membershipTier: .starter,
+            purchaseNotice: nil
+        )
+        let pending = SettingsPlanPresentation(
+            membershipTier: .starter,
+            purchaseNotice: .pendingApproval
+        )
+        let pro = SettingsPlanPresentation(
+            membershipTier: .member,
+            purchaseNotice: .pendingApproval
+        )
+
+        XCTAssertEqual(free.state, .free)
+        XCTAssertEqual(free.planName, "Checkpoint Free")
+        XCTAssertEqual(free.badgeText, "FREE")
+        XCTAssertEqual(free.headline, "Protection for one focused goal.")
+        XCTAssertEqual(
+            free.detail,
+            "Explore Pro for up to 5 goals, fresh checkpoints, and adaptive Next Focus."
+        )
+        XCTAssertEqual(free.actionTitle, "Explore Checkpoint Pro")
+        XCTAssertEqual(free.accessibilityLabel, "Checkpoint Free")
+        XCTAssertEqual(free.accessibilityHint, "Opens Checkpoint Pro plans.")
+
+        XCTAssertEqual(pending.state, .pendingPurchase)
+        XCTAssertEqual(pending.badgeText, "PENDING")
+        XCTAssertEqual(pending.headline, "Your purchase is awaiting approval.")
+        XCTAssertEqual(pending.detail, "Pro unlocks as soon as the App Store confirms it.")
+        XCTAssertEqual(pending.actionTitle, "Check purchase status")
+        XCTAssertEqual(pending.accessibilityLabel, "Checkpoint Pro purchase")
+        XCTAssertEqual(pending.accessibilityHint, "Opens purchase status and plan options.")
+
+        XCTAssertEqual(pro.state, .pro)
+        XCTAssertEqual(pro.badgeText, "PRO ACTIVE")
+        XCTAssertEqual(pro.headline, "Your practice stays in motion.")
+        XCTAssertEqual(
+            pro.detail,
+            "Up to 5 focused goals, fresh checkpoints, and adaptive Next Focus are unlocked."
+        )
+        XCTAssertEqual(pro.actionTitle, "View plan & billing")
+        XCTAssertEqual(pro.accessibilityLabel, "Checkpoint Pro")
+        XCTAssertEqual(pro.accessibilityHint, "Opens plan and billing.")
+    }
+
+    func testSettingsPlanMotionPolicyRespectsReduceMotion() {
+        let animated = SettingsPlanMotionPolicy(reduceMotion: false)
+        let reduced = SettingsPlanMotionPolicy(reduceMotion: true)
+
+        XCTAssertEqual(animated.style, .animated)
+        XCTAssertTrue(animated.animatesSymbol)
+        XCTAssertLessThan(animated.pressedScale, 1)
+        XCTAssertNotNil(animated.animation)
+
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertFalse(reduced.animatesSymbol)
+        XCTAssertEqual(reduced.pressedScale, 1)
+        XCTAssertNil(reduced.animation)
+    }
+
+    @MainActor
+    func testSettingsPlanCardRendersAcrossKeyLayoutsAndStates() {
+        let fixtures = [
+            SettingsPlanRenderFixture(
+                name: "settings-plan-free-light",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: nil
+                ),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pending-dark",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: .pendingApproval
+                ),
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pro-compact-dark",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .member,
+                    purchaseNotice: nil
+                ),
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-free-accessibility5-reduce-motion",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: nil
+                ),
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
+            )
+        ]
+
+        for fixture in fixtures {
+            autoreleasepool {
+                let view = ScrollView {
+                    SettingsPlanCard(
+                        presentation: fixture.presentation,
+                        reduceMotionOverride: fixture.reduceMotion,
+                        action: {}
+                    )
+                    .padding(20)
+                }
+                .checkpointScreenBackground()
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+
+                let image = HostedViewRenderer.image(
+                    for: view,
+                    width: fixture.width,
+                    height: fixture.height,
+                    colorScheme: fixture.colorScheme,
+                    settlingTime: fixture.reduceMotion ? 0.05 : 0.55,
+                    renderScale: 0.5
+                )
+
+                XCTAssertEqual(image.size.width, fixture.width, accuracy: 1)
+                XCTAssertEqual(image.size.height, fixture.height, accuracy: 1)
+                let attachment = XCTAttachment(image: image)
+                attachment.name = fixture.name
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
+        }
+    }
+
+    private func makeLegalLinks() throws -> LegalLinks {
+        LegalLinks(
             privacyPolicyURL: try XCTUnwrap(URL(string: "https://example.com/privacy")),
             supportURL: try XCTUnwrap(URL(string: "https://example.com/support"))
         )
-        let planOptions = MembershipCatalogPresentation(
+    }
+
+    private func makePlanOptions() throws -> [MembershipPlanOption] {
+        MembershipCatalogPresentation(
             storeProducts: [
                 MembershipStoreProduct(
                     id: MembershipProductID.monthly,
@@ -29,113 +360,13 @@ final class MembershipViewRenderingTests: XCTestCase {
                 )
             ]
         ).planOptions
+    }
 
-        let fixtures = [
-            MembershipRenderFixture(
-                name: "membership-annual-light",
-                feature: .adaptiveStudyAssist,
-                width: 393,
-                height: 852,
-                colorScheme: .light,
-                dynamicTypeSize: .large,
-                planOptions: planOptions,
-                selectedPlanID: MembershipProductID.yearly
-            ),
-            MembershipRenderFixture(
-                name: "membership-monthly-compact-dark",
-                feature: .goalProfiles,
-                width: 320,
-                height: 568,
-                colorScheme: .dark,
-                dynamicTypeSize: .large,
-                planOptions: planOptions,
-                selectedPlanID: MembershipProductID.monthly
-            ),
-            MembershipRenderFixture(
-                name: "membership-annual-accessibility",
-                feature: .largerQuestionBank,
-                width: 393,
-                height: 852,
-                colorScheme: .light,
-                dynamicTypeSize: .accessibility2,
-                reduceMotion: true,
-                planOptions: planOptions,
-                selectedPlanID: MembershipProductID.yearly
-            ),
-            MembershipRenderFixture(
-                name: "membership-compact-accessibility5",
-                feature: .goalProfiles,
-                width: 320,
-                height: 568,
-                colorScheme: .dark,
-                dynamicTypeSize: .accessibility5,
-                reduceMotion: true,
-                planOptions: planOptions,
-                selectedPlanID: MembershipProductID.yearly
-            ),
-            MembershipRenderFixture(
-                name: "membership-loading",
-                feature: .freshQuestionGeneration,
-                width: 393,
-                height: 852,
-                colorScheme: .light,
-                dynamicTypeSize: .large,
-                isLoading: true
-            ),
-            MembershipRenderFixture(
-                name: "membership-unavailable",
-                feature: .freshQuestionGeneration,
-                width: 393,
-                height: 852,
-                colorScheme: .light,
-                dynamicTypeSize: .large,
-                purchaseNotice: .catalogUnavailable("Could not load App Store plans yet.")
-            ),
-            MembershipRenderFixture(
-                name: "membership-pending-dark",
-                feature: .adaptiveStudyAssist,
-                width: 393,
-                height: 852,
-                colorScheme: .dark,
-                dynamicTypeSize: .large,
-                planOptions: planOptions,
-                selectedPlanID: MembershipProductID.yearly,
-                purchaseNotice: .pendingApproval
-            ),
-            MembershipRenderFixture(
-                name: "membership-purchase-failure",
-                feature: .goalProfiles,
-                width: 393,
-                height: 852,
-                colorScheme: .light,
-                dynamicTypeSize: .large,
-                planOptions: planOptions,
-                selectedPlanID: MembershipProductID.monthly,
-                purchaseNotice: .failure("Purchase failed. Try again from the App Store sheet.")
-            ),
-            MembershipRenderFixture(
-                name: "membership-restore-information",
-                feature: .freshQuestionGeneration,
-                width: 393,
-                height: 852,
-                colorScheme: .light,
-                dynamicTypeSize: .large,
-                planOptions: planOptions,
-                selectedPlanID: MembershipProductID.yearly,
-                purchaseNotice: .information("No active Checkpoint Pro subscription was found.")
-            ),
-            MembershipRenderFixture(
-                name: "membership-active-accessibility",
-                feature: .freshQuestionGeneration,
-                width: 393,
-                height: 852,
-                colorScheme: .light,
-                dynamicTypeSize: .accessibility2,
-                reduceMotion: true,
-                isMember: true
-            )
-        ]
-
+    @MainActor
+    private func renderMembershipFixtures(
+        _ fixtures: [MembershipRenderFixture],
+        legalLinks: LegalLinks
+    ) throws {
         var defaultsSuites: [String] = []
         defer {
             for suiteName in defaultsSuites {
@@ -146,58 +377,61 @@ final class MembershipViewRenderingTests: XCTestCase {
         for fixture in fixtures {
             let suiteName = "MembershipViewRenderingTests.\(fixture.name).\(UUID().uuidString)"
             defaultsSuites.append(suiteName)
-            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
-            let store = CheckpointStore(defaults: defaults)
-            if fixture.isMember {
-                store.updateMembershipTier(.member)
-            }
 
-            let initialStoreOperation: MembershipStoreOperation? = fixture.isLoading
-                ? .loadingProducts
-                : nil
-            let purchaseController = PurchaseController(
-                grantsDebugTesterEntitlement: false,
-                initialStoreOperation: initialStoreOperation
-            )
-            purchaseController.purchaseNotice = fixture.purchaseNotice
+            try autoreleasepool {
+                let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+                let store = CheckpointStore(defaults: defaults)
+                if fixture.isMember {
+                    store.updateMembershipTier(.member)
+                }
 
-            let view = MembershipView(
-                feature: fixture.feature,
-                store: store,
-                purchaseController: purchaseController,
-                renderConfiguration: MembershipViewRenderConfiguration(
-                    planOptions: fixture.planOptions,
-                    selectedPlanID: fixture.selectedPlanID,
-                    legalLinks: legalLinks,
-                    reduceMotion: fixture.reduceMotion
+                let initialStoreOperation: MembershipStoreOperation? = fixture.isLoading
+                    ? .loadingProducts
+                    : nil
+                let purchaseController = PurchaseController(
+                    grantsDebugTesterEntitlement: false,
+                    initialStoreOperation: initialStoreOperation
                 )
-            )
-            .environment(\.colorScheme, fixture.colorScheme)
-            .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+                purchaseController.purchaseNotice = fixture.purchaseNotice
 
-            let image = HostedViewRenderer.image(
-                for: view,
-                width: fixture.width,
-                height: fixture.height,
-                colorScheme: fixture.colorScheme,
-                settlingTime: fixture.reduceMotion ? 0.05 : 0.55,
-                // Preserve device point geometry while keeping the full render suite's memory bounded.
-                renderScale: 0.5
-            )
+                let view = MembershipView(
+                    context: fixture.context,
+                    store: store,
+                    purchaseController: purchaseController,
+                    renderConfiguration: MembershipViewRenderConfiguration(
+                        planOptions: fixture.planOptions,
+                        selectedPlanID: fixture.selectedPlanID,
+                        legalLinks: legalLinks,
+                        reduceMotion: fixture.reduceMotion
+                    )
+                )
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
 
-            XCTAssertEqual(image.size.width, fixture.width, accuracy: 1)
-            XCTAssertEqual(image.size.height, fixture.height, accuracy: 1)
-            let attachment = XCTAttachment(image: image)
-            attachment.name = fixture.name
-            attachment.lifetime = .keepAlways
-            add(attachment)
+                let image = HostedViewRenderer.image(
+                    for: view,
+                    width: fixture.width,
+                    height: fixture.height,
+                    colorScheme: fixture.colorScheme,
+                    settlingTime: fixture.reduceMotion ? 0.05 : 0.55,
+                    // Preserve device point geometry while keeping the full render suite's memory bounded.
+                    renderScale: 0.5
+                )
+
+                XCTAssertEqual(image.size.width, fixture.width, accuracy: 1)
+                XCTAssertEqual(image.size.height, fixture.height, accuracy: 1)
+                let attachment = XCTAttachment(image: image)
+                attachment.name = fixture.name
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
         }
     }
 }
 
 private struct MembershipRenderFixture {
     let name: String
-    let feature: MembershipFeature
+    let context: MembershipPresentationContext
     let width: CGFloat
     let height: CGFloat
     let colorScheme: ColorScheme
@@ -208,4 +442,14 @@ private struct MembershipRenderFixture {
     var isLoading = false
     var purchaseNotice: MembershipPurchaseNotice?
     var isMember = false
+}
+
+private struct SettingsPlanRenderFixture {
+    let name: String
+    let presentation: SettingsPlanPresentation
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    var reduceMotion = false
 }

@@ -72,7 +72,11 @@ final class CheckpointStore {
     var isOnboardingPresented = false
     var isCreatingGoalProfile = false
     var membershipTier: MembershipTier = .starter
-    var pendingMembershipFeature: MembershipFeature?
+    var pendingMembershipPresentation: MembershipPresentationContext?
+    var pendingMembershipFeature: MembershipFeature? {
+        get { pendingMembershipPresentation?.feature }
+        set { pendingMembershipPresentation = newValue.map(MembershipPresentationContext.feature) }
+    }
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
     var questionBankSyncIntents: [QuestionBankSyncIntent] = []
@@ -1078,7 +1082,7 @@ final class CheckpointStore {
         }
 
         checkpointNotice = "\(deletedGoal.title) was deleted."
-        pendingMembershipFeature = nil
+        pendingMembershipPresentation = nil
         isCreatingGoalProfile = false
         save()
         publishShieldContext()
@@ -1121,11 +1125,15 @@ final class CheckpointStore {
     }
 
     func requestMembership(for feature: MembershipFeature) {
-        pendingMembershipFeature = feature
+        pendingMembershipPresentation = .feature(feature)
+    }
+
+    func requestMembershipOverview() {
+        pendingMembershipPresentation = .overview
     }
 
     func dismissMembershipPrompt() {
-        pendingMembershipFeature = nil
+        pendingMembershipPresentation = nil
     }
 
     func reconcileMembershipEntitlement(isUnlocked: Bool) {
@@ -1136,8 +1144,8 @@ final class CheckpointStore {
 
     func updateMembershipTier(_ tier: MembershipTier) {
         guard membershipTier != tier else {
-            if pendingMembershipFeature != nil {
-                pendingMembershipFeature = nil
+            if pendingMembershipPresentation != nil {
+                pendingMembershipPresentation = nil
                 save()
                 publishShieldContext()
             }
@@ -1145,7 +1153,7 @@ final class CheckpointStore {
         }
 
         membershipTier = tier
-        pendingMembershipFeature = nil
+        pendingMembershipPresentation = nil
         save()
         publishShieldContext()
 
@@ -1312,7 +1320,7 @@ final class CheckpointStore {
         upsertGoalProfile(updatedGoal)
         isOnboardingPresented = false
         isCreatingGoalProfile = false
-        pendingMembershipFeature = nil
+        pendingMembershipPresentation = nil
 
         guard generationContextChanged else {
             save()
@@ -2197,7 +2205,7 @@ final class CheckpointStore {
         questionRefreshesUsed = 0
         lastAutomaticQuestionRefreshAt = nil
         isCreatingGoalProfile = false
-        pendingMembershipFeature = nil
+        pendingMembershipPresentation = nil
         backgroundGenerationGoalIDs = []
         questionBankTopOffGoalIDs = []
         questionBankPollingGoalIDs = []
@@ -4075,7 +4083,7 @@ final class CheckpointStore {
         activeCheckpointRun = snapshot.activeCheckpointRun
         checkpointRetryCooldownUntil = snapshot.checkpointRetryCooldownUntil
         membershipTier = snapshot.membershipTier ?? .starter
-        pendingMembershipFeature = nil
+        pendingMembershipPresentation = nil
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
         lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
         questionBankSyncIntents = snapshot.questionBankSyncIntents ?? []
