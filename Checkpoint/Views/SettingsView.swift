@@ -1,40 +1,5 @@
 import SwiftUI
 
-enum ProtectionSettingsControlLayout: Equatable {
-    case unavailable
-    case requestingAuthorization
-    case authorizationRequired
-    case chooseApps
-    case startAndEditApps
-    case editApps
-}
-
-struct ProtectionSettingsControlPresentation: Equatable {
-    let layout: ProtectionSettingsControlLayout
-
-    init(
-        isProtectionUnavailable: Bool,
-        isRequestingAuthorization: Bool,
-        requiresScreenTimeAuthorization: Bool,
-        hasSelection: Bool,
-        canStopBlocking: Bool
-    ) {
-        if isProtectionUnavailable {
-            layout = .unavailable
-        } else if isRequestingAuthorization {
-            layout = .requestingAuthorization
-        } else if requiresScreenTimeAuthorization {
-            layout = .authorizationRequired
-        } else if !hasSelection {
-            layout = .chooseApps
-        } else if canStopBlocking {
-            layout = .editApps
-        } else {
-            layout = .startAndEditApps
-        }
-    }
-}
-
 struct PracticeHistorySettingsPresentation: Equatable {
     let answerCount: Int
     let goalCount: Int
@@ -146,6 +111,10 @@ struct SettingsView: View {
     let purchaseController: PurchaseController
     let workflow: CheckpointWorkflowCoordinator
     let presentCheckpoint: (CheckpointSession) -> Bool
+    private let isVisible: Bool
+    private let isSceneActive: Bool
+    private let isCoveredByParentModal: Bool
+    private let parentModalOwnsProtectionErrors: Bool
     private let legalLinks = LegalLinks.current
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -169,6 +138,33 @@ struct SettingsView: View {
     @State private var isStopWithoutReviewConfirmationPresented = false
     @State private var pendingGoalDeletionConfirmation: GoalProfileMutationConfirmation?
     @State private var queuedGoalDeletionConfirmation: GoalProfileMutationConfirmation?
+    @State private var accessibilityAnnouncementQueue = AccessibilityAnnouncementDeliveryQueue()
+    @State private var isAuthorizationRequestActionInFlight = false
+    @State private var protectionAnnouncementState = SettingsProtectionAnnouncementState()
+    @State private var explicitlyAnnouncedScreenTimeError: String?
+    @State private var protectionStartErrorFeedback = ProtectionStartErrorFeedbackState()
+
+    init(
+        store: CheckpointStore,
+        screenTime: ScreenTimeController,
+        purchaseController: PurchaseController,
+        workflow: CheckpointWorkflowCoordinator,
+        presentCheckpoint: @escaping (CheckpointSession) -> Bool,
+        isVisible: Bool = true,
+        isSceneActive: Bool = true,
+        isCoveredByParentModal: Bool = false,
+        parentModalOwnsProtectionErrors: Bool = false
+    ) {
+        self.store = store
+        self.screenTime = screenTime
+        self.purchaseController = purchaseController
+        self.workflow = workflow
+        self.presentCheckpoint = presentCheckpoint
+        self.isVisible = isVisible
+        self.isSceneActive = isSceneActive
+        self.isCoveredByParentModal = isCoveredByParentModal
+        self.parentModalOwnsProtectionErrors = parentModalOwnsProtectionErrors
+    }
 
     var body: some View {
         NavigationStack {
@@ -259,23 +255,90 @@ struct SettingsView: View {
                     ).message
                 )
             }
-            .onChange(of: screenTime.userFacingProtectionStatus) { _, status in
-                guard advancedAction == nil else { return }
-                protectionActionMessage = nil
-                AccessibilityNotification.Announcement("Protection status: \(status).").post()
+            .onChange(of: settingsProtectionPresentation.state) { oldState, newState in
+                if SettingsProtectionTransitionPolicy.shouldClearActionMessage(
+                    from: oldState,
+                    to: newState
+                ) {
+                    let hadActionMessage = protectionActionMessage != nil
+                    protectionActionMessage = nil
+                    if hadActionMessage {
+                        accessibilityAnnouncementQueue.discard()
+                    }
+                }
+                let isActionFeedbackPending = workflow.isStartingProtection
+                    || workflow.pendingProtectionStartResult != nil
+                    || isAuthorizationRequestActionInFlight
+                guard protectionAnnouncementState.shouldDeliverTransition(
+                    to: newState,
+                    isActionFeedbackPending: isActionFeedbackPending
+                ) else { return }
+                guard ownsAccessibilityAnnouncements else { return }
+                guard SettingsProtectionTransitionPolicy.shouldAnnounce(
+                    from: oldState,
+                    to: newState,
+                    hasConcreteError: screenTime.userFacingErrorMessage != nil
+                ) else { return }
+                let presentation = settingsProtectionPresentation
+                announceOrQueue(
+                    AccessibilityAnnouncementRequest(
+                        message: "Protection status: \(presentation.statusText). \(presentation.detail)",
+                        context: .settingsProtectionState(newState)
+                    )
+                )
             }
             .onChange(of: screenTime.userFacingErrorMessage) { _, message in
-                guard advancedAction == nil,
-                      let message else { return }
-                AccessibilityNotification.Announcement(message).post()
+                if message == nil {
+                    explicitlyAnnouncedScreenTimeError = nil
+                }
+                let isActionFeedbackPending = workflow.isStartingProtection
+                    || workflow.pendingProtectionStartResult?.protectionErrorMessage == message
+                    || isAuthorizationRequestActionInFlight
+                guard protectionStartErrorFeedback.shouldDeliverPassiveError(
+                    message,
+                    isStartFeedbackPending: isActionFeedbackPending
+                ), let message else { return }
+                if explicitlyAnnouncedScreenTimeError == message {
+                    explicitlyAnnouncedScreenTimeError = nil
+                    return
+                }
+                explicitlyAnnouncedScreenTimeError = nil
+                guard isVisible,
+                      !parentModalOwnsProtectionErrors,
+                      !isRestrictedAppsPresented,
+                      !isAuthorizationRequestActionInFlight else { return }
+                announceOrQueue(
+                    AccessibilityAnnouncementRequest(
+                        message: message,
+                        context: .screenTimeError(message)
+                    )
+                )
+            }
+            .onChange(of: workflow.pendingProtectionStartResult) { _, _ in
+                deliverPendingProtectionStartResultIfPossible()
             }
             .onChange(of: stopBlockingMessage) { _, message in
                 guard let message else { return }
-                AccessibilityNotification.Announcement(message).post()
+                announceOrQueue(
+                    AccessibilityAnnouncementRequest(
+                        message: message,
+                        context: .settingsMessage(message)
+                    )
+                )
             }
             .onChange(of: resetRecoveryMessage) { _, message in
-                guard advancedAction == nil, let message else { return }
-                AccessibilityNotification.Announcement(message).post()
+                guard let message else { return }
+                announceOrQueue(
+                    AccessibilityAnnouncementRequest(
+                        message: message,
+                        context: .settingsMessage(message)
+                    )
+                )
+            }
+            .onChange(of: ownsAccessibilityAnnouncements) { _, ownsAnnouncements in
+                guard ownsAnnouncements else { return }
+                deliverPendingAccessibilityAnnouncement()
+                deliverPendingProtectionStartResultIfPossible()
             }
         }
     }
@@ -285,11 +348,13 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 14) {
                 protectionStatusHeader
 
-                Text(screenTime.restrictedAppsSummary)
-                    .font(.footnote)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityHidden(true)
+                if let selectionSummary = settingsProtectionPresentation.visibleRestrictedAppsSummary {
+                    Text(selectionSummary)
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityHidden(true)
+                }
 
                 protectionPrimaryControl
 
@@ -300,7 +365,7 @@ struct SettingsView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 } else if shouldExplainCheckpointReadiness {
-                    Text("Checkpoint will verify a full practice set before protection turns on, so you can always earn access to your apps.")
+                    Text("Start protection checks that a full practice set is available before applying app limits.")
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.amber)
                         .fixedSize(horizontal: false, vertical: true)
@@ -344,7 +409,7 @@ struct SettingsView: View {
             }
             .animation(
                 CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-                value: screenTime.userFacingProtectionStatus
+                value: settingsProtectionPresentation.state
             )
             .animation(
                 CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
@@ -357,53 +422,15 @@ struct SettingsView: View {
         }
     }
 
-    @ViewBuilder
     private var protectionStatusHeader: some View {
-        let identity = HStack(spacing: 12) {
-            Image(systemName: protectionSystemImage)
-                .font(.system(size: 19, weight: .semibold))
-                .foregroundStyle(protectionTint)
-                .frame(width: 42, height: 42)
-                .background(protectionTint.opacity(0.13), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .contentTransition(.symbolEffect(.replace))
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text("App protection")
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
-
-                Text(protectionStatusDetail)
-                    .font(.footnote)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-
-        Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 10) {
-                    identity
-                    StatusBadge(text: screenTime.userFacingProtectionStatus, tint: protectionTint)
-                }
-            } else {
-                HStack(alignment: .top, spacing: 12) {
-                    identity
-                    Spacer(minLength: 8)
-                    StatusBadge(text: screenTime.userFacingProtectionStatus, tint: protectionTint)
-                }
-            }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("App protection")
-        .accessibilityValue(
-            "\(screenTime.userFacingProtectionStatus). \(protectionStatusDetail) \(screenTime.restrictedAppsSummary)."
+        SettingsProtectionStatusHeader(
+            presentation: settingsProtectionPresentation
         )
     }
 
     @ViewBuilder
     private var protectionPrimaryControl: some View {
-        switch protectionControlPresentation.layout {
+        switch settingsProtectionPresentation.controlLayout {
         case .unavailable:
             EmptyView()
         case .requestingAuthorization:
@@ -426,13 +453,15 @@ struct SettingsView: View {
         case .startAndEditApps:
             VStack(spacing: 10) {
                 PrimaryActionButton(
-                    title: isProtectionStartBusy ? "Checking checkpoint" : "Start protection",
+                    title: settingsProtectionPresentation.showsProtectionStartProgress
+                        ? "Checking checkpoint"
+                        : "Start protection",
                     systemImage: "checkmark.shield",
-                    isLoading: isProtectionStartBusy
+                    isLoading: settingsProtectionPresentation.showsProtectionStartProgress
                 ) {
                     prepareAndStartProtection()
                 }
-                .disabled(isProtectionStartBusy)
+                .disabled(settingsProtectionPresentation.disablesProtectionStart)
 
                 editProtectedAppsButton
             }
@@ -846,16 +875,29 @@ struct SettingsView: View {
     }
 
     private var canStopBlocking: Bool {
-        screenTime.isShieldingEnabled || screenTime.setupState == .temporarilyUnlocked
+        settingsProtectionPresentation.canStopBlocking
     }
 
-    private var protectionControlPresentation: ProtectionSettingsControlPresentation {
-        ProtectionSettingsControlPresentation(
-            isProtectionUnavailable: screenTime.setupState == .unavailable,
-            isRequestingAuthorization: screenTime.isRequestingAuthorization,
-            requiresScreenTimeAuthorization: screenTime.requiresScreenTimeAuthorization,
+    private var settingsProtectionPresentation: SettingsProtectionPresentation {
+        SettingsProtectionPresentation(
+            setupState: screenTime.setupState,
+            isShieldingEnabled: screenTime.isShieldingEnabled,
+            authorizationState: screenTime.authorizationState,
             hasSelection: screenTime.hasSelection,
-            canStopBlocking: canStopBlocking
+            hasReadyCheckpointSet: store.hasReadyCheckpointSet,
+            isStartingProtection: workflow.isStartingProtection,
+            isPreparingPractice: store.isPreparingActiveGoalQuestions,
+            breakRelockReadiness: protectionBreakRelockReadiness,
+            restrictedAppsSummary: screenTime.restrictedAppsSummary
+        )
+    }
+
+    private var protectionBreakRelockReadiness: HomeActiveBreakRelockReadiness {
+        HomeActiveBreakRelockReadiness.resolve(
+            hasRequiredScreenTimeAuthorization: screenTime.hasRequiredScreenTimeAuthorization,
+            hasSelection: screenTime.hasSelection,
+            hasReadyCheckpointSet: store.hasReadyCheckpointSet,
+            sharedCheckpointReady: SharedAppGroup.checkpointReady
         )
     }
 
@@ -864,12 +906,33 @@ struct SettingsView: View {
         protectionActionMessage = nil
 
         Task {
+            isAuthorizationRequestActionInFlight = true
+            protectionAnnouncementState.resetExplicitState()
+            explicitlyAnnouncedScreenTimeError = nil
             await screenTime.requestAuthorization()
+
+            let request: AccessibilityAnnouncementRequest
+            if let message = screenTime.userFacingErrorMessage {
+                explicitlyAnnouncedScreenTimeError = message
+                request = AccessibilityAnnouncementRequest(
+                    message: message,
+                    context: .screenTimeError(message)
+                )
+            } else {
+                let presentation = settingsProtectionPresentation
+                protectionAnnouncementState.recordExplicitState(presentation.state)
+                request = AccessibilityAnnouncementRequest(
+                    message: "Protection status: \(presentation.statusText). \(presentation.detail)",
+                    context: .settingsProtectionState(presentation.state)
+                )
+            }
+            announceOrQueue(request)
+            isAuthorizationRequestActionInFlight = false
         }
     }
 
     private func prepareAndStartProtection() {
-        guard !isProtectionStartBusy else { return }
+        guard !settingsProtectionPresentation.disablesProtectionStart else { return }
         protectionActionMessage = nil
 
         Task {
@@ -878,79 +941,83 @@ struct SettingsView: View {
 
             if let message = store.checkpointNotice {
                 protectionActionMessage = message
-                AccessibilityNotification.Announcement(message).post()
             } else if screenTime.userFacingErrorMessage == nil {
                 let message = "Protection could not start. Check your setup and try again."
                 protectionActionMessage = message
-                AccessibilityNotification.Announcement(message).post()
             }
         }
     }
 
-    private var isProtectionStartBusy: Bool {
-        workflow.isStartingProtection || store.isPreparingActiveGoalQuestions
+    private var ownsAccessibilityAnnouncements: Bool {
+        TabContentAnnouncementOwnership.isActive(
+            isVisible: isVisible,
+            isSceneActive: isSceneActive,
+            isCoveredByParentPresentation: isCoveredByParentModal,
+            isCoveredByLocalPresentation: isRestrictedAppsPresented
+                || isHistoryPresented
+                || isIssueReportsPresented
+                || isGenerationDiagnosticsPresented
+                || advancedAction != nil
+                || isStopProtectionConfirmationPresented
+                || isStopWithoutReviewConfirmationPresented
+                || pendingGoalDeletionConfirmation != nil
+        )
+    }
+
+    private func announceOrQueue(_ request: AccessibilityAnnouncementRequest) {
+        guard let request = accessibilityAnnouncementQueue.submit(
+            request,
+            isOwner: ownsAccessibilityAnnouncements
+        ) else { return }
+        AccessibilityNotification.Announcement(request.message).post()
+    }
+
+    private func deliverPendingAccessibilityAnnouncement() {
+        guard let request = accessibilityAnnouncementQueue.takePending(
+            isOwner: ownsAccessibilityAnnouncements
+        ), accessibilityAnnouncementIsCurrent(request) else { return }
+        AccessibilityNotification.Announcement(request.message).post()
+    }
+
+    private func deliverPendingProtectionStartResultIfPossible() {
+        guard let result = ProtectionStartResultDelivery.takeCurrent(
+            from: workflow,
+            isOwner: ownsAccessibilityAnnouncements,
+            currentGoalID: store.goal?.id,
+            isShieldingEnabled: screenTime.isShieldingEnabled,
+            protectionShouldRemainActive: SharedAppGroup.desiredShieldActive,
+            checkpointNotice: store.checkpointNotice,
+            protectionErrorMessage: screenTime.userFacingErrorMessage
+        ) else { return }
+
+        protectionStartErrorFeedback.recordDeliveredResult(result)
+        protectionAnnouncementState.recordExplicitState(
+            settingsProtectionPresentation.state
+        )
+        AccessibilityNotification.Announcement(
+            ProtectionStartResultAnnouncement.message(for: result)
+        ).post()
+    }
+
+    private func accessibilityAnnouncementIsCurrent(
+        _ request: AccessibilityAnnouncementRequest
+    ) -> Bool {
+        switch request.context {
+        case let .goalReady(goalID):
+            store.goal?.id == goalID && store.hasReadyCheckpointSet
+        case let .screenTimeError(message):
+            screenTime.userFacingErrorMessage == message
+        case let .settingsProtectionState(state):
+            settingsProtectionPresentation.state == state
+        case let .settingsMessage(message):
+            protectionActionMessage == message
+                || stopBlockingMessage == message
+                || resetRecoveryMessage == message
+        }
     }
 
     private var shouldExplainCheckpointReadiness: Bool {
-        screenTime.setupState == .authorized
-            && screenTime.hasSelection
-            && !canStopBlocking
-            && !store.hasReadyCheckpointSet
-    }
-
-    private var protectionSystemImage: String {
-        switch screenTime.setupState {
-        case .shieldActive:
-            return "checkmark.shield.fill"
-        case .temporarilyUnlocked:
-            return "timer"
-        case .failed:
-            return "exclamationmark.shield.fill"
-        case .unavailable:
-            return "iphone.slash"
-        case .notStarted, .authorized:
-            return screenTime.hasSelection ? "shield" : "shield.lefthalf.filled"
-        }
-    }
-
-    private var protectionTint: Color {
-        switch screenTime.setupState {
-        case .shieldActive:
-            return CheckpointTheme.teal
-        case .temporarilyUnlocked:
-            return CheckpointTheme.amber
-        case .failed:
-            return CheckpointTheme.coral
-        case .unavailable:
-            return CheckpointTheme.muted
-        case .notStarted, .authorized:
-            return CheckpointTheme.blue
-        }
-    }
-
-    private var protectionStatusDetail: String {
-        if screenTime.isRequestingAuthorization {
-            return "Waiting for iPhone to confirm Screen Time access."
-        }
-
-        switch screenTime.setupState {
-        case .shieldActive:
-            return "Selected apps pause at a goal-based checkpoint."
-        case .temporarilyUnlocked:
-            return "Your timed break is active; protection restarts automatically."
-        case .failed:
-            return "Screen Time access needs attention before protection can start."
-        case .unavailable:
-            return "App protection is available on iPhone."
-        case .authorized where screenTime.hasSelection && store.hasReadyCheckpointSet:
-            return "Your apps and practice set are ready to protect."
-        case .authorized where screenTime.hasSelection:
-            return "Your apps are selected; Checkpoint will verify practice before starting."
-        case .authorized:
-            return "Choose the apps you want to use more intentionally."
-        case .notStarted:
-            return "Allow Screen Time to set up private, on-device protection."
-        }
+        settingsProtectionPresentation.state == .checkpointRequired
     }
 
     private var resetRecoveryMessage: String? {

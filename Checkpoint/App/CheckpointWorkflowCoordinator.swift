@@ -99,6 +99,15 @@ enum GoalProfileMutationOutcome: Equatable, Sendable {
     case persistenceFailed
 }
 
+struct ProtectionStartResultEvent: Identifiable, Equatable, Sendable {
+    let id: UUID
+    let goalID: Goal.ID?
+    let becameCheckpointReadyDuringStart: Bool
+    let didStart: Bool
+    let checkpointNotice: String?
+    let protectionErrorMessage: String?
+}
+
 @MainActor
 @Observable
 final class CheckpointWorkflowCoordinator {
@@ -108,6 +117,8 @@ final class CheckpointWorkflowCoordinator {
     }
 
     private(set) var operation: Operation?
+    private(set) var pendingProtectionStartResult: ProtectionStartResultEvent?
+    private(set) var startingProtectionReadinessGoalID: Goal.ID?
 
     @ObservationIgnored private let store: CheckpointStore
     @ObservationIgnored private let protection: any AppProtectionControlling
@@ -374,11 +385,36 @@ final class CheckpointWorkflowCoordinator {
     func startProtection() async -> Bool {
         guard operation == nil else { return false }
         operation = .startingProtection
-        defer { operation = nil }
+        let goalID = store.goal?.id
+        let beganWithoutReadyCheckpoint = !store.hasReadyCheckpointSet
+        startingProtectionReadinessGoalID = beganWithoutReadyCheckpoint
+            ? goalID
+            : nil
+        let didPrepare = await store.prepareQuestionsForProtectionStart()
+        if didPrepare {
+            protection.applyShield()
+        }
+        let didStart = didPrepare && protection.isShieldingEnabled
+        pendingProtectionStartResult = ProtectionStartResultEvent(
+            id: UUID(),
+            goalID: goalID,
+            becameCheckpointReadyDuringStart: beganWithoutReadyCheckpoint
+                && store.hasReadyCheckpointSet,
+            didStart: didStart,
+            checkpointNotice: didStart ? nil : store.checkpointNotice,
+            protectionErrorMessage: didStart ? nil : protection.userFacingErrorMessage
+        )
+        startingProtectionReadinessGoalID = nil
+        operation = nil
+        return didStart
+    }
 
-        guard await store.prepareQuestionsForProtectionStart() else { return false }
-        protection.applyShield()
-        return protection.isShieldingEnabled
+    func takePendingProtectionStartResult(
+        id: ProtectionStartResultEvent.ID
+    ) -> ProtectionStartResultEvent? {
+        guard pendingProtectionStartResult?.id == id else { return nil }
+        defer { pendingProtectionStartResult = nil }
+        return pendingProtectionStartResult
     }
 
     func endBreakEarly() {

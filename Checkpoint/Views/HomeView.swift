@@ -8,6 +8,11 @@ struct HomeView: View {
     private let refreshesQuestionsOnActivation: Bool
     private let reduceMotionOverride: Bool?
     private let referenceDateOverride: Date?
+    private let isVisible: Bool
+    private let isSceneActive: Bool
+    private let isCoveredByParentModal: Bool
+    private let parentModalOwnsQuestionReadiness: Bool
+    private let parentModalOwnsProtectionErrors: Bool
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
     @Environment(\.checkpointGoalSelection) private var selectGoal
@@ -22,6 +27,9 @@ struct HomeView: View {
     @State private var questionsReadyConfirmationDismissTask: Task<Void, Never>?
     @State private var lastActivationRefreshAt: Date?
     @State private var liveReferenceDate = Date()
+    @State private var accessibilityAnnouncementQueue = AccessibilityAnnouncementDeliveryQueue()
+    @State private var protectionStartErrorFeedback = ProtectionStartErrorFeedbackState()
+    @State private var suppressedQuestionReadyGoalID: Goal.ID?
 
     private static let activationRefreshDebounceInterval: TimeInterval = 20
     private static let questionsReadyConfirmationText = "Your questions are ready."
@@ -33,7 +41,12 @@ struct HomeView: View {
         workflow: CheckpointWorkflowCoordinator,
         refreshesQuestionsOnActivation: Bool = true,
         reduceMotionOverride: Bool? = nil,
-        referenceDate: Date? = nil
+        referenceDate: Date? = nil,
+        isVisible: Bool = true,
+        isSceneActive: Bool = true,
+        isCoveredByParentModal: Bool = false,
+        parentModalOwnsQuestionReadiness: Bool = false,
+        parentModalOwnsProtectionErrors: Bool = false
     ) {
         self.store = store
         self.screenTime = screenTime
@@ -41,6 +54,11 @@ struct HomeView: View {
         self.refreshesQuestionsOnActivation = refreshesQuestionsOnActivation
         self.reduceMotionOverride = reduceMotionOverride
         referenceDateOverride = referenceDate
+        self.isVisible = isVisible
+        self.isSceneActive = isSceneActive
+        self.isCoveredByParentModal = isCoveredByParentModal
+        self.parentModalOwnsQuestionReadiness = parentModalOwnsQuestionReadiness
+        self.parentModalOwnsProtectionErrors = parentModalOwnsProtectionErrors
     }
 
     private struct QuestionPreparationSnapshot: Equatable {
@@ -114,14 +132,63 @@ struct HomeView: View {
             }
             .onChange(of: questionPreparationSnapshot) { previous, current in
                 guard previous.goalID == current.goalID else {
+                    suppressedQuestionReadyGoalID = nil
                     hideQuestionsReadyConfirmation()
                     return
                 }
 
-                if previous.isPreparing,
-                   !current.isPreparing,
+                if !previous.hasReadyCheckpointSet,
                    current.hasReadyCheckpointSet {
+                    if ProtectionStartReadinessAnnouncementPolicy.shouldSuppress(
+                        for: current.goalID,
+                        locallySuppressedGoalID: suppressedQuestionReadyGoalID,
+                        parentPresentationOwnsReadiness: parentModalOwnsQuestionReadiness,
+                        startingProtectionReadinessGoalID: workflow.startingProtectionReadinessGoalID,
+                        pendingResult: workflow.pendingProtectionStartResult
+                    ) {
+                        suppressedQuestionReadyGoalID = nil
+                        return
+                    }
+                    guard previous.isPreparing else { return }
                     showQuestionsReadyConfirmation()
+                } else if previous.isPreparing,
+                          !current.isPreparing,
+                          !current.hasReadyCheckpointSet,
+                          suppressedQuestionReadyGoalID == current.goalID {
+                    suppressedQuestionReadyGoalID = nil
+                }
+            }
+            .onChange(of: screenTime.userFacingErrorMessage) { _, message in
+                let isStartFeedbackPending = workflow.isStartingProtection
+                    || workflow.pendingProtectionStartResult?.protectionErrorMessage == message
+                guard protectionStartErrorFeedback.shouldDeliverPassiveError(
+                    message,
+                    isStartFeedbackPending: isStartFeedbackPending
+                ), let message else { return }
+                guard isVisible,
+                      !parentModalOwnsProtectionErrors,
+                      !isRestrictedAppsPresented else { return }
+                announceOrQueue(
+                    AccessibilityAnnouncementRequest(
+                        message: message,
+                        context: .screenTimeError(message)
+                    )
+                )
+            }
+            .onChange(of: workflow.pendingProtectionStartResult) { _, _ in
+                deliverPendingProtectionStartResultIfPossible()
+            }
+            .onChange(of: parentModalOwnsQuestionReadiness) { _, ownsReadiness in
+                guard ownsReadiness else { return }
+                accessibilityAnnouncementQueue.discard()
+                hideQuestionsReadyConfirmation()
+            }
+            .onChange(of: ownsQuestionReadinessFeedback) { _, ownsFeedback in
+                if !ownsFeedback {
+                    hideQuestionsReadyConfirmation()
+                } else {
+                    deliverPendingAccessibilityAnnouncement()
+                    deliverPendingProtectionStartResultIfPossible()
                 }
             }
             .onDisappear {
@@ -266,9 +333,24 @@ struct HomeView: View {
     }
 
     private func showQuestionsReadyConfirmation() {
+        guard isVisible,
+              let goalID = store.goal?.id else { return }
+        let request = AccessibilityAnnouncementRequest(
+            message: Self.questionsReadyConfirmationText,
+            context: .goalReady(goalID)
+        )
+        guard let request = accessibilityAnnouncementQueue.submit(
+            request,
+            isOwner: ownsQuestionReadinessFeedback
+        ) else { return }
+
+        presentQuestionsReadyConfirmation()
+        AccessibilityNotification.Announcement(request.message).post()
+    }
+
+    private func presentQuestionsReadyConfirmation() {
         questionsReadyConfirmationDismissTask?.cancel()
         setQuestionsReadyConfirmationVisible(true)
-        AccessibilityNotification.Announcement(Self.questionsReadyConfirmationText).post()
 
         questionsReadyConfirmationDismissTask = Task { @MainActor in
             try? await Task.sleep(
@@ -295,6 +377,16 @@ struct HomeView: View {
         questionsReadyConfirmationDismissTask?.cancel()
         questionsReadyConfirmationDismissTask = nil
         isQuestionsReadyConfirmationVisible = false
+    }
+
+    private var ownsQuestionReadinessFeedback: Bool {
+        TabContentAnnouncementOwnership.isActive(
+            isVisible: isVisible,
+            isSceneActive: isSceneActive,
+            isCoveredByParentPresentation: isCoveredByParentModal,
+            isCoveredByLocalPresentation: isRestrictedAppsPresented
+                || isWeeklyReviewPresented
+        )
     }
 
     @ViewBuilder
@@ -666,7 +758,65 @@ struct HomeView: View {
 
     private func prepareAndStartProtection() {
         Task {
-            await workflow.startProtection()
+            if !store.hasReadyCheckpointSet {
+                suppressedQuestionReadyGoalID = store.goal?.id
+            }
+
+            let didStart = await workflow.startProtection()
+            if !didStart,
+               !store.isPreparingActiveGoalQuestions,
+               !store.hasReadyCheckpointSet {
+                suppressedQuestionReadyGoalID = nil
+            }
+        }
+    }
+
+    private func deliverPendingProtectionStartResultIfPossible() {
+        guard let result = ProtectionStartResultDelivery.takeCurrent(
+            from: workflow,
+            isOwner: ownsQuestionReadinessFeedback,
+            currentGoalID: store.goal?.id,
+            isShieldingEnabled: screenTime.isShieldingEnabled,
+            protectionShouldRemainActive: SharedAppGroup.desiredShieldActive,
+            checkpointNotice: store.checkpointNotice,
+            protectionErrorMessage: screenTime.userFacingErrorMessage
+        ) else { return }
+
+        protectionStartErrorFeedback.recordDeliveredResult(result)
+        AccessibilityNotification.Announcement(
+            ProtectionStartResultAnnouncement.message(for: result)
+        ).post()
+    }
+
+    private func announceOrQueue(_ request: AccessibilityAnnouncementRequest) {
+        guard let request = accessibilityAnnouncementQueue.submit(
+            request,
+            isOwner: ownsQuestionReadinessFeedback
+        ) else { return }
+        AccessibilityNotification.Announcement(request.message).post()
+    }
+
+    private func deliverPendingAccessibilityAnnouncement() {
+        guard let request = accessibilityAnnouncementQueue.takePending(
+            isOwner: ownsQuestionReadinessFeedback
+        ), accessibilityAnnouncementIsCurrent(request) else { return }
+
+        if case .goalReady = request.context {
+            presentQuestionsReadyConfirmation()
+        }
+        AccessibilityNotification.Announcement(request.message).post()
+    }
+
+    private func accessibilityAnnouncementIsCurrent(
+        _ request: AccessibilityAnnouncementRequest
+    ) -> Bool {
+        switch request.context {
+        case let .goalReady(goalID):
+            store.goal?.id == goalID && store.hasReadyCheckpointSet
+        case let .screenTimeError(message):
+            screenTime.userFacingErrorMessage == message
+        case .settingsProtectionState, .settingsMessage:
+            false
         }
     }
 

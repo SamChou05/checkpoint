@@ -69,7 +69,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
     // MARK: - Protection and break transitions
 
     @MainActor
-    func testReadyProtectionStartAppliesShieldOnce() async {
+    func testReadyProtectionStartAppliesShieldOnce() async throws {
         let store = makeStore(questionCount: 5)
         let protection = FakeAppProtectionController()
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
@@ -78,10 +78,23 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
 
         XCTAssertTrue(started)
         XCTAssertEqual(protection.applyShieldCount, 1)
+        let result = try XCTUnwrap(workflow.pendingProtectionStartResult)
+        XCTAssertEqual(result.goalID, store.goal?.id)
+        XCTAssertFalse(result.becameCheckpointReadyDuringStart)
+        XCTAssertTrue(result.didStart)
+        XCTAssertNil(result.checkpointNotice)
+        XCTAssertNil(result.protectionErrorMessage)
+        XCTAssertNil(workflow.takePendingProtectionStartResult(id: UUID()))
+        XCTAssertEqual(
+            workflow.takePendingProtectionStartResult(id: result.id),
+            result
+        )
+        XCTAssertNil(workflow.pendingProtectionStartResult)
+        XCTAssertNil(workflow.takePendingProtectionStartResult(id: result.id))
     }
 
     @MainActor
-    func testUnreadyProtectionStartDoesNotApplyShield() async {
+    func testUnreadyProtectionStartDoesNotApplyShield() async throws {
         let store = makeStore(questionCount: 0)
         store.questionBatchState = .generating
         let protection = FakeAppProtectionController()
@@ -91,6 +104,151 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
 
         XCTAssertFalse(started)
         XCTAssertEqual(protection.applyShieldCount, 0)
+        let result = try XCTUnwrap(workflow.pendingProtectionStartResult)
+        XCTAssertEqual(result.goalID, store.goal?.id)
+        XCTAssertFalse(result.becameCheckpointReadyDuringStart)
+        XCTAssertFalse(result.didStart)
+        XCTAssertEqual(result.checkpointNotice, store.checkpointNotice)
+        XCTAssertNil(result.protectionErrorMessage)
+    }
+
+    @MainActor
+    func testProtectionStartRecordsWhenItGeneratesCheckpointReadiness() async throws {
+        let appleEngine = TargetCountQuestionEngine(provider: .appleFoundation)
+        let store = makeStore(
+            questionCount: 0,
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: appleEngine
+            )
+        )
+        store.updateAIProviderPreference(.appleFoundation)
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let started = await workflow.startProtection()
+
+        XCTAssertTrue(started)
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertEqual(protection.applyShieldCount, 1)
+        let result = try XCTUnwrap(workflow.pendingProtectionStartResult)
+        XCTAssertEqual(result.goalID, store.goal?.id)
+        XCTAssertTrue(result.becameCheckpointReadyDuringStart)
+        XCTAssertTrue(result.didStart)
+        XCTAssertNil(workflow.startingProtectionReadinessGoalID)
+        XCTAssertFalse(appleEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
+    func testRepeatedIdenticalStartFailuresPublishDistinctLatestResult() async throws {
+        let store = makeStore(questionCount: 0)
+        store.questionBatchState = .generating
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let firstDidStart = await workflow.startProtection()
+        XCTAssertFalse(firstDidStart)
+        let firstResult = try XCTUnwrap(workflow.pendingProtectionStartResult)
+        let secondDidStart = await workflow.startProtection()
+        XCTAssertFalse(secondDidStart)
+        let secondResult = try XCTUnwrap(workflow.pendingProtectionStartResult)
+
+        XCTAssertNotEqual(firstResult.id, secondResult.id)
+        XCTAssertEqual(firstResult.checkpointNotice, secondResult.checkpointNotice)
+        XCTAssertNil(workflow.takePendingProtectionStartResult(id: firstResult.id))
+        XCTAssertEqual(
+            workflow.takePendingProtectionStartResult(id: secondResult.id),
+            secondResult
+        )
+    }
+
+    @MainActor
+    func testProtectionStartResultDeliveryClaimsOnceForEveryOwnerOrder() async throws {
+        let surfaceNames = ["Home", "Settings", "Progress"]
+
+        for ownerIndex in surfaceNames.indices {
+            let store = makeStore(questionCount: 5)
+            let protection = FakeAppProtectionController()
+            let workflow = CheckpointWorkflowCoordinator(
+                store: store,
+                protection: protection
+            )
+            let didStart = await workflow.startProtection()
+            XCTAssertTrue(didStart)
+            var claimedResults: [ProtectionStartResultEvent] = []
+
+            for callbackIndex in surfaceNames.indices {
+                if let result = ProtectionStartResultDelivery.takeCurrent(
+                    from: workflow,
+                    isOwner: callbackIndex == ownerIndex,
+                    currentGoalID: store.goal?.id,
+                    isShieldingEnabled: protection.isShieldingEnabled,
+                    protectionShouldRemainActive: true,
+                    checkpointNotice: store.checkpointNotice,
+                    protectionErrorMessage: protection.userFacingErrorMessage
+                ) {
+                    claimedResults.append(result)
+                }
+            }
+
+            XCTAssertEqual(
+                claimedResults.count,
+                1,
+                "Expected exactly one claim when \(surfaceNames[ownerIndex]) owns feedback."
+            )
+            XCTAssertNil(workflow.pendingProtectionStartResult)
+            XCTAssertNil(
+                ProtectionStartResultDelivery.takeCurrent(
+                    from: workflow,
+                    isOwner: true,
+                    currentGoalID: store.goal?.id,
+                    isShieldingEnabled: protection.isShieldingEnabled,
+                    protectionShouldRemainActive: true,
+                    checkpointNotice: store.checkpointNotice,
+                    protectionErrorMessage: protection.userFacingErrorMessage
+                )
+            )
+        }
+    }
+
+    @MainActor
+    func testSequentialIdenticalStartFailuresAreEachClaimedOnce() async throws {
+        let store = makeStore(questionCount: 0)
+        store.questionBatchState = .generating
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+        var claimedIDs: [UUID] = []
+
+        for _ in 0..<2 {
+            let didStart = await workflow.startProtection()
+            XCTAssertFalse(didStart)
+            let result = try XCTUnwrap(
+                ProtectionStartResultDelivery.takeCurrent(
+                    from: workflow,
+                    isOwner: true,
+                    currentGoalID: store.goal?.id,
+                    isShieldingEnabled: protection.isShieldingEnabled,
+                    protectionShouldRemainActive: false,
+                    checkpointNotice: store.checkpointNotice,
+                    protectionErrorMessage: protection.userFacingErrorMessage
+                )
+            )
+            XCTAssertFalse(result.didStart)
+            claimedIDs.append(result.id)
+            XCTAssertNil(
+                ProtectionStartResultDelivery.takeCurrent(
+                    from: workflow,
+                    isOwner: true,
+                    currentGoalID: store.goal?.id,
+                    isShieldingEnabled: protection.isShieldingEnabled,
+                    protectionShouldRemainActive: false,
+                    checkpointNotice: store.checkpointNotice,
+                    protectionErrorMessage: protection.userFacingErrorMessage
+                )
+            )
+        }
+
+        XCTAssertEqual(Set(claimedIDs).count, 2)
     }
 
     @MainActor

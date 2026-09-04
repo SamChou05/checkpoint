@@ -515,60 +515,273 @@ final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
         #endif
     }
 
-    func testProtectionSettingsControlsKeepEditorReachableAcrossStates() {
-        let unavailable = ProtectionSettingsControlPresentation(
-            isProtectionUnavailable: true,
-            isRequestingAuthorization: false,
-            requiresScreenTimeAuthorization: false,
-            hasSelection: true,
-            canStopBlocking: false
-        )
-        XCTAssertEqual(unavailable.layout, .unavailable)
+    func testProtectionSettingsPresentationKeepsStateAndControlsAligned() {
+        func presentation(
+            setupState: ScreenTimeController.SetupState = .authorized,
+            isShieldingEnabled: Bool = false,
+            authorizationState: ScreenTimeController.AuthorizationState = .approvedWithDataAccess,
+            hasSelection: Bool = true,
+            hasReadyCheckpointSet: Bool = true,
+            isStartingProtection: Bool = false,
+            isPreparingPractice: Bool = false,
+            breakRelockReadiness: HomeActiveBreakRelockReadiness = .ready
+        ) -> SettingsProtectionPresentation {
+            SettingsProtectionPresentation(
+                setupState: setupState,
+                isShieldingEnabled: isShieldingEnabled,
+                authorizationState: authorizationState,
+                hasSelection: hasSelection,
+                hasReadyCheckpointSet: hasReadyCheckpointSet,
+                isStartingProtection: isStartingProtection,
+                isPreparingPractice: isPreparingPractice,
+                breakRelockReadiness: breakRelockReadiness,
+                restrictedAppsSummary: hasSelection
+                    ? "2 apps selected"
+                    : "No protected apps selected"
+            )
+        }
 
-        let requesting = ProtectionSettingsControlPresentation(
-            isProtectionUnavailable: false,
-            isRequestingAuthorization: true,
-            requiresScreenTimeAuthorization: true,
+        let unavailable = presentation(setupState: .unavailable)
+        XCTAssertEqual(unavailable.state, .unavailable)
+        XCTAssertEqual(unavailable.controlLayout, .unavailable)
+        XCTAssertEqual(unavailable.statusText, "iPhone only")
+        XCTAssertEqual(unavailable.systemImage, "iphone.slash")
+        XCTAssertEqual(unavailable.tone, .unavailable)
+
+        let requesting = presentation(
+            setupState: .notStarted,
+            authorizationState: .requesting,
             hasSelection: false,
-            canStopBlocking: false
+            hasReadyCheckpointSet: false
         )
-        XCTAssertEqual(requesting.layout, .requestingAuthorization)
+        XCTAssertEqual(requesting.state, .requestingAuthorization)
+        XCTAssertEqual(requesting.controlLayout, .requestingAuthorization)
+        XCTAssertEqual(requesting.statusText, "Requesting access")
+        XCTAssertEqual(requesting.systemImage, "shield")
+        XCTAssertEqual(requesting.tone, .setup)
 
-        let authorizationRequired = ProtectionSettingsControlPresentation(
-            isProtectionUnavailable: false,
-            isRequestingAuthorization: false,
-            requiresScreenTimeAuthorization: true,
-            hasSelection: true,
-            canStopBlocking: false
-        )
-        XCTAssertEqual(authorizationRequired.layout, .authorizationRequired)
-
-        let empty = ProtectionSettingsControlPresentation(
-            isProtectionUnavailable: false,
-            isRequestingAuthorization: false,
-            requiresScreenTimeAuthorization: false,
+        let authorizationRequired = presentation(
+            setupState: .notStarted,
+            authorizationState: .notDetermined,
             hasSelection: false,
-            canStopBlocking: false
+            hasReadyCheckpointSet: false
         )
-        XCTAssertEqual(empty.layout, .chooseApps)
+        XCTAssertEqual(authorizationRequired.state, .authorizationRequired)
+        XCTAssertEqual(authorizationRequired.controlLayout, .authorizationRequired)
+        XCTAssertEqual(authorizationRequired.statusText, "Not set up")
+        XCTAssertEqual(authorizationRequired.systemImage, "shield.lefthalf.filled")
+        XCTAssertEqual(authorizationRequired.tone, .setup)
+        XCTAssertEqual(
+            authorizationRequired.detail,
+            "Allow Screen Time to set up private, on-device protection."
+        )
 
-        let savedAndOff = ProtectionSettingsControlPresentation(
-            isProtectionUnavailable: false,
-            isRequestingAuthorization: false,
-            requiresScreenTimeAuthorization: false,
-            hasSelection: true,
-            canStopBlocking: false
+        let permissionRequired = presentation(
+            setupState: .failed,
+            authorizationState: .denied
         )
-        XCTAssertEqual(savedAndOff.layout, .startAndEditApps)
+        XCTAssertEqual(permissionRequired.state, .permissionRequired)
+        XCTAssertEqual(permissionRequired.controlLayout, .authorizationRequired)
+        XCTAssertEqual(permissionRequired.statusText, "Permission needed")
+        XCTAssertEqual(permissionRequired.systemImage, "exclamationmark.shield.fill")
+        XCTAssertEqual(permissionRequired.tone, .attention)
+        XCTAssertEqual(
+            permissionRequired.detail,
+            "Screen Time access is not approved, so app protection is off."
+        )
 
-        let active = ProtectionSettingsControlPresentation(
-            isProtectionUnavailable: false,
-            isRequestingAuthorization: false,
-            requiresScreenTimeAuthorization: false,
-            hasSelection: true,
-            canStopBlocking: true
+        let empty = presentation(
+            hasSelection: false,
+            hasReadyCheckpointSet: false
         )
-        XCTAssertEqual(active.layout, .editApps)
+        XCTAssertEqual(empty.state, .chooseApps)
+        XCTAssertEqual(empty.controlLayout, .chooseApps)
+        XCTAssertEqual(empty.statusText, "Off")
+        XCTAssertEqual(empty.systemImage, "checklist")
+        XCTAssertEqual(empty.tone, .setup)
+
+        let checkpointRequired = presentation(hasReadyCheckpointSet: false)
+        XCTAssertEqual(checkpointRequired.state, .checkpointRequired)
+        XCTAssertEqual(checkpointRequired.controlLayout, .startAndEditApps)
+        XCTAssertEqual(checkpointRequired.statusText, "Off")
+        XCTAssertEqual(checkpointRequired.systemImage, "shield")
+        XCTAssertEqual(checkpointRequired.tone, .preparing)
+        XCTAssertEqual(
+            checkpointRequired.detail,
+            "Your apps are selected; a full practice set is still needed."
+        )
+
+        let starting = presentation(
+            hasReadyCheckpointSet: false,
+            isStartingProtection: true
+        )
+        XCTAssertEqual(starting.state, .startingProtection)
+        XCTAssertEqual(starting.controlLayout, .startAndEditApps)
+        XCTAssertEqual(starting.statusText, "Off")
+        XCTAssertEqual(starting.systemImage, "clock.arrow.circlepath")
+        XCTAssertEqual(starting.tone, .preparing)
+        XCTAssertTrue(starting.showsProtectionStartProgress)
+        XCTAssertTrue(starting.disablesProtectionStart)
+
+        let preparingPractice = presentation(
+            hasReadyCheckpointSet: false,
+            isPreparingPractice: true
+        )
+        XCTAssertEqual(preparingPractice.state, .preparingPractice)
+        XCTAssertEqual(preparingPractice.controlLayout, .startAndEditApps)
+        XCTAssertEqual(preparingPractice.statusText, "Off")
+        XCTAssertEqual(preparingPractice.systemImage, "clock.arrow.circlepath")
+        XCTAssertEqual(preparingPractice.tone, .preparing)
+        XCTAssertFalse(preparingPractice.showsProtectionStartProgress)
+        XCTAssertTrue(preparingPractice.disablesProtectionStart)
+        XCTAssertEqual(
+            preparingPractice.detail,
+            "Checkpoint is preparing a full practice set. Start protection when it’s ready."
+        )
+
+        let ready = presentation()
+        XCTAssertEqual(ready.state, .ready)
+        XCTAssertEqual(ready.controlLayout, .startAndEditApps)
+        XCTAssertEqual(ready.statusText, "Off")
+        XCTAssertEqual(ready.systemImage, "shield")
+        XCTAssertEqual(ready.tone, .setup)
+        XCTAssertEqual(ready.detail, "Your apps and practice set are ready to protect.")
+        XCTAssertNotEqual(checkpointRequired.state, ready.state)
+
+        let active = presentation(
+            setupState: .shieldActive,
+            isShieldingEnabled: true
+        )
+        XCTAssertEqual(active.state, .active)
+        XCTAssertEqual(active.controlLayout, .editApps)
+        XCTAssertEqual(active.statusText, "On")
+        XCTAssertEqual(active.systemImage, "checkmark.shield.fill")
+        XCTAssertEqual(active.tone, .active)
+        XCTAssertEqual(active.detail, "Selected apps pause at a goal-based checkpoint.")
+        XCTAssertTrue(active.accessibilityValue.contains("2 apps selected"))
+
+        let activeBreak = presentation(
+            setupState: .temporarilyUnlocked,
+            breakRelockReadiness: .ready
+        )
+        XCTAssertEqual(activeBreak.state, .breakInProgress(relockReadiness: .ready))
+        XCTAssertEqual(activeBreak.controlLayout, .editApps)
+        XCTAssertEqual(activeBreak.statusText, "Break in progress")
+        XCTAssertEqual(activeBreak.systemImage, "timer")
+        XCTAssertEqual(activeBreak.tone, .breakInProgress)
+        XCTAssertEqual(
+            activeBreak.detail,
+            "Your timed break is active; protection restarts automatically."
+        )
+
+        let waitingBreak = presentation(
+            setupState: .temporarilyUnlocked,
+            hasReadyCheckpointSet: false,
+            breakRelockReadiness: .waitingForCheckpoint
+        )
+        XCTAssertEqual(
+            waitingBreak.state,
+            .breakInProgress(relockReadiness: .waitingForCheckpoint)
+        )
+        XCTAssertEqual(
+            waitingBreak.detail,
+            "Your timed break is active. Protection turns back on only if another checkpoint is ready."
+        )
+
+        let breakNeedsAttention = presentation(
+            setupState: .temporarilyUnlocked,
+            authorizationState: .denied,
+            breakRelockReadiness: .needsAttention
+        )
+        XCTAssertEqual(
+            breakNeedsAttention.state,
+            .breakInProgress(relockReadiness: .needsAttention)
+        )
+        XCTAssertEqual(
+            breakNeedsAttention.detail,
+            "Your timed break is active. Protection needs attention before it can turn back on."
+        )
+
+        let appliedShieldWins = presentation(
+            setupState: .unavailable,
+            isShieldingEnabled: true,
+            authorizationState: .denied
+        )
+        XCTAssertEqual(appliedShieldWins.state, .active)
+
+        let unavailableWins = presentation(
+            setupState: .unavailable,
+            authorizationState: .requesting
+        )
+        XCTAssertEqual(unavailableWins.state, .unavailable)
+
+        let requestingWins = presentation(
+            setupState: .failed,
+            authorizationState: .requesting
+        )
+        XCTAssertEqual(requestingWins.state, .requestingAuthorization)
+
+        let permissionWins = presentation(
+            setupState: .failed,
+            authorizationState: .denied,
+            hasSelection: false,
+            hasReadyCheckpointSet: false
+        )
+        XCTAssertEqual(permissionWins.state, .permissionRequired)
+
+        let selectionWins = presentation(
+            hasSelection: false,
+            hasReadyCheckpointSet: true,
+            isStartingProtection: true,
+            isPreparingPractice: true
+        )
+        XCTAssertEqual(selectionWins.state, .chooseApps)
+
+        let startingWins = presentation(
+            hasReadyCheckpointSet: true,
+            isStartingProtection: true,
+            isPreparingPractice: true
+        )
+        XCTAssertEqual(startingWins.state, .startingProtection)
+    }
+
+    func testProtectionSettingsPresentationRejectsStaleActiveVisuals() {
+        let presentation = SettingsProtectionPresentation(
+            setupState: .shieldActive,
+            isShieldingEnabled: false,
+            authorizationState: .approvedWithDataAccess,
+            hasSelection: true,
+            hasReadyCheckpointSet: true,
+            isStartingProtection: false,
+            isPreparingPractice: false,
+            restrictedAppsSummary: "2 apps selected"
+        )
+
+        XCTAssertEqual(presentation.state, .ready)
+        XCTAssertEqual(presentation.statusText, "Off")
+        XCTAssertEqual(presentation.systemImage, "shield")
+        XCTAssertEqual(presentation.tone, .setup)
+        XCTAssertFalse(presentation.detail.localizedCaseInsensitiveContains("pause"))
+        XCTAssertTrue(presentation.accessibilityValue.hasPrefix("Off."))
+    }
+
+    func testProtectionSettingsPresentationSuppressesDuplicateUnavailableSummary() {
+        let presentation = SettingsProtectionPresentation(
+            setupState: .unavailable,
+            isShieldingEnabled: false,
+            authorizationState: .unavailable,
+            hasSelection: false,
+            hasReadyCheckpointSet: false,
+            isStartingProtection: false,
+            isPreparingPractice: false,
+            restrictedAppsSummary: "App protection is available on iPhone."
+        )
+
+        XCTAssertNil(presentation.visibleRestrictedAppsSummary)
+        XCTAssertEqual(
+            presentation.accessibilityValue,
+            "iPhone only. App protection is available on iPhone."
+        )
     }
 
     @MainActor

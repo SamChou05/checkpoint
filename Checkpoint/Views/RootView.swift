@@ -53,6 +53,201 @@ private struct ProtectionReconciliationKey: Equatable {
     let hasReadyCheckpoint: Bool
 }
 
+struct TabContentAnnouncementOwnership {
+    static func isActive(
+        isVisible: Bool,
+        isSceneActive: Bool = true,
+        isCoveredByParentPresentation: Bool,
+        isCoveredByLocalPresentation: Bool
+    ) -> Bool {
+        isVisible
+            && isSceneActive
+            && !isCoveredByParentPresentation
+            && !isCoveredByLocalPresentation
+    }
+}
+
+enum AccessibilityAnnouncementContext: Equatable {
+    case goalReady(Goal.ID)
+    case screenTimeError(String)
+    case settingsProtectionState(SettingsProtectionState)
+    case settingsMessage(String)
+}
+
+struct AccessibilityAnnouncementRequest: Equatable {
+    let message: String
+    let context: AccessibilityAnnouncementContext
+}
+
+struct AccessibilityAnnouncementDeliveryQueue: Equatable {
+    private(set) var pendingRequest: AccessibilityAnnouncementRequest?
+
+    mutating func submit(
+        _ request: AccessibilityAnnouncementRequest,
+        isOwner: Bool
+    ) -> AccessibilityAnnouncementRequest? {
+        guard !isOwner else {
+            pendingRequest = nil
+            return request
+        }
+
+        pendingRequest = request
+        return nil
+    }
+
+    mutating func takePending(
+        isOwner: Bool
+    ) -> AccessibilityAnnouncementRequest? {
+        guard isOwner,
+              let pendingRequest else { return nil }
+        self.pendingRequest = nil
+        return pendingRequest
+    }
+
+    mutating func discard() {
+        pendingRequest = nil
+    }
+}
+
+struct ProtectionStartResultAnnouncement {
+    static func message(for event: ProtectionStartResultEvent) -> String {
+        if event.didStart {
+            return "Protection is on. Selected apps pause at a goal-based checkpoint."
+        }
+        return event.checkpointNotice
+            ?? event.protectionErrorMessage
+            ?? "Protection could not start. Check your setup and try again."
+    }
+
+    static func isCurrent(
+        _ event: ProtectionStartResultEvent,
+        currentGoalID: Goal.ID?,
+        isShieldingEnabled: Bool,
+        protectionShouldRemainActive: Bool,
+        checkpointNotice: String?,
+        protectionErrorMessage: String?
+    ) -> Bool {
+        guard event.goalID == currentGoalID else { return false }
+        if event.didStart {
+            return isShieldingEnabled
+        }
+
+        guard !isShieldingEnabled,
+              !protectionShouldRemainActive else { return false }
+        if let eventNotice = event.checkpointNotice {
+            return checkpointNotice == eventNotice
+        }
+        if let eventError = event.protectionErrorMessage {
+            return protectionErrorMessage == eventError
+        }
+        return true
+    }
+}
+
+struct ProtectionStartErrorFeedbackState: Equatable {
+    private(set) var lastDeliveredStartError: String?
+
+    mutating func recordDeliveredResult(_ result: ProtectionStartResultEvent) {
+        lastDeliveredStartError = result.protectionErrorMessage
+    }
+
+    mutating func shouldDeliverPassiveError(
+        _ message: String?,
+        isStartFeedbackPending: Bool
+    ) -> Bool {
+        guard let message else {
+            lastDeliveredStartError = nil
+            return false
+        }
+        let matchesDeliveredStartError = lastDeliveredStartError == message
+        if !matchesDeliveredStartError {
+            lastDeliveredStartError = nil
+        }
+        guard !isStartFeedbackPending else { return false }
+        if matchesDeliveredStartError {
+            lastDeliveredStartError = nil
+            return false
+        }
+        return true
+    }
+}
+
+struct SettingsProtectionAnnouncementState: Equatable {
+    private(set) var explicitlyDeliveredState: SettingsProtectionState?
+
+    mutating func resetExplicitState() {
+        explicitlyDeliveredState = nil
+    }
+
+    mutating func recordExplicitState(_ state: SettingsProtectionState) {
+        explicitlyDeliveredState = state
+    }
+
+    mutating func shouldDeliverTransition(
+        to state: SettingsProtectionState,
+        isActionFeedbackPending: Bool
+    ) -> Bool {
+        let matchesExplicitState = explicitlyDeliveredState == state
+        if !matchesExplicitState {
+            explicitlyDeliveredState = nil
+        }
+        guard !isActionFeedbackPending else { return false }
+        if matchesExplicitState {
+            explicitlyDeliveredState = nil
+            return false
+        }
+        return true
+    }
+}
+
+@MainActor
+struct ProtectionStartResultDelivery {
+    static func takeCurrent(
+        from workflow: CheckpointWorkflowCoordinator,
+        isOwner: Bool,
+        currentGoalID: Goal.ID?,
+        isShieldingEnabled: Bool,
+        protectionShouldRemainActive: Bool,
+        checkpointNotice: String?,
+        protectionErrorMessage: String?
+    ) -> ProtectionStartResultEvent? {
+        guard isOwner,
+              let pendingResult = workflow.pendingProtectionStartResult,
+              let result = workflow.takePendingProtectionStartResult(
+                id: pendingResult.id
+              ) else { return nil }
+
+        guard ProtectionStartResultAnnouncement.isCurrent(
+            result,
+            currentGoalID: currentGoalID,
+            isShieldingEnabled: isShieldingEnabled,
+            protectionShouldRemainActive: protectionShouldRemainActive,
+            checkpointNotice: checkpointNotice,
+            protectionErrorMessage: protectionErrorMessage
+        ) else { return nil }
+        return result
+    }
+}
+
+struct ProtectionStartReadinessAnnouncementPolicy {
+    static func shouldSuppress(
+        for goalID: Goal.ID?,
+        locallySuppressedGoalID: Goal.ID?,
+        parentPresentationOwnsReadiness: Bool,
+        startingProtectionReadinessGoalID: Goal.ID?,
+        pendingResult: ProtectionStartResultEvent?
+    ) -> Bool {
+        guard let goalID else { return false }
+        if parentPresentationOwnsReadiness
+            || locallySuppressedGoalID == goalID
+            || startingProtectionReadinessGoalID == goalID {
+            return true
+        }
+        return pendingResult?.goalID == goalID
+            && pendingResult?.becameCheckpointReadyDuringStart == true
+    }
+}
+
 struct RootView: View {
     @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
@@ -86,7 +281,16 @@ struct RootView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView(store: store, screenTime: screenTime, workflow: workflow)
+            HomeView(
+                store: store,
+                screenTime: screenTime,
+                workflow: workflow,
+                isVisible: selectedTab == .home,
+                isSceneActive: scenePhase == .active,
+                isCoveredByParentModal: isTabContentCoveredByParentPresentation,
+                parentModalOwnsQuestionReadiness: firstRunSetup.isAppSelectionPresented,
+                parentModalOwnsProtectionErrors: parentPresentationOwnsProtectionErrors
+            )
                 .tabItem {
                     Label("Home", systemImage: "target")
                 }
@@ -95,9 +299,12 @@ struct RootView: View {
             CompetencyView(
                 store: store,
                 isVisible: selectedTab == .skill,
-                isCoveredByParentModal: isOnboardingSheetActive
-                    || isSuggestedSkillMapReviewPresented
-                    || isSuggestedSkillMapReviewActive,
+                isSceneActive: scenePhase == .active,
+                isCoveredByParentModal: isTabContentCoveredByParentPresentation,
+                workflow: workflow,
+                screenTime: screenTime,
+                protectionErrorMessage: screenTime.userFacingErrorMessage,
+                parentModalOwnsProtectionErrors: parentPresentationOwnsProtectionErrors,
                 skillEvidenceRequest: $progressSkillEvidenceRequest
             )
                 .tabItem {
@@ -110,7 +317,11 @@ struct RootView: View {
                 screenTime: screenTime,
                 purchaseController: purchaseController,
                 workflow: workflow,
-                presentCheckpoint: presentCheckpoint
+                presentCheckpoint: presentCheckpoint,
+                isVisible: selectedTab == .settings,
+                isSceneActive: scenePhase == .active,
+                isCoveredByParentModal: isTabContentCoveredByParentPresentation,
+                parentModalOwnsProtectionErrors: parentPresentationOwnsProtectionErrors
             )
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
@@ -563,7 +774,8 @@ struct RootView: View {
     }
 
     private func startFirstRunProtection() async -> FirstRunProtectionStartResult {
-        await firstRunSetup.startProtection(
+        let previousResultID = workflow.pendingProtectionStartResult?.id
+        let result = await firstRunSetup.startProtection(
             isPreparingQuestions: { store.isPreparingActiveGoalQuestions },
             startProtection: { await workflow.startProtection() },
             checkpointNotice: { store.checkpointNotice },
@@ -571,6 +783,11 @@ struct RootView: View {
             selectionSummary: { screenTime.restrictedAppsSummary },
             currentGoalID: { store.goal?.id }
         )
+        if let pendingResult = workflow.pendingProtectionStartResult,
+           pendingResult.id != previousResultID {
+            _ = workflow.takePendingProtectionStartResult(id: pendingResult.id)
+        }
+        return result
     }
 
     private var firstRunAppSelectionPresentationBinding: Binding<Bool> {
@@ -658,6 +875,30 @@ struct RootView: View {
             isFirstRunPending: firstRunSetup.isPending,
             hasGoal: store.goal != nil
         )
+    }
+
+    private var isTabContentCoveredByParentPresentation: Bool {
+        screenTime.requiresScreenTimeAuthorization
+            || screenTime.requiresSharedDataEraseRecovery
+            || store.requiresPersistenceEraseRecovery
+            || isAuthorizationRecoveryAppSelectionPresented
+            || activeCheckpointSession != nil
+            || store.pendingMembershipPresentation != nil
+            || (store.isOnboardingPresented
+                && screenTime.hasRequiredScreenTimeAuthorization)
+            || isOnboardingSheetActive
+            || firstRunSetup.isAppSelectionPresented
+            || isSuggestedSkillMapReviewPresented
+            || isSuggestedSkillMapReviewActive
+            || pendingGoalSwitchConfirmation != nil
+    }
+
+    private var parentPresentationOwnsProtectionErrors: Bool {
+        screenTime.requiresScreenTimeAuthorization
+            || screenTime.requiresSharedDataEraseRecovery
+            || store.requiresPersistenceEraseRecovery
+            || isAuthorizationRecoveryAppSelectionPresented
+            || firstRunSetup.isAppSelectionPresented
     }
 }
 

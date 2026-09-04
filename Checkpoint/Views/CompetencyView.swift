@@ -279,7 +279,12 @@ struct CompetencyView: View {
     private let reduceMotionOverride: Bool?
     private let referenceDateOverride: Date?
     private let isVisible: Bool
+    private let isSceneActive: Bool
     private let isCoveredByParentModal: Bool
+    private let workflow: CheckpointWorkflowCoordinator?
+    private let screenTime: ScreenTimeController?
+    private let protectionErrorMessage: String?
+    private let parentModalOwnsProtectionErrors: Bool
     private let skillEvidenceRequestBinding: Binding<ProgressSkillEvidenceRequest?>?
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
@@ -305,6 +310,8 @@ struct CompetencyView: View {
     @State private var highlightDismissTask: Task<Void, Never>?
     @State private var competencyAccessibilityFocusRequest: ProgressCompetencyAccessibilityFocusRequest?
     @State private var pendingAccessibilityFocus: ProgressAccessibilityFocus?
+    @State private var pendingProtectionErrorMessage: String?
+    @State private var protectionStartErrorFeedback = ProtectionStartErrorFeedbackState()
     @AccessibilityFocusState(for: .voiceOver)
     private var accessibilityFocus: ProgressAccessibilityFocus?
 
@@ -313,14 +320,24 @@ struct CompetencyView: View {
         reduceMotionOverride: Bool? = nil,
         referenceDateOverride: Date? = nil,
         isVisible: Bool = true,
+        isSceneActive: Bool = true,
         isCoveredByParentModal: Bool = false,
+        workflow: CheckpointWorkflowCoordinator? = nil,
+        screenTime: ScreenTimeController? = nil,
+        protectionErrorMessage: String? = nil,
+        parentModalOwnsProtectionErrors: Bool = false,
         skillEvidenceRequest: Binding<ProgressSkillEvidenceRequest?>? = nil
     ) {
         self.store = store
         self.reduceMotionOverride = reduceMotionOverride
         self.referenceDateOverride = referenceDateOverride
         self.isVisible = isVisible
+        self.isSceneActive = isSceneActive
         self.isCoveredByParentModal = isCoveredByParentModal
+        self.workflow = workflow
+        self.screenTime = screenTime
+        self.protectionErrorMessage = protectionErrorMessage
+        self.parentModalOwnsProtectionErrors = parentModalOwnsProtectionErrors
         skillEvidenceRequestBinding = skillEvidenceRequest
     }
 
@@ -450,12 +467,49 @@ struct CompetencyView: View {
                 accessibilityFocus = nil
                 pendingAccessibilityFocus = nil
                 competencyAccessibilityFocusRequest = nil
+                pendingProtectionErrorMessage = nil
+            } else {
+                deliverPendingProtectionErrorIfPossible()
+                deliverPendingProtectionStartResultIfPossible()
             }
         }
         .onChange(of: isCoveredByParentModal) { _, isCovered in
             if !isCovered {
                 applyPendingAccessibilityFocusAfterDismiss()
+                deliverPendingProtectionErrorIfPossible()
+                deliverPendingProtectionStartResultIfPossible()
             }
+        }
+        .onChange(of: isSceneActive) { _, isActive in
+            if !isActive {
+                accessibilityFocus = nil
+            } else {
+                applyPendingAccessibilityFocusAfterDismiss()
+                deliverPendingProtectionErrorIfPossible()
+                deliverPendingProtectionStartResultIfPossible()
+            }
+        }
+        .onChange(of: protectionErrorMessage) { _, message in
+            if message == nil {
+                pendingProtectionErrorMessage = nil
+            }
+            let isStartFeedbackPending = workflow?.isStartingProtection == true
+                || workflow?.pendingProtectionStartResult?.protectionErrorMessage == message
+            guard protectionStartErrorFeedback.shouldDeliverPassiveError(
+                message,
+                isStartFeedbackPending: isStartFeedbackPending
+            ), let message else { return }
+            guard isVisible,
+                  !parentModalOwnsProtectionErrors else { return }
+
+            if !isSceneActive || isCoveredByModalPresentation {
+                pendingProtectionErrorMessage = message
+            } else {
+                AccessibilityNotification.Announcement(message).post()
+            }
+        }
+        .onChange(of: workflow?.pendingProtectionStartResult) { _, _ in
+            deliverPendingProtectionStartResultIfPossible()
         }
         .sheet(
             isPresented: $isSkillMapEditorPresented,
@@ -475,14 +529,20 @@ struct CompetencyView: View {
                     isSkillMapModalActive = true
                 }
         }
-        .sheet(item: $focusWinsDestination) { destination in
+        .sheet(
+            item: $focusWinsDestination,
+            onDismiss: finishAuxiliaryModalPresentation
+        ) { destination in
             FocusWinsView(
                 store: store,
                 goalID: destination.goalID,
                 goalTitle: destination.goalTitle
             )
         }
-        .sheet(item: $weeklyImpactDestination) { destination in
+        .sheet(
+            item: $weeklyImpactDestination,
+            onDismiss: finishAuxiliaryModalPresentation
+        ) { destination in
             WeeklyReviewView(
                 store: store,
                 initialMetricsID: destination.goalID.uuidString,
@@ -1880,7 +1940,7 @@ struct CompetencyView: View {
                     nextFocus = .primaryState(current)
                 }
 
-                if isSkillMapModalActive || isCoveredByParentModal {
+                if isCoveredByModalPresentation {
                     pendingAccessibilityFocus = nextFocus
                     return
                 }
@@ -1894,7 +1954,7 @@ struct CompetencyView: View {
     }
 
     private func applyPendingAccessibilityFocusAfterDismiss() {
-        guard !isSkillMapModalActive, !isCoveredByParentModal else { return }
+        guard !isCoveredByModalPresentation else { return }
         guard voiceOverEnabled,
               isVisible,
               let pendingFocus = pendingAccessibilityFocus else {
@@ -1927,6 +1987,62 @@ struct CompetencyView: View {
     private func finishSkillMapModalPresentation() {
         isSkillMapModalActive = false
         applyPendingAccessibilityFocusAfterDismiss()
+        deliverPendingProtectionErrorIfPossible()
+        deliverPendingProtectionStartResultIfPossible()
+    }
+
+    private func finishAuxiliaryModalPresentation() {
+        applyPendingAccessibilityFocusAfterDismiss()
+        deliverPendingProtectionErrorIfPossible()
+        deliverPendingProtectionStartResultIfPossible()
+    }
+
+    private func deliverPendingProtectionErrorIfPossible() {
+        guard isVisible,
+              isSceneActive,
+              !isCoveredByModalPresentation,
+              let pendingProtectionErrorMessage else {
+            return
+        }
+        self.pendingProtectionErrorMessage = nil
+        guard pendingProtectionErrorMessage == protectionErrorMessage else {
+            return
+        }
+        AccessibilityNotification.Announcement(pendingProtectionErrorMessage).post()
+    }
+
+    private func deliverPendingProtectionStartResultIfPossible() {
+        guard let workflow,
+              let screenTime,
+              let result = ProtectionStartResultDelivery.takeCurrent(
+                from: workflow,
+                isOwner: isVisible
+                    && isSceneActive
+                    && !isCoveredByModalPresentation,
+                currentGoalID: store.goal?.id,
+                isShieldingEnabled: screenTime.isShieldingEnabled,
+                protectionShouldRemainActive: SharedAppGroup.desiredShieldActive,
+                checkpointNotice: store.checkpointNotice,
+                protectionErrorMessage: screenTime.userFacingErrorMessage
+              ) else { return }
+
+        pendingProtectionErrorMessage = nil
+        protectionStartErrorFeedback.recordDeliveredResult(result)
+        AccessibilityNotification.Announcement(
+            ProtectionStartResultAnnouncement.message(for: result)
+        ).post()
+    }
+
+    private var isCoveredByModalPresentation: Bool {
+        isCoveredByLocalModalPresentation || isCoveredByParentModal
+    }
+
+    private var isCoveredByLocalModalPresentation: Bool {
+        isSkillMapEditorPresented
+            || isSkillMapRepairPresented
+            || isSkillMapModalActive
+            || focusWinsDestination != nil
+            || weeklyImpactDestination != nil
     }
 
     private func announceScreenChange(

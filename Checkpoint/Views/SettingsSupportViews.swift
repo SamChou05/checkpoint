@@ -1,5 +1,489 @@
 import SwiftUI
 
+enum ProtectionSettingsControlLayout: Equatable {
+    case unavailable
+    case requestingAuthorization
+    case authorizationRequired
+    case chooseApps
+    case startAndEditApps
+    case editApps
+}
+
+enum SettingsProtectionState: Equatable {
+    case active
+    case breakInProgress(relockReadiness: HomeActiveBreakRelockReadiness)
+    case unavailable
+    case requestingAuthorization
+    case authorizationRequired
+    case permissionRequired
+    case chooseApps
+    case startingProtection
+    case preparingPractice
+    case checkpointRequired
+    case ready
+}
+
+enum SettingsProtectionTone: Equatable {
+    case active
+    case breakInProgress
+    case unavailable
+    case attention
+    case setup
+    case preparing
+
+    var color: Color {
+        switch self {
+        case .active:
+            CheckpointTheme.teal
+        case .breakInProgress, .preparing:
+            CheckpointTheme.amber
+        case .unavailable:
+            CheckpointTheme.muted
+        case .attention:
+            CheckpointTheme.coral
+        case .setup:
+            CheckpointTheme.blue
+        }
+    }
+}
+
+struct SettingsProtectionPresentation: Equatable {
+    let state: SettingsProtectionState
+    let restrictedAppsSummary: String
+
+    init(
+        setupState: ScreenTimeController.SetupState,
+        isShieldingEnabled: Bool,
+        authorizationState: ScreenTimeController.AuthorizationState,
+        hasSelection: Bool,
+        hasReadyCheckpointSet: Bool,
+        isStartingProtection: Bool,
+        isPreparingPractice: Bool,
+        breakRelockReadiness: HomeActiveBreakRelockReadiness = .ready,
+        restrictedAppsSummary: String
+    ) {
+        self.restrictedAppsSummary = restrictedAppsSummary
+
+        if isShieldingEnabled {
+            state = .active
+        } else if setupState == .temporarilyUnlocked {
+            state = .breakInProgress(relockReadiness: breakRelockReadiness)
+        } else if setupState == .unavailable || authorizationState == .unavailable {
+            state = .unavailable
+        } else if authorizationState == .requesting {
+            state = .requestingAuthorization
+        } else if setupState == .failed
+                    || authorizationState == .denied
+                    || authorizationState == .failed {
+            state = .permissionRequired
+        } else if authorizationState == .unresolved
+                    || authorizationState == .notDetermined {
+            state = .authorizationRequired
+        } else if !hasSelection {
+            state = .chooseApps
+        } else if isStartingProtection {
+            state = .startingProtection
+        } else if isPreparingPractice {
+            state = .preparingPractice
+        } else if hasReadyCheckpointSet {
+            state = .ready
+        } else {
+            state = .checkpointRequired
+        }
+    }
+
+    var controlLayout: ProtectionSettingsControlLayout {
+        switch state {
+        case .unavailable:
+            .unavailable
+        case .requestingAuthorization:
+            .requestingAuthorization
+        case .authorizationRequired, .permissionRequired:
+            .authorizationRequired
+        case .chooseApps:
+            .chooseApps
+        case .active, .breakInProgress:
+            .editApps
+        case .startingProtection, .preparingPractice, .checkpointRequired, .ready:
+            .startAndEditApps
+        }
+    }
+
+    var statusText: String {
+        switch state {
+        case .active:
+            "On"
+        case .breakInProgress:
+            "Break in progress"
+        case .unavailable:
+            "iPhone only"
+        case .requestingAuthorization:
+            "Requesting access"
+        case .authorizationRequired:
+            "Not set up"
+        case .permissionRequired:
+            "Permission needed"
+        case .chooseApps, .startingProtection, .preparingPractice, .checkpointRequired, .ready:
+            "Off"
+        }
+    }
+
+    var detail: String {
+        switch state {
+        case .active:
+            "Selected apps pause at a goal-based checkpoint."
+        case let .breakInProgress(relockReadiness):
+            switch relockReadiness {
+            case .ready:
+                "Your timed break is active; protection restarts automatically."
+            case .waitingForCheckpoint:
+                "Your timed break is active. Protection turns back on only if another checkpoint is ready."
+            case .needsAttention:
+                "Your timed break is active. Protection needs attention before it can turn back on."
+            }
+        case .unavailable:
+            "App protection is available on iPhone."
+        case .requestingAuthorization:
+            "Waiting for iPhone to confirm Screen Time access."
+        case .authorizationRequired:
+            "Allow Screen Time to set up private, on-device protection."
+        case .permissionRequired:
+            "Screen Time access is not approved, so app protection is off."
+        case .chooseApps:
+            "Choose the apps you want to use more intentionally."
+        case .startingProtection:
+            "Checkpoint is checking the practice set before protection starts."
+        case .preparingPractice:
+            "Checkpoint is preparing a full practice set. Start protection when it’s ready."
+        case .checkpointRequired:
+            "Your apps are selected; a full practice set is still needed."
+        case .ready:
+            "Your apps and practice set are ready to protect."
+        }
+    }
+
+    var systemImage: String {
+        switch state {
+        case .active:
+            "checkmark.shield.fill"
+        case .breakInProgress:
+            "timer"
+        case .unavailable:
+            "iphone.slash"
+        case .permissionRequired:
+            "exclamationmark.shield.fill"
+        case .authorizationRequired:
+            "shield.lefthalf.filled"
+        case .chooseApps:
+            "checklist"
+        case .startingProtection, .preparingPractice:
+            "clock.arrow.circlepath"
+        case .requestingAuthorization, .checkpointRequired, .ready:
+            "shield"
+        }
+    }
+
+    var tone: SettingsProtectionTone {
+        switch state {
+        case .active:
+            .active
+        case .breakInProgress:
+            .breakInProgress
+        case .unavailable:
+            .unavailable
+        case .permissionRequired:
+            .attention
+        case .startingProtection, .preparingPractice, .checkpointRequired:
+            .preparing
+        case .requestingAuthorization, .authorizationRequired, .chooseApps, .ready:
+            .setup
+        }
+    }
+
+    var statusClass: SettingsProtectionStatusClass {
+        Self.statusClass(for: state)
+    }
+
+    static func statusClass(
+        for state: SettingsProtectionState
+    ) -> SettingsProtectionStatusClass {
+        switch state {
+        case .active:
+            .active
+        case .breakInProgress:
+            .breakInProgress
+        case .unavailable:
+            .unavailable
+        case .permissionRequired:
+            .permissionRequired
+        case .requestingAuthorization,
+             .authorizationRequired,
+             .chooseApps,
+             .startingProtection,
+             .preparingPractice,
+             .checkpointRequired,
+             .ready:
+            .off
+        }
+    }
+
+    var canStopBlocking: Bool {
+        switch state {
+        case .active, .breakInProgress:
+            true
+        case .unavailable,
+             .requestingAuthorization,
+             .authorizationRequired,
+             .permissionRequired,
+             .chooseApps,
+             .startingProtection,
+             .preparingPractice,
+             .checkpointRequired,
+             .ready:
+            false
+        }
+    }
+
+    var showsProtectionStartProgress: Bool {
+        state == .startingProtection
+    }
+
+    var disablesProtectionStart: Bool {
+        state == .startingProtection || state == .preparingPractice
+    }
+
+    var visibleRestrictedAppsSummary: String? {
+        let summary = restrictedAppsSummary.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !summary.isEmpty,
+              Self.comparableSentence(summary) != Self.comparableSentence(detail) else {
+            return nil
+        }
+        return summary
+    }
+
+    var accessibilityValue: String {
+        let summary = visibleRestrictedAppsSummary.map(Self.sentence)
+        return ([Self.sentence(statusText), detail] + [summary].compactMap { $0 })
+            .joined(separator: " ")
+    }
+
+    private static func comparableSentence(_ value: String) -> String {
+        value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(in: .punctuationCharacters)
+            .lowercased()
+    }
+
+    private static func sentence(_ value: String) -> String {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let last = trimmed.last,
+              !last.isPunctuation else {
+            return trimmed
+        }
+        return "\(trimmed)."
+    }
+}
+
+enum SettingsProtectionStatusClass: Equatable {
+    case off
+    case active
+    case breakInProgress
+    case permissionRequired
+    case unavailable
+}
+
+struct SettingsProtectionTransitionPolicy {
+    static func shouldClearActionMessage(
+        from oldState: SettingsProtectionState,
+        to newState: SettingsProtectionState
+    ) -> Bool {
+        guard oldState != newState else { return false }
+
+        if newState == .ready {
+            return true
+        }
+
+        if newState == .preparingPractice,
+           oldState != .startingProtection {
+            return true
+        }
+
+        return SettingsProtectionPresentation.statusClass(for: oldState)
+            != SettingsProtectionPresentation.statusClass(for: newState)
+    }
+
+    static func shouldAnnounce(
+        from oldState: SettingsProtectionState,
+        to newState: SettingsProtectionState,
+        hasConcreteError: Bool
+    ) -> Bool {
+        guard !hasConcreteError else { return false }
+
+        if case .breakInProgress = oldState,
+           case .breakInProgress = newState,
+           oldState != newState {
+            return true
+        }
+
+        if oldState == .startingProtection {
+            return false
+        }
+
+        let oldStatusClass = SettingsProtectionPresentation.statusClass(for: oldState)
+        let newStatusClass = SettingsProtectionPresentation.statusClass(for: newState)
+        if oldStatusClass != newStatusClass {
+            return true
+        }
+
+        guard oldStatusClass == .off else { return false }
+
+        if newState == .requestingAuthorization
+            || newState == .startingProtection {
+            return false
+        }
+
+        return oldState != newState
+    }
+}
+
+struct SettingsProtectionMotionPolicy: Equatable {
+    let reduceMotion: Bool
+
+    var animation: Animation? {
+        CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+    }
+
+    var animatesActivationSymbol: Bool {
+        !reduceMotion
+    }
+
+    func emphasizesTransition(
+        from oldState: SettingsProtectionState,
+        to newState: SettingsProtectionState
+    ) -> Bool {
+        animatesActivationSymbol
+            && oldState != .active
+            && newState == .active
+    }
+}
+
+struct SettingsProtectionStatusHeader: View {
+    let presentation: SettingsProtectionPresentation
+
+    private let reduceMotionOverride: Bool?
+
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var activationSymbolSequence = 0
+
+    init(
+        presentation: SettingsProtectionPresentation,
+        reduceMotionOverride: Bool? = nil
+    ) {
+        self.presentation = presentation
+        self.reduceMotionOverride = reduceMotionOverride
+    }
+
+    var body: some View {
+        headerLayout
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("App protection")
+            .accessibilityValue(presentation.accessibilityValue)
+            .animation(motionPolicy.animation, value: presentation.state)
+            .onChange(of: presentation.state) { oldState, newState in
+                guard motionPolicy.emphasizesTransition(
+                    from: oldState,
+                    to: newState
+                ) else { return }
+                activationSymbolSequence += 1
+            }
+    }
+
+    @ViewBuilder
+    private var headerLayout: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                protectionIcon
+                statusCopy
+                statusBadge
+            }
+        } else if dynamicTypeSize > .large {
+            VStack(alignment: .leading, spacing: 10) {
+                regularIdentity
+                statusBadge
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 12) {
+                    inlineIdentity
+                    Spacer(minLength: 8)
+                    statusBadge
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    regularIdentity
+                    statusBadge
+                }
+            }
+        }
+    }
+
+    private var inlineIdentity: some View {
+        regularIdentity
+            .frame(maxWidth: 220, alignment: .leading)
+    }
+
+    private var regularIdentity: some View {
+        HStack(spacing: 12) {
+            protectionIcon
+            statusCopy
+        }
+    }
+
+    private var protectionIcon: some View {
+        Image(systemName: presentation.systemImage)
+            .font(.system(size: 19, weight: .semibold))
+            .foregroundStyle(presentation.tone.color)
+            .frame(width: 42, height: 42)
+            .background(
+                presentation.tone.color.opacity(0.13),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffect(.bounce, options: .nonRepeating, value: activationSymbolSequence)
+            .symbolEffectsRemoved(!motionPolicy.animatesActivationSymbol)
+            .accessibilityHidden(true)
+    }
+
+    private var statusCopy: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("App protection")
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+
+            Text(presentation.detail)
+                .font(.footnote)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.interpolate)
+        }
+    }
+
+    private var statusBadge: some View {
+        StatusBadge(
+            text: presentation.statusText,
+            tint: presentation.tone.color
+        )
+        .contentTransition(.interpolate)
+    }
+
+    private var motionPolicy: SettingsProtectionMotionPolicy {
+        SettingsProtectionMotionPolicy(
+            reduceMotion: reduceMotionOverride ?? systemReduceMotion
+        )
+    }
+}
+
 enum AdvancedSettingsAction: String, Identifiable {
     case resetData
 
