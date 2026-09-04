@@ -174,6 +174,34 @@ final class GoalProfileTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testSelectingAlreadyActiveGoalIsAnIdempotentNoOp() async throws {
+        let appleEngine = CapturingQuestionEngine(provider: .appleFoundation)
+        let store = CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: ThrowingQuestionEngine(provider: .backend),
+                appleFoundationEngine: appleEngine
+            ),
+            defaults: defaults
+        )
+        store.updateAIProviderPreference(.appleFoundation)
+
+        let goal = makeGoal()
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.attempts = [makeAttempt(goal: goal, result: .correct, createdAt: Date())]
+        store.questionBatchState = .failed
+        store.checkpointNotice = "Keep this recovery context."
+
+        XCTAssertFalse(store.switchActiveGoal(to: goal.id))
+        XCTAssertEqual(store.goal?.id, goal.id)
+        XCTAssertEqual(store.questionBatchState, .failed)
+        XCTAssertEqual(store.checkpointNotice, "Keep this recovery context.")
+
+        try await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertTrue(appleEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
     func testSwitchingGoalPreparesProtectionReviewBankWhenCachedSetIsLow() async throws {
         let appleEngine = CapturingQuestionEngine(provider: .appleFoundation)
         let store = CheckpointStore(

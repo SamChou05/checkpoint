@@ -1016,7 +1016,8 @@ final class CheckpointStore {
     @discardableResult
     func switchActiveGoal(to goalID: Goal.ID) -> Bool {
         guard let selectedGoal = availableGoalProfiles.first(where: { $0.id == goalID }) else { return false }
-        guard selectedGoal.id == goal?.id || canUse(.goalProfiles) else {
+        guard selectedGoal.id != goal?.id else { return false }
+        guard canUse(.goalProfiles) else {
             requestMembership(for: .goalProfiles)
             return false
         }
