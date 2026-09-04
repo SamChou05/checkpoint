@@ -9,6 +9,25 @@ import ManagedSettings
 final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
     // MARK: - Screen Time and shield coordination
 
+    func testShieldHandoffRouteKeepsUnsupportedSystemsOnTheManualPath() {
+        XCTAssertEqual(
+            SharedAppGroup.shieldHandoffRoute(supportsAutomaticHandoff: false),
+            .manual
+        )
+        XCTAssertEqual(
+            SharedAppGroup.shieldHandoffRoute(supportsAutomaticHandoff: true),
+            .automatic
+        )
+
+        #if os(iOS)
+        if #available(iOS 26.5, *) {
+            XCTAssertEqual(SharedAppGroup.currentShieldHandoffRoute, .automatic)
+        } else {
+            XCTAssertEqual(SharedAppGroup.currentShieldHandoffRoute, .manual)
+        }
+        #endif
+    }
+
     @MainActor
     func testPendingShieldAttemptCreatesOneCheckpointSessionThenClears() throws {
         let store = makeSeededStore(questionCount: 6)

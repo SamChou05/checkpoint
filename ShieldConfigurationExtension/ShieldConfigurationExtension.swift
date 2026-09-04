@@ -50,13 +50,8 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
         SharedAppGroup.markShieldConfigurationRendered()
 
         let context = SharedAppGroup.currentShieldContext()
-        let supportsAutomaticHandoff: Bool
-        if #available(iOS 26.5, *) {
-            supportsAutomaticHandoff = true
-        } else {
-            supportsAutomaticHandoff = false
-        }
-        let subtitle = supportsAutomaticHandoff
+        let handoffRoute = SharedAppGroup.currentShieldHandoffRoute
+        let subtitle = handoffRoute == .automatic
             ? "Goal: \(context.goalTitle)"
             : "Tap below, then open Checkpoint from your Home Screen. Goal: \(context.goalTitle)"
 
@@ -73,7 +68,7 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
                 color: Theme.muted
             ),
             primaryButtonLabel: ShieldConfiguration.Label(
-                text: supportsAutomaticHandoff ? "Open Checkpoint" : "Start checkpoint",
+                text: handoffRoute == .automatic ? "Open Checkpoint" : "Start checkpoint",
                 color: Theme.actionLabel
             ),
             primaryButtonBackgroundColor: Theme.actionFill,

@@ -9,11 +9,31 @@ import FamilyControls
 #endif
 
 enum SharedAppGroup {
+    enum ShieldHandoffRoute: Equatable {
+        case automatic
+        case manual
+    }
+
     struct ShieldContext: Codable, Equatable {
         var goalTitle: String
         var promptPreview: String
         var revision: String
         var updatedAt: Date
+    }
+
+    static var currentShieldHandoffRoute: ShieldHandoffRoute {
+        #if os(iOS)
+        if #available(iOS 26.5, *) {
+            return shieldHandoffRoute(supportsAutomaticHandoff: true)
+        }
+        #endif
+        return shieldHandoffRoute(supportsAutomaticHandoff: false)
+    }
+
+    static func shieldHandoffRoute(
+        supportsAutomaticHandoff: Bool
+    ) -> ShieldHandoffRoute {
+        supportsAutomaticHandoff ? .automatic : .manual
     }
 
     struct ProtectionSnapshot: Codable, Equatable, Sendable {

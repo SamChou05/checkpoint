@@ -48,8 +48,12 @@ final class ShieldActionExtension: ShieldActionDelegate {
 private extension ShieldActionResponse {
     static var openCheckpoint: ShieldActionResponse {
         // iOS 26.5 uses raw value 3 for openParentalControlsApp, which this SDK
-        // predates. If unavailable, .defer keeps the shield active for manual handoff.
-        ShieldActionResponse(rawValue: 3) ?? .defer
+        // predates. Older systems must never receive that availability-gated
+        // response even when the enum accepts its raw value.
+        guard SharedAppGroup.currentShieldHandoffRoute == .automatic else {
+            return .defer
+        }
+        return ShieldActionResponse(rawValue: 3) ?? .defer
     }
 }
 #endif
