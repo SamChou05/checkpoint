@@ -58,6 +58,113 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testWeeklyMetricsRespectAnInjectedClockAndCalendar() throws {
+        let store = CheckpointStore(defaults: defaults)
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let asOf = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2024, month: 2, day: 14, hour: 12))
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: asOf))
+
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.attempts = [
+            makeAttempt(
+                goal: goal,
+                result: .correct,
+                createdAt: week.start.addingTimeInterval(60 * 60)
+            )
+        ]
+
+        XCTAssertEqual(
+            store.weeklyTotalMetrics(asOf: asOf, calendar: calendar).questionsAnswered,
+            1
+        )
+        XCTAssertEqual(
+            store.weeklyActiveGoalMetrics(asOf: asOf, calendar: calendar)?.questionsAnswered,
+            1
+        )
+        XCTAssertEqual(
+            store.weeklyGoalMetrics(asOf: asOf, calendar: calendar).first?.questionsAnswered,
+            1
+        )
+    }
+
+    @MainActor
+    func testWeeklyMetricsExcludeRecordsAfterTheInjectedClock() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let asOf = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: asOf))
+        let currentDate = asOf.addingTimeInterval(-3_600)
+        let futureDate = asOf.addingTimeInterval(3_600)
+        let sharedQuestionID = UUID()
+        let calculator = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(goal: goal, result: .correct, createdAt: currentDate),
+                makeAttempt(
+                    goal: goal,
+                    questionID: sharedQuestionID,
+                    result: .incorrect,
+                    createdAt: week.start.addingTimeInterval(-3_600)
+                ),
+                makeAttempt(
+                    goal: goal,
+                    questionID: sharedQuestionID,
+                    result: .correct,
+                    createdAt: futureDate
+                )
+            ],
+            unlockEvents: [
+                UnlockEvent(goalID: goal.id, minutes: 15, createdAt: currentDate),
+                UnlockEvent(goalID: goal.id, minutes: 30, createdAt: futureDate)
+            ],
+            asOf: asOf,
+            calendar: calendar
+        )
+
+        let summary = calculator.summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: []
+        )
+        let details = calculator.impactDetails(goalID: goal.id)
+
+        XCTAssertEqual(summary.questionsAnswered, 1)
+        XCTAssertEqual(summary.correctAnswers, 1)
+        XCTAssertEqual(summary.checkpointsCleared, 1)
+        XCTAssertEqual(summary.checkpointStreakDays, 1)
+        XCTAssertEqual(details.earnedBreakMinutes, 15)
+        XCTAssertEqual(details.activePracticeDays, 1)
+        XCTAssertEqual(details.recoveredQuestions, 0)
+    }
+
+    func testWeeklyDateLabelsUseTheInjectedTimeZone() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let monday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 31))
+        )
+        let formatter = WeeklyReviewDateLabelFormatter(
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(formatter.narrowWeekday(for: monday), "M")
+        XCTAssertEqual(formatter.wideWeekday(for: monday), "Monday")
+    }
+
+    @MainActor
     func testWeeklyCheckpointStreakUsesClearedCheckpointDays() {
         let store = CheckpointStore(defaults: defaults)
         let goal = makeGoal()
@@ -211,6 +318,51 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
             ],
             unlockEvents: []
         ).impactDetails(goalID: goal.id)
+
+        XCTAssertEqual(details.recoveredQuestions, 0)
+    }
+
+    @MainActor
+    func testAllGoalsRecoveryKeepsQuestionIdentityScopedToItsGoal() throws {
+        let firstGoal = makeGoal()
+        let secondGoal = Goal(
+            title: "Prepare for calculus final",
+            deadline: Date().addingTimeInterval(86_400 * 30),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "integrals",
+            preferredQuestionStyle: .multipleChoice
+        )
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let now = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: now))
+        let sharedQuestionID = UUID()
+        let miss = week.start.addingTimeInterval(60 * 60)
+        let unrelatedCorrectAnswer = miss.addingTimeInterval(60)
+
+        let details = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(
+                    goal: firstGoal,
+                    questionID: sharedQuestionID,
+                    result: .incorrect,
+                    createdAt: miss
+                ),
+                makeAttempt(
+                    goal: secondGoal,
+                    questionID: sharedQuestionID,
+                    result: .correct,
+                    createdAt: unrelatedCorrectAnswer
+                )
+            ],
+            unlockEvents: [],
+            asOf: now,
+            calendar: calendar
+        ).impactDetails(goalID: nil)
 
         XCTAssertEqual(details.recoveredQuestions, 0)
     }
@@ -384,6 +536,125 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
                 .lowestCurrentEstimate("Derivatives"),
                 .highestCurrentEstimate("Integrals")
             ]
+        )
+        XCTAssertTrue(
+            store.weeklyTotalMetrics.skillSnapshotSignals.isEmpty,
+            "All-goals summaries must not rank unrelated goal skill maps against each other."
+        )
+    }
+
+    @MainActor
+    func testWeeklyGoalPulseRetainsIdentityAndIncludesQuietGoals() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let locale = Locale(identifier: "en_US")
+        let now = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let sharedDeadline = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 30, to: now)
+        )
+        let firstGoal = Goal(
+            title: "Finish the launch review",
+            deadline: sharedDeadline,
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "positioning",
+            preferredQuestionStyle: .reflection,
+            createdAt: now.addingTimeInterval(-200)
+        )
+        let currentGoal = Goal(
+            title: "Finish the launch review",
+            deadline: sharedDeadline,
+            category: .custom,
+            currentLevel: "Advanced",
+            focusAreas: "evidence",
+            preferredQuestionStyle: .shortAnswer,
+            createdAt: now.addingTimeInterval(-100)
+        )
+        let quietGoal = Goal(
+            title: "Build conversational Spanish",
+            deadline: try XCTUnwrap(calendar.date(byAdding: .day, value: 90, to: now)),
+            category: .languageLearning,
+            currentLevel: "Beginner",
+            focusAreas: "speaking",
+            preferredQuestionStyle: .shortAnswer,
+            createdAt: now
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: now))
+        let firstDate = week.start.addingTimeInterval(60 * 60)
+        let currentDate = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 1, to: firstDate)
+        )
+        let attempts = [
+            makeAttempt(goal: firstGoal, result: .correct, createdAt: firstDate),
+            makeAttempt(goal: firstGoal, result: .incorrect, createdAt: firstDate),
+            makeAttempt(goal: currentGoal, result: .correct, createdAt: currentDate)
+        ]
+        let unlockEvents = [
+            UnlockEvent(goalID: firstGoal.id, minutes: 30, createdAt: firstDate),
+            UnlockEvent(goalID: currentGoal.id, minutes: 15, createdAt: currentDate)
+        ]
+        let calculator = WeeklyMetricsCalculator(
+            attempts: attempts,
+            unlockEvents: unlockEvents,
+            asOf: now,
+            calendar: calendar
+        )
+        let goals = [firstGoal, currentGoal, quietGoal]
+        let metrics = goals.map { goal in
+            calculator.summary(
+                id: goal.id.uuidString,
+                title: goal.title,
+                goalID: goal.id,
+                isCurrentGoal: goal.id == currentGoal.id,
+                skillCompetencies: []
+            )
+        }
+
+        let presentation = WeeklyGoalPulsePresentation(
+            goals: goals,
+            metrics: metrics,
+            attempts: attempts,
+            unlockEvents: unlockEvents,
+            activeGoalID: currentGoal.id,
+            asOf: now,
+            calendar: calendar,
+            locale: locale,
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(presentation.items.map(\.id), [currentGoal.id, firstGoal.id, quietGoal.id])
+        XCTAssertEqual(Set(presentation.items.map(\.title)).count, 3)
+        XCTAssertTrue(presentation.items[0].title.contains("profile 2"))
+        XCTAssertTrue(presentation.items[1].title.contains("profile 1"))
+        XCTAssertTrue(presentation.items[0].isCurrentGoal)
+        XCTAssertEqual(presentation.items[0].questionShare, 1.0 / 3.0, accuracy: 0.001)
+        XCTAssertEqual(presentation.items[1].questionShare, 2.0 / 3.0, accuracy: 0.001)
+        XCTAssertEqual(presentation.items[2].questionShare, 0, accuracy: 0.001)
+        XCTAssertEqual(presentation.items[2].activityText, "No checkpoint activity this week")
+        XCTAssertEqual(presentation.items[2].supportingText, "Ready for your next checkpoint")
+        XCTAssertTrue(presentation.items[0].accessibilityLabel.contains("current goal"))
+        XCTAssertEqual(
+            presentation.items.map(\.questionShare).reduce(0, +),
+            1,
+            accuracy: 0.001
+        )
+    }
+
+    func testWeeklyReviewSelectionFeedbackOnlyReportsAnActualScopeChange() {
+        XCTAssertFalse(
+            WeeklyReviewScopeInteractionPolicy.reportsSelectionFeedback(
+                selectedMetricsID: WeeklyMetricsSummary.allGoalsID,
+                currentMetricsID: WeeklyMetricsSummary.allGoalsID
+            )
+        )
+        XCTAssertTrue(
+            WeeklyReviewScopeInteractionPolicy.reportsSelectionFeedback(
+                selectedMetricsID: UUID().uuidString,
+                currentMetricsID: WeeklyMetricsSummary.allGoalsID
+            )
         )
     }
 

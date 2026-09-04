@@ -166,6 +166,38 @@ final class PracticeHistoryReviewPresentationTests: XCTestCase {
         XCTAssertEqual(presentation.goalTitle(for: goals.second.id), secondTitle)
     }
 
+    func testArchiveAddsStableProfileSuffixesWhenEquivalentTitlesShareADeadline() throws {
+        let sharedDeadline = fixedReferenceDate.addingTimeInterval(86_400 * 30)
+        let firstGoal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000703"),
+            title: "Résumé mastery",
+            deadline: sharedDeadline,
+            createdAt: fixedReferenceDate.addingTimeInterval(-86_400)
+        )
+        let secondGoal = makeArchiveGoal(
+            id: fixedUUID("00000000-0000-0000-0000-000000000704"),
+            title: "resume mastery",
+            deadline: sharedDeadline,
+            createdAt: fixedReferenceDate.addingTimeInterval(-86_400 * 2)
+        )
+        let presentation = PracticeHistoryArchivePresentation(
+            allAttempts: [],
+            goalProfiles: [firstGoal, secondGoal],
+            activeGoalID: firstGoal.id,
+            requestedScope: .all,
+            filter: .all
+        )
+
+        let firstTitle = try XCTUnwrap(
+            presentation.goalOptions.first { $0.id == firstGoal.id }?.title
+        )
+        let secondTitle = try XCTUnwrap(
+            presentation.goalOptions.first { $0.id == secondGoal.id }?.title
+        )
+        XCTAssertTrue(firstTitle.hasSuffix("profile 2"))
+        XCTAssertTrue(secondTitle.hasSuffix("profile 1"))
+    }
+
     func testArchiveGuaranteesUniqueLabelsForIdenticalNamesAndDeadlines() {
         let sharedDeadline = fixedReferenceDate.addingTimeInterval(86_400 * 30)
         let firstGoal = makeArchiveGoal(

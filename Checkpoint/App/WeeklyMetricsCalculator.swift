@@ -49,18 +49,26 @@ struct WeeklyImpactDetails: Equatable, Sendable {
 struct WeeklyMetricsCalculator {
     private let attempts: [CheckpointAttempt]
     private let unlockEvents: [UnlockEvent]
+    private let asOf: Date
+    private let calendar: Calendar
 
     init(
         attempts: [CheckpointAttempt],
-        unlockEvents: [UnlockEvent]
+        unlockEvents: [UnlockEvent],
+        asOf: Date = Date(),
+        calendar: Calendar = .current
     ) {
         self.attempts = attempts
         self.unlockEvents = unlockEvents
+        self.asOf = asOf
+        self.calendar = calendar
     }
 
     private var attemptsThisWeek: [CheckpointAttempt] {
-        guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
-        return attempts.filter { week.contains($0.createdAt) }
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: asOf) else { return [] }
+        return attempts.filter {
+            $0.createdAt <= asOf && week.contains($0.createdAt)
+        }
     }
 
     func summary(
@@ -77,11 +85,12 @@ struct WeeklyMetricsCalculator {
         let correctAnswers = weeklyAttempts.filter { $0.result == .correct }.count
         let missedAnswers = weeklyAttempts.filter { $0.result != .correct }.count
         let scopedUnlockEvents = unlockEvents.filter { event in
+            guard event.createdAt <= asOf else { return false }
             guard let goalID else { return true }
             return event.goalID == goalID
         }
         let weeklyUnlockEvents = scopedUnlockEvents.filter { event in
-            guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return false }
+            guard let week = calendar.dateInterval(of: .weekOfYear, for: asOf) else { return false }
             return week.contains(event.createdAt)
         }
         let skillHighlights = skillHighlights(for: skillCompetencies)
@@ -101,11 +110,9 @@ struct WeeklyMetricsCalculator {
     }
 
     func impactDetails(
-        goalID: Goal.ID?,
-        asOf now: Date = Date(),
-        calendar: Calendar = .current
+        goalID: Goal.ID?
     ) -> WeeklyImpactDetails {
-        guard let week = calendar.dateInterval(of: .weekOfYear, for: now),
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: asOf),
               let previousWeekStart = calendar.date(byAdding: .weekOfYear, value: -1, to: week.start) else {
             return WeeklyImpactDetails(
                 practiceDays: [],
@@ -116,7 +123,7 @@ struct WeeklyMetricsCalculator {
             )
         }
 
-        let elapsedThisWeek = now.timeIntervalSince(week.start)
+        let elapsedThisWeek = asOf.timeIntervalSince(week.start)
         let previousComparisonEnd = min(
             previousWeekStart.addingTimeInterval(elapsedThisWeek),
             week.start
@@ -126,12 +133,15 @@ struct WeeklyMetricsCalculator {
             end: previousComparisonEnd
         )
         let scopedAttempts = attempts.filter { attempt in
+            guard attempt.createdAt <= asOf else { return false }
             guard let goalID else { return true }
             return attempt.goalID == goalID
         }
         let weeklyAttempts = scopedAttempts.filter { week.contains($0.createdAt) }
         let weeklyUnlockEvents = unlockEvents.filter { event in
-            week.contains(event.createdAt) && (goalID == nil || event.goalID == goalID)
+            event.createdAt <= asOf &&
+                week.contains(event.createdAt) &&
+                (goalID == nil || event.goalID == goalID)
         }
         let practiceDays = (0..<7).compactMap { offset -> WeeklyPracticeDay? in
             guard let date = calendar.date(byAdding: .day, value: offset, to: week.start) else {
@@ -160,6 +170,19 @@ struct WeeklyMetricsCalculator {
         )
     }
 
+    func impactDetails(
+        goalID: Goal.ID?,
+        asOf: Date,
+        calendar: Calendar
+    ) -> WeeklyImpactDetails {
+        WeeklyMetricsCalculator(
+            attempts: attempts,
+            unlockEvents: unlockEvents,
+            asOf: asOf,
+            calendar: calendar
+        ).impactDetails(goalID: goalID)
+    }
+
     private func recoveredQuestionCount(
         in attempts: [CheckpointAttempt],
         during interval: DateInterval
@@ -170,31 +193,38 @@ struct WeeklyMetricsCalculator {
             }
             return lhs.createdAt < rhs.createdAt
         }
-        var unresolvedQuestionIDs = Set<CheckpointQuestion.ID>()
-        var recoveredQuestionIDs = Set<CheckpointQuestion.ID>()
+        struct QuestionIdentity: Hashable {
+            let goalID: Goal.ID
+            let questionID: CheckpointQuestion.ID
+        }
+        var unresolvedQuestions = Set<QuestionIdentity>()
+        var recoveredQuestions = Set<QuestionIdentity>()
 
         for attempt in orderedAttempts {
+            let identity = QuestionIdentity(
+                goalID: attempt.goalID,
+                questionID: attempt.questionID
+            )
             if attempt.result == .correct {
                 if interval.contains(attempt.createdAt),
-                   unresolvedQuestionIDs.contains(attempt.questionID) {
-                    recoveredQuestionIDs.insert(attempt.questionID)
+                   unresolvedQuestions.contains(identity) {
+                    recoveredQuestions.insert(identity)
                 }
-                unresolvedQuestionIDs.remove(attempt.questionID)
+                unresolvedQuestions.remove(identity)
             } else {
-                unresolvedQuestionIDs.insert(attempt.questionID)
-                recoveredQuestionIDs.remove(attempt.questionID)
+                unresolvedQuestions.insert(identity)
+                recoveredQuestions.remove(identity)
             }
         }
 
-        return recoveredQuestionIDs.count
+        return recoveredQuestions.count
     }
 
     private func checkpointStreakDays(for unlockEvents: [UnlockEvent]) -> Int {
-        let calendar = Calendar.current
         let clearedDays = Set(unlockEvents.map { calendar.startOfDay(for: $0.createdAt) })
         guard !clearedDays.isEmpty else { return 0 }
 
-        let today = calendar.startOfDay(for: Date())
+        let today = calendar.startOfDay(for: asOf)
         let yesterday = calendar.date(byAdding: .day, value: -1, to: today) ?? today
         guard var cursor = clearedDays.contains(today) ? today : (clearedDays.contains(yesterday) ? yesterday : nil) else {
             return 0

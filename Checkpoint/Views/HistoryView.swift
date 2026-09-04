@@ -931,12 +931,12 @@ struct PracticeHistoryArchivePresentation: Equatable {
             resolvedScope = .all
         }
 
-        let titlesByID = Self.goalDisplayTitles(
-            for: goalProfiles,
+        let titlesByID = GoalDisplayTitleResolver(
+            goals: goalProfiles,
             calendar: displayCalendar,
             locale: displayLocale,
             timeZone: displayTimeZone
-        )
+        ).titlesByID
         let options = goalProfiles.map { goal in
             PracticeHistoryGoalOption(
                 id: goal.id,
@@ -1040,94 +1040,6 @@ struct PracticeHistoryArchivePresentation: Equatable {
         return lhs.createdAt > rhs.createdAt
     }
 
-    private static func goalDisplayTitles(
-        for goals: [Goal],
-        calendar: Calendar,
-        locale: Locale,
-        timeZone: TimeZone
-    ) -> [Goal.ID: String] {
-        let groups = Dictionary(grouping: goals) { goal in
-            goal.title
-                .folding(
-                    options: [.caseInsensitive, .diacriticInsensitive],
-                    locale: locale
-                )
-                .lowercased(with: locale)
-        }
-
-        return groups.values.reduce(into: [Goal.ID: String]()) { result, matchingGoals in
-            guard matchingGoals.count > 1 else {
-                if let goal = matchingGoals.first {
-                    result[goal.id] = goal.title
-                }
-                return
-            }
-
-            let shortLabels = matchingGoals.map { goal in
-                let dueDate = formattedDeadline(
-                    goal.deadline,
-                    includesYear: false,
-                    calendar: calendar,
-                    locale: locale,
-                    timeZone: timeZone
-                )
-                return "\(goal.title) · due \(dueDate)"
-            }
-
-            if Set(shortLabels).count == matchingGoals.count {
-                for (goal, label) in zip(matchingGoals, shortLabels) {
-                    result[goal.id] = label
-                }
-                return
-            }
-
-            let longLabels = matchingGoals.map { goal in
-                let dueDate = formattedDeadline(
-                    goal.deadline,
-                    includesYear: true,
-                    calendar: calendar,
-                    locale: locale,
-                    timeZone: timeZone
-                )
-                return "\(goal.title) · due \(dueDate)"
-            }
-
-            if Set(longLabels).count == matchingGoals.count {
-                for (goal, label) in zip(matchingGoals, longLabels) {
-                    result[goal.id] = label
-                }
-                return
-            }
-
-            let stableGoals = matchingGoals.sorted {
-                if $0.createdAt == $1.createdAt {
-                    return $0.id.uuidString < $1.id.uuidString
-                }
-                return $0.createdAt < $1.createdAt
-            }
-            for (index, goal) in stableGoals.enumerated() {
-                let longLabel = longLabels[
-                    matchingGoals.firstIndex(where: { $0.id == goal.id }) ?? 0
-                ]
-                result[goal.id] = "\(longLabel) · profile \(index + 1)"
-            }
-        }
-    }
-
-    private static func formattedDeadline(
-        _ date: Date,
-        includesYear: Bool,
-        calendar: Calendar,
-        locale: Locale,
-        timeZone: TimeZone
-    ) -> String {
-        let formatter = DateFormatter()
-        formatter.calendar = calendar
-        formatter.locale = locale
-        formatter.timeZone = timeZone
-        formatter.setLocalizedDateFormatFromTemplate(includesYear ? "MMMdy" : "MMMd")
-        return formatter.string(from: date)
-    }
 }
 
 enum PracticeHistoryFilter: String, CaseIterable, Identifiable {

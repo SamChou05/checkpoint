@@ -202,26 +202,50 @@ final class CheckpointStore {
         checkpointRetryCooldownRemainingSeconds > 0
     }
 
-    private var weeklyMetricsCalculator: WeeklyMetricsCalculator {
+    private func weeklyMetricsCalculator(
+        asOf: Date = Date(),
+        calendar: Calendar = .current
+    ) -> WeeklyMetricsCalculator {
         WeeklyMetricsCalculator(
             attempts: attempts,
-            unlockEvents: unlockEvents
+            unlockEvents: unlockEvents,
+            asOf: asOf,
+            calendar: calendar
         )
     }
 
     var weeklyTotalMetrics: WeeklyMetricsSummary {
-        weeklyMetricsCalculator.summary(
+        weeklyTotalMetrics(asOf: Date(), calendar: .current)
+    }
+
+    func weeklyTotalMetrics(
+        asOf: Date,
+        calendar: Calendar
+    ) -> WeeklyMetricsSummary {
+        let profiles = availableGoalProfiles
+        let aggregateSkillCompetencies = profiles.count == 1
+            ? currentMetricCompetencies(for: profiles[0])
+            : []
+
+        return weeklyMetricsCalculator(asOf: asOf, calendar: calendar).summary(
             id: WeeklyMetricsSummary.allGoalsID,
             title: "All goals",
             goalID: nil,
             isCurrentGoal: false,
-            skillCompetencies: availableGoalProfiles.flatMap(currentMetricCompetencies)
+            skillCompetencies: aggregateSkillCompetencies
         )
     }
 
     var weeklyActiveGoalMetrics: WeeklyMetricsSummary? {
+        weeklyActiveGoalMetrics(asOf: Date(), calendar: .current)
+    }
+
+    func weeklyActiveGoalMetrics(
+        asOf: Date,
+        calendar: Calendar
+    ) -> WeeklyMetricsSummary? {
         guard let goal else { return nil }
-        return weeklyMetricsCalculator.summary(
+        return weeklyMetricsCalculator(asOf: asOf, calendar: calendar).summary(
             id: goal.id.uuidString,
             title: goal.title,
             goalID: goal.id,
@@ -231,8 +255,15 @@ final class CheckpointStore {
     }
 
     var weeklyGoalMetrics: [WeeklyMetricsSummary] {
+        weeklyGoalMetrics(asOf: Date(), calendar: .current)
+    }
+
+    func weeklyGoalMetrics(
+        asOf: Date,
+        calendar: Calendar
+    ) -> [WeeklyMetricsSummary] {
         availableGoalProfiles.map { profile in
-            weeklyMetricsCalculator.summary(
+            weeklyMetricsCalculator(asOf: asOf, calendar: calendar).summary(
                 id: profile.id.uuidString,
                 title: profile.title,
                 goalID: profile.id,
