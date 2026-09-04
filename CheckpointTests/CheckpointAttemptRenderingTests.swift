@@ -5,18 +5,23 @@ import XCTest
 
 final class CheckpointAttemptRenderingTests: XCTestCase {
     @MainActor
-    func testResolutionPresentationLeadsWithCheckpointOutcomeWhenFinalAnswerDiffers() {
+    func testResolutionPresentationLeadsWithCheckpointOutcomeAndTruthfulScore() {
         let passAfterMiss = CheckpointResolutionPresentation(
             purpose: .temporaryUnlock,
             didMeetStandard: true,
             correctAnswerCount: 4,
+            answeredQuestionCount: 5,
             questionCount: 5,
+            requiredCorrectAnswerCount: 4,
             unlockMinutes: 30,
             failureProtectionOutcome: nil
         )
 
         XCTAssertEqual(passAfterMiss.title, "Checkpoint cleared")
+        XCTAssertEqual(passAfterMiss.compactTitle, "Cleared")
         XCTAssertEqual(passAfterMiss.scoreText, "4 of 5 correct")
+        XCTAssertEqual(passAfterMiss.scoreComponents, ["4 of 5 correct"])
+        XCTAssertEqual(passAfterMiss.compactScoreComponents, ["Score 4 / 5"])
         XCTAssertEqual(passAfterMiss.detail, "Your 30-minute break is ready to begin.")
         XCTAssertEqual(passAfterMiss.systemImage, "checkmark.seal.fill")
         XCTAssertEqual(passAfterMiss.tone, .success)
@@ -27,17 +32,25 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             purpose: .temporaryUnlock,
             didMeetStandard: false,
             correctAnswerCount: 1,
+            answeredQuestionCount: 3,
             questionCount: 5,
+            requiredCorrectAnswerCount: 4,
             unlockMinutes: 30,
             failureProtectionOutcome: .protectionRemainsOn,
             cooldownDurationText: "5 minutes"
         )
 
         XCTAssertEqual(failureAfterCorrectAnswer.title, "Checkpoint not cleared")
-        XCTAssertEqual(failureAfterCorrectAnswer.scoreText, "1 of 5 correct")
+        XCTAssertEqual(failureAfterCorrectAnswer.compactTitle, "Not cleared")
+        XCTAssertEqual(failureAfterCorrectAnswer.scoreText, "1 correct · 3 of 5 answered")
+        XCTAssertEqual(failureAfterCorrectAnswer.scoreComponents, ["1 correct", "3 of 5 answered"])
+        XCTAssertEqual(
+            failureAfterCorrectAnswer.compactScoreComponents,
+            ["1 correct", "3 / 5 done"]
+        )
         XCTAssertEqual(
             failureAfterCorrectAnswer.detail,
-            "Protection stays on. Try again in 5 minutes, and we'll revisit what you missed."
+            "The 4-of-5 standard was no longer reachable. Protection stays on. Try again in 5 minutes, and we'll revisit what you missed."
         )
         XCTAssertEqual(failureAfterCorrectAnswer.systemImage, "arrow.counterclockwise.circle.fill")
         XCTAssertEqual(failureAfterCorrectAnswer.tone, .needsPractice)
@@ -51,7 +64,9 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             purpose: .preview,
             didMeetStandard: false,
             correctAnswerCount: 2,
+            answeredQuestionCount: 5,
             questionCount: 5,
+            requiredCorrectAnswerCount: 4,
             unlockMinutes: 30,
             failureProtectionOutcome: nil
         )
@@ -65,11 +80,29 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         XCTAssertEqual(preview.actionTitle, "Finish")
         XCTAssertEqual(preview.actionSystemImage, "checkmark.seal")
 
+        let earlyPreview = CheckpointResolutionPresentation(
+            purpose: .preview,
+            didMeetStandard: false,
+            correctAnswerCount: 1,
+            answeredQuestionCount: 3,
+            questionCount: 5,
+            requiredCorrectAnswerCount: 4,
+            unlockMinutes: 30,
+            failureProtectionOutcome: nil
+        )
+        XCTAssertEqual(earlyPreview.scoreText, "1 correct · 3 of 5 answered")
+        XCTAssertEqual(
+            earlyPreview.detail,
+            "The 4-of-5 standard was no longer reachable. App protection did not change."
+        )
+
         let unavailable = CheckpointResolutionPresentation(
             purpose: .stopBlocking,
             didMeetStandard: false,
             correctAnswerCount: 1,
+            answeredQuestionCount: 5,
             questionCount: 5,
+            requiredCorrectAnswerCount: 4,
             unlockMinutes: 30,
             failureProtectionOutcome: .protectionTurnedOffForUnavailableCheckpoint
         )
@@ -84,7 +117,9 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             purpose: .stopBlocking,
             didMeetStandard: false,
             correctAnswerCount: 1,
+            answeredQuestionCount: 5,
             questionCount: 5,
+            requiredCorrectAnswerCount: 4,
             unlockMinutes: 30,
             failureProtectionOutcome: .activeBreakContinues
         )
@@ -108,7 +143,9 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             purpose: .temporaryUnlock,
             didMeetStandard: true,
             correctAnswerCount: 4,
+            answeredQuestionCount: 5,
             questionCount: 5,
+            requiredCorrectAnswerCount: 4,
             unlockMinutes: 30,
             failureProtectionOutcome: nil,
             protectionActionFailed: true
@@ -137,10 +174,73 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             CheckpointFeedbackDestination.resolve(shouldFinish: true),
             .resolution
         )
+
+        let activeChrome = CheckpointAttemptChromePresentation(
+            isResolved: false,
+            usesAccessibilityTextSize: false
+        )
+        XCTAssertTrue(activeChrome.showsProgressHeader)
+        XCTAssertEqual(activeChrome.primaryActionPlacement, .pinned)
+
+        let resolvedStandardChrome = CheckpointAttemptChromePresentation(
+            isResolved: true,
+            usesAccessibilityTextSize: false
+        )
+        XCTAssertFalse(resolvedStandardChrome.showsProgressHeader)
+        XCTAssertEqual(resolvedStandardChrome.primaryActionPlacement, .pinned)
+
+        let resolvedAccessibilityChrome = CheckpointAttemptChromePresentation(
+            isResolved: true,
+            usesAccessibilityTextSize: true
+        )
+        XCTAssertFalse(resolvedAccessibilityChrome.showsProgressHeader)
+        XCTAssertEqual(resolvedAccessibilityChrome.primaryActionPlacement, .inline)
+
+        let activeAccessibilityChrome = CheckpointAttemptChromePresentation(
+            isResolved: false,
+            usesAccessibilityTextSize: true
+        )
+        XCTAssertTrue(activeAccessibilityChrome.showsProgressHeader)
+        XCTAssertEqual(activeAccessibilityChrome.primaryActionPlacement, .inline)
     }
 
     @MainActor
-    func testContradictoryFinalAnswerStatesRenderAcrossCompactAndAccessibleLayouts() throws {
+    func testAnswerProgressionEndsImpossibleAttemptsButCompletesPassingQuestionSet() {
+        let goal = makeGoal()
+        let questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
+        let session = CheckpointSession(
+            questions: questions,
+            requiredCorrectAnswers: 4,
+            purpose: .temporaryUnlock
+        )
+
+        let earlyFailure = CheckpointAnswerProgression(
+            session: session,
+            correctAnswerCount: 1,
+            answeredQuestionCount: 3
+        )
+        XCTAssertTrue(earlyFailure.shouldFinish)
+        XCTAssertFalse(earlyFailure.shouldPass)
+
+        let standardMetBeforeFinalQuestion = CheckpointAnswerProgression(
+            session: session,
+            correctAnswerCount: 4,
+            answeredQuestionCount: 4
+        )
+        XCTAssertFalse(standardMetBeforeFinalQuestion.shouldFinish)
+        XCTAssertFalse(standardMetBeforeFinalQuestion.shouldPass)
+
+        let completedPass = CheckpointAnswerProgression(
+            session: session,
+            correctAnswerCount: 4,
+            answeredQuestionCount: 5
+        )
+        XCTAssertTrue(completedPass.shouldFinish)
+        XCTAssertTrue(completedPass.shouldPass)
+    }
+
+    @MainActor
+    func testResolvedAttemptsRenderAcrossCompactAndAccessibleLayouts() throws {
         let suiteName = "CheckpointAttemptRenderingTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
@@ -246,7 +346,29 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                 )
             ),
             CheckpointAttemptRenderFixture(
-                name: "attempt-fail-final-correct-accessibility-dark-reduced",
+                name: "attempt-fail-early-resolution-standard-dark",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .terminal(
+                            questionIndex: 2,
+                            correctAnswerCount: 1,
+                            answer: questions[2].expectedAnswer,
+                            result: .correct,
+                            didPass: false
+                        ),
+                        reduceMotionOverride: false
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
+                name: "attempt-fail-early-resolution-accessibility-dark-reduced",
                 width: 393,
                 height: 852,
                 colorScheme: .dark,
@@ -268,7 +390,51 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                 )
             ),
             CheckpointAttemptRenderFixture(
-                name: "attempt-fail-final-correct-full-dark",
+                name: "attempt-fail-early-resolution-narrow-accessibility5-dark-reduced",
+                width: 320,
+                height: 1_800,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .terminal(
+                            questionIndex: 2,
+                            correctAnswerCount: 1,
+                            answer: questions[2].expectedAnswer,
+                            result: .correct,
+                            didPass: false
+                        ),
+                        reduceMotionOverride: true
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
+                name: "attempt-fail-early-resolution-accessibility-full-dark-reduced",
+                width: 393,
+                height: 2_200,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility2,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .terminal(
+                            questionIndex: 2,
+                            correctAnswerCount: 1,
+                            answer: questions[2].expectedAnswer,
+                            result: .correct,
+                            didPass: false
+                        ),
+                        reduceMotionOverride: true
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
+                name: "attempt-fail-early-resolution-full-dark",
                 width: 393,
                 height: 1_400,
                 colorScheme: .dark,

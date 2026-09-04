@@ -515,16 +515,26 @@ struct CheckpointHeroSurface<Content: View>: View {
 struct StatusBadge: View {
     var text: String
     var tint: Color
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Text(text)
             .font(.caption.weight(.bold))
             .foregroundStyle(tint)
-            .lineLimit(1)
-            .minimumScaleFactor(0.85)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+            .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.85)
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(tint.opacity(0.14), in: Capsule())
+            .background(
+                tint.opacity(0.14),
+                in: RoundedRectangle(
+                    cornerRadius: dynamicTypeSize.isAccessibilitySize
+                        ? CheckpointTheme.compactCornerRadius
+                        : 100,
+                    style: .continuous
+                )
+            )
     }
 }
 

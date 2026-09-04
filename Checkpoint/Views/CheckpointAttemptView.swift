@@ -110,7 +110,10 @@ enum CheckpointResolutionTone: Equatable {
 struct CheckpointResolutionPresentation: Equatable {
     let eyebrow: String
     let title: String
+    let compactTitle: String
     let scoreText: String
+    let scoreComponents: [String]
+    let compactScoreComponents: [String]
     let detail: String
     let systemImage: String
     let tone: CheckpointResolutionTone
@@ -121,25 +124,52 @@ struct CheckpointResolutionPresentation: Equatable {
         purpose: CheckpointSessionPurpose,
         didMeetStandard: Bool,
         correctAnswerCount: Int,
+        answeredQuestionCount: Int,
         questionCount: Int,
+        requiredCorrectAnswerCount: Int,
         unlockMinutes: Int,
         failureProtectionOutcome: CheckpointFailureProtectionOutcome?,
         protectionActionFailed: Bool = false,
         cooldownDurationText: String = CheckpointRetryPolicy.cooldownDurationText
     ) {
         let safeQuestionCount = max(0, questionCount)
-        let safeCorrectAnswerCount = min(max(0, correctAnswerCount), safeQuestionCount)
+        let safeAnsweredQuestionCount = min(max(0, answeredQuestionCount), safeQuestionCount)
+        let safeCorrectAnswerCount = min(max(0, correctAnswerCount), safeAnsweredQuestionCount)
+        let safeRequiredCorrectAnswerCount = min(
+            max(0, requiredCorrectAnswerCount),
+            safeQuestionCount
+        )
+        let endedBeforeFinalQuestion = safeAnsweredQuestionCount < safeQuestionCount
 
-        scoreText = "\(safeCorrectAnswerCount) of \(safeQuestionCount) correct"
+        if endedBeforeFinalQuestion {
+            scoreComponents = [
+                "\(safeCorrectAnswerCount) correct",
+                "\(safeAnsweredQuestionCount) of \(safeQuestionCount) answered"
+            ]
+            compactScoreComponents = [
+                "\(safeCorrectAnswerCount) correct",
+                "\(safeAnsweredQuestionCount) / \(safeQuestionCount) done"
+            ]
+            scoreText = scoreComponents.joined(separator: " · ")
+        } else {
+            scoreText = "\(safeCorrectAnswerCount) of \(safeQuestionCount) correct"
+            scoreComponents = [scoreText]
+            compactScoreComponents = ["Score \(safeCorrectAnswerCount) / \(safeQuestionCount)"]
+        }
         tone = didMeetStandard ? .success : .needsPractice
 
         if purpose == .preview {
             eyebrow = "PRACTICE RESULT"
             title = "Practice complete"
+            compactTitle = "Complete"
             systemImage = didMeetStandard ? "checkmark.seal.fill" : "book.closed.fill"
-            detail = didMeetStandard
-                ? "You met the practice standard. App protection did not change."
-                : "You didn't meet the practice standard yet. App protection did not change."
+            if didMeetStandard {
+                detail = "You met the practice standard. App protection did not change."
+            } else if endedBeforeFinalQuestion {
+                detail = "The \(safeRequiredCorrectAnswerCount)-of-\(safeQuestionCount) standard was no longer reachable. App protection did not change."
+            } else {
+                detail = "You didn't meet the practice standard yet. App protection did not change."
+            }
             actionTitle = "Finish"
             actionSystemImage = "checkmark.seal"
             return
@@ -148,6 +178,7 @@ struct CheckpointResolutionPresentation: Equatable {
         eyebrow = "CHECKPOINT RESULT"
         if didMeetStandard {
             title = "Checkpoint cleared"
+            compactTitle = "Cleared"
             systemImage = "checkmark.seal.fill"
 
             switch purpose {
@@ -168,22 +199,65 @@ struct CheckpointResolutionPresentation: Equatable {
             }
         } else {
             title = "Checkpoint not cleared"
+            compactTitle = "Not cleared"
             systemImage = "arrow.counterclockwise.circle.fill"
+            let earlyResolutionDetail = endedBeforeFinalQuestion
+                ? "The \(safeRequiredCorrectAnswerCount)-of-\(safeQuestionCount) standard was no longer reachable. "
+                : ""
             switch failureProtectionOutcome {
             case .activeBreakContinues:
-                detail = "Your break continues. Check Home when it ends to confirm protection status."
+                detail = earlyResolutionDetail
+                    + "Your break continues. Check Home when it ends to confirm protection status."
             case .protectionRemainsOn:
-                detail = "Protection stays on. Try again in \(cooldownDurationText), and we'll revisit what you missed."
+                detail = earlyResolutionDetail
+                    + "Protection stays on. Try again in \(cooldownDurationText), and we'll revisit what you missed."
             case .protectionTurnedOffForUnavailableCheckpoint:
-                detail = "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
+                detail = earlyResolutionDetail
+                    + "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
             case .protectionIsOff:
-                detail = "Protection is off. Review its status from Home before trying another checkpoint."
+                detail = earlyResolutionDetail
+                    + "Protection is off. Review its status from Home before trying another checkpoint."
             case nil:
-                detail = "The standard wasn't met. Return home to review protection before trying again."
+                detail = earlyResolutionDetail
+                    + "The standard wasn't met. Return home to review protection before trying again."
             }
             actionTitle = "Return home"
             actionSystemImage = "house"
         }
+    }
+}
+
+enum CheckpointAttemptPrimaryActionPlacement: Equatable {
+    case pinned
+    case inline
+}
+
+struct CheckpointAttemptChromePresentation: Equatable {
+    let showsProgressHeader: Bool
+    let primaryActionPlacement: CheckpointAttemptPrimaryActionPlacement
+
+    init(isResolved: Bool, usesAccessibilityTextSize: Bool) {
+        showsProgressHeader = !isResolved
+        primaryActionPlacement = usesAccessibilityTextSize ? .inline : .pinned
+    }
+}
+
+struct CheckpointAnswerProgression: Equatable {
+    let shouldFinish: Bool
+    let shouldPass: Bool
+
+    init(
+        session: CheckpointSession,
+        correctAnswerCount: Int,
+        answeredQuestionCount: Int
+    ) {
+        let answeredEveryQuestion = answeredQuestionCount >= session.questions.count
+        shouldFinish = answeredEveryQuestion || !session.canStillMeetUnlockThreshold(
+            correctAnswerCount: correctAnswerCount,
+            answeredQuestionCount: answeredQuestionCount
+        )
+        shouldPass = shouldFinish
+            && session.hasMetUnlockThreshold(correctAnswerCount: correctAnswerCount)
     }
 }
 
@@ -228,6 +302,10 @@ struct CheckpointResolutionMotionPolicy {
             removal: .opacity
         )
     }
+
+    var progressTransition: AnyTransition {
+        reduceMotion ? .identity : .opacity
+    }
 }
 
 enum CheckpointFeedbackDestination: Hashable {
@@ -269,16 +347,7 @@ private struct CheckpointResolutionCard: View {
                 resolutionIdentity
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(presentation.scoreText)
-                        .font(.title3.weight(.bold))
-                        .monospacedDigit()
-                        .foregroundStyle(CheckpointTheme.heroText)
-                        .padding(.horizontal, 11)
-                        .padding(.vertical, 7)
-                        .background(
-                            CheckpointTheme.heroSubtleFill,
-                            in: Capsule()
-                        )
+                    scoreBadges
 
                     Text(presentation.detail)
                         .font(.subheadline.weight(.medium))
@@ -292,6 +361,51 @@ private struct CheckpointResolutionCard: View {
             "\(presentation.title). \(presentation.scoreText). \(presentation.detail)"
         )
         .accessibilityAddTraits(.isHeader)
+    }
+
+    @ViewBuilder
+    private var scoreBadges: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(displayedScoreComponents, id: \.self) { component in
+                    scoreBadge(component)
+                }
+            }
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    ForEach(displayedScoreComponents, id: \.self) { component in
+                        scoreBadge(component)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(displayedScoreComponents, id: \.self) { component in
+                        scoreBadge(component)
+                    }
+                }
+            }
+        }
+    }
+
+    private func scoreBadge(_ text: String) -> some View {
+        Text(text)
+            .font(.title3.weight(.bold))
+            .monospacedDigit()
+            .foregroundStyle(CheckpointTheme.heroText)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 11)
+            .padding(.vertical, 7)
+            .background(
+                CheckpointTheme.heroSubtleFill,
+                in: RoundedRectangle(
+                    cornerRadius: dynamicTypeSize.isAccessibilitySize
+                        ? CheckpointTheme.compactCornerRadius
+                        : 100,
+                    style: .continuous
+                )
+            )
     }
 
     @ViewBuilder
@@ -330,12 +444,12 @@ private struct CheckpointResolutionCard: View {
 
     private var identityCopy: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(presentation.eyebrow)
+            Text(usesCompactResultCopy ? "RESULT" : presentation.eyebrow)
                 .font(.caption2.weight(.bold))
                 .tracking(0.85)
                 .foregroundStyle(accent)
 
-            Text(presentation.title)
+            Text(usesCompactResultCopy ? presentation.compactTitle : presentation.title)
                 .font(.title2.weight(.bold))
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -349,6 +463,16 @@ private struct CheckpointResolutionCard: View {
         case .needsPractice:
             CheckpointTheme.heroWarning
         }
+    }
+
+    private var usesCompactResultCopy: Bool {
+        dynamicTypeSize >= .accessibility4
+    }
+
+    private var displayedScoreComponents: [String] {
+        usesCompactResultCopy
+            ? presentation.compactScoreComponents
+            : presentation.scoreComponents
     }
 }
 
@@ -404,6 +528,7 @@ struct CheckpointAttemptView: View {
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var currentQuestionIndex = 0
     @State private var correctAnswerCount = 0
     @State private var answer = ""
@@ -415,6 +540,7 @@ struct CheckpointAttemptView: View {
     @State private var resolutionFeedback: CheckpointResolutionFeedback?
     @State private var isExitConfirmationPresented = false
     @State private var hasFinalizedCheckpoint = false
+    @State private var hasCommittedResolutionAction = false
     @State private var questionQualityFeedbackContext: QuestionQualityFeedbackContext?
     @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
@@ -476,8 +602,11 @@ struct CheckpointAttemptView: View {
             ScrollViewReader { scrollProxy in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        progressHeader
-                            .id(AttemptScrollAnchor.question)
+                        if chromePresentation.showsProgressHeader {
+                            progressHeader
+                                .id(AttemptScrollAnchor.question)
+                                .transition(resolutionMotionPolicy.progressTransition)
+                        }
 
                         if let resolutionPresentation {
                             CheckpointResolutionCard(
@@ -500,11 +629,20 @@ struct CheckpointAttemptView: View {
                                 )
                                 .transition(resolutionMotionPolicy.transition)
                             }
+
+                            if chromePresentation.primaryActionPlacement == .inline {
+                                inlinePrimaryActionButton
+                            }
                         }
 
                         questionPanel
                             .id(question.id)
                             .transition(questionTransition)
+
+                        if chromePresentation.primaryActionPlacement == .inline,
+                           resolutionPresentation == nil {
+                            inlinePrimaryActionButton
+                        }
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
@@ -523,7 +661,9 @@ struct CheckpointAttemptView: View {
             }
             .checkpointScreenBackground()
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                primaryActionBar
+                if chromePresentation.primaryActionPlacement == .pinned {
+                    primaryActionBar
+                }
             }
             .navigationTitle("Checkpoint")
             .toolbarTitleDisplayMode(.inline)
@@ -673,26 +813,35 @@ struct CheckpointAttemptView: View {
             Divider()
                 .overlay(CheckpointTheme.hairline)
 
-            PrimaryActionButton(
-                title: submitButtonTitle,
-                systemImage: submitButtonIcon
-            ) {
-                handlePrimaryAction()
-            }
-            .disabled(checkedAnswer == nil && answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
-            .padding(.bottom, 10)
+            primaryActionButton
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 10)
         }
         .background(.ultraThinMaterial)
     }
 
-    private var question: CheckpointQuestion {
-        session.questions[currentQuestionIndex]
+    private var primaryActionButton: some View {
+        PrimaryActionButton(
+            title: submitButtonTitle,
+            systemImage: submitButtonIcon
+        ) {
+            handlePrimaryAction()
+        }
+        .disabled(
+            hasCommittedResolutionAction
+                || (checkedAnswer == nil && answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        )
     }
 
-    private var isFinalQuestion: Bool {
-        currentQuestionIndex >= session.questions.count - 1
+    private var inlinePrimaryActionButton: some View {
+        primaryActionButton
+            .padding(.top, 2)
+            .padding(.bottom, 12)
+    }
+
+    private var question: CheckpointQuestion {
+        session.questions[currentQuestionIndex]
     }
 
     private var completedQuestionCount: Int {
@@ -728,7 +877,9 @@ struct CheckpointAttemptView: View {
             purpose: session.purpose,
             didMeetStandard: checkedAnswer.shouldPass,
             correctAnswerCount: correctAnswerCount,
+            answeredQuestionCount: completedQuestionCount,
             questionCount: session.questions.count,
+            requiredCorrectAnswerCount: session.unlockThreshold,
             unlockMinutes: store.unlockPolicy.unlockMinutes,
             failureProtectionOutcome: checkedAnswer.failureProtectionOutcome,
             protectionActionFailed: protectionActionErrorMessage != nil
@@ -745,6 +896,13 @@ struct CheckpointAttemptView: View {
 
     private var resolutionMotionPolicy: CheckpointResolutionMotionPolicy {
         CheckpointResolutionMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var chromePresentation: CheckpointAttemptChromePresentation {
+        CheckpointAttemptChromePresentation(
+            isResolved: resolutionPresentation != nil,
+            usesAccessibilityTextSize: dynamicTypeSize.isAccessibilitySize
+        )
     }
 
     private var usesAutomaticEvaluation: Bool {
@@ -807,11 +965,11 @@ struct CheckpointAttemptView: View {
         let updatedCorrectCount = correctAnswerCount + (result == .correct ? 1 : 0)
 
         let answeredQuestionCount = currentQuestionIndex + 1
-        let shouldFinish = isFinalQuestion || !session.canStillMeetUnlockThreshold(
+        let progression = CheckpointAnswerProgression(
+            session: session,
             correctAnswerCount: updatedCorrectCount,
             answeredQuestionCount: answeredQuestionCount
         )
-        let shouldPass = shouldFinish && session.hasMetUnlockThreshold(correctAnswerCount: updatedCorrectCount)
         var failureProtectionOutcome: CheckpointFailureProtectionOutcome?
 
         if session.purpose != .preview {
@@ -822,27 +980,27 @@ struct CheckpointAttemptView: View {
                 grantsUnlock: false
             )
 
-            if shouldFinish && !shouldPass {
+            if progression.shouldFinish && !progression.shouldPass {
                 failureProtectionOutcome = workflow.resolveFailed(session)
             }
         }
 
         isAnswerFieldFocused = false
-        let updateAnimation = shouldFinish
+        let updateAnimation = progression.shouldFinish
             ? resolutionMotionPolicy.animation
             : CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
         withAnimation(updateAnimation) {
             correctAnswerCount = updatedCorrectCount
             checkedAnswer = CheckedCheckpointAnswer(
                 result: result,
-                shouldFinish: shouldFinish,
-                shouldPass: shouldPass,
+                shouldFinish: progression.shouldFinish,
+                shouldPass: progression.shouldPass,
                 failureProtectionOutcome: failureProtectionOutcome
             )
             feedbackSequence += 1
         }
-        if shouldFinish {
-            resolutionFeedback = shouldPass ? .passed : .failed
+        if progression.shouldFinish {
+            resolutionFeedback = progression.shouldPass ? .passed : .failed
         }
     }
 
@@ -850,6 +1008,7 @@ struct CheckpointAttemptView: View {
         guard let checkedAnswer else { return }
 
         guard !checkedAnswer.shouldFinish else {
+            guard !hasCommittedResolutionAction else { return }
             if checkedAnswer.shouldPass {
                 if let errorMessage = workflow.finishPassed(session) {
                     withAnimation(resolutionMotionPolicy.animation) {
@@ -860,6 +1019,7 @@ struct CheckpointAttemptView: View {
                 }
                 protectionActionErrorMessage = nil
             }
+            hasCommittedResolutionAction = true
             dismiss()
             return
         }
@@ -1000,7 +1160,7 @@ struct CheckpointAttemptView: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 if checkedAnswer.shouldFinish {
-                    Text("FINAL ANSWER")
+                    Text("LAST ANSWER")
                         .font(.caption2.weight(.bold))
                         .tracking(0.8)
                         .foregroundStyle(CheckpointTheme.muted)
@@ -1020,7 +1180,7 @@ struct CheckpointAttemptView: View {
                         .foregroundStyle(resultTint(for: feedbackPresentation.tone))
                         .accessibilityLabel(
                             checkedAnswer.shouldFinish
-                                ? "Final answer: \(feedbackPresentation.label)"
+                                ? "Last answer: \(feedbackPresentation.label)"
                                 : feedbackPresentation.label
                         )
                         .accessibilityFocused($accessibilityFocus, equals: .answerFeedback)
