@@ -17,6 +17,136 @@ final class SkillMapEditorRenderingTests: XCTestCase {
         XCTAssertTrue(sixSkills.canRemove)
     }
 
+    func testSkillMapReviewContextFreezesRevisionAndRejectsGoalOrMapDrift() throws {
+        let sessionID = UUID(uuidString: "00000000-0000-0000-0000-000000000301")!
+        let goalID = UUID(uuidString: "00000000-0000-0000-0000-000000000302")!
+        let updatedAt = Date(timeIntervalSince1970: 1_780_000_000)
+        let topics = [
+            SkillMapTopic(name: "Problem framing"),
+            SkillMapTopic(name: "State modeling"),
+            SkillMapTopic(name: "Testing strategy")
+        ]
+        let skillMap = GoalSkillMap(
+            topics: topics,
+            status: .suggested,
+            version: 4,
+            provenance: .backendInferred,
+            updatedAt: updatedAt
+        )
+        let goal = Goal(
+            id: goalID,
+            title: "Ship a reliable app",
+            deadline: updatedAt.addingTimeInterval(86_400 * 30),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "architecture",
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let context = try XCTUnwrap(
+            SkillMapReviewContext(goal: goal, sessionID: sessionID)
+        )
+
+        XCTAssertEqual(context.id.sessionID, sessionID)
+        XCTAssertEqual(context.id.goalID, goalID)
+        XCTAssertEqual(context.id.mapVersion, 4)
+        XCTAssertEqual(context.id.mapUpdatedAt, updatedAt)
+        XCTAssertEqual(context.goalTitle, goal.title)
+        XCTAssertEqual(context.skillMap, skillMap)
+        XCTAssertTrue(context.matches(goal))
+
+        var otherGoal = goal
+        otherGoal.id = UUID(uuidString: "00000000-0000-0000-0000-000000000303")!
+        XCTAssertFalse(context.matches(otherGoal))
+
+        var versionDriftGoal = goal
+        versionDriftGoal.derivedSkillMap?.version += 1
+        XCTAssertFalse(context.matches(versionDriftGoal))
+
+        var metadataDriftGoal = goal
+        metadataDriftGoal.derivedSkillMap?.updatedAt = updatedAt.addingTimeInterval(1)
+        XCTAssertFalse(context.matches(metadataDriftGoal))
+
+        var contentDriftGoal = goal
+        contentDriftGoal.derivedSkillMap?.topics[0].name = "Reframed systems"
+        XCTAssertFalse(context.matches(contentDriftGoal))
+        XCTAssertEqual(context.goalTitle, "Ship a reliable app")
+        XCTAssertEqual(context.skillMap.topics, topics)
+    }
+
+    func testSkillMapReviewPresentationRetainsOwnershipUntilDismissal() throws {
+        let updatedAt = Date(timeIntervalSince1970: 1_780_010_000)
+        let skillMap = GoalSkillMap(
+            topics: [
+                SkillMapTopic(name: "Problem framing"),
+                SkillMapTopic(name: "State modeling"),
+                SkillMapTopic(name: "Testing strategy")
+            ],
+            status: .suggested,
+            version: 3,
+            provenance: .backendInferred,
+            updatedAt: updatedAt
+        )
+        let firstGoal = Goal(
+            title: "Ship a reliable app",
+            deadline: updatedAt.addingTimeInterval(86_400 * 30),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "architecture",
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        var secondGoal = firstGoal
+        secondGoal.id = UUID(uuidString: "00000000-0000-0000-0000-000000000304")!
+        secondGoal.title = "Build a second app"
+        var revisedGoal = firstGoal
+        revisedGoal.derivedSkillMap?.version += 1
+        revisedGoal.derivedSkillMap?.updatedAt = updatedAt.addingTimeInterval(1)
+        let firstContext = try XCTUnwrap(SkillMapReviewContext(goal: firstGoal))
+        let secondContext = try XCTUnwrap(SkillMapReviewContext(goal: secondGoal))
+        let revisedContext = try XCTUnwrap(SkillMapReviewContext(goal: revisedGoal))
+
+        var switchedGoalState = SkillMapReviewPresentationState()
+        XCTAssertTrue(switchedGoalState.request(firstContext, currentGoal: firstGoal))
+        switchedGoalState.presentationDidAppear()
+        XCTAssertEqual(switchedGoalState.destination, firstContext)
+        XCTAssertTrue(switchedGoalState.blocksUnderlyingPresentations)
+
+        XCTAssertTrue(switchedGoalState.invalidateIfStale(for: secondGoal))
+        XCTAssertNil(switchedGoalState.destination)
+        XCTAssertTrue(switchedGoalState.blocksUnderlyingPresentations)
+        XCTAssertFalse(switchedGoalState.request(secondContext, currentGoal: secondGoal))
+        XCTAssertFalse(switchedGoalState.invalidateIfStale(for: firstGoal))
+        XCTAssertTrue(switchedGoalState.blocksUnderlyingPresentations)
+
+        switchedGoalState.presentationDidDismiss()
+        XCTAssertFalse(switchedGoalState.blocksUnderlyingPresentations)
+        XCTAssertTrue(switchedGoalState.request(secondContext, currentGoal: secondGoal))
+
+        var revisedMapState = SkillMapReviewPresentationState()
+        XCTAssertTrue(revisedMapState.request(firstContext, currentGoal: firstGoal))
+        XCTAssertTrue(revisedMapState.invalidateIfStale(for: revisedGoal))
+        XCTAssertEqual(revisedMapState.destination, firstContext)
+        XCTAssertTrue(revisedMapState.blocksUnderlyingPresentations)
+        XCTAssertFalse(revisedMapState.request(revisedContext, currentGoal: revisedGoal))
+        XCTAssertFalse(revisedMapState.invalidateIfStale(for: firstGoal))
+        XCTAssertEqual(revisedMapState.destination, firstContext)
+        XCTAssertTrue(revisedMapState.blocksUnderlyingPresentations)
+
+        revisedMapState.presentationDidAppear()
+        XCTAssertNil(revisedMapState.destination)
+        XCTAssertTrue(revisedMapState.blocksUnderlyingPresentations)
+        XCTAssertFalse(revisedMapState.request(firstContext, currentGoal: firstGoal))
+        revisedMapState.presentationDidDismiss()
+        XCTAssertTrue(revisedMapState.request(revisedContext, currentGoal: revisedGoal))
+
+        revisedMapState.presentationRequestedDismissal()
+        XCTAssertNil(revisedMapState.destination)
+        XCTAssertTrue(revisedMapState.blocksUnderlyingPresentations)
+        revisedMapState.presentationDidDismiss()
+        XCTAssertFalse(revisedMapState.blocksUnderlyingPresentations)
+    }
+
     func testEditorMutationsPreserveBoundsOrderingAndFreshReplacementIdentity() {
         let firstID = UUID(uuidString: "00000000-0000-0000-0000-000000000311")!
         let secondID = UUID(uuidString: "00000000-0000-0000-0000-000000000312")!

@@ -478,14 +478,34 @@ final class CheckpointStore {
     }
 
     func confirmActiveDerivedSkillMap() {
-        guard let topics = goal?.derivedSkillMap?.topics else { return }
-        _ = reviewActiveDerivedSkillMap(topics: topics)
+        guard let goal, let skillMap = goal.derivedSkillMap else { return }
+        _ = reviewDerivedSkillMap(
+            topics: skillMap.topics,
+            forGoalID: goal.id,
+            expectedMap: skillMap
+        )
     }
 
     @discardableResult
     func reviewActiveDerivedSkillMap(topics proposedTopics: [SkillMapTopic]) -> Bool {
+        guard let goal, let skillMap = goal.derivedSkillMap else { return false }
+        return reviewDerivedSkillMap(
+            topics: proposedTopics,
+            forGoalID: goal.id,
+            expectedMap: skillMap
+        )
+    }
+
+    @discardableResult
+    func reviewDerivedSkillMap(
+        topics proposedTopics: [SkillMapTopic],
+        forGoalID expectedGoalID: Goal.ID,
+        expectedMap: GoalSkillMap
+    ) -> Bool {
         guard var updatedGoal = goal,
-              let existingMap = updatedGoal.derivedSkillMap else {
+              updatedGoal.id == expectedGoalID,
+              let existingMap = updatedGoal.derivedSkillMap,
+              existingMap == expectedMap else {
             return false
         }
         let starterPracticeWasConsumed = hasConsumedStarterPractice

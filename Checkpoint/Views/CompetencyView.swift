@@ -363,7 +363,7 @@ struct CompetencyView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.checkpointGoalSelection) private var selectGoal
     @ScaledMetric(relativeTo: .largeTitle) private var heroMetricSize: CGFloat = 54
-    @State private var isSkillMapEditorPresented = false
+    @State private var skillMapReviewPresentation = SkillMapReviewPresentationState()
     @State private var isSkillMapRepairPresented = false
     @State private var isSkillMapModalActive = false
     @State private var isSkillHistoryExpanded = false
@@ -445,6 +445,16 @@ struct CompetencyView: View {
 
     private var focusState: StudyFocusState? {
         store.studyFocusState
+    }
+
+    private var skillMapReviewBinding: Binding<SkillMapReviewContext?> {
+        Binding(
+            get: { skillMapReviewPresentation.destination },
+            set: { destination in
+                guard destination == nil else { return }
+                skillMapReviewPresentation.presentationRequestedDismissal()
+            }
+        )
     }
 
     private var screenSnapshot: ProgressScreenSnapshot {
@@ -540,6 +550,9 @@ struct CompetencyView: View {
             }
         }
         .coordinateSpace(name: progressLayoutCoordinateSpaceName)
+        .onChange(of: store.goal) { _, goal in
+            invalidateSkillMapReviewIfStale(for: goal)
+        }
         .onChange(of: isVisible) { _, currentIsVisible in
             if !currentIsVisible {
                 accessibilityFocus = nil
@@ -590,12 +603,12 @@ struct CompetencyView: View {
             deliverPendingProtectionStartResultIfPossible()
         }
         .sheet(
-            isPresented: $isSkillMapEditorPresented,
+            item: skillMapReviewBinding,
             onDismiss: finishSkillMapModalPresentation
-        ) {
-            SkillMapReviewView(store: store)
+        ) { reviewContext in
+            SkillMapReviewView(store: store, reviewContext: reviewContext)
                 .onAppear {
-                    isSkillMapModalActive = true
+                    skillMapReviewPresentation.presentationDidAppear()
                 }
         }
         .sheet(
@@ -660,13 +673,16 @@ struct CompetencyView: View {
         } else if dashboardSummary.totalSkillCount == 0 {
             emptyState
             activeGoalFocusWinsEntry
-        } else if store.activeDerivedSkillMap?.status == .suggested {
-            suggestedSkillMapCallout
+        } else if let goal = store.goal,
+                  let reviewContext = SkillMapReviewContext(goal: goal),
+                  reviewContext.skillMap.status == .suggested {
+            suggestedSkillMapCallout(reviewContext)
             progressHero
             activeGoalFocusWinsEntry
             focusAreasPanel(title: "Focus areas")
-        } else if let skillMap = store.activeDerivedSkillMap,
-                  skillMap.status == .reviewed {
+        } else if let goal = store.goal,
+                  let reviewContext = SkillMapReviewContext(goal: goal),
+                  reviewContext.skillMap.status == .reviewed {
             activeGoalMomentumEntry
             nextFocusPanel
                 .reportProgressLayoutFrame(.nextFocus, using: layoutReporter)
@@ -676,7 +692,10 @@ struct CompetencyView: View {
                 description: "Open any skill for its answer mix and latest signal.",
                 showsCoverageSummary: true
             )
-            skillMapManagementPanel(skillMap)
+            skillMapManagementPanel(
+                reviewContext.skillMap,
+                reviewContext: reviewContext
+            )
         } else {
             progressHero
             nextFocusPanel
@@ -1623,7 +1642,9 @@ struct CompetencyView: View {
         )
     }
 
-    private var suggestedSkillMapCallout: some View {
+    private func suggestedSkillMapCallout(
+        _ reviewContext: SkillMapReviewContext
+    ) -> some View {
         SectionPanel {
             VStack(alignment: .leading, spacing: 14) {
                 if usesStackedTypeLayout {
@@ -1646,13 +1667,13 @@ struct CompetencyView: View {
 
                 if usesStackedTypeLayout {
                     VStack(spacing: 10) {
-                        reviewSuggestedMapButton
-                        acceptSuggestedMapButton
+                        reviewSuggestedMapButton(reviewContext)
+                        acceptSuggestedMapButton(reviewContext)
                     }
                 } else {
                     HStack(spacing: 10) {
-                        reviewSuggestedMapButton
-                        acceptSuggestedMapButton
+                        reviewSuggestedMapButton(reviewContext)
+                        acceptSuggestedMapButton(reviewContext)
                     }
                 }
             }
@@ -1700,19 +1721,30 @@ struct CompetencyView: View {
             .background(CheckpointTheme.blue.opacity(0.11), in: Capsule())
     }
 
-    private var acceptSuggestedMapButton: some View {
+    private func acceptSuggestedMapButton(
+        _ reviewContext: SkillMapReviewContext
+    ) -> some View {
         SecondaryActionButton(title: "Looks good", systemImage: "checkmark") {
-            store.confirmActiveDerivedSkillMap()
+            _ = store.reviewDerivedSkillMap(
+                topics: reviewContext.skillMap.topics,
+                forGoalID: reviewContext.revision.goalID,
+                expectedMap: reviewContext.skillMap
+            )
         }
     }
 
-    private var reviewSuggestedMapButton: some View {
+    private func reviewSuggestedMapButton(
+        _ reviewContext: SkillMapReviewContext
+    ) -> some View {
         PrimaryActionButton(title: "Review skills", systemImage: "slider.horizontal.3") {
-            isSkillMapEditorPresented = true
+            presentSkillMapReview(reviewContext)
         }
     }
 
-    private func skillMapManagementPanel(_ skillMap: GoalSkillMap) -> some View {
+    private func skillMapManagementPanel(
+        _ skillMap: GoalSkillMap,
+        reviewContext: SkillMapReviewContext
+    ) -> some View {
         SectionPanel("Skill map") {
             VStack(alignment: .leading, spacing: 14) {
                 if usesStackedTypeLayout {
@@ -1729,7 +1761,7 @@ struct CompetencyView: View {
                 }
 
                 SecondaryActionButton(title: "Edit skill map", systemImage: "slider.horizontal.3") {
-                    isSkillMapEditorPresented = true
+                    presentSkillMapReview(reviewContext)
                 }
 
                 Divider()
@@ -2137,10 +2169,22 @@ struct CompetencyView: View {
     }
 
     private func finishSkillMapModalPresentation() {
+        skillMapReviewPresentation.presentationDidDismiss()
         isSkillMapModalActive = false
         applyPendingAccessibilityFocusAfterDismiss()
         deliverPendingProtectionErrorIfPossible()
         deliverPendingProtectionStartResultIfPossible()
+    }
+
+    private func presentSkillMapReview(_ reviewContext: SkillMapReviewContext) {
+        _ = skillMapReviewPresentation.request(
+            reviewContext,
+            currentGoal: store.goal
+        )
+    }
+
+    private func invalidateSkillMapReviewIfStale(for goal: Goal?) {
+        _ = skillMapReviewPresentation.invalidateIfStale(for: goal)
     }
 
     private func finishAuxiliaryModalPresentation() {
@@ -2190,7 +2234,7 @@ struct CompetencyView: View {
     }
 
     private var isCoveredByLocalModalPresentation: Bool {
-        isSkillMapEditorPresented
+        skillMapReviewPresentation.blocksUnderlyingPresentations
             || isSkillMapRepairPresented
             || isSkillMapModalActive
             || focusWinsDestination != nil

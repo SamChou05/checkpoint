@@ -125,6 +125,271 @@ final class SkillMapTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
+    func testGoalScopedSkillMapReviewAcceptsExactCurrentRevision() throws {
+        let updatedAt = Date(timeIntervalSince1970: 1_780_050_000)
+        let skillMap = GoalSkillMap(
+            topics: [
+                SkillMapTopic(
+                    name: "Problem framing",
+                    objectives: [SkillMapObjective(name: "Clarify the problem")]
+                ),
+                SkillMapTopic(
+                    name: "State modeling",
+                    objectives: [SkillMapObjective(name: "Model state transitions")]
+                ),
+                SkillMapTopic(
+                    name: "Testing strategy",
+                    objectives: [SkillMapObjective(name: "Design focused tests")]
+                )
+            ],
+            status: .suggested,
+            version: 4,
+            provenance: .backendInferred,
+            updatedAt: updatedAt
+        )
+        let goal = Goal(
+            title: "Ship a reliable app",
+            deadline: updatedAt.addingTimeInterval(86_400 * 30),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "architecture",
+            derivedSkillMap: skillMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let reviewContext = try XCTUnwrap(SkillMapReviewContext(goal: goal))
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+
+        XCTAssertTrue(
+            store.reviewDerivedSkillMap(
+                topics: reviewContext.skillMap.topics,
+                forGoalID: reviewContext.revision.goalID,
+                expectedMap: reviewContext.skillMap
+            )
+        )
+        let reviewedGoal = try XCTUnwrap(store.goal)
+        let reviewedMap = try XCTUnwrap(reviewedGoal.derivedSkillMap)
+        XCTAssertEqual(reviewedGoal.id, goal.id)
+        XCTAssertEqual(reviewedMap.topics, skillMap.topics)
+        XCTAssertEqual(reviewedMap.status, .reviewed)
+        XCTAssertEqual(reviewedMap.version, skillMap.version)
+        XCTAssertGreaterThan(reviewedMap.updatedAt, skillMap.updatedAt)
+    }
+
+    @MainActor
+    func testGoalScopedSkillMapReviewRejectsActiveGoalSwitch() throws {
+        let updatedAt = Date(timeIntervalSince1970: 1_780_100_000)
+        let firstMap = GoalSkillMap(
+            topics: [
+                SkillMapTopic(name: "Problem framing"),
+                SkillMapTopic(name: "State modeling"),
+                SkillMapTopic(name: "Testing strategy")
+            ],
+            status: .suggested,
+            version: 2,
+            provenance: .backendInferred,
+            updatedAt: updatedAt
+        )
+        let firstGoal = Goal(
+            title: "Ship a reliable app",
+            deadline: updatedAt.addingTimeInterval(86_400 * 30),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "architecture",
+            derivedSkillMap: firstMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let secondMap = GoalSkillMap(
+            topics: [
+                SkillMapTopic(name: "Vocabulary"),
+                SkillMapTopic(name: "Listening"),
+                SkillMapTopic(name: "Conversation")
+            ],
+            status: .suggested,
+            version: 7,
+            provenance: .explicitFocusAreas,
+            updatedAt: updatedAt.addingTimeInterval(20)
+        )
+        let secondGoal = Goal(
+            title: "Build conversational Spanish",
+            deadline: updatedAt.addingTimeInterval(86_400 * 60),
+            category: .languageLearning,
+            currentLevel: "Beginner",
+            focusAreas: "speaking",
+            derivedSkillMap: secondMap,
+            preferredQuestionStyle: .shortAnswer
+        )
+        let reviewContext = try XCTUnwrap(SkillMapReviewContext(goal: firstGoal))
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = secondGoal
+        store.goalProfiles = [firstGoal, secondGoal]
+        let activeSkill = try XCTUnwrap(secondMap.topics.first)
+        store.questions = [
+            makeQuestion(
+                goal: secondGoal,
+                index: 901,
+                topic: activeSkill.name,
+                skillID: activeSkill.id
+            )
+        ]
+        store.competencies = [
+            .initial(
+                topic: activeSkill.name,
+                goalID: secondGoal.id,
+                skillID: activeSkill.id
+            )
+        ]
+        store.skillMapEvolutionIntents = [
+            SkillMapEvolutionIntent(
+                goalID: secondGoal.id,
+                baseVersion: secondMap.version,
+                baseMapFingerprint: SkillMapReconciler.skillMapFingerprint(
+                    topics: secondMap.topics
+                ),
+                masteredSkillIDs: [activeSkill.id]
+            )
+        ]
+        store.questionBankSyncIntents = [
+            QuestionBankSyncIntent(
+                goalID: secondGoal.id,
+                contextRevision: "second-goal-context",
+                desiredCount: 6,
+                lowWatermark: 2
+            )
+        ]
+        store.questionBatchState = .ready
+        store.isQuestionBankTopOffInProgress = true
+        let goalBeforeSave = store.goal
+        let profilesBeforeSave = store.goalProfiles
+        let questionsBeforeSave = store.questions
+        let competenciesBeforeSave = store.competencies
+        let evolutionIntentsBeforeSave = store.skillMapEvolutionIntents
+        let syncIntentsBeforeSave = store.questionBankSyncIntents
+        let batchStateBeforeSave = store.questionBatchState.rawValue
+        let topOffStateBeforeSave = store.isQuestionBankTopOffInProgress
+
+        XCTAssertFalse(
+            store.reviewDerivedSkillMap(
+                topics: reviewContext.skillMap.topics,
+                forGoalID: reviewContext.revision.goalID,
+                expectedMap: reviewContext.skillMap
+            )
+        )
+        XCTAssertEqual(store.goal, goalBeforeSave)
+        XCTAssertEqual(store.goalProfiles, profilesBeforeSave)
+        XCTAssertEqual(store.questions, questionsBeforeSave)
+        XCTAssertEqual(store.competencies, competenciesBeforeSave)
+        XCTAssertEqual(store.skillMapEvolutionIntents, evolutionIntentsBeforeSave)
+        XCTAssertEqual(store.questionBankSyncIntents, syncIntentsBeforeSave)
+        XCTAssertEqual(store.questionBatchState.rawValue, batchStateBeforeSave)
+        XCTAssertEqual(store.isQuestionBankTopOffInProgress, topOffStateBeforeSave)
+        XCTAssertFalse(reviewContext.matches(store.goal))
+    }
+
+    @MainActor
+    func testGoalScopedSkillMapReviewRejectsSameGoalRevisionDrift() throws {
+        let updatedAt = Date(timeIntervalSince1970: 1_780_200_000)
+        let baseMap = GoalSkillMap(
+            topics: [
+                SkillMapTopic(name: "Problem framing"),
+                SkillMapTopic(name: "State modeling"),
+                SkillMapTopic(name: "Testing strategy")
+            ],
+            status: .suggested,
+            version: 5,
+            provenance: .backendInferred,
+            updatedAt: updatedAt
+        )
+        let baseGoal = Goal(
+            title: "Ship a reliable app",
+            deadline: updatedAt.addingTimeInterval(86_400 * 30),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "architecture",
+            derivedSkillMap: baseMap,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let reviewContext = try XCTUnwrap(SkillMapReviewContext(goal: baseGoal))
+        var versionDrift = baseMap
+        versionDrift.version += 1
+        var metadataDrift = baseMap
+        metadataDrift.updatedAt = updatedAt.addingTimeInterval(1)
+        var contentDrift = baseMap
+        contentDrift.topics[0].name = "Reframed systems"
+        let liveMaps = [versionDrift, metadataDrift, contentDrift]
+        let store = CheckpointStore(defaults: defaults)
+        let baseSkill = try XCTUnwrap(baseMap.topics.first)
+        store.questions = [
+            makeQuestion(
+                goal: baseGoal,
+                index: 902,
+                topic: baseSkill.name,
+                skillID: baseSkill.id
+            )
+        ]
+        store.competencies = [
+            .initial(
+                topic: baseSkill.name,
+                goalID: baseGoal.id,
+                skillID: baseSkill.id
+            )
+        ]
+        store.skillMapEvolutionIntents = [
+            SkillMapEvolutionIntent(
+                goalID: baseGoal.id,
+                baseVersion: baseMap.version,
+                baseMapFingerprint: SkillMapReconciler.skillMapFingerprint(
+                    topics: baseMap.topics
+                ),
+                masteredSkillIDs: [baseSkill.id]
+            )
+        ]
+        store.questionBankSyncIntents = [
+            QuestionBankSyncIntent(
+                goalID: baseGoal.id,
+                contextRevision: "base-goal-context",
+                desiredCount: 6,
+                lowWatermark: 2
+            )
+        ]
+        store.questionBatchState = .ready
+        store.isQuestionBankTopOffInProgress = true
+
+        for liveMap in liveMaps {
+            var liveGoal = baseGoal
+            liveGoal.derivedSkillMap = liveMap
+            store.goal = liveGoal
+            store.goalProfiles = [liveGoal]
+            let goalBeforeSave = store.goal
+            let profilesBeforeSave = store.goalProfiles
+            let questionsBeforeSave = store.questions
+            let competenciesBeforeSave = store.competencies
+            let evolutionIntentsBeforeSave = store.skillMapEvolutionIntents
+            let syncIntentsBeforeSave = store.questionBankSyncIntents
+            let batchStateBeforeSave = store.questionBatchState.rawValue
+            let topOffStateBeforeSave = store.isQuestionBankTopOffInProgress
+
+            XCTAssertFalse(
+                store.reviewDerivedSkillMap(
+                    topics: reviewContext.skillMap.topics,
+                    forGoalID: reviewContext.revision.goalID,
+                    expectedMap: reviewContext.skillMap
+                )
+            )
+            XCTAssertEqual(store.goal, goalBeforeSave)
+            XCTAssertEqual(store.goalProfiles, profilesBeforeSave)
+            XCTAssertEqual(store.questions, questionsBeforeSave)
+            XCTAssertEqual(store.competencies, competenciesBeforeSave)
+            XCTAssertEqual(store.skillMapEvolutionIntents, evolutionIntentsBeforeSave)
+            XCTAssertEqual(store.questionBankSyncIntents, syncIntentsBeforeSave)
+            XCTAssertEqual(store.questionBatchState.rawValue, batchStateBeforeSave)
+            XCTAssertEqual(store.isQuestionBankTopOffInProgress, topOffStateBeforeSave)
+            XCTAssertFalse(reviewContext.matches(store.goal))
+        }
+    }
+
+    @MainActor
     func testAdaptiveSkillWeightsIgnoreInventoryAndRetainMasteredMaintenance() async throws {
         let weakSkill = SkillMapTopic(
             name: "argument analysis",

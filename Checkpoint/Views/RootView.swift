@@ -398,9 +398,8 @@ struct RootView: View {
     @State private var selectedTab: AppTab = .home
     @State private var activeCheckpointSession: CheckpointSession?
     @State private var pendingShieldRetryTask: Task<Void, Never>?
-    @State private var isSuggestedSkillMapReviewPresented = false
-    @State private var isSuggestedSkillMapReviewActive = false
-    @State private var lastPresentedSkillMapSignature: String?
+    @State private var suggestedSkillMapReviewPresentation = SkillMapReviewPresentationState()
+    @State private var lastPresentedSkillMapReviewRevision: SkillMapReviewContext.Revision?
     @State private var firstRunSetup = FirstRunSetupCoordinator()
     @State private var isOnboardingSheetActive = false
     @State private var isFirstRunAppSelectionQueued = false
@@ -417,6 +416,15 @@ struct RootView: View {
     private var screenTime: ScreenTimeController { appModel.screenTime }
     private var purchaseController: PurchaseController { appModel.purchaseController }
     private var workflow: CheckpointWorkflowCoordinator { appModel.workflow }
+    private var suggestedSkillMapReviewBinding: Binding<SkillMapReviewContext?> {
+        Binding(
+            get: { suggestedSkillMapReviewPresentation.destination },
+            set: { destination in
+                guard destination == nil else { return }
+                suggestedSkillMapReviewPresentation.presentationRequestedDismissal()
+            }
+        )
+    }
     private var protectionReconciliationKey: ProtectionReconciliationKey {
         ProtectionReconciliationKey(
             goalID: store.goal?.id,
@@ -553,12 +561,12 @@ struct RootView: View {
             .interactiveDismissDisabled()
         }
         .sheet(
-            isPresented: $isSuggestedSkillMapReviewPresented,
+            item: suggestedSkillMapReviewBinding,
             onDismiss: handleSuggestedSkillMapReviewDismissed
-        ) {
-            SkillMapReviewView(store: store)
+        ) { reviewContext in
+            SkillMapReviewView(store: store, reviewContext: reviewContext)
                 .onAppear {
-                    isSuggestedSkillMapReviewActive = true
+                    suggestedSkillMapReviewPresentation.presentationDidAppear()
                 }
         }
         .task {
@@ -578,10 +586,11 @@ struct RootView: View {
             reconcileProtectionAndHandlePendingAttempt()
             resumeFirstRunSetupIfNeeded()
         }
-        .onChange(of: store.goal) { _, _ in
-            if store.goal == nil {
+        .onChange(of: store.goal) { _, goal in
+            if goal == nil {
                 beginFirstRunSetup()
             }
+            guard !invalidateSuggestedSkillMapReviewIfStale(for: goal) else { return }
             presentSuggestedSkillMapReviewIfNeeded()
         }
         .onChange(of: protectionReconciliationKey) { _, _ in
@@ -589,6 +598,7 @@ struct RootView: View {
             reconcileProtectionAndHandlePendingAttempt()
         }
         .onChange(of: store.activeDerivedSkillMap) { _, _ in
+            guard !invalidateSuggestedSkillMapReviewIfStale(for: store.goal) else { return }
             presentSuggestedSkillMapReviewIfNeeded()
         }
         .onChange(of: store.isOnboardingPresented) { _, _ in
@@ -822,7 +832,8 @@ struct RootView: View {
     }
 
     private func presentSuggestedSkillMapReviewIfNeeded() {
-        guard !firstRunSetup.isPending,
+        guard !suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations,
+              !firstRunSetup.isPending,
               !screenTimeAccessGate.blocksUnderlyingPresentations,
               !store.isOnboardingPresented,
               !isOnboardingSheetActive,
@@ -832,17 +843,24 @@ struct RootView: View {
               !firstRunSetup.isAppSelectionPresented,
               activeCheckpointSession == nil,
               store.pendingMembershipPresentation == nil,
-              let goalID = store.goal?.id,
-              goalID != firstRunSetup.suppressedSuggestedSkillMapGoalID,
-              let skillMap = store.activeDerivedSkillMap,
-              skillMap.status == .suggested else {
+              let goal = store.goal,
+              goal.id != firstRunSetup.suppressedSuggestedSkillMapGoalID,
+              let reviewContext = SkillMapReviewContext(goal: goal),
+              reviewContext.skillMap.status == .suggested else {
             return
         }
 
-        let signature = "\(goalID.uuidString):\(skillMap.version):\(skillMap.updatedAt.timeIntervalSince1970)"
-        guard signature != lastPresentedSkillMapSignature else { return }
-        lastPresentedSkillMapSignature = signature
-        isSuggestedSkillMapReviewPresented = true
+        guard reviewContext.revision != lastPresentedSkillMapReviewRevision else { return }
+        guard suggestedSkillMapReviewPresentation.request(
+            reviewContext,
+            currentGoal: store.goal
+        ) else { return }
+        lastPresentedSkillMapReviewRevision = reviewContext.revision
+    }
+
+    @discardableResult
+    private func invalidateSuggestedSkillMapReviewIfStale(for goal: Goal?) -> Bool {
+        suggestedSkillMapReviewPresentation.invalidateIfStale(for: goal)
     }
 
     private func handleOnboardingDismissed() {
@@ -870,8 +888,9 @@ struct RootView: View {
     }
 
     private func handleSuggestedSkillMapReviewDismissed() {
-        isSuggestedSkillMapReviewActive = false
+        suggestedSkillMapReviewPresentation.presentationDidDismiss()
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+        presentSuggestedSkillMapReviewIfNeeded()
     }
 
     private func handleScreenTimeAccessDismissed(
@@ -924,8 +943,7 @@ struct RootView: View {
             !store.isOnboardingPresented &&
             !isOnboardingSheetActive &&
             !firstRunSetup.isAppSelectionPresented &&
-            !isSuggestedSkillMapReviewPresented &&
-            !isSuggestedSkillMapReviewActive
+            !suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations
         guard authorizationRecoveryQueue.beginScheduling(
             shouldRecover: shouldRecover,
             canPresent: canPresent
@@ -947,8 +965,7 @@ struct RootView: View {
                 !store.isOnboardingPresented &&
                 !isOnboardingSheetActive &&
                 !firstRunSetup.isAppSelectionPresented &&
-                !isSuggestedSkillMapReviewPresented &&
-                !isSuggestedSkillMapReviewActive
+                !suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations
             guard authorizationRecoveryQueue.finishScheduling(
                 shouldRecover: shouldRecover,
                 canPresent: canPresent
@@ -1151,8 +1168,7 @@ struct RootView: View {
                 && screenTime.hasRequiredScreenTimeAuthorization)
             || isOnboardingSheetActive
             || firstRunSetup.isAppSelectionPresented
-            || isSuggestedSkillMapReviewPresented
-            || isSuggestedSkillMapReviewActive
+            || suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations
             || pendingGoalSwitchConfirmation != nil
     }
 

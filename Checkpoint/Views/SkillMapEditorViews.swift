@@ -452,11 +452,109 @@ private enum SkillMapDestructiveAction: Equatable {
     }
 }
 
+struct SkillMapReviewContext: Identifiable, Equatable {
+    struct Revision: Equatable {
+        let goalID: Goal.ID
+        let skillMap: GoalSkillMap
+    }
+
+    struct ID: Hashable {
+        let sessionID: UUID
+        let goalID: Goal.ID
+        let mapVersion: Int
+        let mapUpdatedAt: Date
+    }
+
+    let id: ID
+    let goalTitle: String
+    let revision: Revision
+
+    var skillMap: GoalSkillMap { revision.skillMap }
+
+    init?(goal: Goal?, sessionID: UUID = UUID()) {
+        guard let goal, let skillMap = goal.derivedSkillMap else { return nil }
+        id = ID(
+            sessionID: sessionID,
+            goalID: goal.id,
+            mapVersion: skillMap.version,
+            mapUpdatedAt: skillMap.updatedAt
+        )
+        goalTitle = goal.title
+        revision = Revision(goalID: goal.id, skillMap: skillMap)
+    }
+
+    func matches(_ goal: Goal?) -> Bool {
+        guard let goal else { return false }
+        return goal.id == revision.goalID && goal.derivedSkillMap == skillMap
+    }
+}
+
+struct SkillMapReviewPresentationState: Equatable {
+    private(set) var destination: SkillMapReviewContext?
+    private(set) var ownsPresentation = false
+    private var hasAppeared = false
+    private var invalidatedBeforeAppearance = false
+
+    var blocksUnderlyingPresentations: Bool {
+        destination != nil || ownsPresentation
+    }
+
+    @discardableResult
+    mutating func request(
+        _ context: SkillMapReviewContext,
+        currentGoal: Goal?
+    ) -> Bool {
+        guard !blocksUnderlyingPresentations,
+              context.matches(currentGoal) else { return false }
+        ownsPresentation = true
+        hasAppeared = false
+        invalidatedBeforeAppearance = false
+        destination = context
+        return true
+    }
+
+    @discardableResult
+    mutating func invalidateIfStale(for goal: Goal?) -> Bool {
+        guard let destination,
+              !destination.matches(goal) else { return false }
+        if hasAppeared {
+            self.destination = nil
+        } else {
+            // Keep the item mounted until SwiftUI has begun presenting it. Clearing a
+            // just-requested item can be coalesced away without an onDismiss callback,
+            // which would otherwise strand modal ownership indefinitely.
+            invalidatedBeforeAppearance = true
+        }
+        return true
+    }
+
+    mutating func presentationDidAppear() {
+        guard destination != nil else { return }
+        hasAppeared = true
+        ownsPresentation = true
+        if invalidatedBeforeAppearance {
+            destination = nil
+            invalidatedBeforeAppearance = false
+        }
+    }
+
+    mutating func presentationRequestedDismissal() {
+        destination = nil
+        invalidatedBeforeAppearance = false
+    }
+
+    mutating func presentationDidDismiss() {
+        destination = nil
+        ownsPresentation = false
+        hasAppeared = false
+        invalidatedBeforeAppearance = false
+    }
+}
+
 struct SkillMapReviewView: View {
     let store: CheckpointStore
     private let reduceMotionOverride: Bool?
-    private let originalTopics: [SkillMapTopic]
-    private let originalStatus: SkillMapStatus
+    private let reviewContext: SkillMapReviewContext?
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.dismiss) private var dismiss
@@ -467,15 +565,17 @@ struct SkillMapReviewView: View {
 
     init(
         store: CheckpointStore,
+        reviewContext: SkillMapReviewContext? = nil,
         reduceMotionOverride: Bool? = nil,
         initialTopics: [SkillMapTopic]? = nil
     ) {
-        let map = store.activeDerivedSkillMap
+        let resolvedContext = reviewContext ?? SkillMapReviewContext(goal: store.goal)
         self.store = store
         self.reduceMotionOverride = reduceMotionOverride
-        originalTopics = map?.topics ?? []
-        originalStatus = map?.status ?? .suggested
-        _topics = State(initialValue: initialTopics ?? map?.topics ?? [])
+        self.reviewContext = resolvedContext
+        _topics = State(
+            initialValue: initialTopics ?? resolvedContext?.skillMap.topics ?? []
+        )
         _pendingFocusPlan = State(initialValue: nil)
         _pendingDestructiveAction = State(initialValue: nil)
     }
@@ -565,7 +665,7 @@ struct SkillMapReviewView: View {
                 ) {
                     pendingFocusPlan = nil
                     focusedSkillID = nil
-                    if store.reviewActiveDerivedSkillMap(topics: topics) {
+                    if saveReview() {
                         dismiss()
                     }
                 }
@@ -575,8 +675,14 @@ struct SkillMapReviewView: View {
                 .background(.ultraThinMaterial)
             }
         }
+        .onAppear {
+            dismissIfStale(for: store.goal)
+        }
         .onChange(of: validationAnnouncement) { _, message in
             announceValidation(message)
+        }
+        .onChange(of: store.goal) { _, goal in
+            dismissIfStale(for: goal)
         }
         .confirmationDialog(
             pendingDestructiveAction?.title ?? "Update skill",
@@ -602,15 +708,15 @@ struct SkillMapReviewView: View {
     private var validation: SkillMapEditorValidation {
         SkillMapEditorValidation(
             topics: topics,
-            originalTopics: originalTopics,
-            archivedTopics: store.activeDerivedSkillMap?.archivedTopics ?? []
+            originalTopics: reviewContext?.skillMap.topics ?? [],
+            archivedTopics: reviewContext?.skillMap.archivedTopics ?? []
         )
     }
 
     private var editorPresentation: SkillMapEditorPresentation {
         SkillMapEditorPresentation(
-            mode: .review(status: originalStatus),
-            goalTitle: store.goal?.title ?? "Your goal",
+            mode: .review(status: reviewContext?.skillMap.status ?? .suggested),
+            goalTitle: reviewContext?.goalTitle ?? "Your goal",
             skillCount: topics.count,
             namedCount: validation.namedCount,
             isValid: validation.isValid,
@@ -619,7 +725,7 @@ struct SkillMapReviewView: View {
     }
 
     private var hasChanges: Bool {
-        topics != originalTopics
+        topics != (reviewContext?.skillMap.topics ?? [])
     }
 
     private var affordances: SkillMapEditorAffordances {
@@ -658,14 +764,31 @@ struct SkillMapReviewView: View {
     }
 
     private var existingSkillIDs: Set<SkillMapTopic.ID> {
-        Set(originalTopics.map(\.id))
+        Set(reviewContext?.skillMap.topics.map(\.id) ?? [])
     }
 
     private func continuity(for id: SkillMapTopic.ID) -> SkillNameContinuity {
         SkillNameContinuity.reviewing(
-            status: originalStatus,
+            status: reviewContext?.skillMap.status ?? .suggested,
             isExistingSkill: existingSkillIDs.contains(id)
         )
+    }
+
+    private func saveReview() -> Bool {
+        guard let reviewContext else { return false }
+        return store.reviewDerivedSkillMap(
+            topics: topics,
+            forGoalID: reviewContext.revision.goalID,
+            expectedMap: reviewContext.skillMap
+        )
+    }
+
+    private func dismissIfStale(for goal: Goal?) {
+        guard let reviewContext,
+              !reviewContext.matches(goal) else { return }
+        pendingFocusPlan = nil
+        focusedSkillID = nil
+        dismiss()
     }
 
     private func requestRemoval(of id: SkillMapTopic.ID) {
