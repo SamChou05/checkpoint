@@ -964,6 +964,13 @@ final class CheckpointStore {
                 || hasPendingActiveQuestionBankSync)
     }
 
+    var isMaintainingActiveGoalQuestions: Bool {
+        guard isMember, let goal else { return false }
+        return isQuestionPreparationInProgress(for: goal)
+            || isQuestionBankTopOffInProgress
+            || hasPendingActiveQuestionBankSync
+    }
+
     var isQuestionGenerationBlockingPractice: Bool {
         questionBatchState == .failed && !hasReadyCheckpointSet
     }

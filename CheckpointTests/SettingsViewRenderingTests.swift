@@ -857,18 +857,47 @@ final class SettingsViewRenderingTests: XCTestCase {
             screenTimeDefaults.removePersistentDomain(forName: screenTimeSuiteName)
         }
 
+        let focusSkill = SkillMapTopic(name: "Reliability and failure recovery")
         let goal = Goal(
             title: "Pass senior technical interviews",
             deadline: fixedDate(year: 2027, month: 2, day: 14),
             category: .codingInterview,
             currentLevel: "Intermediate",
             focusAreas: "system design, reliability, communication",
+            derivedSkillMap: GoalSkillMap(
+                topics: [focusSkill],
+                status: .reviewed,
+                provenance: .userEdited
+            ),
             preferredQuestionStyle: .multipleChoice
+        )
+        let secondGoal = Goal(
+            title: "Write a product strategy brief",
+            deadline: fixedDate(year: 2027, month: 3, day: 20),
+            category: .writing,
+            currentLevel: "Intermediate",
+            focusAreas: "positioning, evidence, clarity",
+            preferredQuestionStyle: .shortAnswer
         )
         let store = CheckpointStore(defaults: storeDefaults)
         store.goal = goal
-        store.goalProfiles = [goal]
+        store.goalProfiles = [goal, secondGoal]
         store.membershipTier = .member
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map {
+            makeQuestion(
+                goal: goal,
+                index: $0,
+                topic: focusSkill.name,
+                skillID: focusSkill.id
+            )
+        }
+        store.questionBatchState = .ready
+        store.isQuestionBankTopOffInProgress = true
+
+        guard case let .recommendation(recommendation)? = store.studyFocusState else {
+            return XCTFail("The assembled Pro settings fixture must expose a live Next Focus.")
+        }
+        XCTAssertEqual(recommendation.title, focusSkill.name)
 
         let screenTime = ScreenTimeController(
             defaults: screenTimeDefaults,

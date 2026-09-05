@@ -1114,11 +1114,27 @@ struct SettingsView: View {
         SettingsPlanCard(
             presentation: SettingsPlanPresentation(
                 membershipTier: store.membershipTier,
-                purchaseNotice: purchaseController.purchaseNotice
+                purchaseNotice: purchaseController.purchaseNotice,
+                proActivity: store.isMember ? proActivityPresentation : nil
             )
         ) {
             store.requestMembershipOverview()
         }
+    }
+
+    private var proActivityPresentation: SettingsProActivityPresentation {
+        SettingsProActivityPresentation(
+            hasGoal: store.goal != nil,
+            hasReadyCheckpoint: store.hasReadyCheckpointSet,
+            isMaintainingFreshCheckpoints: store.isMaintainingActiveGoalQuestions,
+            isQuestionGenerationBlockingPractice: store.isQuestionGenerationBlockingPractice,
+            questionBankTargetCount: store.questionBankTargetCount,
+            studyFocusState: store.studyFocusState,
+            skillMapStatus: store.activeDerivedSkillMap?.status,
+            hasPracticeHistory: !store.activeAttempts.isEmpty,
+            goalCount: store.availableGoalProfiles.count,
+            goalLimit: store.goalProfileLimit
+        )
     }
 
     private var privacyAndSupportPanel: some View {

@@ -655,12 +655,198 @@ enum SettingsPlanState: Equatable, Sendable {
     case pro
 }
 
+enum SettingsProActivityID: String, CaseIterable, Hashable, Sendable {
+    case freshCheckpoints
+    case nextFocus
+    case goalLanes
+}
+
+enum SettingsProActivityTone: Equatable, Hashable, Sendable {
+    case positive
+    case informative
+    case attention
+    case neutral
+}
+
+struct SettingsProActivityItem: Identifiable, Equatable, Hashable, Sendable {
+    let id: SettingsProActivityID
+    let label: String
+    let value: String
+    let detail: String
+    let systemImage: String
+    let tone: SettingsProActivityTone
+
+    var accessibilityValue: String {
+        "\(label.capitalized): \(value). \(detail)"
+    }
+}
+
+struct SettingsProActivityPresentation: Equatable, Hashable, Sendable {
+    let headline: String
+    let freshCheckpoints: SettingsProActivityItem
+    let nextFocus: SettingsProActivityItem
+    let goalLanes: SettingsProActivityItem
+
+    init(
+        hasGoal: Bool,
+        hasReadyCheckpoint: Bool,
+        isMaintainingFreshCheckpoints: Bool,
+        isQuestionGenerationBlockingPractice: Bool,
+        questionBankTargetCount: Int,
+        studyFocusState: StudyFocusState?,
+        skillMapStatus: SkillMapStatus?,
+        hasPracticeHistory: Bool,
+        goalCount: Int,
+        goalLimit: Int
+    ) {
+        let targetCount = max(1, questionBankTargetCount)
+        let normalizedGoalCount = max(0, goalCount)
+        let normalizedGoalLimit = max(1, goalLimit)
+        let targetDetail = "\(targetCount)-question practice target"
+
+        if !hasGoal {
+            headline = "Your Pro workspace is ready."
+        } else if isQuestionGenerationBlockingPractice {
+            headline = "Practice needs a little attention."
+        } else {
+            headline = "Pro is working in the background."
+        }
+
+        if !hasGoal {
+            freshCheckpoints = SettingsProActivityItem(
+                id: .freshCheckpoints,
+                label: "FRESH CHECKPOINTS",
+                value: "Ready for your first goal",
+                detail: targetDetail,
+                systemImage: "sparkles",
+                tone: .neutral
+            )
+        } else if isQuestionGenerationBlockingPractice {
+            freshCheckpoints = SettingsProActivityItem(
+                id: .freshCheckpoints,
+                label: "FRESH CHECKPOINTS",
+                value: "Needs attention",
+                detail: "Review Home to retry checkpoint setup",
+                systemImage: "exclamationmark.triangle.fill",
+                tone: .attention
+            )
+        } else if isMaintainingFreshCheckpoints {
+            freshCheckpoints = SettingsProActivityItem(
+                id: .freshCheckpoints,
+                label: "FRESH CHECKPOINTS",
+                value: hasReadyCheckpoint ? "Refreshing practice" : "Preparing checkpoint",
+                detail: targetDetail,
+                systemImage: "arrow.triangle.2.circlepath",
+                tone: .informative
+            )
+        } else if hasReadyCheckpoint {
+            freshCheckpoints = SettingsProActivityItem(
+                id: .freshCheckpoints,
+                label: "FRESH CHECKPOINTS",
+                value: "Next checkpoint ready",
+                detail: targetDetail,
+                systemImage: "checkmark.circle.fill",
+                tone: .positive
+            )
+        } else {
+            freshCheckpoints = SettingsProActivityItem(
+                id: .freshCheckpoints,
+                label: "FRESH CHECKPOINTS",
+                value: "Waiting to prepare",
+                detail: targetDetail,
+                systemImage: "clock",
+                tone: .neutral
+            )
+        }
+
+        switch studyFocusState {
+        case let .recommendation(recommendation):
+            nextFocus = SettingsProActivityItem(
+                id: .nextFocus,
+                label: "NEXT FOCUS",
+                value: recommendation.title,
+                detail: "Adaptive recommendation",
+                systemImage: recommendation.systemImage,
+                tone: .informative
+            )
+        case .caughtUp:
+            nextFocus = SettingsProActivityItem(
+                id: .nextFocus,
+                label: "NEXT FOCUS",
+                value: "Caught up for now",
+                detail: "No review is due",
+                systemImage: "checkmark.seal.fill",
+                tone: .positive
+            )
+        case .awaitingQuestion:
+            nextFocus = SettingsProActivityItem(
+                id: .nextFocus,
+                label: "NEXT FOCUS",
+                value: "Waiting for practice",
+                detail: "Appears when a question is ready",
+                systemImage: "clock",
+                tone: .neutral
+            )
+        case nil:
+            let value: String
+            let detail: String
+            if !hasGoal {
+                value = "Starts with your first goal"
+                detail = "Adapts as you answer"
+            } else if skillMapStatus == .suggested {
+                value = "Skill map ready to review"
+                detail = "Review it in Progress to unlock guidance"
+            } else if !hasPracticeHistory {
+                value = "Starts after your first checkpoint"
+                detail = "Adapts from your answers"
+            } else if skillMapStatus == nil {
+                value = "Calibrating from your answers"
+                detail = "Next Focus is not ready yet"
+            } else {
+                value = "Calibrating from your answers"
+                detail = "Updates as practice becomes ready"
+            }
+            nextFocus = SettingsProActivityItem(
+                id: .nextFocus,
+                label: "NEXT FOCUS",
+                value: value,
+                detail: detail,
+                systemImage: "scope",
+                tone: .neutral
+            )
+        }
+
+        goalLanes = SettingsProActivityItem(
+            id: .goalLanes,
+            label: "GOAL LANES",
+            value: normalizedGoalCount == 0
+                ? "Ready for your first goal"
+                : "\(normalizedGoalCount) of \(normalizedGoalLimit) in use",
+            detail: normalizedGoalCount == 0
+                ? "\(normalizedGoalLimit) Pro goal lanes available"
+                : "Each keeps its progress separate",
+            systemImage: "square.stack.3d.up.fill",
+            tone: .informative
+        )
+    }
+
+    var items: [SettingsProActivityItem] {
+        [freshCheckpoints, nextFocus, goalLanes]
+    }
+
+    var accessibilityValue: String {
+        items.map(\.accessibilityValue).joined(separator: ". ")
+    }
+}
+
 struct SettingsPlanPresentation: Equatable, Sendable {
     let state: SettingsPlanState
+    let proActivity: SettingsProActivityPresentation?
 
     init(
         membershipTier: MembershipTier,
-        purchaseNotice: MembershipPurchaseNotice?
+        purchaseNotice: MembershipPurchaseNotice?,
+        proActivity: SettingsProActivityPresentation? = nil
     ) {
         if membershipTier == .member {
             state = .pro
@@ -669,6 +855,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         } else {
             state = .free
         }
+        self.proActivity = state == .pro ? proActivity : nil
     }
 
     var planName: String {
@@ -698,7 +885,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .pendingPurchase:
             "Your purchase is awaiting approval."
         case .pro:
-            "Your practice stays in motion."
+            proActivity?.headline ?? "Pro is working in the background."
         }
     }
 
@@ -709,7 +896,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .pendingPurchase:
             "Pro unlocks as soon as the App Store confirms it."
         case .pro:
-            "Up to \(ProductLimits.memberGoalProfileLimit) focused goals, fresh checkpoints, and adaptive Next Focus are unlocked."
+            "Fresh checkpoints, adaptive guidance, and separate goal lanes stay ready as you practice."
         }
     }
 
@@ -720,7 +907,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .pendingPurchase:
             "Check purchase status"
         case .pro:
-            "View plan & billing"
+            "Manage plan & billing"
         }
     }
 
@@ -764,7 +951,11 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .pendingPurchase:
             "Pending App Store approval. Pro unlocks after confirmation."
         case .pro:
-            "Active access. Up to \(ProductLimits.memberGoalProfileLimit) focused goals, fresh checkpoints, and adaptive Next Focus are unlocked."
+            if let proActivity {
+                "Active access. \(proActivity.accessibilityValue)."
+            } else {
+                "Active access. Fresh checkpoints, adaptive guidance, and separate goal lanes are unlocked."
+            }
         }
     }
 
@@ -803,6 +994,56 @@ struct SettingsPlanMotionPolicy: Equatable {
     var pressedScale: CGFloat {
         style == .animated ? 0.99 : 1
     }
+
+    var activityTransition: AnyTransition {
+        switch style {
+        case .animated:
+            .opacity.combined(with: .scale(scale: 0.985, anchor: .top))
+        case .identity:
+            .identity
+        }
+    }
+}
+
+enum SettingsPlanLayoutElement: Hashable {
+    case card
+    case proActivity
+    case proActivityRow(SettingsProActivityID)
+    case action
+}
+
+private let settingsPlanLayoutCoordinateSpaceName = "Checkpoint.Settings.Plan.Layout"
+
+private struct SettingsPlanLayoutFrameReporter: ViewModifier {
+    let element: SettingsPlanLayoutElement
+    let report: (@MainActor (SettingsPlanLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(in: .named(settingsPlanLayoutCoordinateSpaceName))
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportSettingsPlanLayoutFrame(
+        _ element: SettingsPlanLayoutElement,
+        using report: (@MainActor (SettingsPlanLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(SettingsPlanLayoutFrameReporter(element: element, report: report))
+    }
 }
 
 struct SettingsPlanCard: View {
@@ -810,6 +1051,7 @@ struct SettingsPlanCard: View {
     let action: () -> Void
 
     private let reduceMotionOverride: Bool?
+    private let layoutReporter: (@MainActor (SettingsPlanLayoutElement, CGRect) -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -818,10 +1060,12 @@ struct SettingsPlanCard: View {
     init(
         presentation: SettingsPlanPresentation,
         reduceMotionOverride: Bool? = nil,
+        layoutReporter: (@MainActor (SettingsPlanLayoutElement, CGRect) -> Void)? = nil,
         action: @escaping () -> Void
     ) {
         self.presentation = presentation
         self.reduceMotionOverride = reduceMotionOverride
+        self.layoutReporter = layoutReporter
         self.action = action
     }
 
@@ -838,19 +1082,7 @@ struct SettingsPlanCard: View {
                 VStack(alignment: .leading, spacing: 16) {
                     planHeader
 
-                    VStack(alignment: .leading, spacing: 7) {
-                        Text(presentation.headline)
-                            .font(.title3.weight(.bold))
-                            .foregroundStyle(CheckpointTheme.heroText)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .contentTransition(.interpolate)
-
-                        Text(presentation.detail)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(CheckpointTheme.heroMuted)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .contentTransition(.interpolate)
-                    }
+                    planSummary
 
                     Divider()
                         .overlay(CheckpointTheme.heroBorder)
@@ -862,16 +1094,152 @@ struct SettingsPlanCard: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(SettingsPlanCardButtonStyle(motionPolicy: motionPolicy))
+        .reportSettingsPlanLayoutFrame(.card, using: layoutReporter)
+        .coordinateSpace(name: settingsPlanLayoutCoordinateSpaceName)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(presentation.accessibilityLabel)
         .accessibilityValue(presentation.accessibilityValue)
         .accessibilityHint(presentation.accessibilityHint)
         .animation(motionPolicy.animation, value: presentation.state)
+        .animation(motionPolicy.animation, value: presentation.proActivity)
         .onAppear {
             triggerSymbolEffectIfNeeded()
         }
         .onChange(of: presentation.state) { _, _ in
             triggerSymbolEffectIfNeeded()
+        }
+    }
+
+    @ViewBuilder
+    private var planSummary: some View {
+        VStack(alignment: .leading, spacing: presentation.proActivity == nil ? 7 : 13) {
+            Text(presentation.headline)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.interpolate)
+
+            if let proActivity = presentation.proActivity {
+                proActivityPanel(proActivity)
+                    .transition(motionPolicy.activityTransition)
+            } else {
+                Text(presentation.detail)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.interpolate)
+            }
+        }
+    }
+
+    private func proActivityPanel(
+        _ proActivity: SettingsProActivityPresentation
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(proActivity.items) { item in
+                proActivityRow(item)
+
+                if item.id != .goalLanes {
+                    Divider()
+                        .overlay(CheckpointTheme.heroDivider)
+                        .padding(.leading, dynamicTypeSize.isAccessibilitySize ? 0 : 41)
+                        .accessibilityHidden(true)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 3)
+        .background(
+            CheckpointTheme.heroSubtleFill,
+            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
+        }
+        .reportSettingsPlanLayoutFrame(.proActivity, using: layoutReporter)
+    }
+
+    private func proActivityRow(_ item: SettingsProActivityItem) -> some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 8) {
+                    proActivityIdentity(item)
+                    proActivityCopy(item)
+                }
+            } else {
+                HStack(alignment: .center, spacing: 11) {
+                    proActivityIcon(item)
+                    proActivityCopy(item)
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .reportSettingsPlanLayoutFrame(.proActivityRow(item.id), using: layoutReporter)
+        .accessibilityHidden(true)
+    }
+
+    private func proActivityIdentity(_ item: SettingsProActivityItem) -> some View {
+        Text(item.label)
+            .font(.caption2.weight(.bold))
+            .tracking(0.7)
+            .foregroundStyle(proActivityTint(item.tone))
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func proActivityIcon(_ item: SettingsProActivityItem) -> some View {
+        Image(systemName: item.systemImage)
+            .symbolRenderingMode(.hierarchical)
+            .font(.system(size: 13, weight: .bold))
+            .foregroundStyle(proActivityTint(item.tone))
+            .frame(width: 30, height: 30)
+            .background(
+                proActivityTint(item.tone).opacity(0.12),
+                in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+            )
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffect(.bounce, options: .nonRepeating, value: item)
+            .symbolEffectsRemoved(!motionPolicy.animatesSymbol)
+            .accessibilityHidden(true)
+    }
+
+    private func proActivityCopy(_ item: SettingsProActivityItem) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            if !dynamicTypeSize.isAccessibilitySize {
+                Text(item.label)
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.7)
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+            }
+
+            Text(item.value)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(
+                    item.id == .goalLanes ? .numericText() : .interpolate
+                )
+
+            Text(item.detail)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.interpolate)
+        }
+    }
+
+    private func proActivityTint(_ tone: SettingsProActivityTone) -> Color {
+        switch tone {
+        case .positive:
+            CheckpointTheme.heroSuccess
+        case .informative:
+            CheckpointTheme.heroInfo
+        case .attention:
+            CheckpointTheme.heroWarning
+        case .neutral:
+            CheckpointTheme.heroMuted
         }
     }
 
@@ -944,25 +1312,29 @@ struct SettingsPlanCard: View {
 
     @ViewBuilder
     private var planAction: some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 8) {
-                planActionTitle
-                planActionIcon
-            }
-        } else {
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .center, spacing: 10) {
-                    planActionTitle
-                    Spacer(minLength: 8)
-                    planActionIcon
-                }
-
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 8) {
                     planActionTitle
                     planActionIcon
                 }
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .center, spacing: 10) {
+                        planActionTitle
+                        Spacer(minLength: 8)
+                        planActionIcon
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        planActionTitle
+                        planActionIcon
+                    }
+                }
             }
         }
+        .frame(minHeight: 44, alignment: .leading)
+        .reportSettingsPlanLayoutFrame(.action, using: layoutReporter)
     }
 
     private var planActionTitle: some View {

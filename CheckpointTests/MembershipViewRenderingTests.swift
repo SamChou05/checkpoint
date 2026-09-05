@@ -941,17 +941,32 @@ final class MembershipViewRenderingTests: XCTestCase {
     }
 
     func testSettingsPlanPresentationIsStateHonestAndPrioritizesProAccess() {
+        let proActivity = SettingsProActivityPresentation(
+            hasGoal: true,
+            hasReadyCheckpoint: true,
+            isMaintainingFreshCheckpoints: false,
+            isQuestionGenerationBlockingPractice: false,
+            questionBankTargetCount: 80,
+            studyFocusState: .caughtUp,
+            skillMapStatus: .reviewed,
+            hasPracticeHistory: true,
+            goalCount: 2,
+            goalLimit: 5
+        )
         let free = SettingsPlanPresentation(
             membershipTier: .starter,
-            purchaseNotice: nil
+            purchaseNotice: nil,
+            proActivity: proActivity
         )
         let pending = SettingsPlanPresentation(
             membershipTier: .starter,
-            purchaseNotice: .pendingApproval
+            purchaseNotice: .pendingApproval,
+            proActivity: proActivity
         )
         let pro = SettingsPlanPresentation(
             membershipTier: .member,
-            purchaseNotice: .pendingApproval
+            purchaseNotice: .pendingApproval,
+            proActivity: proActivity
         )
 
         XCTAssertEqual(free.state, .free)
@@ -965,6 +980,7 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(free.actionTitle, "Explore Checkpoint Pro")
         XCTAssertEqual(free.accessibilityLabel, "Checkpoint Free")
         XCTAssertEqual(free.accessibilityHint, "Opens Checkpoint Pro plans.")
+        XCTAssertNil(free.proActivity)
 
         XCTAssertEqual(pending.state, .pendingPurchase)
         XCTAssertEqual(pending.badgeText, "PENDING")
@@ -973,17 +989,160 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(pending.actionTitle, "Check purchase status")
         XCTAssertEqual(pending.accessibilityLabel, "Checkpoint Pro purchase")
         XCTAssertEqual(pending.accessibilityHint, "Opens purchase status and plan options.")
+        XCTAssertNil(pending.proActivity)
 
         XCTAssertEqual(pro.state, .pro)
         XCTAssertEqual(pro.badgeText, "PRO ACTIVE")
-        XCTAssertEqual(pro.headline, "Your practice stays in motion.")
+        XCTAssertEqual(pro.headline, "Pro is working in the background.")
         XCTAssertEqual(
             pro.detail,
-            "Up to 5 focused goals, fresh checkpoints, and adaptive Next Focus are unlocked."
+            "Fresh checkpoints, adaptive guidance, and separate goal lanes stay ready as you practice."
         )
-        XCTAssertEqual(pro.actionTitle, "View plan & billing")
+        XCTAssertEqual(pro.actionTitle, "Manage plan & billing")
         XCTAssertEqual(pro.accessibilityLabel, "Checkpoint Pro")
         XCTAssertEqual(pro.accessibilityHint, "Opens plan and billing.")
+        XCTAssertEqual(pro.proActivity, proActivity)
+        XCTAssertTrue(pro.accessibilityValue.contains("Next Focus: Caught up for now"))
+        XCTAssertTrue(pro.accessibilityValue.contains("Goal Lanes: 2 of 5 in use"))
+    }
+
+    func testSettingsProActivityPresentationUsesTruthfulLiveStates() throws {
+        let goal = makeLSATGoal()
+        let longSkillName = "Reliability and failure recovery under distributed load"
+        let recommendation = try XCTUnwrap(
+            StudyFocusRecommendation(
+                question: makeQuestion(
+                    goal: goal,
+                    index: 1,
+                    topic: longSkillName
+                ),
+                skillID: nil,
+                skillName: longSkillName,
+                hasPracticeHistory: true
+            )
+        )
+        let ready = SettingsProActivityPresentation(
+            hasGoal: true,
+            hasReadyCheckpoint: true,
+            isMaintainingFreshCheckpoints: false,
+            isQuestionGenerationBlockingPractice: false,
+            questionBankTargetCount: 80,
+            studyFocusState: .recommendation(recommendation),
+            skillMapStatus: .reviewed,
+            hasPracticeHistory: true,
+            goalCount: 2,
+            goalLimit: 5
+        )
+
+        XCTAssertEqual(
+            ready.items.map(\.id),
+            [.freshCheckpoints, .nextFocus, .goalLanes]
+        )
+        XCTAssertEqual(ready.freshCheckpoints.value, "Next checkpoint ready")
+        XCTAssertEqual(ready.freshCheckpoints.detail, "80-question practice target")
+        XCTAssertEqual(ready.freshCheckpoints.tone, .positive)
+        XCTAssertEqual(ready.nextFocus.value, longSkillName)
+        XCTAssertEqual(ready.nextFocus.detail, "Adaptive recommendation")
+        XCTAssertEqual(ready.goalLanes.value, "2 of 5 in use")
+        XCTAssertTrue(ready.accessibilityValue.contains(longSkillName))
+
+        let refreshing = makeSettingsProActivity(
+            hasReadyCheckpoint: true,
+            isMaintaining: true
+        )
+        XCTAssertEqual(refreshing.freshCheckpoints.value, "Refreshing practice")
+        XCTAssertEqual(refreshing.freshCheckpoints.tone, .informative)
+
+        let preparing = makeSettingsProActivity(
+            hasReadyCheckpoint: false,
+            isMaintaining: true
+        )
+        XCTAssertEqual(preparing.freshCheckpoints.value, "Preparing checkpoint")
+
+        let failure = makeSettingsProActivity(
+            hasReadyCheckpoint: false,
+            isMaintaining: true,
+            isBlocking: true
+        )
+        XCTAssertEqual(failure.freshCheckpoints.value, "Needs attention")
+        XCTAssertEqual(failure.freshCheckpoints.tone, .attention)
+        XCTAssertEqual(failure.freshCheckpoints.detail, "Review Home to retry checkpoint setup")
+        XCTAssertEqual(failure.headline, "Practice needs a little attention.")
+
+        let caughtUp = makeSettingsProActivity(studyFocusState: .caughtUp)
+        XCTAssertEqual(caughtUp.nextFocus.value, "Caught up for now")
+        XCTAssertEqual(caughtUp.nextFocus.detail, "No review is due")
+
+        let awaiting = makeSettingsProActivity(studyFocusState: .awaitingQuestion)
+        XCTAssertEqual(awaiting.nextFocus.value, "Waiting for practice")
+
+        let calibrating = makeSettingsProActivity(
+            studyFocusState: nil,
+            skillMapStatus: nil,
+            hasPracticeHistory: true
+        )
+        XCTAssertEqual(calibrating.nextFocus.value, "Calibrating from your answers")
+        XCTAssertEqual(calibrating.nextFocus.detail, "Next Focus is not ready yet")
+
+        let suggested = makeSettingsProActivity(
+            studyFocusState: nil,
+            skillMapStatus: .suggested,
+            hasPracticeHistory: true
+        )
+        XCTAssertEqual(suggested.nextFocus.value, "Skill map ready to review")
+        XCTAssertEqual(suggested.nextFocus.detail, "Review it in Progress to unlock guidance")
+
+        let suggestedBeforeFirstCheckpoint = makeSettingsProActivity(
+            studyFocusState: nil,
+            skillMapStatus: .suggested,
+            hasPracticeHistory: false
+        )
+        XCTAssertEqual(suggestedBeforeFirstCheckpoint.nextFocus.value, "Skill map ready to review")
+
+        let firstCheckpoint = makeSettingsProActivity(
+            studyFocusState: nil,
+            skillMapStatus: nil,
+            hasPracticeHistory: false
+        )
+        XCTAssertEqual(firstCheckpoint.nextFocus.value, "Starts after your first checkpoint")
+
+        let noGoal = makeSettingsProActivity(
+            hasGoal: false,
+            hasReadyCheckpoint: false,
+            studyFocusState: nil,
+            skillMapStatus: nil,
+            hasPracticeHistory: false,
+            goalCount: 0
+        )
+        XCTAssertEqual(noGoal.freshCheckpoints.value, "Ready for your first goal")
+        XCTAssertEqual(noGoal.nextFocus.value, "Starts with your first goal")
+        XCTAssertEqual(noGoal.goalLanes.value, "Ready for your first goal")
+        XCTAssertEqual(noGoal.goalLanes.detail, "5 Pro goal lanes available")
+        XCTAssertEqual(noGoal.headline, "Your Pro workspace is ready.")
+    }
+
+    @MainActor
+    func testStoreExposesReadyProBackgroundMaintenanceWithoutBlockingPractice() throws {
+        let suiteName = "SettingsProActivityStoreTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeLSATGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.membershipTier = .member
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = (1...store.unlockPolicy.questionsPerSession).map {
+            makeQuestion(goal: goal, index: $0)
+        }
+        store.questionBatchState = .ready
+        store.isQuestionBankTopOffInProgress = true
+
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertFalse(store.isPreparingActiveGoalQuestions)
+        XCTAssertTrue(store.isMaintainingActiveGoalQuestions)
+
+        store.membershipTier = .starter
+        XCTAssertFalse(store.isMaintainingActiveGoalQuestions)
     }
 
     func testSettingsPlanMotionPolicyRespectsReduceMotion() {
@@ -1027,15 +1186,52 @@ final class MembershipViewRenderingTests: XCTestCase {
                 dynamicTypeSize: .large
             ),
             SettingsPlanRenderFixture(
-                name: "settings-plan-pro-compact-dark",
+                name: "settings-plan-pro-ready-light",
                 presentation: SettingsPlanPresentation(
                     membershipTier: .member,
-                    purchaseNotice: nil
+                    purchaseNotice: nil,
+                    proActivity: makeSettingsProActivity(
+                        studyFocusState: .caughtUp,
+                        goalCount: 2
+                    )
+                ),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pro-refreshing-compact-dark",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .member,
+                    purchaseNotice: nil,
+                    proActivity: makeSettingsProActivity(
+                        isMaintaining: true,
+                        nextFocusValue: "Multi-stage causal inference with counterfactual calibration",
+                        goalCount: 4
+                    )
                 ),
                 width: 320,
                 height: 568,
                 colorScheme: .dark,
                 dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pro-accessibility5-reduce-motion",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .member,
+                    purchaseNotice: nil,
+                    proActivity: makeSettingsProActivity(
+                        isMaintaining: true,
+                        nextFocusValue: "Multi-stage causal inference with counterfactual calibration",
+                        goalCount: 4
+                    )
+                ),
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
             ),
             SettingsPlanRenderFixture(
                 name: "settings-plan-free-accessibility5-reduce-motion",
@@ -1053,10 +1249,14 @@ final class MembershipViewRenderingTests: XCTestCase {
 
         for fixture in fixtures {
             autoreleasepool {
+                let layoutCapture = SettingsPlanLayoutCapture()
                 let view = ScrollView {
                     SettingsPlanCard(
                         presentation: fixture.presentation,
                         reduceMotionOverride: fixture.reduceMotion,
+                        layoutReporter: { element, frame in
+                            layoutCapture.frames[element] = frame
+                        },
                         action: {}
                     )
                     .padding(20)
@@ -1076,12 +1276,90 @@ final class MembershipViewRenderingTests: XCTestCase {
 
                 XCTAssertEqual(image.size.width, fixture.width, accuracy: 1)
                 XCTAssertEqual(image.size.height, fixture.height, accuracy: 1)
+
+                let card = try? XCTUnwrap(layoutCapture.frames[.card], fixture.name)
+                let action = try? XCTUnwrap(layoutCapture.frames[.action], fixture.name)
+                if let card, let action {
+                    XCTAssertTrue(
+                        card.insetBy(dx: -0.5, dy: -0.5).contains(action),
+                        "\(fixture.name) action escaped the plan card"
+                    )
+                    XCTAssertGreaterThanOrEqual(
+                        action.height,
+                        43.5,
+                        "\(fixture.name) plan action is below the 44-point affordance"
+                    )
+                }
+
+                if fixture.presentation.proActivity != nil,
+                   let activity = try? XCTUnwrap(
+                       layoutCapture.frames[.proActivity],
+                       fixture.name
+                   ) {
+                    let rows = SettingsProActivityID.allCases.compactMap {
+                        layoutCapture.frames[.proActivityRow($0)]
+                    }
+                    XCTAssertEqual(rows.count, SettingsProActivityID.allCases.count)
+                    for row in rows {
+                        XCTAssertTrue(
+                            activity.insetBy(dx: -0.5, dy: -0.5).contains(row),
+                            "\(fixture.name) activity row escaped its status surface"
+                        )
+                        XCTAssertGreaterThan(row.height, 0, fixture.name)
+                    }
+                    for (first, second) in zip(rows, rows.dropFirst()) {
+                        XCTAssertLessThanOrEqual(
+                            first.maxY,
+                            second.minY + 0.5,
+                            "\(fixture.name) activity rows overlap"
+                        )
+                    }
+                }
+
                 let attachment = XCTAttachment(image: image)
                 attachment.name = fixture.name
                 attachment.lifetime = .keepAlways
                 add(attachment)
             }
         }
+    }
+
+    private func makeSettingsProActivity(
+        hasGoal: Bool = true,
+        hasReadyCheckpoint: Bool = true,
+        isMaintaining: Bool = false,
+        isBlocking: Bool = false,
+        studyFocusState: StudyFocusState? = .caughtUp,
+        nextFocusValue: String? = nil,
+        skillMapStatus: SkillMapStatus? = .reviewed,
+        hasPracticeHistory: Bool = true,
+        goalCount: Int = 2
+    ) -> SettingsProActivityPresentation {
+        let resolvedStudyFocusState: StudyFocusState?
+        if let nextFocusValue {
+            let goal = makeLSATGoal()
+            resolvedStudyFocusState = StudyFocusRecommendation(
+                question: makeQuestion(goal: goal, index: 99, topic: nextFocusValue),
+                skillID: nil,
+                skillName: nextFocusValue,
+                hasPracticeHistory: true
+            ).map(StudyFocusState.recommendation)
+        } else {
+            resolvedStudyFocusState = studyFocusState
+        }
+
+        return SettingsProActivityPresentation(
+            hasGoal: hasGoal,
+            hasReadyCheckpoint: hasReadyCheckpoint,
+            isMaintainingFreshCheckpoints: isMaintaining,
+            isQuestionGenerationBlockingPractice: isBlocking,
+            questionBankTargetCount: 80,
+            studyFocusState: resolvedStudyFocusState,
+            skillMapStatus: skillMapStatus,
+            hasPracticeHistory: hasPracticeHistory,
+            goalCount: goalCount,
+            goalLimit: 5
+        )
     }
 
     private func makeLegalLinks() throws -> LegalLinks {
@@ -1273,4 +1551,9 @@ private struct SettingsPlanRenderFixture {
     let colorScheme: ColorScheme
     let dynamicTypeSize: DynamicTypeSize
     var reduceMotion = false
+}
+
+@MainActor
+private final class SettingsPlanLayoutCapture {
+    var frames: [SettingsPlanLayoutElement: CGRect] = [:]
 }
