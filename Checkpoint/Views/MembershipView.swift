@@ -58,6 +58,7 @@ struct MembershipViewRenderConfiguration {
     let purchaseAction: (String?) -> Void
     let reloadAction: () -> Void
     let restoreAction: () -> Void
+    let checkPurchaseStatusAction: () -> Void
 
     init(
         planOptions: [MembershipPlanOption],
@@ -68,7 +69,8 @@ struct MembershipViewRenderConfiguration {
         layoutReporter: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)? = nil,
         purchaseAction: @escaping (String?) -> Void = { _ in },
         reloadAction: @escaping () -> Void = {},
-        restoreAction: @escaping () -> Void = {}
+        restoreAction: @escaping () -> Void = {},
+        checkPurchaseStatusAction: @escaping () -> Void = {}
     ) {
         self.planOptions = planOptions
         self.selectedPlanID = selectedPlanID
@@ -79,6 +81,7 @@ struct MembershipViewRenderConfiguration {
         self.purchaseAction = purchaseAction
         self.reloadAction = reloadAction
         self.restoreAction = restoreAction
+        self.checkPurchaseStatusAction = checkPurchaseStatusAction
     }
 }
 
@@ -138,6 +141,7 @@ struct MembershipView: View {
     private let renderPurchaseAction: ((String?) -> Void)?
     private let renderReloadAction: (() -> Void)?
     private let renderRestoreAction: (() -> Void)?
+    private let renderCheckPurchaseStatusAction: (() -> Void)?
     private let layoutReporter: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
@@ -167,6 +171,7 @@ struct MembershipView: View {
         renderPurchaseAction = renderConfiguration?.purchaseAction
         renderReloadAction = renderConfiguration?.reloadAction
         renderRestoreAction = renderConfiguration?.restoreAction
+        renderCheckPurchaseStatusAction = renderConfiguration?.checkPurchaseStatusAction
         layoutReporter = renderConfiguration?.layoutReporter
         _selectedProductID = State(initialValue: renderConfiguration?.selectedPlanID)
         _activationPresentation = State(initialValue: renderConfiguration?.activationPresentation)
@@ -987,17 +992,17 @@ struct MembershipView: View {
 
     private var restoreButton: some View {
         Button {
-            restorePurchases()
+            handleSecondaryStoreAction()
         } label: {
             HStack(spacing: 7) {
-                if purchaseController.isRestoringPurchases {
+                if checkoutPresentation.showsSecondaryProgress {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-                    Image(systemName: "arrow.clockwise")
+                    Image(systemName: checkoutPresentation.secondaryButtonSystemImage)
                 }
 
-                Text(checkoutPresentation.restoreButtonTitle)
+                Text(checkoutPresentation.secondaryButtonTitle)
             }
             .font(.footnote.weight(.semibold))
             .foregroundStyle(CheckpointTheme.teal)
@@ -1005,7 +1010,8 @@ struct MembershipView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .disabled(checkoutPresentation.isRestoreActionDisabled)
+        .accessibilityLabel(checkoutPresentation.secondaryButtonAccessibilityLabel)
+        .disabled(checkoutPresentation.isSecondaryActionDisabled)
     }
 
     private func purchaseNotice(_ notice: MembershipPurchaseNotice) -> some View {
@@ -1086,6 +1092,7 @@ struct MembershipView: View {
             selectedPlan: selectedOption,
             isLoadingPlans: purchaseController.isLoadingProducts,
             isRestoringPurchases: purchaseController.isRestoringPurchases,
+            isCheckingPurchaseStatus: purchaseController.isCheckingPurchaseStatus,
             isPurchasing: purchaseController.purchasingProductID != nil,
             notice: purchaseController.purchaseNotice
         )
@@ -1149,8 +1156,7 @@ struct MembershipView: View {
 
     private func loadEntitlements() async {
         await purchaseController.loadProducts()
-        let unlocked = await purchaseController.refreshEntitlements()
-        store.reconcileMembershipEntitlement(isUnlocked: unlocked)
+        _ = await purchaseController.refreshEntitlements()
     }
 
     private func handlePurchaseButton() {
@@ -1198,6 +1204,29 @@ struct MembershipView: View {
             let unlocked = await purchaseController.restorePurchases()
             if unlocked {
                 presentActivation(source: .restore)
+            }
+        }
+    }
+
+    private func handleSecondaryStoreAction() {
+        switch checkoutPresentation.secondaryAction {
+        case .restorePurchases:
+            restorePurchases()
+        case .checkPurchaseStatus:
+            checkPurchaseStatus()
+        }
+    }
+
+    private func checkPurchaseStatus() {
+        if let renderCheckPurchaseStatusAction {
+            renderCheckPurchaseStatusAction()
+            return
+        }
+
+        Task {
+            let unlocked = await purchaseController.checkPurchaseStatus()
+            if unlocked {
+                presentActivation(source: .purchase)
             }
         }
     }

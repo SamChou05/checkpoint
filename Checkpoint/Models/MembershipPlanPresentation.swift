@@ -147,6 +147,7 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
 
 enum MembershipPurchaseNotice: Equatable, Sendable {
     case pendingApproval
+    case pendingApprovalChecked
     case catalogUnavailable(String)
     case failure(String)
     case information(String)
@@ -155,6 +156,8 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
         switch self {
         case .pendingApproval:
             "Purchase is pending approval."
+        case .pendingApprovalChecked:
+            "Still awaiting App Store approval. Pro unlocks automatically when it’s confirmed."
         case .catalogUnavailable(let message),
              .failure(let message),
              .information(let message):
@@ -164,7 +167,7 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
 
     var tone: MembershipPurchaseNoticeTone {
         switch self {
-        case .pendingApproval:
+        case .pendingApproval, .pendingApprovalChecked:
             .pending
         case .catalogUnavailable, .failure:
             .failure
@@ -174,17 +177,19 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
     }
 
     var isPending: Bool {
-        if case .pendingApproval = self {
-            return true
+        switch self {
+        case .pendingApproval, .pendingApprovalChecked:
+            true
+        case .catalogUnavailable, .failure, .information:
+            false
         }
-        return false
     }
 
     var shouldDisplayWithoutSelectedPlan: Bool {
         switch self {
         case .failure, .information:
             true
-        case .pendingApproval, .catalogUnavailable:
+        case .pendingApproval, .pendingApprovalChecked, .catalogUnavailable:
             false
         }
     }
@@ -204,6 +209,11 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
     }
 }
 
+enum MembershipSecondaryStoreAction: Equatable, Sendable {
+    case restorePurchases
+    case checkPurchaseStatus
+}
+
 enum MembershipPurchaseNoticeTone: Equatable, Sendable {
     case pending
     case failure
@@ -214,11 +224,32 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
     let selectedPlan: MembershipPlanOption?
     let isLoadingPlans: Bool
     let isRestoringPurchases: Bool
+    let isCheckingPurchaseStatus: Bool
     let isPurchasing: Bool
     let notice: MembershipPurchaseNotice?
 
+    init(
+        selectedPlan: MembershipPlanOption?,
+        isLoadingPlans: Bool,
+        isRestoringPurchases: Bool,
+        isCheckingPurchaseStatus: Bool = false,
+        isPurchasing: Bool,
+        notice: MembershipPurchaseNotice?
+    ) {
+        self.selectedPlan = selectedPlan
+        self.isLoadingPlans = isLoadingPlans
+        self.isRestoringPurchases = isRestoringPurchases
+        self.isCheckingPurchaseStatus = isCheckingPurchaseStatus
+        self.isPurchasing = isPurchasing
+        self.notice = notice
+    }
+
     var isActionInProgress: Bool {
-        isLoadingPlans || isRestoringPurchases || isPurchasing || notice?.isPending == true
+        isLoadingPlans
+            || isRestoringPurchases
+            || isCheckingPurchaseStatus
+            || isPurchasing
+            || notice?.isPending == true
     }
 
     var isPrimaryActionDisabled: Bool {
@@ -229,8 +260,8 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         isLoadingPlans || isPurchasing
     }
 
-    var isRestoreActionDisabled: Bool {
-        isLoadingPlans || isRestoringPurchases || isPurchasing
+    var isSecondaryActionDisabled: Bool {
+        isLoadingPlans || isRestoringPurchases || isCheckingPurchaseStatus || isPurchasing
     }
 
     var shouldShowNoticeInPurchaseBar: Bool {
@@ -277,14 +308,40 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         return selectedPlan == nil ? "arrow.clockwise" : "sparkles"
     }
 
-    var restoreButtonTitle: String {
+    var secondaryAction: MembershipSecondaryStoreAction {
+        notice?.isPending == true ? .checkPurchaseStatus : .restorePurchases
+    }
+
+    var secondaryButtonTitle: String {
         if isRestoringPurchases {
             return "Restoring purchases"
+        }
+        if isCheckingPurchaseStatus {
+            return "Checking purchase status"
         }
         if notice?.isPending == true {
             return "Check purchase status"
         }
         return "Restore purchases"
+    }
+
+    var secondaryButtonSystemImage: String {
+        secondaryAction == .checkPurchaseStatus ? "clock.arrow.circlepath" : "arrow.clockwise"
+    }
+
+    var showsSecondaryProgress: Bool {
+        isRestoringPurchases || isCheckingPurchaseStatus
+    }
+
+    var secondaryButtonAccessibilityLabel: String {
+        switch secondaryAction {
+        case .restorePurchases:
+            isRestoringPurchases ? "Restoring App Store purchases, in progress" : "Restore App Store purchases"
+        case .checkPurchaseStatus:
+            isCheckingPurchaseStatus
+                ? "Checking App Store purchase status, in progress"
+                : "Check App Store purchase status"
+        }
     }
 }
 

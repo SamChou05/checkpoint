@@ -1153,8 +1153,7 @@ struct RootView: View {
 
     @MainActor
     private func refreshPlanAccessFromEntitlements() async {
-        let unlocked = await purchaseController.refreshEntitlements()
-        store.reconcileMembershipEntitlement(isUnlocked: unlocked)
+        _ = await purchaseController.refreshEntitlements()
     }
 
     private var membershipPresentationBinding: Binding<MembershipPresentationContext?> {
