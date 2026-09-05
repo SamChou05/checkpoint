@@ -337,6 +337,269 @@ struct CheckpointChoiceSelectionPolicy {
     }
 }
 
+enum CheckpointRunwayNodeState: Equatable {
+    case upcoming
+    case current
+    case answered(AnswerResult)
+}
+
+enum CheckpointRunwayNodeTone: Equatable {
+    case muted
+    case current
+    case success
+    case warning
+    case failure
+}
+
+struct CheckpointRunwayNodePresentation: Identifiable, Equatable {
+    let questionIndex: Int
+    let state: CheckpointRunwayNodeState
+    let isCurrentQuestion: Bool
+
+    var id: Int { questionIndex }
+    var questionNumber: Int { questionIndex + 1 }
+
+    var systemImage: String {
+        switch state {
+        case .upcoming:
+            return "\(questionNumber).circle"
+        case .current:
+            return "\(questionNumber).circle.fill"
+        case let .answered(result):
+            switch result {
+            case .correct:
+                return "checkmark.circle.fill"
+            case .partial:
+                return "circle.lefthalf.filled"
+            case .incorrect:
+                return "xmark.circle.fill"
+            case .unclear:
+                return "questionmark.circle.fill"
+            }
+        }
+    }
+
+    var tone: CheckpointRunwayNodeTone {
+        switch state {
+        case .upcoming:
+            return .muted
+        case .current:
+            return .current
+        case let .answered(result):
+            switch result {
+            case .correct:
+                return .success
+            case .partial, .unclear:
+                return .warning
+            case .incorrect:
+                return .failure
+            }
+        }
+    }
+
+}
+
+enum CheckpointRunwayStatusTone: Equatable {
+    case progress
+    case secured
+}
+
+struct CheckpointRunwayPresentation: Equatable {
+    let nodes: [CheckpointRunwayNodePresentation]
+    let currentQuestionNumber: Int
+    let questionCount: Int
+    let answeredQuestionCount: Int
+    let correctAnswerCount: Int
+    let requiredCorrectAnswerCount: Int
+    let statusText: String
+    let statusTone: CheckpointRunwayStatusTone
+    let accessibilityValue: String
+
+    init(
+        questionCount: Int,
+        currentQuestionIndex: Int,
+        answerResults: [AnswerResult],
+        requiredCorrectAnswerCount: Int
+    ) {
+        let safeQuestionCount = max(0, questionCount)
+        let safeCurrentQuestionIndex = min(
+            max(0, currentQuestionIndex),
+            max(0, safeQuestionCount - 1)
+        )
+        let safeAnswerResults = Array(answerResults.prefix(safeQuestionCount))
+        let safeRequiredCorrectAnswerCount = min(
+            max(0, requiredCorrectAnswerCount),
+            safeQuestionCount
+        )
+        let safeCorrectAnswerCount = safeAnswerResults.reduce(into: 0) { count, result in
+            if result == .correct {
+                count += 1
+            }
+        }
+        let remainingCorrectAnswers = max(
+            0,
+            safeRequiredCorrectAnswerCount - safeCorrectAnswerCount
+        )
+        let remainingQuestions = max(0, safeQuestionCount - safeAnswerResults.count)
+
+        self.questionCount = safeQuestionCount
+        currentQuestionNumber = safeQuestionCount == 0 ? 0 : safeCurrentQuestionIndex + 1
+        answeredQuestionCount = safeAnswerResults.count
+        correctAnswerCount = safeCorrectAnswerCount
+        self.requiredCorrectAnswerCount = safeRequiredCorrectAnswerCount
+
+        let nodePresentations = (0..<safeQuestionCount).map { questionIndex in
+            let state: CheckpointRunwayNodeState
+            if safeAnswerResults.indices.contains(questionIndex) {
+                state = .answered(safeAnswerResults[questionIndex])
+            } else if questionIndex == safeCurrentQuestionIndex {
+                state = .current
+            } else {
+                state = .upcoming
+            }
+            return CheckpointRunwayNodePresentation(
+                questionIndex: questionIndex,
+                state: state,
+                isCurrentQuestion: questionIndex == safeCurrentQuestionIndex
+            )
+        }
+        nodes = nodePresentations
+
+        if remainingCorrectAnswers == 0 {
+            statusTone = .secured
+            if remainingQuestions == 1 {
+                statusText = "Standard secured · Final question"
+            } else if remainingQuestions > 1 {
+                statusText = "Standard secured · \(remainingQuestions) questions left"
+            } else {
+                statusText = "Standard secured"
+            }
+        } else {
+            statusTone = .progress
+            statusText = remainingCorrectAnswers == 1
+                ? "1 more to clear"
+                : "\(remainingCorrectAnswers) more to clear"
+        }
+
+        let questionProgress = safeQuestionCount == 0
+            ? "No questions"
+            : "Question \(safeCurrentQuestionIndex + 1) of \(safeQuestionCount)"
+        let answerProgress = "\(safeAnswerResults.count) of \(safeQuestionCount) answered"
+        let correctProgress = "\(safeCorrectAnswerCount) of \(safeRequiredCorrectAnswerCount) correct"
+        let answerHistory = Self.answerHistoryAccessibilityText(in: nodePresentations)
+        accessibilityValue = "\(questionProgress). \(answerProgress). \(correctProgress). \(statusText).\(answerHistory)"
+    }
+
+    static func recording(
+        _ result: AnswerResult,
+        for questionIndex: Int,
+        in answerResults: [AnswerResult],
+        questionCount: Int
+    ) -> [AnswerResult] {
+        guard questionCount > 0 else { return [] }
+        let safeQuestionIndex = min(max(0, questionIndex), questionCount - 1)
+        var updatedResults = Array(answerResults.prefix(safeQuestionIndex))
+        updatedResults.append(result)
+        return updatedResults
+    }
+
+    private static func answerHistoryAccessibilityText(
+        in nodes: [CheckpointRunwayNodePresentation]
+    ) -> String {
+        let resultGroups: [(result: AnswerResult, label: String)] = [
+            (.correct, "Correct"),
+            (.partial, "Almost"),
+            (.incorrect, "Incorrect"),
+            (.unclear, "Needs review"),
+        ]
+        let descriptions = resultGroups.compactMap { group -> String? in
+            let questionNumbers = nodes.compactMap { node -> Int? in
+                guard node.state == .answered(group.result) else { return nil }
+                return node.questionNumber
+            }
+            guard !questionNumbers.isEmpty else { return nil }
+
+            let questionNoun = questionNumbers.count == 1 ? "question" : "questions"
+            let numberList = questionNumbers.map(String.init).joined(separator: ", ")
+            return "\(group.label): \(questionNoun) \(numberList)"
+        }
+
+        guard !descriptions.isEmpty else { return "" }
+        return " Answer history. \(descriptions.joined(separator: ". "))."
+    }
+}
+
+struct CheckpointRunwayLayoutMetrics: Equatable {
+    static let maximumNodesPerRow = 10
+    static let maximumRegularNodeCount = 6
+
+    let questionCount: Int
+
+    var usesCompactNodes: Bool {
+        questionCount > Self.maximumRegularNodeCount
+    }
+
+    var nodeDiameter: CGFloat {
+        usesCompactNodes ? 20 : 30
+    }
+
+    var nodeFrameDiameter: CGFloat {
+        usesCompactNodes ? 26 : 38
+    }
+
+    var connectorMinimumWidth: CGFloat {
+        usesCompactNodes ? 2 : 4
+    }
+
+    var connectorHorizontalPadding: CGFloat {
+        usesCompactNodes ? 0 : 1
+    }
+
+    func minimumRowWidth(nodeCount: Int) -> CGFloat {
+        let safeNodeCount = max(0, nodeCount)
+        guard safeNodeCount > 0 else { return 0 }
+        let connectorCount = max(0, safeNodeCount - 1)
+        let connectorWidth = connectorMinimumWidth + (connectorHorizontalPadding * 2)
+        return (CGFloat(safeNodeCount) * nodeFrameDiameter)
+            + (CGFloat(connectorCount) * connectorWidth)
+    }
+}
+
+enum CheckpointRunwayMotionStyle: Equatable {
+    case linked
+    case identity
+}
+
+struct CheckpointRunwayMotionPolicy {
+    let reduceMotion: Bool
+
+    var style: CheckpointRunwayMotionStyle {
+        reduceMotion ? .identity : .linked
+    }
+
+    var usesLinkedCurrentMarker: Bool {
+        !reduceMotion
+    }
+
+    var animation: Animation? {
+        CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+    }
+}
+
+enum CheckpointAnswerFeedbackSensoryTone: Equatable {
+    case success
+    case warning
+
+    init(result: AnswerResult) {
+        self = result == .correct ? .success : .warning
+    }
+}
+
+struct CheckpointAnswerFeedbackSignal: Equatable {
+    let sequence: Int
+    let tone: CheckpointAnswerFeedbackSensoryTone
+}
+
 enum CheckpointFeedbackDestination: Hashable {
     case answerFeedback
     case protectionActionFailure
@@ -350,6 +613,12 @@ enum CheckpointFeedbackDestination: Hashable {
 enum CheckpointAttemptInitialPresentation: Equatable {
     case unanswered
     case selected(questionIndex: Int, answer: String)
+    case reviewed(
+        questionIndex: Int,
+        previousResults: [AnswerResult],
+        answer: String,
+        result: AnswerResult
+    )
     case terminal(
         questionIndex: Int,
         correctAnswerCount: Int,
@@ -358,6 +627,113 @@ enum CheckpointAttemptInitialPresentation: Equatable {
         didPass: Bool,
         actionErrorMessage: String? = nil
     )
+}
+
+struct CheckpointClearanceRunway: View {
+    let presentation: CheckpointRunwayPresentation
+    let motionPolicy: CheckpointRunwayMotionPolicy
+    let currentMarkerNamespace: Namespace.ID
+
+    var body: some View {
+        VStack(spacing: nodeRows.count > 1 ? 8 : 0) {
+            ForEach(nodeRows.indices, id: \.self) { rowIndex in
+                runwayRow(nodeRows[rowIndex])
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .animation(motionPolicy.animation, value: presentation)
+        .accessibilityHidden(true)
+    }
+
+    private var nodeRows: [[CheckpointRunwayNodePresentation]] {
+        let nodes = presentation.nodes
+        let maximumNodesPerRow = CheckpointRunwayLayoutMetrics.maximumNodesPerRow
+        guard nodes.count > maximumNodesPerRow else { return nodes.isEmpty ? [] : [nodes] }
+
+        let rowCount = Int(ceil(Double(nodes.count) / Double(maximumNodesPerRow)))
+        let nodesPerRow = Int(ceil(Double(nodes.count) / Double(rowCount)))
+        return stride(from: 0, to: nodes.count, by: nodesPerRow).map { startIndex in
+            Array(nodes[startIndex..<min(startIndex + nodesPerRow, nodes.count)])
+        }
+    }
+
+    private var layoutMetrics: CheckpointRunwayLayoutMetrics {
+        CheckpointRunwayLayoutMetrics(questionCount: presentation.nodes.count)
+    }
+
+    private func runwayRow(_ nodes: [CheckpointRunwayNodePresentation]) -> some View {
+        HStack(spacing: 0) {
+            ForEach(Array(nodes.enumerated()), id: \.element.id) { offset, node in
+                runwayNode(node)
+
+                if offset < nodes.count - 1 {
+                    connector(after: node)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func runwayNode(_ node: CheckpointRunwayNodePresentation) -> some View {
+        ZStack {
+            if node.isCurrentQuestion {
+                currentMarker(for: node)
+            }
+
+            Image(systemName: node.systemImage)
+                .font(.system(size: layoutMetrics.nodeDiameter, weight: .semibold))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(tint(for: node.tone))
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffectsRemoved(motionPolicy.reduceMotion)
+        }
+        .frame(width: layoutMetrics.nodeFrameDiameter, height: layoutMetrics.nodeFrameDiameter)
+    }
+
+    @ViewBuilder
+    private func currentMarker(for node: CheckpointRunwayNodePresentation) -> some View {
+        let marker = Circle()
+            .stroke(CheckpointTheme.teal.opacity(0.48), lineWidth: 2)
+            .frame(
+                width: layoutMetrics.nodeDiameter + 7,
+                height: layoutMetrics.nodeDiameter + 7
+            )
+
+        if motionPolicy.usesLinkedCurrentMarker {
+            marker.matchedGeometryEffect(
+                id: "checkpoint-runway-current-marker",
+                in: currentMarkerNamespace
+            )
+        } else {
+            marker
+        }
+    }
+
+    private func connector(after node: CheckpointRunwayNodePresentation) -> some View {
+        Capsule()
+            .fill(connectorTint(after: node))
+            .frame(minWidth: layoutMetrics.connectorMinimumWidth, maxWidth: .infinity)
+            .frame(height: 2)
+            .padding(.horizontal, layoutMetrics.connectorHorizontalPadding)
+    }
+
+    private func connectorTint(after node: CheckpointRunwayNodePresentation) -> Color {
+        guard case .answered = node.state else { return CheckpointTheme.hairline }
+        return tint(for: node.tone).opacity(0.52)
+    }
+
+    private func tint(for tone: CheckpointRunwayNodeTone) -> Color {
+        switch tone {
+        case .muted:
+            return CheckpointTheme.muted.opacity(0.68)
+        case .current, .success:
+            return CheckpointTheme.teal
+        case .warning:
+            return CheckpointTheme.amber
+        case .failure:
+            return CheckpointTheme.coral
+        }
+    }
 }
 
 private struct CheckpointResolutionCard: View {
@@ -563,11 +939,13 @@ struct CheckpointAttemptView: View {
     @State private var correctAnswerCount = 0
     @State private var answer = ""
     @State private var result: AnswerResult = .correct
+    @State private var answerResults: [AnswerResult] = []
     @State private var checkedAnswer: CheckedCheckpointAnswer?
     @State private var protectionActionErrorMessage: String?
     @State private var protectionActionErrorSequence = 0
     @State private var feedbackSequence = 0
     @State private var choiceSelectionFeedbackSequence = 0
+    @State private var answerFeedbackSignal: CheckpointAnswerFeedbackSignal?
     @State private var resolutionFeedback: CheckpointResolutionFeedback?
     @State private var isExitConfirmationPresented = false
     @State private var hasFinalizedCheckpoint = false
@@ -576,6 +954,7 @@ struct CheckpointAttemptView: View {
     @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
     @Namespace private var choiceSelectionNamespace
+    @Namespace private var runwayCurrentMarkerNamespace
 
     init(
         store: CheckpointStore,
@@ -597,6 +976,39 @@ struct CheckpointAttemptView: View {
                 initialValue: Self.boundedQuestionIndex(questionIndex, in: session)
             )
             _answer = State(initialValue: answer)
+        case let .reviewed(questionIndex, previousResults, answer, result):
+            let boundedQuestionIndex = Self.boundedQuestionIndex(questionIndex, in: session)
+            let recordedResults = CheckpointRunwayPresentation.recording(
+                result,
+                for: boundedQuestionIndex,
+                in: previousResults,
+                questionCount: session.questions.count
+            )
+            let reviewedCorrectAnswerCount = recordedResults.filter { $0 == .correct }.count
+            let reviewedProgression = CheckpointAnswerProgression(
+                session: session,
+                correctAnswerCount: reviewedCorrectAnswerCount,
+                answeredQuestionCount: recordedResults.count
+            )
+            _currentQuestionIndex = State(initialValue: boundedQuestionIndex)
+            _correctAnswerCount = State(initialValue: reviewedCorrectAnswerCount)
+            _answer = State(initialValue: answer)
+            _result = State(initialValue: result)
+            _answerResults = State(initialValue: recordedResults)
+            _checkedAnswer = State(
+                initialValue: CheckedCheckpointAnswer(
+                    result: result,
+                    shouldFinish: reviewedProgression.shouldFinish,
+                    shouldPass: reviewedProgression.shouldPass,
+                    failureProtectionOutcome: reviewedProgression.shouldFinish
+                        && !reviewedProgression.shouldPass
+                        && session.purpose != .preview
+                        ? (store.hasReadyCheckpointSet
+                            ? .protectionRemainsOn
+                            : .protectionTurnedOffForUnavailableCheckpoint)
+                        : nil
+                )
+            )
         case let .terminal(
             questionIndex,
             correctAnswerCount,
@@ -752,44 +1164,40 @@ struct CheckpointAttemptView: View {
                   store.activeCheckpointRun?.sessionID == session.id else { return }
             hasFinalizedCheckpoint = workflow.abandon(session)
         }
-        .sensoryFeedback(.success, trigger: resolutionFeedback) { _, newValue in
-            newValue == .passed
-        }
-        .sensoryFeedback(.warning, trigger: resolutionFeedback) { _, newValue in
-            newValue == .failed
-        }
-        .sensoryFeedback(.selection, trigger: choiceSelectionFeedbackSequence)
-        .sensoryFeedback(.error, trigger: protectionActionErrorSequence)
+        .modifier(
+            CheckpointAttemptSensoryFeedbackModifier(
+                resolutionFeedback: resolutionFeedback,
+                answerFeedbackSignal: answerFeedbackSignal,
+                choiceSelectionFeedbackSequence: choiceSelectionFeedbackSequence,
+                protectionActionErrorSequence: protectionActionErrorSequence
+            )
+        )
     }
 
     private var progressHeader: some View {
         VStack(alignment: .leading, spacing: 11) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
-                Text("Question \(currentQuestionIndex + 1) of \(session.questions.count)")
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
-                    .contentTransition(.numericText())
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    questionProgressLabel
+                        .fixedSize(horizontal: true, vertical: true)
 
-                Spacer(minLength: 8)
+                    Spacer(minLength: 8)
 
-                Text(progressStatusText)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(progressStatusTint)
-                    .multilineTextAlignment(.trailing)
+                    progressStatusLabel
+                        .multilineTextAlignment(.trailing)
+                        .fixedSize(horizontal: true, vertical: true)
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    questionProgressLabel
+                    stackedProgressStatusLabel
+                }
             }
 
-            ProgressView(
-                value: Double(completedQuestionCount),
-                total: Double(max(session.questions.count, 1))
-            )
-            .tint(CheckpointTheme.teal)
-            .animation(
-                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-                value: completedQuestionCount
-            )
-            .accessibilityLabel("Checkpoint progress")
-            .accessibilityValue(
-                "\(completedQuestionCount) of \(session.questions.count) questions completed; \(correctAnswerCount) of \(session.unlockThreshold) correct"
+            CheckpointClearanceRunway(
+                presentation: runwayPresentation,
+                motionPolicy: runwayMotionPolicy,
+                currentMarkerNamespace: runwayCurrentMarkerNamespace
             )
 
             Text(sessionSubtitle)
@@ -797,6 +1205,33 @@ struct CheckpointAttemptView: View {
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Checkpoint progress")
+        .accessibilityValue("\(runwayPresentation.accessibilityValue) \(sessionSubtitle)")
+        .accessibilityAddTraits(.isHeader)
+    }
+
+    private var questionProgressLabel: some View {
+        Text("Question \(currentQuestionIndex + 1) of \(session.questions.count)")
+            .font(.headline)
+            .foregroundStyle(CheckpointTheme.text)
+            .contentTransition(.numericText())
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var progressStatusLabel: some View {
+        Text(runwayPresentation.statusText)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(progressStatusTint)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var stackedProgressStatusLabel: some View {
+        Text(runwayPresentation.statusText.replacingOccurrences(of: " · ", with: "\n"))
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(progressStatusTint)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     private var questionPanel: some View {
@@ -896,27 +1331,26 @@ struct CheckpointAttemptView: View {
         currentQuestionIndex + (checkedAnswer == nil ? 0 : 1)
     }
 
-    private var remainingCorrectAnswers: Int {
-        max(0, session.unlockThreshold - correctAnswerCount)
+    private var runwayPresentation: CheckpointRunwayPresentation {
+        CheckpointRunwayPresentation(
+            questionCount: session.questions.count,
+            currentQuestionIndex: currentQuestionIndex,
+            answerResults: answerResults,
+            requiredCorrectAnswerCount: session.unlockThreshold
+        )
     }
 
-    private var progressStatusText: String {
-        if let checkedAnswer, checkedAnswer.shouldFinish {
-            return checkedAnswer.shouldPass ? "Standard met" : "Standard not met"
-        }
-        if remainingCorrectAnswers == 0 {
-            return "Standard met"
-        }
-        return remainingCorrectAnswers == 1
-            ? "1 more to clear"
-            : "\(remainingCorrectAnswers) more to clear"
+    private var runwayMotionPolicy: CheckpointRunwayMotionPolicy {
+        CheckpointRunwayMotionPolicy(reduceMotion: reduceMotion)
     }
 
     private var progressStatusTint: Color {
-        guard let checkedAnswer, checkedAnswer.shouldFinish else {
-            return remainingCorrectAnswers == 0 ? CheckpointTheme.teal : CheckpointTheme.muted
+        switch runwayPresentation.statusTone {
+        case .progress:
+            return CheckpointTheme.muted
+        case .secured:
+            return CheckpointTheme.teal
         }
-        return checkedAnswer.shouldPass ? CheckpointTheme.teal : CheckpointTheme.coral
     }
 
     private var resolutionPresentation: CheckpointResolutionPresentation? {
@@ -1015,6 +1449,12 @@ struct CheckpointAttemptView: View {
     private func checkCurrentAnswer() {
         let result = submissionResult
         let updatedCorrectCount = correctAnswerCount + (result == .correct ? 1 : 0)
+        let updatedAnswerResults = CheckpointRunwayPresentation.recording(
+            result,
+            for: currentQuestionIndex,
+            in: answerResults,
+            questionCount: session.questions.count
+        )
 
         let answeredQuestionCount = currentQuestionIndex + 1
         let progression = CheckpointAnswerProgression(
@@ -1041,15 +1481,23 @@ struct CheckpointAttemptView: View {
         let updateAnimation = progression.shouldFinish
             ? resolutionMotionPolicy.animation
             : CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
+        let nextFeedbackSequence = feedbackSequence + 1
         withAnimation(updateAnimation) {
             correctAnswerCount = updatedCorrectCount
+            answerResults = updatedAnswerResults
             checkedAnswer = CheckedCheckpointAnswer(
                 result: result,
                 shouldFinish: progression.shouldFinish,
                 shouldPass: progression.shouldPass,
                 failureProtectionOutcome: failureProtectionOutcome
             )
-            feedbackSequence += 1
+            feedbackSequence = nextFeedbackSequence
+            if !progression.shouldFinish {
+                answerFeedbackSignal = CheckpointAnswerFeedbackSignal(
+                    sequence: nextFeedbackSequence,
+                    tone: CheckpointAnswerFeedbackSensoryTone(result: result)
+                )
+            }
         }
         if progression.shouldFinish {
             resolutionFeedback = progression.shouldPass ? .passed : .failed
@@ -1388,6 +1836,39 @@ private enum AttemptScrollAnchor: Hashable {
 private enum CheckpointResolutionFeedback: Hashable {
     case passed
     case failed
+}
+
+private struct CheckpointAttemptSensoryFeedbackModifier: ViewModifier {
+    let resolutionFeedback: CheckpointResolutionFeedback?
+    let answerFeedbackSignal: CheckpointAnswerFeedbackSignal?
+    let choiceSelectionFeedbackSequence: Int
+    let protectionActionErrorSequence: Int
+
+    func body(content: Content) -> some View {
+        content
+            .sensoryFeedback(trigger: resolutionFeedback) { _, newValue in
+                switch newValue {
+                case .passed:
+                    return .success
+                case .failed:
+                    return .warning
+                case nil:
+                    return nil
+                }
+            }
+            .sensoryFeedback(trigger: answerFeedbackSignal) { _, newValue in
+                switch newValue?.tone {
+                case .success:
+                    return .success
+                case .warning:
+                    return .warning
+                case nil:
+                    return nil
+                }
+            }
+            .sensoryFeedback(.selection, trigger: choiceSelectionFeedbackSequence)
+            .sensoryFeedback(.error, trigger: protectionActionErrorSequence)
+    }
 }
 
 private enum CheckpointChoiceState: Hashable {
