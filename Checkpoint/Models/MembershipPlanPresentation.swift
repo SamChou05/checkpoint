@@ -237,7 +237,7 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         selectedPlan != nil && notice != nil
     }
 
-    func buttonTitle(accessibilitySize _: Bool) -> String {
+    func buttonTitle(accessibilitySize _: Bool, compact: Bool = false) -> String {
         if notice?.isPending == true {
             return "Awaiting approval"
         }
@@ -246,6 +246,9 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         }
         guard let selectedPlan else {
             return "Reload App Store plans"
+        }
+        if compact {
+            return "Subscribe — \(selectedPlan.displayPrice)"
         }
         return "Subscribe — \(selectedPlan.displayPrice) \(selectedPlan.cadence)"
     }

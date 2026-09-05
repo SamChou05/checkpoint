@@ -253,6 +253,26 @@ enum MembershipPaywallSection: Equatable, Hashable, Sendable {
     case legal
 }
 
+enum MembershipPaywallViewportClass: Equatable, Sendable {
+    case constrained
+    case compact
+    case regular
+
+    // Measured inside NavigationStack, before the checkout safe-area inset is applied.
+    static let constrainedHeightUpperBound: CGFloat = 420
+    static let compactHeightUpperBound: CGFloat = 640
+
+    init(availableHeight: CGFloat) {
+        if availableHeight < Self.constrainedHeightUpperBound {
+            self = .constrained
+        } else if availableHeight < Self.compactHeightUpperBound {
+            self = .compact
+        } else {
+            self = .regular
+        }
+    }
+}
+
 struct MembershipPaywallPresentation: Equatable, Sendable {
     enum CheckoutPlacement: Equatable, Sendable {
         case sticky
@@ -260,21 +280,53 @@ struct MembershipPaywallPresentation: Equatable, Sendable {
         case hidden
     }
 
+    enum ContentDensity: Equatable, Sendable {
+        case compact
+        case regular
+    }
+
+    enum OfferIntroduction: Equatable, Sendable {
+        case none
+        case compact
+        case expanded
+    }
+
     let sectionOrder: [MembershipPaywallSection]
     let checkoutPlacement: CheckoutPlacement
     let laysOutPlansSideBySide: Bool
+    let contentDensity: ContentDensity
+    let offerIntroduction: OfferIntroduction
 
-    init(isMember: Bool, accessibilitySize: Bool, usesLargeText: Bool = false) {
+    init(
+        isMember: Bool,
+        accessibilitySize: Bool,
+        usesLargeText: Bool = false,
+        hasCheckoutNotice: Bool = false,
+        availableHeight: CGFloat = .infinity
+    ) {
+        let viewportClass = MembershipPaywallViewportClass(availableHeight: availableHeight)
+        let needsFlowingCheckout = accessibilitySize
+            || usesLargeText
+            || (viewportClass != .regular && hasCheckoutNotice)
+            || viewportClass == .constrained
+        let usesCompactOffer = viewportClass != .regular && !usesLargeText
+
         if isMember {
             sectionOrder = [.hero, .memberManagement, .benefits, .notice, .legal]
             checkoutPlacement = .hidden
             laysOutPlansSideBySide = false
+            contentDensity = .regular
+            offerIntroduction = .none
         } else {
-            sectionOrder = accessibilitySize
+            sectionOrder = needsFlowingCheckout || usesCompactOffer
                 ? [.offer, .valueProof, .benefits, .notice, .restore, .legal]
                 : [.hero, .offer, .valueProof, .benefits, .notice, .restore, .legal]
-            checkoutPlacement = accessibilitySize ? .afterPlanChoices : .sticky
+            checkoutPlacement = needsFlowingCheckout ? .afterPlanChoices : .sticky
             laysOutPlansSideBySide = !accessibilitySize && !usesLargeText
+            contentDensity = usesCompactOffer ? .compact : .regular
+            offerIntroduction = usesCompactOffer
+                ? .compact
+                : (needsFlowingCheckout ? .expanded : .none)
         }
     }
 

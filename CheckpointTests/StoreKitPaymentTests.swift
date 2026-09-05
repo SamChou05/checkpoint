@@ -227,6 +227,10 @@ final class StoreKitPaymentTests: XCTestCase {
             "Subscribe — $29.99 per year"
         )
         XCTAssertEqual(
+            presentation.buttonTitle(accessibilitySize: false, compact: true),
+            "Subscribe — $29.99"
+        )
+        XCTAssertEqual(
             presentation.buttonAccessibilityLabel,
             "Subscribe to Checkpoint Pro, Annual plan, $29.99 per year"
         )

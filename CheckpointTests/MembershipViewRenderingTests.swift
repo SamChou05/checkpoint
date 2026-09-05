@@ -138,6 +138,252 @@ final class MembershipViewRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testCompactPaywallKeepsTheCompleteSelectedOfferAboveStickyCheckout() throws {
+        let legalLinks = try makeLegalLinks()
+        let planOptions = try makePlanOptions()
+        let fixtures = [
+            MembershipCompactFirstFoldFixture(
+                name: "annual",
+                context: .overview,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            ),
+            MembershipCompactFirstFoldFixture(
+                name: "monthly-long-headline",
+                context: .feature(.largerQuestionBank),
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.monthly
+            ),
+            MembershipCompactFirstFoldFixture(
+                name: "long-localized-price",
+                context: .overview,
+                planOptions: try makeLongLocalizedPlanOptions(),
+                selectedPlanID: MembershipProductID.yearly
+            ),
+        ]
+
+        for fixture in fixtures {
+            let suiteName = "MembershipCompactFirstFold.\(fixture.name).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let capture = MembershipPaywallLayoutCapture()
+            let store = CheckpointStore(defaults: defaults)
+            let purchaseController = PurchaseController(grantsDebugTesterEntitlement: false)
+            let view = MembershipView(
+                context: fixture.context,
+                store: store,
+                purchaseController: purchaseController,
+                renderConfiguration: MembershipViewRenderConfiguration(
+                    planOptions: fixture.planOptions,
+                    selectedPlanID: fixture.selectedPlanID,
+                    legalLinks: legalLinks,
+                    reduceMotion: true,
+                    layoutReporter: { element, frame in
+                        capture.frames[element] = frame
+                    }
+                )
+            )
+            .environment(\.colorScheme, ColorScheme.light)
+            .environment(\.dynamicTypeSize, DynamicTypeSize.large)
+
+            let image = HostedViewRenderer.image(
+                for: view,
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                settlingTime: 0.15,
+                renderScale: 0.5
+            )
+
+            XCTAssertEqual(image.size.width, 320, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, 568, accuracy: 0.5, fixture.name)
+            XCTAssertNil(capture.frames[.section(.hero)], fixture.name)
+
+            let viewport = try XCTUnwrap(capture.frames[.viewport], fixture.name)
+            let offer = try XCTUnwrap(capture.frames[.section(.offer)], fixture.name)
+            let yearly = try XCTUnwrap(
+                capture.frames[.plan(MembershipProductID.yearly)],
+                fixture.name
+            )
+            let monthly = try XCTUnwrap(
+                capture.frames[.plan(MembershipProductID.monthly)],
+                fixture.name
+            )
+            let selectedSupport = try XCTUnwrap(
+                capture.frames[.selectedPlanSupport],
+                fixture.name
+            )
+            let disclosure = try XCTUnwrap(
+                capture.frames[.subscriptionDisclosure],
+                fixture.name
+            )
+            let checkoutBar = try XCTUnwrap(capture.frames[.checkoutBar], fixture.name)
+            let primaryAction = try XCTUnwrap(capture.frames[.primaryAction], fixture.name)
+            let visibleOfferFrames = [offer, yearly, monthly, selectedSupport, disclosure]
+
+            for frame in visibleOfferFrames + [viewport, checkoutBar, primaryAction] {
+                XCTAssertFalse(frame.isNull, fixture.name)
+                XCTAssertFalse(frame.isInfinite, fixture.name)
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+            }
+
+            XCTAssertEqual(yearly.width, monthly.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(yearly.width, 136, accuracy: 1, fixture.name)
+            for planFrame in [yearly, monthly] {
+                XCTAssertGreaterThanOrEqual(planFrame.height, 104, fixture.name)
+                XCTAssertLessThanOrEqual(planFrame.height, 122, fixture.name)
+                XCTAssertGreaterThanOrEqual(planFrame.minY, viewport.minY - 0.5, fixture.name)
+                XCTAssertLessThanOrEqual(
+                    planFrame.maxY,
+                    checkoutBar.minY - 6,
+                    "\(fixture.name) let a plan card run under the checkout bar"
+                )
+                XCTAssertTrue(
+                    planFrame.intersection(checkoutBar).isNull,
+                    "\(fixture.name) overlapped a plan card with checkout"
+                )
+            }
+
+            XCTAssertLessThanOrEqual(
+                selectedSupport.maxY,
+                checkoutBar.minY - 6,
+                "\(fixture.name) hid selected-plan context below checkout"
+            )
+            XCTAssertLessThanOrEqual(
+                disclosure.maxY,
+                checkoutBar.minY - 6,
+                "\(fixture.name) hid renewal disclosure below checkout"
+            )
+            XCTAssertTrue(offer.insetBy(dx: -0.5, dy: -0.5).contains(disclosure), fixture.name)
+            XCTAssertGreaterThanOrEqual(primaryAction.height, 50, fixture.name)
+            XCTAssertLessThanOrEqual(checkoutBar.height, 92, fixture.name)
+            XCTAssertTrue(
+                checkoutBar.insetBy(dx: -0.5, dy: -0.5).contains(primaryAction),
+                fixture.name
+            )
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = "membership-compact-first-fold-\(fixture.name)"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
+    func testPaywallFlowsCheckoutInlineForConstrainedLayoutsLargeTextNoticesAndAccessibility() throws {
+        let legalLinks = try makeLegalLinks()
+        let planOptions = try makePlanOptions()
+        let fixtures: [MembershipInlineCheckoutFixture] = [
+            MembershipInlineCheckoutFixture(
+                name: "compact-xxx-large",
+                dynamicTypeSize: .xxxLarge
+            ),
+            MembershipInlineCheckoutFixture(
+                name: "regular-xxx-large",
+                dynamicTypeSize: .xxxLarge,
+                width: 393,
+                height: 852
+            ),
+            MembershipInlineCheckoutFixture(
+                name: "compact-pending",
+                dynamicTypeSize: .large,
+                purchaseNotice: .pendingApproval
+            ),
+            MembershipInlineCheckoutFixture(
+                name: "compact-accessibility5",
+                dynamicTypeSize: .accessibility5
+            ),
+            MembershipInlineCheckoutFixture(
+                name: "landscape",
+                dynamicTypeSize: .large,
+                width: 852,
+                height: 393
+            ),
+        ]
+
+        for fixture in fixtures {
+            let suiteName = "MembershipInlineCheckout.\(fixture.name).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let capture = MembershipPaywallLayoutCapture()
+            let store = CheckpointStore(defaults: defaults)
+            let purchaseController = PurchaseController(grantsDebugTesterEntitlement: false)
+            purchaseController.purchaseNotice = fixture.purchaseNotice
+            let view = MembershipView(
+                context: .feature(.goalProfiles),
+                store: store,
+                purchaseController: purchaseController,
+                renderConfiguration: MembershipViewRenderConfiguration(
+                    planOptions: planOptions,
+                    selectedPlanID: MembershipProductID.yearly,
+                    legalLinks: legalLinks,
+                    reduceMotion: true,
+                    layoutReporter: { element, frame in
+                        capture.frames[element] = frame
+                    }
+                )
+            )
+            .environment(\.colorScheme, ColorScheme.dark)
+            .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+
+            let image = HostedViewRenderer.image(
+                for: view,
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: .dark,
+                settlingTime: 0.15,
+                renderScale: 0.5
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 1.1, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 1.1, fixture.name)
+            XCTAssertNil(capture.frames[.section(.hero)], fixture.name)
+            XCTAssertNil(capture.frames[.checkoutBar], fixture.name)
+
+            let offer = try XCTUnwrap(capture.frames[.section(.offer)], fixture.name)
+            let yearly = try XCTUnwrap(
+                capture.frames[.plan(MembershipProductID.yearly)],
+                fixture.name
+            )
+            let monthly = try XCTUnwrap(
+                capture.frames[.plan(MembershipProductID.monthly)],
+                fixture.name
+            )
+            let disclosure = try XCTUnwrap(
+                capture.frames[.subscriptionDisclosure],
+                fixture.name
+            )
+            let primaryAction = try XCTUnwrap(capture.frames[.primaryAction], fixture.name)
+            let valueProof = try XCTUnwrap(
+                capture.frames[.section(.valueProof)],
+                fixture.name
+            )
+
+            for planFrame in [yearly, monthly] {
+                XCTAssertGreaterThanOrEqual(planFrame.height, 44, fixture.name)
+                XCTAssertTrue(
+                    offer.insetBy(dx: -0.5, dy: -0.5).contains(planFrame),
+                    fixture.name
+                )
+            }
+            XCTAssertTrue(yearly.intersection(monthly).isNull, fixture.name)
+            XCTAssertGreaterThanOrEqual(primaryAction.height, 50, fixture.name)
+            XCTAssertGreaterThanOrEqual(primaryAction.minY, disclosure.maxY - 0.5, fixture.name)
+            XCTAssertGreaterThanOrEqual(valueProof.minY, primaryAction.maxY - 0.5, fixture.name)
+            XCTAssertTrue(
+                offer.insetBy(dx: -0.5, dy: -0.5).contains(primaryAction),
+                fixture.name
+            )
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = "membership-\(fixture.name)-inline-checkout"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
     func testMembershipOverviewRendersAcrossKeyLayouts() throws {
         let legalLinks = try makeLegalLinks()
         let planOptions = try makePlanOptions()
@@ -377,18 +623,70 @@ final class MembershipViewRenderingTests: XCTestCase {
             accessibilitySize: false,
             usesLargeText: true
         )
+        let compact = MembershipPaywallPresentation(
+            isMember: false,
+            accessibilitySize: false,
+            availableHeight: 639.5
+        )
+        let compactLargeText = MembershipPaywallPresentation(
+            isMember: false,
+            accessibilitySize: false,
+            usesLargeText: true,
+            availableHeight: 639.5
+        )
+        let compactNotice = MembershipPaywallPresentation(
+            isMember: false,
+            accessibilitySize: false,
+            hasCheckoutNotice: true,
+            availableHeight: 639.5
+        )
+        let constrained = MembershipPaywallPresentation(
+            isMember: false,
+            accessibilitySize: false,
+            availableHeight: 419.5
+        )
 
         XCTAssertEqual(regular.sectionOrder, regularOrder)
         XCTAssertEqual(regular.checkoutPlacement, .sticky)
         XCTAssertTrue(regular.laysOutPlansSideBySide)
+        XCTAssertEqual(regular.contentDensity, .regular)
+        XCTAssertEqual(regular.offerIntroduction, .none)
 
         XCTAssertEqual(accessible.sectionOrder, accessibleOrder)
         XCTAssertEqual(accessible.checkoutPlacement, .afterPlanChoices)
         XCTAssertFalse(accessible.laysOutPlansSideBySide)
+        XCTAssertEqual(accessible.contentDensity, .regular)
+        XCTAssertEqual(accessible.offerIntroduction, .expanded)
 
-        XCTAssertEqual(largeText.sectionOrder, regularOrder)
-        XCTAssertEqual(largeText.checkoutPlacement, .sticky)
+        XCTAssertEqual(largeText.sectionOrder, accessibleOrder)
+        XCTAssertEqual(largeText.checkoutPlacement, .afterPlanChoices)
         XCTAssertFalse(largeText.laysOutPlansSideBySide)
+        XCTAssertEqual(largeText.contentDensity, .regular)
+        XCTAssertEqual(largeText.offerIntroduction, .expanded)
+
+        XCTAssertEqual(compact.sectionOrder, accessibleOrder)
+        XCTAssertEqual(compact.checkoutPlacement, .sticky)
+        XCTAssertTrue(compact.laysOutPlansSideBySide)
+        XCTAssertEqual(compact.contentDensity, .compact)
+        XCTAssertEqual(compact.offerIntroduction, .compact)
+
+        XCTAssertEqual(compactLargeText.sectionOrder, accessibleOrder)
+        XCTAssertEqual(compactLargeText.checkoutPlacement, .afterPlanChoices)
+        XCTAssertFalse(compactLargeText.laysOutPlansSideBySide)
+        XCTAssertEqual(compactLargeText.contentDensity, .regular)
+        XCTAssertEqual(compactLargeText.offerIntroduction, .expanded)
+
+        XCTAssertEqual(compactNotice.sectionOrder, accessibleOrder)
+        XCTAssertEqual(compactNotice.checkoutPlacement, .afterPlanChoices)
+        XCTAssertTrue(compactNotice.laysOutPlansSideBySide)
+        XCTAssertEqual(compactNotice.contentDensity, .compact)
+        XCTAssertEqual(compactNotice.offerIntroduction, .compact)
+
+        XCTAssertEqual(constrained.sectionOrder, accessibleOrder)
+        XCTAssertEqual(constrained.checkoutPlacement, .afterPlanChoices)
+        XCTAssertTrue(constrained.laysOutPlansSideBySide)
+        XCTAssertEqual(constrained.contentDensity, .compact)
+        XCTAssertEqual(constrained.offerIntroduction, .compact)
 
         XCTAssertLessThan(
             regularOrder.firstIndex(of: .offer) ?? .max,
@@ -397,6 +695,29 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertLessThan(
             accessibleOrder.firstIndex(of: .offer) ?? .max,
             accessibleOrder.firstIndex(of: .valueProof) ?? .max
+        )
+    }
+
+    func testMembershipPaywallViewportClassUsesBoundedContainerHeight() {
+        XCTAssertEqual(
+            MembershipPaywallViewportClass(availableHeight: 419.5),
+            .constrained
+        )
+        XCTAssertEqual(
+            MembershipPaywallViewportClass(availableHeight: 420),
+            .compact
+        )
+        XCTAssertEqual(
+            MembershipPaywallViewportClass(availableHeight: 639.5),
+            .compact
+        )
+        XCTAssertEqual(
+            MembershipPaywallViewportClass(availableHeight: 640),
+            .regular
+        )
+        XCTAssertEqual(
+            MembershipPaywallViewportClass(availableHeight: .infinity),
+            .regular
         )
     }
 
@@ -409,6 +730,8 @@ final class MembershipViewRenderingTests: XCTestCase {
         )
         XCTAssertEqual(presentation.checkoutPlacement, .hidden)
         XCTAssertFalse(presentation.laysOutPlansSideBySide)
+        XCTAssertEqual(presentation.contentDensity, .regular)
+        XCTAssertEqual(presentation.offerIntroduction, .none)
         XCTAssertFalse(presentation.sectionOrder.contains(.offer))
         XCTAssertFalse(presentation.sectionOrder.contains(.valueProof))
         XCTAssertFalse(presentation.sectionOrder.contains(.restore))
@@ -791,6 +1114,29 @@ final class MembershipViewRenderingTests: XCTestCase {
         ).planOptions
     }
 
+    private func makeLongLocalizedPlanOptions() throws -> [MembershipPlanOption] {
+        MembershipCatalogPresentation(
+            storeProducts: [
+                MembershipStoreProduct(
+                    id: MembershipProductID.monthly,
+                    price: try XCTUnwrap(Decimal(string: "1234.56")),
+                    displayPrice: "US$1,234.56",
+                    currencyCode: "USD",
+                    locale: Locale(identifier: "en_US"),
+                    billingPeriod: .month
+                ),
+                MembershipStoreProduct(
+                    id: MembershipProductID.yearly,
+                    price: try XCTUnwrap(Decimal(string: "12345.67")),
+                    displayPrice: "US$12,345.67",
+                    currencyCode: "USD",
+                    locale: Locale(identifier: "en_US"),
+                    billingPeriod: .year
+                ),
+            ]
+        ).planOptions
+    }
+
     @MainActor
     private func renderMembershipFixtures(
         _ fixtures: [MembershipRenderFixture],
@@ -856,6 +1202,40 @@ final class MembershipViewRenderingTests: XCTestCase {
                 add(attachment)
             }
         }
+    }
+}
+
+@MainActor
+private final class MembershipPaywallLayoutCapture {
+    var frames: [MembershipPaywallLayoutElement: CGRect] = [:]
+}
+
+private struct MembershipCompactFirstFoldFixture {
+    let name: String
+    let context: MembershipPresentationContext
+    let planOptions: [MembershipPlanOption]
+    let selectedPlanID: String
+}
+
+private struct MembershipInlineCheckoutFixture {
+    let name: String
+    let dynamicTypeSize: DynamicTypeSize
+    var purchaseNotice: MembershipPurchaseNotice?
+    var width: CGFloat
+    var height: CGFloat
+
+    init(
+        name: String,
+        dynamicTypeSize: DynamicTypeSize,
+        purchaseNotice: MembershipPurchaseNotice? = nil,
+        width: CGFloat = 320,
+        height: CGFloat = 568
+    ) {
+        self.name = name
+        self.dynamicTypeSize = dynamicTypeSize
+        self.purchaseNotice = purchaseNotice
+        self.width = width
+        self.height = height
     }
 }
 

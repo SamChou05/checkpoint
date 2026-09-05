@@ -2,12 +2,59 @@ import Accessibility
 import StoreKit
 import SwiftUI
 
+enum MembershipPaywallLayoutElement: Hashable {
+    case viewport
+    case section(MembershipPaywallSection)
+    case plan(String)
+    case selectedPlanSupport
+    case subscriptionDisclosure
+    case checkoutBar
+    case primaryAction
+}
+
+private let membershipPaywallLayoutCoordinateSpaceName = "Checkpoint.MembershipPaywall.Layout"
+
+private struct MembershipPaywallLayoutFrameReporter: ViewModifier {
+    let element: MembershipPaywallLayoutElement
+    let report: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(
+                        in: .named(membershipPaywallLayoutCoordinateSpaceName)
+                    )
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportMembershipPaywallLayoutFrame(
+        _ element: MembershipPaywallLayoutElement,
+        using report: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(MembershipPaywallLayoutFrameReporter(element: element, report: report))
+    }
+}
+
 struct MembershipViewRenderConfiguration {
     let planOptions: [MembershipPlanOption]
     let selectedPlanID: String?
     let legalLinks: LegalLinks
     let reduceMotion: Bool
     let activationPresentation: MembershipActivationPresentation?
+    let layoutReporter: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)?
     let purchaseAction: (String?) -> Void
     let reloadAction: () -> Void
     let restoreAction: () -> Void
@@ -18,6 +65,7 @@ struct MembershipViewRenderConfiguration {
         legalLinks: LegalLinks,
         reduceMotion: Bool = false,
         activationPresentation: MembershipActivationPresentation? = nil,
+        layoutReporter: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)? = nil,
         purchaseAction: @escaping (String?) -> Void = { _ in },
         reloadAction: @escaping () -> Void = {},
         restoreAction: @escaping () -> Void = {}
@@ -27,6 +75,7 @@ struct MembershipViewRenderConfiguration {
         self.legalLinks = legalLinks
         self.reduceMotion = reduceMotion
         self.activationPresentation = activationPresentation
+        self.layoutReporter = layoutReporter
         self.purchaseAction = purchaseAction
         self.reloadAction = reloadAction
         self.restoreAction = restoreAction
@@ -89,6 +138,7 @@ struct MembershipView: View {
     private let renderPurchaseAction: ((String?) -> Void)?
     private let renderReloadAction: (() -> Void)?
     private let renderRestoreAction: (() -> Void)?
+    private let layoutReporter: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
@@ -117,6 +167,7 @@ struct MembershipView: View {
         renderPurchaseAction = renderConfiguration?.purchaseAction
         renderReloadAction = renderConfiguration?.reloadAction
         renderRestoreAction = renderConfiguration?.restoreAction
+        layoutReporter = renderConfiguration?.layoutReporter
         _selectedProductID = State(initialValue: renderConfiguration?.selectedPlanID)
         _activationPresentation = State(initialValue: renderConfiguration?.activationPresentation)
     }
@@ -127,23 +178,7 @@ struct MembershipView: View {
                 if let activationPresentation {
                     membershipActivationContent(activationPresentation)
                 } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
-                            ForEach(paywallPresentation.sectionOrder, id: \.self) { section in
-                                paywallSection(section)
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
-                        .padding(.bottom, 24)
-                    }
-                    .scrollDismissesKeyboard(.interactively)
-                    .checkpointScreenBackground()
-                    .safeAreaInset(edge: .bottom, spacing: 0) {
-                        if paywallPresentation.checkoutPlacement == .sticky {
-                            purchaseBar
-                        }
-                    }
+                    paywallContent
                 }
             }
             .navigationTitle(navigationTitle)
@@ -187,6 +222,7 @@ struct MembershipView: View {
             .sensoryFeedback(.selection, trigger: selectionFeedbackSequence)
             .sensoryFeedback(.success, trigger: activationFeedbackSequence)
         }
+        .coordinateSpace(name: membershipPaywallLayoutCoordinateSpaceName)
     }
 
     private var navigationTitle: String {
@@ -194,6 +230,36 @@ struct MembershipView: View {
             return "Pro unlocked"
         }
         return store.isMember ? "Your Plan" : "Checkpoint Pro"
+    }
+
+    private var paywallContent: some View {
+        GeometryReader { proxy in
+            let presentation = paywallPresentation(availableHeight: proxy.size.height)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: presentation.contentDensity == .compact ? 13 : 16) {
+                    ForEach(presentation.sectionOrder, id: \.self) { section in
+                        paywallSection(section, presentation: presentation)
+                            .reportMembershipPaywallLayoutFrame(
+                                .section(section),
+                                using: layoutReporter
+                            )
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, presentation.contentDensity == .compact ? 9 : 12)
+                .padding(.bottom, 24)
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .checkpointScreenBackground()
+            .reportMembershipPaywallLayoutFrame(.viewport, using: layoutReporter)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if presentation.checkoutPlacement == .sticky {
+                    purchaseBar(presentation: presentation)
+                        .reportMembershipPaywallLayoutFrame(.checkoutBar, using: layoutReporter)
+                }
+            }
+        }
     }
 
     private func membershipActivationContent(
@@ -447,12 +513,15 @@ struct MembershipView: View {
     }
 
     @ViewBuilder
-    private func paywallSection(_ section: MembershipPaywallSection) -> some View {
+    private func paywallSection(
+        _ section: MembershipPaywallSection,
+        presentation: MembershipPaywallPresentation
+    ) -> some View {
         switch section {
         case .hero:
             proHero
         case .offer:
-            planSelection
+            planSelection(presentation: presentation)
         case .memberManagement:
             memberManagement
         case .valueProof:
@@ -610,10 +679,14 @@ struct MembershipView: View {
             .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
-    private var planSelection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if paywallPresentation.checkoutPlacement == .afterPlanChoices {
-                accessibilityOfferIntro
+    private func planSelection(presentation: MembershipPaywallPresentation) -> some View {
+        let usesCompactDensity = presentation.contentDensity == .compact
+
+        return VStack(alignment: .leading, spacing: usesCompactDensity ? 9 : 12) {
+            if presentation.offerIntroduction == .compact {
+                compactOfferIntro
+            } else if presentation.offerIntroduction == .expanded {
+                expandedOfferIntro
             }
 
             Text("Choose your plan")
@@ -631,25 +704,30 @@ struct MembershipView: View {
                 }
                 .frame(maxWidth: .infinity, minHeight: 88)
 
-                if paywallPresentation.checkoutPlacement == .afterPlanChoices {
+                if presentation.checkoutPlacement == .afterPlanChoices {
                     inlinePurchaseAction
                 }
             } else if planOptions.isEmpty {
                 unavailablePlans
 
-                if paywallPresentation.checkoutPlacement == .afterPlanChoices {
+                if presentation.checkoutPlacement == .afterPlanChoices {
                     inlinePurchaseAction
                 }
-            } else if paywallPresentation.laysOutPlansSideBySide {
-                HStack(alignment: .top, spacing: 10) {
+            } else if presentation.laysOutPlansSideBySide {
+                HStack(alignment: .top, spacing: usesCompactDensity ? 8 : 10) {
                     ForEach(planOptions) { option in
                         MembershipPlanRow(
                             option: option,
                             isSelected: selectedProductID == option.id,
-                            style: .compactCard
+                            style: usesCompactDensity ? .compactHeightCard : .compactCard,
+                            reduceMotion: reduceMotion
                         ) {
                             selectPlan(option.id)
                         }
+                        .reportMembershipPaywallLayoutFrame(
+                            .plan(option.id),
+                            using: layoutReporter
+                        )
                     }
                 }
                 .disabled(isPurchaseActionInProgress)
@@ -661,7 +739,19 @@ struct MembershipView: View {
 
                 if let selectedOption {
                     selectedOfferSupport(selectedOption)
+                        .reportMembershipPaywallLayoutFrame(
+                            .selectedPlanSupport,
+                            using: layoutReporter
+                        )
                     subscriptionDisclosure
+                        .reportMembershipPaywallLayoutFrame(
+                            .subscriptionDisclosure,
+                            using: layoutReporter
+                        )
+
+                    if presentation.checkoutPlacement == .afterPlanChoices {
+                        inlinePurchaseAction
+                    }
                 }
             } else {
                 VStack(alignment: .leading, spacing: 12) {
@@ -670,13 +760,18 @@ struct MembershipView: View {
                             MembershipPlanRow(
                                 option: option,
                                 isSelected: selectedProductID == option.id,
-                                style: paywallPresentation.checkoutPlacement == .afterPlanChoices
+                                style: presentation.checkoutPlacement == .afterPlanChoices
                                     && selectedProductID != option.id
                                         ? .compactAlternativeRow
-                                        : .expandedRow
+                                        : .expandedRow,
+                                reduceMotion: reduceMotion
                             ) {
                                 selectPlan(option.id)
                             }
+                            .reportMembershipPaywallLayoutFrame(
+                                .plan(option.id),
+                                using: layoutReporter
+                            )
                         }
                     }
                     .disabled(isPurchaseActionInProgress)
@@ -688,17 +783,46 @@ struct MembershipView: View {
 
                     if selectedOption != nil {
                         subscriptionDisclosure
+                            .reportMembershipPaywallLayoutFrame(
+                                .subscriptionDisclosure,
+                                using: layoutReporter
+                            )
 
-                        if paywallPresentation.checkoutPlacement == .afterPlanChoices {
+                        if presentation.checkoutPlacement == .afterPlanChoices {
                             inlinePurchaseAction
                         }
                     }
                 }
             }
         }
+        .padding(.bottom, usesCompactDensity ? 28 : 0)
     }
 
-    private var accessibilityOfferIntro: some View {
+    private var compactOfferIntro: some View {
+        CheckpointHeroSurface(
+            glowColor: CheckpointTheme.mint,
+            glowOpacity: 0.08,
+            glowDiameter: 92,
+            glowBlurRadius: 8,
+            glowOffset: CGSize(width: 52, height: -48),
+            contentPadding: 11
+        ) {
+            VStack(alignment: .leading, spacing: 5) {
+                Label(context.offerLabel, systemImage: "sparkles")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.mint)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(context.membershipHeadline)
+                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .foregroundStyle(proText)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var expandedOfferIntro: some View {
         CheckpointHeroSurface(
             glowColor: CheckpointTheme.mint,
             glowOpacity: 0.07,
@@ -801,7 +925,7 @@ struct MembershipView: View {
         }
     }
 
-    private var purchaseBar: some View {
+    private func purchaseBar(presentation: MembershipPaywallPresentation) -> some View {
         VStack(spacing: 8) {
             Divider()
                 .overlay(CheckpointTheme.hairline)
@@ -812,7 +936,7 @@ struct MembershipView: View {
                     .padding(.horizontal, 20)
             }
 
-            purchaseActionButton
+            purchaseActionButton(usesCompactTitle: presentation.contentDensity == .compact)
                 .padding(.horizontal, 20)
                 .padding(.top, selectedOption == nil ? 2 : 0)
 
@@ -833,18 +957,19 @@ struct MembershipView: View {
                 purchaseNotice(notice)
             }
 
-            purchaseActionButton
+            purchaseActionButton(usesCompactTitle: false)
         }
     }
 
-    private var purchaseActionButton: some View {
+    private func purchaseActionButton(usesCompactTitle: Bool) -> some View {
         PrimaryActionButton(
-            title: purchaseButtonTitle,
+            title: purchaseButtonTitle(usesCompactTitle: usesCompactTitle),
             systemImage: purchaseButtonSystemImage,
             isLoading: checkoutPresentation.showsPrimaryProgress
         ) {
             handlePurchaseButton()
         }
+        .reportMembershipPaywallLayoutFrame(.primaryAction, using: layoutReporter)
         .accessibilityLabel(checkoutPresentation.buttonAccessibilityLabel)
         .disabled(checkoutPresentation.isPrimaryActionDisabled)
     }
@@ -931,19 +1056,24 @@ struct MembershipView: View {
         purchaseController.products.first { $0.id == selectedProductID }
     }
 
-    private var purchaseButtonTitle: String {
-        checkoutPresentation.buttonTitle(accessibilitySize: dynamicTypeSize.isAccessibilitySize)
+    private func purchaseButtonTitle(usesCompactTitle: Bool) -> String {
+        checkoutPresentation.buttonTitle(
+            accessibilitySize: dynamicTypeSize.isAccessibilitySize,
+            compact: usesCompactTitle
+        )
     }
 
     private var purchaseButtonSystemImage: String {
         checkoutPresentation.buttonSystemImage
     }
 
-    private var paywallPresentation: MembershipPaywallPresentation {
+    private func paywallPresentation(availableHeight: CGFloat) -> MembershipPaywallPresentation {
         MembershipPaywallPresentation(
             isMember: store.isMember,
             accessibilitySize: dynamicTypeSize.isAccessibilitySize,
-            usesLargeText: dynamicTypeSize >= .xLarge
+            usesLargeText: dynamicTypeSize >= .xLarge,
+            hasCheckoutNotice: checkoutPresentation.shouldShowNoticeInPurchaseBar,
+            availableHeight: availableHeight
         )
     }
 
@@ -1343,6 +1473,7 @@ struct MembershipValuePreview: View {
 
 private enum MembershipPlanRowStyle: Equatable {
     case compactCard
+    case compactHeightCard
     case compactAlternativeRow
     case expandedRow
 }
@@ -1351,18 +1482,18 @@ private struct MembershipPlanRow: View {
     let option: MembershipPlanOption
     let isSelected: Bool
     let style: MembershipPlanRowStyle
+    let reduceMotion: Bool
     let action: () -> Void
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Button(action: action) {
             planRowContent
-                .padding(style == .compactCard ? 12 : 15)
+                .padding(planPadding)
                 .frame(
                     maxWidth: .infinity,
-                    minHeight: style == .compactCard ? 118 : nil,
+                    minHeight: compactCardMinimumHeight,
                     alignment: .leading
                 )
                 .background(
@@ -1392,7 +1523,7 @@ private struct MembershipPlanRow: View {
 
     @ViewBuilder
     private var planRowContent: some View {
-        if style == .compactCard {
+        if style == .compactCard || style == .compactHeightCard {
             compactCardContent
         } else if style == .compactAlternativeRow {
             compactAlternativeContent
@@ -1409,6 +1540,28 @@ private struct MembershipPlanRow: View {
 
                 expandedContent
             }
+        }
+    }
+
+    private var planPadding: CGFloat {
+        switch style {
+        case .compactCard:
+            12
+        case .compactHeightCard:
+            10
+        case .compactAlternativeRow, .expandedRow:
+            15
+        }
+    }
+
+    private var compactCardMinimumHeight: CGFloat? {
+        switch style {
+        case .compactCard:
+            118
+        case .compactHeightCard:
+            104
+        case .compactAlternativeRow, .expandedRow:
+            nil
         }
     }
 
@@ -1440,24 +1593,51 @@ private struct MembershipPlanRow: View {
 
             optionTitleText
 
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(option.displayPrice)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.text)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
-
-                Spacer(minLength: 2)
-
-                Text(option.cadence)
-                    .font(.caption2)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
-            }
+            compactPricePresentation
 
             optionSavings
         }
+    }
+
+    @ViewBuilder
+    private var compactPricePresentation: some View {
+        if style == .compactHeightCard {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    compactPriceText
+                        .fixedSize(horizontal: true, vertical: false)
+                    compactCadenceText
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                .fixedSize(horizontal: true, vertical: false)
+
+                compactPriceText
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                compactPriceText
+                Spacer(minLength: 2)
+                compactCadenceText
+                    .minimumScaleFactor(0.75)
+            }
+        }
+    }
+
+    private var compactPriceText: some View {
+        Text(option.displayPrice)
+            .font(.headline.weight(.bold))
+            .foregroundStyle(CheckpointTheme.text)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .allowsTightening(true)
+    }
+
+    private var compactCadenceText: some View {
+        Text(option.cadence)
+            .font(.caption2)
+            .foregroundStyle(CheckpointTheme.muted)
+            .lineLimit(1)
     }
 
     private var expandedContent: some View {
@@ -1494,6 +1674,7 @@ private struct MembershipPlanRow: View {
             .foregroundStyle(isSelected ? CheckpointTheme.teal : CheckpointTheme.muted)
             .frame(width: 22)
             .contentTransition(.symbolEffect(.replace))
+            .symbolEffectsRemoved(reduceMotion)
             .accessibilityHidden(true)
     }
 
