@@ -157,7 +157,7 @@ struct CompetencyRow: View {
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(CheckpointPressButtonStyle())
+            .buttonStyle(CheckpointPressButtonStyle(role: .surface))
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(competency.topic)
             .accessibilityValue(accessibilityValue)

@@ -1087,7 +1087,7 @@ struct CompetencyView: View {
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             }
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Focus Wins")
         .accessibilityValue(presentation.accessibilityValue)
@@ -1469,7 +1469,7 @@ struct CompetencyView: View {
                 }
             }
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityLabel("Next Focus, Pro. Know what to practice next.")
         .accessibilityHint("Opens Checkpoint Pro")
     }

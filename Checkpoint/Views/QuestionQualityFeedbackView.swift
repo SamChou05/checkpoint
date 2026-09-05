@@ -288,7 +288,7 @@ struct QuestionQualityFeedbackView: View {
                     )
             }
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(presentation.title)
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
@@ -497,7 +497,7 @@ struct QuestionRemovalControl: View {
                     )
             }
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(presentation.accessibilityLabel)
         .accessibilityHint(presentation.accessibilityHint)

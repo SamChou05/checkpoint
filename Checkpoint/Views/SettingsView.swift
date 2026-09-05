@@ -726,7 +726,7 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .disabled(presentation.isCurrent)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(presentation.title)
@@ -767,7 +767,7 @@ struct SettingsView: View {
             .foregroundStyle(CheckpointTheme.coral)
             .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
         .accessibilityLabel("Delete \(displayTitle)")
     }
 
@@ -784,7 +784,7 @@ struct SettingsView: View {
                 .padding(.horizontal, 12)
                 .background(CheckpointTheme.coral.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
     }
 
     private func goalSwitchOption(

@@ -23,6 +23,81 @@ final class CheckpointThemeTests: XCTestCase {
         XCTAssertNil(reduced.animation)
     }
 
+    func testPressMotionPolicyUsesSpatialFeedbackOnlyForStandardInteraction() {
+        let idleEffect = CheckpointPressVisualEffect(scale: 1, offsetY: 0, opacity: 1)
+        let standardExpectations: [(
+            name: String,
+            role: CheckpointPressRole,
+            pressedEffect: CheckpointPressVisualEffect
+        )] = [
+            (
+                "control",
+                .control,
+                CheckpointPressVisualEffect(scale: 0.985, offsetY: 0, opacity: 0.88)
+            ),
+            (
+                "surface",
+                .surface,
+                CheckpointPressVisualEffect(scale: 0.992, offsetY: 1, opacity: 0.92)
+            )
+        ]
+
+        for expectation in standardExpectations {
+            let policy = CheckpointPressMotionPolicy(
+                role: expectation.role,
+                reduceMotion: false,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            )
+
+            XCTAssertEqual(policy.style, .spatial, expectation.name)
+            XCTAssertNotNil(policy.animation, expectation.name)
+            XCTAssertEqual(policy.visualEffect(isPressed: false), idleEffect, expectation.name)
+            XCTAssertEqual(
+                policy.visualEffect(isPressed: true),
+                expectation.pressedEffect,
+                expectation.name
+            )
+        }
+
+        let assistiveScenarios: [(
+            name: String,
+            reduceMotion: Bool,
+            voiceOverEnabled: Bool,
+            switchControlEnabled: Bool
+        )] = [
+            ("Reduce Motion", true, false, false),
+            ("VoiceOver", false, true, false),
+            ("Switch Control", false, false, true),
+            ("combined assistive settings", true, true, true)
+        ]
+
+        for scenario in assistiveScenarios {
+            for role in [CheckpointPressRole.control, .surface] {
+                let policy = CheckpointPressMotionPolicy(
+                    role: role,
+                    reduceMotion: scenario.reduceMotion,
+                    voiceOverEnabled: scenario.voiceOverEnabled,
+                    switchControlEnabled: scenario.switchControlEnabled
+                )
+                let pressedEffect = policy.visualEffect(isPressed: true)
+
+                XCTAssertEqual(policy.style, .tonalOnly, scenario.name)
+                XCTAssertNil(policy.animation, scenario.name)
+                XCTAssertEqual(policy.visualEffect(isPressed: false), idleEffect, scenario.name)
+                XCTAssertEqual(pressedEffect.scale, 1, accuracy: 0.0001, scenario.name)
+                XCTAssertEqual(pressedEffect.offsetY, 0, accuracy: 0.0001, scenario.name)
+                XCTAssertEqual(
+                    pressedEffect.opacity,
+                    role == .control ? 0.88 : 0.92,
+                    accuracy: 0.0001,
+                    scenario.name
+                )
+                XCTAssertLessThan(pressedEffect.opacity, idleEffect.opacity, scenario.name)
+            }
+        }
+    }
+
     @MainActor
     func testPrimaryActionButtonsPreserveGeometryAcrossIconStates() throws {
         let fixtures = [
@@ -62,6 +137,73 @@ final class CheckpointThemeTests: XCTestCase {
             XCTAssertEqual(idleSize.height, loadingSize.height, accuracy: 0.5, fixture.name)
             XCTAssertEqual(idleSize.width, changedSymbolSize.width, accuracy: 0.5, fixture.name)
             XCTAssertEqual(idleSize.height, changedSymbolSize.height, accuracy: 0.5, fixture.name)
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
+    func testPressEffectsPreserveLogicalGeometryAcrossFrozenStates() throws {
+        let fixtures = [
+            PressEffectRenderFixture(
+                name: "press-effects-compact-light",
+                width: 393,
+                height: 780,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            ),
+            PressEffectRenderFixture(
+                name: "press-effects-accessibility5-dark",
+                width: 393,
+                height: 1_900,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                voiceOverEnabled: true,
+                switchControlEnabled: false
+            )
+        ]
+
+        for fixture in fixtures {
+            let capture = PressEffectSizeCapture()
+            let image = HostedViewRenderer.image(
+                for: PressEffectRenderScene(
+                    capture: capture,
+                    reduceMotion: fixture.reduceMotion,
+                    voiceOverEnabled: fixture.voiceOverEnabled,
+                    switchControlEnabled: fixture.switchControlEnabled,
+                    showsSurfaceFirst: fixture.dynamicTypeSize.isAccessibilitySize
+                )
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.2,
+                renderScale: 1
+            )
+
+            for pair in [
+                (
+                    idle: PressEffectCaptureKey.controlIdle,
+                    pressed: PressEffectCaptureKey.controlPressed
+                ),
+                (
+                    idle: PressEffectCaptureKey.surfaceIdle,
+                    pressed: PressEffectCaptureKey.surfacePressed
+                )
+            ] {
+                let idleSize = try XCTUnwrap(capture.sizes[pair.idle], fixture.name)
+                let pressedSize = try XCTUnwrap(capture.sizes[pair.pressed], fixture.name)
+                XCTAssertEqual(idleSize.width, pressedSize.width, accuracy: 0.5, fixture.name)
+                XCTAssertEqual(idleSize.height, pressedSize.height, accuracy: 0.5, fixture.name)
+            }
 
             let attachment = XCTAttachment(image: image)
             attachment.name = fixture.name
@@ -338,6 +480,174 @@ private struct PrimaryActionRenderScene: View {
                         capture.sizes[key] = proxy.size
                     }
             }
+        }
+    }
+}
+
+private struct PressEffectRenderFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let reduceMotion: Bool
+    let voiceOverEnabled: Bool
+    let switchControlEnabled: Bool
+}
+
+private enum PressEffectCaptureKey: Hashable {
+    case controlIdle
+    case controlPressed
+    case surfaceIdle
+    case surfacePressed
+}
+
+@MainActor
+private final class PressEffectSizeCapture {
+    var sizes: [PressEffectCaptureKey: CGSize] = [:]
+}
+
+private struct PressEffectRenderScene: View {
+    let capture: PressEffectSizeCapture
+    let reduceMotion: Bool
+    let voiceOverEnabled: Bool
+    let switchControlEnabled: Bool
+    let showsSurfaceFirst: Bool
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("PRESS RESPONSE")
+                        .font(.caption2.weight(.bold))
+                        .tracking(1)
+                        .foregroundStyle(CheckpointTheme.teal)
+
+                    Text("Frozen interaction states")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    Text("The feedback changes visually without changing the control's logical layout.")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if showsSurfaceFirst {
+                    surfaceComparison
+                    controlComparison
+                } else {
+                    controlComparison
+                    surfaceComparison
+                }
+            }
+            .padding(20)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .checkpointScreenBackground()
+    }
+
+    private var controlComparison: some View {
+        comparison(
+            title: "Primary control",
+            role: .control,
+            idleKey: .controlIdle,
+            pressedKey: .controlPressed
+        )
+    }
+
+    private var surfaceComparison: some View {
+        comparison(
+            title: "Interactive surface",
+            role: .surface,
+            idleKey: .surfaceIdle,
+            pressedKey: .surfacePressed
+        )
+    }
+
+    private func comparison(
+        title: String,
+        role: CheckpointPressRole,
+        idleKey: PressEffectCaptureKey,
+        pressedKey: PressEffectCaptureKey
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+
+            frozenState(label: "Idle", key: idleKey, role: role, isPressed: false)
+            frozenState(label: "Pressed", key: pressedKey, role: role, isPressed: true)
+        }
+    }
+
+    private func frozenState(
+        label: String,
+        key: PressEffectCaptureKey,
+        role: CheckpointPressRole,
+        isPressed: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(label.uppercased())
+                .font(.caption2.weight(.bold))
+                .tracking(0.8)
+                .foregroundStyle(CheckpointTheme.muted)
+
+            pressTarget(role: role)
+                .modifier(
+                    CheckpointPressEffect(
+                        isPressed: isPressed,
+                        policy: CheckpointPressMotionPolicy(
+                            role: role,
+                            reduceMotion: reduceMotion,
+                            voiceOverEnabled: voiceOverEnabled,
+                            switchControlEnabled: switchControlEnabled
+                        )
+                    )
+                )
+                .background {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear {
+                                capture.sizes[key] = proxy.size
+                            }
+                    }
+                }
+        }
+    }
+
+    private func pressTarget(role: CheckpointPressRole) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: role == .control ? "arrow.right.circle.fill" : "chart.line.uptrend.xyaxis")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(role == .control ? "Start checkpoint" : "Open weekly progress")
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text(role == .control ? "Five focused questions" : "Review consistency and focus wins")
+                    .font(.caption)
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 8)
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(CheckpointTheme.muted)
+                .accessibilityHidden(true)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
+        .background(CheckpointTheme.panel)
+        .clipShape(RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                .stroke(CheckpointTheme.hairline, lineWidth: 1)
         }
     }
 }

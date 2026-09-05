@@ -1270,7 +1270,7 @@ struct MembershipView: View {
             }
             .contentShape(Rectangle())
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityLabel(presentation.managementTitle)
         .accessibilityHint(presentation.managementAccessibilityHint)
     }
@@ -1364,7 +1364,7 @@ struct MembershipView: View {
             .frame(maxWidth: .infinity, minHeight: 44)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
         .reportMembershipPaywallLayoutFrame(.secondaryAction, using: layoutReporter)
         .accessibilityLabel(checkoutPresentation.secondaryButtonAccessibilityLabel)
         .disabled(checkoutPresentation.isSecondaryActionDisabled)
@@ -1958,7 +1958,7 @@ private struct MembershipPlanRow: View {
                         )
                 }
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
             value: isSelected

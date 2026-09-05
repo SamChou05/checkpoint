@@ -1993,12 +1993,10 @@ final class MembershipViewRenderingTests: XCTestCase {
 
         XCTAssertEqual(animated.style, .animated)
         XCTAssertTrue(animated.animatesSymbol)
-        XCTAssertLessThan(animated.pressedScale, 1)
         XCTAssertNotNil(animated.animation)
 
         XCTAssertEqual(reduced.style, .identity)
         XCTAssertFalse(reduced.animatesSymbol)
-        XCTAssertEqual(reduced.pressedScale, 1)
         XCTAssertNil(reduced.animation)
     }
 

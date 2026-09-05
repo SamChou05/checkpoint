@@ -399,7 +399,7 @@ struct ProgressMomentumCard: View {
                 }
             }
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("This week for \(presentation.goalTitle)")
         .accessibilityValue(presentation.accessibilityValue)

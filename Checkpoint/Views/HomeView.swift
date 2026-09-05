@@ -367,7 +367,7 @@ struct HomeView: View {
                     .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
                     .contentShape(Capsule())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(CheckpointPressButtonStyle())
             .accessibilityLabel("Edit goal")
             .accessibilityValue(currentGoal.title)
             .accessibilityHint("Opens this goal's details")
@@ -571,7 +571,7 @@ struct HomeView: View {
                 .padding(14)
                 .background(CheckpointTheme.panelRaised.opacity(0.62), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(CheckpointPressButtonStyle(role: .surface))
             .disabled(isAcceptingLevelIncrease)
             .accessibilityHint("Updates the current goal to use harder questions")
         }
@@ -872,7 +872,7 @@ struct HomeView: View {
             .padding(14)
             .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Protection on. \(screenTime.restrictedAppsSummary)")
         .accessibilityHint("Manage protected apps")

@@ -1979,7 +1979,7 @@ private struct AttemptRow: View {
             } label: {
                 collapsedHeader
             }
-            .buttonStyle(CheckpointPressButtonStyle())
+            .buttonStyle(CheckpointPressButtonStyle(role: .surface))
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(
                 "\(resultPresentation.label), "

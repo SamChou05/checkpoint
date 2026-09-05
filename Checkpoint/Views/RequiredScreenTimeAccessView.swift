@@ -711,7 +711,7 @@ struct RequiredScreenTimeAccessView: View {
                         .frame(minHeight: 44)
                         .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(CheckpointPressButtonStyle())
                 .reportScreenTimeAccessLayoutFrame(.eraseLink, using: layoutReporter)
             }
         }

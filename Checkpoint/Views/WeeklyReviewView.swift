@@ -1330,7 +1330,7 @@ struct WeeklyReviewView: View {
                             reduceMotion: reduceMotion
                         )
                     }
-                    .buttonStyle(CheckpointPressButtonStyle())
+                    .buttonStyle(CheckpointPressButtonStyle(role: .surface))
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(item.accessibilityLabel)
                     .accessibilityHint("Shows this goal's weekly impact.")

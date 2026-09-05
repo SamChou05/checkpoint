@@ -2176,7 +2176,7 @@ struct LightStudyBeaconSection: View {
                 }
                 .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             }
-            .buttonStyle(CheckpointPressButtonStyle())
+            .buttonStyle(CheckpointPressButtonStyle(role: .surface))
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(HomeWeeklySignalHeroPresentation.actionLabel)
             .accessibilityValue(weeklySignalAccessibilityValue)

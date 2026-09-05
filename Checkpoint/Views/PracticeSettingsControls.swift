@@ -252,7 +252,7 @@ struct SettingsPracticeStandardCard<Controls: View>: View {
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityLabel(isExpanded ? "Hide checkpoint standard controls" : "Edit checkpoint standard")
         .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
         .accessibilityHint(isExpanded ? "Hides the editing controls." : "Shows the editing controls.")

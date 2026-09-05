@@ -1047,10 +1047,6 @@ struct SettingsPlanMotionPolicy: Equatable {
         style == .animated
     }
 
-    var pressedScale: CGFloat {
-        style == .animated ? 0.99 : 1
-    }
-
     var activityTransition: AnyTransition {
         switch style {
         case .animated:
@@ -1149,7 +1145,7 @@ struct SettingsPlanCard: View {
             }
             .contentShape(Rectangle())
         }
-        .buttonStyle(SettingsPlanCardButtonStyle(motionPolicy: motionPolicy))
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .reportSettingsPlanLayoutFrame(.card, using: layoutReporter)
         .coordinateSpace(name: settingsPlanLayoutCoordinateSpaceName)
         .accessibilityElement(children: .ignore)
@@ -1436,17 +1432,6 @@ struct SettingsPlanCard: View {
     }
 }
 
-private struct SettingsPlanCardButtonStyle: ButtonStyle {
-    let motionPolicy: SettingsPlanMotionPolicy
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? motionPolicy.pressedScale : 1)
-            .opacity(configuration.isPressed ? 0.9 : 1)
-            .animation(motionPolicy.animation, value: configuration.isPressed)
-    }
-}
-
 struct SettingsNavigationRow: View {
     var title: String
     var detail: String
@@ -1492,7 +1477,7 @@ struct SettingsNavigationRow: View {
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue(voiceOverValue ?? detail)

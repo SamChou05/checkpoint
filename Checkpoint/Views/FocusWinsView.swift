@@ -570,7 +570,7 @@ struct FocusWinsView: View {
                 }
             }
         }
-        .buttonStyle(CheckpointPressButtonStyle())
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(composerLauncherAccessibilityLabel)
         .accessibilityHint("Opens a private note editor")

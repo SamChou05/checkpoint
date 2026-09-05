@@ -1536,7 +1536,7 @@ struct OnboardingView: View {
                     .font(.caption.weight(.bold))
                     .frame(width: 44, height: 44)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(CheckpointPressButtonStyle())
             .foregroundStyle(CheckpointTheme.coral)
             .accessibilityLabel("Remove \(document.name)")
         }

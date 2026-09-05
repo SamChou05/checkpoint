@@ -593,17 +593,94 @@ struct CheckpointSetupMark: View {
     }
 }
 
+enum CheckpointPressRole: Equatable, Sendable {
+    case control
+    case surface
+}
+
+enum CheckpointPressMotionStyle: Equatable, Sendable {
+    case spatial
+    case tonalOnly
+}
+
+struct CheckpointPressVisualEffect: Equatable, Sendable {
+    let scale: CGFloat
+    let offsetY: CGFloat
+    let opacity: Double
+}
+
+struct CheckpointPressMotionPolicy: Equatable, Sendable {
+    let role: CheckpointPressRole
+    let style: CheckpointPressMotionStyle
+
+    init(
+        role: CheckpointPressRole = .control,
+        reduceMotion: Bool,
+        voiceOverEnabled: Bool,
+        switchControlEnabled: Bool
+    ) {
+        self.role = role
+        style = reduceMotion || voiceOverEnabled || switchControlEnabled
+            ? .tonalOnly
+            : .spatial
+    }
+
+    var animation: Animation? {
+        style == .spatial ? CheckpointMotion.press : nil
+    }
+
+    func visualEffect(isPressed: Bool) -> CheckpointPressVisualEffect {
+        guard isPressed else {
+            return CheckpointPressVisualEffect(scale: 1, offsetY: 0, opacity: 1)
+        }
+
+        switch (style, role) {
+        case (.spatial, .control):
+            return CheckpointPressVisualEffect(scale: 0.985, offsetY: 0, opacity: 0.88)
+        case (.spatial, .surface):
+            return CheckpointPressVisualEffect(scale: 0.992, offsetY: 1, opacity: 0.92)
+        case (.tonalOnly, .control):
+            return CheckpointPressVisualEffect(scale: 1, offsetY: 0, opacity: 0.88)
+        case (.tonalOnly, .surface):
+            return CheckpointPressVisualEffect(scale: 1, offsetY: 0, opacity: 0.92)
+        }
+    }
+}
+
+struct CheckpointPressEffect: ViewModifier {
+    let isPressed: Bool
+    let policy: CheckpointPressMotionPolicy
+
+    func body(content: Content) -> some View {
+        let effect = policy.visualEffect(isPressed: isPressed)
+
+        content
+            .scaleEffect(effect.scale)
+            .offset(y: effect.offsetY)
+            .opacity(effect.opacity)
+            .animation(policy.animation, value: isPressed)
+    }
+}
+
 struct CheckpointPressButtonStyle: ButtonStyle {
+    var role: CheckpointPressRole = .control
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
 
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.985 : 1)
-            .opacity(configuration.isPressed ? 0.88 : 1)
-            .animation(
-                CheckpointMotion.animation(CheckpointMotion.press, reduceMotion: reduceMotion),
-                value: configuration.isPressed
+        configuration.label.modifier(
+            CheckpointPressEffect(
+                isPressed: configuration.isPressed,
+                policy: CheckpointPressMotionPolicy(
+                    role: role,
+                    reduceMotion: reduceMotion,
+                    voiceOverEnabled: voiceOverEnabled,
+                    switchControlEnabled: switchControlEnabled
+                )
             )
+        )
     }
 }
 
@@ -787,7 +864,7 @@ struct StudyFocusCard: View {
                 Button(action: action) {
                     surface
                 }
-                .buttonStyle(CheckpointPressButtonStyle())
+                .buttonStyle(CheckpointPressButtonStyle(role: .surface))
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Next Focus. \(state.title). \(state.detail)")
                 .accessibilityHint("Shows this skill's answer breakdown and latest signal.")

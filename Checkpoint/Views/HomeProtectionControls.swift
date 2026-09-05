@@ -815,6 +815,6 @@ struct HomeProtectionActionButton: View {
                     .stroke(CheckpointTheme.controlStroke, lineWidth: 1)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
     }
 }
