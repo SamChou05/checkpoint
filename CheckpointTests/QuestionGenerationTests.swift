@@ -165,6 +165,40 @@ final class QuestionGenerationTests: XCTestCase {
         }
     }
 
+    func testGoalSourceDocumentImporterPropagatesCancellationWithoutReportingFailure() async {
+        let urls = [
+            URL(fileURLWithPath: "/tmp/first-source.txt"),
+            URL(fileURLWithPath: "/tmp/second-source.txt"),
+        ]
+        let loadStarted = AsyncStream.makeStream(of: Void.self)
+        let releaseLoader = DispatchSemaphore(value: 0)
+        let usefulText = "A sufficiently detailed source about recursion, base cases, and call stacks."
+
+        let importTask = Task {
+            await GoalSourceDocumentImporter.importDocuments(from: urls) { url in
+                loadStarted.continuation.yield(())
+                releaseLoader.wait()
+                return GoalSourceDocument(name: url.lastPathComponent, text: usefulText)
+            }
+        }
+
+        var loadEvents = loadStarted.stream.makeAsyncIterator()
+        _ = await loadEvents.next()
+        await Task.yield()
+        importTask.cancel()
+        releaseLoader.signal()
+        releaseLoader.signal()
+
+        let result = await importTask.value
+        loadStarted.continuation.finish()
+
+        XCTAssertTrue(result.documents.isEmpty)
+        XCTAssertTrue(
+            result.failureMessages.isEmpty,
+            "Cancellation must stop the detached worker without surfacing a file failure."
+        )
+    }
+
     func testBackendRequestEncodesGoalContextCompetenciesAndDifficulty() throws {
         var goal = makeGoal()
         goal.sourceDocuments = [

@@ -41,14 +41,32 @@ enum GoalSourceDocumentImporter {
     ]
 
     static func importDocuments(from urls: [URL]) async -> GoalSourceImportResult {
-        await Task.detached(priority: .userInitiated) {
+        await importDocuments(from: urls, loader: loadDocument(from:))
+    }
+
+    static func importDocuments(
+        from urls: [URL],
+        loader: @escaping @Sendable (URL) throws -> GoalSourceDocument
+    ) async -> GoalSourceImportResult {
+        guard !Task.isCancelled else {
+            return GoalSourceImportResult(documents: [], failureMessages: [])
+        }
+
+        let worker = Task.detached(priority: .userInitiated) {
             var documents: [GoalSourceDocument] = []
             var failureMessages: [String] = []
 
             for url in urls {
+                guard !Task.isCancelled else { break }
+
                 do {
-                    documents.append(try loadDocument(from: url))
+                    let document = try loader(url)
+                    try Task.checkCancellation()
+                    documents.append(document)
+                } catch is CancellationError {
+                    break
                 } catch {
+                    guard !Task.isCancelled else { break }
                     let detail = (error as? LocalizedError)?.errorDescription
                         ?? GoalSourceImportError.unreadableFile.localizedDescription
                     failureMessages.append("\(url.lastPathComponent): \(detail)")
@@ -59,10 +77,18 @@ enum GoalSourceDocumentImporter {
                 documents: documents,
                 failureMessages: failureMessages
             )
-        }.value
+        }
+
+        return await withTaskCancellationHandler {
+            await worker.value
+        } onCancel: {
+            worker.cancel()
+        }
     }
 
     static func loadDocument(from url: URL) throws -> GoalSourceDocument {
+        try Task.checkCancellation()
+
         let didAccessSecurityScope = url.startAccessingSecurityScopedResource()
         defer {
             if didAccessSecurityScope {
@@ -70,6 +96,7 @@ enum GoalSourceDocumentImporter {
             }
         }
 
+        try Task.checkCancellation()
         let resourceValues = try? url.resourceValues(
             forKeys: [.contentTypeKey, .fileSizeKey]
         )
@@ -93,6 +120,7 @@ enum GoalSourceDocumentImporter {
             throw GoalSourceImportError.unsupportedType
         }
 
+        try Task.checkCancellation()
         let document = GoalSourceDocument(name: url.lastPathComponent, text: text)
         guard document.characterCount >= GoalContextLimits.minimumUsefulDocumentCharacters else {
             throw GoalSourceImportError.tooLittleText
@@ -101,6 +129,8 @@ enum GoalSourceDocumentImporter {
     }
 
     private static func extractedPlainText(from url: URL) throws -> String {
+        try Task.checkCancellation()
+
         let data: Data
         do {
             data = try Data(contentsOf: url, options: [.mappedIfSafe])
@@ -110,6 +140,7 @@ enum GoalSourceDocumentImporter {
         guard data.count <= GoalContextLimits.maximumImportFileBytes else {
             throw GoalSourceImportError.fileTooLarge
         }
+        try Task.checkCancellation()
 
         let encodings: [String.Encoding] = [
             .utf8,
@@ -118,14 +149,23 @@ enum GoalSourceDocumentImporter {
             .utf16BigEndian,
             .isoLatin1
         ]
-        guard let text = encodings.lazy.compactMap({ String(data: data, encoding: $0) }).first else {
+        var decodedText: String?
+        for encoding in encodings {
+            try Task.checkCancellation()
+            if let text = String(data: data, encoding: encoding) {
+                decodedText = text
+                break
+            }
+        }
+        guard let decodedText else {
             throw GoalSourceImportError.unreadableFile
         }
-        return text
+        return decodedText
     }
 
     private static func extractedPDFText(from url: URL) throws -> String {
         #if canImport(PDFKit)
+        try Task.checkCancellation()
         guard let document = PDFDocument(url: url) else {
             throw GoalSourceImportError.unreadableFile
         }
@@ -133,6 +173,7 @@ enum GoalSourceDocumentImporter {
         var pageText: [String] = []
         var extractedCharacterCount = 0
         for pageIndex in 0..<document.pageCount {
+            try Task.checkCancellation()
             guard let text = document.page(at: pageIndex)?.string,
                   !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                 continue
@@ -144,6 +185,7 @@ enum GoalSourceDocumentImporter {
             }
         }
 
+        try Task.checkCancellation()
         let text = pageText.joined(separator: "\n\n")
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw GoalSourceImportError.noExtractableText

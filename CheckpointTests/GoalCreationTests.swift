@@ -539,7 +539,7 @@ final class GoalSetupPresentationTests: XCTestCase {
         XCTAssertEqual(firstEmpty.state, .awaitingGoal)
         XCTAssertEqual(firstEmpty.status, "Goal needed")
         XCTAssertEqual(firstEmpty.eyebrow, "SETUP · STEP 2 OF 3")
-        XCTAssertEqual(firstEmpty.title, "What are you working toward?")
+        XCTAssertEqual(firstEmpty.title, "Set your outcome.")
         XCTAssertEqual(firstEmpty.guidance, "Enter one outcome to continue.")
         XCTAssertEqual(firstEmpty.accessibilityContext, "Checkpoint setup, step 2 of 3")
 
@@ -557,7 +557,7 @@ final class GoalSetupPresentationTests: XCTestCase {
             isWorking: false
         )
         XCTAssertEqual(newReady.state, .ready)
-        XCTAssertEqual(newReady.title, "What else are you working toward?")
+        XCTAssertEqual(newReady.title, "Add another outcome.")
         XCTAssertEqual(
             newReady.guidance,
             "This goal becomes active. Your other goals stay available."
@@ -571,6 +571,7 @@ final class GoalSetupPresentationTests: XCTestCase {
         )
         XCTAssertEqual(editSaved.state, .upToDate)
         XCTAssertEqual(editSaved.status, "Up to date")
+        XCTAssertEqual(editSaved.title, "Refine this outcome.")
         XCTAssertEqual(editSaved.guidance, "Your current goal is saved.")
 
         let editDeadline = GoalSetupHeroPresentation(
@@ -621,6 +622,153 @@ final class GoalSetupPresentationTests: XCTestCase {
         )
         XCTAssertEqual(editWorking.state, .working)
         XCTAssertEqual(editWorking.status, "Saving…")
+    }
+
+    func testDraftSnapshotAndDismissalPolicyProtectOnlyMeaningfulChanges() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let baselineDeadline = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 4, hour: 8))
+        )
+        let baseline = GoalSetupDraftSnapshot(
+            title: "  Pass the bar exam  ",
+            deadline: baselineDeadline,
+            currentLevel: " Intermediate ",
+            focusAreas: " contracts, evidence ",
+            sourceDocuments: [],
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        let normalizedMatch = GoalSetupDraftSnapshot(
+            title: "Pass the bar exam",
+            deadline: baselineDeadline.addingTimeInterval(60 * 60 * 10),
+            currentLevel: "Intermediate",
+            focusAreas: "contracts, evidence",
+            sourceDocuments: [],
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        XCTAssertFalse(
+            normalizedMatch.hasMeaningfulChanges(from: baseline, calendar: calendar)
+        )
+
+        let changed = GoalSetupDraftSnapshot(
+            title: "Pass the California bar exam",
+            deadline: baselineDeadline,
+            currentLevel: "Intermediate",
+            focusAreas: "contracts, evidence",
+            sourceDocuments: [],
+            preferredQuestionStyle: .multipleChoice,
+            minimumQuestionDifficulty: 2
+        )
+        XCTAssertTrue(changed.hasMeaningfulChanges(from: baseline, calendar: calendar))
+
+        let firstGoalPolicy = GoalSetupDismissalPolicy(
+            mode: .firstGoal,
+            hasUnsavedDraft: false
+        )
+        XCTAssertFalse(firstGoalPolicy.requiresDiscardConfirmation)
+        XCTAssertTrue(firstGoalPolicy.preventsInteractiveDismissal)
+
+        let cleanNewGoalPolicy = GoalSetupDismissalPolicy(
+            mode: .newGoal,
+            hasUnsavedDraft: false
+        )
+        XCTAssertFalse(cleanNewGoalPolicy.requiresDiscardConfirmation)
+        XCTAssertFalse(cleanNewGoalPolicy.preventsInteractiveDismissal)
+
+        let dirtyEditPolicy = GoalSetupDismissalPolicy(
+            mode: .editGoal,
+            hasUnsavedDraft: true
+        )
+        XCTAssertTrue(dirtyEditPolicy.requiresDiscardConfirmation)
+        XCTAssertTrue(dirtyEditPolicy.preventsInteractiveDismissal)
+
+        let importingIntoCleanEditPolicy = GoalSetupDismissalPolicy(
+            mode: .editGoal,
+            hasUnsavedDraft: false,
+            hasPendingImport: true
+        )
+        XCTAssertTrue(importingIntoCleanEditPolicy.requiresDiscardConfirmation)
+        XCTAssertTrue(importingIntoCleanEditPolicy.preventsInteractiveDismissal)
+    }
+
+    func testPrimaryActionDistinguishesDoneFromSavingChanges() {
+        let unchanged = GoalSetupPrimaryActionPresentation(
+            mode: .editGoal,
+            editImpact: .none,
+            isWorking: false
+        )
+        XCTAssertEqual(unchanged.title, "Done")
+        XCTAssertEqual(unchanged.intent, .dismiss)
+
+        let changed = GoalSetupPrimaryActionPresentation(
+            mode: .editGoal,
+            editImpact: .practiceSetup,
+            isWorking: false
+        )
+        XCTAssertEqual(changed.title, "Save changes")
+        XCTAssertEqual(changed.intent, .save)
+
+        let firstGoal = GoalSetupPrimaryActionPresentation(
+            mode: .firstGoal,
+            editImpact: .none,
+            isWorking: false
+        )
+        XCTAssertEqual(firstGoal.title, "Continue to app selection")
+        XCTAssertEqual(firstGoal.intent, .save)
+        XCTAssertEqual(
+            firstGoal.displayTitle(isAccessibilitySize: true),
+            "Choose apps"
+        )
+
+        let firstGoalWorking = GoalSetupPrimaryActionPresentation(
+            mode: .firstGoal,
+            editImpact: .none,
+            isWorking: true
+        )
+        XCTAssertEqual(
+            firstGoalWorking.displayTitle(isAccessibilitySize: true),
+            "Choose apps",
+            "The accessibility-size action bar should not resize while saving."
+        )
+        XCTAssertEqual(
+            firstGoalWorking.displayTitle(
+                isAccessibilitySize: true,
+                isImportingSources: true
+            ),
+            "Reading files"
+        )
+    }
+
+    func testPersistenceAnnouncementsRepeatForEachFailedSaveAttempt() {
+        let recoveryMessage = "Checkpoint could not save the latest local changes."
+
+        XCTAssertNil(
+            GoalSetupPersistenceAnnouncementPolicy.message(
+                for: .recoveryMessageChanged,
+                recoveryMessage: recoveryMessage,
+                previouslyAnnouncedMessage: recoveryMessage
+            ),
+            "An unchanged passive recovery banner should not announce twice."
+        )
+        XCTAssertEqual(
+            GoalSetupPersistenceAnnouncementPolicy.message(
+                for: .saveFailed,
+                recoveryMessage: recoveryMessage,
+                previouslyAnnouncedMessage: recoveryMessage
+            ),
+            recoveryMessage,
+            "Every explicit failed save needs feedback, even when its message is unchanged."
+        )
+        XCTAssertEqual(
+            GoalSetupPersistenceAnnouncementPolicy.message(
+                for: .saveFailed,
+                recoveryMessage: nil,
+                previouslyAnnouncedMessage: nil
+            ),
+            GoalSetupPersistenceAnnouncementPolicy.fallbackMessage
+        )
     }
 
     func testCreateProtectionConfirmationPresentationUsesExactCopy() {
@@ -926,6 +1074,38 @@ final class GoalSetupPresentationTests: XCTestCase {
         XCTAssertNotNil(
             previewState.commit(goalTitle: "Prepare for the MCAT", focusAreas: "")
         )
+
+        var livePreviewState = GoalSetupDirectionPreviewState()
+        livePreviewState.preview(
+            goalTitle: "Prepare for the MCAT",
+            focusAreas: "biology, chemistry"
+        )
+        XCTAssertEqual(livePreviewState.presentation?.topics, ["biology", "chemistry"])
+        XCTAssertNil(livePreviewState.lastAnnouncement)
+        XCTAssertNotNil(
+            livePreviewState.commit(
+                goalTitle: "Prepare for the MCAT",
+                focusAreas: "biology, chemistry"
+            ),
+            "A silent live preview must not consume the later VoiceOver announcement."
+        )
+
+        let committedPresentation = try XCTUnwrap(livePreviewState.presentation)
+        var existingGoalPreviewState = GoalSetupDirectionPreviewState(
+            initialPresentation: committedPresentation,
+            initialPresentationIsCommitted: true
+        )
+        XCTAssertEqual(
+            existingGoalPreviewState.lastAnnouncement,
+            committedPresentation.accessibilityAnnouncement
+        )
+        XCTAssertNil(
+            existingGoalPreviewState.commit(
+                goalTitle: "Prepare for the MCAT",
+                focusAreas: "biology, chemistry"
+            ),
+            "Leaving an unchanged edit field must not announce a false update."
+        )
     }
 
     func testCustomizationSummaryIsCompactAndCanonical() {
@@ -968,6 +1148,20 @@ final class GoalSetupPresentationTests: XCTestCase {
         XCTAssertEqual(reduced.style, .identity)
         XCTAssertNil(reduced.animation)
         XCTAssertNil(reduced.revealAnimation)
+        XCTAssertNil(reduced.previewAnimation(wasVisible: false, isVisible: true))
+
+        XCTAssertNotNil(standard.previewAnimation(wasVisible: false, isVisible: true))
+        XCTAssertNotNil(standard.previewAnimation(wasVisible: true, isVisible: true))
+
+        let input = GoalSetupDirectionInput(
+            goalTitle: "Prepare for the MCAT",
+            focusAreas: "biology"
+        )
+        XCTAssertNotEqual(
+            GoalSetupDirectionPreviewTaskID(input: input, reduceMotion: false),
+            GoalSetupDirectionPreviewTaskID(input: input, reduceMotion: true),
+            "Changing Reduce Motion must cancel and re-key a pending preview."
+        )
     }
 
     func testEditModePreservesAnExistingQuestionStyle() {
@@ -1009,6 +1203,142 @@ final class GoalSetupPresentationTests: XCTestCase {
             ),
             .none
         )
+    }
+
+    @MainActor
+    func testGoalSetupKeepsPrimaryInputInTheFirstFold() throws {
+        let fixtures = [
+            GoalSetupFirstFoldFixture(
+                name: "goal-setup-first-fold-compact",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                requiresFullyVisibleField: true,
+                persistenceRecoveryMessage: "Checkpoint recovered an earlier version after the latest saved app data could not be read. Review the goal before continuing."
+            ),
+            GoalSetupFirstFoldFixture(
+                name: "goal-setup-first-fold-accessibility5",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                requiresFullyVisibleField: false
+            ),
+            GoalSetupFirstFoldFixture(
+                name: "goal-setup-first-fold-accessibility5-working",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                requiresFullyVisibleField: false,
+                workingStateOverride: true
+            ),
+        ]
+
+        for fixture in fixtures {
+            let suiteName = "GoalSetupFirstFold.\(fixture.name).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let store = CheckpointStore(defaults: defaults)
+            store.persistenceRecoveryMessage = fixture.persistenceRecoveryMessage
+            let workflow = CheckpointWorkflowCoordinator(
+                store: store,
+                protection: InertGoalSetupProtectionController()
+            )
+            let capture = GoalSetupLayoutCapture()
+            let image = HostedViewRenderer.image(
+                for: OnboardingView(
+                    store: store,
+                    workflow: workflow,
+                    reduceMotionOverride: true,
+                    workingStateOverride: fixture.workingStateOverride,
+                    layoutReporter: { element, frame in
+                        capture.frames[element] = frame
+                    }
+                )
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.15,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            let viewport = try XCTUnwrap(capture.frames[.viewport], fixture.name)
+            let hero = try XCTUnwrap(capture.frames[.hero], fixture.name)
+            let goalPanel = try XCTUnwrap(capture.frames[.goalPanel], fixture.name)
+            let titleLabel = try XCTUnwrap(capture.frames[.titleLabel], fixture.name)
+            let titleField = try XCTUnwrap(capture.frames[.titleField], fixture.name)
+            let actionBar = try XCTUnwrap(capture.frames[.actionBar], fixture.name)
+            let contentFrames = [hero, goalPanel, titleLabel, titleField]
+            let canvas = CGRect(
+                x: 0,
+                y: 0,
+                width: fixture.width,
+                height: fixture.height
+            )
+
+            for frame in [viewport, actionBar] + contentFrames {
+                XCTAssertFalse(frame.isNull, fixture.name)
+                XCTAssertFalse(frame.isInfinite, fixture.name)
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+            }
+            for frame in contentFrames {
+                XCTAssertGreaterThanOrEqual(frame.minX, viewport.minX - 0.5, fixture.name)
+                XCTAssertLessThanOrEqual(frame.maxX, viewport.maxX + 0.5, fixture.name)
+            }
+            XCTAssertTrue(
+                canvas.insetBy(dx: -0.5, dy: -0.5).contains(actionBar),
+                "\(fixture.name) action bar escaped the rendered screen"
+            )
+            XCTAssertGreaterThanOrEqual(titleField.height, 43.5, fixture.name)
+            XCTAssertGreaterThanOrEqual(actionBar.height, 43.5, fixture.name)
+            XCTAssertLessThanOrEqual(hero.maxY, goalPanel.minY + 0.5, fixture.name)
+            XCTAssertTrue(
+                goalPanel.insetBy(dx: -0.5, dy: -0.5).contains(titleLabel),
+                "\(fixture.name) title label escaped the goal panel"
+            )
+            XCTAssertTrue(
+                goalPanel.insetBy(dx: -0.5, dy: -0.5).contains(titleField),
+                "\(fixture.name) title field escaped the goal panel"
+            )
+            XCTAssertLessThanOrEqual(titleLabel.maxY, titleField.minY + 0.5, fixture.name)
+
+            let visibleBottom = min(viewport.maxY, actionBar.minY)
+            let visibleViewport = CGRect(
+                x: viewport.minX,
+                y: viewport.minY,
+                width: viewport.width,
+                height: max(0, visibleBottom - viewport.minY)
+            )
+            XCTAssertGreaterThan(visibleViewport.height, 0, fixture.name)
+
+            if fixture.requiresFullyVisibleField {
+                XCTAssertTrue(
+                    visibleViewport.insetBy(dx: -0.5, dy: -0.5).contains(titleField),
+                    "\(fixture.name) pushed the primary input below the first fold"
+                )
+            } else {
+                let visibleTitleField = titleField.intersection(visibleViewport)
+                XCTAssertFalse(visibleTitleField.isNull, fixture.name)
+                XCTAssertGreaterThanOrEqual(
+                    visibleTitleField.height,
+                    44,
+                    "\(fixture.name) left less than one accessible tap row of the input visible"
+                )
+            }
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = XCTAttachment.Lifetime.keepAlways
+            add(attachment)
+        }
     }
 
     @MainActor
@@ -1080,7 +1410,11 @@ final class GoalSetupPresentationTests: XCTestCase {
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    OnboardingView(store: firstStore, workflow: firstWorkflow)
+                    OnboardingView(
+                        store: firstStore,
+                        workflow: firstWorkflow,
+                        reduceMotionOverride: true
+                    )
                 )
             ),
             GoalSetupRenderFixture(
@@ -1090,43 +1424,59 @@ final class GoalSetupPresentationTests: XCTestCase {
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    OnboardingView(store: newStore, workflow: newWorkflow)
+                    OnboardingView(
+                        store: newStore,
+                        workflow: newWorkflow,
+                        reduceMotionOverride: true
+                    )
                 )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-edit-customized-dark",
                 width: 393,
-                height: 1_000,
+                height: 852,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    OnboardingView(store: editStore, workflow: editWorkflow)
+                    OnboardingView(
+                        store: editStore,
+                        workflow: editWorkflow,
+                        reduceMotionOverride: true
+                    )
                 )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-edit-customized-ax2-light",
                 width: 393,
-                height: 1_800,
+                height: 852,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility2,
                 content: AnyView(
-                    OnboardingView(store: editStore, workflow: editWorkflow)
+                    OnboardingView(
+                        store: editStore,
+                        workflow: editWorkflow,
+                        reduceMotionOverride: true
+                    )
                 )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-edit-customized-ax5-light",
                 width: 393,
-                height: 1_850,
+                height: 852,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility5,
                 content: AnyView(
-                    OnboardingView(store: editStore, workflow: editWorkflow)
+                    OnboardingView(
+                        store: editStore,
+                        workflow: editWorkflow,
+                        reduceMotionOverride: true
+                    )
                 )
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-ready-ax5-reduced-motion",
-                width: 320,
-                height: 1_850,
+                width: 393,
+                height: 852,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility5,
                 content: AnyView(
@@ -1141,24 +1491,24 @@ final class GoalSetupPresentationTests: XCTestCase {
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-inferred-direction-ax5-reduced-motion",
-                width: 320,
-                height: 1_500,
+                width: 393,
+                height: 852,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility5,
                 content: AnyView(GoalSetupInferredDirectionScene())
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-explicit-topics-ax5-reduced-motion",
-                width: 320,
-                height: 1_500,
+                width: 393,
+                height: 852,
                 colorScheme: .light,
                 dynamicTypeSize: .accessibility5,
                 content: AnyView(GoalSetupExplicitTopicsScene())
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-unsaved-ax5-reduced-motion",
-                width: 320,
-                height: 1_850,
+                width: 393,
+                height: 852,
                 colorScheme: .dark,
                 dynamicTypeSize: .accessibility5,
                 content: AnyView(
@@ -1174,8 +1524,8 @@ final class GoalSetupPresentationTests: XCTestCase {
             ),
             GoalSetupRenderFixture(
                 name: "goal-setup-working-ax5-reduced-motion",
-                width: 320,
-                height: 1_850,
+                width: 393,
+                height: 852,
                 colorScheme: .dark,
                 dynamicTypeSize: .accessibility5,
                 content: AnyView(
@@ -1220,6 +1570,42 @@ private struct GoalSetupRenderFixture {
     let content: AnyView
 }
 
+private struct GoalSetupFirstFoldFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let requiresFullyVisibleField: Bool
+    let persistenceRecoveryMessage: String?
+    let workingStateOverride: Bool?
+
+    init(
+        name: String,
+        width: CGFloat,
+        height: CGFloat,
+        colorScheme: ColorScheme,
+        dynamicTypeSize: DynamicTypeSize,
+        requiresFullyVisibleField: Bool,
+        persistenceRecoveryMessage: String? = nil,
+        workingStateOverride: Bool? = nil
+    ) {
+        self.name = name
+        self.width = width
+        self.height = height
+        self.colorScheme = colorScheme
+        self.dynamicTypeSize = dynamicTypeSize
+        self.requiresFullyVisibleField = requiresFullyVisibleField
+        self.persistenceRecoveryMessage = persistenceRecoveryMessage
+        self.workingStateOverride = workingStateOverride
+    }
+}
+
+@MainActor
+private final class GoalSetupLayoutCapture {
+    var frames: [GoalSetupLayoutElement: CGRect] = [:]
+}
+
 @MainActor
 private final class InertGoalSetupProtectionController: AppProtectionControlling {
     let hasSelection = false
@@ -1246,7 +1632,10 @@ private struct GoalSetupInferredDirectionScene: View {
                 goalTitle: "Prepare for an advanced systems design interview with thoughtful tradeoff analysis",
                 focusAreas: ""
             ) {
-                GoalSetupDirectionCard(presentation: direction)
+                GoalSetupDirectionCard(
+                    presentation: direction,
+                    reduceMotionOverride: true
+                )
                     .padding(16)
             }
         }
@@ -1261,7 +1650,10 @@ private struct GoalSetupExplicitTopicsScene: View {
                 goalTitle: "Pass technical interviews",
                 focusAreas: "capacity planning, data consistency, graceful failure recovery"
             ) {
-                GoalSetupDirectionCard(presentation: direction)
+                GoalSetupDirectionCard(
+                    presentation: direction,
+                    reduceMotionOverride: true
+                )
                     .padding(16)
             }
         }

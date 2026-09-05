@@ -47,6 +47,29 @@ struct ScreenTimeAccessRecoveryQueue: Equatable {
     }
 }
 
+enum ScreenTimeAccessPresentationHost: Equatable {
+    case root
+    case onboarding
+}
+
+enum OnboardingScreenTimeAccessRouting {
+    static func shouldPresentOnboarding(
+        isRequested: Bool,
+        isAuthorized: Bool,
+        isAlreadyActive: Bool
+    ) -> Bool {
+        isRequested && (isAuthorized || isAlreadyActive)
+    }
+
+    static func recoveryHost(
+        requiresRecovery: Bool,
+        isOnboardingActive: Bool
+    ) -> ScreenTimeAccessPresentationHost? {
+        guard requiresRecovery else { return nil }
+        return isOnboardingActive ? .onboarding : .root
+    }
+}
+
 private struct ProtectionReconciliationKey: Equatable {
     let goalID: Goal.ID?
     let goalTitle: String?
@@ -362,12 +385,7 @@ struct RootView: View {
             isPresented: screenTimeAuthorizationRequiredBinding,
             onDismiss: handleScreenTimeAccessDismissed
         ) {
-            RequiredScreenTimeAccessView(
-                store: store,
-                screenTime: screenTime,
-                context: screenTimeAccessContext
-            )
-                .interactiveDismissDisabled()
+            screenTimeAccessContent
         }
         .sheet(
             isPresented: $isAuthorizationRecoveryAppSelectionPresented,
@@ -385,13 +403,7 @@ struct RootView: View {
             isPresented: onboardingPresentationBinding,
             onDismiss: handleOnboardingDismissed
         ) {
-            OnboardingView(store: store, workflow: workflow) {
-                beginFirstRunSetup()
-            }
-                .onAppear {
-                    isOnboardingSheetActive = true
-                }
-                .interactiveDismissDisabled(store.goal == nil)
+            onboardingSheetContent
         }
         .sheet(
             isPresented: firstRunAppSelectionPresentationBinding,
@@ -463,6 +475,30 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .checkpointShieldContextDidChange)) { _ in
             workflow.refreshProtectionConfiguration()
         }
+    }
+
+    private var onboardingSheetContent: some View {
+        OnboardingView(store: store, workflow: workflow, onFirstGoalCreated: {
+            beginFirstRunSetup()
+        })
+        .onAppear {
+            isOnboardingSheetActive = true
+        }
+        .fullScreenCover(
+            isPresented: onboardingScreenTimeAuthorizationRequiredBinding,
+            onDismiss: handleScreenTimeAccessDismissed
+        ) {
+            screenTimeAccessContent
+        }
+    }
+
+    private var screenTimeAccessContent: some View {
+        RequiredScreenTimeAccessView(
+            store: store,
+            screenTime: screenTime,
+            context: screenTimeAccessContext
+        )
+        .interactiveDismissDisabled()
     }
 
     private var goalSwitchConfirmationIsPresented: Binding<Bool> {
@@ -845,8 +881,11 @@ struct RootView: View {
     private var onboardingPresentationBinding: Binding<Bool> {
         Binding(
             get: {
-                store.isOnboardingPresented
-                    && screenTime.hasRequiredScreenTimeAuthorization
+                OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+                    isRequested: store.isOnboardingPresented,
+                    isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
+                    isAlreadyActive: isOnboardingSheetActive
+                )
             },
             set: { isPresented in
                 store.isOnboardingPresented = isPresented
@@ -860,11 +899,27 @@ struct RootView: View {
     private var screenTimeAuthorizationRequiredBinding: Binding<Bool> {
         Binding(
             get: {
-                screenTime.requiresScreenTimeAuthorization
-                    || screenTime.requiresSharedDataEraseRecovery
-                    || store.requiresPersistenceEraseRecovery
+                screenTimeAccessRecoveryHost == .root
             },
             set: { _ in }
+        )
+    }
+
+    private var onboardingScreenTimeAuthorizationRequiredBinding: Binding<Bool> {
+        Binding(
+            get: {
+                screenTimeAccessRecoveryHost == .onboarding
+            },
+            set: { _ in }
+        )
+    }
+
+    private var screenTimeAccessRecoveryHost: ScreenTimeAccessPresentationHost? {
+        OnboardingScreenTimeAccessRouting.recoveryHost(
+            requiresRecovery: screenTime.requiresScreenTimeAuthorization
+                || screenTime.requiresSharedDataEraseRecovery
+                || store.requiresPersistenceEraseRecovery,
+            isOnboardingActive: isOnboardingSheetActive
         )
     }
 

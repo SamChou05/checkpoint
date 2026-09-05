@@ -257,6 +257,66 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         )
     }
 
+    func testInitialUnauthorizedOnboardingStillRoutesAccessRecoveryFromRoot() {
+        XCTAssertFalse(
+            OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+                isRequested: true,
+                isAuthorized: false,
+                isAlreadyActive: false
+            )
+        )
+        XCTAssertEqual(
+            OnboardingScreenTimeAccessRouting.recoveryHost(
+                requiresRecovery: true,
+                isOnboardingActive: false
+            ),
+            .root
+        )
+    }
+
+    func testAuthorizationLossKeepsActiveOnboardingAndHostsRecoveryAboveItsDraft() {
+        XCTAssertTrue(
+            OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+                isRequested: true,
+                isAuthorized: false,
+                isAlreadyActive: true
+            )
+        )
+        XCTAssertEqual(
+            OnboardingScreenTimeAccessRouting.recoveryHost(
+                requiresRecovery: true,
+                isOnboardingActive: true
+            ),
+            .onboarding
+        )
+    }
+
+    func testOnboardingRequestStillControlsDismissalDuringAuthorizationLoss() {
+        XCTAssertFalse(
+            OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+                isRequested: false,
+                isAuthorized: false,
+                isAlreadyActive: true
+            )
+        )
+    }
+
+    func testAuthorizedOnboardingUsesNormalSheetRoutingWithoutRecovery() {
+        XCTAssertTrue(
+            OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+                isRequested: true,
+                isAuthorized: true,
+                isAlreadyActive: false
+            )
+        )
+        XCTAssertNil(
+            OnboardingScreenTimeAccessRouting.recoveryHost(
+                requiresRecovery: false,
+                isOnboardingActive: false
+            )
+        )
+    }
+
     func testRecoveryQueueRetriesAfterACompetingModalDismisses() {
         var queue = ScreenTimeAccessRecoveryQueue()
 
