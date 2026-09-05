@@ -450,13 +450,7 @@ struct HomeView: View {
     }
 
     private func setQuestionsReadyConfirmationVisible(_ isVisible: Bool) {
-        if reduceMotion {
-            isQuestionsReadyConfirmationVisible = isVisible
-        } else {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isQuestionsReadyConfirmationVisible = isVisible
-            }
-        }
+        isQuestionsReadyConfirmationVisible = isVisible
     }
 
     private func hideQuestionsReadyConfirmation() {

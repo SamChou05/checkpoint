@@ -437,7 +437,7 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     func testGoalOverviewMotionPolicyHonorsReduceMotion() {
         let standard = HomeGoalOverviewMotionPolicy(reduceMotion: false)
         XCTAssertEqual(standard.style, .animated)
-        XCTAssertNotNil(standard.animation)
+        XCTAssertEqual(standard.animation, CheckpointMotion.change)
 
         let reduced = HomeGoalOverviewMotionPolicy(reduceMotion: true)
         XCTAssertEqual(reduced.style, .identity)
