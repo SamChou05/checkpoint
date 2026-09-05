@@ -682,6 +682,7 @@ struct RootView: View {
         RequiredScreenTimeAccessView(
             store: store,
             screenTime: screenTime,
+            purchaseController: purchaseController,
             context: screenTimeAccessContext,
             onContinue: continueAfterScreenTimeAccessConnection,
             continuesOnboardingAfterDismissal: host == .onboarding

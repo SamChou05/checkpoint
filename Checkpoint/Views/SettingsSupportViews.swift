@@ -499,7 +499,7 @@ enum AdvancedSettingsAction: String, Identifiable {
     var detail: String {
         switch self {
         case .resetData:
-            return "This erases goals, progress, protected-app selections, local diagnostics, and the anonymous backend install ID, then turns off app protection. Your App Store subscription and iOS Screen Time permission are not canceled. This can't be undone."
+            return CheckpointDataEraseCopy.warningMessage
         }
     }
 
@@ -525,10 +525,15 @@ enum AdvancedSettingsAction: String, Identifiable {
     }
 }
 
+enum CheckpointDataEraseCopy {
+    static let warningMessage = "This erases goals, progress, protected-app selections, local diagnostics, the anonymous backend install ID, and local purchase-status reminders, then turns off app protection. App Store subscriptions or purchases in progress and your iOS Screen Time permission are not canceled. This can't be undone."
+}
+
 struct AdvancedConfirmationView: View {
     let action: AdvancedSettingsAction
     let store: CheckpointStore
     let screenTime: ScreenTimeController
+    let purchaseController: PurchaseController
 
     @Environment(\.dismiss) private var dismiss
     @State private var confirmationText = ""
@@ -625,8 +630,11 @@ struct AdvancedConfirmationView: View {
 
         switch action {
         case .resetData:
-            screenTime.eraseAllData()
-            store.eraseAllData()
+            CheckpointDataEraseCoordinator.eraseAllData(
+                store: store,
+                screenTime: screenTime,
+                purchaseController: purchaseController
+            )
         }
 
         let recoveryMessages = [
@@ -649,9 +657,23 @@ struct AdvancedConfirmationView: View {
     }
 }
 
+@MainActor
+enum CheckpointDataEraseCoordinator {
+    static func eraseAllData(
+        store: CheckpointStore,
+        screenTime: ScreenTimeController,
+        purchaseController: PurchaseController
+    ) {
+        screenTime.eraseAllData()
+        store.eraseAllData()
+        purchaseController.clearPendingPurchaseState()
+    }
+}
+
 enum SettingsPlanState: Equatable, Sendable {
     case free
     case pendingPurchase
+    case unconfirmedPurchase
     case pro
 }
 
@@ -847,12 +869,16 @@ struct SettingsPlanPresentation: Equatable, Sendable {
     init(
         membershipTier: MembershipTier,
         purchaseNotice: MembershipPurchaseNotice?,
+        hasUnresolvedPurchase: Bool = false,
         proActivity: SettingsProActivityPresentation? = nil,
         activePlanSnapshot: MembershipActivePlanSnapshot? = nil
     ) {
         if membershipTier == .member {
             state = .pro
-        } else if purchaseNotice?.isPending == true {
+        } else if hasUnresolvedPurchase,
+                  purchaseNotice == .previousPurchaseUnconfirmed {
+            state = .unconfirmedPurchase
+        } else if hasUnresolvedPurchase || purchaseNotice?.isPending == true {
             state = .pendingPurchase
         } else {
             state = .free
@@ -867,6 +893,8 @@ struct SettingsPlanPresentation: Equatable, Sendable {
             "Checkpoint Free"
         case .pendingPurchase:
             "Checkpoint Pro"
+        case .unconfirmedPurchase:
+            "Checkpoint Pro"
         case .pro:
             activePlanKind.map { "Checkpoint Pro · \($0.shortTitle)" } ?? "Checkpoint Pro"
         }
@@ -878,6 +906,8 @@ struct SettingsPlanPresentation: Equatable, Sendable {
             "FREE"
         case .pendingPurchase:
             "PENDING"
+        case .unconfirmedPurchase:
+            "UNCONFIRMED"
         case .pro:
             "PRO ACTIVE"
         }
@@ -888,7 +918,9 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .free:
             "Protection for one focused goal."
         case .pendingPurchase:
-            "Your purchase is awaiting approval."
+            "The App Store is completing your purchase."
+        case .unconfirmedPurchase:
+            "The App Store hasn’t completed this purchase."
         case .pro:
             proActivity?.headline ?? "Pro is working in the background."
         }
@@ -899,7 +931,9 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .free:
             "Explore Pro for up to \(ProductLimits.memberGoalProfileLimit) goals, fresh checkpoints, and adaptive Next Focus."
         case .pendingPurchase:
-            "Pro unlocks as soon as the App Store confirms it."
+            "Pro unlocks automatically when it finishes. You may need to take action in the App Store."
+        case .unconfirmedPurchase:
+            "It may still complete. Check its status before starting another purchase."
         case .pro:
             "Fresh checkpoints, adaptive guidance, and separate goal lanes stay ready as you practice."
         }
@@ -909,7 +943,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         switch state {
         case .free:
             "Explore Checkpoint Pro"
-        case .pendingPurchase:
+        case .pendingPurchase, .unconfirmedPurchase:
             "Check purchase status"
         case .pro:
             "Manage plan & billing"
@@ -922,6 +956,8 @@ struct SettingsPlanPresentation: Equatable, Sendable {
             "shield.lefthalf.filled"
         case .pendingPurchase:
             "clock.fill"
+        case .unconfirmedPurchase:
+            "questionmark.circle.fill"
         case .pro:
             "sparkles"
         }
@@ -931,7 +967,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         switch state {
         case .free:
             "arrow.up.right"
-        case .pendingPurchase:
+        case .pendingPurchase, .unconfirmedPurchase:
             "clock.arrow.circlepath"
         case .pro:
             "creditcard"
@@ -942,7 +978,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         switch state {
         case .free:
             "Checkpoint Free"
-        case .pendingPurchase:
+        case .pendingPurchase, .unconfirmedPurchase:
             "Checkpoint Pro purchase"
         case .pro:
             planName
@@ -954,7 +990,9 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .free:
             "Current plan. App protection for one focused goal. Checkpoint Pro adds up to \(ProductLimits.memberGoalProfileLimit) goals, fresh checkpoints, and adaptive Next Focus."
         case .pendingPurchase:
-            "Pending App Store approval. Pro unlocks after confirmation."
+            "Waiting for the App Store to complete this purchase. Pro unlocks automatically when it finishes. You may need to take action in the App Store."
+        case .unconfirmedPurchase:
+            "Unconfirmed App Store purchase. It may still complete."
         case .pro:
             if let proActivity {
                 "Active access. \(activePlanAccessibilityValue)\(proActivity.accessibilityValue)."
@@ -968,7 +1006,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         switch state {
         case .free:
             "Opens Checkpoint Pro plans."
-        case .pendingPurchase:
+        case .pendingPurchase, .unconfirmedPurchase:
             "Opens purchase status and plan options."
         case .pro:
             "Opens plan and billing."
@@ -1377,6 +1415,8 @@ struct SettingsPlanCard: View {
             CheckpointTheme.heroInfo
         case .pendingPurchase:
             CheckpointTheme.amber
+        case .unconfirmedPurchase:
+            CheckpointTheme.heroInfo
         case .pro:
             CheckpointTheme.mint
         }

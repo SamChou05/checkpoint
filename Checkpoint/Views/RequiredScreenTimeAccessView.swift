@@ -416,6 +416,7 @@ enum ScreenTimeAccessRecoveryRouting {
 struct RequiredScreenTimeAccessView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
+    let purchaseController: PurchaseController
     let context: ScreenTimeAccessContext
     private let reduceMotionOverride: Bool?
     private let layoutReporter: (@MainActor (ScreenTimeAccessLayoutElement, CGRect) -> Void)?
@@ -435,6 +436,7 @@ struct RequiredScreenTimeAccessView: View {
     init(
         store: CheckpointStore,
         screenTime: ScreenTimeController,
+        purchaseController: PurchaseController,
         context: ScreenTimeAccessContext = .initialSetup,
         onContinue: @escaping () -> Void = {},
         continuesOnboardingAfterDismissal: Bool = false,
@@ -443,6 +445,7 @@ struct RequiredScreenTimeAccessView: View {
     ) {
         self.store = store
         self.screenTime = screenTime
+        self.purchaseController = purchaseController
         self.context = context
         self.onContinue = onContinue
         self.continuesOnboardingAfterDismissal = continuesOnboardingAfterDismissal
@@ -526,7 +529,7 @@ struct RequiredScreenTimeAccessView: View {
                 eraseAllData()
             }
         } message: {
-            Text("This removes goals, progress, protected-app selections, diagnostics, and the anonymous backend install ID.")
+            Text(CheckpointDataEraseCopy.warningMessage)
         }
     }
 
@@ -754,8 +757,11 @@ struct RequiredScreenTimeAccessView: View {
     }
 
     private func eraseAllData() {
-        screenTime.eraseAllData()
-        store.eraseAllData()
+        CheckpointDataEraseCoordinator.eraseAllData(
+            store: store,
+            screenTime: screenTime,
+            purchaseController: purchaseController
+        )
     }
 
     private var accessMotionPolicy: ScreenTimeAccessMotionPolicy {

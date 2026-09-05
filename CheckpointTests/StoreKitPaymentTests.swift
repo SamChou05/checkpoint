@@ -7,14 +7,20 @@ final class StoreKitPaymentTests: XCTestCase {
 
     @MainActor
     func testDebugMembershipEntitlementDefaultsOff() {
-        let controller = PurchaseController(grantsDebugTesterEntitlement: false)
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: nil
+        )
 
         XCTAssertFalse(controller.isMembershipUnlocked)
     }
 
     @MainActor
     func testDebugMembershipEntitlementCanBeExplicitlyEnabled() async {
-        let controller = PurchaseController(grantsDebugTesterEntitlement: true)
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: true,
+            pendingPurchaseDefaults: nil
+        )
         let isUnlocked = await controller.refreshEntitlements()
 
         XCTAssertTrue(isUnlocked)
@@ -191,9 +197,50 @@ final class StoreKitPaymentTests: XCTestCase {
         )
     }
 
-    func testPendingCheckoutDisablesRepeatPurchaseAndUsesAwaitingApprovalCTA() {
+    func testPendingPurchasePlanWinsSelectionAndMissingPlanFallsBackSafely() throws {
+        let planOptions = [
+            makeAnnualPlanOption(),
+            MembershipPlanOption(
+                id: MembershipProductID.monthly,
+                title: "Monthly",
+                displayPrice: "$4.99",
+                cadence: "per month",
+                detail: "Flexible access, billed monthly through Apple."
+            ),
+        ]
+
+        XCTAssertEqual(
+            MembershipPlanSelectionResolver.resolve(
+                planOptions: planOptions,
+                currentID: MembershipProductID.yearly,
+                pendingProductID: MembershipProductID.monthly,
+                defaultID: MembershipProductID.yearly
+            ),
+            MembershipProductID.monthly
+        )
+        XCTAssertEqual(
+            MembershipPlanSelectionResolver.resolve(
+                planOptions: planOptions,
+                currentID: nil,
+                pendingProductID: "checkpoint.membership.missing",
+                defaultID: MembershipProductID.yearly
+            ),
+            MembershipProductID.yearly
+        )
+        XCTAssertNil(
+            MembershipPlanSelectionResolver.resolve(
+                planOptions: [],
+                currentID: MembershipProductID.yearly,
+                pendingProductID: MembershipProductID.monthly,
+                defaultID: MembershipProductID.yearly
+            )
+        )
+    }
+
+    func testPendingCheckoutDisablesRepeatPurchaseAndUsesAppStoreCompletionCTA() {
         let presentation = MembershipCheckoutPresentation(
             selectedPlan: makeAnnualPlanOption(),
+            hasUnresolvedPurchase: true,
             isLoadingPlans: false,
             isRestoringPurchases: false,
             isPurchasing: false,
@@ -205,7 +252,7 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertFalse(presentation.showsPrimaryProgress)
         XCTAssertFalse(presentation.isSecondaryActionDisabled)
         XCTAssertTrue(presentation.shouldShowNoticeInPurchaseBar)
-        XCTAssertEqual(presentation.buttonTitle(accessibilitySize: false), "Awaiting approval")
+        XCTAssertEqual(presentation.buttonTitle(accessibilitySize: false), "Waiting for App Store")
         XCTAssertEqual(presentation.buttonSystemImage, "clock.fill")
         XCTAssertEqual(presentation.secondaryAction, .checkPurchaseStatus)
         XCTAssertEqual(presentation.secondaryButtonTitle, "Check purchase status")
@@ -216,13 +263,22 @@ final class StoreKitPaymentTests: XCTestCase {
         )
         XCTAssertEqual(
             presentation.buttonAccessibilityLabel,
-            "Purchase pending App Store approval"
+            "Purchase waiting for the App Store to complete"
+        )
+        XCTAssertEqual(
+            MembershipPurchaseNotice.pendingApproval.message,
+            "Waiting for the App Store to complete this purchase."
+        )
+        XCTAssertEqual(
+            MembershipPurchaseNotice.pendingApprovalChecked.message,
+            "The App Store is still completing this purchase. Pro unlocks automatically when it finishes."
         )
     }
 
     func testAccessibleCheckoutKeepsVisibleAndVoiceOverBillingComplete() {
         let presentation = MembershipCheckoutPresentation(
             selectedPlan: makeAnnualPlanOption(),
+            hasUnresolvedPurchase: false,
             isLoadingPlans: false,
             isRestoringPurchases: false,
             isPurchasing: false,
@@ -247,6 +303,7 @@ final class StoreKitPaymentTests: XCTestCase {
     func testCatalogRecoveryCTAHasOneClearStateWithoutInlineNotice() {
         let unavailable = MembershipCheckoutPresentation(
             selectedPlan: nil,
+            hasUnresolvedPurchase: false,
             isLoadingPlans: false,
             isRestoringPurchases: false,
             isPurchasing: false,
@@ -254,6 +311,7 @@ final class StoreKitPaymentTests: XCTestCase {
         )
         let loading = MembershipCheckoutPresentation(
             selectedPlan: nil,
+            hasUnresolvedPurchase: false,
             isLoadingPlans: true,
             isRestoringPurchases: false,
             isPurchasing: false,
@@ -275,6 +333,7 @@ final class StoreKitPaymentTests: XCTestCase {
     func testCatalogLoadingBlocksRestoreAndSelectionUntilItsNoticeResolutionFinishes() {
         let presentation = MembershipCheckoutPresentation(
             selectedPlan: makeAnnualPlanOption(),
+            hasUnresolvedPurchase: false,
             isLoadingPlans: true,
             isRestoringPurchases: false,
             isPurchasing: false,
@@ -296,7 +355,8 @@ final class StoreKitPaymentTests: XCTestCase {
     func testPurchaseControllerRejectsOverlappingCatalogAndRestoreOperations() async {
         let loadingController = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            initialStoreOperation: .loadingProducts
+            initialStoreOperation: .loadingProducts,
+            pendingPurchaseDefaults: nil
         )
         let restoreStarted = await loadingController.restorePurchases()
 
@@ -306,7 +366,8 @@ final class StoreKitPaymentTests: XCTestCase {
 
         let restoringController = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            initialStoreOperation: .restoringPurchases
+            initialStoreOperation: .restoringPurchases,
+            pendingPurchaseDefaults: nil
         )
         await restoringController.loadProducts()
 
@@ -315,7 +376,8 @@ final class StoreKitPaymentTests: XCTestCase {
 
         let checkingController = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            initialStoreOperation: .checkingPurchaseStatus
+            initialStoreOperation: .checkingPurchaseStatus,
+            pendingPurchaseDefaults: nil
         )
         let overlappingRestoreStarted = await checkingController.restorePurchases()
 
@@ -327,6 +389,7 @@ final class StoreKitPaymentTests: XCTestCase {
     func testCheckingPurchaseStatusPresentationOwnsSecondaryProgress() {
         let presentation = MembershipCheckoutPresentation(
             selectedPlan: makeAnnualPlanOption(),
+            hasUnresolvedPurchase: true,
             isLoadingPlans: false,
             isRestoringPurchases: false,
             isCheckingPurchaseStatus: true,
@@ -561,7 +624,8 @@ final class StoreKitPaymentTests: XCTestCase {
         )
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            initialActivePlanSnapshot: snapshot
+            initialActivePlanSnapshot: snapshot,
+            pendingPurchaseDefaults: nil
         )
 
         XCTAssertFalse(controller.isMembershipUnlocked)
@@ -571,10 +635,17 @@ final class StoreKitPaymentTests: XCTestCase {
 
     @MainActor
     func testPendingStatusCheckReadsEntitlementsWithoutSynchronizingAndKeepsPendingNotice() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
         let client = MembershipStoreClientSpy(entitlementResponses: [[]])
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil,
+            currentDate: { now }
+        )
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
         )
         controller.purchaseNotice = .pendingApproval
 
@@ -588,6 +659,478 @@ final class StoreKitPaymentTests: XCTestCase {
     }
 
     @MainActor
+    func testPendingPurchaseMarkerRestoresExactPlanAcrossRelaunch() throws {
+        let suiteName = "StoreKitPaymentTests.pending-relaunch.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        let persistence = MembershipPendingPurchasePersistence(defaults: defaults)
+        persistence.save(
+            MembershipPendingPurchaseRecord(
+                productID: MembershipProductID.monthly,
+                initiatedAt: initiatedAt
+            )
+        )
+
+        let relaunched = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { initiatedAt.addingTimeInterval(60) }
+        )
+
+        XCTAssertEqual(relaunched.pendingPurchaseProductID, MembershipProductID.monthly)
+        XCTAssertEqual(relaunched.purchaseNotice, .pendingApproval)
+    }
+
+    @MainActor
+    func testLongRunningPendingPurchaseRetainsRecoveryEvidenceAcrossRelaunches() throws {
+        let suiteName = "StoreKitPaymentTests.pending-long-running.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        let persistence = MembershipPendingPurchasePersistence(defaults: defaults)
+        let record = MembershipPendingPurchaseRecord(
+            productID: MembershipProductID.yearly,
+            initiatedAt: initiatedAt
+        )
+        persistence.save(record)
+
+        let stillPending = persistence.load(
+            at: initiatedAt.addingTimeInterval(
+                MembershipPendingPurchasePersistence.defaultLongRunningInterval - 1
+            )
+        )
+        XCTAssertEqual(stillPending, .recent(record))
+
+        let longRunningDate = initiatedAt.addingTimeInterval(
+            MembershipPendingPurchasePersistence.defaultLongRunningInterval
+        )
+        XCTAssertEqual(
+            persistence.load(at: longRunningDate),
+            .longRunning(record)
+        )
+
+        let relaunched = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { longRunningDate }
+        )
+        let checkout = MembershipCheckoutPresentation(
+            selectedPlan: makeAnnualPlanOption(),
+            hasUnresolvedPurchase: relaunched.hasUnresolvedPurchase,
+            isLoadingPlans: false,
+            isRestoringPurchases: false,
+            isPurchasing: false,
+            notice: relaunched.purchaseNotice
+        )
+
+        let relaunchedAgain = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { longRunningDate.addingTimeInterval(60) }
+        )
+
+        XCTAssertEqual(relaunched.pendingPurchaseProductID, MembershipProductID.yearly)
+        XCTAssertTrue(relaunched.hasUnresolvedPurchase)
+        XCTAssertEqual(relaunched.purchaseNotice, .previousPurchaseUnconfirmed)
+        XCTAssertNotNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+        XCTAssertFalse(checkout.isPrimaryActionDisabled)
+        XCTAssertEqual(
+            checkout.buttonTitle(accessibilitySize: false),
+            "Start another purchase — $29.99 per year"
+        )
+        XCTAssertEqual(checkout.secondaryAction, .checkPurchaseStatus)
+        XCTAssertEqual(
+            relaunched.purchaseNotice?.message,
+            "The App Store still hasn’t completed the earlier purchase, and it may finish later. Check its status before starting another purchase."
+        )
+        XCTAssertFalse(relaunched.purchaseNotice?.message.contains("declined") == true)
+        XCTAssertEqual(relaunchedAgain.pendingPurchaseProductID, MembershipProductID.yearly)
+        XCTAssertEqual(relaunchedAgain.purchaseNotice, .previousPurchaseUnconfirmed)
+    }
+
+    @MainActor
+    func testExplicitLongRunningRetryPreservesRecoveryMarkerUntilStoreKitResolves() throws {
+        let suiteName = "StoreKitPaymentTests.pending-explicit-retry.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        var now = initiatedAt.addingTimeInterval(60)
+        let recentController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+        recentController.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: initiatedAt
+        )
+
+        XCTAssertFalse(recentController.prepareForPurchaseAttempt())
+        XCTAssertEqual(recentController.pendingPurchaseProductID, MembershipProductID.monthly)
+        XCTAssertNotNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+
+        now = initiatedAt.addingTimeInterval(
+            MembershipPendingPurchasePersistence.defaultLongRunningInterval
+        )
+        let longRunningController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+
+        XCTAssertEqual(longRunningController.purchaseNotice, .previousPurchaseUnconfirmed)
+        XCTAssertTrue(longRunningController.prepareForPurchaseAttempt())
+        XCTAssertEqual(
+            longRunningController.pendingPurchaseProductID,
+            MembershipProductID.monthly
+        )
+        XCTAssertEqual(
+            longRunningController.purchaseNotice,
+            .previousPurchaseUnconfirmed
+        )
+        XCTAssertNotNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+
+        longRunningController.purchaseNotice = nil
+        longRunningController.resolveUnsuccessfulPurchaseAttempt(notice: nil)
+        XCTAssertEqual(
+            longRunningController.purchaseNotice,
+            .previousPurchaseUnconfirmed,
+            "Canceling a replacement attempt must restore the earlier recovery state."
+        )
+
+        longRunningController.purchaseNotice = nil
+        longRunningController.resolveUnsuccessfulPurchaseAttempt(
+            notice: .failure("Replacement attempt failed.")
+        )
+        XCTAssertEqual(
+            longRunningController.purchaseNotice,
+            .previousPurchaseUnconfirmed,
+            "A replacement failure cannot disprove the earlier StoreKit request."
+        )
+        XCTAssertEqual(
+            longRunningController.pendingPurchaseProductID,
+            MembershipProductID.monthly
+        )
+        XCTAssertNotNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+    }
+
+    @MainActor
+    func testLateApprovalStillUnlocksAndClearsLongRunningMarker() async throws {
+        let suiteName = "StoreKitPaymentTests.pending-late-approval.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        MembershipPendingPurchasePersistence(defaults: defaults).save(
+            MembershipPendingPurchaseRecord(
+                productID: MembershipProductID.yearly,
+                initiatedAt: initiatedAt
+            )
+        )
+        let entitlement = makeEntitlement(
+            transactionID: 80,
+            productID: MembershipProductID.yearly,
+            purchaseDate: initiatedAt.addingTimeInterval(30)
+        )
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: MembershipStoreClientSpy(entitlementResponses: [[entitlement]]),
+            pendingPurchaseDefaults: defaults,
+            currentDate: {
+                initiatedAt.addingTimeInterval(
+                    MembershipPendingPurchasePersistence.defaultLongRunningInterval + 60
+                )
+            }
+        )
+
+        let unlocked = await controller.refreshEntitlements()
+
+        XCTAssertTrue(unlocked)
+        XCTAssertTrue(controller.isMembershipUnlocked)
+        XCTAssertNil(controller.pendingPurchaseProductID)
+        XCTAssertNil(controller.purchaseNotice)
+        XCTAssertNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+    }
+
+    @MainActor
+    func testInvalidPendingPurchaseMarkersArePrunedWithoutBlockingCheckout() throws {
+        let suiteName = "StoreKitPaymentTests.pending-invalid.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let persistence = MembershipPendingPurchasePersistence(defaults: defaults)
+
+        defaults.set(Data([0x00, 0x01]), forKey: MembershipPendingPurchasePersistence.storageKey)
+        XCTAssertEqual(persistence.load(at: now), .none)
+        XCTAssertNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+
+        let unsupported = MembershipPendingPurchaseRecord(
+            productID: "checkpoint.membership.unsupported",
+            initiatedAt: now
+        )
+        defaults.set(
+            try JSONEncoder().encode(unsupported),
+            forKey: MembershipPendingPurchasePersistence.storageKey
+        )
+        XCTAssertEqual(persistence.load(at: now), .none)
+        XCTAssertNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+
+        let future = MembershipPendingPurchaseRecord(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now.addingTimeInterval(1)
+        )
+        defaults.set(
+            try JSONEncoder().encode(future),
+            forKey: MembershipPendingPurchasePersistence.storageKey
+        )
+        XCTAssertEqual(persistence.load(at: now), .none)
+        XCTAssertNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+    }
+
+    @MainActor
+    func testPendingStatusCheckKeepsPersistedMarkerButCheckedCopyIsSessionOnly() async throws {
+        let suiteName = "StoreKitPaymentTests.pending-check.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        let persistence = MembershipPendingPurchasePersistence(defaults: defaults)
+        persistence.save(
+            MembershipPendingPurchaseRecord(
+                productID: MembershipProductID.monthly,
+                initiatedAt: initiatedAt
+            )
+        )
+        let client = MembershipStoreClientSpy(entitlementResponses: [[]])
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: client,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { initiatedAt.addingTimeInterval(60) }
+        )
+
+        let unlocked = await controller.checkPurchaseStatus()
+        let events = await client.recordedEvents()
+        let relaunched = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { initiatedAt.addingTimeInterval(120) }
+        )
+
+        XCTAssertFalse(unlocked)
+        XCTAssertEqual(controller.purchaseNotice, .pendingApprovalChecked)
+        XCTAssertEqual(controller.pendingPurchaseProductID, MembershipProductID.monthly)
+        XCTAssertEqual(events, [.readEntitlements])
+        XCTAssertEqual(relaunched.purchaseNotice, .pendingApproval)
+        XCTAssertEqual(relaunched.pendingPurchaseProductID, MembershipProductID.monthly)
+    }
+
+    @MainActor
+    func testVerifiedEntitlementClearsPersistedPendingPurchaseMarker() async throws {
+        let suiteName = "StoreKitPaymentTests.pending-approved.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        MembershipPendingPurchasePersistence(defaults: defaults).save(
+            MembershipPendingPurchaseRecord(
+                productID: MembershipProductID.monthly,
+                initiatedAt: initiatedAt
+            )
+        )
+        let entitlement = makeEntitlement(
+            transactionID: 76,
+            productID: MembershipProductID.monthly,
+            purchaseDate: initiatedAt.addingTimeInterval(30)
+        )
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: MembershipStoreClientSpy(entitlementResponses: [[entitlement]]),
+            pendingPurchaseDefaults: defaults,
+            currentDate: { initiatedAt.addingTimeInterval(60) }
+        )
+
+        let unlocked = await controller.refreshEntitlements()
+
+        XCTAssertTrue(unlocked)
+        XCTAssertNil(controller.pendingPurchaseProductID)
+        XCTAssertNil(controller.purchaseNotice)
+        XCTAssertNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+    }
+
+    @MainActor
+    func testForegroundEntitlementRefreshAgesPendingPresentationWithoutDiscardingMarker() async {
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        var now = initiatedAt
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: MembershipStoreClientSpy(entitlementResponses: [[]]),
+            pendingPurchaseDefaults: nil,
+            currentDate: { now }
+        )
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.yearly,
+            initiatedAt: initiatedAt
+        )
+        now = initiatedAt.addingTimeInterval(
+            MembershipPendingPurchasePersistence.defaultLongRunningInterval
+        )
+
+        let unlocked = await controller.refreshEntitlements()
+
+        XCTAssertFalse(unlocked)
+        XCTAssertEqual(controller.pendingPurchaseProductID, MembershipProductID.yearly)
+        XCTAssertEqual(controller.purchaseNotice, .previousPurchaseUnconfirmed)
+    }
+
+    @MainActor
+    func testDebugEntitlementClearsPersistedPendingPurchaseMarker() async throws {
+        let suiteName = "StoreKitPaymentTests.pending-debug.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        MembershipPendingPurchasePersistence(defaults: defaults).save(
+            MembershipPendingPurchaseRecord(
+                productID: MembershipProductID.yearly,
+                initiatedAt: now
+            )
+        )
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: true,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+
+        let unlocked = await controller.refreshEntitlements()
+
+        XCTAssertTrue(unlocked)
+        XCTAssertNil(controller.pendingPurchaseProductID)
+        XCTAssertNil(controller.purchaseNotice)
+        XCTAssertNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+    }
+
+    @MainActor
+    func testExplicitDataEraseClearsPendingPurchaseStateAndPersistence() throws {
+        let suiteName = "StoreKitPaymentTests.pending-erase.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
+        )
+
+        controller.clearPendingPurchaseState()
+        let relaunched = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+
+        XCTAssertNil(controller.pendingPurchaseProductID)
+        XCTAssertNil(controller.purchaseNotice)
+        XCTAssertNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+        XCTAssertNil(relaunched.pendingPurchaseProductID)
+        XCTAssertNil(relaunched.purchaseNotice)
+    }
+
+    @MainActor
+    func testSupersededEntitlementRefreshCannotClearNewPersistedPendingPurchaseMarker() async throws {
+        let suiteName = "StoreKitPaymentTests.pending-refresh-race.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let activeAnnual = makeEntitlement(
+            transactionID: 75,
+            productID: MembershipProductID.yearly,
+            purchaseDate: now
+        )
+        let client = GatedMembershipStoreClient()
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: client,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+
+        let olderRefresh = Task { @MainActor in
+            await controller.refreshEntitlements()
+        }
+        await client.waitForRequestCount(1)
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
+        )
+        let newerRefresh = Task { @MainActor in
+            await controller.refreshEntitlements()
+        }
+        await client.waitForRequestCount(2)
+
+        await client.resumeRequest(1, with: [])
+        _ = await newerRefresh.value
+        await client.resumeRequest(0, with: [activeAnnual])
+        _ = await olderRefresh.value
+        let relaunched = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now.addingTimeInterval(60) }
+        )
+
+        XCTAssertEqual(controller.pendingPurchaseProductID, MembershipProductID.monthly)
+        XCTAssertEqual(controller.purchaseNotice, .pendingApproval)
+        XCTAssertFalse(controller.isMembershipUnlocked)
+        XCTAssertNotNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+        XCTAssertEqual(relaunched.pendingPurchaseProductID, MembershipProductID.monthly)
+        XCTAssertEqual(relaunched.purchaseNotice, .pendingApproval)
+    }
+
+    @MainActor
+    func testSupersededPendingStatusCheckCannotOverwriteNewerVerifiedEntitlement() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let activeAnnual = makeEntitlement(
+            transactionID: 82,
+            productID: MembershipProductID.yearly,
+            purchaseDate: now
+        )
+        let client = GatedMembershipStoreClient()
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: client,
+            pendingPurchaseDefaults: nil,
+            currentDate: { now }
+        )
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
+        )
+
+        let olderCheck = Task { @MainActor in
+            await controller.checkPurchaseStatus()
+        }
+        await client.waitForRequestCount(1)
+        let newerRefresh = Task { @MainActor in
+            await controller.refreshEntitlements()
+        }
+        await client.waitForRequestCount(2)
+
+        await client.resumeRequest(1, with: [activeAnnual])
+        let refreshed = await newerRefresh.value
+        await client.resumeRequest(0, with: [])
+        let checked = await olderCheck.value
+
+        XCTAssertTrue(refreshed)
+        XCTAssertFalse(checked)
+        XCTAssertTrue(controller.isMembershipUnlocked)
+        XCTAssertEqual(controller.activePlanSnapshot?.transactionID, activeAnnual.transactionID)
+        XCTAssertNil(controller.pendingPurchaseProductID)
+        XCTAssertNil(controller.purchaseNotice)
+        XCTAssertFalse(controller.isCheckingPurchaseStatus)
+    }
+
+    @MainActor
     func testPendingStatusCheckClearsPendingAndPublishesActiveAnnualSnapshot() async throws {
         let entitlement = makeEntitlement(
             transactionID: 77,
@@ -597,7 +1140,8 @@ final class StoreKitPaymentTests: XCTestCase {
         let client = MembershipStoreClientSpy(entitlementResponses: [[entitlement]])
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil
         )
         controller.purchaseNotice = .pendingApproval
         var publishedEntitlement = false
@@ -641,7 +1185,8 @@ final class StoreKitPaymentTests: XCTestCase {
         )
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil
         )
 
         let unlocked = await controller.refreshEntitlements()
@@ -667,7 +1212,8 @@ final class StoreKitPaymentTests: XCTestCase {
         )
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil
         )
 
         let unlocked = await controller.refreshEntitlements()
@@ -682,7 +1228,8 @@ final class StoreKitPaymentTests: XCTestCase {
         let client = MembershipStoreClientSpy(entitlementResponses: [[]])
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil
         )
 
         let unlocked = await controller.restorePurchases()
@@ -697,6 +1244,91 @@ final class StoreKitPaymentTests: XCTestCase {
     }
 
     @MainActor
+    func testEmptyRestoreCannotOverwritePendingPurchaseMarker() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let client = MembershipStoreClientSpy(entitlementResponses: [[]])
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: client,
+            pendingPurchaseDefaults: nil,
+            currentDate: { now }
+        )
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
+        )
+
+        let unlocked = await controller.restorePurchases()
+        let events = await client.recordedEvents()
+
+        XCTAssertFalse(unlocked)
+        XCTAssertEqual(controller.pendingPurchaseProductID, MembershipProductID.monthly)
+        XCTAssertEqual(controller.purchaseNotice, .pendingApproval)
+        XCTAssertEqual(events, [.synchronize, .readEntitlements])
+    }
+
+    @MainActor
+    func testSynchronizationFailurePreservesRecentAndLongRunningPurchaseRecovery() async throws {
+        let suiteName = "StoreKitPaymentTests.pending-sync-failure.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let initiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        let recentClient = MembershipStoreClientSpy(
+            entitlementResponses: [[]],
+            synchronizationFails: true
+        )
+        let recentController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: recentClient,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { initiatedAt.addingTimeInterval(60) }
+        )
+        recentController.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: initiatedAt
+        )
+
+        let recentUnlocked = await recentController.restorePurchases()
+        let recentEvents = await recentClient.recordedEvents()
+
+        XCTAssertFalse(recentUnlocked)
+        XCTAssertEqual(recentController.purchaseNotice, .pendingApproval)
+        XCTAssertEqual(recentController.pendingPurchaseProductID, MembershipProductID.monthly)
+        XCTAssertNotNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+        XCTAssertEqual(recentEvents, [.synchronize])
+
+        let longRunningClient = MembershipStoreClientSpy(
+            entitlementResponses: [[]],
+            synchronizationFails: true
+        )
+        let longRunningController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: longRunningClient,
+            pendingPurchaseDefaults: defaults,
+            currentDate: {
+                initiatedAt.addingTimeInterval(
+                    MembershipPendingPurchasePersistence.defaultLongRunningInterval
+                )
+            }
+        )
+
+        let longRunningUnlocked = await longRunningController.restorePurchases()
+        let longRunningEvents = await longRunningClient.recordedEvents()
+
+        XCTAssertFalse(longRunningUnlocked)
+        XCTAssertEqual(
+            longRunningController.purchaseNotice,
+            .previousPurchaseUnconfirmed
+        )
+        XCTAssertEqual(
+            longRunningController.pendingPurchaseProductID,
+            MembershipProductID.monthly
+        )
+        XCTAssertNotNil(defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey))
+        XCTAssertEqual(longRunningEvents, [.synchronize])
+    }
+
+    @MainActor
     func testRestoreDoesNotReadEntitlementsWhenSynchronizationFails() async {
         let client = MembershipStoreClientSpy(
             entitlementResponses: [[]],
@@ -704,7 +1336,8 @@ final class StoreKitPaymentTests: XCTestCase {
         )
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil
         )
 
         let unlocked = await controller.restorePurchases()
@@ -713,6 +1346,79 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertFalse(unlocked)
         XCTAssertEqual(controller.purchaseNotice, .failure("Could not restore purchases yet."))
         XCTAssertEqual(events, [.synchronize])
+    }
+
+    @MainActor
+    func testSuccessfulRestoreReadsEntitlementsAfterConcurrentPreSyncRefresh() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let annual = makeEntitlement(
+            transactionID: 82,
+            productID: MembershipProductID.yearly,
+            purchaseDate: now
+        )
+        let client = GatedSynchronizationMembershipStoreClient(entitlements: [])
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: client,
+            pendingPurchaseDefaults: nil,
+            currentDate: { now }
+        )
+
+        let restore = Task { @MainActor in
+            await controller.restorePurchases()
+        }
+        await client.waitForSynchronizationRequest()
+
+        let preSyncRefresh = await controller.refreshEntitlements()
+        await client.replaceEntitlements(with: [annual])
+        await client.succeedSynchronization()
+        let restored = await restore.value
+        let entitlementRequestCount = await client.entitlementRequestCount()
+
+        XCTAssertFalse(preSyncRefresh)
+        XCTAssertTrue(restored)
+        XCTAssertTrue(controller.isMembershipUnlocked)
+        XCTAssertEqual(controller.activePlanSnapshot?.transactionID, annual.transactionID)
+        XCTAssertEqual(entitlementRequestCount, 2)
+        XCTAssertFalse(controller.isRestoringPurchases)
+    }
+
+    @MainActor
+    func testLateRestoreFailureCannotOverwriteNewerVerifiedEntitlement() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let annual = makeEntitlement(
+            transactionID: 81,
+            productID: MembershipProductID.yearly,
+            purchaseDate: now
+        )
+        let client = GatedSynchronizationMembershipStoreClient(entitlements: [annual])
+        let controller = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            storeClient: client,
+            pendingPurchaseDefaults: nil,
+            currentDate: { now }
+        )
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
+        )
+
+        let restore = Task { @MainActor in
+            await controller.restorePurchases()
+        }
+        await client.waitForSynchronizationRequest()
+
+        let refreshed = await controller.refreshEntitlements()
+        await client.failSynchronization()
+        let restored = await restore.value
+
+        XCTAssertTrue(refreshed)
+        XCTAssertFalse(restored)
+        XCTAssertTrue(controller.isMembershipUnlocked)
+        XCTAssertEqual(controller.activePlanSnapshot?.transactionID, annual.transactionID)
+        XCTAssertNil(controller.pendingPurchaseProductID)
+        XCTAssertNil(controller.purchaseNotice)
+        XCTAssertFalse(controller.isRestoringPurchases)
     }
 
     @MainActor
@@ -726,7 +1432,13 @@ final class StoreKitPaymentTests: XCTestCase {
         let client = GatedMembershipStoreClient()
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil,
+            currentDate: { now }
+        )
+        controller.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
         )
 
         let olderRefresh = Task { @MainActor in
@@ -746,6 +1458,8 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertTrue(controller.isMembershipUnlocked)
         XCTAssertEqual(controller.activePlanSnapshot?.transactionID, annual.transactionID)
         XCTAssertEqual(controller.purchasedProductIDs, [MembershipProductID.yearly])
+        XCTAssertNil(controller.pendingPurchaseProductID)
+        XCTAssertNil(controller.purchaseNotice)
     }
 
     @MainActor
@@ -767,7 +1481,8 @@ final class StoreKitPaymentTests: XCTestCase {
         )
         let controller = PurchaseController(
             grantsDebugTesterEntitlement: false,
-            storeClient: client
+            storeClient: client,
+            pendingPurchaseDefaults: nil
         )
 
         let olderRefresh = Task { @MainActor in
@@ -825,6 +1540,21 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertNil(afterApproval)
     }
 
+    func testUnconfirmedPurchaseRecoveryNoticeSurvivesCatalogReload() {
+        let recoveredCatalog = MembershipPurchaseNotice.resolvingCatalogLoad(
+            current: .previousPurchaseUnconfirmed,
+            catalogNotice: nil
+        )
+        let unavailableCatalog = MembershipPurchaseNotice.resolvingCatalogLoad(
+            current: .previousPurchaseUnconfirmed,
+            catalogNotice: .catalogUnavailable("Could not load App Store plans yet.")
+        )
+
+        XCTAssertEqual(recoveredCatalog, .previousPurchaseUnconfirmed)
+        XCTAssertEqual(unavailableCatalog, .previousPurchaseUnconfirmed)
+        XCTAssertTrue(MembershipPurchaseNotice.previousPurchaseUnconfirmed.shouldDisplayWithoutSelectedPlan)
+    }
+
     func testCatalogReloadReplacesNonpendingNoticeWithCurrentCatalogState() {
         let unavailable = MembershipPurchaseNotice.resolvingCatalogLoad(
             current: .failure("A previous purchase failed."),
@@ -843,12 +1573,16 @@ final class StoreKitPaymentTests: XCTestCase {
     }
 
     func testOnlyActionableNoCatalogNoticesRenderSeparately() {
-        XCTAssertFalse(MembershipPurchaseNotice.pendingApproval.shouldDisplayWithoutSelectedPlan)
-        XCTAssertFalse(
+        XCTAssertTrue(MembershipPurchaseNotice.pendingApproval.shouldDisplayWithoutSelectedPlan)
+        XCTAssertTrue(
             MembershipPurchaseNotice.pendingApprovalChecked.shouldDisplayWithoutSelectedPlan
         )
         XCTAssertFalse(
             MembershipPurchaseNotice.catalogUnavailable("Catalog unavailable.")
+                .shouldDisplayWithoutSelectedPlan
+        )
+        XCTAssertTrue(
+            MembershipPurchaseNotice.previousPurchaseUnconfirmed
                 .shouldDisplayWithoutSelectedPlan
         )
         XCTAssertTrue(
@@ -976,6 +1710,63 @@ private actor MembershipStoreClientSpy: MembershipStoreClient {
 
     func recordedEvents() -> [Event] {
         events
+    }
+}
+
+private actor GatedSynchronizationMembershipStoreClient: MembershipStoreClient {
+    enum Failure: Error {
+        case synchronization
+    }
+
+    private var entitlements: [MembershipEntitlementRecord]
+    private var entitlementRequests = 0
+    private var synchronizationRequested = false
+    private var synchronizationContinuation: CheckedContinuation<Void, Error>?
+
+    init(entitlements: [MembershipEntitlementRecord]) {
+        self.entitlements = entitlements
+    }
+
+    func currentMembershipEntitlements() async -> [MembershipEntitlementRecord] {
+        entitlementRequests += 1
+        return entitlements
+    }
+
+    func subscriptionStatuses(
+        for _: String
+    ) async throws -> [MembershipSubscriptionStatusRecord] {
+        []
+    }
+
+    func synchronize() async throws {
+        synchronizationRequested = true
+        try await withCheckedThrowingContinuation { continuation in
+            synchronizationContinuation = continuation
+        }
+    }
+
+    func waitForSynchronizationRequest() async {
+        while !synchronizationRequested {
+            await Task.yield()
+        }
+    }
+
+    func failSynchronization() {
+        synchronizationContinuation?.resume(throwing: Failure.synchronization)
+        synchronizationContinuation = nil
+    }
+
+    func succeedSynchronization() {
+        synchronizationContinuation?.resume(returning: ())
+        synchronizationContinuation = nil
+    }
+
+    func replaceEntitlements(with entitlements: [MembershipEntitlementRecord]) {
+        self.entitlements = entitlements
+    }
+
+    func entitlementRequestCount() -> Int {
+        entitlementRequests
     }
 }
 

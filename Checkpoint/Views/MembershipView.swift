@@ -9,6 +9,7 @@ enum MembershipPaywallLayoutElement: Hashable {
     case selectedPlanSupport
     case subscriptionDisclosure
     case checkoutBar
+    case secondaryAction
     case primaryAction
     case memberPlanReceipt
     case memberPlanIdentity
@@ -590,11 +591,13 @@ struct MembershipView: View {
             proBenefitsPanel
         case .notice:
             if let notice = purchaseController.purchaseNotice,
-               store.isMember || (planOptions.isEmpty && notice.shouldDisplayWithoutSelectedPlan) {
+               store.isMember {
                 purchaseNotice(notice)
             }
         case .restore:
-            restoreButton
+            if !purchaseController.hasUnresolvedPurchase {
+                restoreButton
+            }
         case .legal:
             paywallLegalLinks
         }
@@ -769,6 +772,11 @@ struct MembershipView: View {
                 }
             } else if planOptions.isEmpty {
                 unavailablePlans
+
+                if let notice = purchaseController.purchaseNotice,
+                   notice.shouldDisplayWithoutSelectedPlan {
+                    purchaseNotice(notice)
+                }
 
                 if presentation.checkoutPlacement == .afterPlanChoices {
                     inlinePurchaseAction
@@ -1168,11 +1176,17 @@ struct MembershipView: View {
                     .padding(.horizontal, 20)
             }
 
+            if purchaseController.hasUnresolvedPurchase {
+                restoreButton
+                    .padding(.horizontal, 20)
+            }
+
             purchaseActionButton(usesCompactTitle: presentation.contentDensity == .compact)
                 .padding(.horizontal, 20)
                 .padding(.top, selectedOption == nil ? 2 : 0)
 
-            if selectedOption != nil {
+            if selectedOption != nil,
+               !purchaseController.hasUnresolvedPurchase {
                 purchaseTrustLine
                     .padding(.horizontal, 20)
             }
@@ -1187,6 +1201,10 @@ struct MembershipView: View {
             if let notice = purchaseController.purchaseNotice,
                checkoutPresentation.shouldShowNoticeInPurchaseBar {
                 purchaseNotice(notice)
+            }
+
+            if purchaseController.hasUnresolvedPurchase {
+                restoreButton
             }
 
             purchaseActionButton(usesCompactTitle: false)
@@ -1237,6 +1255,7 @@ struct MembershipView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .reportMembershipPaywallLayoutFrame(.secondaryAction, using: layoutReporter)
         .accessibilityLabel(checkoutPresentation.secondaryButtonAccessibilityLabel)
         .disabled(checkoutPresentation.isSecondaryActionDisabled)
     }
@@ -1317,6 +1336,7 @@ struct MembershipView: View {
     private var checkoutPresentation: MembershipCheckoutPresentation {
         MembershipCheckoutPresentation(
             selectedPlan: selectedOption,
+            hasUnresolvedPurchase: purchaseController.hasUnresolvedPurchase,
             isLoadingPlans: purchaseController.isLoadingProducts,
             isRestoringPurchases: purchaseController.isRestoringPurchases,
             isCheckingPurchaseStatus: purchaseController.isCheckingPurchaseStatus,
@@ -1359,16 +1379,22 @@ struct MembershipView: View {
             selectedProductID = nil
             return
         }
-        guard !planOptions.contains(where: { $0.id == selectedProductID }) else { return }
 
         let defaultOptionID: String?
         if planOptionsOverride != nil {
             defaultOptionID = planOptions.first(where: \.isRecommended)?.id ?? planOptions.first?.id
         } else {
-            defaultOptionID = catalogPresentation.resolvedSelection(currentID: selectedProductID)
+            defaultOptionID = catalogPresentation.defaultPlanID
         }
+        let resolvedSelection = MembershipPlanSelectionResolver.resolve(
+            planOptions: planOptions,
+            currentID: selectedProductID,
+            pendingProductID: purchaseController.pendingPurchaseProductID,
+            defaultID: defaultOptionID
+        )
+        guard resolvedSelection != selectedProductID else { return }
         withAnimation(CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)) {
-            selectedProductID = defaultOptionID
+            selectedProductID = resolvedSelection
         }
     }
 

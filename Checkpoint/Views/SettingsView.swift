@@ -209,7 +209,12 @@ struct SettingsView: View {
                 QuestionGenerationDiagnosticsView(store: store)
             }
             .sheet(item: $advancedAction) { action in
-                AdvancedConfirmationView(action: action, store: store, screenTime: screenTime)
+                AdvancedConfirmationView(
+                    action: action,
+                    store: store,
+                    screenTime: screenTime,
+                    purchaseController: purchaseController
+                )
             }
             .alert("Turn off protection?", isPresented: $isStopProtectionConfirmationPresented) {
                 Button("Start 20-question review") {
@@ -1115,6 +1120,7 @@ struct SettingsView: View {
             presentation: SettingsPlanPresentation(
                 membershipTier: store.membershipTier,
                 purchaseNotice: purchaseController.purchaseNotice,
+                hasUnresolvedPurchase: purchaseController.hasUnresolvedPurchase,
                 proActivity: store.isMember ? proActivityPresentation : nil,
                 activePlanSnapshot: purchaseController.activePlanSnapshot
             )

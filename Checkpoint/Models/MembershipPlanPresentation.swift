@@ -145,9 +145,15 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
     }
 }
 
+struct MembershipPendingPurchaseRecord: Codable, Equatable, Sendable {
+    let productID: String
+    let initiatedAt: Date
+}
+
 enum MembershipPurchaseNotice: Equatable, Sendable {
     case pendingApproval
     case pendingApprovalChecked
+    case previousPurchaseUnconfirmed
     case catalogUnavailable(String)
     case failure(String)
     case information(String)
@@ -155,9 +161,11 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
     var message: String {
         switch self {
         case .pendingApproval:
-            "Purchase is pending approval."
+            "Waiting for the App Store to complete this purchase."
         case .pendingApprovalChecked:
-            "Still awaiting App Store approval. Pro unlocks automatically when it’s confirmed."
+            "The App Store is still completing this purchase. Pro unlocks automatically when it finishes."
+        case .previousPurchaseUnconfirmed:
+            "The App Store still hasn’t completed the earlier purchase, and it may finish later. Check its status before starting another purchase."
         case .catalogUnavailable(let message),
              .failure(let message),
              .information(let message):
@@ -169,6 +177,8 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
         switch self {
         case .pendingApproval, .pendingApprovalChecked:
             .pending
+        case .previousPurchaseUnconfirmed:
+            .information
         case .catalogUnavailable, .failure:
             .failure
         case .information:
@@ -180,6 +190,15 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
         switch self {
         case .pendingApproval, .pendingApprovalChecked:
             true
+        case .previousPurchaseUnconfirmed, .catalogUnavailable, .failure, .information:
+            false
+        }
+    }
+
+    var requiresPurchaseStatusCheck: Bool {
+        switch self {
+        case .pendingApproval, .pendingApprovalChecked, .previousPurchaseUnconfirmed:
+            true
         case .catalogUnavailable, .failure, .information:
             false
         }
@@ -187,9 +206,19 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
 
     var shouldDisplayWithoutSelectedPlan: Bool {
         switch self {
-        case .failure, .information:
+        case .pendingApproval, .pendingApprovalChecked,
+             .previousPurchaseUnconfirmed, .failure, .information:
             true
-        case .pendingApproval, .pendingApprovalChecked, .catalogUnavailable:
+        case .catalogUnavailable:
+            false
+        }
+    }
+
+    private var survivesCatalogLoad: Bool {
+        switch self {
+        case .pendingApproval, .pendingApprovalChecked, .previousPurchaseUnconfirmed:
+            true
+        case .catalogUnavailable, .failure, .information:
             false
         }
     }
@@ -198,7 +227,7 @@ enum MembershipPurchaseNotice: Equatable, Sendable {
         current: MembershipPurchaseNotice?,
         catalogNotice: MembershipPurchaseNotice?
     ) -> MembershipPurchaseNotice? {
-        current?.isPending == true ? current : catalogNotice
+        current?.survivesCatalogLoad == true ? current : catalogNotice
     }
 
     static func resolvingEntitlementRefresh(
@@ -222,6 +251,7 @@ enum MembershipPurchaseNoticeTone: Equatable, Sendable {
 
 struct MembershipCheckoutPresentation: Equatable, Sendable {
     let selectedPlan: MembershipPlanOption?
+    let hasUnresolvedPurchase: Bool
     let isLoadingPlans: Bool
     let isRestoringPurchases: Bool
     let isCheckingPurchaseStatus: Bool
@@ -230,6 +260,7 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
 
     init(
         selectedPlan: MembershipPlanOption?,
+        hasUnresolvedPurchase: Bool,
         isLoadingPlans: Bool,
         isRestoringPurchases: Bool,
         isCheckingPurchaseStatus: Bool = false,
@@ -237,6 +268,7 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         notice: MembershipPurchaseNotice?
     ) {
         self.selectedPlan = selectedPlan
+        self.hasUnresolvedPurchase = hasUnresolvedPurchase
         self.isLoadingPlans = isLoadingPlans
         self.isRestoringPurchases = isRestoringPurchases
         self.isCheckingPurchaseStatus = isCheckingPurchaseStatus
@@ -270,13 +302,18 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
 
     func buttonTitle(accessibilitySize _: Bool, compact: Bool = false) -> String {
         if notice?.isPending == true {
-            return "Awaiting approval"
+            return "Waiting for App Store"
         }
         if isLoadingPlans {
             return selectedPlan == nil ? "Loading plans" : "Refreshing prices"
         }
         guard let selectedPlan else {
             return "Reload App Store plans"
+        }
+        if notice == .previousPurchaseUnconfirmed {
+            return compact
+                ? "Start another purchase — \(selectedPlan.displayPrice)"
+                : "Start another purchase — \(selectedPlan.displayPrice) \(selectedPlan.cadence)"
         }
         if compact {
             return "Subscribe — \(selectedPlan.displayPrice)"
@@ -286,7 +323,7 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
 
     var buttonAccessibilityLabel: String {
         if notice?.isPending == true {
-            return "Purchase pending App Store approval"
+            return "Purchase waiting for the App Store to complete"
         }
         if isLoadingPlans {
             return selectedPlan == nil
@@ -298,6 +335,9 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         }
 
         let label = "Subscribe to Checkpoint Pro, \(selectedPlan.title) plan, \(selectedPlan.displayPrice) \(selectedPlan.cadence)"
+        if notice == .previousPurchaseUnconfirmed {
+            return "Start another Checkpoint Pro purchase, \(selectedPlan.title) plan, \(selectedPlan.displayPrice) \(selectedPlan.cadence)"
+        }
         return isPurchasing ? "\(label), in progress" : label
     }
 
@@ -305,11 +345,14 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         if notice?.isPending == true {
             return "clock.fill"
         }
+        if notice == .previousPurchaseUnconfirmed {
+            return "arrow.clockwise"
+        }
         return selectedPlan == nil ? "arrow.clockwise" : "sparkles"
     }
 
     var secondaryAction: MembershipSecondaryStoreAction {
-        notice?.isPending == true ? .checkPurchaseStatus : .restorePurchases
+        hasUnresolvedPurchase ? .checkPurchaseStatus : .restorePurchases
     }
 
     var secondaryButtonTitle: String {
@@ -319,7 +362,7 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         if isCheckingPurchaseStatus {
             return "Checking purchase status"
         }
-        if notice?.isPending == true {
+        if hasUnresolvedPurchase {
             return "Check purchase status"
         }
         return "Restore purchases"
@@ -590,10 +633,32 @@ struct MembershipCatalogPresentation: Equatable, Sendable {
     }
 
     func resolvedSelection(currentID: String?) -> String? {
+        MembershipPlanSelectionResolver.resolve(
+            planOptions: planOptions,
+            currentID: currentID,
+            pendingProductID: nil,
+            defaultID: defaultPlanID
+        )
+    }
+}
+
+enum MembershipPlanSelectionResolver {
+    static func resolve(
+        planOptions: [MembershipPlanOption],
+        currentID: String?,
+        pendingProductID: String?,
+        defaultID: String?
+    ) -> String? {
+        if planOptions.contains(where: { $0.id == pendingProductID }) {
+            return pendingProductID
+        }
         if planOptions.contains(where: { $0.id == currentID }) {
             return currentID
         }
-        return defaultPlanID
+        if planOptions.contains(where: { $0.id == defaultID }) {
+            return defaultID
+        }
+        return planOptions.first?.id
     }
 }
 

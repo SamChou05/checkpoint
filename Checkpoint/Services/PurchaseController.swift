@@ -297,6 +297,67 @@ private struct MembershipEntitlementRefreshResult {
     let isCurrent: Bool
 }
 
+enum MembershipPendingPurchaseLoadResult: Equatable, Sendable {
+    case none
+    case recent(MembershipPendingPurchaseRecord)
+    case longRunning(MembershipPendingPurchaseRecord)
+}
+
+@MainActor
+struct MembershipPendingPurchasePersistence {
+    static let storageKey = "checkpoint.membership.pendingPurchase.v1"
+    /// Changes recovery wording only. StoreKit does not provide a matching
+    /// timeout, so the marker remains until verification or explicit user action.
+    static let defaultLongRunningInterval: TimeInterval = 24 * 60 * 60
+
+    private let defaults: UserDefaults?
+    let longRunningInterval: TimeInterval
+
+    init(
+        defaults: UserDefaults? = .standard,
+        longRunningInterval: TimeInterval = Self.defaultLongRunningInterval
+    ) {
+        self.defaults = defaults
+        self.longRunningInterval = max(0, longRunningInterval)
+    }
+
+    func load(at date: Date) -> MembershipPendingPurchaseLoadResult {
+        guard let defaults,
+              let data = defaults.data(forKey: Self.storageKey) else {
+            return .none
+        }
+        guard let record = try? JSONDecoder().decode(
+            MembershipPendingPurchaseRecord.self,
+            from: data
+        ), MembershipProductID.all.contains(record.productID),
+           record.initiatedAt <= date else {
+            clear()
+            return .none
+        }
+        guard !isLongRunning(record, at: date) else {
+            return .longRunning(record)
+        }
+        return .recent(record)
+    }
+
+    func save(_ record: MembershipPendingPurchaseRecord) {
+        guard MembershipProductID.all.contains(record.productID),
+              let data = try? JSONEncoder().encode(record) else {
+            clear()
+            return
+        }
+        defaults?.set(data, forKey: Self.storageKey)
+    }
+
+    func clear() {
+        defaults?.removeObject(forKey: Self.storageKey)
+    }
+
+    func isLongRunning(_ record: MembershipPendingPurchaseRecord, at date: Date) -> Bool {
+        date.timeIntervalSince(record.initiatedAt) >= longRunningInterval
+    }
+}
+
 @MainActor
 @Observable
 final class PurchaseController {
@@ -305,18 +366,24 @@ final class PurchaseController {
     var purchaseNotice: MembershipPurchaseNotice?
     private(set) var storeOperation: MembershipStoreOperation?
     private(set) var activePlanSnapshot: MembershipActivePlanSnapshot?
+    private(set) var pendingPurchaseRecord: MembershipPendingPurchaseRecord?
 
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
     @ObservationIgnored var onMembershipEntitlementChange: ((Bool) -> Void)?
     @ObservationIgnored private let grantsDebugTesterEntitlement: Bool
     @ObservationIgnored private let storeClient: any MembershipStoreClient
+    @ObservationIgnored private let pendingPurchasePersistence: MembershipPendingPurchasePersistence
+    @ObservationIgnored private let currentDate: () -> Date
     @ObservationIgnored private var entitlementRequestRevision = 0
 
     init(
         grantsDebugTesterEntitlement: Bool = DebugMembershipEntitlement.isEnabled(),
         initialStoreOperation: MembershipStoreOperation? = nil,
         initialActivePlanSnapshot: MembershipActivePlanSnapshot? = nil,
-        storeClient: any MembershipStoreClient = StoreKitMembershipStoreClient()
+        storeClient: any MembershipStoreClient = StoreKitMembershipStoreClient(),
+        pendingPurchaseDefaults: UserDefaults? = .standard,
+        pendingPurchaseLongRunningInterval: TimeInterval = MembershipPendingPurchasePersistence.defaultLongRunningInterval,
+        currentDate: @escaping () -> Date = { Date() }
     ) {
         #if DEBUG
         self.grantsDebugTesterEntitlement = grantsDebugTesterEntitlement
@@ -324,8 +391,32 @@ final class PurchaseController {
         self.grantsDebugTesterEntitlement = false
         #endif
         self.storeClient = storeClient
+        pendingPurchasePersistence = MembershipPendingPurchasePersistence(
+            defaults: pendingPurchaseDefaults,
+            longRunningInterval: pendingPurchaseLongRunningInterval
+        )
+        self.currentDate = currentDate
         storeOperation = initialStoreOperation
         activePlanSnapshot = initialActivePlanSnapshot
+
+        switch pendingPurchasePersistence.load(at: currentDate()) {
+        case .none:
+            break
+        case .recent(let record):
+            pendingPurchaseRecord = record
+            purchaseNotice = .pendingApproval
+        case .longRunning(let record):
+            pendingPurchaseRecord = record
+            purchaseNotice = .previousPurchaseUnconfirmed
+        }
+    }
+
+    var pendingPurchaseProductID: String? {
+        pendingPurchaseRecord?.productID
+    }
+
+    var hasUnresolvedPurchase: Bool {
+        pendingPurchaseRecord != nil
     }
 
     var isMembershipUnlocked: Bool {
@@ -369,6 +460,7 @@ final class PurchaseController {
             products = MembershipProductID.all.compactMap { productID in
                 loadedProducts.first { $0.id == productID }
             }
+            refreshPendingPurchasePresentationIfNeeded()
             let catalogNotice: MembershipPurchaseNotice? = products.isEmpty
                 ? .catalogUnavailable(Self.productsUnavailableMessage)
                 : nil
@@ -377,6 +469,7 @@ final class PurchaseController {
                 catalogNotice: catalogNotice
             )
         } catch {
+            refreshPendingPurchasePresentationIfNeeded()
             purchaseNotice = .resolvingCatalogLoad(
                 current: purchaseNotice,
                 catalogNotice: .catalogUnavailable("Could not load App Store plans yet.")
@@ -404,6 +497,7 @@ final class PurchaseController {
         guard begin(operation) else { return false }
         defer { finish(operation) }
 
+        guard prepareForPurchaseAttempt() else { return false }
         purchaseNotice = nil
 
         do {
@@ -412,25 +506,37 @@ final class PurchaseController {
             switch result {
             case .success(let verification):
                 guard case .verified(let transaction) = verification else {
-                    purchaseNotice = .failure("The App Store could not verify this purchase.")
+                    resolveUnsuccessfulPurchaseAttempt(
+                        notice: .failure("The App Store could not verify this purchase.")
+                    )
                     return false
                 }
 
                 await transaction.finish()
+                clearPendingPurchaseMarker()
                 purchaseNotice = nil
                 return await refreshEntitlements()
             case .pending:
-                purchaseNotice = .pendingApproval
+                if isMembershipUnlocked {
+                    clearPendingPurchaseMarker()
+                    purchaseNotice = nil
+                    return true
+                }
+                recordPendingPurchase(productID: product.id, initiatedAt: currentDate())
                 return false
             case .userCancelled:
-                purchaseNotice = nil
+                resolveUnsuccessfulPurchaseAttempt(notice: nil)
                 return false
             @unknown default:
-                purchaseNotice = .failure("The App Store returned an unknown purchase state.")
+                resolveUnsuccessfulPurchaseAttempt(
+                    notice: .failure("The App Store returned an unknown purchase state.")
+                )
                 return false
             }
         } catch {
-            purchaseNotice = .failure("Purchase failed. Try again from the App Store sheet.")
+            resolveUnsuccessfulPurchaseAttempt(
+                notice: .failure("Purchase failed. Try again from the App Store sheet.")
+            )
             return false
         }
     }
@@ -441,17 +547,33 @@ final class PurchaseController {
         guard begin(operation) else { return false }
         defer { finish(operation) }
 
-        purchaseNotice = nil
+        if pendingPurchaseRecord == nil {
+            purchaseNotice = nil
+        }
+        let startingEntitlementRevision = entitlementRequestRevision
 
         do {
             try await storeClient.synchronize()
             let refresh = await readAndApplyEntitlements()
             if refresh.isCurrent, !refresh.isUnlocked {
-                purchaseNotice = .information("No active Checkpoint Pro subscription was found.")
+                if pendingPurchaseRecord != nil {
+                    refreshPendingPurchasePresentationIfNeeded()
+                } else if purchaseNotice != .previousPurchaseUnconfirmed {
+                    purchaseNotice = .information("No active Checkpoint Pro subscription was found.")
+                }
             }
             return refresh.isCurrent && refresh.isUnlocked
         } catch {
-            purchaseNotice = .failure("Could not restore purchases yet.")
+            guard startingEntitlementRevision == entitlementRequestRevision else {
+                return false
+            }
+            refreshPendingPurchasePresentationIfNeeded()
+            if pendingPurchaseRecord != nil {
+                // The local marker is only recovery context. A synchronization
+                // failure cannot prove the App Store request was rejected.
+            } else if purchaseNotice != .previousPurchaseUnconfirmed {
+                purchaseNotice = .failure("Could not restore purchases yet.")
+            }
             return false
         }
     }
@@ -462,15 +584,75 @@ final class PurchaseController {
         guard begin(operation) else { return false }
         defer { finish(operation) }
 
-        let wasPending = purchaseNotice?.isPending == true
+        let startingNotice = purchaseNotice
+        let hadUnresolvedPurchase = pendingPurchaseRecord != nil
         let refresh = await readAndApplyEntitlements()
         if refresh.isCurrent,
            !refresh.isUnlocked,
-           wasPending,
-           purchaseNotice?.isPending == true {
+           let pendingPurchaseRecord {
+            if pendingPurchasePersistence.isLongRunning(
+                pendingPurchaseRecord,
+                at: currentDate()
+            ) {
+                purchaseNotice = .previousPurchaseUnconfirmed
+            } else if hadUnresolvedPurchase || startingNotice?.isPending == true {
+                purchaseNotice = .pendingApprovalChecked
+            }
+        } else if refresh.isCurrent,
+                  !refresh.isUnlocked,
+                  startingNotice?.isPending == true,
+                  purchaseNotice?.isPending == true {
             purchaseNotice = .pendingApprovalChecked
         }
         return refresh.isCurrent && refresh.isUnlocked
+    }
+
+    func clearPendingPurchaseState() {
+        clearPendingPurchaseMarker()
+        switch purchaseNotice {
+        case .pendingApproval, .pendingApprovalChecked, .previousPurchaseUnconfirmed:
+            purchaseNotice = nil
+        case .catalogUnavailable, .failure, .information, nil:
+            break
+        }
+    }
+
+    func recordPendingPurchase(productID: String, initiatedAt: Date) {
+        guard MembershipProductID.all.contains(productID) else { return }
+        let record = MembershipPendingPurchaseRecord(
+            productID: productID,
+            initiatedAt: initiatedAt
+        )
+        pendingPurchaseRecord = record
+        pendingPurchasePersistence.save(record)
+        purchaseNotice = .pendingApproval
+    }
+
+    @discardableResult
+    func prepareForPurchaseAttempt() -> Bool {
+        guard let pendingPurchaseRecord else { return true }
+        guard pendingPurchasePersistence.isLongRunning(
+            pendingPurchaseRecord,
+            at: currentDate()
+        ) else {
+            refreshPendingPurchasePresentationIfNeeded()
+            return false
+        }
+        refreshPendingPurchasePresentationIfNeeded()
+        return true
+    }
+
+    func resolveUnsuccessfulPurchaseAttempt(
+        notice: MembershipPurchaseNotice?
+    ) {
+        if pendingPurchaseRecord != nil {
+            // A replacement attempt does not prove the earlier StoreKit request
+            // ended. Keep its recovery record until StoreKit verifies access, a
+            // newer attempt becomes pending, or the user erases local data.
+            refreshPendingPurchasePresentationIfNeeded()
+        } else {
+            purchaseNotice = notice
+        }
     }
 
     private func handle(transactionResult: VerificationResult<Transaction>) async {
@@ -503,6 +685,7 @@ final class PurchaseController {
         let baseSnapshot = MembershipActivePlanResolver.resolve(entitlements: entitlements)
         activePlanSnapshot = baseSnapshot
         reconcilePurchaseNoticeWithEntitlement()
+        refreshPendingPurchasePresentationIfNeeded()
         publishMembershipEntitlement()
 
         guard let subscriptionGroupID = activePlanSnapshot?.subscriptionGroupID else {
@@ -557,10 +740,30 @@ final class PurchaseController {
     }
 
     private func reconcilePurchaseNoticeWithEntitlement() {
+        if isMembershipUnlocked {
+            clearPendingPurchaseMarker()
+        }
         purchaseNotice = .resolvingEntitlementRefresh(
             current: purchaseNotice,
             isUnlocked: isMembershipUnlocked
         )
+    }
+
+    private func refreshPendingPurchasePresentationIfNeeded() {
+        guard let pendingPurchaseRecord else { return }
+        if pendingPurchasePersistence.isLongRunning(
+            pendingPurchaseRecord,
+            at: currentDate()
+        ) {
+            purchaseNotice = .previousPurchaseUnconfirmed
+        } else if purchaseNotice?.requiresPurchaseStatusCheck != true {
+            purchaseNotice = .pendingApproval
+        }
+    }
+
+    private func clearPendingPurchaseMarker() {
+        pendingPurchaseRecord = nil
+        pendingPurchasePersistence.clear()
     }
 
     private static var productsUnavailableMessage: String {

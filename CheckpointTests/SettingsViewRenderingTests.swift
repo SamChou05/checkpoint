@@ -9,6 +9,16 @@ import ManagedSettings
 #endif
 
 final class SettingsViewRenderingTests: XCTestCase {
+    func testDataEraseWarningNamesExternalStateThatContinues() {
+        let warning = CheckpointDataEraseCopy.warningMessage
+
+        XCTAssertEqual(AdvancedSettingsAction.resetData.detail, warning)
+        XCTAssertTrue(warning.contains("local purchase-status reminders"))
+        XCTAssertTrue(warning.contains("purchases in progress"))
+        XCTAssertTrue(warning.contains("Screen Time permission"))
+        XCTAssertTrue(warning.contains("not canceled"))
+    }
+
     func testPracticeStandardPresentationKeepsExactContractPrimary() {
         let defaultPresentation = SettingsPracticeStandardPresentation(
             unlockPolicy: .default
@@ -904,7 +914,10 @@ final class SettingsViewRenderingTests: XCTestCase {
             authorizer: SettingsRenderScreenTimeAuthorizer()
         )
         await screenTime.bootstrapAuthorizationIfNeeded()
-        let purchaseController = PurchaseController(grantsDebugTesterEntitlement: false)
+        let purchaseController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: nil
+        )
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: screenTime)
 
         let image = HostedViewRenderer.image(
@@ -1025,7 +1038,10 @@ final class SettingsViewRenderingTests: XCTestCase {
             try configureProtectedAppSelection(screenTime)
         }
 
-        let purchaseController = PurchaseController(grantsDebugTesterEntitlement: false)
+        let purchaseController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: nil
+        )
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: screenTime)
         var authorizationRequestTask: Task<Void, Never>?
         var protectionStartTask: Task<Bool, Never>?

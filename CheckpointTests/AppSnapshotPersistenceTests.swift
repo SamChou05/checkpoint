@@ -1366,6 +1366,46 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testProjectWideDataEraseAlsoRemovesPendingPurchaseRecoveryState() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        XCTAssertTrue(store.recordFocusWin(note: "Erase this win.", goalID: goal.id))
+        let screenTime = ScreenTimeController()
+        let purchaseController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+        purchaseController.recordPendingPurchase(
+            productID: MembershipProductID.monthly,
+            initiatedAt: now
+        )
+
+        CheckpointDataEraseCoordinator.eraseAllData(
+            store: store,
+            screenTime: screenTime,
+            purchaseController: purchaseController
+        )
+        let relaunchedPurchaseController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: defaults,
+            currentDate: { now }
+        )
+
+        XCTAssertTrue(store.hasNoPersistedAppData)
+        XCTAssertTrue(store.focusWins.isEmpty)
+        XCTAssertFalse(SharedAppGroup.hasPersistedData)
+        XCTAssertNil(purchaseController.pendingPurchaseProductID)
+        XCTAssertNil(purchaseController.purchaseNotice)
+        XCTAssertNil(
+            defaults.data(forKey: MembershipPendingPurchasePersistence.storageKey)
+        )
+        XCTAssertNil(relaunchedPurchaseController.pendingPurchaseProductID)
+        XCTAssertNil(relaunchedPurchaseController.purchaseNotice)
+    }
+
+    @MainActor
     func testPostEraseReconciliationDoesNotRecreateLocalOrAppGroupState() {
         let goal = makeGoal()
         let store = makeFileBackedStore(goal: goal)

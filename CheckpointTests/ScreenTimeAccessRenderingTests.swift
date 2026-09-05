@@ -965,6 +965,10 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 for: RequiredScreenTimeAccessView(
                     store: store,
                     screenTime: screenTime,
+                    purchaseController: PurchaseController(
+                        grantsDebugTesterEntitlement: false,
+                        pendingPurchaseDefaults: nil
+                    ),
                     context: fixture.context,
                     reduceMotionOverride: fixture.reduceMotion,
                     layoutReporter: { element, frame in

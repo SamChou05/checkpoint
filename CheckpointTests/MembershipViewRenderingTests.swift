@@ -8,6 +8,7 @@ final class MembershipViewRenderingTests: XCTestCase {
         let legalLinks = try makeLegalLinks()
         let planOptions = try makePlanOptions()
         let futurePlanDate = Date(timeIntervalSince1970: 2_000_000_000)
+        let pendingInitiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
 
         let fixtures = [
             MembershipRenderFixture(
@@ -99,7 +100,75 @@ final class MembershipViewRenderingTests: XCTestCase {
                 dynamicTypeSize: .large,
                 planOptions: planOptions,
                 selectedPlanID: MembershipProductID.yearly,
-                purchaseNotice: .pendingApproval
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(60)
+            ),
+            MembershipRenderFixture(
+                name: "membership-pending-accessibility5-light",
+                context: .feature(.adaptiveStudyAssist),
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly,
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(60)
+            ),
+            MembershipRenderFixture(
+                name: "membership-unconfirmed-retry-compact-dark",
+                context: .feature(.adaptiveStudyAssist),
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.monthly,
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(
+                    MembershipPendingPurchasePersistence.defaultLongRunningInterval
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-unconfirmed-retry-accessibility5-light",
+                context: .feature(.adaptiveStudyAssist),
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly,
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(
+                    MembershipPendingPurchasePersistence.defaultLongRunningInterval
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-pending-no-catalog-light",
+                context: .overview,
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(60)
             ),
             MembershipRenderFixture(
                 name: "membership-purchase-failure",
@@ -225,7 +294,10 @@ final class MembershipViewRenderingTests: XCTestCase {
             defer { defaults.removePersistentDomain(forName: suiteName) }
             let capture = MembershipPaywallLayoutCapture()
             let store = CheckpointStore(defaults: defaults)
-            let purchaseController = PurchaseController(grantsDebugTesterEntitlement: false)
+            let purchaseController = PurchaseController(
+                grantsDebugTesterEntitlement: false,
+                pendingPurchaseDefaults: nil
+            )
             let view = MembershipView(
                 context: fixture.context,
                 store: store,
@@ -331,6 +403,7 @@ final class MembershipViewRenderingTests: XCTestCase {
     func testPaywallFlowsCheckoutInlineForConstrainedLayoutsLargeTextNoticesAndAccessibility() throws {
         let legalLinks = try makeLegalLinks()
         let planOptions = try makePlanOptions()
+        let pendingInitiatedAt = Date(timeIntervalSince1970: 1_800_000_000)
         let fixtures: [MembershipInlineCheckoutFixture] = [
             MembershipInlineCheckoutFixture(
                 name: "compact-xxx-large",
@@ -345,7 +418,44 @@ final class MembershipViewRenderingTests: XCTestCase {
             MembershipInlineCheckoutFixture(
                 name: "compact-pending",
                 dynamicTypeSize: .large,
-                purchaseNotice: .pendingApproval
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(60)
+            ),
+            MembershipInlineCheckoutFixture(
+                name: "compact-unconfirmed-purchase",
+                dynamicTypeSize: .large,
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(
+                    MembershipPendingPurchasePersistence.defaultLongRunningInterval
+                )
+            ),
+            MembershipInlineCheckoutFixture(
+                name: "compact-pending-accessibility5",
+                dynamicTypeSize: .accessibility5,
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(60),
+                height: 1_600
+            ),
+            MembershipInlineCheckoutFixture(
+                name: "compact-unconfirmed-accessibility5",
+                dynamicTypeSize: .accessibility5,
+                pendingPurchaseRecord: MembershipPendingPurchaseRecord(
+                    productID: MembershipProductID.monthly,
+                    initiatedAt: pendingInitiatedAt
+                ),
+                currentDate: pendingInitiatedAt.addingTimeInterval(
+                    MembershipPendingPurchasePersistence.defaultLongRunningInterval
+                ),
+                height: 1_600
             ),
             MembershipInlineCheckoutFixture(
                 name: "compact-accessibility5",
@@ -365,8 +475,19 @@ final class MembershipViewRenderingTests: XCTestCase {
             defer { defaults.removePersistentDomain(forName: suiteName) }
             let capture = MembershipPaywallLayoutCapture()
             let store = CheckpointStore(defaults: defaults)
-            let purchaseController = PurchaseController(grantsDebugTesterEntitlement: false)
-            purchaseController.purchaseNotice = fixture.purchaseNotice
+            if let pendingPurchaseRecord = fixture.pendingPurchaseRecord {
+                MembershipPendingPurchasePersistence(defaults: defaults).save(
+                    pendingPurchaseRecord
+                )
+            }
+            let purchaseController = PurchaseController(
+                grantsDebugTesterEntitlement: false,
+                pendingPurchaseDefaults: defaults,
+                currentDate: { fixture.currentDate }
+            )
+            if let purchaseNotice = fixture.purchaseNotice {
+                purchaseController.purchaseNotice = purchaseNotice
+            }
             let view = MembershipView(
                 context: .feature(.goalProfiles),
                 store: store,
@@ -433,6 +554,28 @@ final class MembershipViewRenderingTests: XCTestCase {
                 fixture.name
             )
 
+            if fixture.pendingPurchaseRecord != nil {
+                let secondaryAction = try XCTUnwrap(
+                    capture.frames[.secondaryAction],
+                    fixture.name
+                )
+                XCTAssertGreaterThanOrEqual(secondaryAction.height, 44, fixture.name)
+                XCTAssertGreaterThanOrEqual(
+                    secondaryAction.minY,
+                    disclosure.maxY - 0.5,
+                    "\(fixture.name) placed purchase-status recovery above billing disclosure"
+                )
+                XCTAssertGreaterThanOrEqual(
+                    primaryAction.minY,
+                    secondaryAction.maxY - 0.5,
+                    "\(fixture.name) overlapped purchase-status recovery and the primary action"
+                )
+                XCTAssertTrue(
+                    offer.insetBy(dx: -0.5, dy: -0.5).contains(secondaryAction),
+                    "\(fixture.name) let purchase-status recovery escape the offer"
+                )
+            }
+
             let attachment = XCTAttachment(image: image)
             attachment.name = "membership-\(fixture.name)-inline-checkout"
             attachment.lifetime = .keepAlways
@@ -491,7 +634,8 @@ final class MembershipViewRenderingTests: XCTestCase {
             store.updateMembershipTier(.member)
             let purchaseController = PurchaseController(
                 grantsDebugTesterEntitlement: false,
-                initialActivePlanSnapshot: fixture.snapshot
+                initialActivePlanSnapshot: fixture.snapshot,
+                pendingPurchaseDefaults: nil
             )
             let view = MembershipView(
                 context: .overview,
@@ -1350,11 +1494,19 @@ final class MembershipViewRenderingTests: XCTestCase {
         let pending = SettingsPlanPresentation(
             membershipTier: .starter,
             purchaseNotice: .pendingApproval,
+            hasUnresolvedPurchase: true,
+            proActivity: proActivity
+        )
+        let unconfirmed = SettingsPlanPresentation(
+            membershipTier: .starter,
+            purchaseNotice: .previousPurchaseUnconfirmed,
+            hasUnresolvedPurchase: true,
             proActivity: proActivity
         )
         let pro = SettingsPlanPresentation(
             membershipTier: .member,
             purchaseNotice: .pendingApproval,
+            hasUnresolvedPurchase: true,
             proActivity: proActivity
         )
 
@@ -1373,12 +1525,33 @@ final class MembershipViewRenderingTests: XCTestCase {
 
         XCTAssertEqual(pending.state, .pendingPurchase)
         XCTAssertEqual(pending.badgeText, "PENDING")
-        XCTAssertEqual(pending.headline, "Your purchase is awaiting approval.")
-        XCTAssertEqual(pending.detail, "Pro unlocks as soon as the App Store confirms it.")
+        XCTAssertEqual(pending.headline, "The App Store is completing your purchase.")
+        XCTAssertEqual(
+            pending.detail,
+            "Pro unlocks automatically when it finishes. You may need to take action in the App Store."
+        )
         XCTAssertEqual(pending.actionTitle, "Check purchase status")
         XCTAssertEqual(pending.accessibilityLabel, "Checkpoint Pro purchase")
+        XCTAssertEqual(
+            pending.accessibilityValue,
+            "Waiting for the App Store to complete this purchase. Pro unlocks automatically when it finishes. You may need to take action in the App Store."
+        )
         XCTAssertEqual(pending.accessibilityHint, "Opens purchase status and plan options.")
         XCTAssertNil(pending.proActivity)
+
+        XCTAssertEqual(unconfirmed.state, .unconfirmedPurchase)
+        XCTAssertEqual(unconfirmed.badgeText, "UNCONFIRMED")
+        XCTAssertEqual(unconfirmed.headline, "The App Store hasn’t completed this purchase.")
+        XCTAssertEqual(
+            unconfirmed.detail,
+            "It may still complete. Check its status before starting another purchase."
+        )
+        XCTAssertEqual(unconfirmed.actionTitle, "Check purchase status")
+        XCTAssertEqual(
+            unconfirmed.accessibilityValue,
+            "Unconfirmed App Store purchase. It may still complete."
+        )
+        XCTAssertNil(unconfirmed.proActivity)
 
         XCTAssertEqual(pro.state, .pro)
         XCTAssertEqual(pro.badgeText, "PRO ACTIVE")
@@ -1592,12 +1765,51 @@ final class MembershipViewRenderingTests: XCTestCase {
                 name: "settings-plan-pending-dark",
                 presentation: SettingsPlanPresentation(
                     membershipTier: .starter,
-                    purchaseNotice: .pendingApproval
+                    purchaseNotice: .pendingApproval,
+                    hasUnresolvedPurchase: true
                 ),
                 width: 393,
                 height: 852,
                 colorScheme: .dark,
                 dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-unconfirmed-light",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: .previousPurchaseUnconfirmed,
+                    hasUnresolvedPurchase: true
+                ),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pending-accessibility5-dark",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: .pendingApproval,
+                    hasUnresolvedPurchase: true
+                ),
+                width: 393,
+                height: 1_200,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-unconfirmed-accessibility5-light",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: .previousPurchaseUnconfirmed,
+                    hasUnresolvedPurchase: true
+                ),
+                width: 393,
+                height: 1_200,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
             ),
             SettingsPlanRenderFixture(
                 name: "settings-plan-pro-ready-light",
@@ -1905,12 +2117,21 @@ final class MembershipViewRenderingTests: XCTestCase {
                 let initialStoreOperation: MembershipStoreOperation? = fixture.isLoading
                     ? .loadingProducts
                     : nil
+                if let pendingPurchaseRecord = fixture.pendingPurchaseRecord {
+                    MembershipPendingPurchasePersistence(defaults: defaults).save(
+                        pendingPurchaseRecord
+                    )
+                }
                 let purchaseController = PurchaseController(
                     grantsDebugTesterEntitlement: false,
                     initialStoreOperation: initialStoreOperation,
-                    initialActivePlanSnapshot: fixture.activePlanSnapshot
+                    initialActivePlanSnapshot: fixture.activePlanSnapshot,
+                    pendingPurchaseDefaults: defaults,
+                    currentDate: { fixture.currentDate }
                 )
-                purchaseController.purchaseNotice = fixture.purchaseNotice
+                if let purchaseNotice = fixture.purchaseNotice {
+                    purchaseController.purchaseNotice = purchaseNotice
+                }
 
                 let view = MembershipView(
                     context: fixture.context,
@@ -1971,6 +2192,8 @@ private struct MembershipInlineCheckoutFixture {
     let name: String
     let dynamicTypeSize: DynamicTypeSize
     var purchaseNotice: MembershipPurchaseNotice?
+    var pendingPurchaseRecord: MembershipPendingPurchaseRecord?
+    var currentDate: Date
     var width: CGFloat
     var height: CGFloat
 
@@ -1978,12 +2201,16 @@ private struct MembershipInlineCheckoutFixture {
         name: String,
         dynamicTypeSize: DynamicTypeSize,
         purchaseNotice: MembershipPurchaseNotice? = nil,
+        pendingPurchaseRecord: MembershipPendingPurchaseRecord? = nil,
+        currentDate: Date = Date(timeIntervalSince1970: 1_800_000_000),
         width: CGFloat = 320,
         height: CGFloat = 568
     ) {
         self.name = name
         self.dynamicTypeSize = dynamicTypeSize
         self.purchaseNotice = purchaseNotice
+        self.pendingPurchaseRecord = pendingPurchaseRecord
+        self.currentDate = currentDate
         self.width = width
         self.height = height
     }
@@ -2010,6 +2237,8 @@ private struct MembershipRenderFixture {
     var selectedPlanID: String?
     var isLoading = false
     var purchaseNotice: MembershipPurchaseNotice?
+    var pendingPurchaseRecord: MembershipPendingPurchaseRecord?
+    var currentDate = Date(timeIntervalSince1970: 1_800_000_000)
     var isMember = false
     var activationPresentation: MembershipActivationPresentation?
     var activePlanSnapshot: MembershipActivePlanSnapshot?
