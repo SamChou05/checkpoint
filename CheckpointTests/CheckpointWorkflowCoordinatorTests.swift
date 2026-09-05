@@ -22,6 +22,18 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
 
     // MARK: - First-run setup durability
 
+    func testAppUsesOneSceneForSingleOwnerWorkflowHandoffs() throws {
+        let sceneManifest = try XCTUnwrap(
+            Bundle.main.object(forInfoDictionaryKey: "UIApplicationSceneManifest")
+                as? [String: Any]
+        )
+
+        XCTAssertEqual(
+            sceneManifest["UIApplicationSupportsMultipleScenes"] as? Bool,
+            false
+        )
+    }
+
     func testPendingFirstRunAppSelectionSurvivesRelaunchAndResumesRouting() throws {
         FirstRunSetupProgress.begin(defaults: defaults)
 
@@ -1058,8 +1070,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertEqual(workflow.requestGoalSwitch(to: targetGoal.id), .membershipRequired)
         let expectedContinuation = MembershipActivationContinuation.activateGoal(
             sourceGoalID: sourceGoalID,
-            targetGoalID: targetGoal.id,
-            targetTitle: targetGoal.title
+            targetGoalID: targetGoal.id
         )
         XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
         XCTAssertEqual(store.pendingMembershipActivationContinuation, expectedContinuation)
@@ -1068,12 +1079,18 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
         XCTAssertEqual(store.pendingMembershipActivationContinuation, expectedContinuation)
 
-        XCTAssertEqual(store.completeMembershipCheckout(), expectedContinuation)
+        XCTAssertTrue(store.membershipCheckoutStarted())
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+        XCTAssertEqual(store.completeMembershipCheckout(source: .purchase), expectedContinuation)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
         store.dismissMembershipPrompt()
         let continuation = try XCTUnwrap(
-            store.takeCompletedMembershipActivationContinuation()
+            store.claimMembershipActivationContinuationForResume()
         )
-        guard case let .activateGoal(_, targetGoalID, _) = continuation else {
+        guard case let .activateGoal(_, targetGoalID) = continuation else {
             return XCTFail("Expected the exact goal switch continuation")
         }
 
@@ -1082,7 +1099,39 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             .switched(from: sourceGoalID, to: targetGoal.id)
         )
         XCTAssertEqual(store.goal?.id, targetGoal.id)
-        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        XCTAssertNil(store.claimMembershipActivationContinuationForResume())
+    }
+
+    @MainActor
+    func testPaidGoalCreationClearsItsHandoffOnlyWithTheCommittedGoal() throws {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = try XCTUnwrap(store.goal?.id)
+        store.membershipTier = .starter
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: FakeAppProtectionController()
+        )
+
+        store.presentGoalProfileCreator()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            .createGoalProfile(sourceGoalID: sourceGoalID)
+        )
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+
+        let request = GoalProfileMutationRequest(
+            operation: .create(
+                makeCoordinatorDraft(title: "Build a durable launch plan")
+            )
+        )
+        XCTAssertEqual(
+            workflow.requestGoalProfileMutation(request),
+            .committed(resultingGoalID: request.id)
+        )
+        XCTAssertEqual(store.goal?.id, request.id)
+        XCTAssertNil(store.membershipActivationHandoff)
     }
 
     @MainActor
@@ -1096,11 +1145,49 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         )
 
         XCTAssertEqual(workflow.requestGoalSwitch(to: targetGoal.id), .membershipRequired)
-        _ = store.completeMembershipCheckout()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
         store.goalProfiles.removeAll { $0.id == targetGoal.id }
 
-        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        let stalePresentation = store.membershipActivationPresentation(
+            fallbackContext: .overview,
+            fallbackSource: .entitlementRefresh
+        )
+        XCTAssertNil(stalePresentation.continuation)
+        XCTAssertEqual(stalePresentation.actionTitle, "Done")
+        XCTAssertEqual(store.requestMembershipActivationResume(), .actionUnavailable)
+        store.dismissMembershipPrompt()
+        XCTAssertNil(store.claimMembershipActivationContinuationForResume())
         XCTAssertNil(store.completedMembershipActivationContinuation)
+    }
+
+    @MainActor
+    func testMembershipGoalSwitchActivationUsesTheCurrentDestinationTitle() throws {
+        let store = makeStore(questionCount: 5)
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 5)
+        store.membershipTier = .starter
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: FakeAppProtectionController()
+        )
+        XCTAssertEqual(workflow.requestGoalSwitch(to: targetGoal.id), .membershipRequired)
+
+        let renamedTitle = "Publish the revised design portfolio"
+        let index = try XCTUnwrap(
+            store.goalProfiles.firstIndex { $0.id == targetGoal.id }
+        )
+        store.goalProfiles[index].title = renamedTitle
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .restore
+        )
+
+        let presentation = store.membershipActivationPresentation(
+            fallbackContext: .overview,
+            fallbackSource: .entitlementRefresh
+        )
+        XCTAssertEqual(presentation.source, .restore)
+        XCTAssertEqual(presentation.destinationTitle, renamedTitle)
+        XCTAssertTrue(presentation.detail.contains(renamedTitle))
     }
 
     @MainActor
@@ -1115,11 +1202,12 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
 
         XCTAssertEqual(workflow.requestGoalSwitch(to: targetGoal.id), .membershipRequired)
-        _ = store.completeMembershipCheckout()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
         let continuation = try XCTUnwrap(
-            store.takeCompletedMembershipActivationContinuation()
+            store.claimMembershipActivationContinuationForResume()
         )
-        guard case let .activateGoal(_, targetGoalID, _) = continuation else {
+        guard case let .activateGoal(_, targetGoalID) = continuation else {
             return XCTFail("Expected the goal-switch continuation")
         }
 
@@ -1127,6 +1215,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         guard case let .confirmationRequired(confirmation) = resumedOutcome else {
             return XCTFail("Expected a fresh protection-impact confirmation")
         }
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
         XCTAssertEqual(store.goal?.id, sourceGoalID)
         XCTAssertEqual(confirmation.sourceGoalID, sourceGoalID)
         XCTAssertEqual(confirmation.targetGoalID, targetGoal.id)
@@ -1144,6 +1233,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         )
         XCTAssertEqual(store.goal?.id, targetGoal.id)
         XCTAssertEqual(protection.clearShieldCount, 0)
+        XCTAssertNil(store.membershipActivationHandoff)
     }
 
     @MainActor

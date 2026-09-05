@@ -528,9 +528,7 @@ struct RootView: View {
                 confirmGoalSwitch(confirmation)
             }
             Button(presentation.cancelButtonTitle, role: .cancel) {
-                queuedGoalSwitchConfirmation = nil
-                pendingGoalSwitchConfirmation = nil
-                schedulePostGoalSwitchPresentationDrain()
+                cancelGoalSwitch(confirmation)
             }
         } message: { confirmation in
             Text(goalSwitchConfirmationPresentation(for: confirmation).message)
@@ -545,7 +543,7 @@ struct RootView: View {
         }
         .sheet(
             isPresented: $isAuthorizationRecoveryAppSelectionPresented,
-            onDismiss: presentSuggestedSkillMapReviewIfNeeded
+            onDismiss: handleAuthorizationRecoveryAppSelectionDismissed
         ) {
             RestrictedAppsView(screenTime: screenTime)
         }
@@ -764,6 +762,16 @@ struct RootView: View {
         }
     }
 
+    private func cancelGoalSwitch(_ confirmation: GoalSwitchConfirmation) {
+        if store.cancelResumedMembershipGoalSwitch(to: confirmation.targetGoalID) {
+            queuedGoalSwitchConfirmation = nil
+        } else {
+            queuedGoalSwitchConfirmation = confirmation
+        }
+        pendingGoalSwitchConfirmation = nil
+        schedulePostGoalSwitchPresentationDrain()
+    }
+
     private func handleGoalSwitchOutcome(_ outcome: GoalSwitchOutcome) {
         switch outcome {
         case let .switched(_, targetGoalID):
@@ -782,11 +790,20 @@ struct RootView: View {
         case let .confirmationRequired(confirmation):
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = confirmation
-        case .alreadyActive, .membershipRequired:
+        case .alreadyActive:
+            if let activeGoalID = store.goal?.id {
+                _ = store.completeResumedMembershipGoalSwitch(to: activeGoalID)
+            }
+            queuedGoalSwitchConfirmation = nil
+            pendingGoalSwitchConfirmation = nil
+            schedulePostGoalSwitchPresentationDrain()
+        case .membershipRequired:
+            _ = store.returnMembershipActivationResumeToReceipt()
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = nil
             schedulePostGoalSwitchPresentationDrain()
         case .targetNotFound, .staleRequest:
+            _ = store.returnMembershipActivationResumeToReceipt()
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = nil
             AccessibilityNotification.Announcement(
@@ -794,6 +811,7 @@ struct RootView: View {
             ).post()
             schedulePostGoalSwitchPresentationDrain()
         case .persistenceFailed:
+            _ = store.returnMembershipActivationResumeToReceipt()
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = nil
             AccessibilityNotification.Announcement(
@@ -815,6 +833,7 @@ struct RootView: View {
             case .promoteQueuedConfirmation:
                 promoteQueuedGoalSwitchConfirmationAfterDismissal()
             case .drainDeferredPresentations:
+                presentDeferredMembershipActivationIfPossible()
                 presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
                 presentSuggestedSkillMapReviewIfNeeded()
             }
@@ -846,14 +865,25 @@ struct RootView: View {
         queueAuthorizationRecoveryAppSelectionIfNeeded()
 
         purchaseController.onMembershipEntitlementChange = { unlocked in
-            store.reconcileMembershipEntitlement(isUnlocked: unlocked)
+            store.reconcileMembershipEntitlement(
+                isUnlocked: unlocked,
+                activationSource: membershipActivationSourceForCurrentStoreOperation
+            )
+            if unlocked {
+                presentDeferredMembershipActivationIfPossible()
+            }
         }
         purchaseController.startListeningForTransactions()
-        await refreshPlanAccessFromEntitlements()
+        let isMembershipUnlocked = await refreshPlanAccessFromEntitlements()
+        store.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: isMembershipUnlocked,
+            hasUnresolvedPurchase: purchaseController.hasUnresolvedPurchase
+        )
         await purchaseController.loadProducts()
 
         reconcileProtectionAndHandlePendingAttempt()
         resumeFirstRunSetupIfNeeded()
+        presentDeferredMembershipActivationIfPossible()
         presentSuggestedSkillMapReviewIfNeeded()
     }
 
@@ -862,7 +892,8 @@ struct RootView: View {
         reconcileScreenTimeAccessGate()
         reconcileProtectionAndHandlePendingAttempt()
         Task {
-            await refreshPlanAccessFromEntitlements()
+            _ = await refreshPlanAccessFromEntitlements()
+            presentDeferredMembershipActivationIfPossible()
         }
         resumeFirstRunSetupIfNeeded()
     }
@@ -908,6 +939,7 @@ struct RootView: View {
               !firstRunSetup.isAppSelectionPresented,
               activeCheckpointSession == nil,
               store.pendingMembershipPresentation == nil,
+              !store.hasDeferredMembershipActivationPresentation,
               pendingGoalSwitchConfirmation == nil,
               let goal = store.goal,
               goal.id != firstRunSetup.suppressedSuggestedSkillMapGoalID,
@@ -934,6 +966,7 @@ struct RootView: View {
         reconcileScreenTimeAccessGate()
         resumeFirstRunSetupIfNeeded()
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+        presentDeferredMembershipActivationIfPossible()
         presentSuggestedSkillMapReviewIfNeeded()
     }
 
@@ -942,15 +975,17 @@ struct RootView: View {
         firstGoalSuccessHandoff.discardPending()
         selectedTab = .home
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+        presentDeferredMembershipActivationIfPossible()
     }
 
     private func handleCheckpointDismissed() {
         handlePendingShieldActivation()
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+        presentDeferredMembershipActivationIfPossible()
     }
 
     private func handleMembershipDismissed() {
-        if let continuation = store.takeCompletedMembershipActivationContinuation() {
+        if let continuation = store.claimMembershipActivationContinuationForResume() {
             resumeMembershipActivation(continuation)
         }
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
@@ -963,7 +998,7 @@ struct RootView: View {
         switch continuation {
         case .createGoalProfile:
             store.presentGoalProfileCreator()
-        case let .activateGoal(_, targetGoalID, _):
+        case let .activateGoal(_, targetGoalID):
             requestGoalSwitch(to: targetGoalID)
         }
     }
@@ -971,6 +1006,7 @@ struct RootView: View {
     private func handleSuggestedSkillMapReviewDismissed() {
         suggestedSkillMapReviewPresentation.presentationDidDismiss()
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+        presentDeferredMembershipActivationIfPossible()
         presentSuggestedSkillMapReviewIfNeeded()
     }
 
@@ -986,7 +1022,42 @@ struct RootView: View {
 
         reconcileProtectionAndHandlePendingAttempt()
         resumeFirstRunSetupIfNeeded()
+        presentDeferredMembershipActivationIfPossible()
         presentSuggestedSkillMapReviewIfNeeded()
+    }
+
+    private func handleAuthorizationRecoveryAppSelectionDismissed() {
+        presentDeferredMembershipActivationIfPossible()
+        presentSuggestedSkillMapReviewIfNeeded()
+    }
+
+    private func presentDeferredMembershipActivationIfPossible() {
+        guard store.hasDeferredMembershipActivationPresentation,
+              !screenTimeAccessGate.blocksUnderlyingPresentations,
+              !firstRunSetup.isPending,
+              !store.isOnboardingPresented,
+              !isOnboardingSheetActive,
+              !isAuthorizationRecoveryAppSelectionPresented,
+              !authorizationRecoveryQueue.isQueued,
+              !authorizationRecoveryQueue.isScheduling,
+              !firstRunSetup.isAppSelectionPresented,
+              activeCheckpointSession == nil,
+              store.pendingMembershipPresentation == nil,
+              pendingGoalSwitchConfirmation == nil,
+              queuedGoalSwitchConfirmation == nil,
+              !suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations else {
+            return
+        }
+
+        if store.hasMembershipActivationResumeRequest {
+            if let continuation = store.claimMembershipActivationContinuationForResume() {
+                resumeMembershipActivation(continuation)
+            } else {
+                _ = store.presentMembershipActivationHandoffIfAvailable()
+            }
+            return
+        }
+        _ = store.presentMembershipActivationHandoffIfAvailable()
     }
 
     private func continueAfterScreenTimeAccessConnection() {
@@ -1153,8 +1224,22 @@ struct RootView: View {
     }
 
     @MainActor
-    private func refreshPlanAccessFromEntitlements() async {
+    private func refreshPlanAccessFromEntitlements() async -> Bool {
         _ = await purchaseController.refreshEntitlements()
+        return purchaseController.isMembershipUnlocked
+    }
+
+    private var membershipActivationSourceForCurrentStoreOperation: MembershipActivationSource {
+        if purchaseController.purchasingProductID != nil {
+            return .purchase
+        }
+        if purchaseController.isRestoringPurchases {
+            return .restore
+        }
+        if purchaseController.isCheckingPurchaseStatus {
+            return .purchase
+        }
+        return .entitlementRefresh
     }
 
     private var membershipPresentationBinding: Binding<MembershipPresentationContext?> {
@@ -1164,7 +1249,9 @@ struct RootView: View {
                 if let context {
                     store.pendingMembershipPresentation = context
                 } else {
-                    store.dismissMembershipPrompt()
+                    store.dismissMembershipPrompt(
+                        hasUnresolvedPurchase: purchaseController.hasUnresolvedCheckout
+                    )
                 }
             }
         )
@@ -1184,9 +1271,13 @@ struct RootView: View {
                 )
             },
             set: { isPresented in
-                store.isOnboardingPresented = isPresented
-                if !isPresented {
+                if isPresented {
+                    store.isOnboardingPresented = true
+                } else if store.cancelResumedMembershipGoalCreation() {
+                    store.isOnboardingPresented = false
                     store.isCreatingGoalProfile = false
+                } else {
+                    store.isOnboardingPresented = true
                 }
             }
         )

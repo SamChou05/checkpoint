@@ -386,6 +386,35 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertFalse(checkingController.isRestoringPurchases)
     }
 
+    @MainActor
+    func testCheckoutActivityIsUnresolvedBeforeStoreKitCreatesAPendingRecord() {
+        let checkoutOperations: [MembershipStoreOperation] = [
+            .purchasing(productID: MembershipProductID.monthly),
+            .restoringPurchases,
+            .checkingPurchaseStatus,
+        ]
+
+        for operation in checkoutOperations {
+            let controller = PurchaseController(
+                grantsDebugTesterEntitlement: false,
+                initialStoreOperation: operation,
+                pendingPurchaseDefaults: nil
+            )
+
+            XCTAssertTrue(controller.isCheckoutActionInProgress)
+            XCTAssertTrue(controller.hasUnresolvedCheckout)
+            XCTAssertFalse(controller.hasUnresolvedPurchase)
+        }
+
+        let catalogController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            initialStoreOperation: .loadingProducts,
+            pendingPurchaseDefaults: nil
+        )
+        XCTAssertFalse(catalogController.isCheckoutActionInProgress)
+        XCTAssertFalse(catalogController.hasUnresolvedCheckout)
+    }
+
     func testCheckingPurchaseStatusPresentationOwnsSecondaryProgress() {
         let presentation = MembershipCheckoutPresentation(
             selectedPlan: makeAnnualPlanOption(),

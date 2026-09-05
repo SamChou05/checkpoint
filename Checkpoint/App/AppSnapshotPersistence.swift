@@ -181,6 +181,56 @@ struct AppSnapshotPersistence {
         defaults.removeObject(forKey: Self.legacySnapshotKey)
     }
 
+    /// Persists a transition whose recovery copy must agree with its committed
+    /// primary. The backup is prepared first; the primary remains the commit
+    /// marker, so an interrupted write continues loading the previous primary.
+    func saveMirrored(_ snapshot: AppSnapshot) throws {
+        guard !requiresEraseRecovery else {
+            throw PersistenceError.verificationFailed
+        }
+
+        let encoded = try JSONEncoder().encode(AppSnapshotEnvelope(snapshot: snapshot))
+
+        switch storage {
+        case .files(let directory):
+            try fileManager.createDirectory(
+                at: directory,
+                withIntermediateDirectories: true
+            )
+            let primaryURL = directory.appendingPathComponent(Self.primaryFileName)
+            let backupURL = directory.appendingPathComponent(Self.backupFileName)
+
+            try encoded.write(to: backupURL, options: [.atomic])
+            applyFileProtection(to: backupURL)
+            guard decodedSnapshot(from: try? Data(contentsOf: backupURL)) != nil else {
+                throw PersistenceError.verificationFailed
+            }
+
+            try encoded.write(to: primaryURL, options: [.atomic])
+            applyFileProtection(to: primaryURL)
+            guard decodedSnapshot(from: try? Data(contentsOf: primaryURL)) != nil else {
+                throw PersistenceError.verificationFailed
+            }
+
+        case .defaults:
+            defaults.set(encoded, forKey: Self.backupDefaultsKey)
+            guard decodedSnapshot(
+                from: defaults.data(forKey: Self.backupDefaultsKey)
+            ) != nil else {
+                throw PersistenceError.verificationFailed
+            }
+
+            defaults.set(encoded, forKey: Self.primaryDefaultsKey)
+            guard decodedSnapshot(
+                from: defaults.data(forKey: Self.primaryDefaultsKey)
+            ) != nil else {
+                throw PersistenceError.verificationFailed
+            }
+        }
+
+        defaults.removeObject(forKey: Self.legacySnapshotKey)
+    }
+
     func erase() throws {
         defaults.set(true, forKey: Self.eraseIncompleteKey)
         defaults.synchronize()

@@ -386,15 +386,11 @@ final class CheckpointWorkflowCoordinator {
     }
 
     private func requestGoalSwitchMembership(for targetGoalID: Goal.ID) {
-        let targetTitle = store.availableGoalProfiles.first {
-            $0.id == targetGoalID
-        }?.title ?? "Selected goal"
         store.requestMembership(
             for: .goalProfiles,
             continuation: .activateGoal(
                 sourceGoalID: store.goal?.id,
-                targetGoalID: targetGoalID,
-                targetTitle: targetTitle
+                targetGoalID: targetGoalID
             )
         )
     }

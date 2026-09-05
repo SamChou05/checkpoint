@@ -22,6 +22,7 @@ struct AppSnapshot: Codable, Sendable {
     var activeCheckpointRun: ActiveCheckpointRun?
     var checkpointRetryCooldownUntil: Date?
     var membershipTier: MembershipTier?
+    var membershipActivationHandoff: MembershipActivationHandoff?
     var questionRefreshesUsed: Int?
     var lastAutomaticQuestionRefreshAt: Date?
     var questionBankSyncIntents: [QuestionBankSyncIntent]?

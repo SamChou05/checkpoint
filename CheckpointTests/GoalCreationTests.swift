@@ -307,7 +307,7 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
-    func testGoalCreationMembershipContinuationCompletesAndReleasesExactlyOnce() {
+    func testGoalCreationMembershipContinuationStaysDurableUntilCompletionOrCancel() {
         let store = CheckpointStore(defaults: defaults)
         let sourceGoal = makeGoal()
         store.goal = sourceGoal
@@ -328,6 +328,7 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
         XCTAssertEqual(store.pendingMembershipActivationContinuation, expectedContinuation)
 
+        XCTAssertTrue(store.membershipCheckoutStarted())
         store.reconcileMembershipEntitlement(isUnlocked: true)
         XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
         XCTAssertNil(store.pendingMembershipActivationContinuation)
@@ -337,17 +338,22 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
         XCTAssertNil(store.pendingMembershipActivationContinuation)
         XCTAssertEqual(store.completedMembershipActivationContinuation, expectedContinuation)
 
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
         store.dismissMembershipPrompt()
         XCTAssertEqual(
-            store.takeCompletedMembershipActivationContinuation(),
+            store.claimMembershipActivationContinuationForResume(),
             expectedContinuation
         )
-        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        XCTAssertNil(store.claimMembershipActivationContinuationForResume())
 
         store.presentGoalProfileCreator()
         XCTAssertTrue(store.isCreatingGoalProfile)
         XCTAssertTrue(store.isOnboardingPresented)
         XCTAssertNil(store.pendingMembershipPresentation)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+
+        XCTAssertTrue(store.cancelResumedMembershipGoalCreation())
+        XCTAssertNil(store.membershipActivationHandoff)
     }
 
     @MainActor
@@ -366,13 +372,16 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
         store.requestMembership(for: .freshQuestionGeneration)
         XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
         XCTAssertEqual(store.completedMembershipActivationContinuation, expectedContinuation)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
         store.dismissMembershipPrompt()
 
         XCTAssertEqual(
-            store.takeCompletedMembershipActivationContinuation(),
+            store.claimMembershipActivationContinuationForResume(),
             expectedContinuation
         )
-        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        XCTAssertNil(store.claimMembershipActivationContinuationForResume())
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+        XCTAssertTrue(store.cancelResumedMembershipGoalCreation())
     }
 
     @MainActor
@@ -387,7 +396,83 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
 
         XCTAssertNil(store.pendingMembershipActivationContinuation)
         XCTAssertNil(store.completeMembershipCheckout())
-        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        XCTAssertNil(store.claimMembershipActivationContinuationForResume())
+    }
+
+    @MainActor
+    func testPendingMembershipDismissalKeepsThePaidActionForLaterApproval() {
+        let store = CheckpointStore(defaults: defaults)
+        let sourceGoal = makeGoal()
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal]
+
+        store.presentGoalProfileCreator()
+        let continuation = store.pendingMembershipActivationContinuation
+        XCTAssertTrue(store.membershipCheckoutStarted())
+        store.membershipCheckoutFinished(hasUnresolvedPurchase: true)
+
+        store.dismissMembershipPrompt(hasUnresolvedPurchase: true)
+
+        XCTAssertNil(store.pendingMembershipPresentation)
+        XCTAssertEqual(store.pendingMembershipActivationContinuation, continuation)
+        XCTAssertNil(store.claimMembershipActivationContinuationForResume())
+
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .entitlementRefresh
+        )
+
+        XCTAssertNil(store.pendingMembershipActivationContinuation)
+        XCTAssertEqual(store.completedMembershipActivationContinuation, continuation)
+    }
+
+    @MainActor
+    func testMembershipActionCannotResumeBeforeActivationIsReady() {
+        let store = CheckpointStore(defaults: defaults)
+        let sourceGoal = makeGoal()
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal]
+
+        store.presentGoalProfileCreator()
+        store.updateMembershipTier(.member)
+
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .offered)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .actionUnavailable)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .offered)
+    }
+
+    @MainActor
+    func testVerifiedActivationReceiptIsAvailableBeforeTheMembershipSheetRenders() throws {
+        let store = CheckpointStore(defaults: defaults)
+        let sourceGoal = makeGoal()
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal]
+        store.presentGoalProfileCreator()
+
+        XCTAssertNil(
+            store.membershipActivationPresentationIfVerified(
+                fallbackContext: .overview,
+                fallbackSource: .entitlementRefresh
+            )
+        )
+
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+        let presentation = try XCTUnwrap(
+            store.membershipActivationPresentationIfVerified(
+                fallbackContext: .overview,
+                fallbackSource: .entitlementRefresh
+            )
+        )
+
+        XCTAssertEqual(presentation.context, .feature(.goalProfiles))
+        XCTAssertEqual(presentation.source, .purchase)
+        XCTAssertEqual(
+            presentation.continuation,
+            .createGoalProfile(sourceGoalID: sourceGoal.id)
+        )
     }
 
     @MainActor
@@ -406,11 +491,22 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
         store.goalProfiles = [sourceGoal, replacementGoal]
 
         store.presentGoalProfileCreator()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
         _ = store.completeMembershipCheckout()
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
         store.goal = replacementGoal
 
-        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        XCTAssertNil(store.claimMembershipActivationContinuationForResume())
         XCTAssertNil(store.completedMembershipActivationContinuation)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .activationReady)
+        XCTAssertNil(
+            store.membershipActivationPresentation(
+                fallbackContext: .overview,
+                fallbackSource: .entitlementRefresh
+            ).continuation
+        )
+        XCTAssertTrue(store.dismissMembershipPrompt())
+        XCTAssertNil(store.membershipActivationHandoff)
     }
 
     @MainActor

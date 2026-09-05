@@ -790,9 +790,9 @@ final class MembershipViewRenderingTests: XCTestCase {
             source: .restore,
             continuation: .activateGoal(
                 sourceGoalID: sourceGoalID,
-                targetGoalID: targetGoalID,
-                targetTitle: "Design portfolio"
-            )
+                targetGoalID: targetGoalID
+            ),
+            destinationTitle: "Design portfolio"
         )
         let overview = MembershipActivationPresentation(
             id: UUID(uuidString: "A941302A-7E60-47F4-A688-D24F721C4C21")!,
@@ -802,20 +802,153 @@ final class MembershipViewRenderingTests: XCTestCase {
         )
 
         XCTAssertEqual(create.eyebrow, "PURCHASE COMPLETE")
-        XCTAssertEqual(create.title, "Checkpoint Pro is yours.")
-        XCTAssertEqual(create.actionTitle, "Create your next goal")
+        XCTAssertEqual(create.title, "Checkpoint Pro is active.")
+        XCTAssertEqual(create.actionTitle, "Set up new goal")
         XCTAssertEqual(create.actionSystemImage, "plus")
+        XCTAssertEqual(create.actionAccessibilityHint, "Opens goal setup.")
         XCTAssertTrue(create.detail.contains("next goal"))
 
         XCTAssertEqual(goalSwitch.eyebrow, "ACCESS RESTORED")
         XCTAssertEqual(goalSwitch.title, "Pro access restored.")
-        XCTAssertEqual(goalSwitch.actionTitle, "Continue to Design portfolio")
+        XCTAssertEqual(goalSwitch.actionTitle, "Review goal switch")
+        XCTAssertTrue(goalSwitch.actionAccessibilityHint.contains("protection"))
         XCTAssertTrue(goalSwitch.detail.contains("Design portfolio"))
 
         XCTAssertEqual(overview.eyebrow, "ACCESS CONFIRMED")
-        XCTAssertEqual(overview.actionTitle, "Continue")
+        XCTAssertEqual(overview.actionTitle, "Done")
         XCTAssertEqual(overview.actionSystemImage, "checkmark")
         XCTAssertTrue(overview.accessibilityAnnouncement.contains(overview.detail))
+    }
+
+    func testMembershipActivationHandoffReducerKeepsTheFirstPaidAction() {
+        let firstRequest = MembershipActivationRequest(
+            id: UUID(uuidString: "6EC28BF2-3798-4E65-937D-2137262C4C64")!,
+            createdAt: Date(timeIntervalSince1970: 1_800_000_000),
+            context: .feature(.goalProfiles),
+            continuation: .createGoalProfile(sourceGoalID: UUID())
+        )
+        let secondRequest = MembershipActivationRequest(
+            id: UUID(uuidString: "29346431-7618-4089-82D6-D0DCC75A34E4")!,
+            createdAt: Date(timeIntervalSince1970: 1_800_000_100),
+            context: .feature(.freshQuestionGeneration),
+            continuation: .createGoalProfile(sourceGoalID: UUID())
+        )
+
+        let offered = MembershipActivationHandoffReducer.reduce(
+            nil,
+            event: .request(firstRequest)
+        )
+        let duplicateRequest = MembershipActivationHandoffReducer.reduce(
+            offered,
+            event: .request(secondRequest)
+        )
+
+        XCTAssertEqual(offered?.phase, .offered)
+        XCTAssertEqual(duplicateRequest?.request, firstRequest)
+    }
+
+    func testMembershipActivationHandoffReducerLetsAContextualActionReplaceAnUnstartedOverview() {
+        let overviewRequest = MembershipActivationRequest(
+            context: .overview
+        )
+        let contextualRequest = MembershipActivationRequest(
+            context: .feature(.goalProfiles),
+            continuation: .createGoalProfile(sourceGoalID: UUID())
+        )
+        let offeredOverview = MembershipActivationHandoff(request: overviewRequest)
+
+        let contextualHandoff = MembershipActivationHandoffReducer.reduce(
+            offeredOverview,
+            event: .request(contextualRequest)
+        )
+
+        XCTAssertEqual(contextualHandoff?.request, contextualRequest)
+        XCTAssertEqual(contextualHandoff?.phase, .offered)
+    }
+
+    func testMembershipActivationHandoffReducerPreservesOnlyUnresolvedCheckoutDismissals() {
+        let request = MembershipActivationRequest(
+            context: .feature(.goalProfiles),
+            continuation: .createGoalProfile(sourceGoalID: UUID())
+        )
+        let offered = MembershipActivationHandoff(request: request)
+        let awaiting = MembershipActivationHandoffReducer.reduce(
+            offered,
+            event: .checkoutStarted
+        )
+
+        XCTAssertEqual(awaiting?.phase, .awaitingEntitlement)
+        XCTAssertNil(
+            MembershipActivationHandoffReducer.reduce(
+                awaiting,
+                event: .dismissed(hasUnresolvedPurchase: false)
+            )
+        )
+        XCTAssertEqual(
+            MembershipActivationHandoffReducer.reduce(
+                awaiting,
+                event: .dismissed(hasUnresolvedPurchase: true)
+            ),
+            awaiting
+        )
+        XCTAssertEqual(
+            MembershipActivationHandoffReducer.reduce(
+                awaiting,
+                event: .checkoutFinished(hasUnresolvedPurchase: false)
+            )?.phase,
+            .offered
+        )
+    }
+
+    func testMembershipActivationHandoffReducerResumesOnlyAfterExplicitAcknowledgment() {
+        let request = MembershipActivationRequest(
+            context: .feature(.goalProfiles),
+            continuation: .createGoalProfile(sourceGoalID: UUID())
+        )
+        let offered = MembershipActivationHandoff(request: request)
+        let ready = MembershipActivationHandoffReducer.reduce(
+            offered,
+            event: .entitlementVerified(source: .purchase)
+        )
+        let duplicateVerification = MembershipActivationHandoffReducer.reduce(
+            ready,
+            event: .entitlementVerified(source: .restore)
+        )
+        let resumeRequested = MembershipActivationHandoffReducer.reduce(
+            ready,
+            event: .resumeRequested
+        )
+
+        XCTAssertEqual(ready?.phase, .activationReady)
+        XCTAssertEqual(ready?.source, .purchase)
+        XCTAssertEqual(duplicateVerification, ready)
+        XCTAssertNil(
+            MembershipActivationHandoffReducer.reduce(
+                ready,
+                event: .dismissed(hasUnresolvedPurchase: false)
+            )
+        )
+        XCTAssertEqual(resumeRequested?.phase, .resumeRequested)
+        XCTAssertEqual(
+            MembershipActivationHandoffReducer.reduce(
+                resumeRequested,
+                event: .resumeFailed
+            ),
+            ready
+        )
+        XCTAssertEqual(
+            MembershipActivationHandoffReducer.reduce(
+                resumeRequested,
+                event: .dismissed(hasUnresolvedPurchase: false)
+            ),
+            resumeRequested
+        )
+        XCTAssertNil(
+            MembershipActivationHandoffReducer.reduce(
+                resumeRequested,
+                event: .consumed
+            )
+        )
     }
 
     func testMembershipActivationFeedbackWaitsForAnActiveSceneAndDeliversEachReceiptOnce() {
@@ -899,14 +1032,14 @@ final class MembershipViewRenderingTests: XCTestCase {
                     source: .restore,
                     continuation: .activateGoal(
                         sourceGoalID: sourceGoalID,
-                        targetGoalID: UUID(uuidString: "B738CD41-D9CD-4E85-9B74-5FB9017C0ED2")!,
-                        targetTitle: "Design portfolio"
-                    )
+                        targetGoalID: UUID(uuidString: "B738CD41-D9CD-4E85-9B74-5FB9017C0ED2")!
+                    ),
+                    destinationTitle: "Design portfolio"
                 )
             ),
             MembershipRenderFixture(
                 name: "membership-activated-accessibility5-reduced-motion",
-                context: .overview,
+                context: .feature(.goalProfiles),
                 width: 393,
                 height: 1_600,
                 colorScheme: .light,
@@ -915,14 +1048,136 @@ final class MembershipViewRenderingTests: XCTestCase {
                 isMember: true,
                 activationPresentation: MembershipActivationPresentation(
                     id: UUID(uuidString: "5A7CE487-FE62-4034-A1F7-4CB34A94B5CA")!,
-                    context: .overview,
+                    context: .feature(.goalProfiles),
                     source: .entitlementRefresh,
-                    continuation: nil
+                    continuation: .createGoalProfile(sourceGoalID: sourceGoalID)
                 )
             )
         ]
 
         try renderMembershipFixtures(fixtures, legalLinks: legalLinks)
+    }
+
+    @MainActor
+    func testLiveVerifiedReceiptOwnsTheMembershipSheetsFirstFrame() throws {
+        let suiteName = "MembershipViewRenderingTests.live-receipt.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.presentGoalProfileCreator()
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+        let capture = MembershipPaywallLayoutCapture()
+        let view = MembershipView(
+            context: .feature(.goalProfiles),
+            store: store,
+            purchaseController: PurchaseController(
+                grantsDebugTesterEntitlement: false,
+                pendingPurchaseDefaults: nil
+            ),
+            renderConfiguration: MembershipViewRenderConfiguration(
+                planOptions: [],
+                selectedPlanID: nil,
+                legalLinks: try makeLegalLinks(),
+                reduceMotion: true,
+                layoutReporter: { element, frame in
+                    capture.frames[element] = frame
+                }
+            )
+        )
+
+        _ = HostedViewRenderer.image(
+            for: view,
+            width: 393,
+            height: 852,
+            colorScheme: .light,
+            settlingTime: 0.05,
+            renderScale: 0.5
+        )
+
+        XCTAssertNotNil(capture.frames[.activationReceipt])
+        XCTAssertNotNil(capture.frames[.activationAction])
+        XCTAssertNil(capture.frames[.section(.hero)])
+    }
+
+    @MainActor
+    func testPersistedReceiptVerificationScrollsAtCompactAccessibilitySize() throws {
+        let suiteName = "MembershipViewRenderingTests.pending-receipt.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let goal = makeGoal()
+        let initialStore = CheckpointStore(defaults: defaults)
+        initialStore.goal = goal
+        initialStore.goalProfiles = [goal]
+        initialStore.presentGoalProfileCreator()
+        initialStore.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+
+        let restoredStore = CheckpointStore(defaults: defaults)
+        XCTAssertTrue(restoredStore.hasMembershipActivationReceipt)
+        XCTAssertNil(
+            restoredStore.membershipActivationPresentationIfVerified(
+                fallbackContext: .feature(.goalProfiles),
+                fallbackSource: .entitlementRefresh
+            )
+        )
+
+        let capture = MembershipPaywallLayoutCapture()
+        let view = MembershipView(
+            context: .feature(.goalProfiles),
+            store: restoredStore,
+            purchaseController: PurchaseController(
+                grantsDebugTesterEntitlement: false,
+                pendingPurchaseDefaults: nil
+            ),
+            renderConfiguration: MembershipViewRenderConfiguration(
+                planOptions: [],
+                selectedPlanID: nil,
+                legalLinks: try makeLegalLinks(),
+                reduceMotion: true,
+                layoutReporter: { element, frame in
+                    capture.frames[element] = frame
+                }
+            )
+        )
+        .environment(\.dynamicTypeSize, DynamicTypeSize.accessibility5)
+
+        let image = HostedViewRenderer.image(
+            for: view,
+            width: 568,
+            height: 320,
+            colorScheme: .light,
+            settlingTime: 0.05,
+            renderScale: 0.5
+        )
+
+        let viewport = try XCTUnwrap(capture.frames[.activationVerificationViewport])
+        let content = try XCTUnwrap(capture.frames[.activationVerificationContent])
+        XCTAssertGreaterThan(viewport.width, 0)
+        XCTAssertGreaterThan(viewport.height, 0)
+        XCTAssertGreaterThan(
+            content.height,
+            viewport.height,
+            "Accessibility content should overflow into the scrollable region"
+        )
+        XCTAssertGreaterThanOrEqual(viewport.minX, -0.5)
+        XCTAssertLessThanOrEqual(viewport.maxX, 568.5)
+        XCTAssertGreaterThanOrEqual(viewport.minY, -0.5)
+        XCTAssertLessThanOrEqual(viewport.maxY, 320.5)
+        XCTAssertNil(capture.frames[.section(.hero)])
+        XCTAssertNil(capture.frames[.activationReceipt])
+
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "membership-pending-receipt-landscape-accessibility5"
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     func testMembershipPaywallPresentationKeepsCheckoutAheadOfExtendedProof() {
@@ -2110,6 +2365,7 @@ final class MembershipViewRenderingTests: XCTestCase {
             try autoreleasepool {
                 let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
                 let store = CheckpointStore(defaults: defaults)
+                let layoutCapture = MembershipPaywallLayoutCapture()
                 if fixture.isMember {
                     store.updateMembershipTier(.member)
                 }
@@ -2142,7 +2398,10 @@ final class MembershipViewRenderingTests: XCTestCase {
                         selectedPlanID: fixture.selectedPlanID,
                         legalLinks: legalLinks,
                         reduceMotion: fixture.reduceMotion,
-                        activationPresentation: fixture.activationPresentation
+                        activationPresentation: fixture.activationPresentation,
+                        layoutReporter: { element, frame in
+                            layoutCapture.frames[element] = frame
+                        }
                     )
                 )
                 .environment(\.colorScheme, fixture.colorScheme)
@@ -2160,6 +2419,21 @@ final class MembershipViewRenderingTests: XCTestCase {
 
                 XCTAssertEqual(image.size.width, fixture.width, accuracy: 1)
                 XCTAssertEqual(image.size.height, fixture.height, accuracy: 1)
+                if fixture.activationPresentation != nil,
+                   let action = try? XCTUnwrap(
+                       layoutCapture.frames[.activationAction],
+                       fixture.name
+                   ) {
+                    XCTAssertGreaterThanOrEqual(
+                        action.height,
+                        43.5,
+                        "\(fixture.name) activation action is below the 44-point affordance"
+                    )
+                    XCTAssertGreaterThanOrEqual(action.minX, -0.5, fixture.name)
+                    XCTAssertLessThanOrEqual(action.maxX, fixture.width + 0.5, fixture.name)
+                    XCTAssertGreaterThanOrEqual(action.minY, -0.5, fixture.name)
+                    XCTAssertLessThanOrEqual(action.maxY, fixture.height + 0.5, fixture.name)
+                }
                 let attachment = XCTAttachment(image: image)
                 attachment.name = fixture.name
                 attachment.lifetime = .keepAlways

@@ -14,7 +14,7 @@ enum MembershipTier: String, Codable, Sendable {
     }
 }
 
-enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
+enum MembershipFeature: String, CaseIterable, Codable, Identifiable, Sendable {
     case goalProfiles
     case freshQuestionGeneration
     case largerQuestionBank
@@ -62,7 +62,7 @@ enum MembershipFeature: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-enum MembershipPresentationContext: Equatable, Identifiable, Sendable {
+enum MembershipPresentationContext: Codable, Equatable, Identifiable, Sendable {
     case overview
     case feature(MembershipFeature)
 
@@ -138,19 +138,147 @@ enum MembershipPresentationContext: Equatable, Identifiable, Sendable {
     }
 }
 
-enum MembershipActivationContinuation: Equatable, Sendable {
+enum MembershipActivationContinuation: Codable, Equatable, Sendable {
     case createGoalProfile(sourceGoalID: Goal.ID?)
     case activateGoal(
         sourceGoalID: Goal.ID?,
-        targetGoalID: Goal.ID,
-        targetTitle: String
+        targetGoalID: Goal.ID
     )
 }
 
-enum MembershipActivationSource: Equatable, Sendable {
+enum MembershipActivationSource: Codable, Equatable, Sendable {
     case purchase
     case restore
     case entitlementRefresh
+}
+
+enum MembershipActivationResumeResult: Equatable, Sendable {
+    case requested
+    case actionUnavailable
+    case persistenceFailed
+}
+
+struct MembershipActivationRequest: Codable, Equatable, Identifiable, Sendable {
+    let id: UUID
+    let createdAt: Date
+    let context: MembershipPresentationContext
+    let continuation: MembershipActivationContinuation?
+
+    init(
+        id: UUID = UUID(),
+        createdAt: Date = Date(),
+        context: MembershipPresentationContext,
+        continuation: MembershipActivationContinuation? = nil
+    ) {
+        self.id = id
+        self.createdAt = createdAt
+        self.context = context
+        self.continuation = continuation
+    }
+}
+
+struct MembershipActivationHandoff: Codable, Equatable, Sendable {
+    enum Phase: String, Codable, Equatable, Sendable {
+        case offered
+        case awaitingEntitlement
+        case activationReady
+        case resumeRequested
+    }
+
+    let request: MembershipActivationRequest
+    var phase: Phase
+    var source: MembershipActivationSource?
+
+    init(
+        request: MembershipActivationRequest,
+        phase: Phase = .offered,
+        source: MembershipActivationSource? = nil
+    ) {
+        self.request = request
+        self.phase = phase
+        self.source = source
+    }
+}
+
+enum MembershipActivationHandoffEvent: Equatable, Sendable {
+    case request(MembershipActivationRequest)
+    case checkoutStarted
+    case checkoutFinished(hasUnresolvedPurchase: Bool)
+    case entitlementVerified(source: MembershipActivationSource)
+    case dismissed(hasUnresolvedPurchase: Bool)
+    case resumeRequested
+    case resumeFailed
+    case consumed
+    case entitlementRevoked
+    case abandoned
+}
+
+enum MembershipActivationHandoffReducer {
+    static func reduce(
+        _ current: MembershipActivationHandoff?,
+        event: MembershipActivationHandoffEvent
+    ) -> MembershipActivationHandoff? {
+        switch event {
+        case .request(let request):
+            guard let current else {
+                return MembershipActivationHandoff(request: request)
+            }
+            if current.phase == .offered,
+               current.request.continuation == nil {
+                return MembershipActivationHandoff(request: request)
+            }
+            return current
+        case .checkoutStarted:
+            guard var current, current.phase == .offered else { return current }
+            current.phase = .awaitingEntitlement
+            current.source = nil
+            return current
+        case .checkoutFinished(let hasUnresolvedPurchase):
+            guard var current, current.phase == .awaitingEntitlement else { return current }
+            current.phase = hasUnresolvedPurchase ? .awaitingEntitlement : .offered
+            current.source = nil
+            return current
+        case .entitlementVerified(let source):
+            guard var current else { return nil }
+            guard current.phase == .offered || current.phase == .awaitingEntitlement else {
+                return current
+            }
+            current.phase = .activationReady
+            current.source = source
+            return current
+        case .dismissed(let hasUnresolvedPurchase):
+            guard let current else { return nil }
+            switch current.phase {
+            case .offered, .activationReady:
+                return nil
+            case .awaitingEntitlement:
+                return hasUnresolvedPurchase ? current : nil
+            case .resumeRequested:
+                return current
+            }
+        case .resumeRequested:
+            guard var current, current.phase == .activationReady else { return current }
+            current.phase = .resumeRequested
+            return current
+        case .resumeFailed:
+            guard var current, current.phase == .resumeRequested else { return current }
+            current.phase = .activationReady
+            return current
+        case .consumed:
+            guard current?.phase == .resumeRequested else { return current }
+            return nil
+        case .entitlementRevoked:
+            guard let current else { return nil }
+            switch current.phase {
+            case .offered, .awaitingEntitlement:
+                return current
+            case .activationReady, .resumeRequested:
+                return nil
+            }
+        case .abandoned:
+            return nil
+        }
+    }
 }
 
 struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
@@ -158,17 +286,20 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
     let context: MembershipPresentationContext
     let source: MembershipActivationSource
     let continuation: MembershipActivationContinuation?
+    let destinationTitle: String?
 
     init(
         id: UUID = UUID(),
         context: MembershipPresentationContext,
         source: MembershipActivationSource,
-        continuation: MembershipActivationContinuation?
+        continuation: MembershipActivationContinuation?,
+        destinationTitle: String? = nil
     ) {
         self.id = id
         self.context = context
         self.source = source
         self.continuation = continuation
+        self.destinationTitle = destinationTitle
     }
 
     var eyebrow: String {
@@ -185,7 +316,7 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
     var title: String {
         switch source {
         case .purchase:
-            "Checkpoint Pro is yours."
+            "Checkpoint Pro is active."
         case .restore:
             "Pro access restored."
         case .entitlementRefresh:
@@ -197,8 +328,12 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
         switch continuation {
         case .createGoalProfile:
             "Your next goal can now keep its own checkpoints, progress, and Next Focus."
-        case let .activateGoal(_, _, targetTitle):
-            "\(targetTitle) is ready to become your active goal."
+        case .activateGoal:
+            if let destinationTitle {
+                "\(destinationTitle) is ready for review as your active goal."
+            } else {
+                "Your selected goal is ready for review."
+            }
         case nil:
             switch context {
             case .overview:
@@ -218,11 +353,11 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
     var actionTitle: String {
         switch continuation {
         case .createGoalProfile:
-            "Create your next goal"
-        case let .activateGoal(_, _, targetTitle):
-            "Continue to \(targetTitle)"
+            "Set up new goal"
+        case .activateGoal:
+            "Review goal switch"
         case nil:
-            "Continue"
+            "Done"
         }
     }
 
@@ -239,6 +374,17 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
 
     var accessibilityAnnouncement: String {
         "\(title) \(detail)"
+    }
+
+    var actionAccessibilityHint: String {
+        switch continuation {
+        case .createGoalProfile:
+            "Opens goal setup."
+        case .activateGoal:
+            "Reviews the goal switch and any protection changes."
+        case nil:
+            "Closes this confirmation."
+        }
     }
 }
 

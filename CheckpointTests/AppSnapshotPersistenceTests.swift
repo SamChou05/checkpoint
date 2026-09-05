@@ -580,6 +580,587 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testPendingMembershipActionSurvivesDismissalAndRelaunchWithoutExecuting() throws {
+        let goal = makeGoal()
+        let originalStore = makeFileBackedStore(goal: goal)
+        originalStore.presentGoalProfileCreator()
+        let originalHandoff = try XCTUnwrap(originalStore.membershipActivationHandoff)
+        XCTAssertTrue(originalStore.membershipCheckoutStarted())
+        originalStore.membershipCheckoutFinished(hasUnresolvedPurchase: true)
+        originalStore.dismissMembershipPrompt(hasUnresolvedPurchase: true)
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.request, originalHandoff.request)
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.phase, .awaitingEntitlement)
+        XCTAssertNil(relaunchedStore.pendingMembershipPresentation)
+        XCTAssertFalse(relaunchedStore.hasDeferredMembershipActivationPresentation)
+        XCTAssertFalse(relaunchedStore.presentMembershipActivationHandoffIfAvailable())
+        XCTAssertNil(relaunchedStore.claimMembershipActivationContinuationForResume())
+
+        relaunchedStore.reconcileMembershipEntitlement(isUnlocked: false)
+        relaunchedStore.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: false,
+            hasUnresolvedPurchase: true
+        )
+
+        XCTAssertTrue(relaunchedStore.hasDeferredMembershipActivationPresentation)
+        XCTAssertTrue(relaunchedStore.presentMembershipActivationHandoffIfAvailable())
+        XCTAssertEqual(
+            relaunchedStore.pendingMembershipPresentation,
+            .feature(.goalProfiles)
+        )
+        XCTAssertNil(relaunchedStore.claimMembershipActivationContinuationForResume())
+    }
+
+    @MainActor
+    func testInterruptedStoreKitSheetKeepsPaidActionForALateTransaction() throws {
+        let goal = makeGoal()
+        let originalStore = makeFileBackedStore(goal: goal)
+        originalStore.presentGoalProfileCreator()
+        let request = try XCTUnwrap(originalStore.membershipActivationHandoff?.request)
+        XCTAssertTrue(originalStore.membershipCheckoutStarted())
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        relaunchedStore.reconcileMembershipEntitlement(isUnlocked: false)
+        relaunchedStore.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: false,
+            hasUnresolvedPurchase: false
+        )
+
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.request, request)
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.phase, .offered)
+        XCTAssertTrue(relaunchedStore.hasDeferredMembershipActivationPresentation)
+
+        relaunchedStore.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.phase, .activationReady)
+        XCTAssertEqual(
+            relaunchedStore.completedMembershipActivationContinuation,
+            .createGoalProfile(sourceGoalID: goal.id)
+        )
+    }
+
+    @MainActor
+    func testVerifiedMembershipActionReplaysAfterRelaunchUntilItReachesATerminalOutcome() throws {
+        let goal = makeGoal()
+        let originalStore = makeFileBackedStore(goal: goal)
+        originalStore.presentGoalProfileCreator()
+        let expectedContinuation = MembershipActivationContinuation.createGoalProfile(
+            sourceGoalID: goal.id
+        )
+        originalStore.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+        let originalPresentation = originalStore.membershipActivationPresentation(
+            fallbackContext: .overview,
+            fallbackSource: .entitlementRefresh
+        )
+
+        let activationRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        let unverifiedPresentation = activationRelaunch.membershipActivationPresentation(
+            fallbackContext: .overview,
+            fallbackSource: .entitlementRefresh
+        )
+
+        XCTAssertNil(activationRelaunch.pendingMembershipPresentation)
+        XCTAssertFalse(activationRelaunch.presentMembershipActivationHandoffIfAvailable())
+        XCTAssertNil(unverifiedPresentation.continuation)
+        XCTAssertNil(activationRelaunch.claimMembershipActivationContinuationForResume())
+
+        activationRelaunch.reconcileMembershipEntitlement(isUnlocked: true)
+        activationRelaunch.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: true,
+            hasUnresolvedPurchase: false
+        )
+        XCTAssertTrue(activationRelaunch.presentMembershipActivationHandoffIfAvailable())
+        let restoredPresentation = activationRelaunch.membershipActivationPresentation(
+            fallbackContext: .overview,
+            fallbackSource: .entitlementRefresh
+        )
+        XCTAssertEqual(restoredPresentation.id, originalPresentation.id)
+        XCTAssertEqual(restoredPresentation.context, .feature(.goalProfiles))
+        XCTAssertEqual(restoredPresentation.source, .purchase)
+        XCTAssertEqual(restoredPresentation.continuation, expectedContinuation)
+        XCTAssertEqual(activationRelaunch.requestMembershipActivationResume(), .requested)
+
+        let acknowledgedRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertNil(acknowledgedRelaunch.claimMembershipActivationContinuationForResume())
+        acknowledgedRelaunch.reconcileMembershipEntitlement(isUnlocked: true)
+        acknowledgedRelaunch.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: true,
+            hasUnresolvedPurchase: false
+        )
+        XCTAssertEqual(
+            acknowledgedRelaunch.claimMembershipActivationContinuationForResume(),
+            expectedContinuation
+        )
+        XCTAssertNil(acknowledgedRelaunch.claimMembershipActivationContinuationForResume())
+
+        let interruptedRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(interruptedRelaunch.membershipActivationHandoff?.phase, .resumeRequested)
+        interruptedRelaunch.reconcileMembershipEntitlement(isUnlocked: true)
+        interruptedRelaunch.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: true,
+            hasUnresolvedPurchase: false
+        )
+        XCTAssertEqual(
+            interruptedRelaunch.claimMembershipActivationContinuationForResume(),
+            expectedContinuation
+        )
+        XCTAssertTrue(interruptedRelaunch.cancelResumedMembershipGoalCreation())
+
+        let completedRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertNil(completedRelaunch.membershipActivationHandoff)
+        completedRelaunch.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertNil(completedRelaunch.claimMembershipActivationContinuationForResume())
+    }
+
+    @MainActor
+    func testAbandonedMembershipActionCannotReturnFromRecoveryBackup() throws {
+        let goal = makeGoal()
+        let originalStore = makeFileBackedStore(goal: goal)
+        originalStore.presentGoalProfileCreator()
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        relaunchedStore.reconcileMembershipEntitlement(isUnlocked: false)
+        relaunchedStore.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: false,
+            hasUnresolvedPurchase: false
+        )
+        XCTAssertNil(relaunchedStore.membershipActivationHandoff)
+
+        let primaryURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.primaryFileName
+        )
+        try Data("corrupt primary".utf8).write(to: primaryURL, options: [.atomic])
+        let recoveredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertNil(recoveredStore.membershipActivationHandoff)
+        XCTAssertNil(recoveredStore.pendingMembershipPresentation)
+        XCTAssertNotNil(recoveredStore.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testMembershipActionDoesNotOpenCheckoutWhenItsFirstDurableWriteFails() {
+        let fileManager = NthCreateDirectoryFailingFileManager()
+        let goal = makeGoal()
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateUnlockMinutes(10)
+        fileManager.fail(onCreateDirectoryCall: 1)
+
+        store.presentGoalProfileCreator()
+
+        XCTAssertNil(store.membershipActivationHandoff)
+        XCTAssertNil(store.pendingMembershipPresentation)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testMirroredMembershipRequestSurvivesPrimaryCorruption() throws {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        store.presentGoalProfileCreator()
+        let request = try XCTUnwrap(store.membershipActivationHandoff?.request)
+
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertNil(store.persistenceRecoveryMessage)
+
+        let primaryURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.primaryFileName
+        )
+        try Data("corrupt primary".utf8).write(to: primaryURL, options: [.atomic])
+        let recoveredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(recoveredStore.membershipActivationHandoff?.request, request)
+        XCTAssertEqual(recoveredStore.membershipActivationHandoff?.phase, .offered)
+        XCTAssertNotNil(recoveredStore.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testMembershipResumeAcknowledgmentStaysRetryableWhenPersistenceFails() {
+        let fileManager = NthCreateDirectoryFailingFileManager()
+        let goal = makeGoal()
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateUnlockMinutes(10)
+        store.presentGoalProfileCreator()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        fileManager.fail(onCreateDirectoryCall: 1)
+
+        XCTAssertEqual(
+            store.requestMembershipActivationResume(),
+            .persistenceFailed
+        )
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .activationReady)
+        XCTAssertNotNil(store.completedMembershipActivationContinuation)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.phase, .activationReady)
+
+        fileManager.fail(onCreateDirectoryCall: .max)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+    }
+
+    @MainActor
+    func testFailedActivationDismissalKeepsTheReceiptOpenAndRetryable() {
+        let fileManager = NthCreateDirectoryFailingFileManager()
+        let goal = makeGoal()
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.updateUnlockMinutes(10)
+        store.presentGoalProfileCreator()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        fileManager.fail(onCreateDirectoryCall: 1)
+
+        XCTAssertFalse(store.dismissMembershipPrompt())
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .activationReady)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.phase, .activationReady)
+
+        fileManager.fail(onCreateDirectoryCall: .max)
+        XCTAssertTrue(store.dismissMembershipPrompt())
+        XCTAssertNil(store.pendingMembershipPresentation)
+        XCTAssertNil(store.membershipActivationHandoff)
+    }
+
+    @MainActor
+    func testMirroredActivationDismissalClearsTheRecoveryBackup() throws {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        store.presentGoalProfileCreator()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+
+        XCTAssertTrue(store.dismissMembershipPrompt())
+        XCTAssertNil(store.membershipActivationHandoff)
+
+        let primaryURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.primaryFileName
+        )
+        let backupURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.backupFileName
+        )
+        let primaryEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: primaryURL)
+        )
+        let backupEnvelope = try JSONDecoder().decode(
+            AppSnapshotEnvelope.self,
+            from: Data(contentsOf: backupURL)
+        )
+        XCTAssertNil(primaryEnvelope.snapshot.membershipActivationHandoff)
+        XCTAssertNil(backupEnvelope.snapshot.membershipActivationHandoff)
+
+        try Data("corrupt primary".utf8).write(to: primaryURL, options: [.atomic])
+        let recoveredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertNil(recoveredStore.membershipActivationHandoff)
+        XCTAssertNotNil(recoveredStore.persistenceRecoveryMessage)
+        recoveredStore.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertNil(recoveredStore.membershipActivationHandoff)
+    }
+
+    @MainActor
+    func testMirroredResumeRequestSurvivesPrimaryCorruptionUntilItCanBeClaimed() throws {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        store.presentGoalProfileCreator()
+        let continuation = MembershipActivationContinuation.createGoalProfile(
+            sourceGoalID: goal.id
+        )
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+
+        let primaryURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.primaryFileName
+        )
+        try Data("corrupt primary".utf8).write(to: primaryURL, options: [.atomic])
+        let recoveredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+
+        XCTAssertEqual(recoveredStore.membershipActivationHandoff?.phase, .resumeRequested)
+        XCTAssertNil(recoveredStore.claimMembershipActivationContinuationForResume())
+        recoveredStore.reconcileMembershipEntitlement(isUnlocked: true)
+        recoveredStore.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: true,
+            hasUnresolvedPurchase: false
+        )
+        XCTAssertEqual(
+            recoveredStore.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+    }
+
+    @MainActor
+    func testPaidGoalSwitchPersistenceFailureRetainsCommandUntilRetryCommits() throws {
+        let fileManager = NthCreateDirectoryFailingFileManager()
+        let sourceGoal = makeGoal()
+        let targetGoal = Goal(
+            title: "Ship the polished release",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "release quality",
+            preferredQuestionStyle: .shortAnswer
+        )
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal, targetGoal]
+        store.updateUnlockMinutes(10)
+        let continuation = MembershipActivationContinuation.activateGoal(
+            sourceGoalID: sourceGoal.id,
+            targetGoalID: targetGoal.id
+        )
+        store.requestMembership(for: .goalProfiles, continuation: continuation)
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+        guard case let .eligible(plan) = store.prepareGoalActivation(to: targetGoal.id) else {
+            return XCTFail("Expected the verified member goal switch to be eligible")
+        }
+
+        fileManager.fail(onCreateDirectoryCall: 1)
+        XCTAssertEqual(store.activateGoal(using: plan), .persistenceFailed)
+        XCTAssertEqual(store.goal?.id, sourceGoal.id)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+
+        fileManager.fail(onCreateDirectoryCall: .max)
+        XCTAssertEqual(
+            store.activateGoal(using: plan),
+            .activated(from: sourceGoal.id, to: targetGoal.id)
+        )
+        XCTAssertEqual(store.goal?.id, targetGoal.id)
+        XCTAssertNil(store.membershipActivationHandoff)
+
+        let primaryURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.primaryFileName
+        )
+        let backupURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.backupFileName
+        )
+        for url in [primaryURL, backupURL] {
+            let envelope = try JSONDecoder().decode(
+                AppSnapshotEnvelope.self,
+                from: Data(contentsOf: url)
+            )
+            XCTAssertEqual(envelope.snapshot.goal?.id, targetGoal.id)
+            XCTAssertNil(envelope.snapshot.membershipActivationHandoff)
+        }
+
+        try Data("corrupt primary".utf8).write(to: primaryURL, options: [.atomic])
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(relaunchedStore.goal?.id, targetGoal.id)
+        XCTAssertNil(relaunchedStore.membershipActivationHandoff)
+        XCTAssertNotNil(relaunchedStore.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testPaidGoalCreationMirrorsTheCommittedGoalAndTerminalHandoff() throws {
+        let sourceGoal = makeGoal()
+        let store = makeFileBackedStore(goal: sourceGoal)
+        store.presentGoalProfileCreator()
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            .createGoalProfile(sourceGoalID: sourceGoal.id)
+        )
+        let request = GoalProfileMutationRequest(
+            operation: .create(
+                GoalProfileDraft(
+                    title: "Launch a recovery-safe goal",
+                    deadline: Date().addingTimeInterval(60 * 60 * 24 * 60),
+                    category: .custom,
+                    currentLevel: "Intermediate",
+                    focusAreas: "durable product delivery",
+                    preferredQuestionStyle: .shortAnswer,
+                    minimumQuestionDifficulty: sourceGoal.minimumQuestionDifficulty
+                )
+            )
+        )
+        guard case let .eligible(plan) = store.prepareGoalProfileMutation(request) else {
+            return XCTFail("Expected paid goal creation to be eligible")
+        }
+
+        XCTAssertEqual(
+            store.commitGoalProfileMutation(using: plan),
+            .committed(resultingGoalID: request.id)
+        )
+
+        let primaryURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.primaryFileName
+        )
+        let backupURL = persistenceDirectory.appendingPathComponent(
+            AppSnapshotPersistence.backupFileName
+        )
+        for url in [primaryURL, backupURL] {
+            let envelope = try JSONDecoder().decode(
+                AppSnapshotEnvelope.self,
+                from: Data(contentsOf: url)
+            )
+            XCTAssertEqual(envelope.snapshot.goal?.id, request.id)
+            XCTAssertNil(envelope.snapshot.membershipActivationHandoff)
+        }
+
+        try Data("corrupt primary".utf8).write(to: primaryURL, options: [.atomic])
+        let recoveredStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(recoveredStore.goal?.id, request.id)
+        XCTAssertNil(recoveredStore.membershipActivationHandoff)
+        XCTAssertNotNil(recoveredStore.persistenceRecoveryMessage)
+    }
+
+    @MainActor
+    func testPendingPaidActionSurvivesASameIdentityGoalEditAndRelaunch() throws {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        store.presentGoalProfileCreator()
+        XCTAssertTrue(store.membershipCheckoutStarted())
+        store.membershipCheckoutFinished(hasUnresolvedPurchase: true)
+        XCTAssertTrue(store.dismissMembershipPrompt(hasUnresolvedPurchase: true))
+        let request = try XCTUnwrap(store.membershipActivationHandoff?.request)
+        let editRequest = GoalProfileMutationRequest(
+            operation: .edit(
+                expectedGoalID: goal.id,
+                draft: GoalProfileDraft(
+                    title: "\(goal.title) — refined",
+                    deadline: goal.deadline,
+                    category: goal.category,
+                    currentLevel: goal.currentLevel,
+                    focusAreas: goal.focusAreas,
+                    sourceDocuments: goal.sourceDocuments,
+                    preferredQuestionStyle: goal.preferredQuestionStyle,
+                    minimumQuestionDifficulty: goal.minimumQuestionDifficulty
+                )
+            )
+        )
+        guard case let .eligible(plan) = store.prepareGoalProfileMutation(editRequest) else {
+            return XCTFail("Expected the same-identity edit to be eligible")
+        }
+
+        XCTAssertEqual(
+            store.commitGoalProfileMutation(using: plan),
+            .committed(resultingGoalID: goal.id)
+        )
+        XCTAssertEqual(store.membershipActivationHandoff?.request, request)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .awaitingEntitlement)
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.request, request)
+        XCTAssertEqual(relaunchedStore.membershipActivationHandoff?.phase, .awaitingEntitlement)
+    }
+
+    @MainActor
+    func testOverviewCheckoutKeepsAOneShotReceiptAcrossRelaunch() throws {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        store.requestMembershipOverview()
+        let requestID = try XCTUnwrap(store.membershipActivationHandoff?.request.id)
+        XCTAssertNil(store.membershipActivationHandoff?.request.continuation)
+        XCTAssertTrue(store.membershipCheckoutStarted())
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        relaunchedStore.reconcileMembershipEntitlement(isUnlocked: true)
+        relaunchedStore.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: true,
+            hasUnresolvedPurchase: false
+        )
+        XCTAssertTrue(relaunchedStore.presentMembershipActivationHandoffIfAvailable())
+        let presentation = relaunchedStore.membershipActivationPresentation(
+            fallbackContext: .feature(.goalProfiles),
+            fallbackSource: .entitlementRefresh
+        )
+        XCTAssertEqual(presentation.id, requestID)
+        XCTAssertEqual(presentation.context, .overview)
+        XCTAssertEqual(presentation.source, .purchase)
+        XCTAssertNil(presentation.continuation)
+        XCTAssertEqual(presentation.actionTitle, "Done")
+    }
+
+    @MainActor
     func testLegacyUserDefaultsSnapshotMigratesOnlyAfterVerifiedFileWrite() throws {
         let goal = makeGoal()
         let defaultsBackedStore = CheckpointStore(defaults: defaults)
@@ -1371,6 +1952,8 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         let goal = makeGoal()
         let store = makeFileBackedStore(goal: goal)
         XCTAssertTrue(store.recordFocusWin(note: "Erase this win.", goalID: goal.id))
+        store.presentGoalProfileCreator()
+        XCTAssertNotNil(store.membershipActivationHandoff)
         let screenTime = ScreenTimeController()
         let purchaseController = PurchaseController(
             grantsDebugTesterEntitlement: false,
@@ -1392,9 +1975,14 @@ final class AppSnapshotPersistenceTests: XCTestCase {
             pendingPurchaseDefaults: defaults,
             currentDate: { now }
         )
+        let relaunchedStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
 
         XCTAssertTrue(store.hasNoPersistedAppData)
         XCTAssertTrue(store.focusWins.isEmpty)
+        XCTAssertNil(store.membershipActivationHandoff)
         XCTAssertFalse(SharedAppGroup.hasPersistedData)
         XCTAssertNil(purchaseController.pendingPurchaseProductID)
         XCTAssertNil(purchaseController.purchaseNotice)
@@ -1403,6 +1991,7 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         )
         XCTAssertNil(relaunchedPurchaseController.pendingPurchaseProductID)
         XCTAssertNil(relaunchedPurchaseController.purchaseNotice)
+        XCTAssertNil(relaunchedStore.membershipActivationHandoff)
     }
 
     @MainActor
@@ -1799,5 +2388,31 @@ private final class ToggleFailingFileManager: FileManager, @unchecked Sendable {
             throw CocoaError(.fileWriteNoPermission)
         }
         try super.removeItem(at: URL)
+    }
+}
+
+private final class NthCreateDirectoryFailingFileManager: FileManager, @unchecked Sendable {
+    private var createDirectoryCallCount = 0
+    private var failingCall: Int?
+
+    func fail(onCreateDirectoryCall call: Int) {
+        createDirectoryCallCount = 0
+        failingCall = call
+    }
+
+    override func createDirectory(
+        at url: URL,
+        withIntermediateDirectories createIntermediates: Bool,
+        attributes: [FileAttributeKey: Any]? = nil
+    ) throws {
+        createDirectoryCallCount += 1
+        if createDirectoryCallCount == failingCall {
+            throw CocoaError(.fileWriteNoPermission)
+        }
+        try super.createDirectory(
+            at: url,
+            withIntermediateDirectories: createIntermediates,
+            attributes: attributes
+        )
     }
 }

@@ -883,7 +883,10 @@ struct OnboardingView: View {
             }
         }
         .coordinateSpace(name: goalSetupLayoutCoordinateSpaceName)
-        .interactiveDismissDisabled(dismissalPolicy.preventsInteractiveDismissal)
+        .interactiveDismissDisabled(
+            dismissalPolicy.preventsInteractiveDismissal
+                || store.hasResumedMembershipGoalCreation
+        )
         .fileImporter(
             isPresented: $isSourceImporterPresented,
             allowedContentTypes: GoalSourceDocumentImporter.supportedContentTypes,
@@ -1216,6 +1219,10 @@ struct OnboardingView: View {
 
     private func dismissGoalSetup() {
         cancelPendingOperations()
+        guard store.cancelResumedMembershipGoalCreation() else {
+            announcePersistenceFailure()
+            return
+        }
         store.isCreatingGoalProfile = false
         store.isOnboardingPresented = false
         dismiss()

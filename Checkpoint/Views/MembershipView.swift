@@ -15,6 +15,10 @@ enum MembershipPaywallLayoutElement: Hashable {
     case memberPlanIdentity
     case memberPlanBadge
     case memberManagementAction
+    case activationReceipt
+    case activationAction
+    case activationVerificationViewport
+    case activationVerificationContent
 }
 
 private let membershipPaywallLayoutCoordinateSpaceName = "Checkpoint.MembershipPaywall.Layout"
@@ -197,6 +201,7 @@ struct MembershipView: View {
     @State private var activationFeedback = MembershipActivationFeedbackState()
     @State private var activationFeedbackSequence = 0
     @State private var isActivationRevealed = false
+    @State private var activationActionNotice: String?
     @State private var isSubscriptionManagementPresented = false
 
     init(
@@ -218,7 +223,14 @@ struct MembershipView: View {
         renderCheckPurchaseStatusAction = renderConfiguration?.checkPurchaseStatusAction
         layoutReporter = renderConfiguration?.layoutReporter
         _selectedProductID = State(initialValue: renderConfiguration?.selectedPlanID)
-        _activationPresentation = State(initialValue: renderConfiguration?.activationPresentation)
+        let liveActivationPresentation = store.membershipActivationPresentationIfVerified(
+            fallbackContext: context,
+            fallbackSource: .entitlementRefresh
+        )
+        _activationPresentation = State(
+            initialValue: renderConfiguration?.activationPresentation
+                ?? liveActivationPresentation
+        )
     }
 
     var body: some View {
@@ -226,6 +238,8 @@ struct MembershipView: View {
             Group {
                 if let activationPresentation {
                     membershipActivationContent(activationPresentation)
+                } else if isAwaitingActivationPresentation {
+                    membershipActivationVerificationContent
                 } else {
                     paywallContent
                 }
@@ -233,25 +247,28 @@ struct MembershipView: View {
             .navigationTitle(navigationTitle)
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
-                        close()
+                if !isAwaitingActivationPresentation {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(activationPresentation == nil ? "Done" : "Not now") {
+                            close()
+                        }
+                        .foregroundStyle(CheckpointTheme.teal)
+                        .disabled(purchaseController.isCheckoutActionInProgress)
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
                 }
             }
             .task {
-                if activationPresentation == nil,
-                   store.isMember,
-                   store.completedMembershipActivationContinuation != nil {
-                    presentActivation(source: .entitlementRefresh)
-                }
                 guard performsStoreKitLoading else {
                     selectDefaultPlanIfNeeded()
                     return
                 }
                 purchaseController.startListeningForTransactions()
                 await loadEntitlements()
+                if purchaseController.isMembershipUnlocked,
+                   activationPresentation == nil,
+                   store.hasMembershipActivationReceipt {
+                    presentActivation(source: .entitlementRefresh)
+                }
                 selectDefaultPlanIfNeeded()
             }
             .onChange(of: planOptions.map(\.id)) { _, _ in
@@ -272,6 +289,11 @@ struct MembershipView: View {
             .sensoryFeedback(.success, trigger: activationFeedbackSequence)
         }
         .coordinateSpace(name: membershipPaywallLayoutCoordinateSpaceName)
+        .interactiveDismissDisabled(
+            activationPresentation != nil
+                || isAwaitingActivationPresentation
+                || purchaseController.isCheckoutActionInProgress
+        )
         .modifier(
             MembershipSubscriptionManagementSheetModifier(
                 isPresented: $isSubscriptionManagementPresented,
@@ -288,9 +310,52 @@ struct MembershipView: View {
 
     private var navigationTitle: String {
         if activationPresentation != nil {
-            return "Pro unlocked"
+            return "Pro active"
+        }
+        if isAwaitingActivationPresentation {
+            return "Confirming Pro"
         }
         return store.isMember ? "Your Plan" : "Checkpoint Pro"
+    }
+
+    private var isAwaitingActivationPresentation: Bool {
+        activationPresentation == nil && store.hasMembershipActivationReceipt
+    }
+
+    private var membershipActivationVerificationContent: some View {
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(spacing: 14) {
+                    ProgressView()
+                        .controlSize(.large)
+                        .tint(CheckpointTheme.teal)
+                        .accessibilityHidden(true)
+                    Text("Confirming your Pro access…")
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.ink)
+                    Text("Keep this screen open while Checkpoint verifies your purchase with the App Store.")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(28)
+                .frame(maxWidth: .infinity, minHeight: proxy.size.height)
+                .reportMembershipPaywallLayoutFrame(
+                    .activationVerificationContent,
+                    using: layoutReporter
+                )
+            }
+            .scrollIndicators(.hidden)
+            .reportMembershipPaywallLayoutFrame(
+                .activationVerificationViewport,
+                using: layoutReporter
+            )
+        }
+        .checkpointScreenBackground()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "Confirming your Pro access. Keep this screen open while Checkpoint verifies your purchase with the App Store."
+        )
     }
 
     private var paywallContent: some View {
@@ -336,6 +401,7 @@ struct MembershipView: View {
             .padding(.bottom, 24)
         }
         .checkpointScreenBackground()
+        .reportMembershipPaywallLayoutFrame(.activationReceipt, using: layoutReporter)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             activationActionBar(presentation)
         }
@@ -494,12 +560,19 @@ struct MembershipView: View {
             Divider()
                 .overlay(CheckpointTheme.hairline)
 
+            if let activationActionNotice {
+                purchaseNotice(.failure(activationActionNotice))
+                    .padding(.horizontal, 20)
+            }
+
             PrimaryActionButton(
                 title: presentation.actionTitle,
                 systemImage: presentation.actionSystemImage
             ) {
-                close()
+                performActivationAction(presentation)
             }
+            .accessibilityHint(presentation.actionAccessibilityHint)
+            .reportMembershipPaywallLayoutFrame(.activationAction, using: layoutReporter)
             .padding(.horizontal, 20)
 
             Text(activationSupportText(for: presentation))
@@ -517,9 +590,14 @@ struct MembershipView: View {
     private func activationSupportText(
         for presentation: MembershipActivationPresentation
     ) -> String {
-        presentation.continuation == nil
-            ? "Your Pro benefits are ready now."
-            : "Checkpoint will pick up exactly where you left off."
+        switch presentation.continuation {
+        case .createGoalProfile:
+            "Opens goal setup next."
+        case .activateGoal:
+            "You’ll review the switch and any protection changes next."
+        case nil:
+            "Your Pro benefits are ready now."
+        }
     }
 
     private var activationMotionPolicy: MembershipActivationMotionPolicy {
@@ -540,17 +618,49 @@ struct MembershipView: View {
         if purchaseController.isRestoringPurchases {
             return .restore
         }
+        if purchaseController.isCheckingPurchaseStatus {
+            return .purchase
+        }
         return .entitlementRefresh
     }
 
     private func presentActivation(source: MembershipActivationSource) {
         guard activationPresentation == nil else { return }
-        let continuation = store.completeMembershipCheckout()
-        activationPresentation = MembershipActivationPresentation(
-            context: context,
-            source: source,
-            continuation: continuation
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: source
         )
+        _ = store.completeMembershipCheckout(source: source)
+        activationPresentation = store.membershipActivationPresentation(
+            fallbackContext: context,
+            fallbackSource: source
+        )
+    }
+
+    private func performActivationAction(
+        _ presentation: MembershipActivationPresentation
+    ) {
+        guard presentation.continuation != nil else {
+            close()
+            return
+        }
+        switch store.requestMembershipActivationResume() {
+        case .requested:
+            activationActionNotice = nil
+            dismiss()
+        case .actionUnavailable:
+            let notice = "That next step is no longer available. Your Pro access is still active."
+            activationActionNotice = notice
+            activationPresentation = store.membershipActivationPresentation(
+                fallbackContext: presentation.context,
+                fallbackSource: presentation.source
+            )
+            AccessibilityNotification.Announcement(notice).post()
+        case .persistenceFailed:
+            let notice = "Checkpoint couldn’t save this handoff yet. Keep this screen open and try again."
+            activationActionNotice = notice
+            AccessibilityNotification.Announcement(notice).post()
+        }
     }
 
     private func revealActivation() {
@@ -1439,7 +1549,11 @@ struct MembershipView: View {
 
     private func purchase(_ product: Product) {
         Task {
+            guard beginMembershipStoreAction() else { return }
             let unlocked = await purchaseController.purchase(product)
+            store.membershipCheckoutFinished(
+                hasUnresolvedPurchase: purchaseController.hasUnresolvedPurchase
+            )
 
             if unlocked {
                 presentActivation(source: .purchase)
@@ -1454,7 +1568,11 @@ struct MembershipView: View {
         }
 
         Task {
+            guard beginMembershipStoreAction() else { return }
             let unlocked = await purchaseController.restorePurchases()
+            store.membershipCheckoutFinished(
+                hasUnresolvedPurchase: purchaseController.hasUnresolvedPurchase
+            )
             if unlocked {
                 presentActivation(source: .restore)
             }
@@ -1477,11 +1595,25 @@ struct MembershipView: View {
         }
 
         Task {
+            guard beginMembershipStoreAction() else { return }
             let unlocked = await purchaseController.checkPurchaseStatus()
+            store.membershipCheckoutFinished(
+                hasUnresolvedPurchase: purchaseController.hasUnresolvedPurchase
+            )
             if unlocked {
                 presentActivation(source: .purchase)
             }
         }
+    }
+
+    private func beginMembershipStoreAction() -> Bool {
+        guard store.membershipCheckoutStarted() else {
+            purchaseController.purchaseNotice = .failure(
+                "Checkpoint couldn’t safely save where to continue, so the App Store action hasn’t started. Free up storage and try again."
+            )
+            return false
+        }
+        return true
     }
 
     private func openSubscriptionManagement() {
@@ -1489,7 +1621,18 @@ struct MembershipView: View {
     }
 
     private func close() {
-        store.dismissMembershipPrompt()
+        guard store.dismissMembershipPrompt(
+            hasUnresolvedPurchase: purchaseController.hasUnresolvedCheckout
+        ) else {
+            let notice = "Checkpoint couldn’t save this choice yet. Keep this screen open and try again."
+            if activationPresentation != nil {
+                activationActionNotice = notice
+            } else {
+                purchaseController.purchaseNotice = .failure(notice)
+            }
+            AccessibilityNotification.Announcement(notice).post()
+            return
+        }
         dismiss()
     }
 

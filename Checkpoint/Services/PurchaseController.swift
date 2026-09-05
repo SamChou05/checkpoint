@@ -440,6 +440,19 @@ final class PurchaseController {
         return productID
     }
 
+    var isCheckoutActionInProgress: Bool {
+        switch storeOperation {
+        case .purchasing, .restoringPurchases, .checkingPurchaseStatus:
+            true
+        case .loadingProducts, nil:
+            false
+        }
+    }
+
+    var hasUnresolvedCheckout: Bool {
+        hasUnresolvedPurchase || isCheckoutActionInProgress
+    }
+
     func startListeningForTransactions() {
         guard updatesTask == nil else { return }
 
