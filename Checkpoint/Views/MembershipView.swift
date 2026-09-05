@@ -249,7 +249,7 @@ struct MembershipView: View {
             .toolbar {
                 if !isAwaitingActivationPresentation {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button(activationPresentation == nil ? "Done" : "Not now") {
+                        Button(activationPresentation == nil ? "Done" : "Close") {
                             close()
                         }
                         .foregroundStyle(CheckpointTheme.teal)
@@ -464,8 +464,21 @@ struct MembershipView: View {
                     .foregroundStyle(CheckpointTheme.mint)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(CheckpointTheme.mint.opacity(0.10), in: Capsule())
+                    .frame(
+                        maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil,
+                        alignment: .leading
+                    )
+                    .background {
+                        if dynamicTypeSize.isAccessibilitySize {
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(CheckpointTheme.mint.opacity(0.10))
+                        } else {
+                            Capsule()
+                                .fill(CheckpointTheme.mint.opacity(0.10))
+                        }
+                    }
                     .fixedSize(horizontal: false, vertical: true)
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                     .accessibilityElement(children: .combine)
             }
         }
@@ -595,6 +608,8 @@ struct MembershipView: View {
             "Opens goal setup next."
         case .activateGoal:
             "You’ll review the switch and any protection changes next."
+        case .revealNextFocus:
+            "Returns to Next Focus in Progress."
         case nil:
             "Your Pro benefits are ready now."
         }

@@ -144,6 +144,7 @@ enum MembershipActivationContinuation: Codable, Equatable, Sendable {
         sourceGoalID: Goal.ID?,
         targetGoalID: Goal.ID
     )
+    case revealNextFocus(sourceGoalID: Goal.ID)
 }
 
 enum MembershipActivationSource: Codable, Equatable, Sendable {
@@ -334,6 +335,8 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
             } else {
                 "Your selected goal is ready for review."
             }
+        case .revealNextFocus:
+            "Next Focus is now available for this goal in Progress."
         case nil:
             switch context {
             case .overview:
@@ -356,6 +359,8 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
             "Set up new goal"
         case .activateGoal:
             "Review goal switch"
+        case .revealNextFocus:
+            "Open Next Focus"
         case nil:
             "Done"
         }
@@ -367,6 +372,8 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
             "plus"
         case .activateGoal:
             "arrow.right"
+        case .revealNextFocus:
+            "scope"
         case nil:
             "checkmark"
         }
@@ -382,6 +389,8 @@ struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
             "Opens goal setup."
         case .activateGoal:
             "Reviews the goal switch and any protection changes."
+        case .revealNextFocus:
+            "Closes this confirmation and opens Next Focus in Progress."
         case nil:
             "Closes this confirmation."
         }

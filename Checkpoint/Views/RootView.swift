@@ -423,6 +423,18 @@ struct GoalSwitchDismissalRouting {
     }
 }
 
+private enum MembershipNextFocusResolutionPersistenceAction {
+    case consume(goalID: Goal.ID)
+    case returnToReceipt(goalID: Goal.ID)
+
+    var goalID: Goal.ID {
+        switch self {
+        case let .consume(goalID), let .returnToReceipt(goalID):
+            goalID
+        }
+    }
+}
+
 struct RootView: View {
     @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
@@ -500,7 +512,8 @@ struct RootView: View {
                 screenTime: screenTime,
                 protectionErrorMessage: screenTime.userFacingErrorMessage,
                 parentModalOwnsProtectionErrors: parentPresentationOwnsProtectionErrors,
-                skillEvidenceRequest: $progressSkillEvidenceRequest
+                skillEvidenceRequest: $progressSkillEvidenceRequest,
+                skillEvidenceResolution: handleProgressSkillEvidenceResolution
             )
                 .tabItem {
                     Label("Progress", systemImage: "chart.line.uptrend.xyaxis")
@@ -1037,6 +1050,79 @@ struct RootView: View {
             store.presentGoalProfileCreator()
         case let .activateGoal(_, targetGoalID):
             requestGoalSwitch(to: targetGoalID)
+        case let .revealNextFocus(sourceGoalID):
+            guard store.goal?.id == sourceGoalID else {
+                _ = store.returnMembershipActivationResumeToReceipt()
+                presentDeferredMembershipActivationIfPossible()
+                return
+            }
+
+            progressSkillEvidenceRequest = ProgressSkillEvidenceRequest(
+                currentNextFocusFor: sourceGoalID
+            )
+            selectedTab = .skill
+        }
+    }
+
+    private func handleProgressSkillEvidenceResolution(
+        _ request: ProgressSkillEvidenceRequest,
+        _ resolution: ProgressSkillEvidenceResolution
+    ) {
+        guard case let .currentNextFocus(sourceGoalID) = request.destination else {
+            return
+        }
+
+        let persistenceAction: MembershipNextFocusResolutionPersistenceAction
+        switch resolution {
+        case .revealed:
+            persistenceAction = .consume(goalID: sourceGoalID)
+        case .unavailable:
+            persistenceAction = .returnToReceipt(goalID: sourceGoalID)
+        }
+
+        guard !persistMembershipNextFocusResolution(persistenceAction) else {
+            return
+        }
+        retryMembershipNextFocusResolutionPersistence(persistenceAction)
+    }
+
+    private func persistMembershipNextFocusResolution(
+        _ action: MembershipNextFocusResolutionPersistenceAction
+    ) -> Bool {
+        guard let handoff = store.membershipActivationHandoff,
+              handoff.phase == .resumeRequested,
+              case let .revealNextFocus(sourceGoalID) = handoff.request.continuation,
+              sourceGoalID == action.goalID else {
+            return true
+        }
+
+        switch action {
+        case let .consume(goalID):
+            return store.completeResumedMembershipNextFocusReveal(for: goalID)
+        case .returnToReceipt:
+            guard store.returnMembershipActivationResumeToReceipt() else {
+                return false
+            }
+            presentDeferredMembershipActivationIfPossible()
+            return true
+        }
+    }
+
+    private func retryMembershipNextFocusResolutionPersistence(
+        _ action: MembershipNextFocusResolutionPersistenceAction
+    ) {
+        Task { @MainActor in
+            for delay in [Duration.milliseconds(250), .seconds(1), .seconds(2)] {
+                do {
+                    try await Task.sleep(for: delay)
+                } catch {
+                    return
+                }
+                guard !Task.isCancelled else { return }
+                if persistMembershipNextFocusResolution(action) {
+                    return
+                }
+            }
         }
     }
 

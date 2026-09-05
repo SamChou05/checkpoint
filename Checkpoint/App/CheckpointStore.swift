@@ -2071,6 +2071,23 @@ final class CheckpointStore {
         return true
     }
 
+    @discardableResult
+    func completeResumedMembershipNextFocusReveal(
+        for sourceGoalID: Goal.ID
+    ) -> Bool {
+        guard let membershipActivationHandoff,
+              membershipActivationHandoff.phase == .resumeRequested,
+              case let .revealNextFocus(requestedSourceGoalID) =
+                membershipActivationHandoff.request.continuation,
+              requestedSourceGoalID == sourceGoalID else {
+            return true
+        }
+        guard transitionMembershipActivationHandoff(.consumed) else { return false }
+        claimedMembershipActivationRequestID = nil
+        shouldPresentMembershipActivationHandoff = false
+        return true
+    }
+
     func reconcileMembershipActivationAfterLaunch(
         isUnlocked: Bool,
         hasUnresolvedPurchase: Bool
@@ -2169,6 +2186,16 @@ final class CheckpointStore {
                 goals: availableGoalProfiles
             ).title(for: targetGoal)
             return (continuation, destinationTitle)
+        case let .revealNextFocus(sourceGoalID):
+            guard goal?.id == sourceGoalID,
+                  activeDerivedSkillMap?.status == .reviewed,
+                  studyFocusState != nil
+                    || (canUse(.adaptiveStudyAssist)
+                        && isPreparingActiveGoalQuestions
+                        && !isQuestionGenerationBlockingPractice) else {
+                return nil
+            }
+            return (continuation, nil)
         }
     }
 

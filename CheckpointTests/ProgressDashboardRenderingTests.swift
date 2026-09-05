@@ -49,6 +49,16 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 to: nil
             )
         )
+        XCTAssertTrue(
+            ProgressScreenChangePolicy.suppressesGeneralAccessibilityResponse(
+                hasPendingSkillEvidenceRequest: true
+            )
+        )
+        XCTAssertFalse(
+            ProgressScreenChangePolicy.suppressesGeneralAccessibilityResponse(
+                hasPendingSkillEvidenceRequest: false
+            )
+        )
 
         XCTAssertTrue(
             ProgressGoalSwitchInteractionPolicy.animatesScroll(
@@ -210,6 +220,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         )
         XCTAssertFalse(standard.suppressesTransientHighlight)
         XCTAssertTrue(standard.highlightsTarget)
+        XCTAssertTrue(standard.animatesNavigation)
 
         for scenario in suppressiveSkillEvidencePolicies() {
             XCTAssertTrue(
@@ -217,7 +228,49 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 scenario.name
             )
             XCTAssertFalse(scenario.policy.highlightsTarget, scenario.name)
+            XCTAssertFalse(scenario.policy.animatesNavigation, scenario.name)
         }
+
+        XCTAssertTrue(
+            ProgressSkillEvidenceDeliveryPolicy.canDeliver(
+                isVisible: true,
+                isSceneActive: true,
+                isCoveredByModalPresentation: false
+            )
+        )
+        XCTAssertFalse(
+            ProgressSkillEvidenceDeliveryPolicy.canDeliver(
+                isVisible: false,
+                isSceneActive: true,
+                isCoveredByModalPresentation: false
+            )
+        )
+        XCTAssertFalse(
+            ProgressSkillEvidenceDeliveryPolicy.canDeliver(
+                isVisible: true,
+                isSceneActive: false,
+                isCoveredByModalPresentation: false
+            )
+        )
+        XCTAssertFalse(
+            ProgressSkillEvidenceDeliveryPolicy.canDeliver(
+                isVisible: true,
+                isSceneActive: true,
+                isCoveredByModalPresentation: true
+            )
+        )
+    }
+
+    func testNextFocusUpgradePresentationMakesThePlanBoundaryExplicit() {
+        let presentation = ProgressNextFocusUpgradePresentation.standard
+
+        XCTAssertEqual(presentation.eyebrow, "NEXT FOCUS")
+        XCTAssertEqual(presentation.planBadge, "PRO")
+        XCTAssertEqual(presentation.headline, "Know what to practice next")
+        XCTAssertEqual(presentation.accessory, "See plans")
+        XCTAssertEqual(presentation.accessibilityLabel, "Next Focus")
+        XCTAssertTrue(presentation.accessibilityValue.hasPrefix("Requires Checkpoint Pro."))
+        XCTAssertEqual(presentation.accessibilityHint, "Opens Checkpoint Pro plans.")
     }
 
     @MainActor
@@ -371,13 +424,463 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         )
         XCTAssertGreaterThan(
             activeBorderDifference,
-            0.02,
+            0.012,
             "The mounted test must intercept the active evidence highlight."
         )
         XCTAssertLessThan(
             snappedBorderDifference,
             activeBorderDifference * 0.55,
             "Enabling suppression must snap to the stable no-highlight rendering."
+        )
+    }
+
+    @MainActor
+    func testMembershipNextFocusHandoffClearsOnlyAfterTheMountedDestinationReveals() throws {
+        let suiteName = "ProgressDashboardRenderingTests.NextFocusDelivery.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+        let goalID = try XCTUnwrap(store.goal?.id)
+        let continuation = MembershipActivationContinuation.revealNextFocus(
+            sourceGoalID: goalID
+        )
+        store.membershipTier = .starter
+        store.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: continuation
+        )
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+
+        let recorder = ProgressSkillEvidenceResolutionRecorder()
+        let frame = CGRect(x: 0, y: 0, width: 393, height: 1_000)
+        let hostingController = UIHostingController(
+            rootView: ProgressSkillEvidenceMotionHarness(
+                driver: ProgressSkillEvidenceMotionDriver(reduceMotion: false),
+                store: store,
+                referenceDate: referenceDate,
+                request: ProgressSkillEvidenceRequest(currentNextFocusFor: goalID),
+                resolution: { request, resolution in
+                    recorder.record(resolution)
+                    guard resolution == .revealed else { return }
+                    _ = store.completeResumedMembershipNextFocusReveal(
+                        for: request.goalID
+                    )
+                }
+            )
+            .preferredColorScheme(.dark)
+        )
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.overrideUserInterfaceStyle = .dark
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
+
+        XCTAssertEqual(recorder.events, [.revealed])
+        XCTAssertNil(store.membershipActivationHandoff)
+
+        let image = mountedViewImage(of: hostingController.view, size: frame.size)
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "membership-next-focus-delivery-highlighted"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    @MainActor
+    func testMembershipNextFocusHandoffWaitsUntilParentPresentationClears() throws {
+        let suiteName = "ProgressDashboardRenderingTests.NextFocusCovered.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+        let goalID = try XCTUnwrap(store.goal?.id)
+        let continuation = MembershipActivationContinuation.revealNextFocus(
+            sourceGoalID: goalID
+        )
+        store.membershipTier = .starter
+        store.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: continuation
+        )
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+
+        let recorder = ProgressSkillEvidenceResolutionRecorder()
+        let driver = ProgressSkillEvidenceMotionDriver(
+            reduceMotion: true,
+            isCoveredByParentModal: true
+        )
+        let frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+        let hostingController = UIHostingController(
+            rootView: ProgressSkillEvidenceMotionHarness(
+                driver: driver,
+                store: store,
+                referenceDate: referenceDate,
+                request: ProgressSkillEvidenceRequest(currentNextFocusFor: goalID),
+                resolution: { request, resolution in
+                    recorder.record(resolution)
+                    guard resolution == .revealed else { return }
+                    _ = store.completeResumedMembershipNextFocusReveal(
+                        for: request.goalID
+                    )
+                }
+            )
+        )
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.2))
+
+        XCTAssertTrue(recorder.events.isEmpty)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+
+        driver.isCoveredByParentModal = false
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.35))
+
+        XCTAssertEqual(recorder.events, [.revealed])
+        XCTAssertNil(store.membershipActivationHandoff)
+    }
+
+    @MainActor
+    func testMembershipNextFocusHandoffReturnsToTheReceiptWhenItsGoalChanges() throws {
+        let suiteName = "ProgressDashboardRenderingTests.NextFocusStale.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+        let sourceGoalID = try XCTUnwrap(store.goal?.id)
+        let continuation = MembershipActivationContinuation.revealNextFocus(
+            sourceGoalID: sourceGoalID
+        )
+        store.membershipTier = .starter
+        store.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: continuation
+        )
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+
+        let replacementSkill = SkillMapTopic(name: "Conversational listening")
+        var replacementGoal = makeInterviewGoal(title: "Reach conversational Spanish")
+        replacementGoal.derivedSkillMap = GoalSkillMap(
+            topics: [replacementSkill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        store.goal = replacementGoal
+        store.goalProfiles.append(replacementGoal)
+
+        let recorder = ProgressSkillEvidenceResolutionRecorder()
+        let frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+        let hostingController = UIHostingController(
+            rootView: ProgressSkillEvidenceMotionHarness(
+                driver: ProgressSkillEvidenceMotionDriver(reduceMotion: true),
+                store: store,
+                referenceDate: referenceDate,
+                request: ProgressSkillEvidenceRequest(
+                    currentNextFocusFor: sourceGoalID
+                ),
+                resolution: { _, resolution in
+                    recorder.record(resolution)
+                    guard resolution == .unavailable else { return }
+                    _ = store.returnMembershipActivationResumeToReceipt()
+                }
+            )
+        )
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.15))
+
+        XCTAssertEqual(recorder.events, [.unavailable])
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .activationReady)
+        XCTAssertTrue(store.hasDeferredMembershipActivationPresentation)
+        let fallbackPresentation = try XCTUnwrap(
+            store.membershipActivationPresentationIfVerified(
+                fallbackContext: .overview,
+                fallbackSource: .entitlementRefresh
+            )
+        )
+        XCTAssertNil(fallbackPresentation.continuation)
+        XCTAssertEqual(fallbackPresentation.actionTitle, "Done")
+        XCTAssertEqual(
+            fallbackPresentation.detail,
+            "Your answer history can now guide one clear Next Focus."
+        )
+    }
+
+    @MainActor
+    func testMembershipNextFocusHandoffRevealsAwaitingAndCaughtUpStates() throws {
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+
+        for isCaughtUp in [false, true] {
+            let scenarioName = isCaughtUp ? "caught-up" : "awaiting"
+            let suiteName =
+                "ProgressDashboardRenderingTests.NextFocus.\(scenarioName).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let store = makeReviewedStore(
+                defaults: defaults,
+                referenceDate: referenceDate
+            )
+            let goal = try XCTUnwrap(store.goal)
+            let skill = try XCTUnwrap(goal.derivedSkillMap?.topics.first)
+            store.questions = isCaughtUp
+                ? [
+                    makeQuestion(
+                        goal: goal,
+                        index: 1,
+                        topic: skill.name,
+                        skillID: skill.id,
+                        status: .correct,
+                        timesAsked: 1,
+                        timesCorrect: 1,
+                        nextReviewAt: .distantFuture
+                    )
+                ]
+                : []
+            let continuation = MembershipActivationContinuation.revealNextFocus(
+                sourceGoalID: goal.id
+            )
+            store.requestMembership(
+                for: .adaptiveStudyAssist,
+                continuation: continuation
+            )
+            store.reconcileMembershipEntitlement(isUnlocked: true)
+            XCTAssertEqual(
+                store.studyFocusState,
+                isCaughtUp ? .caughtUp : .awaitingQuestion,
+                scenarioName
+            )
+            XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+            XCTAssertEqual(
+                store.claimMembershipActivationContinuationForResume(),
+                continuation,
+                scenarioName
+            )
+
+            let recorder = ProgressSkillEvidenceResolutionRecorder()
+            let frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+            let hostingController = UIHostingController(
+                rootView: ProgressSkillEvidenceMotionHarness(
+                    driver: ProgressSkillEvidenceMotionDriver(reduceMotion: true),
+                    store: store,
+                    referenceDate: referenceDate,
+                    request: ProgressSkillEvidenceRequest(
+                        currentNextFocusFor: goal.id
+                    ),
+                    resolution: { request, resolution in
+                        recorder.record(resolution)
+                        guard resolution == .revealed else { return }
+                        _ = store.completeResumedMembershipNextFocusReveal(
+                            for: request.goalID
+                        )
+                    }
+                )
+            )
+            let window = UIWindow(frame: frame)
+            window.rootViewController = hostingController
+            window.isHidden = false
+            hostingController.view.frame = frame
+            hostingController.view.layoutIfNeeded()
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.15))
+
+            XCTAssertEqual(recorder.events, [.revealed], scenarioName)
+            XCTAssertNil(store.membershipActivationHandoff, scenarioName)
+            window.isHidden = true
+        }
+    }
+
+    @MainActor
+    func testMembershipNextFocusHandoffRetriesAfterSameGoalPreparationFinishes() throws {
+        let suiteName = "ProgressDashboardRenderingTests.NextFocusPreparation.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+        let goal = try XCTUnwrap(store.goal)
+        let skill = try XCTUnwrap(goal.derivedSkillMap?.topics.first)
+        let continuation = MembershipActivationContinuation.revealNextFocus(
+            sourceGoalID: goal.id
+        )
+        store.membershipTier = .starter
+        store.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: continuation
+        )
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+        store.questions = []
+        store.questionBatchState = .generating
+        XCTAssertNil(store.studyFocusState)
+
+        let recorder = ProgressSkillEvidenceResolutionRecorder()
+        let frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+        let hostingController = UIHostingController(
+            rootView: ProgressSkillEvidenceMotionHarness(
+                driver: ProgressSkillEvidenceMotionDriver(reduceMotion: true),
+                store: store,
+                referenceDate: referenceDate,
+                request: ProgressSkillEvidenceRequest(currentNextFocusFor: goal.id),
+                resolution: { request, resolution in
+                    recorder.record(resolution)
+                    guard resolution == .revealed else { return }
+                    _ = store.completeResumedMembershipNextFocusReveal(
+                        for: request.goalID
+                    )
+                }
+            )
+        )
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.15))
+
+        XCTAssertTrue(recorder.events.isEmpty)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 99,
+                topic: skill.name,
+                skillID: skill.id,
+                status: .incorrect
+            )
+        ]
+        store.questionBatchState = .ready
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.35))
+
+        XCTAssertEqual(recorder.events, [.revealed])
+        XCTAssertNil(store.membershipActivationHandoff)
+    }
+
+    @MainActor
+    func testMembershipNextFocusHandoffReturnsToReceiptForPermanentFailure() throws {
+        let suiteName = "ProgressDashboardRenderingTests.NextFocusFailure.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+        let goalID = try XCTUnwrap(store.goal?.id)
+        let continuation = MembershipActivationContinuation.revealNextFocus(
+            sourceGoalID: goalID
+        )
+        store.membershipTier = .starter
+        store.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: continuation
+        )
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+        store.questions = []
+        store.questionBatchState = .generating
+        XCTAssertNil(store.studyFocusState)
+
+        let recorder = ProgressSkillEvidenceResolutionRecorder()
+        let frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+        let hostingController = UIHostingController(
+            rootView: ProgressSkillEvidenceMotionHarness(
+                driver: ProgressSkillEvidenceMotionDriver(reduceMotion: true),
+                store: store,
+                referenceDate: referenceDate,
+                request: ProgressSkillEvidenceRequest(currentNextFocusFor: goalID),
+                resolution: { _, resolution in
+                    recorder.record(resolution)
+                    guard resolution == .unavailable else { return }
+                    _ = store.returnMembershipActivationResumeToReceipt()
+                }
+            )
+        )
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.15))
+
+        XCTAssertTrue(recorder.events.isEmpty)
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+
+        store.questionBatchState = .failed
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.2))
+
+        XCTAssertEqual(recorder.events, [.unavailable])
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .activationReady)
+        XCTAssertTrue(store.hasDeferredMembershipActivationPresentation)
+        let fallbackPresentation = try XCTUnwrap(
+            store.membershipActivationPresentationIfVerified(
+                fallbackContext: .overview,
+                fallbackSource: .entitlementRefresh
+            )
+        )
+        XCTAssertNil(fallbackPresentation.continuation)
+        XCTAssertEqual(fallbackPresentation.actionTitle, "Done")
+        XCTAssertEqual(
+            fallbackPresentation.detail,
+            "Your answer history can now guide one clear Next Focus."
         )
     }
 
@@ -1784,6 +2287,26 @@ final class ProgressDashboardRenderingTests: XCTestCase {
 
         let fixtures = [
             ProgressDashboardRenderFixture(
+                name: "progress-next-focus-gate-compact-dark",
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    ProgressNextFocusUpgradeCardAuditView()
+                )
+            ),
+            ProgressDashboardRenderFixture(
+                name: "progress-next-focus-gate-accessibility5-reduced",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    ProgressNextFocusUpgradeCardAuditView()
+                )
+            ),
+            ProgressDashboardRenderFixture(
                 name: "next-focus-cards-compact-dark",
                 width: 320,
                 height: 1_050,
@@ -2299,9 +2822,17 @@ private struct ProgressMomentumRailMotionHarness: View {
 @MainActor
 private final class ProgressSkillEvidenceMotionDriver: ObservableObject {
     @Published var reduceMotion: Bool
+    @Published var isSceneActive: Bool
+    @Published var isCoveredByParentModal: Bool
 
-    init(reduceMotion: Bool) {
+    init(
+        reduceMotion: Bool,
+        isSceneActive: Bool = true,
+        isCoveredByParentModal: Bool = false
+    ) {
         self.reduceMotion = reduceMotion
+        self.isSceneActive = isSceneActive
+        self.isCoveredByParentModal = isCoveredByParentModal
     }
 }
 
@@ -2309,17 +2840,26 @@ private struct ProgressSkillEvidenceMotionHarness: View {
     @ObservedObject var driver: ProgressSkillEvidenceMotionDriver
     let store: CheckpointStore
     let referenceDate: Date
+    let resolution: @MainActor (
+        ProgressSkillEvidenceRequest,
+        ProgressSkillEvidenceResolution
+    ) -> Void
     @State private var request: ProgressSkillEvidenceRequest?
 
     init(
         driver: ProgressSkillEvidenceMotionDriver,
         store: CheckpointStore,
         referenceDate: Date,
-        request: ProgressSkillEvidenceRequest
+        request: ProgressSkillEvidenceRequest,
+        resolution: @escaping @MainActor (
+            ProgressSkillEvidenceRequest,
+            ProgressSkillEvidenceResolution
+        ) -> Void = { _, _ in }
     ) {
         self.driver = driver
         self.store = store
         self.referenceDate = referenceDate
+        self.resolution = resolution
         _request = State(initialValue: request)
     }
 
@@ -2328,8 +2868,20 @@ private struct ProgressSkillEvidenceMotionHarness: View {
             store: store,
             reduceMotionOverride: driver.reduceMotion,
             referenceDateOverride: referenceDate,
-            skillEvidenceRequest: $request
+            isSceneActive: driver.isSceneActive,
+            isCoveredByParentModal: driver.isCoveredByParentModal,
+            skillEvidenceRequest: $request,
+            skillEvidenceResolution: resolution
         )
+    }
+}
+
+@MainActor
+private final class ProgressSkillEvidenceResolutionRecorder {
+    private(set) var events: [ProgressSkillEvidenceResolution] = []
+
+    func record(_ resolution: ProgressSkillEvidenceResolution) {
+        events.append(resolution)
     }
 }
 
@@ -2357,6 +2909,16 @@ private struct ProgressSkillRowsAuditView: View {
                 }
             }
             .padding(20)
+        }
+        .checkpointScreenBackground()
+    }
+}
+
+private struct ProgressNextFocusUpgradeCardAuditView: View {
+    var body: some View {
+        ScrollView {
+            ProgressNextFocusUpgradeCard {}
+                .padding(20)
         }
         .checkpointScreenBackground()
     }

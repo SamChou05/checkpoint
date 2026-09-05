@@ -794,6 +794,13 @@ final class MembershipViewRenderingTests: XCTestCase {
             ),
             destinationTitle: "Design portfolio"
         )
+        let nextFocus = MembershipActivationPresentation(
+            id: UUID(uuidString: "DD9007C4-A1A1-4F3E-9EB2-A713BE5437CF")!,
+            context: .feature(.adaptiveStudyAssist),
+            source: .purchase,
+            continuation: .revealNextFocus(sourceGoalID: sourceGoalID),
+            destinationTitle: "Reliability and failure recovery"
+        )
         let overview = MembershipActivationPresentation(
             id: UUID(uuidString: "A941302A-7E60-47F4-A688-D24F721C4C21")!,
             context: .overview,
@@ -813,6 +820,17 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(goalSwitch.actionTitle, "Review goal switch")
         XCTAssertTrue(goalSwitch.actionAccessibilityHint.contains("protection"))
         XCTAssertTrue(goalSwitch.detail.contains("Design portfolio"))
+
+        XCTAssertEqual(nextFocus.actionTitle, "Open Next Focus")
+        XCTAssertEqual(nextFocus.actionSystemImage, "scope")
+        XCTAssertEqual(
+            nextFocus.detail,
+            "Next Focus is now available for this goal in Progress."
+        )
+        XCTAssertEqual(
+            nextFocus.actionAccessibilityHint,
+            "Closes this confirmation and opens Next Focus in Progress."
+        )
 
         XCTAssertEqual(overview.eyebrow, "ACCESS CONFIRMED")
         XCTAssertEqual(overview.actionTitle, "Done")
@@ -1038,6 +1056,21 @@ final class MembershipViewRenderingTests: XCTestCase {
                 )
             ),
             MembershipRenderFixture(
+                name: "membership-activated-next-focus-compact-dark",
+                context: .feature(.adaptiveStudyAssist),
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                isMember: true,
+                activationPresentation: MembershipActivationPresentation(
+                    id: UUID(uuidString: "06D34D49-09AD-46E8-A7EC-8684933677CD")!,
+                    context: .feature(.adaptiveStudyAssist),
+                    source: .purchase,
+                    continuation: .revealNextFocus(sourceGoalID: sourceGoalID)
+                )
+            ),
+            MembershipRenderFixture(
                 name: "membership-activated-accessibility5-reduced-motion",
                 context: .feature(.goalProfiles),
                 width: 393,
@@ -1051,6 +1084,22 @@ final class MembershipViewRenderingTests: XCTestCase {
                     context: .feature(.goalProfiles),
                     source: .entitlementRefresh,
                     continuation: .createGoalProfile(sourceGoalID: sourceGoalID)
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-activated-next-focus-accessibility5-reduced",
+                context: .feature(.adaptiveStudyAssist),
+                width: 393,
+                height: 1_700,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                isMember: true,
+                activationPresentation: MembershipActivationPresentation(
+                    id: UUID(uuidString: "8070E977-CC0D-4D8E-963A-D0E19322CC0F")!,
+                    context: .feature(.adaptiveStudyAssist),
+                    source: .restore,
+                    continuation: .revealNextFocus(sourceGoalID: sourceGoalID)
                 )
             )
         ]

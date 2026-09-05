@@ -167,12 +167,14 @@ private struct ProgressScreenSnapshot: Hashable {
 
 private enum ProgressScrollAnchor: Hashable {
     case top
+    case nextFocus
     case competency(TopicCompetency.ID)
 }
 
 private enum ProgressAccessibilityFocus: Hashable {
     case goalTitle(Goal.ID)
     case primaryState(ProgressScreenSnapshot)
+    case nextFocus(Goal.ID)
 }
 
 enum ProgressStateMotionStyle: Equatable {
@@ -213,6 +215,12 @@ struct ProgressScreenChangePolicy {
     ) -> Bool {
         previousGoalID != currentGoalID
     }
+
+    static func suppressesGeneralAccessibilityResponse(
+        hasPendingSkillEvidenceRequest: Bool
+    ) -> Bool {
+        hasPendingSkillEvidenceRequest
+    }
 }
 
 struct ProgressGoalSwitchInteractionPolicy {
@@ -231,16 +239,52 @@ struct ProgressSkillEvidenceTarget: Equatable, Sendable {
 }
 
 struct ProgressSkillEvidenceRequest: Identifiable, Equatable, Sendable {
+    enum Destination: Equatable, Sendable {
+        case currentNextFocus(goalID: Goal.ID)
+        case skill(ProgressSkillEvidenceTarget)
+
+        var goalID: Goal.ID {
+            switch self {
+            case let .currentNextFocus(goalID):
+                goalID
+            case let .skill(target):
+                target.goalID
+            }
+        }
+    }
+
     let id: UUID
-    let target: ProgressSkillEvidenceTarget
+    let destination: Destination
 
     init(
         id: UUID = UUID(),
         target: ProgressSkillEvidenceTarget
     ) {
         self.id = id
-        self.target = target
+        destination = .skill(target)
     }
+
+    init(
+        id: UUID = UUID(),
+        currentNextFocusFor goalID: Goal.ID
+    ) {
+        self.id = id
+        destination = .currentNextFocus(goalID: goalID)
+    }
+
+    var goalID: Goal.ID {
+        destination.goalID
+    }
+
+    var target: ProgressSkillEvidenceTarget? {
+        guard case let .skill(target) = destination else { return nil }
+        return target
+    }
+}
+
+enum ProgressSkillEvidenceResolution: Equatable, Sendable {
+    case revealed
+    case unavailable
 }
 
 @MainActor
@@ -302,6 +346,10 @@ struct ProgressSkillEvidenceInteractionPolicy: Equatable {
         !suppressesTransientHighlight
     }
 
+    var animatesNavigation: Bool {
+        !suppressesTransientHighlight
+    }
+
     static func shouldSnapActiveHighlight(
         from previous: Self,
         to current: Self,
@@ -310,6 +358,140 @@ struct ProgressSkillEvidenceInteractionPolicy: Equatable {
         hasActiveHighlight
             && !previous.suppressesTransientHighlight
             && current.suppressesTransientHighlight
+    }
+}
+
+struct ProgressSkillEvidenceDeliveryPolicy {
+    static func canDeliver(
+        isVisible: Bool,
+        isSceneActive: Bool,
+        isCoveredByModalPresentation: Bool
+    ) -> Bool {
+        isVisible && isSceneActive && !isCoveredByModalPresentation
+    }
+}
+
+struct ProgressNextFocusUpgradePresentation: Equatable {
+    static let standard = Self(
+        eyebrow: "NEXT FOCUS",
+        planBadge: "PRO",
+        headline: "Know what to practice next",
+        detail: "Pro turns your answer history and review schedule into one clear practice priority.",
+        accessory: "See plans",
+        accessibilityLabel: "Next Focus",
+        accessibilityValue: "Requires Checkpoint Pro. Pro turns your answer history and review schedule into one clear practice priority.",
+        accessibilityHint: "Opens Checkpoint Pro plans."
+    )
+
+    let eyebrow: String
+    let planBadge: String
+    let headline: String
+    let detail: String
+    let accessory: String
+    let accessibilityLabel: String
+    let accessibilityValue: String
+    let accessibilityHint: String
+}
+
+struct ProgressNextFocusUpgradeCard: View {
+    let presentation: ProgressNextFocusUpgradePresentation
+    let action: @MainActor () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    init(
+        presentation: ProgressNextFocusUpgradePresentation = .standard,
+        action: @escaping @MainActor () -> Void
+    ) {
+        self.presentation = presentation
+        self.action = action
+    }
+
+    private var usesStackedTypeLayout: Bool {
+        dynamicTypeSize == .large
+            || dynamicTypeSize == .xLarge
+            || dynamicTypeSize == .xxLarge
+            || dynamicTypeSize == .xxxLarge
+            || dynamicTypeSize.isAccessibilitySize
+    }
+
+    var body: some View {
+        Button(action: action) {
+            SectionPanel {
+                if usesStackedTypeLayout {
+                    VStack(alignment: .leading, spacing: 14) {
+                        icon
+                        copy
+                        accessory
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                } else {
+                    HStack(alignment: .top, spacing: 14) {
+                        icon
+                        copy
+                        Spacer(minLength: 4)
+                        accessory
+                    }
+                }
+            }
+        }
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
+        .accessibilityLabel(presentation.accessibilityLabel)
+        .accessibilityValue(presentation.accessibilityValue)
+        .accessibilityHint(presentation.accessibilityHint)
+    }
+
+    private var icon: some View {
+        Image(systemName: "scope")
+            .font(.system(size: 18, weight: .bold))
+            .foregroundStyle(CheckpointTheme.blue)
+            .frame(width: 44, height: 44)
+            .background(
+                CheckpointTheme.blue.opacity(0.11),
+                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private var copy: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 7) {
+                Text(presentation.eyebrow)
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.85)
+
+                Text(presentation.planBadge)
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.55)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 4)
+                    .background(CheckpointTheme.blue.opacity(0.11), in: Capsule())
+            }
+            .foregroundStyle(CheckpointTheme.blue)
+
+            Text(presentation.headline)
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(presentation.detail)
+                .font(.subheadline)
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var accessory: some View {
+        HStack(spacing: 6) {
+            Text(presentation.accessory)
+                .font(.caption.weight(.bold))
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.bold))
+        }
+        .foregroundStyle(CheckpointTheme.blue)
+        .fixedSize()
+        .accessibilityHidden(true)
     }
 }
 
@@ -370,6 +552,10 @@ struct CompetencyView: View {
     private let protectionErrorMessage: String?
     private let parentModalOwnsProtectionErrors: Bool
     private let skillEvidenceRequestBinding: Binding<ProgressSkillEvidenceRequest?>?
+    private let skillEvidenceResolution: @MainActor (
+        ProgressSkillEvidenceRequest,
+        ProgressSkillEvidenceResolution
+    ) -> Void
     private let layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
@@ -397,7 +583,7 @@ struct CompetencyView: View {
     @State private var pendingAccessibilityFocus: ProgressAccessibilityFocus?
     @State private var pendingProtectionErrorMessage: String?
     @State private var protectionStartErrorFeedback = ProtectionStartErrorFeedbackState()
-    @AccessibilityFocusState(for: .voiceOver)
+    @AccessibilityFocusState(for: [.voiceOver, .switchControl])
     private var accessibilityFocus: ProgressAccessibilityFocus?
 
     init(
@@ -412,6 +598,10 @@ struct CompetencyView: View {
         protectionErrorMessage: String? = nil,
         parentModalOwnsProtectionErrors: Bool = false,
         skillEvidenceRequest: Binding<ProgressSkillEvidenceRequest?>? = nil,
+        skillEvidenceResolution: @escaping @MainActor (
+            ProgressSkillEvidenceRequest,
+            ProgressSkillEvidenceResolution
+        ) -> Void = { _, _ in },
         layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)? = nil
     ) {
         self.store = store
@@ -425,6 +615,7 @@ struct CompetencyView: View {
         self.protectionErrorMessage = protectionErrorMessage
         self.parentModalOwnsProtectionErrors = parentModalOwnsProtectionErrors
         skillEvidenceRequestBinding = skillEvidenceRequest
+        self.skillEvidenceResolution = skillEvidenceResolution
         self.layoutReporter = layoutReporter
     }
 
@@ -532,11 +723,28 @@ struct CompetencyView: View {
                 .onChange(of: pendingSkillEvidenceRequest?.id) { _, _ in
                     revealPendingSkillEvidence(using: scrollProxy)
                 }
+                .onChange(of: focusState) { _, _ in
+                    revealPendingSkillEvidence(using: scrollProxy)
+                }
                 .onChange(of: isVisible) { _, currentIsVisible in
                     if currentIsVisible {
                         revealPendingSkillEvidence(using: scrollProxy)
                     } else {
                         cancelSkillEvidenceReveal()
+                    }
+                }
+                .onChange(of: isSceneActive) { _, currentIsSceneActive in
+                    if currentIsSceneActive {
+                        revealPendingSkillEvidence(using: scrollProxy)
+                    } else {
+                        cancelSkillEvidenceReveal()
+                    }
+                }
+                .onChange(of: isCoveredByModalPresentation) { _, isCovered in
+                    if isCovered {
+                        cancelSkillEvidenceReveal()
+                    } else {
+                        revealPendingSkillEvidence(using: scrollProxy)
                     }
                 }
                 .onChange(of: skillEvidenceInteractionPolicy) { previous, current in
@@ -570,6 +778,9 @@ struct CompetencyView: View {
                         }
                     }
                     respondToScreenChangeAfterLayout(from: previous, to: current)
+                    if pendingSkillEvidenceRequest != nil {
+                        revealPendingSkillEvidence(using: scrollProxy)
+                    }
                 }
             }
         }
@@ -709,6 +920,11 @@ struct CompetencyView: View {
                   reviewContext.skillMap.status == .reviewed {
             activeGoalMomentumEntry
             nextFocusPanel
+                .id(ProgressScrollAnchor.nextFocus)
+                .accessibilityFocused(
+                    $accessibilityFocus,
+                    equals: .nextFocus(goal.id)
+                )
                 .reportProgressLayoutFrame(.nextFocus, using: layoutReporter)
             activeGoalFocusWinsEntry
             focusAreasPanel(
@@ -723,6 +939,7 @@ struct CompetencyView: View {
         } else {
             progressHero
             nextFocusPanel
+                .id(ProgressScrollAnchor.nextFocus)
             activeGoalFocusWinsEntry
             focusAreasPanel(title: "Focus areas")
         }
@@ -840,7 +1057,11 @@ struct CompetencyView: View {
     }
 
     private func revealPendingSkillEvidence(using proxy: ScrollViewProxy) {
-        guard isVisible,
+        guard ProgressSkillEvidenceDeliveryPolicy.canDeliver(
+                isVisible: isVisible,
+                isSceneActive: isSceneActive,
+                isCoveredByModalPresentation: isCoveredByModalPresentation
+              ),
               let request = pendingSkillEvidenceRequest,
               skillEvidenceRequestInFlightID != request.id else {
             return
@@ -853,67 +1074,175 @@ struct CompetencyView: View {
 
             guard !Task.isCancelled,
                   isCurrentSkillEvidenceRequest(request.id) else {
-                finishSkillEvidenceRequest(request.id, consumeRequest: false)
+                finishSkillEvidenceRequest(request, consumeRequest: false)
                 return
             }
 
-            guard !ProgressSkillEvidenceRoutingPolicy.shouldDiscard(
-                target: request.target,
-                currentGoalID: store.goal?.id
-            ),
-            let competencyID = ProgressSkillEvidenceRoutingPolicy.competencyID(
-                for: request.target,
-                in: competencies
-            ) else {
-                finishSkillEvidenceRequest(request.id, consumeRequest: true)
-                return
-            }
-
-            let interactionPolicy = skillEvidenceInteractionPolicy
-            var navigationTransaction = Transaction(animation: nil)
-            navigationTransaction.disablesAnimations = true
-            withTransaction(navigationTransaction) {
-                expandedCompetencyID = competencyID
-            }
-
-            if interactionPolicy.highlightsTarget {
-                highlightCompetency(competencyID)
-            } else {
-                cancelSkillEvidenceHighlight()
-            }
-
-            await Task.yield()
-            guard !Task.isCancelled,
-                  isCurrentSkillEvidenceRequest(request.id),
-                  store.goal?.id == request.target.goalID,
-                  ProgressSkillEvidenceRoutingPolicy.competencyID(
-                    for: request.target,
-                    in: competencies
-                  ) == competencyID else {
+            guard store.goal?.id == request.goalID else {
                 finishSkillEvidenceRequest(
-                    request.id,
-                    consumeRequest: pendingSkillEvidenceRequest?.id == request.id
+                    request,
+                    consumeRequest: true,
+                    resolution: .unavailable
                 )
                 return
             }
 
-            var scrollTransaction = Transaction(animation: nil)
-            scrollTransaction.disablesAnimations = true
-            withTransaction(scrollTransaction) {
-                proxy.scrollTo(
-                    ProgressScrollAnchor.competency(competencyID),
-                    anchor: .center
+            switch request.destination {
+            case .currentNextFocus:
+                guard store.activeDerivedSkillMap?.status == .reviewed else {
+                    finishSkillEvidenceRequest(
+                        request,
+                        consumeRequest: true,
+                        resolution: .unavailable
+                    )
+                    return
+                }
+                guard let focusState else {
+                    let shouldRetryAfterPreparation = store.canUse(
+                        .adaptiveStudyAssist
+                    ) && store.isPreparingActiveGoalQuestions
+                        && !store.isQuestionGenerationBlockingPractice
+                    finishSkillEvidenceRequest(
+                        request,
+                        consumeRequest: !shouldRetryAfterPreparation,
+                        resolution: shouldRetryAfterPreparation ? nil : .unavailable
+                    )
+                    return
+                }
+                if let target = ProgressSkillEvidenceRoutingPolicy.target(
+                    for: focusState,
+                    goalID: request.goalID
+                ) {
+                    await revealSkillEvidence(
+                        target,
+                        for: request,
+                        using: proxy
+                    )
+                } else {
+                    revealInformationalNextFocus(
+                        for: request,
+                        using: proxy
+                    )
+                }
+            case let .skill(target):
+                await revealSkillEvidence(
+                    target,
+                    for: request,
+                    using: proxy
                 )
             }
+        }
+    }
 
-            competencyAccessibilityFocusRequest = voiceOverEnabled || switchControlEnabled
-                ? ProgressCompetencyAccessibilityFocusRequest(
-                    competencyID: competencyID
-                )
-                : nil
+    private func revealSkillEvidence(
+        _ target: ProgressSkillEvidenceTarget,
+        for request: ProgressSkillEvidenceRequest,
+        using proxy: ScrollViewProxy
+    ) async {
+        guard let competencyID = ProgressSkillEvidenceRoutingPolicy.competencyID(
+            for: target,
+            in: competencies
+        ) else {
+            finishSkillEvidenceRequest(
+                request,
+                consumeRequest: true,
+                resolution: .unavailable
+            )
+            return
+        }
 
-            skillEvidenceFeedbackSequence += 1
-            finishSkillEvidenceRequest(request.id, consumeRequest: true)
+        let interactionPolicy = skillEvidenceInteractionPolicy
+        var navigationTransaction = Transaction(animation: nil)
+        navigationTransaction.disablesAnimations = true
+        withTransaction(navigationTransaction) {
+            expandedCompetencyID = competencyID
+        }
+
+        if interactionPolicy.highlightsTarget {
+            highlightCompetency(competencyID)
+        } else {
+            cancelSkillEvidenceHighlight()
+        }
+
+        await Task.yield()
+        guard !Task.isCancelled,
+              isCurrentSkillEvidenceRequest(request.id) else {
+            finishSkillEvidenceRequest(request, consumeRequest: false)
+            return
+        }
+        guard store.goal?.id == target.goalID,
+              ProgressSkillEvidenceRoutingPolicy.competencyID(
+                for: target,
+                in: competencies
+              ) == competencyID else {
+            finishSkillEvidenceRequest(
+                request,
+                consumeRequest: true,
+                resolution: .unavailable
+            )
+            return
+        }
+
+        scroll(
+            to: .competency(competencyID),
+            anchor: .center,
+            using: proxy,
+            interactionPolicy: interactionPolicy
+        )
+
+        competencyAccessibilityFocusRequest = voiceOverEnabled || switchControlEnabled
+            ? ProgressCompetencyAccessibilityFocusRequest(
+                competencyID: competencyID
+            )
+            : nil
+
+        skillEvidenceFeedbackSequence += 1
+        finishSkillEvidenceRequest(
+            request,
+            consumeRequest: true,
+            resolution: .revealed
+        )
+    }
+
+    private func revealInformationalNextFocus(
+        for request: ProgressSkillEvidenceRequest,
+        using proxy: ScrollViewProxy
+    ) {
+        let interactionPolicy = skillEvidenceInteractionPolicy
+        cancelSkillEvidenceHighlight()
+        scroll(
+            to: .nextFocus,
+            anchor: .center,
+            using: proxy,
+            interactionPolicy: interactionPolicy
+        )
+        if voiceOverEnabled || switchControlEnabled {
+            accessibilityFocus = .nextFocus(request.goalID)
+        }
+        skillEvidenceFeedbackSequence += 1
+        finishSkillEvidenceRequest(
+            request,
+            consumeRequest: true,
+            resolution: .revealed
+        )
+    }
+
+    private func scroll(
+        to destination: ProgressScrollAnchor,
+        anchor: UnitPoint,
+        using proxy: ScrollViewProxy,
+        interactionPolicy: ProgressSkillEvidenceInteractionPolicy
+    ) {
+        if interactionPolicy.animatesNavigation {
+            withAnimation(CheckpointMotion.reveal) {
+                proxy.scrollTo(destination, anchor: anchor)
+            }
+        } else {
+            var transaction = Transaction(animation: nil)
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                proxy.scrollTo(destination, anchor: anchor)
+            }
         }
     }
 
@@ -923,16 +1252,20 @@ struct CompetencyView: View {
     }
 
     private func finishSkillEvidenceRequest(
-        _ requestID: UUID,
-        consumeRequest: Bool
+        _ request: ProgressSkillEvidenceRequest,
+        consumeRequest: Bool,
+        resolution: ProgressSkillEvidenceResolution? = nil
     ) {
-        if consumeRequest,
-           pendingSkillEvidenceRequest?.id == requestID {
+        let resolvesPendingRequest = pendingSkillEvidenceRequest?.id == request.id
+        if consumeRequest, resolvesPendingRequest {
             setPendingSkillEvidenceRequest(nil)
         }
-        if skillEvidenceRequestInFlightID == requestID {
+        if skillEvidenceRequestInFlightID == request.id {
             skillEvidenceRequestInFlightID = nil
             skillEvidenceRevealTask = nil
+        }
+        if resolvesPendingRequest, let resolution {
+            skillEvidenceResolution(request, resolution)
         }
     }
 
@@ -943,16 +1276,17 @@ struct CompetencyView: View {
     }
 
     private func discardStaleSkillEvidenceRequest(for currentGoalID: Goal.ID?) {
-        guard let target = pendingSkillEvidenceRequest?.target,
-              ProgressSkillEvidenceRoutingPolicy.shouldDiscard(
-                target: target,
-                currentGoalID: currentGoalID
-              ) else {
+        guard let request = pendingSkillEvidenceRequest,
+              request.goalID != currentGoalID else {
             return
         }
 
         cancelSkillEvidenceReveal()
-        setPendingSkillEvidenceRequest(nil)
+        finishSkillEvidenceRequest(
+            request,
+            consumeRequest: true,
+            resolution: .unavailable
+        )
     }
 
     private func highlightCompetency(_ competencyID: TopicCompetency.ID) {
@@ -1484,81 +1818,13 @@ struct CompetencyView: View {
     }
 
     private var guidedReviewUpgradePanel: some View {
-        Button {
-            store.requestMembership(for: .adaptiveStudyAssist)
-        } label: {
-            SectionPanel {
-                Group {
-                    if usesStackedTypeLayout {
-                        VStack(alignment: .leading, spacing: 14) {
-                            HStack {
-                                guidedReviewUpgradeIcon
-                                Spacer(minLength: 8)
-                                guidedReviewUpgradeChevron
-                            }
-                            guidedReviewUpgradeCopy
-                        }
-                    } else {
-                        HStack(alignment: .top, spacing: 14) {
-                            guidedReviewUpgradeIcon
-                            guidedReviewUpgradeCopy
-                            Spacer(minLength: 4)
-                            guidedReviewUpgradeChevron
-                        }
-                    }
-                }
-            }
-        }
-        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
-        .accessibilityLabel("Next Focus, Pro. Know what to practice next.")
-        .accessibilityHint("Opens Checkpoint Pro")
-    }
-
-    private var guidedReviewUpgradeIcon: some View {
-        Image(systemName: "scope")
-            .font(.system(size: 18, weight: .bold))
-            .foregroundStyle(CheckpointTheme.blue)
-            .frame(width: 44, height: 44)
-            .background(
-                CheckpointTheme.blue.opacity(0.11),
-                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+        ProgressNextFocusUpgradeCard {
+            guard let sourceGoalID = store.goal?.id else { return }
+            store.requestMembership(
+                for: .adaptiveStudyAssist,
+                continuation: .revealNextFocus(sourceGoalID: sourceGoalID)
             )
-            .accessibilityHidden(true)
-    }
-
-    private var guidedReviewUpgradeCopy: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 7) {
-                Text("NEXT FOCUS")
-                    .font(.caption2.weight(.bold))
-                    .tracking(0.85)
-
-                Text("PRO")
-                    .font(.caption2.weight(.bold))
-                    .tracking(0.55)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 4)
-                    .background(CheckpointTheme.blue.opacity(0.11), in: Capsule())
-            }
-            .foregroundStyle(CheckpointTheme.blue)
-
-            Text("Know what to practice next")
-                .font(.headline)
-                .foregroundStyle(CheckpointTheme.text)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text("Pro uses your answer history and review schedule to surface one clear priority.")
-                .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
         }
-    }
-
-    private var guidedReviewUpgradeChevron: some View {
-        Image(systemName: "chevron.right")
-            .font(.caption.weight(.bold))
-            .foregroundStyle(CheckpointTheme.blue)
-            .accessibilityHidden(true)
     }
 
     private func focusAreasPanel(
@@ -2150,10 +2416,15 @@ struct CompetencyView: View {
         from previous: ProgressScreenSnapshot,
         to current: ProgressScreenSnapshot
     ) {
+        let suppressesGeneralAccessibilityResponse =
+            ProgressScreenChangePolicy.suppressesGeneralAccessibilityResponse(
+                hasPendingSkillEvidenceRequest: pendingSkillEvidenceRequest != nil
+            )
         Task { @MainActor in
             await Task.yield()
             guard screenSnapshot == current else { return }
             guard isVisible else { return }
+            guard !suppressesGeneralAccessibilityResponse else { return }
 
             if voiceOverEnabled {
                 let nextFocus: ProgressAccessibilityFocus
@@ -2205,6 +2476,9 @@ struct CompetencyView: View {
             screenSnapshot.goalID == goalID
         case let .primaryState(snapshot):
             screenSnapshot == snapshot
+        case let .nextFocus(goalID):
+            screenSnapshot.goalID == goalID
+                && screenSnapshot.stage == .reviewed
         }
     }
 

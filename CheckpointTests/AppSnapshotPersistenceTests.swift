@@ -738,6 +738,253 @@ final class AppSnapshotPersistenceTests: XCTestCase {
     }
 
     @MainActor
+    func testNextFocusActivationUsesTheFreshRecommendationAndConsumesItsDurableHandoffOnce() throws {
+        let initialSkill = SkillMapTopic(name: "Distributed data modeling")
+        let freshSkill = SkillMapTopic(name: "Reliability and failure recovery")
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [initialSkill, freshSkill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let continuation = MembershipActivationContinuation.revealNextFocus(
+            sourceGoalID: goal.id
+        )
+        let originalStore = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        originalStore.goal = goal
+        originalStore.goalProfiles = [goal]
+        originalStore.questionBatchState = .ready
+        originalStore.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 1,
+                topic: initialSkill.name,
+                skillID: initialSkill.id,
+                status: .incorrect
+            )
+        ]
+        originalStore.competencies = [
+            TopicCompetency.initial(
+                topic: initialSkill.name,
+                goalID: goal.id,
+                skillID: initialSkill.id
+            ),
+            TopicCompetency.initial(
+                topic: freshSkill.name,
+                goalID: goal.id,
+                skillID: freshSkill.id
+            )
+        ]
+
+        originalStore.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: continuation
+        )
+        XCTAssertEqual(originalStore.pendingMembershipActivationContinuation, continuation)
+        XCTAssertTrue(originalStore.membershipCheckoutStarted())
+
+        let activationRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(activationRelaunch.membershipActivationHandoff?.phase, .awaitingEntitlement)
+
+        activationRelaunch.questions = (1...ProductLimits.memberQuestionBankTargetCount).map {
+            index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                topic: freshSkill.name,
+                skillID: freshSkill.id,
+                status: index == 1 ? .incorrect : .new
+            )
+        }
+        activationRelaunch.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+
+        let presentation = try XCTUnwrap(
+            activationRelaunch.membershipActivationPresentationIfVerified(
+                fallbackContext: .overview,
+                fallbackSource: .entitlementRefresh
+            )
+        )
+        XCTAssertEqual(presentation.continuation, continuation)
+        XCTAssertNil(presentation.destinationTitle)
+        XCTAssertEqual(presentation.actionTitle, "Open Next Focus")
+        XCTAssertEqual(activationRelaunch.requestMembershipActivationResume(), .requested)
+
+        let resumeRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertNil(resumeRelaunch.claimMembershipActivationContinuationForResume())
+        resumeRelaunch.reconcileMembershipEntitlement(isUnlocked: true)
+        resumeRelaunch.reconcileMembershipActivationAfterLaunch(
+            isUnlocked: true,
+            hasUnresolvedPurchase: false
+        )
+
+        let claimedContinuation = try XCTUnwrap(
+            resumeRelaunch.claimMembershipActivationContinuationForResume()
+        )
+        XCTAssertEqual(claimedContinuation, continuation)
+        XCTAssertNil(resumeRelaunch.claimMembershipActivationContinuationForResume())
+        let focusState = try XCTUnwrap(resumeRelaunch.studyFocusState)
+        let target = try XCTUnwrap(
+            ProgressSkillEvidenceRoutingPolicy.target(
+                for: focusState,
+                goalID: goal.id
+            )
+        )
+        XCTAssertEqual(target.goalID, goal.id)
+        XCTAssertEqual(target.skillID, freshSkill.id)
+        XCTAssertEqual(target.skillName, freshSkill.name)
+
+        XCTAssertTrue(
+            resumeRelaunch.completeResumedMembershipNextFocusReveal(for: goal.id)
+        )
+        XCTAssertNil(resumeRelaunch.membershipActivationHandoff)
+
+        let completedRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        completedRelaunch.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertNil(completedRelaunch.membershipActivationHandoff)
+        XCTAssertNil(completedRelaunch.claimMembershipActivationContinuationForResume())
+    }
+
+    @MainActor
+    func testNextFocusActivationRemainsActionableWhenTheRecommendationDisappears() throws {
+        let skill = SkillMapTopic(name: "Reliability and failure recovery")
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [skill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questionBatchState = .ready
+        store.questions = [
+            makeQuestion(
+                goal: goal,
+                index: 1,
+                topic: skill.name,
+                skillID: skill.id,
+                status: .incorrect
+            )
+        ]
+        store.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: .revealNextFocus(sourceGoalID: goal.id)
+        )
+
+        store.questions = []
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+
+        let presentation = try XCTUnwrap(
+            store.membershipActivationPresentationIfVerified(
+                fallbackContext: .overview,
+                fallbackSource: .entitlementRefresh
+            )
+        )
+        XCTAssertEqual(
+            presentation.continuation,
+            .revealNextFocus(sourceGoalID: goal.id)
+        )
+        XCTAssertNil(presentation.destinationTitle)
+        XCTAssertEqual(presentation.actionTitle, "Open Next Focus")
+        XCTAssertEqual(store.studyFocusState, .awaitingQuestion)
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            .revealNextFocus(sourceGoalID: goal.id)
+        )
+    }
+
+    @MainActor
+    func testNextFocusRevealAcknowledgmentStaysRetryableWhenPersistenceFails() throws {
+        let fileManager = NthCreateDirectoryFailingFileManager()
+        let skill = SkillMapTopic(name: "Reliability and failure recovery")
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(
+            topics: [skill],
+            status: .reviewed,
+            provenance: .userEdited
+        )
+        let continuation = MembershipActivationContinuation.revealNextFocus(
+            sourceGoalID: goal.id
+        )
+        let store = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory,
+            fileManager: fileManager
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questionBatchState = .ready
+        store.questions = (1...ProductLimits.memberQuestionBankTargetCount).map { index in
+            makeQuestion(
+                goal: goal,
+                index: index,
+                topic: skill.name,
+                skillID: skill.id,
+                status: index == 1 ? .incorrect : .new
+            )
+        }
+        store.requestMembership(
+            for: .adaptiveStudyAssist,
+            continuation: continuation
+        )
+        store.reconcileMembershipEntitlement(
+            isUnlocked: true,
+            activationSource: .purchase
+        )
+        XCTAssertEqual(store.requestMembershipActivationResume(), .requested)
+        XCTAssertEqual(
+            store.claimMembershipActivationContinuationForResume(),
+            continuation
+        )
+
+        fileManager.fail(onCreateDirectoryCall: 1)
+        XCTAssertFalse(
+            store.completeResumedMembershipNextFocusReveal(for: goal.id)
+        )
+        XCTAssertEqual(store.membershipActivationHandoff?.phase, .resumeRequested)
+        XCTAssertEqual(store.membershipActivationHandoff?.request.continuation, continuation)
+        XCTAssertNotNil(store.persistenceRecoveryMessage)
+
+        let interruptedRelaunch = CheckpointStore(
+            defaults: defaults,
+            persistenceDirectory: persistenceDirectory
+        )
+        XCTAssertEqual(interruptedRelaunch.membershipActivationHandoff?.phase, .resumeRequested)
+        XCTAssertEqual(
+            interruptedRelaunch.membershipActivationHandoff?.request.continuation,
+            continuation
+        )
+
+        fileManager.fail(onCreateDirectoryCall: .max)
+        XCTAssertTrue(
+            store.completeResumedMembershipNextFocusReveal(for: goal.id)
+        )
+        XCTAssertNil(store.membershipActivationHandoff)
+    }
+
+    @MainActor
     func testAbandonedMembershipActionCannotReturnFromRecoveryBackup() throws {
         let goal = makeGoal()
         let originalStore = makeFileBackedStore(goal: goal)
