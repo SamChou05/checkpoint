@@ -125,6 +125,95 @@ struct FocusWinsComposerPolicy {
     }
 }
 
+enum FocusWinsMutationMotionStyle: Equatable {
+    case spatial
+    case tonalOnly
+}
+
+struct FocusWinsMutationMotionPolicy {
+    let style: FocusWinsMutationMotionStyle
+
+    init(
+        reduceMotion: Bool,
+        voiceOverEnabled: Bool,
+        switchControlEnabled: Bool
+    ) {
+        style = reduceMotion || voiceOverEnabled || switchControlEnabled
+            ? .tonalOnly
+            : .spatial
+    }
+
+    var mutationAnimation: Animation? {
+        style == .spatial ? CheckpointMotion.reveal : nil
+    }
+
+    var confirmationDismissAnimation: Animation? {
+        style == .spatial ? CheckpointMotion.change : nil
+    }
+
+    var mutationTransaction: Transaction {
+        transaction(animation: mutationAnimation)
+    }
+
+    var confirmationDismissTransaction: Transaction {
+        transaction(animation: confirmationDismissAnimation)
+    }
+
+    var scrollTransaction: Transaction {
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        return transaction
+    }
+
+    var usesSpatialTransitions: Bool {
+        style == .spatial
+    }
+
+    var animatesSymbolEffects: Bool {
+        style == .spatial
+    }
+
+    var showsTonalConfirmation: Bool {
+        celebrationBackgroundOpacity > 0 && celebrationBorderOpacity > 0
+    }
+
+    var celebrationBackgroundOpacity: Double {
+        0.10
+    }
+
+    var celebrationBorderOpacity: Double {
+        0.72
+    }
+
+    var celebrationShadowOpacity: Double {
+        style == .spatial ? 0.13 : 0
+    }
+
+    var composerTransition: AnyTransition {
+        style == .spatial
+            ? .opacity.combined(with: .move(edge: .top))
+            : .identity
+    }
+
+    var rowTransition: AnyTransition {
+        switch style {
+        case .spatial:
+            .asymmetric(
+                insertion: .move(edge: .top).combined(with: .opacity),
+                removal: .opacity
+            )
+        case .tonalOnly:
+            .identity
+        }
+    }
+
+    private func transaction(animation: Animation?) -> Transaction {
+        var transaction = Transaction(animation: animation)
+        transaction.disablesAnimations = style == .tonalOnly
+        return transaction
+    }
+}
+
 enum FocusWinsPostDeleteFocusTarget: Equatable {
     case composer
     case composerLauncher
@@ -250,10 +339,12 @@ struct FocusWinsView: View {
     @State private var confirmation: FocusWinsConfirmation?
     @State private var failure: FocusWinsFailure?
     @State private var successFeedbackTrigger = 0
+    @State private var celebrationFeedbackSequence = 0
     @State private var deletionFeedbackTrigger = 0
     @State private var errorFeedbackTrigger = 0
     @State private var celebratedWinID: FocusWin.ID?
     @State private var celebrationRequestID: UUID?
+    @State private var celebrationDismissalReadyID: UUID?
     @State private var celebrationTask: Task<Void, Never>?
     @State private var revealRequest: FocusWinRevealRequest?
     @State private var focusedWinID: FocusWin.ID?
@@ -292,6 +383,14 @@ struct FocusWinsView: View {
 
     private var reduceMotion: Bool {
         reduceMotionOverride ?? systemReduceMotion
+    }
+
+    private var mutationMotionPolicy: FocusWinsMutationMotionPolicy {
+        FocusWinsMutationMotionPolicy(
+            reduceMotion: reduceMotion,
+            voiceOverEnabled: voiceOverEnabled,
+            switchControlEnabled: switchControlEnabled
+        )
     }
 
     private var referenceDate: Date {
@@ -358,10 +457,10 @@ struct FocusWinsView: View {
 
                         if isComposerExpanded {
                             composer
-                                .transition(composerTransition)
+                                .transition(mutationMotionPolicy.composerTransition)
                         } else {
                             composerLauncher
-                                .transition(composerTransition)
+                                .transition(mutationMotionPolicy.composerTransition)
                         }
 
                         if !focusWins.isEmpty {
@@ -397,23 +496,19 @@ struct FocusWinsView: View {
                 }
             }
             .alert(item: $confirmation, content: confirmationAlert)
-            .animation(
-                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-                value: focusWins.map(\.id)
-            )
-            .animation(
-                CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion),
-                value: isComposerExpanded
-            )
             .sensoryFeedback(.success, trigger: successFeedbackTrigger)
             .sensoryFeedback(.success, trigger: deletionFeedbackTrigger)
             .sensoryFeedback(.error, trigger: errorFeedbackTrigger)
         }
         .interactiveDismissDisabled(hasUnsavedDraft)
+        .onChange(of: celebrationDismissalReadyID) { _, requestID in
+            completeCelebrationDismissal(requestID)
+        }
         .onDisappear {
             celebrationTask?.cancel()
             celebrationTask = nil
             celebrationRequestID = nil
+            celebrationDismissalReadyID = nil
             revealRequest = nil
         }
     }
@@ -449,7 +544,7 @@ struct FocusWinsView: View {
     private var weeklySnapshot: some View {
         FocusWinsWeeklySnapshotCard(
             presentation: weeklySnapshotPresentation,
-            reduceMotion: reduceMotion
+            motionPolicy: mutationMotionPolicy
         )
     }
 
@@ -711,11 +806,11 @@ struct FocusWinsView: View {
                             focusWin: focusWin,
                             usesStackedLayout: usesStackedLayout,
                             isCelebrated: focusWin.id == celebratedWinID,
-                            celebrationSequence: successFeedbackTrigger,
+                            celebrationSequence: celebrationFeedbackSequence,
                             accessibilityFocusRequestID: focusedWinID == focusWin.id
                                 ? winAccessibilityFocusRequestID
                                 : nil,
-                            reduceMotion: reduceMotion,
+                            motionPolicy: mutationMotionPolicy,
                             calendar: calendar,
                             locale: locale,
                             timeZone: timeZone,
@@ -733,7 +828,7 @@ struct FocusWinsView: View {
                             }
                         )
                         .id(focusWin.id)
-                        .transition(rowTransition)
+                        .transition(mutationMotionPolicy.rowTransition)
                     }
                 }
             }
@@ -803,37 +898,19 @@ struct FocusWinsView: View {
         return "\(-difference) characters over the limit"
     }
 
-    private var composerTransition: AnyTransition {
-        reduceMotion
-            ? .opacity
-            : .opacity.combined(with: .move(edge: .top))
-    }
-
-    private var rowTransition: AnyTransition {
-        reduceMotion
-            ? .opacity
-            : .opacity.combined(with: .move(edge: .top))
-    }
-
     private func logFocusWin() {
         guard canLogDraft else { return }
 
         let previousWinIDs = Set(focusWins.map(\.id))
         let wasAtCapacity = focusWins.count >= CheckpointStore.maximumStoredFocusWinCountPerGoal
-        let didSave = store.recordFocusWin(note: draft, goalID: goalID)
-        guard didSave else {
-            failure = .save
-            focusedFailure = .save
-            errorFeedbackTrigger += 1
-            return
-        }
+        var loggedWin: FocusWin?
+        let didSave = withTransaction(mutationMotionPolicy.mutationTransaction) {
+            guard store.recordFocusWin(note: draft, goalID: goalID) else {
+                return false
+            }
 
-        let loggedWin = focusWins.first(where: { !previousWinIDs.contains($0.id) })
-            ?? focusWins.first
-
-        withAnimation(
-            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
-        ) {
+            loggedWin = focusWins.first(where: { !previousWinIDs.contains($0.id) })
+                ?? focusWins.first
             draft = ""
             failure = nil
             focusedFailure = nil
@@ -842,7 +919,15 @@ struct FocusWinsView: View {
             postMutationAccessibilityFocus = nil
             isComposerExpanded = false
             celebratedWinID = loggedWin?.id
+            return true
         }
+        guard didSave else {
+            failure = .save
+            focusedFailure = .save
+            errorFeedbackTrigger += 1
+            return
+        }
+
         successFeedbackTrigger += 1
         if let loggedWin {
             requestReveal(of: loggedWin.id)
@@ -865,12 +950,10 @@ struct FocusWinsView: View {
     }
 
     private func expandComposer() {
-        failure = nil
-        focusedFailure = nil
-        postMutationAccessibilityFocus = nil
-        withAnimation(
-            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
-        ) {
+        withTransaction(mutationMotionPolicy.mutationTransaction) {
+            failure = nil
+            focusedFailure = nil
+            postMutationAccessibilityFocus = nil
             isComposerExpanded = true
         }
 
@@ -893,18 +976,16 @@ struct FocusWinsView: View {
     }
 
     private func collapseComposer() {
-        failure = nil
-        focusedFailure = nil
-        withAnimation(
-            CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
-        ) {
+        withTransaction(mutationMotionPolicy.mutationTransaction) {
+            failure = nil
+            focusedFailure = nil
             isComposerExpanded = false
         }
     }
 
     private func requestReveal(of focusWinID: FocusWin.ID) {
-        focusedWinID = focusWinID
-        winAccessibilityFocusRequestID = UUID()
+        focusedWinID = nil
+        winAccessibilityFocusRequestID = nil
         revealRequest = FocusWinRevealRequest(focusWinID: focusWinID)
     }
 
@@ -929,15 +1010,19 @@ struct FocusWinsView: View {
             await Task.yield()
             guard revealRequest == request else { return }
 
-            if reduceMotion || voiceOverEnabled || switchControlEnabled {
+            withTransaction(mutationMotionPolicy.scrollTransaction) {
                 proxy.scrollTo(request.focusWinID, anchor: .center)
-            } else {
-                withAnimation(CheckpointMotion.reveal) {
-                    proxy.scrollTo(request.focusWinID, anchor: .center)
-                }
             }
 
             guard revealRequest == request else { return }
+            if voiceOverEnabled || switchControlEnabled {
+                focusedWinID = request.focusWinID
+                winAccessibilityFocusRequestID = UUID()
+            }
+            if mutationMotionPolicy.animatesSymbolEffects,
+               celebratedWinID == request.focusWinID {
+                celebrationFeedbackSequence += 1
+            }
             revealRequest = nil
         }
     }
@@ -946,26 +1031,51 @@ struct FocusWinsView: View {
         celebrationTask?.cancel()
         let requestID = UUID()
         celebrationRequestID = requestID
+        celebrationDismissalReadyID = nil
 
         celebrationTask = Task { @MainActor in
             try? await Task.sleep(for: .seconds(1.4))
             guard !Task.isCancelled,
                   celebrationRequestID == requestID,
                   celebratedWinID == focusWinID else { return }
-
-            withAnimation(
-                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion)
-            ) {
-                celebratedWinID = nil
-            }
-            guard celebrationRequestID == requestID else { return }
-            celebrationRequestID = nil
-            celebrationTask = nil
+            celebrationDismissalReadyID = requestID
         }
     }
 
+    private func completeCelebrationDismissal(_ requestID: UUID?) {
+        guard let requestID,
+              celebrationRequestID == requestID else { return }
+
+        withTransaction(mutationMotionPolicy.confirmationDismissTransaction) {
+            celebratedWinID = nil
+        }
+        guard celebrationRequestID == requestID else { return }
+        celebrationRequestID = nil
+        celebrationDismissalReadyID = nil
+        celebrationTask = nil
+    }
+
     private func delete(_ focusWin: FocusWin) {
-        let didDelete = store.deleteFocusWin(id: focusWin.id, goalID: goalID)
+        let didDelete = withTransaction(mutationMotionPolicy.mutationTransaction) {
+            guard store.deleteFocusWin(id: focusWin.id, goalID: goalID) else {
+                return false
+            }
+
+            failure = nil
+            focusedFailure = nil
+            if celebratedWinID == focusWin.id {
+                celebrationTask?.cancel()
+                celebrationTask = nil
+                celebrationRequestID = nil
+                celebrationDismissalReadyID = nil
+                celebratedWinID = nil
+            }
+            if focusedWinID == focusWin.id {
+                focusedWinID = nil
+                winAccessibilityFocusRequestID = nil
+            }
+            return true
+        }
         guard didDelete else {
             failure = .delete
             focusedFailure = .delete
@@ -973,18 +1083,6 @@ struct FocusWinsView: View {
             return
         }
 
-        failure = nil
-        focusedFailure = nil
-        if celebratedWinID == focusWin.id {
-            celebrationTask?.cancel()
-            celebrationTask = nil
-            celebrationRequestID = nil
-            celebratedWinID = nil
-        }
-        if focusedWinID == focusWin.id {
-            focusedWinID = nil
-            winAccessibilityFocusRequestID = nil
-        }
         deletionFeedbackTrigger += 1
         AccessibilityNotification.Announcement("Focus Win deleted.").post()
         Task { @MainActor in
@@ -1088,7 +1186,7 @@ struct FocusWinsView: View {
 
 private struct FocusWinsWeeklySnapshotCard: View {
     let presentation: FocusWinsWeeklySnapshotPresentation
-    let reduceMotion: Bool
+    let motionPolicy: FocusWinsMutationMotionPolicy
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     var body: some View {
@@ -1117,10 +1215,6 @@ private struct FocusWinsWeeklySnapshotCard: View {
                 }
         )
         .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 9)
-        .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-            value: presentation
-        )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Your Focus Wins this week")
         .accessibilityValue(presentation.accessibilityValue)
@@ -1171,7 +1265,7 @@ private struct FocusWinsWeeklySnapshotCard: View {
             .frame(width: 44, height: 44)
             .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 13))
             .contentTransition(.symbolEffect(.replace))
-            .symbolEffectsRemoved(reduceMotion)
+            .symbolEffectsRemoved(!motionPolicy.animatesSymbolEffects)
             .accessibilityHidden(true)
     }
 
@@ -1341,13 +1435,13 @@ private struct FocusWinsDayGroup: Identifiable {
     var wins: [FocusWin]
 }
 
-private struct FocusWinRow: View {
+struct FocusWinRow: View {
     var focusWin: FocusWin
     var usesStackedLayout: Bool
     var isCelebrated: Bool
     var celebrationSequence: Int
     var accessibilityFocusRequestID: UUID?
-    var reduceMotion: Bool
+    var motionPolicy: FocusWinsMutationMotionPolicy
     var calendar: Calendar
     var locale: Locale
     var timeZone: TimeZone
@@ -1356,6 +1450,32 @@ private struct FocusWinRow: View {
 
     @AccessibilityFocusState(for: [.voiceOver, .switchControl])
     private var isAccessibilityFocused: Bool
+
+    init(
+        focusWin: FocusWin,
+        usesStackedLayout: Bool,
+        isCelebrated: Bool,
+        celebrationSequence: Int,
+        accessibilityFocusRequestID: UUID?,
+        motionPolicy: FocusWinsMutationMotionPolicy,
+        calendar: Calendar,
+        locale: Locale,
+        timeZone: TimeZone,
+        consumeAccessibilityFocusRequest: @escaping (UUID) -> Void,
+        requestDeletion: @escaping () -> Void
+    ) {
+        self.focusWin = focusWin
+        self.usesStackedLayout = usesStackedLayout
+        self.isCelebrated = isCelebrated
+        self.celebrationSequence = celebrationSequence
+        self.accessibilityFocusRequestID = accessibilityFocusRequestID
+        self.motionPolicy = motionPolicy
+        self.calendar = calendar
+        self.locale = locale
+        self.timeZone = timeZone
+        self.consumeAccessibilityFocusRequest = consumeAccessibilityFocusRequest
+        self.requestDeletion = requestDeletion
+    }
 
     var body: some View {
         Group {
@@ -1390,19 +1510,19 @@ private struct FocusWinRow: View {
             RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
                 .stroke(
                     isCelebrated
-                        ? CheckpointTheme.teal.opacity(0.72)
+                        ? CheckpointTheme.teal.opacity(
+                            motionPolicy.celebrationBorderOpacity
+                        )
                         : CheckpointTheme.hairline,
                     lineWidth: isCelebrated ? 1.5 : 1
                 )
         }
         .shadow(
-            color: isCelebrated ? CheckpointTheme.teal.opacity(0.13) : .clear,
+            color: isCelebrated
+                ? CheckpointTheme.teal.opacity(motionPolicy.celebrationShadowOpacity)
+                : .clear,
             radius: 10,
             y: 4
-        )
-        .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-            value: isCelebrated
         )
         .task(id: accessibilityFocusRequestID) {
             guard let requestID = accessibilityFocusRequestID else { return }
@@ -1420,9 +1540,10 @@ private struct FocusWinRow: View {
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(CheckpointTheme.teal)
                 .frame(width: 22, height: 22)
-                .contentTransition(.symbolEffect(.replace))
                 .symbolEffect(.bounce, options: .nonRepeating, value: celebrationSequence)
-                .symbolEffectsRemoved(reduceMotion || !isCelebrated)
+                .symbolEffectsRemoved(
+                    !motionPolicy.animatesSymbolEffects || !isCelebrated
+                )
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 8) {
@@ -1446,7 +1567,7 @@ private struct FocusWinRow: View {
 
     private var rowBackground: Color {
         isCelebrated
-            ? CheckpointTheme.teal.opacity(0.10)
+            ? CheckpointTheme.teal.opacity(motionPolicy.celebrationBackgroundOpacity)
             : CheckpointTheme.panel.opacity(0.94)
     }
 

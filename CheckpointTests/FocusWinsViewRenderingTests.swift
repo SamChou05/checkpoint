@@ -198,6 +198,134 @@ final class FocusWinsViewRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testMutationMotionPolicyUsesSpatialFeedbackOnlyForStandardInteraction() {
+        let standard = FocusWinsMutationMotionPolicy(
+            reduceMotion: false,
+            voiceOverEnabled: false,
+            switchControlEnabled: false
+        )
+
+        XCTAssertEqual(standard.style, .spatial)
+        XCTAssertNotNil(standard.mutationAnimation)
+        XCTAssertNotNil(standard.confirmationDismissAnimation)
+        XCTAssertTrue(standard.usesSpatialTransitions)
+        XCTAssertTrue(standard.animatesSymbolEffects)
+        XCTAssertFalse(standard.mutationTransaction.disablesAnimations)
+
+        let suppressedPolicies = [
+            (
+                "Reduce Motion",
+                FocusWinsMutationMotionPolicy(
+                    reduceMotion: true,
+                    voiceOverEnabled: false,
+                    switchControlEnabled: false
+                )
+            ),
+            (
+                "VoiceOver",
+                FocusWinsMutationMotionPolicy(
+                    reduceMotion: false,
+                    voiceOverEnabled: true,
+                    switchControlEnabled: false
+                )
+            ),
+            (
+                "Switch Control",
+                FocusWinsMutationMotionPolicy(
+                    reduceMotion: false,
+                    voiceOverEnabled: false,
+                    switchControlEnabled: true
+                )
+            ),
+            (
+                "Combined",
+                FocusWinsMutationMotionPolicy(
+                    reduceMotion: true,
+                    voiceOverEnabled: true,
+                    switchControlEnabled: true
+                )
+            ),
+        ]
+
+        for (name, policy) in suppressedPolicies {
+            XCTAssertEqual(policy.style, .tonalOnly, name)
+            XCTAssertNil(policy.mutationAnimation, name)
+            XCTAssertNil(policy.confirmationDismissAnimation, name)
+            XCTAssertFalse(policy.usesSpatialTransitions, name)
+            XCTAssertFalse(policy.animatesSymbolEffects, name)
+            XCTAssertTrue(policy.mutationTransaction.disablesAnimations, name)
+            XCTAssertTrue(policy.confirmationDismissTransaction.disablesAnimations, name)
+        }
+    }
+
+    @MainActor
+    func testMutationRevealScrollIsAlwaysDeterministicAndNonanimated() {
+        let policies = [
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: false,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            ),
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: true,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            ),
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: false,
+                voiceOverEnabled: true,
+                switchControlEnabled: false
+            ),
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: false,
+                voiceOverEnabled: false,
+                switchControlEnabled: true
+            ),
+        ]
+
+        for policy in policies {
+            XCTAssertNil(policy.scrollTransaction.animation)
+            XCTAssertTrue(policy.scrollTransaction.disablesAnimations)
+        }
+    }
+
+    @MainActor
+    func testMutationConfirmationRemainsTonalAcrossAccessibilityModes() {
+        let policies = [
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: false,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            ),
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: true,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            ),
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: false,
+                voiceOverEnabled: true,
+                switchControlEnabled: false
+            ),
+            FocusWinsMutationMotionPolicy(
+                reduceMotion: false,
+                voiceOverEnabled: false,
+                switchControlEnabled: true
+            ),
+        ]
+
+        for policy in policies {
+            XCTAssertTrue(policy.showsTonalConfirmation)
+            XCTAssertGreaterThan(policy.celebrationBackgroundOpacity, 0)
+            XCTAssertGreaterThan(policy.celebrationBorderOpacity, 0)
+        }
+        XCTAssertGreaterThan(policies[0].celebrationShadowOpacity, 0)
+        for policy in policies.dropFirst() {
+            XCTAssertEqual(policy.celebrationShadowOpacity, 0)
+        }
+    }
+
+    @MainActor
     func testFocusWinsSurfacesRenderAcrossKeyLayouts() throws {
         let populatedSuiteName = "FocusWinsViewRenderingTests.populated.\(UUID().uuidString)"
         let emptySuiteName = "FocusWinsViewRenderingTests.empty.\(UUID().uuidString)"
@@ -257,6 +385,17 @@ final class FocusWinsViewRenderingTests: XCTestCase {
         let emptyStore = CheckpointStore(defaults: emptyDefaults)
         emptyStore.goal = goal
         emptyStore.goalProfiles = [goal]
+        let celebratedWin = try XCTUnwrap(populatedStore.focusWins.first)
+        let standardMotionPolicy = FocusWinsMutationMotionPolicy(
+            reduceMotion: false,
+            voiceOverEnabled: false,
+            switchControlEnabled: false
+        )
+        let tonalOnlyMotionPolicy = FocusWinsMutationMotionPolicy(
+            reduceMotion: true,
+            voiceOverEnabled: false,
+            switchControlEnabled: false
+        )
 
         let fixtures = [
             RenderFixture(
@@ -410,6 +549,54 @@ final class FocusWinsViewRenderingTests: XCTestCase {
                 )
             ),
             RenderFixture(
+                name: "focus-win-row-celebrated-standard",
+                width: 393,
+                height: 220,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    FocusWinRow(
+                        focusWin: celebratedWin,
+                        usesStackedLayout: false,
+                        isCelebrated: true,
+                        celebrationSequence: 0,
+                        accessibilityFocusRequestID: nil,
+                        motionPolicy: standardMotionPolicy,
+                        calendar: calendar,
+                        locale: locale,
+                        timeZone: timeZone,
+                        consumeAccessibilityFocusRequest: { _ in },
+                        requestDeletion: {}
+                    )
+                    .padding(20)
+                    .checkpointScreenBackground()
+                )
+            ),
+            RenderFixture(
+                name: "focus-win-row-celebrated-accessibility5-tonal-only",
+                width: 393,
+                height: 720,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    FocusWinRow(
+                        focusWin: celebratedWin,
+                        usesStackedLayout: true,
+                        isCelebrated: true,
+                        celebrationSequence: 0,
+                        accessibilityFocusRequestID: nil,
+                        motionPolicy: tonalOnlyMotionPolicy,
+                        calendar: calendar,
+                        locale: locale,
+                        timeZone: timeZone,
+                        consumeAccessibilityFocusRequest: { _ in },
+                        requestDeletion: {}
+                    )
+                    .padding(20)
+                    .checkpointScreenBackground()
+                )
+            ),
+            RenderFixture(
                 name: "progress-focus-wins-entry",
                 width: 393,
                 height: 852,
@@ -425,21 +612,24 @@ final class FocusWinsViewRenderingTests: XCTestCase {
         ]
 
         for fixture in fixtures {
-            let image = HostedViewRenderer.image(
-                for: fixture.content
-                    .environment(\.colorScheme, fixture.colorScheme)
-                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
-                width: fixture.width,
-                height: fixture.height,
-                colorScheme: fixture.colorScheme
-            )
+            autoreleasepool {
+                let image = HostedViewRenderer.image(
+                    for: fixture.content
+                        .environment(\.colorScheme, fixture.colorScheme)
+                        .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                    width: fixture.width,
+                    height: fixture.height,
+                    colorScheme: fixture.colorScheme,
+                    renderScale: 1
+                )
 
-            XCTAssertGreaterThan(image.size.width, 0)
-            XCTAssertGreaterThan(image.size.height, 0)
-            let attachment = XCTAttachment(image: image)
-            attachment.name = fixture.name
-            attachment.lifetime = .keepAlways
-            add(attachment)
+                XCTAssertGreaterThan(image.size.width, 0)
+                XCTAssertGreaterThan(image.size.height, 0)
+                let attachment = XCTAttachment(image: image)
+                attachment.name = fixture.name
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
         }
     }
 
