@@ -328,7 +328,7 @@ final class MembershipViewRenderingTests: XCTestCase {
             (
                 .largerQuestionBank,
                 .freshCheckpoints,
-                "Build toward a \(ProductLimits.memberQuestionBankTargetCount)-question bank for broader practice."
+                "Build toward an \(ProductLimits.memberQuestionBankTargetCount)-question bank for broader practice."
             ),
             (
                 .adaptiveStudyAssist,

@@ -241,7 +241,7 @@ struct MembershipValuePreviewPresentation: Equatable, Sendable {
             outcome = "Keep new checkpoints coming as your ready set runs low."
         case .feature(.largerQuestionBank):
             highlightedNodeID = .freshCheckpoints
-            outcome = "Build toward a \(ProductLimits.memberQuestionBankTargetCount)-question bank for broader practice."
+            outcome = "Build toward an \(ProductLimits.memberQuestionBankTargetCount)-question bank for broader practice."
         case .feature(.adaptiveStudyAssist):
             highlightedNodeID = .nextFocus
             outcome = "Turn answer history into one clear next step."

@@ -984,7 +984,7 @@ struct SettingsPlanCard: View {
     private var accentTint: Color {
         switch presentation.state {
         case .free:
-            CheckpointTheme.blue
+            CheckpointTheme.heroInfo
         case .pendingPurchase:
             CheckpointTheme.amber
         case .pro:
