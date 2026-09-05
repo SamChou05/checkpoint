@@ -225,14 +225,14 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
 
         let suppressedReady = makeGoalOverviewPresentation(
             readiness: .ready(selectableCount: 5, requiredCount: 5),
-            readyDisclosure: .suppressedByFirstCheckpointLaunchpad,
+            readyDisclosure: .suppressedByFirstWinJourney,
             isNewlyPrepared: true
         )
         XCTAssertEqual(
             suppressedReady.checkpointState,
             .ready(
                 requiredCount: 5,
-                disclosure: .suppressedByFirstCheckpointLaunchpad,
+                disclosure: .suppressedByFirstWinJourney,
                 isNewlyPrepared: true
             )
         )
@@ -479,7 +479,7 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 referenceDate: fixedGoalSwitchDate(month: 1, day: 5)
             ),
             HomeGoalSwitchRenderFixture(
-                name: "home-goal-overview-ready-first-checkpoint-launchpad",
+                name: "home-goal-overview-ready-first-win-journey",
                 width: 393,
                 height: 1_200,
                 colorScheme: .light,
@@ -489,9 +489,19 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 isProtectionActive: true
             ),
             HomeGoalSwitchRenderFixture(
-                name: "home-goal-overview-preparing-compact-dark",
+                name: "home-weekly-signal-populated-protected-dark",
+                width: 393,
+                height: 1_200,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                state: .practiced,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5),
+                isProtectionActive: true
+            ),
+            HomeGoalSwitchRenderFixture(
+                name: "home-goal-overview-preparing-compact-568-dark",
                 width: 320,
-                height: 1_000,
+                height: 568,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
                 state: .preparing,
@@ -595,46 +605,76 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testFirstCheckpointLaunchpadRendersAcrossKeyLayouts() {
+    func testFirstWinJourneyRendersAcrossKeyLayoutsAndStates() {
         let fixtures = [
-            HomeLaunchpadRenderFixture(
-                name: "first-checkpoint-light",
+            HomeJourneyRenderFixture(
+                name: "first-win-complete-light",
                 width: 393,
                 height: 852,
                 colorScheme: .light,
-                dynamicTypeSize: .large
+                dynamicTypeSize: .large,
+                state: .complete
             ),
-            HomeLaunchpadRenderFixture(
-                name: "first-checkpoint-dark",
+            HomeJourneyRenderFixture(
+                name: "first-win-ready-to-protect-dark",
                 width: 393,
                 height: 852,
                 colorScheme: .dark,
-                dynamicTypeSize: .large
+                dynamicTypeSize: .large,
+                state: .readyToProtect
             ),
-            HomeLaunchpadRenderFixture(
-                name: "first-checkpoint-compact",
+            HomeJourneyRenderFixture(
+                name: "first-win-choose-apps-compact",
                 width: 320,
                 height: 568,
                 colorScheme: .light,
-                dynamicTypeSize: .large
+                dynamicTypeSize: .large,
+                state: .chooseApps
             ),
-            HomeLaunchpadRenderFixture(
-                name: "first-checkpoint-accessibility",
+            HomeJourneyRenderFixture(
+                name: "first-win-prepare-and-protect-light",
                 width: 393,
                 height: 852,
                 colorScheme: .light,
-                dynamicTypeSize: .accessibility2
+                dynamicTypeSize: .large,
+                state: .checkpointIncomplete
+            ),
+            HomeJourneyRenderFixture(
+                name: "first-win-preparing-accessibility-5",
+                width: 393,
+                height: 2_400,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                state: .preparing
+            ),
+            HomeJourneyRenderFixture(
+                name: "first-win-needs-attention-dark-reduced-motion",
+                width: 393,
+                height: 1_100,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility2,
+                state: .needsAttention,
+                reduceMotion: true
+            ),
+            HomeJourneyRenderFixture(
+                name: "first-win-unavailable-light",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                state: .unavailable
             )
         ]
 
         for fixture in fixtures {
             let image = HostedViewRenderer.image(
-                for: launchpadSurface
+                for: journeySurface(for: fixture)
                     .environment(\.colorScheme, fixture.colorScheme)
                     .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
                 width: fixture.width,
                 height: fixture.height,
                 colorScheme: fixture.colorScheme,
+                settlingTime: fixture.reduceMotion ? 0.05 : 0.35,
                 // Preserve point geometry while keeping the full render suite's retained attachments bounded.
                 renderScale: 0.5
             )
@@ -742,20 +782,58 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     }
 
     @MainActor
-    private var launchpadSurface: some View {
+    private func journeySurface(for fixture: HomeJourneyRenderFixture) -> some View {
         ScrollView {
-            HomeFirstCheckpointLaunchpad(
-                requiredCorrectAnswers: 4,
-                questionCount: 5,
-                unlockMinutes: 30,
-                protectedAppsSummary: "3 apps and 2 websites selected",
-                reviewApps: {}
+            HomeFirstWinJourneyCard(
+                presentation: makeJourneyPresentation(for: fixture.state),
+                reduceMotion: fixture.reduceMotion,
+                manageApps: {},
+                startProtection: {}
             )
             .padding(.horizontal, 20)
             .padding(.top, 20)
             .padding(.bottom, 36)
         }
         .checkpointScreenBackground()
+    }
+
+    private func makeJourneyPresentation(
+        for state: HomeJourneyRenderState
+    ) -> HomeFirstWinJourneyPresentation {
+        let hasReadyCheckpointSet: Bool = switch state {
+        case .preparing, .needsAttention, .checkpointIncomplete:
+            false
+        case .chooseApps, .readyToProtect, .complete, .unavailable:
+            true
+        }
+        let selectableQuestionCount: Int = switch state {
+        case .preparing:
+            2
+        case .needsAttention:
+            0
+        case .checkpointIncomplete:
+            1
+        case .chooseApps, .readyToProtect, .complete, .unavailable:
+            5
+        }
+
+        return HomeFirstWinJourneyPresentation(
+            hasReadyCheckpointSet: hasReadyCheckpointSet,
+            isPreparingCheckpoint: state == .preparing,
+            isCheckpointBlockedByGeneration: state == .needsAttention,
+            selectableQuestionCount: selectableQuestionCount,
+            requiredQuestionCount: 5,
+            authorizationState: state == .unavailable ? .unavailable : .approved,
+            setupState: state == .unavailable ? .unavailable : .authorized,
+            hasSelection: state != .chooseApps && state != .unavailable,
+            isProtectionActive: state == .complete,
+            isStartingProtection: false,
+            protectionErrorMessage: nil,
+            protectedAppsSummary: "3 apps and 2 websites selected",
+            requiredCorrectAnswers: 4,
+            questionCount: 5,
+            unlockMinutes: 30
+        )
     }
 
     @MainActor
@@ -834,12 +912,12 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         store.goalProfiles = switch state {
         case .singleReadyOverdue, .failed, .incomplete:
             [firstGoal]
-        case .ready, .preparing, .starterLocked:
+        case .ready, .preparing, .starterLocked, .practiced:
             [firstGoal, secondGoal]
         }
 
         switch state {
-        case .ready, .singleReadyOverdue, .starterLocked:
+        case .ready, .singleReadyOverdue, .starterLocked, .practiced:
             store.questions = (1...store.unlockPolicy.questionsPerSession).map {
                 makeQuestion(goal: firstGoal, index: $0, topic: "system design")
             }
@@ -858,6 +936,21 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 makeQuestion(goal: firstGoal, index: 1, topic: "system design")
             ]
             store.questionBatchState = .idle
+        }
+
+        if state == .practiced {
+            store.attempts = [
+                makeAttempt(
+                    goal: firstGoal,
+                    result: .correct,
+                    createdAt: Date()
+                ),
+                makeAttempt(
+                    goal: firstGoal,
+                    result: .incorrect,
+                    createdAt: Date().addingTimeInterval(-60)
+                )
+            ]
         }
 
         return store
@@ -886,12 +979,24 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     }
 }
 
-private struct HomeLaunchpadRenderFixture {
+private struct HomeJourneyRenderFixture {
     var name: String
     var width: CGFloat
     var height: CGFloat
     var colorScheme: ColorScheme
     var dynamicTypeSize: DynamicTypeSize
+    var state: HomeJourneyRenderState
+    var reduceMotion = false
+}
+
+private enum HomeJourneyRenderState: Equatable {
+    case chooseApps
+    case preparing
+    case needsAttention
+    case checkpointIncomplete
+    case readyToProtect
+    case complete
+    case unavailable
 }
 
 private struct HomeBreakRenderFixture {
@@ -918,13 +1023,14 @@ private struct HomeGoalSwitchRenderFixture {
     var isProtectionActive = false
 }
 
-private enum HomeGoalSwitchRenderState {
+private enum HomeGoalSwitchRenderState: Equatable {
     case ready
     case singleReadyOverdue
     case preparing
     case failed
     case incomplete
     case starterLocked
+    case practiced
 }
 
 @MainActor

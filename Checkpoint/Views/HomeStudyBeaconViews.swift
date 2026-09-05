@@ -3,7 +3,7 @@ import SwiftUI
 
 enum HomeGoalOverviewReadyDisclosure: Equatable {
     case visible
-    case suppressedByFirstCheckpointLaunchpad
+    case suppressedByFirstWinJourney
 }
 
 enum HomeGoalOverviewDeadlineState: Equatable {
@@ -320,9 +320,15 @@ struct HomeGoalOverviewMotionPolicy: Equatable {
     }
 }
 
+enum HomeGoalOverviewLayout: Equatable {
+    case standard
+    case firstWinCompact
+}
+
 struct HomeGoalOverviewCard<GoalControl: View>: View {
     let presentation: HomeGoalOverviewPresentation
     let reduceMotion: Bool
+    let layout: HomeGoalOverviewLayout
     let retryQuestions: () -> Void
     let editGoal: () -> Void
     @ViewBuilder let goalControl: GoalControl
@@ -332,18 +338,55 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
     init(
         presentation: HomeGoalOverviewPresentation,
         reduceMotion: Bool,
+        layout: HomeGoalOverviewLayout = .standard,
         retryQuestions: @escaping () -> Void,
         editGoal: @escaping () -> Void,
         @ViewBuilder goalControl: () -> GoalControl
     ) {
         self.presentation = presentation
         self.reduceMotion = reduceMotion
+        self.layout = layout
         self.retryQuestions = retryQuestions
         self.editGoal = editGoal
         self.goalControl = goalControl()
     }
 
     var body: some View {
+        cardContent
+            .padding(layout == .firstWinCompact ? 12 : 18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                CheckpointTheme.panel,
+                                CheckpointTheme.panelRaised.opacity(0.94)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .stroke(CheckpointTheme.hairline, lineWidth: 1)
+            }
+            .shadow(color: CheckpointTheme.shadowCard, radius: 14, x: 0, y: 6)
+            .animation(motionPolicy.animation, value: presentation.checkpointState)
+    }
+
+    @ViewBuilder
+    private var cardContent: some View {
+        switch layout {
+        case .standard:
+            standardContent
+        case .firstWinCompact:
+            firstWinCompactContent
+        }
+    }
+
+    private var standardContent: some View {
         VStack(alignment: .leading, spacing: 16) {
             header
 
@@ -360,27 +403,107 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
                 .id(presentation.checkpointState.phase)
                 .transition(motionPolicy.transition)
         }
-        .padding(18)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            CheckpointTheme.panel,
-                            CheckpointTheme.panelRaised.opacity(0.94)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+    }
+
+    @ViewBuilder
+    private var firstWinCompactContent: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            compactHeader
+
+            Text(presentation.goalTitle)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+
+            compactMetadata
+
+            if presentation.checkpointState.phase == .recovery {
+                checkpointStatus
+                    .id(presentation.checkpointState.phase)
+                    .transition(motionPolicy.transition)
+            }
+        }
+    }
+
+    private var compactHeader: some View {
+        HStack(alignment: .center, spacing: 10) {
+            HStack(spacing: 7) {
+                Image(systemName: "scope")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 25, height: 25)
+                    .background(
+                        CheckpointTheme.teal.opacity(0.10),
+                        in: RoundedRectangle(cornerRadius: 8, style: .continuous)
                     )
-                )
+                    .accessibilityHidden(true)
+
+                Text("CURRENT FOCUS")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.7)
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Current focus")
+
+            Spacer(minLength: 4)
+            goalControl
         }
+    }
+
+    private var compactMetadata: some View {
+        HStack(spacing: 8) {
+            compactMetadataItem(
+                value: presentation.deadline.text,
+                systemImage: deadlineSystemImage,
+                tint: deadlineTint,
+                accessibilityLabel: presentation.deadline.accessibilityLabel
+            )
+
+            compactMetadataItem(
+                value: presentation.passTargetText,
+                systemImage: "checkmark.circle",
+                tint: CheckpointTheme.blue,
+                accessibilityLabel: presentation.passTargetAccessibilityLabel
+            )
+        }
+    }
+
+    private func compactMetadataItem(
+        value: String,
+        systemImage: String,
+        tint: Color,
+        accessibilityLabel: String
+    ) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: systemImage)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(tint)
+                .accessibilityHidden(true)
+
+            Text(value)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+                .lineLimit(2)
+                .minimumScaleFactor(0.78)
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.panelRaised.opacity(0.70),
+            in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+        )
         .overlay {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(CheckpointTheme.hairline, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
+                .stroke(CheckpointTheme.controlStroke.opacity(0.64), lineWidth: 1)
         }
-        .shadow(color: CheckpointTheme.shadowCard, radius: 14, x: 0, y: 6)
-        .animation(motionPolicy.animation, value: presentation.checkpointState)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
     }
 
     @ViewBuilder
@@ -854,172 +977,879 @@ private extension View {
     }
 }
 
+enum HomeStudyBeaconKind: Equatable {
+    case firstWinJourney
+    case weeklySignal
+}
+
 enum HomeStudyBeaconPresentation: Equatable {
-    case firstCheckpointLaunchpad
+    case firstWinJourney(HomeFirstWinJourneyPresentation)
     case weeklySignal
 
+    var kind: HomeStudyBeaconKind {
+        switch self {
+        case .firstWinJourney:
+            .firstWinJourney
+        case .weeklySignal:
+            .weeklySignal
+        }
+    }
+
     var showsNextFocus: Bool {
-        self == .weeklySignal
+        kind == .weeklySignal
+    }
+
+    var suppressesReadyGoalDisclosure: Bool {
+        kind == .firstWinJourney
     }
 
     init(
         hasPracticeForActiveGoal: Bool,
-        hasReadyCheckpointSet: Bool,
-        isProtectionActive: Bool
+        firstWinJourney: HomeFirstWinJourneyPresentation
     ) {
-        self = !hasPracticeForActiveGoal && hasReadyCheckpointSet && isProtectionActive
-            ? .firstCheckpointLaunchpad
-            : .weeklySignal
+        self = hasPracticeForActiveGoal
+            ? .weeklySignal
+            : .firstWinJourney(firstWinJourney)
     }
 }
 
-struct HomeFirstCheckpointLaunchpad: View {
-    var requiredCorrectAnswers: Int
-    var questionCount: Int
-    var unlockMinutes: Int
-    var protectedAppsSummary: String
-    var reviewApps: () -> Void
+enum HomeFirstWinJourneyNodeID: String, CaseIterable, Equatable {
+    case checkpoint
+    case protectedApps
+    case protection
+
+    var title: String {
+        switch self {
+        case .checkpoint:
+            "Checkpoint"
+        case .protectedApps:
+            "Apps & websites"
+        case .protection:
+            "Protection"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .checkpoint:
+            "checkmark.circle"
+        case .protectedApps:
+            "checklist"
+        case .protection:
+            "shield.checkered"
+        }
+    }
+
+    var compactTitle: String {
+        switch self {
+        case .checkpoint:
+            "Checkpoint"
+        case .protectedApps:
+            "Apps & sites"
+        case .protection:
+            "Protection"
+        }
+    }
+}
+
+enum HomeFirstWinJourneyNodeState: Equatable {
+    case complete
+    case ready
+    case working
+    case attention
+    case blocked
+}
+
+struct HomeFirstWinJourneyNode: Identifiable, Equatable {
+    let id: HomeFirstWinJourneyNodeID
+    let state: HomeFirstWinJourneyNodeState
+    let status: String
+    let isCurrent: Bool
+}
+
+enum HomeFirstWinJourneyAction: Equatable {
+    case chooseApps
+    case reviewProtection
+    case prepareAndProtect
+    case startProtection(isLoading: Bool)
+    case reviewSelection
+
+    var title: String {
+        switch self {
+        case .chooseApps:
+            "Choose apps & sites"
+        case .reviewProtection:
+            "Review protection"
+        case .prepareAndProtect:
+            "Prepare & turn on protection"
+        case let .startProtection(isLoading):
+            isLoading ? "Turning on protection" : "Turn on protection"
+        case .reviewSelection:
+            "Review selection"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .chooseApps:
+            "checklist"
+        case .reviewProtection, .reviewSelection:
+            "slider.horizontal.3"
+        case .prepareAndProtect:
+            "wand.and.sparkles"
+        case .startProtection:
+            "shield"
+        }
+    }
+
+    var isLoading: Bool {
+        if case let .startProtection(isLoading) = self {
+            return isLoading
+        }
+        return false
+    }
+
+    var isProminent: Bool {
+        self != .reviewSelection
+    }
+
+    var accessibilityHint: String {
+        switch self {
+        case .chooseApps:
+            "Opens the app and website picker"
+        case .reviewProtection:
+            "Opens protection settings"
+        case .prepareAndProtect:
+            "Builds the remaining questions, then turns on protection"
+        case .startProtection:
+            "Places your checkpoint before the apps and websites you select"
+        case .reviewSelection:
+            "Opens your protected app and website selection"
+        }
+    }
+}
+
+enum HomeFirstWinJourneyPhase: Hashable {
+    case screenTimeUnavailable
+    case screenTimeAuthorizationRequired
+    case requestingScreenTime
+    case screenTimePermissionRequired
+    case chooseApps
+    case protectionNeedsAttention
+    case preparingCheckpoint
+    case checkpointNeedsAttention
+    case checkpointNotReady
+    case readyToProtect
+    case startingProtection
+    case firstCheckpointReady
+}
+
+struct HomeFirstWinJourneyPresentation: Equatable {
+    let phase: HomeFirstWinJourneyPhase
+    let nodes: [HomeFirstWinJourneyNode]
+    let headline: String
+    let title: String
+    let detail: String
+    let action: HomeFirstWinJourneyAction?
+    let completedStepCount: Int
+
+    init(
+        hasReadyCheckpointSet: Bool,
+        isPreparingCheckpoint: Bool,
+        isCheckpointBlockedByGeneration: Bool,
+        selectableQuestionCount: Int,
+        requiredQuestionCount: Int,
+        authorizationState: ScreenTimeController.AuthorizationState,
+        setupState: ScreenTimeController.SetupState,
+        hasSelection: Bool,
+        isProtectionActive: Bool,
+        isStartingProtection: Bool,
+        protectionErrorMessage: String?,
+        protectedAppsSummary: String,
+        requiredCorrectAnswers: Int,
+        questionCount: Int,
+        unlockMinutes: Int
+    ) {
+        let hasAuthorizedSelection = isProtectionActive || (
+            (authorizationState == .approved || authorizationState == .approvedWithDataAccess)
+                && hasSelection
+        )
+        let normalizedError = protectionErrorMessage?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let hasProtectionError = normalizedError?.isEmpty == false
+
+        if setupState == .unavailable || authorizationState == .unavailable {
+            phase = .screenTimeUnavailable
+        } else if authorizationState == .requesting {
+            phase = .requestingScreenTime
+        } else if authorizationState == .unresolved || authorizationState == .notDetermined {
+            phase = .screenTimeAuthorizationRequired
+        } else if authorizationState == .denied || authorizationState == .failed {
+            phase = .screenTimePermissionRequired
+        } else if !hasAuthorizedSelection {
+            phase = .chooseApps
+        } else if setupState == .failed || hasProtectionError {
+            phase = .protectionNeedsAttention
+        } else if !hasReadyCheckpointSet {
+            if isCheckpointBlockedByGeneration {
+                phase = .checkpointNeedsAttention
+            } else if isPreparingCheckpoint {
+                phase = .preparingCheckpoint
+            } else {
+                phase = .checkpointNotReady
+            }
+        } else if isProtectionActive {
+            phase = .firstCheckpointReady
+        } else if isStartingProtection {
+            phase = .startingProtection
+        } else {
+            phase = .readyToProtect
+        }
+
+        let currentNodeID: HomeFirstWinJourneyNodeID? = switch phase {
+        case .screenTimeUnavailable,
+             .screenTimeAuthorizationRequired,
+             .requestingScreenTime,
+             .screenTimePermissionRequired,
+             .chooseApps:
+            .protectedApps
+        case .protectionNeedsAttention, .readyToProtect, .startingProtection:
+            .protection
+        case .preparingCheckpoint, .checkpointNeedsAttention, .checkpointNotReady:
+            .checkpoint
+        case .firstCheckpointReady:
+            nil
+        }
+
+        let checkpointState: HomeFirstWinJourneyNodeState
+        let checkpointStatus: String
+        if hasReadyCheckpointSet {
+            checkpointState = .complete
+            checkpointStatus = "\(requiredQuestionCount) questions ready"
+        } else if isCheckpointBlockedByGeneration {
+            checkpointState = .attention
+            checkpointStatus = "Needs attention"
+        } else if isPreparingCheckpoint {
+            checkpointState = .working
+            checkpointStatus = "\(selectableQuestionCount) of \(requiredQuestionCount) ready"
+        } else {
+            checkpointState = .attention
+            checkpointStatus = "Needs questions"
+        }
+
+        let appsState: HomeFirstWinJourneyNodeState
+        let appsStatus: String
+        switch phase {
+        case .screenTimeUnavailable:
+            appsState = .attention
+            appsStatus = "iPhone required"
+        case .requestingScreenTime:
+            appsState = .working
+            appsStatus = "Requesting access"
+        case .screenTimeAuthorizationRequired, .screenTimePermissionRequired:
+            appsState = .attention
+            appsStatus = "Allow Screen Time"
+        case .chooseApps:
+            appsState = .ready
+            appsStatus = "Choose apps or sites"
+        default:
+            if hasAuthorizedSelection {
+                appsState = .complete
+                appsStatus = protectedAppsSummary
+            } else {
+                appsState = .blocked
+                appsStatus = "Waiting"
+            }
+        }
+
+        let protectionState: HomeFirstWinJourneyNodeState
+        let protectionStatus: String
+        if isProtectionActive && phase == .firstCheckpointReady {
+            protectionState = .complete
+            protectionStatus = "On"
+        } else {
+            switch phase {
+            case .protectionNeedsAttention:
+                protectionState = .attention
+                protectionStatus = "Needs attention"
+            case .startingProtection:
+                protectionState = .working
+                protectionStatus = "Turning on"
+            case .readyToProtect:
+                protectionState = .ready
+                protectionStatus = "Ready to start"
+            default:
+                protectionState = .blocked
+                protectionStatus = "Waiting"
+            }
+        }
+
+        nodes = [
+            HomeFirstWinJourneyNode(
+                id: .checkpoint,
+                state: checkpointState,
+                status: checkpointStatus,
+                isCurrent: currentNodeID == .checkpoint
+            ),
+            HomeFirstWinJourneyNode(
+                id: .protectedApps,
+                state: appsState,
+                status: appsStatus,
+                isCurrent: currentNodeID == .protectedApps
+            ),
+            HomeFirstWinJourneyNode(
+                id: .protection,
+                state: protectionState,
+                status: protectionStatus,
+                isCurrent: currentNodeID == .protection
+            )
+        ]
+        completedStepCount = nodes.filter { $0.state == .complete }.count
+        headline = phase == .firstCheckpointReady
+            ? "Your first win is ready"
+            : "Set up your first win"
+
+        switch phase {
+        case .screenTimeUnavailable:
+            title = "Continue on iPhone"
+            detail = "Protection uses Screen Time and is available in the iPhone app."
+            action = nil
+        case .screenTimeAuthorizationRequired:
+            title = "Connect Screen Time"
+            detail = "Allow Screen Time access to protect only what you choose."
+            action = nil
+        case .requestingScreenTime:
+            title = "Connecting Screen Time"
+            detail = "Finish the permission request, then choose what you want to protect."
+            action = nil
+        case .screenTimePermissionRequired:
+            title = "Screen Time needs attention"
+            detail = normalizedError ?? "Allow Screen Time access before setting up protection."
+            action = nil
+        case .chooseApps:
+            title = "Choose what to protect"
+            detail = "Choose the apps and websites you want behind practice."
+            action = .chooseApps
+        case .protectionNeedsAttention:
+            title = "Protection needs attention"
+            detail = normalizedError ?? "Review your protected selection before continuing."
+            action = .reviewProtection
+        case .preparingCheckpoint:
+            title = "Preparing your checkpoint"
+            detail = "\(selectableQuestionCount) of \(requiredQuestionCount) questions are ready. We’ll move you forward when the set is complete."
+            action = nil
+        case .checkpointNeedsAttention:
+            title = "Finish your checkpoint setup"
+            detail = "Use the checkpoint options above, then your first-win setup will continue here."
+            action = nil
+        case .checkpointNotReady:
+            title = "Your checkpoint needs more questions"
+            detail = "Prepare the rest of the set, then Checkpoint will turn protection on."
+            action = .prepareAndProtect
+        case .readyToProtect:
+            title = "Turn on protection"
+            detail = "Your checkpoint and protected selection are ready."
+            action = .startProtection(isLoading: false)
+        case .startingProtection:
+            title = "Turning on protection"
+            detail = "Checkpoint is verifying your question set and protected selection."
+            action = .startProtection(isLoading: true)
+        case .firstCheckpointReady:
+            let questionNoun = questionCount == 1 ? "question" : "questions"
+            title = "Open a protected app or website"
+            detail = "Clear \(requiredCorrectAnswers) of \(questionCount) \(questionNoun) to earn a \(unlockMinutes)-minute break."
+            action = .reviewSelection
+        }
+    }
+
+    var progressText: String {
+        completedStepCount == nodes.count
+            ? "SETUP COMPLETE"
+            : "\(completedStepCount) OF \(nodes.count) READY"
+    }
+}
+
+struct HomeFirstWinJourneyCard: View {
+    let presentation: HomeFirstWinJourneyPresentation
+    let reduceMotion: Bool
+    let manageApps: () -> Void
+    let startProtection: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("NEXT STEP")
-                .font(.caption2.weight(.bold))
-                .tracking(0.95)
-                .foregroundStyle(CheckpointTheme.muted)
-                .accessibilityHidden(true)
+        VStack(alignment: .leading, spacing: usesCompactJourneyLayout ? 6 : 12) {
+            sectionHeader
 
-            CheckpointHeroSurface(glowColor: CheckpointTheme.mint) {
-                VStack(alignment: .leading, spacing: 18) {
-                    launchIdentity
-
-                    Text(instructionText)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(CheckpointTheme.heroMuted)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityLabel(instructionText)
-
-                    Divider()
-                        .overlay(CheckpointTheme.heroDivider)
-
-                    protectionControls
-                }
+            CheckpointHeroSurface(
+                glowColor: glowColor,
+                contentPadding: usesCompactJourneyLayout ? 12 : 18
+            ) {
+                journeyContent
+                .animation(
+                    CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                    value: presentation.phase
+                )
             }
         }
         .padding(.horizontal, 4)
     }
 
     @ViewBuilder
-    private var launchIdentity: some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 12) {
-                launchIcon
-                launchTitle
+    private var journeyContent: some View {
+        if usesCompactJourneyLayout {
+            VStack(alignment: .leading, spacing: 9) {
+                compactIdentity
+                compactJourneyRail
+                currentStep
+                    .id(presentation.phase)
+                    .transition(currentStepTransition)
             }
         } else {
-            HStack(alignment: .center, spacing: 13) {
-                launchIcon
-                launchTitle
+            VStack(alignment: .leading, spacing: 18) {
+                identity
+                journeyRail
+
+                Divider()
+                    .overlay(CheckpointTheme.heroDivider)
+                    .accessibilityHidden(true)
+
+                currentStep
+                    .id(presentation.phase)
+                    .transition(currentStepTransition)
             }
         }
     }
 
-    private var launchIcon: some View {
+    private var sectionHeader: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text("FIRST WIN")
+                .font(.caption2.weight(.bold))
+                .tracking(0.95)
+                .foregroundStyle(CheckpointTheme.muted)
+                .accessibilityAddTraits(.isHeader)
+
+            Spacer(minLength: 4)
+
+            Text(presentation.progressText)
+                .font(.caption2.weight(.bold))
+                .tracking(0.55)
+                .foregroundStyle(CheckpointTheme.teal)
+                .contentTransition(.numericText())
+        }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    @ViewBuilder
+    private var identity: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                identityIcon
+                identityCopy
+            }
+        } else {
+            HStack(alignment: .center, spacing: 13) {
+                identityIcon
+                identityCopy
+            }
+        }
+    }
+
+    private var identityIcon: some View {
         Image(systemName: "flag.checkered")
             .font(.system(size: 19, weight: .bold))
             .foregroundStyle(CheckpointTheme.ink)
             .frame(width: 46, height: 46)
             .background(CheckpointTheme.mint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .symbolEffect(.bounce, options: .nonRepeating, value: presentation.phase)
+            .symbolEffectsRemoved(reduceMotion)
             .fixedSize()
             .accessibilityHidden(true)
     }
 
-    private var launchTitle: some View {
+    private var compactIdentity: some View {
+        HStack(alignment: .center, spacing: 8) {
+            Image(systemName: "flag.checkered")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(CheckpointTheme.ink)
+                .frame(width: 28, height: 28)
+                .background(
+                    CheckpointTheme.mint,
+                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                )
+                .symbolEffect(.bounce, options: .nonRepeating, value: presentation.phase)
+                .symbolEffectsRemoved(reduceMotion)
+                .accessibilityHidden(true)
+
+            Text(presentation.headline)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var identityCopy: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text("FIRST CHECKPOINT")
+            Text("YOUR PATH")
                 .font(.caption2.weight(.bold))
                 .tracking(0.8)
                 .foregroundStyle(CheckpointTheme.heroSuccess)
 
-            Text("This goal’s first checkpoint is ready")
+            Text(presentation.headline)
                 .font(.title3.weight(.bold))
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Next step. This goal’s first checkpoint is ready")
+        .accessibilityLabel(presentation.headline)
         .accessibilityAddTraits(.isHeader)
     }
 
     @ViewBuilder
-    private var protectionControls: some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 12) {
-                protectionIdentity
-                reviewAppsButton
-            }
+    private var journeyRail: some View {
+        if usesVerticalJourneyRail {
+            verticalJourneyRail
         } else {
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .center, spacing: 12) {
-                    protectionIdentity
-                    Spacer(minLength: 8)
-                    reviewAppsButton
+            horizontalJourneyRail
+        }
+    }
+
+    private var horizontalJourneyRail: some View {
+        HStack(alignment: .top, spacing: 0) {
+            ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
+                if index > 0 {
+                    connector(after: presentation.nodes[index - 1])
+                        .frame(width: 16, height: 2)
+                        .padding(.top, 15)
                 }
 
-                VStack(alignment: .leading, spacing: 12) {
-                    protectionIdentity
-                    reviewAppsButton
-                }
+                horizontalNode(node, index: index)
+                    .frame(maxWidth: .infinity)
             }
         }
     }
 
-    private var protectionIdentity: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "shield.checkered")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(CheckpointTheme.heroSuccess)
-                .frame(width: 30, height: 30)
-                .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 9))
-                .accessibilityHidden(true)
+    private var compactJourneyRail: some View {
+        HStack(alignment: .top, spacing: 0) {
+            ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
+                if index > 0 {
+                    connector(after: presentation.nodes[index - 1])
+                        .frame(width: 12, height: 2)
+                        .padding(.top, 11)
+                }
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Protection on")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.heroText)
+                VStack(spacing: 3) {
+                    nodeBadge(node, size: 24)
 
-                Text(protectedAppsSummary)
-                    .font(.caption)
-                    .foregroundStyle(CheckpointTheme.heroMuted)
-                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                    .fixedSize(horizontal: false, vertical: true)
+                    Text(node.id.compactTitle)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(
+                            node.isCurrent
+                                ? CheckpointTheme.heroText
+                                : CheckpointTheme.heroMuted
+                        )
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.76)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(nodeAccessibilityLabel(node, index: index))
+            }
+        }
+    }
+
+    private var verticalJourneyRail: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
+                verticalNode(node, index: index)
+
+                if index < presentation.nodes.count - 1 {
+                    connector(after: node)
+                        .frame(width: 2, height: 16)
+                        .padding(.leading, 15)
+                        .padding(.vertical, 4)
+                }
+            }
+        }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private func horizontalNode(
+        _ node: HomeFirstWinJourneyNode,
+        index: Int
+    ) -> some View {
+        VStack(spacing: 7) {
+            nodeBadge(node)
+
+            VStack(spacing: 2) {
+                Text(node.id.title)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(node.isCurrent ? CheckpointTheme.heroText : CheckpointTheme.heroMuted)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+
+                Text(node.status)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(nodeTint(node))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.78)
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Protection on. \(protectedAppsSummary)")
+        .accessibilityLabel(nodeAccessibilityLabel(node, index: index))
     }
 
-    private var reviewAppsButton: some View {
-        Button(action: reviewApps) {
-            HStack(spacing: 6) {
-                Text("Review apps")
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .accessibilityHidden(true)
+    private func verticalNode(
+        _ node: HomeFirstWinJourneyNode,
+        index: Int
+    ) -> some View {
+        HStack(alignment: .center, spacing: 12) {
+            nodeBadge(node)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(node.id.title)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(node.isCurrent ? CheckpointTheme.heroText : CheckpointTheme.heroMuted)
+
+                Text(node.status)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(nodeTint(node))
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.heroSuccess)
+
+            Spacer(minLength: 0)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(nodeAccessibilityLabel(node, index: index))
+    }
+
+    private func nodeBadge(
+        _ node: HomeFirstWinJourneyNode,
+        size: CGFloat = 32
+    ) -> some View {
+        ZStack {
+            Circle()
+                .fill(nodeTint(node).opacity(node.isCurrent ? 0.20 : 0.11))
+
+            Circle()
+                .stroke(
+                    node.isCurrent ? nodeTint(node) : CheckpointTheme.heroDivider,
+                    lineWidth: node.isCurrent ? 1.5 : 1
+                )
+
+            if node.state == .working {
+                ProgressView()
+                    .controlSize(.small)
+                    .tint(nodeTint(node))
+            } else {
+                Image(systemName: nodeSystemImage(node))
+                    .font(.system(size: size == 32 ? 12 : 10, weight: .bold))
+                    .foregroundStyle(nodeTint(node))
+                    .symbolEffect(.bounce, options: .nonRepeating, value: presentation.phase)
+                    .symbolEffectsRemoved(reduceMotion || !node.isCurrent)
+            }
+        }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    }
+
+    private func connector(after node: HomeFirstWinJourneyNode) -> some View {
+        Rectangle()
+            .fill(node.state == .complete ? CheckpointTheme.heroSuccess.opacity(0.58) : CheckpointTheme.heroDivider)
+            .accessibilityHidden(true)
+    }
+
+    private var currentStep: some View {
+        VStack(alignment: .leading, spacing: usesCompactJourneyLayout ? 9 : 13) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("NEXT STEP")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.75)
+                    .foregroundStyle(currentTint)
+
+                Text(presentation.title)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.heroText)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(presentation.detail)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .accessibilityElement(children: .combine)
+
+            if let action = presentation.action {
+                journeyAction(action)
+            }
+        }
+        .padding(usesCompactJourneyLayout ? 10 : 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            currentTint.opacity(0.10),
+            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .stroke(currentTint.opacity(0.20), lineWidth: 1)
+        }
+    }
+
+    private func journeyAction(_ action: HomeFirstWinJourneyAction) -> some View {
+        Button {
+            switch action {
+            case .chooseApps, .reviewProtection, .reviewSelection:
+                manageApps()
+            case .prepareAndProtect, .startProtection:
+                startProtection()
+            }
+        } label: {
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(spacing: 9) {
+                        actionIcon(action)
+                        Text(action.title)
+                    }
+                } else {
+                    HStack(spacing: 8) {
+                        actionIcon(action)
+                        Text(action.title)
+                        Spacer(minLength: 0)
+                        if !action.isLoading {
+                            Image(systemName: "arrow.right")
+                                .font(.caption.weight(.bold))
+                                .accessibilityHidden(true)
+                        }
+                    }
+                }
+            }
+            .font(.subheadline.weight(.bold))
+            .foregroundStyle(action.isProminent ? CheckpointTheme.ink : CheckpointTheme.heroText)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 14)
+            .padding(
+                .vertical,
+                dynamicTypeSize.isAccessibilitySize
+                    ? 16
+                    : (usesCompactJourneyLayout ? 10 : 13)
+            )
             .frame(minHeight: 44)
-            .contentShape(Rectangle())
+            .background(
+                action.isProminent ? CheckpointTheme.heroSuccess : CheckpointTheme.heroSubtleFill,
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(action.isProminent ? Color.clear : CheckpointTheme.heroDivider, lineWidth: 1)
+            }
         }
         .buttonStyle(CheckpointPressButtonStyle())
-        .accessibilityHint("Opens your protected app selection")
+        .disabled(action.isLoading)
+        .accessibilityHint(action.accessibilityHint)
     }
 
-    private var instructionText: String {
-        let questionNoun = questionCount == 1 ? "question" : "questions"
-        return "Open any protected app. Clear \(requiredCorrectAnswers) of \(questionCount) \(questionNoun) to earn a \(unlockMinutes)-minute break."
+    @ViewBuilder
+    private func actionIcon(_ action: HomeFirstWinJourneyAction) -> some View {
+        if action.isLoading {
+            ProgressView()
+                .tint(CheckpointTheme.ink)
+                .accessibilityHidden(true)
+        } else {
+            Image(systemName: action.systemImage)
+                .font(.system(size: 15, weight: .bold))
+                .accessibilityHidden(true)
+        }
+    }
+
+    private func nodeSystemImage(_ node: HomeFirstWinJourneyNode) -> String {
+        switch node.state {
+        case .complete:
+            "checkmark"
+        case .attention:
+            "exclamationmark"
+        case .ready, .working, .blocked:
+            node.id.systemImage
+        }
+    }
+
+    private func nodeTint(_ node: HomeFirstWinJourneyNode) -> Color {
+        switch node.state {
+        case .complete:
+            CheckpointTheme.heroSuccess
+        case .ready:
+            node.isCurrent ? CheckpointTheme.heroSuccess : CheckpointTheme.heroInfo
+        case .working:
+            CheckpointTheme.heroInfo
+        case .attention:
+            CheckpointTheme.heroWarning
+        case .blocked:
+            CheckpointTheme.heroMuted
+        }
+    }
+
+    private func nodeAccessibilityLabel(
+        _ node: HomeFirstWinJourneyNode,
+        index: Int
+    ) -> String {
+        let current = node.isCurrent ? " Current step." : ""
+        return "Step \(index + 1) of \(presentation.nodes.count), \(node.id.title), \(node.status).\(current)"
+    }
+
+    private var currentTint: Color {
+        switch presentation.phase {
+        case .screenTimeUnavailable:
+            CheckpointTheme.heroMuted
+        case .screenTimePermissionRequired,
+             .protectionNeedsAttention,
+             .checkpointNeedsAttention,
+             .checkpointNotReady:
+            CheckpointTheme.heroWarning
+        case .requestingScreenTime, .preparingCheckpoint, .startingProtection:
+            CheckpointTheme.heroInfo
+        case .screenTimeAuthorizationRequired, .chooseApps, .readyToProtect, .firstCheckpointReady:
+            CheckpointTheme.heroSuccess
+        }
+    }
+
+    private var glowColor: Color {
+        switch presentation.phase {
+        case .screenTimePermissionRequired,
+             .protectionNeedsAttention,
+             .checkpointNeedsAttention,
+             .checkpointNotReady:
+            CheckpointTheme.heroWarning
+        case .requestingScreenTime, .preparingCheckpoint, .startingProtection:
+            CheckpointTheme.heroInfo
+        case .screenTimeUnavailable:
+            CheckpointTheme.heroTrack
+        case .screenTimeAuthorizationRequired, .chooseApps, .readyToProtect, .firstCheckpointReady:
+            CheckpointTheme.mint
+        }
+    }
+
+    private var currentStepTransition: AnyTransition {
+        reduceMotion
+            ? .identity
+            : .opacity.combined(with: .scale(scale: 0.985, anchor: .top))
+    }
+
+    private var usesVerticalJourneyRail: Bool {
+        dynamicTypeSize == .xLarge ||
+            dynamicTypeSize == .xxLarge ||
+            dynamicTypeSize == .xxxLarge ||
+            dynamicTypeSize.isAccessibilitySize
+    }
+
+    private var usesCompactJourneyLayout: Bool {
+        dynamicTypeSize == .xSmall ||
+            dynamicTypeSize == .small ||
+            dynamicTypeSize == .medium ||
+            dynamicTypeSize == .large
     }
 }
 

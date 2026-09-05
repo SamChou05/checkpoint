@@ -19,6 +19,7 @@ struct HomeView: View {
     @Environment(\.checkpointProgressSkillEvidenceNavigation)
     private var navigateToProgressSkillEvidence
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isRestrictedAppsPresented = false
     @State private var isWeeklyReviewPresented = false
     @State private var isAcceptingLevelIncrease = false
@@ -70,7 +71,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: homeSectionSpacing) {
                     checkpointNoticePanel
 
                     if let goal = store.goal {
@@ -86,7 +87,7 @@ struct HomeView: View {
                         CheckpointMotion.reveal,
                         reduceMotion: reduceMotion
                     ),
-                    value: homeStudyBeaconPresentation
+                    value: homeStudyBeaconPresentation.kind
                 )
                 .animation(
                     CheckpointMotion.animation(
@@ -99,8 +100,8 @@ struct HomeView: View {
                     goalIdentityMotionPolicy.animation,
                     value: store.goal?.id
                 )
-                .padding(.horizontal, 24)
-                .padding(.top, 20)
+                .padding(.horizontal, usesCompactFirstWinHomeLayout ? 16 : 24)
+                .padding(.top, usesCompactFirstWinHomeLayout ? 8 : 20)
                 .padding(.bottom, 112)
             }
             .checkpointScreenBackground()
@@ -198,30 +199,36 @@ struct HomeView: View {
     }
 
     private func goalScopedContent(_ goal: Goal) -> some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(
+            alignment: .leading,
+            spacing: usesCompactFirstWinHomeLayout ? 14 : 24
+        ) {
             if isTemporarilyUnblocked {
                 activeBreakCard
                     .transition(homeActiveBreakTransition)
                 goalHero(goal)
-                homeNextFocusPanel
-                homeStudyBeaconSection
+                if homeStudyBeaconPresentation.showsNextFocus {
+                    homeNextFocusPanel
+                    homeStudyBeaconSection
+                }
             } else {
                 goalHero(goal)
 
-                if homeStudyBeaconPresentation.showsNextFocus {
+                switch homeStudyBeaconPresentation {
+                case .firstWinJourney:
+                    homeStudyBeaconSection
+
+                case .weeklySignal:
                     homeNextFocusPanel
                         .transition(homeNextFocusTransition)
-                }
 
-                if isHealthyProtectionState {
-                    homeStudyBeaconSection
-
-                    if homeStudyBeaconPresentation == .weeklySignal {
+                    if isHealthyProtectionState {
+                        homeStudyBeaconSection
                         compactProtectionRow
+                    } else {
+                        screenTimePanel
+                        homeStudyBeaconSection
                     }
-                } else {
-                    screenTimePanel
-                    homeStudyBeaconSection
                 }
             }
 
@@ -237,8 +244,8 @@ struct HomeView: View {
             isGenerationBlockingPractice: store.isQuestionGenerationBlockingPractice,
             generationFailure: store.lastQuestionGenerationFailure,
             isRetryingGeneration: isRetryingInitialQuestions,
-            readyDisclosure: homeStudyBeaconPresentation == .firstCheckpointLaunchpad
-                ? .suppressedByFirstCheckpointLaunchpad
+            readyDisclosure: homeStudyBeaconPresentation.suppressesReadyGoalDisclosure
+                ? .suppressedByFirstWinJourney
                 : .visible,
             isNewlyPrepared: isQuestionsReadyConfirmationVisible,
             unlockPolicy: store.unlockPolicy,
@@ -250,6 +257,7 @@ struct HomeView: View {
         return HomeGoalOverviewCard(
             presentation: presentation,
             reduceMotion: reduceMotion,
+            layout: usesCompactFirstWinHomeLayout ? .firstWinCompact : .standard,
             retryQuestions: retryInitialQuestionGeneration,
             editGoal: store.presentActiveGoalEditor
         ) {
@@ -487,15 +495,15 @@ struct HomeView: View {
     private var homeStudyBeaconSection: some View {
         Group {
             switch homeStudyBeaconPresentation {
-            case .firstCheckpointLaunchpad:
-                HomeFirstCheckpointLaunchpad(
-                    requiredCorrectAnswers: store.unlockPolicy.requiredCorrectAnswers,
-                    questionCount: store.unlockPolicy.questionsPerSession,
-                    unlockMinutes: store.unlockPolicy.unlockMinutes,
-                    protectedAppsSummary: screenTime.restrictedAppsSummary
-                ) {
-                    isRestrictedAppsPresented = true
-                }
+            case let .firstWinJourney(presentation):
+                HomeFirstWinJourneyCard(
+                    presentation: presentation,
+                    reduceMotion: reduceMotion,
+                    manageApps: {
+                        isRestrictedAppsPresented = true
+                    },
+                    startProtection: prepareAndStartProtection
+                )
                 .transition(homeStudyBeaconTransition)
 
             case .weeklySignal:
@@ -506,10 +514,38 @@ struct HomeView: View {
     }
 
     private var homeStudyBeaconPresentation: HomeStudyBeaconPresentation {
-        HomeStudyBeaconPresentation(
+        let readiness = store.goal.map { store.checkpointReadiness(for: $0) }
+            ?? .incomplete(
+                selectableCount: 0,
+                requiredCount: store.unlockPolicy.questionsPerSession
+            )
+        let isPreparingCheckpoint: Bool
+        if case .preparing = readiness {
+            isPreparingCheckpoint = true
+        } else {
+            isPreparingCheckpoint = false
+        }
+        let firstWinJourney = HomeFirstWinJourneyPresentation(
+            hasReadyCheckpointSet: readiness.hasFullCheckpoint,
+            isPreparingCheckpoint: isPreparingCheckpoint,
+            isCheckpointBlockedByGeneration: store.isQuestionGenerationBlockingPractice,
+            selectableQuestionCount: readiness.selectableCount,
+            requiredQuestionCount: readiness.requiredCount,
+            authorizationState: screenTime.authorizationState,
+            setupState: screenTime.setupState,
+            hasSelection: screenTime.hasSelection,
+            isProtectionActive: isHealthyProtectionState,
+            isStartingProtection: workflow.isStartingProtection,
+            protectionErrorMessage: screenTime.userFacingErrorMessage,
+            protectedAppsSummary: screenTime.restrictedAppsSummary,
+            requiredCorrectAnswers: store.unlockPolicy.requiredCorrectAnswers,
+            questionCount: store.unlockPolicy.questionsPerSession,
+            unlockMinutes: store.unlockPolicy.unlockMinutes
+        )
+
+        return HomeStudyBeaconPresentation(
             hasPracticeForActiveGoal: !store.activeAttempts.isEmpty,
-            hasReadyCheckpointSet: store.hasReadyCheckpointSet,
-            isProtectionActive: isHealthyProtectionState
+            firstWinJourney: firstWinJourney
         )
     }
 
@@ -736,6 +772,21 @@ struct HomeView: View {
 
     private var reduceMotion: Bool {
         reduceMotionOverride ?? accessibilityReduceMotion
+    }
+
+    private var usesCompactFirstWinHomeLayout: Bool {
+        guard homeStudyBeaconPresentation.kind == .firstWinJourney else {
+            return false
+        }
+
+        return dynamicTypeSize == .xSmall ||
+            dynamicTypeSize == .small ||
+            dynamicTypeSize == .medium ||
+            dynamicTypeSize == .large
+    }
+
+    private var homeSectionSpacing: CGFloat {
+        usesCompactFirstWinHomeLayout ? 16 : 24
     }
 
     private var referenceDate: Date {

@@ -2,44 +2,264 @@ import XCTest
 @testable import Checkpoint
 
 final class HomeProtectionControlsTests: XCTestCase {
-    func testFirstCheckpointLaunchpadRequiresReadyProtectedGoalWithoutPractice() {
-        let presentation = HomeStudyBeaconPresentation(
+    func testHomeKeepsFirstWinJourneyUntilTheActiveGoalHasPractice() {
+        let journey = makeFirstWinJourney()
+        let beforePractice = HomeStudyBeaconPresentation(
             hasPracticeForActiveGoal: false,
-            hasReadyCheckpointSet: true,
-            isProtectionActive: true
+            firstWinJourney: journey
+        )
+        let afterPractice = HomeStudyBeaconPresentation(
+            hasPracticeForActiveGoal: true,
+            firstWinJourney: journey
         )
 
-        XCTAssertEqual(presentation, .firstCheckpointLaunchpad)
-        XCTAssertFalse(presentation.showsNextFocus)
+        XCTAssertEqual(beforePractice, .firstWinJourney(journey))
+        XCTAssertEqual(beforePractice.kind, .firstWinJourney)
+        XCTAssertFalse(beforePractice.showsNextFocus)
+        XCTAssertTrue(beforePractice.suppressesReadyGoalDisclosure)
+
+        XCTAssertEqual(afterPractice, .weeklySignal)
+        XCTAssertEqual(afterPractice.kind, .weeklySignal)
+        XCTAssertTrue(afterPractice.showsNextFocus)
+        XCTAssertFalse(afterPractice.suppressesReadyGoalDisclosure)
     }
 
-    func testActiveGoalPracticePreventsLaunchpadFromReturningInALaterWeek() {
-        XCTAssertEqual(
-            HomeStudyBeaconPresentation(
-                hasPracticeForActiveGoal: true,
-                hasReadyCheckpointSet: true,
-                isProtectionActive: true
-            ),
-            .weeklySignal
-        )
-    }
+    func testFirstWinJourneyResolvesEveryOperationalPhaseDeterministically() {
+        struct Fixture {
+            let name: String
+            var ready = true
+            var preparing = false
+            var generationBlocked = false
+            var selectableCount = 5
+            var authorizationState = ScreenTimeController.AuthorizationState.approved
+            var setupState = ScreenTimeController.SetupState.authorized
+            var hasSelection = true
+            var protectionActive = false
+            var startingProtection = false
+            var errorMessage: String? = nil
+            let expectedPhase: HomeFirstWinJourneyPhase
+            let expectedAction: HomeFirstWinJourneyAction?
+            let expectedCurrentNode: HomeFirstWinJourneyNodeID?
+            let expectedCompletedCount: Int
+        }
 
-    func testFirstCheckpointLaunchpadDoesNotReplaceWeeklySignalWhenNotActionable() {
-        let states: [HomeStudyBeaconPresentation] = [
-            HomeStudyBeaconPresentation(
-                hasPracticeForActiveGoal: false,
-                hasReadyCheckpointSet: false,
-                isProtectionActive: true
+        let fixtures = [
+            Fixture(
+                name: "unavailable",
+                authorizationState: .unavailable,
+                setupState: .unavailable,
+                hasSelection: false,
+                expectedPhase: .screenTimeUnavailable,
+                expectedAction: nil,
+                expectedCurrentNode: .protectedApps,
+                expectedCompletedCount: 1
             ),
-            HomeStudyBeaconPresentation(
-                hasPracticeForActiveGoal: false,
-                hasReadyCheckpointSet: true,
-                isProtectionActive: false
+            Fixture(
+                name: "authorization required",
+                authorizationState: .notDetermined,
+                setupState: .notStarted,
+                hasSelection: false,
+                expectedPhase: .screenTimeAuthorizationRequired,
+                expectedAction: nil,
+                expectedCurrentNode: .protectedApps,
+                expectedCompletedCount: 1
+            ),
+            Fixture(
+                name: "requesting authorization",
+                authorizationState: .requesting,
+                setupState: .notStarted,
+                hasSelection: false,
+                expectedPhase: .requestingScreenTime,
+                expectedAction: nil,
+                expectedCurrentNode: .protectedApps,
+                expectedCompletedCount: 1
+            ),
+            Fixture(
+                name: "permission required",
+                authorizationState: .denied,
+                setupState: .failed,
+                hasSelection: false,
+                errorMessage: "Screen Time access is denied.",
+                expectedPhase: .screenTimePermissionRequired,
+                expectedAction: nil,
+                expectedCurrentNode: .protectedApps,
+                expectedCompletedCount: 1
+            ),
+            Fixture(
+                name: "choose apps",
+                hasSelection: false,
+                expectedPhase: .chooseApps,
+                expectedAction: .chooseApps,
+                expectedCurrentNode: .protectedApps,
+                expectedCompletedCount: 1
+            ),
+            Fixture(
+                name: "protection error",
+                errorMessage: "Review the selected apps.",
+                expectedPhase: .protectionNeedsAttention,
+                expectedAction: .reviewProtection,
+                expectedCurrentNode: .protection,
+                expectedCompletedCount: 2
+            ),
+            Fixture(
+                name: "question generation failure",
+                ready: false,
+                generationBlocked: true,
+                selectableCount: 0,
+                expectedPhase: .checkpointNeedsAttention,
+                expectedAction: nil,
+                expectedCurrentNode: .checkpoint,
+                expectedCompletedCount: 1
+            ),
+            Fixture(
+                name: "preparing checkpoint",
+                ready: false,
+                preparing: true,
+                selectableCount: 2,
+                expectedPhase: .preparingCheckpoint,
+                expectedAction: nil,
+                expectedCurrentNode: .checkpoint,
+                expectedCompletedCount: 1
+            ),
+            Fixture(
+                name: "checkpoint incomplete",
+                ready: false,
+                selectableCount: 1,
+                expectedPhase: .checkpointNotReady,
+                expectedAction: .prepareAndProtect,
+                expectedCurrentNode: .checkpoint,
+                expectedCompletedCount: 1
+            ),
+            Fixture(
+                name: "starting protection",
+                startingProtection: true,
+                expectedPhase: .startingProtection,
+                expectedAction: .startProtection(isLoading: true),
+                expectedCurrentNode: .protection,
+                expectedCompletedCount: 2
+            ),
+            Fixture(
+                name: "ready to protect",
+                expectedPhase: .readyToProtect,
+                expectedAction: .startProtection(isLoading: false),
+                expectedCurrentNode: .protection,
+                expectedCompletedCount: 2
+            ),
+            Fixture(
+                name: "first checkpoint ready",
+                protectionActive: true,
+                expectedPhase: .firstCheckpointReady,
+                expectedAction: .reviewSelection,
+                expectedCurrentNode: nil,
+                expectedCompletedCount: 3
             )
         ]
 
-        XCTAssertEqual(states, [.weeklySignal, .weeklySignal])
-        XCTAssertTrue(states.allSatisfy(\.showsNextFocus))
+        for fixture in fixtures {
+            let presentation = makeFirstWinJourney(
+                ready: fixture.ready,
+                preparing: fixture.preparing,
+                generationBlocked: fixture.generationBlocked,
+                selectableCount: fixture.selectableCount,
+                authorizationState: fixture.authorizationState,
+                setupState: fixture.setupState,
+                hasSelection: fixture.hasSelection,
+                protectionActive: fixture.protectionActive,
+                startingProtection: fixture.startingProtection,
+                errorMessage: fixture.errorMessage
+            )
+
+            XCTAssertEqual(presentation.phase, fixture.expectedPhase, fixture.name)
+            XCTAssertEqual(presentation.action, fixture.expectedAction, fixture.name)
+            XCTAssertEqual(
+                presentation.nodes.first(where: \.isCurrent)?.id,
+                fixture.expectedCurrentNode,
+                fixture.name
+            )
+            XCTAssertEqual(
+                presentation.completedStepCount,
+                fixture.expectedCompletedCount,
+                fixture.name
+            )
+            XCTAssertEqual(presentation.nodes.map(\.id), HomeFirstWinJourneyNodeID.allCases)
+        }
+    }
+
+    func testFirstCheckpointReadyUsesTheRealUnlockPromise() {
+        let presentation = makeFirstWinJourney(
+            protectionActive: true,
+            requiredCorrectAnswers: 4,
+            questionCount: 5,
+            unlockMinutes: 30
+        )
+
+        XCTAssertEqual(presentation.progressText, "SETUP COMPLETE")
+        XCTAssertEqual(presentation.title, "Open a protected app or website")
+        XCTAssertEqual(
+            presentation.detail,
+            "Clear 4 of 5 questions to earn a 30-minute break."
+        )
+        XCTAssertEqual(presentation.action, .reviewSelection)
+    }
+
+    func testFirstWinJourneyCopySupportsWebsiteOnlySelections() {
+        XCTAssertEqual(HomeFirstWinJourneyNodeID.protectedApps.title, "Apps & websites")
+        XCTAssertEqual(HomeFirstWinJourneyNodeID.protectedApps.compactTitle, "Apps & sites")
+        XCTAssertEqual(HomeFirstWinJourneyAction.chooseApps.title, "Choose apps & sites")
+        XCTAssertEqual(
+            HomeFirstWinJourneyAction.chooseApps.accessibilityHint,
+            "Opens the app and website picker"
+        )
+        XCTAssertEqual(
+            HomeFirstWinJourneyAction.startProtection(isLoading: false).accessibilityHint,
+            "Places your checkpoint before the apps and websites you select"
+        )
+
+        let ready = makeFirstWinJourney()
+        XCTAssertEqual(
+            ready.detail,
+            "Your checkpoint and protected selection are ready."
+        )
+
+        let starting = makeFirstWinJourney(startingProtection: true)
+        XCTAssertEqual(
+            starting.detail,
+            "Checkpoint is verifying your question set and protected selection."
+        )
+    }
+
+    private func makeFirstWinJourney(
+        ready: Bool = true,
+        preparing: Bool = false,
+        generationBlocked: Bool = false,
+        selectableCount: Int = 5,
+        authorizationState: ScreenTimeController.AuthorizationState = .approved,
+        setupState: ScreenTimeController.SetupState = .authorized,
+        hasSelection: Bool = true,
+        protectionActive: Bool = false,
+        startingProtection: Bool = false,
+        errorMessage: String? = nil,
+        requiredCorrectAnswers: Int = 4,
+        questionCount: Int = 5,
+        unlockMinutes: Int = 30
+    ) -> HomeFirstWinJourneyPresentation {
+        HomeFirstWinJourneyPresentation(
+            hasReadyCheckpointSet: ready,
+            isPreparingCheckpoint: preparing,
+            isCheckpointBlockedByGeneration: generationBlocked,
+            selectableQuestionCount: selectableCount,
+            requiredQuestionCount: questionCount,
+            authorizationState: authorizationState,
+            setupState: setupState,
+            hasSelection: hasSelection,
+            isProtectionActive: protectionActive,
+            isStartingProtection: startingProtection,
+            protectionErrorMessage: errorMessage,
+            protectedAppsSummary: "3 apps and 2 websites selected",
+            requiredCorrectAnswers: requiredCorrectAnswers,
+            questionCount: questionCount,
+            unlockMinutes: unlockMinutes
+        )
     }
 
     func testActiveBreakPresentationRoundsUpPartialSeconds() {
