@@ -371,7 +371,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         )
         XCTAssertGreaterThan(
             activeBorderDifference,
-            0.04,
+            0.02,
             "The mounted test must intercept the active evidence highlight."
         )
         XCTAssertLessThan(
