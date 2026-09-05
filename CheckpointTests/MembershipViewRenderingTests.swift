@@ -30,6 +30,26 @@ final class MembershipViewRenderingTests: XCTestCase {
                 selectedPlanID: MembershipProductID.monthly
             ),
             MembershipRenderFixture(
+                name: "membership-annual-compact-light",
+                context: .overview,
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            ),
+            MembershipRenderFixture(
+                name: "membership-large-text-dark",
+                context: .overview,
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .xxxLarge,
+                planOptions: planOptions,
+                selectedPlanID: MembershipProductID.yearly
+            ),
+            MembershipRenderFixture(
                 name: "membership-annual-accessibility",
                 context: .feature(.largerQuestionBank),
                 width: 393,
@@ -154,18 +174,122 @@ final class MembershipViewRenderingTests: XCTestCase {
 
         XCTAssertEqual(overview.id, "overview")
         XCTAssertEqual(overview.heroLabel, "THE FULL EXPERIENCE")
+        XCTAssertEqual(overview.offerLabel, "Full Pro access")
         XCTAssertEqual(overview.membershipHeadline, "Practice that keeps pace with you.")
         XCTAssertEqual(
             overview.detail,
             "Build up to 5 focused goals, keep checkpoints fresh, and get a clear Next Focus from your progress."
         )
+        XCTAssertEqual(
+            overview.offerDetail,
+            "Up to 5 focused goals, fresh checkpoints, and one clear Next Focus."
+        )
         XCTAssertNil(overview.feature)
 
         XCTAssertEqual(feature.id, "feature.adaptiveStudyAssist")
         XCTAssertEqual(feature.heroLabel, "UNLOCK NEXT FOCUS")
+        XCTAssertEqual(feature.offerLabel, "Next Focus with Pro")
         XCTAssertEqual(feature.membershipHeadline, MembershipFeature.adaptiveStudyAssist.membershipHeadline)
         XCTAssertEqual(feature.detail, MembershipFeature.adaptiveStudyAssist.detail)
+        XCTAssertEqual(
+            feature.offerDetail,
+            "Turn answer history into one clear priority for every checkpoint."
+        )
         XCTAssertEqual(feature.feature, .adaptiveStudyAssist)
+        XCTAssertEqual(
+            MembershipPresentationContext.feature(.goalProfiles).offerLabel,
+            "More goals with Pro"
+        )
+    }
+
+    func testMembershipPaywallPresentationKeepsCheckoutAheadOfExtendedProof() {
+        let regularOrder: [MembershipPaywallSection] = [
+            .hero,
+            .offer,
+            .valueProof,
+            .benefits,
+            .notice,
+            .restore,
+            .legal
+        ]
+        let accessibleOrder: [MembershipPaywallSection] = [
+            .offer,
+            .valueProof,
+            .benefits,
+            .notice,
+            .restore,
+            .legal
+        ]
+        let regular = MembershipPaywallPresentation(isMember: false, accessibilitySize: false)
+        let accessible = MembershipPaywallPresentation(isMember: false, accessibilitySize: true)
+        let largeText = MembershipPaywallPresentation(
+            isMember: false,
+            accessibilitySize: false,
+            usesLargeText: true
+        )
+
+        XCTAssertEqual(regular.sectionOrder, regularOrder)
+        XCTAssertEqual(regular.checkoutPlacement, .sticky)
+        XCTAssertTrue(regular.laysOutPlansSideBySide)
+
+        XCTAssertEqual(accessible.sectionOrder, accessibleOrder)
+        XCTAssertEqual(accessible.checkoutPlacement, .afterPlanChoices)
+        XCTAssertFalse(accessible.laysOutPlansSideBySide)
+
+        XCTAssertEqual(largeText.sectionOrder, regularOrder)
+        XCTAssertEqual(largeText.checkoutPlacement, .sticky)
+        XCTAssertFalse(largeText.laysOutPlansSideBySide)
+
+        XCTAssertLessThan(
+            regularOrder.firstIndex(of: .offer) ?? .max,
+            regularOrder.firstIndex(of: .valueProof) ?? .max
+        )
+        XCTAssertLessThan(
+            accessibleOrder.firstIndex(of: .offer) ?? .max,
+            accessibleOrder.firstIndex(of: .valueProof) ?? .max
+        )
+    }
+
+    func testMembershipPaywallPresentationHidesCheckoutForMembers() {
+        let presentation = MembershipPaywallPresentation(isMember: true, accessibilitySize: true)
+
+        XCTAssertEqual(
+            presentation.sectionOrder,
+            [.hero, .memberManagement, .benefits, .notice, .legal]
+        )
+        XCTAssertEqual(presentation.checkoutPlacement, .hidden)
+        XCTAssertFalse(presentation.laysOutPlansSideBySide)
+        XCTAssertFalse(presentation.sectionOrder.contains(.offer))
+        XCTAssertFalse(presentation.sectionOrder.contains(.valueProof))
+        XCTAssertFalse(presentation.sectionOrder.contains(.restore))
+    }
+
+    func testMembershipOfferTrustCopyNamesAppleRenewalAndCancellation() {
+        XCTAssertEqual(
+            MembershipPaywallPresentation.billingTrustText,
+            "Apple billing · Auto-renews until canceled"
+        )
+        XCTAssertEqual(
+            MembershipPaywallPresentation.subscriptionDisclosureText,
+            "Payment is charged by Apple. Subscriptions renew automatically until canceled in App Store account settings."
+        )
+    }
+
+    func testMembershipPlanAccessibilityLabelKeepsOfferDetailsInReadingOrder() {
+        let option = MembershipPlanOption(
+            id: MembershipProductID.yearly,
+            title: "Annual",
+            displayPrice: "$29.99",
+            cadence: "per year",
+            detail: "$2.50 per month when billed annually.",
+            valueBadge: "Save 49%",
+            isRecommended: true
+        )
+
+        XCTAssertEqual(
+            option.accessibilityLabel,
+            "Annual plan. $29.99 per year. $2.50 per month when billed annually. Save 49%. Best value."
+        )
     }
 
     func testMembershipValuePreviewOverviewShowsTheCompleteWorkflowWithoutASpotlight() {

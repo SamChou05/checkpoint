@@ -84,6 +84,21 @@ enum MembershipPresentationContext: Equatable, Identifiable, Sendable {
         }
     }
 
+    var offerLabel: String {
+        switch self {
+        case .overview:
+            "Full Pro access"
+        case .feature(.goalProfiles):
+            "More goals with Pro"
+        case .feature(.freshQuestionGeneration):
+            "Ongoing practice with Pro"
+        case .feature(.largerQuestionBank):
+            "More variety with Pro"
+        case .feature(.adaptiveStudyAssist):
+            "Next Focus with Pro"
+        }
+    }
+
     var membershipHeadline: String {
         switch self {
         case .overview:
@@ -102,10 +117,68 @@ enum MembershipPresentationContext: Equatable, Identifiable, Sendable {
         }
     }
 
+    var offerDetail: String {
+        switch self {
+        case .overview:
+            "Up to \(ProductLimits.memberGoalProfileLimit) focused goals, fresh checkpoints, and one clear Next Focus."
+        case .feature(.goalProfiles):
+            "Keep progress, focus areas, and question levels separate for every goal."
+        case .feature(.freshQuestionGeneration):
+            "Keep new goal-aligned checkpoints ready after your first Free set."
+        case .feature(.largerQuestionBank):
+            "Get broader question variety so practice stays useful."
+        case .feature(.adaptiveStudyAssist):
+            "Turn answer history into one clear priority for every checkpoint."
+        }
+    }
+
     var feature: MembershipFeature? {
         guard case .feature(let feature) = self else { return nil }
         return feature
     }
+}
+
+enum MembershipPaywallSection: Equatable, Hashable, Sendable {
+    case hero
+    case offer
+    case memberManagement
+    case valueProof
+    case benefits
+    case notice
+    case restore
+    case legal
+}
+
+struct MembershipPaywallPresentation: Equatable, Sendable {
+    enum CheckoutPlacement: Equatable, Sendable {
+        case sticky
+        case afterPlanChoices
+        case hidden
+    }
+
+    let sectionOrder: [MembershipPaywallSection]
+    let checkoutPlacement: CheckoutPlacement
+    let laysOutPlansSideBySide: Bool
+
+    init(isMember: Bool, accessibilitySize: Bool, usesLargeText: Bool = false) {
+        if isMember {
+            sectionOrder = [.hero, .memberManagement, .benefits, .notice, .legal]
+            checkoutPlacement = .hidden
+            laysOutPlansSideBySide = false
+        } else {
+            sectionOrder = accessibilitySize
+                ? [.offer, .valueProof, .benefits, .notice, .restore, .legal]
+                : [.hero, .offer, .valueProof, .benefits, .notice, .restore, .legal]
+            checkoutPlacement = accessibilitySize ? .afterPlanChoices : .sticky
+            laysOutPlansSideBySide = !accessibilitySize && !usesLargeText
+        }
+    }
+
+    static let billingTrustText = "Apple billing · Auto-renews until canceled"
+    static let billingTrustAccessibilityLabel =
+        "Billing is handled by Apple. Subscription renews automatically until canceled."
+    static let subscriptionDisclosureText =
+        "Payment is charged by Apple. Subscriptions renew automatically until canceled in App Store account settings."
 }
 
 struct MembershipValuePreviewNode: Equatable, Identifiable, Sendable {

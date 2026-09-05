@@ -128,6 +128,21 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
         self.valueBadge = valueBadge
         self.isRecommended = isRecommended
     }
+
+    var accessibilityLabel: String {
+        var parts = [
+            "\(title) plan",
+            "\(displayPrice) \(cadence)",
+            detail.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+        ]
+        if let valueBadge {
+            parts.append(valueBadge)
+        }
+        if isRecommended {
+            parts.append("Best value")
+        }
+        return parts.joined(separator: ". ") + "."
+    }
 }
 
 enum MembershipPurchaseNotice: Equatable, Sendable {
@@ -222,7 +237,7 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         selectedPlan != nil && notice != nil
     }
 
-    func buttonTitle(accessibilitySize: Bool) -> String {
+    func buttonTitle(accessibilitySize _: Bool) -> String {
         if notice?.isPending == true {
             return "Awaiting approval"
         }
@@ -231,9 +246,6 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
         }
         guard let selectedPlan else {
             return "Reload App Store plans"
-        }
-        if accessibilitySize {
-            return "Subscribe — \(selectedPlan.displayPrice)"
         }
         return "Subscribe — \(selectedPlan.displayPrice) \(selectedPlan.cadence)"
     }

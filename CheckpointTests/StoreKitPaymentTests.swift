@@ -213,7 +213,7 @@ final class StoreKitPaymentTests: XCTestCase {
         )
     }
 
-    func testAccessibleCheckoutKeepsVisibleCTACompactAndVoiceOverBillingComplete() {
+    func testAccessibleCheckoutKeepsVisibleAndVoiceOverBillingComplete() {
         let presentation = MembershipCheckoutPresentation(
             selectedPlan: makeAnnualPlanOption(),
             isLoadingPlans: false,
@@ -224,7 +224,7 @@ final class StoreKitPaymentTests: XCTestCase {
 
         XCTAssertEqual(
             presentation.buttonTitle(accessibilitySize: true),
-            "Subscribe — $29.99"
+            "Subscribe — $29.99 per year"
         )
         XCTAssertEqual(
             presentation.buttonAccessibilityLabel,
