@@ -61,6 +61,129 @@ struct CheckpointAnswerReviewPresentation: Equatable {
     }
 }
 
+struct CheckpointTerminalAnswerReviewPresentation: Equatable {
+    let resultLabel: String
+    let resultSystemImage: String
+    let resultTone: CheckpointAnswerResultTone
+    let topic: String
+    let prompt: String
+    let answerLabel: String
+    let answerText: String
+    let referenceAnswerLabel: String?
+    let referenceAnswerText: String?
+    let explanation: String
+    let accessibilityLabel: String
+
+    let disclosureAccessibilityLabel = "Review last answer"
+    let collapsedDisclosureAccessibilityValue = "Collapsed"
+    let expandedDisclosureAccessibilityValue = "Expanded"
+    let collapsedDisclosureAccessibilityHint = "Shows the question prompt and explanation."
+    let expandedDisclosureAccessibilityHint = "Hides the question prompt and explanation."
+
+    init(
+        question: CheckpointQuestion,
+        answer: String,
+        result: AnswerResult
+    ) {
+        let resultPresentation = CheckpointAnswerResultPresentation(result: result)
+        resultLabel = resultPresentation.label
+        resultSystemImage = resultPresentation.systemImage
+        resultTone = resultPresentation.tone
+        topic = Self.nonEmptyText(question.topic) ?? "Checkpoint question"
+        prompt = Self.nonEmptyText(question.prompt)
+            ?? "This question's prompt is unavailable."
+        answerLabel = "Your answer"
+        answerText = Self.nonEmptyText(answer) ?? "No answer was recorded."
+        explanation = Self.nonEmptyText(question.explanation)
+            ?? "No explanation is available for this question."
+
+        if result == .correct {
+            referenceAnswerLabel = nil
+            referenceAnswerText = nil
+        } else {
+            let answerReview = CheckpointAnswerReviewPresentation(
+                question: question,
+                result: result
+            )
+            referenceAnswerLabel = answerReview?.answerLabel
+                ?? CheckpointAnswerReviewPresentation.answerLabel(for: question.format)
+            referenceAnswerText = answerReview.flatMap {
+                Self.nonEmptyText($0.answerText)
+            } ?? "No reference answer is available."
+        }
+
+        var accessibilityComponents = [
+            "Last answer",
+            resultPresentation.label,
+            "Your answer: \(answerText)"
+        ]
+        if let referenceAnswerLabel, let referenceAnswerText {
+            accessibilityComponents.append(
+                "\(referenceAnswerLabel): \(referenceAnswerText)"
+            )
+        }
+        accessibilityLabel = Self.accessibilitySentence(
+            from: accessibilityComponents
+        )
+    }
+
+    func disclosureAccessibilityValue(isExpanded: Bool) -> String {
+        isExpanded
+            ? expandedDisclosureAccessibilityValue
+            : collapsedDisclosureAccessibilityValue
+    }
+
+    func disclosureAccessibilityHint(isExpanded: Bool) -> String {
+        isExpanded
+            ? expandedDisclosureAccessibilityHint
+            : collapsedDisclosureAccessibilityHint
+    }
+
+    private static func nonEmptyText(_ text: String) -> String? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    private static func accessibilitySentence(from components: [String]) -> String {
+        components
+            .compactMap(nonEmptyText)
+            .map { component in
+                guard let lastCharacter = component.last,
+                      !".!?".contains(lastCharacter) else {
+                    return component
+                }
+                return component + "."
+            }
+            .joined(separator: " ")
+    }
+}
+
+enum CheckpointTerminalAnswerReviewMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct CheckpointTerminalAnswerReviewMotionPolicy {
+    let style: CheckpointTerminalAnswerReviewMotionStyle
+
+    init(reduceMotion: Bool, assistiveNavigationEnabled: Bool) {
+        style = reduceMotion || assistiveNavigationEnabled ? .identity : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var transition: AnyTransition {
+        switch style {
+        case .animated:
+            .opacity.combined(with: .move(edge: .top))
+        case .identity:
+            .identity
+        }
+    }
+}
+
 struct CheckpointExitConfirmation: Equatable {
     let title = "Leave checkpoint?"
     let message: String
@@ -115,6 +238,7 @@ struct CheckpointResolutionPresentation: Equatable {
     let scoreComponents: [String]
     let compactScoreComponents: [String]
     let detail: String
+    let compactDetail: String
     let systemImage: String
     let tone: CheckpointResolutionTone
     let actionTitle: String
@@ -165,10 +289,13 @@ struct CheckpointResolutionPresentation: Equatable {
             systemImage = didMeetStandard ? "checkmark.seal.fill" : "book.closed.fill"
             if didMeetStandard {
                 detail = "You met the practice standard. App protection did not change."
+                compactDetail = "Practice standard met. Protection unchanged."
             } else if endedBeforeFinalQuestion {
                 detail = "The \(safeRequiredCorrectAnswerCount)-of-\(safeQuestionCount) standard was no longer reachable. App protection did not change."
+                compactDetail = "Standard no longer reachable. Protection unchanged."
             } else {
                 detail = "You didn't meet the practice standard yet. App protection did not change."
+                compactDetail = "Practice standard not met. Protection unchanged."
             }
             actionTitle = "Finish"
             actionSystemImage = "checkmark.seal"
@@ -186,12 +313,18 @@ struct CheckpointResolutionPresentation: Equatable {
                 detail = protectionActionFailed
                     ? "You met the standard, but the break didn't start."
                     : "Your \(unlockMinutes)-minute break is ready to begin."
+                compactDetail = protectionActionFailed
+                    ? "Standard met, but the break didn't start."
+                    : "Your \(unlockMinutes)-minute break is ready."
                 actionTitle = "Begin \(unlockMinutes)-minute break"
                 actionSystemImage = "lock.open"
             case .stopBlocking:
                 detail = protectionActionFailed
                     ? "You met the standard, but app protection didn't change."
                     : "App protection is ready to turn off."
+                compactDetail = protectionActionFailed
+                    ? "Standard met, but protection didn't change."
+                    : "Protection is ready to turn off."
                 actionTitle = "Turn off protection"
                 actionSystemImage = "hand.raised"
             case .preview:
@@ -204,22 +337,36 @@ struct CheckpointResolutionPresentation: Equatable {
             let earlyResolutionDetail = endedBeforeFinalQuestion
                 ? "The \(safeRequiredCorrectAnswerCount)-of-\(safeQuestionCount) standard was no longer reachable. "
                 : ""
+            let earlyCompactDetail = endedBeforeFinalQuestion
+                ? "Standard no longer reachable. "
+                : ""
             switch failureProtectionOutcome {
             case .activeBreakContinues:
                 detail = earlyResolutionDetail
                     + "Your break continues. Check Home when it ends to confirm protection status."
+                compactDetail = earlyCompactDetail
+                    + "Break continues. Check Home when it ends."
             case .protectionRemainsOn:
                 detail = earlyResolutionDetail
                     + "Protection stays on. Try again in \(cooldownDurationText), and we'll revisit what you missed."
+                compactDetail = earlyCompactDetail
+                    + "Protection stays on; retry in \(cooldownDurationText)."
             case .protectionTurnedOffForUnavailableCheckpoint:
                 detail = earlyResolutionDetail
                     + "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
+                compactDetail = earlyCompactDetail
+                    + "Protection is off because a full checkpoint isn't ready. Prepare questions before restarting."
             case .protectionIsOff:
                 detail = earlyResolutionDetail
                     + "Protection is off. Review its status from Home before trying another checkpoint."
+                compactDetail = earlyCompactDetail
+                    + "Protection is off. Review Home before retrying."
             case nil:
                 detail = earlyResolutionDetail
                     + "The standard wasn't met. Return home to review protection before trying again."
+                compactDetail = endedBeforeFinalQuestion
+                    ? "Standard no longer reachable. Return home to review protection."
+                    : "Standard not met. Return home to review protection."
             }
             actionTitle = "Return home"
             actionSystemImage = "house"
@@ -239,6 +386,24 @@ struct CheckpointAttemptChromePresentation: Equatable {
     init(isResolved: Bool, usesAccessibilityTextSize: Bool) {
         showsProgressHeader = !isResolved
         primaryActionPlacement = usesAccessibilityTextSize ? .inline : .pinned
+    }
+}
+
+enum CheckpointTerminalLayoutDensity: Equatable {
+    case standard
+    case compact
+}
+
+struct CheckpointTerminalLayoutPolicy: Equatable {
+    static let compactMaximumViewportHeight: CGFloat = 760
+
+    let density: CheckpointTerminalLayoutDensity
+
+    init(viewportHeight: CGFloat, usesAccessibilityTextSize: Bool) {
+        density = !usesAccessibilityTextSize
+            && viewportHeight <= Self.compactMaximumViewportHeight
+            ? .compact
+            : .standard
     }
 }
 
@@ -377,6 +542,12 @@ struct CheckpointChoiceLayoutPolicy: Equatable {
 enum CheckpointChoiceLayoutElement: Hashable {
     case questionPanel
     case answerGroup
+    case terminalReviewCard
+    case terminalReviewToggle
+    case terminalReviewComparison
+    case terminalReviewDetails
+    case primaryActionBar
+    case inlinePrimaryAction
     case control(String)
     case indicator(String)
     case title(String)
@@ -806,10 +977,260 @@ struct CheckpointClearanceRunway: View {
     }
 }
 
+struct CheckpointTerminalAnswerReviewCard: View {
+    let presentation: CheckpointTerminalAnswerReviewPresentation
+    @Binding var isExpanded: Bool
+    let showsRemovalControl: Bool
+    let report: QuestionQualityReport?
+    let motionPolicy: CheckpointTerminalAnswerReviewMotionPolicy
+    let layoutDensity: CheckpointTerminalLayoutDensity
+    let presentQuestionQualityFeedback: () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        SectionPanel(contentPadding: cardContentPadding) {
+            VStack(alignment: .leading, spacing: 0) {
+                Button(action: toggleExpansion) {
+                    VStack(alignment: .leading, spacing: answerSectionSpacing) {
+                        disclosureHeader
+                        answerComparison
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(CheckpointPressButtonStyle(role: .surface))
+                .checkpointChoiceLayoutAnchor(.terminalReviewToggle)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(presentation.disclosureAccessibilityLabel)
+                .accessibilityValue(
+                    "\(presentation.disclosureAccessibilityValue(isExpanded: isExpanded)). "
+                        + presentation.accessibilityLabel
+                )
+                .accessibilityHint(
+                    presentation.disclosureAccessibilityHint(isExpanded: isExpanded)
+                )
+
+                if isExpanded {
+                    reviewDetails
+                        .padding(.top, 16)
+                        .transition(motionPolicy.transition)
+                        .checkpointChoiceLayoutAnchor(.terminalReviewDetails)
+                }
+            }
+        }
+        .checkpointChoiceLayoutAnchor(.terminalReviewCard)
+    }
+
+    @ViewBuilder
+    private var disclosureHeader: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                resultIdentity
+                disclosureCue
+            }
+        } else {
+            HStack(spacing: 10) {
+                resultIdentity
+                Spacer(minLength: 8)
+                disclosureCue
+            }
+        }
+    }
+
+    private var resultIdentity: some View {
+        HStack(spacing: 9) {
+            Image(systemName: presentation.resultSystemImage)
+                .font(.system(size: resultIconFontSize, weight: .bold))
+                .foregroundStyle(resultTint)
+                .frame(width: resultIconSide, height: resultIconSide)
+                .background(
+                    resultTint.opacity(0.12),
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("LAST ANSWER")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.8)
+                    .foregroundStyle(CheckpointTheme.muted)
+
+                Text(presentation.resultLabel)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(resultTint)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var disclosureCue: some View {
+        HStack(spacing: 6) {
+            Text(isExpanded ? "Hide" : "Review")
+                .font(.subheadline.weight(.semibold))
+
+            Image(systemName: "chevron.down")
+                .font(.caption.weight(.bold))
+                .rotationEffect(isExpanded ? .degrees(180) : .zero)
+        }
+        .foregroundStyle(CheckpointTheme.teal)
+        .frame(minHeight: 44)
+    }
+
+    private var answerComparison: some View {
+        VStack(alignment: .leading, spacing: answerComparisonSpacing) {
+            answerRow(
+                label: presentation.answerLabel,
+                text: presentation.answerText,
+                tint: resultTint
+            )
+
+            if let referenceAnswerLabel = presentation.referenceAnswerLabel,
+               let referenceAnswerText = presentation.referenceAnswerText {
+                Divider()
+                    .overlay(CheckpointTheme.hairline)
+
+                answerRow(
+                    label: referenceAnswerLabel,
+                    text: referenceAnswerText,
+                    tint: CheckpointTheme.teal
+                )
+            }
+        }
+        .padding(answerComparisonPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.panelRaised.opacity(0.68),
+            in: RoundedRectangle(
+                cornerRadius: CheckpointTheme.compactCornerRadius,
+                style: .continuous
+            )
+        )
+        .checkpointChoiceLayoutAnchor(.terminalReviewComparison)
+    }
+
+    private func answerRow(label: String, text: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(label.uppercased())
+                .font(.caption2.weight(.bold))
+                .tracking(0.55)
+                .foregroundStyle(tint)
+
+            Text(text)
+                .font(answerTextFont)
+                .foregroundStyle(CheckpointTheme.text)
+                .lineLimit(collapsedAnswerLineLimit)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var reviewDetails: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            VStack(alignment: .leading, spacing: 10) {
+                StatusBadge(text: presentation.topic, tint: CheckpointTheme.teal)
+
+                Text("QUESTION")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.7)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .accessibilityHidden(true)
+
+                Text(presentation.prompt)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Explanation")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+
+                Text(presentation.explanation)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(13)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                CheckpointTheme.panelRaised.opacity(0.68),
+                in: RoundedRectangle(
+                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                    style: .continuous
+                )
+            )
+
+            if showsRemovalControl {
+                QuestionRemovalControl(report: report) {
+                    presentQuestionQualityFeedback()
+                }
+            }
+        }
+    }
+
+    private var resultTint: Color {
+        switch presentation.resultTone {
+        case .success:
+            CheckpointTheme.teal
+        case .warning:
+            CheckpointTheme.amber
+        case .failure:
+            CheckpointTheme.coral
+        }
+    }
+
+    private var isCompact: Bool {
+        layoutDensity == .compact
+    }
+
+    private var cardContentPadding: CGFloat {
+        isCompact ? 10 : 16
+    }
+
+    private var answerSectionSpacing: CGFloat {
+        isCompact ? 6 : 12
+    }
+
+    private var answerComparisonSpacing: CGFloat {
+        isCompact ? 7 : 10
+    }
+
+    private var answerComparisonPadding: CGFloat {
+        isCompact ? 8 : 12
+    }
+
+    private var answerTextFont: Font {
+        isCompact ? .footnote.weight(.semibold) : .subheadline.weight(.semibold)
+    }
+
+    private var collapsedAnswerLineLimit: Int? {
+        isCompact && !isExpanded ? 2 : nil
+    }
+
+    private var resultIconSide: CGFloat {
+        isCompact ? 28 : 32
+    }
+
+    private var resultIconFontSize: CGFloat {
+        isCompact ? 15 : 17
+    }
+
+    private func toggleExpansion() {
+        withAnimation(motionPolicy.animation) {
+            isExpanded.toggle()
+        }
+    }
+}
+
 private struct CheckpointResolutionCard: View {
     let presentation: CheckpointResolutionPresentation
     let feedbackSequence: Int
     let reduceMotion: Bool
+    let layoutDensity: CheckpointTerminalLayoutDensity
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -817,16 +1238,21 @@ private struct CheckpointResolutionCard: View {
         CheckpointHeroSurface(
             glowColor: accent,
             glowOpacity: 0.11,
-            glowOffset: CGSize(width: 62, height: -78)
+            glowOffset: CGSize(width: 62, height: -78),
+            contentPadding: isCompact ? 13 : 18
         ) {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: isCompact ? 11 : 16) {
                 resolutionIdentity
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: isCompact ? 6 : 8) {
                     scoreBadges
 
-                    Text(presentation.detail)
-                        .font(.subheadline.weight(.medium))
+                    Text(isCompact ? presentation.compactDetail : presentation.detail)
+                        .font(
+                            isCompact
+                                ? .footnote.weight(.medium)
+                                : .subheadline.weight(.medium)
+                        )
                         .foregroundStyle(CheckpointTheme.heroMuted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -866,13 +1292,13 @@ private struct CheckpointResolutionCard: View {
 
     private func scoreBadge(_ text: String) -> some View {
         Text(text)
-            .font(.title3.weight(.bold))
+            .font(isCompact ? .headline.weight(.bold) : .title3.weight(.bold))
             .monospacedDigit()
             .foregroundStyle(CheckpointTheme.heroText)
             .multilineTextAlignment(.center)
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, 11)
-            .padding(.vertical, 7)
+            .padding(.horizontal, isCompact ? 9 : 11)
+            .padding(.vertical, isCompact ? 6 : 7)
             .background(
                 CheckpointTheme.heroSubtleFill,
                 in: RoundedRectangle(
@@ -891,6 +1317,12 @@ private struct CheckpointResolutionCard: View {
                 resultIcon
                 identityCopy
             }
+        } else if isCompact {
+            HStack(alignment: .center, spacing: 10) {
+                resultIcon
+                identityCopy
+                    .layoutPriority(1)
+            }
         } else {
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .center, spacing: 13) {
@@ -908,10 +1340,16 @@ private struct CheckpointResolutionCard: View {
 
     private var resultIcon: some View {
         Image(systemName: presentation.systemImage)
-            .font(.system(size: 20, weight: .bold))
+            .font(.system(size: isCompact ? 17 : 20, weight: .bold))
             .foregroundStyle(CheckpointTheme.ink)
-            .frame(width: 50, height: 50)
-            .background(accent, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .frame(width: isCompact ? 42 : 50, height: isCompact ? 42 : 50)
+            .background(
+                accent,
+                in: RoundedRectangle(
+                    cornerRadius: isCompact ? 13 : 15,
+                    style: .continuous
+                )
+            )
             .symbolEffect(.bounce, options: .nonRepeating, value: feedbackSequence)
             .symbolEffectsRemoved(reduceMotion)
             .fixedSize()
@@ -926,7 +1364,7 @@ private struct CheckpointResolutionCard: View {
                 .foregroundStyle(accent)
 
             Text(usesCompactResultCopy ? presentation.compactTitle : presentation.title)
-                .font(.title2.weight(.bold))
+                .font(isCompact ? .headline.weight(.bold) : .title2.weight(.bold))
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -942,13 +1380,17 @@ private struct CheckpointResolutionCard: View {
     }
 
     private var usesCompactResultCopy: Bool {
-        dynamicTypeSize >= .accessibility4
+        isCompact || dynamicTypeSize >= .accessibility4
     }
 
     private var displayedScoreComponents: [String] {
         usesCompactResultCopy
             ? presentation.compactScoreComponents
             : presentation.scoreComponents
+    }
+
+    private var isCompact: Bool {
+        layoutDensity == .compact
     }
 }
 
@@ -1021,6 +1463,7 @@ struct CheckpointAttemptView: View {
     @State private var isExitConfirmationPresented = false
     @State private var hasFinalizedCheckpoint = false
     @State private var hasCommittedResolutionAction = false
+    @State private var isTerminalAnswerReviewExpanded = false
     @State private var questionQualityFeedbackContext: QuestionQualityFeedbackContext?
     @FocusState private var isAnswerFieldFocused: Bool
     @AccessibilityFocusState private var accessibilityFocus: AttemptAccessibilityFocus?
@@ -1033,6 +1476,7 @@ struct CheckpointAttemptView: View {
         session: CheckpointSession,
         initialPresentation: CheckpointAttemptInitialPresentation = .unanswered,
         reduceMotionOverride: Bool? = nil,
+        initiallyExpandsTerminalReview: Bool = false,
         onEarnedBreak: @escaping @MainActor (EarnedBreakHandoffToken) -> Void = { _ in }
     ) {
         self.store = store
@@ -1040,6 +1484,9 @@ struct CheckpointAttemptView: View {
         self.session = session
         self.reduceMotionOverride = reduceMotionOverride
         self.onEarnedBreak = onEarnedBreak
+        _isTerminalAnswerReviewExpanded = State(
+            initialValue: initiallyExpandsTerminalReview
+        )
 
         switch initialPresentation {
         case .unanswered:
@@ -1128,82 +1575,109 @@ struct CheckpointAttemptView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollViewReader { scrollProxy in
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 18) {
-                        if chromePresentation.showsProgressHeader {
-                            progressHeader
-                                .id(AttemptScrollAnchor.question)
-                                .transition(resolutionMotionPolicy.progressTransition)
-                        }
+        GeometryReader { viewport in
+            let terminalLayoutPolicy = CheckpointTerminalLayoutPolicy(
+                viewportHeight: viewport.size.height,
+                usesAccessibilityTextSize: dynamicTypeSize.isAccessibilitySize
+            )
+            let usesCompactTerminalLayout = terminalAnswerReviewPresentation != nil
+                && terminalLayoutPolicy.density == .compact
 
-                        if let resolutionPresentation {
-                            CheckpointResolutionCard(
-                                presentation: resolutionPresentation,
-                                feedbackSequence: feedbackSequence,
-                                reduceMotion: reduceMotion
-                            )
-                            .id(CheckpointFeedbackDestination.resolution)
-                            .accessibilityFocused($accessibilityFocus, equals: .resolution)
-                            .transition(resolutionMotionPolicy.transition)
-
-                            if let protectionActionFailurePresentation {
-                                CheckpointProtectionActionFailureCard(
-                                    presentation: protectionActionFailurePresentation
-                                )
-                                .id(CheckpointFeedbackDestination.protectionActionFailure)
-                                .accessibilityFocused(
-                                    $accessibilityFocus,
-                                    equals: .protectionActionFailure
-                                )
-                                .transition(resolutionMotionPolicy.transition)
+            NavigationStack {
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        VStack(
+                            alignment: .leading,
+                            spacing: usesCompactTerminalLayout ? 12 : 18
+                        ) {
+                            if chromePresentation.showsProgressHeader {
+                                progressHeader
+                                    .id(AttemptScrollAnchor.question)
+                                    .transition(resolutionMotionPolicy.progressTransition)
                             }
 
-                            if chromePresentation.primaryActionPlacement == .inline {
+                            if let resolutionPresentation {
+                                CheckpointResolutionCard(
+                                    presentation: resolutionPresentation,
+                                    feedbackSequence: feedbackSequence,
+                                    reduceMotion: reduceMotion,
+                                    layoutDensity: terminalLayoutPolicy.density
+                                )
+                                .id(CheckpointFeedbackDestination.resolution)
+                                .accessibilityFocused($accessibilityFocus, equals: .resolution)
+                                .transition(resolutionMotionPolicy.transition)
+
+                                if let protectionActionFailurePresentation {
+                                    CheckpointProtectionActionFailureCard(
+                                        presentation: protectionActionFailurePresentation
+                                    )
+                                    .id(CheckpointFeedbackDestination.protectionActionFailure)
+                                    .accessibilityFocused(
+                                        $accessibilityFocus,
+                                        equals: .protectionActionFailure
+                                    )
+                                    .transition(resolutionMotionPolicy.transition)
+                                }
+
+                                if chromePresentation.primaryActionPlacement == .inline {
+                                    inlinePrimaryActionButton
+                                }
+                            }
+
+                            if let terminalAnswerReviewPresentation {
+                                CheckpointTerminalAnswerReviewCard(
+                                    presentation: terminalAnswerReviewPresentation,
+                                    isExpanded: $isTerminalAnswerReviewExpanded,
+                                    showsRemovalControl: QuestionQualityFeedbackPresentation
+                                        .supportsRemoval(in: session.purpose),
+                                    report: currentQuestionReport,
+                                    motionPolicy: terminalAnswerReviewMotionPolicy,
+                                    layoutDensity: terminalLayoutPolicy.density,
+                                    presentQuestionQualityFeedback: presentQuestionQualityFeedback
+                                )
+                                .transition(.identity)
+                            } else {
+                                questionPanel
+                                    .id(question.id)
+                                    .transition(questionTransition)
+                            }
+
+                            if chromePresentation.primaryActionPlacement == .inline,
+                               resolutionPresentation == nil {
                                 inlinePrimaryActionButton
                             }
                         }
-
-                        questionPanel
-                            .id(question.id)
-                            .transition(questionTransition)
-
-                        if chromePresentation.primaryActionPlacement == .inline,
-                           resolutionPresentation == nil {
-                            inlinePrimaryActionButton
+                        .padding(.horizontal, 20)
+                        .padding(.top, usesCompactTerminalLayout ? 10 : 16)
+                        .padding(.bottom, 12)
+                    }
+                    .scrollDismissesKeyboard(.interactively)
+                    .onChange(of: currentQuestionIndex) { _, _ in
+                        scrollToQuestion(using: scrollProxy)
+                    }
+                    .onChange(of: feedbackSequence) { _, sequence in
+                        revealFeedback(sequence: sequence, using: scrollProxy)
+                    }
+                    .onChange(of: protectionActionErrorSequence) { _, sequence in
+                        revealProtectionActionFailure(sequence: sequence, using: scrollProxy)
+                    }
+                }
+                .checkpointScreenBackground()
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    if chromePresentation.primaryActionPlacement == .pinned {
+                        primaryActionBar
+                    }
+                }
+                .navigationTitle("Checkpoint")
+                .toolbarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") {
+                            closeCheckpoint()
                         }
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .accessibilityHint(closeAccessibilityHint)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                    .padding(.bottom, 12)
-                }
-                .scrollDismissesKeyboard(.interactively)
-                .onChange(of: currentQuestionIndex) { _, _ in
-                    scrollToQuestion(using: scrollProxy)
-                }
-                .onChange(of: feedbackSequence) { _, sequence in
-                    revealFeedback(sequence: sequence, using: scrollProxy)
-                }
-                .onChange(of: protectionActionErrorSequence) { _, sequence in
-                    revealProtectionActionFailure(sequence: sequence, using: scrollProxy)
-                }
-            }
-            .checkpointScreenBackground()
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                if chromePresentation.primaryActionPlacement == .pinned {
-                    primaryActionBar
-                }
-            }
-            .navigationTitle("Checkpoint")
-            .toolbarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") {
-                        closeCheckpoint()
-                    }
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .accessibilityHint(closeAccessibilityHint)
                 }
             }
         }
@@ -1379,6 +1853,7 @@ struct CheckpointAttemptView: View {
                 .padding(.bottom, 10)
         }
         .background(.ultraThinMaterial)
+        .checkpointChoiceLayoutAnchor(.primaryActionBar)
     }
 
     private var primaryActionButton: some View {
@@ -1398,6 +1873,7 @@ struct CheckpointAttemptView: View {
         primaryActionButton
             .padding(.top, 2)
             .padding(.bottom, 12)
+            .checkpointChoiceLayoutAnchor(.inlinePrimaryAction)
     }
 
     private var question: CheckpointQuestion {
@@ -1455,6 +1931,22 @@ struct CheckpointAttemptView: View {
 
     private var resolutionMotionPolicy: CheckpointResolutionMotionPolicy {
         CheckpointResolutionMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var terminalAnswerReviewPresentation: CheckpointTerminalAnswerReviewPresentation? {
+        guard let checkedAnswer, checkedAnswer.shouldFinish else { return nil }
+        return CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: answer,
+            result: checkedAnswer.result
+        )
+    }
+
+    private var terminalAnswerReviewMotionPolicy: CheckpointTerminalAnswerReviewMotionPolicy {
+        CheckpointTerminalAnswerReviewMotionPolicy(
+            reduceMotion: reduceMotion,
+            assistiveNavigationEnabled: voiceOverEnabled || switchControlEnabled
+        )
     }
 
     private var choiceSelectionPolicy: CheckpointChoiceSelectionPolicy {

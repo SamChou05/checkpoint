@@ -5,6 +5,203 @@ import XCTest
 
 final class CheckpointAttemptRenderingTests: XCTestCase {
     @MainActor
+    func testTerminalAnswerReviewPresentationKeepsTheResultAndCriticalComparisonVisible() {
+        let goal = makeGoal()
+        let correctAnswer = "Validate the invariant before committing state"
+        let submittedAnswer = "Commit dependent state before validation"
+        let question = makeQuestion(
+            goal: goal,
+            index: 1,
+            topic: "State modeling",
+            prompt: "Which choice preserves the system invariant?",
+            expectedAnswer: correctAnswer,
+            choices: [
+                correctAnswer,
+                submittedAnswer,
+                "Skip validation",
+                "Reset every dependency",
+            ],
+            explanation: "Validate first so dependent state never observes an invalid transition."
+        )
+
+        let incorrect = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: submittedAnswer,
+            result: .incorrect
+        )
+        XCTAssertEqual(incorrect.resultLabel, "Not quite")
+        XCTAssertEqual(incorrect.resultSystemImage, "xmark.circle.fill")
+        XCTAssertEqual(incorrect.resultTone, .failure)
+        XCTAssertEqual(incorrect.topic, "State modeling")
+        XCTAssertEqual(incorrect.prompt, "Which choice preserves the system invariant?")
+        XCTAssertEqual(incorrect.answerLabel, "Your answer")
+        XCTAssertEqual(incorrect.answerText, submittedAnswer)
+        XCTAssertEqual(incorrect.referenceAnswerLabel, "Correct answer")
+        XCTAssertEqual(incorrect.referenceAnswerText, correctAnswer)
+        XCTAssertEqual(
+            incorrect.explanation,
+            "Validate first so dependent state never observes an invalid transition."
+        )
+        XCTAssertEqual(
+            incorrect.accessibilityLabel,
+            "Last answer. Not quite. Your answer: \(submittedAnswer). Correct answer: \(correctAnswer)."
+        )
+
+        let correct = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: correctAnswer,
+            result: .correct
+        )
+        XCTAssertEqual(correct.resultLabel, "Correct")
+        XCTAssertEqual(correct.resultTone, .success)
+        XCTAssertNil(correct.referenceAnswerLabel)
+        XCTAssertNil(correct.referenceAnswerText)
+        XCTAssertEqual(
+            correct.accessibilityLabel,
+            "Last answer. Correct. Your answer: \(correctAnswer)."
+        )
+    }
+
+    @MainActor
+    func testTerminalAnswerReviewPresentationSupportsEveryFormatAndLegacyFallbacks() {
+        let goal = makeGoal()
+        var question = makeQuestion(
+            goal: goal,
+            index: 1,
+            prompt: "Name the bounded recovery strategy.",
+            expectedAnswer: "Use a capped exponential backoff",
+            choices: [],
+            explanation: "A cap prevents retry work from growing without bound."
+        )
+        question.format = .shortAnswer
+
+        let shortAnswer = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: "Retry immediately",
+            result: .partial
+        )
+        XCTAssertEqual(shortAnswer.resultLabel, "Almost")
+        XCTAssertEqual(shortAnswer.referenceAnswerLabel, "Expected answer")
+        XCTAssertEqual(shortAnswer.referenceAnswerText, "Use a capped exponential backoff")
+
+        question.format = .codeTrace
+        let codeTrace = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: "unboundedRetry()",
+            result: .unclear
+        )
+        XCTAssertEqual(codeTrace.resultLabel, "Needs review")
+        XCTAssertEqual(codeTrace.referenceAnswerLabel, "Expected answer")
+
+        question.format = .reflection
+        let reflection = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: "I would cap retries and surface a recovery action.",
+            result: .incorrect
+        )
+        XCTAssertEqual(reflection.referenceAnswerLabel, "Example response")
+        XCTAssertEqual(reflection.referenceAnswerText, "Use a capped exponential backoff")
+
+        question.topic = "  "
+        question.prompt = "\n"
+        question.expectedAnswer = " "
+        question.explanation = "\t"
+        let legacy = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: " ",
+            result: .unclear
+        )
+        XCTAssertEqual(legacy.topic, "Checkpoint question")
+        XCTAssertEqual(legacy.prompt, "This question's prompt is unavailable.")
+        XCTAssertEqual(legacy.answerText, "No answer was recorded.")
+        XCTAssertEqual(legacy.referenceAnswerLabel, "Example response")
+        XCTAssertEqual(legacy.referenceAnswerText, "No reference answer is available.")
+        XCTAssertEqual(
+            legacy.explanation,
+            "No explanation is available for this question."
+        )
+        XCTAssertFalse(legacy.accessibilityLabel.contains(".."))
+    }
+
+    @MainActor
+    func testTerminalAnswerReviewDisclosureMotionAndAccessibilityStayPredictable() {
+        let standard = CheckpointTerminalAnswerReviewMotionPolicy(
+            reduceMotion: false,
+            assistiveNavigationEnabled: false
+        )
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertNotNil(standard.animation)
+
+        for policy in [
+            CheckpointTerminalAnswerReviewMotionPolicy(
+                reduceMotion: true,
+                assistiveNavigationEnabled: false
+            ),
+            CheckpointTerminalAnswerReviewMotionPolicy(
+                reduceMotion: false,
+                assistiveNavigationEnabled: true
+            ),
+            CheckpointTerminalAnswerReviewMotionPolicy(
+                reduceMotion: true,
+                assistiveNavigationEnabled: true
+            ),
+        ] {
+            XCTAssertEqual(policy.style, .identity)
+            XCTAssertNil(policy.animation)
+        }
+
+        let question = makeQuestion(goal: makeGoal(), index: 1)
+        let presentation = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: question.expectedAnswer,
+            result: .correct
+        )
+        XCTAssertEqual(presentation.disclosureAccessibilityLabel, "Review last answer")
+        XCTAssertEqual(presentation.disclosureAccessibilityValue(isExpanded: false), "Collapsed")
+        XCTAssertEqual(presentation.disclosureAccessibilityValue(isExpanded: true), "Expanded")
+        XCTAssertEqual(
+            presentation.disclosureAccessibilityHint(isExpanded: false),
+            "Shows the question prompt and explanation."
+        )
+        XCTAssertEqual(
+            presentation.disclosureAccessibilityHint(isExpanded: true),
+            "Hides the question prompt and explanation."
+        )
+    }
+
+    @MainActor
+    func testTerminalLayoutPolicyProtectsShortResultsWithoutCompressingAccessibilityCopy() {
+        XCTAssertEqual(
+            CheckpointTerminalLayoutPolicy(
+                viewportHeight: 568,
+                usesAccessibilityTextSize: false
+            ).density,
+            .compact
+        )
+        XCTAssertEqual(
+            CheckpointTerminalLayoutPolicy(
+                viewportHeight: CheckpointTerminalLayoutPolicy.compactMaximumViewportHeight,
+                usesAccessibilityTextSize: false
+            ).density,
+            .compact
+        )
+        XCTAssertEqual(
+            CheckpointTerminalLayoutPolicy(
+                viewportHeight: CheckpointTerminalLayoutPolicy.compactMaximumViewportHeight + 1,
+                usesAccessibilityTextSize: false
+            ).density,
+            .standard
+        )
+        XCTAssertEqual(
+            CheckpointTerminalLayoutPolicy(
+                viewportHeight: 568,
+                usesAccessibilityTextSize: true
+            ).density,
+            .standard
+        )
+    }
+
+    @MainActor
     func testResolutionPresentationLeadsWithCheckpointOutcomeAndTruthfulScore() {
         let passAfterMiss = CheckpointResolutionPresentation(
             purpose: .temporaryUnlock,
@@ -23,6 +220,7 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         XCTAssertEqual(passAfterMiss.scoreComponents, ["4 of 5 correct"])
         XCTAssertEqual(passAfterMiss.compactScoreComponents, ["Score 4 / 5"])
         XCTAssertEqual(passAfterMiss.detail, "Your 30-minute break is ready to begin.")
+        XCTAssertEqual(passAfterMiss.compactDetail, "Your 30-minute break is ready.")
         XCTAssertEqual(passAfterMiss.systemImage, "checkmark.seal.fill")
         XCTAssertEqual(passAfterMiss.tone, .success)
         XCTAssertEqual(passAfterMiss.actionTitle, "Begin 30-minute break")
@@ -52,6 +250,10 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             failureAfterCorrectAnswer.detail,
             "The 4-of-5 standard was no longer reachable. Protection stays on. Try again in 5 minutes, and we'll revisit what you missed."
         )
+        XCTAssertEqual(
+            failureAfterCorrectAnswer.compactDetail,
+            "Standard no longer reachable. Protection stays on; retry in 5 minutes."
+        )
         XCTAssertEqual(failureAfterCorrectAnswer.systemImage, "arrow.counterclockwise.circle.fill")
         XCTAssertEqual(failureAfterCorrectAnswer.tone, .needsPractice)
         XCTAssertEqual(failureAfterCorrectAnswer.actionTitle, "Return home")
@@ -77,6 +279,10 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             preview.detail,
             "You didn't meet the practice standard yet. App protection did not change."
         )
+        XCTAssertEqual(
+            preview.compactDetail,
+            "Practice standard not met. Protection unchanged."
+        )
         XCTAssertEqual(preview.actionTitle, "Finish")
         XCTAssertEqual(preview.actionSystemImage, "checkmark.seal")
 
@@ -95,6 +301,10 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             earlyPreview.detail,
             "The 4-of-5 standard was no longer reachable. App protection did not change."
         )
+        XCTAssertEqual(
+            earlyPreview.compactDetail,
+            "Standard no longer reachable. Protection unchanged."
+        )
 
         let unavailable = CheckpointResolutionPresentation(
             purpose: .stopBlocking,
@@ -110,6 +320,10 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         XCTAssertEqual(
             unavailable.detail,
             "Protection was turned off because another full checkpoint isn't ready. Prepare questions before starting it again."
+        )
+        XCTAssertEqual(
+            unavailable.compactDetail,
+            "Protection is off because a full checkpoint isn't ready. Prepare questions before restarting."
         )
         XCTAssertEqual(unavailable.actionTitle, "Return home")
 
@@ -128,6 +342,7 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             activeBreak.detail,
             "Your break continues. Check Home when it ends to confirm protection status."
         )
+        XCTAssertEqual(activeBreak.compactDetail, "Break continues. Check Home when it ends.")
 
         let actionFailure = CheckpointProtectionActionFailurePresentation(
             purpose: .temporaryUnlock,
@@ -153,6 +368,10 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         XCTAssertEqual(
             actionFailureResolution.detail,
             "You met the standard, but the break didn't start."
+        )
+        XCTAssertEqual(
+            actionFailureResolution.compactDetail,
+            "Standard met, but the break didn't start."
         )
     }
 
@@ -621,6 +840,29 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                 )
             ),
             CheckpointAttemptRenderFixture(
+                name: "attempt-pass-final-miss-compact-expanded-light",
+                width: 320,
+                height: 760,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .terminal(
+                            questionIndex: 4,
+                            correctAnswerCount: 4,
+                            answer: questions[4].choices[1],
+                            result: .incorrect,
+                            didPass: true
+                        ),
+                        reduceMotionOverride: false,
+                        initiallyExpandsTerminalReview: true
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
                 name: "attempt-pass-final-miss-full-light",
                 width: 393,
                 height: 1_400,
@@ -643,6 +885,29 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                 )
             ),
             CheckpointAttemptRenderFixture(
+                name: "attempt-pass-final-miss-full-expanded-light",
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .terminal(
+                            questionIndex: 4,
+                            correctAnswerCount: 4,
+                            answer: questions[4].choices[1],
+                            result: .incorrect,
+                            didPass: true
+                        ),
+                        reduceMotionOverride: false,
+                        initiallyExpandsTerminalReview: true
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
                 name: "attempt-pass-action-failure-compact-light",
                 width: 320,
                 height: 760,
@@ -660,6 +925,28 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                             result: .incorrect,
                             didPass: true,
                             actionErrorMessage: "The break could not start. Protection is still on; try again."
+                        ),
+                        reduceMotionOverride: false
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
+                name: "attempt-fail-early-resolution-longest-compact-dark",
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .terminal(
+                            questionIndex: 2,
+                            correctAnswerCount: 1,
+                            answer: questions[2].choices[1],
+                            result: .incorrect,
+                            didPass: false
                         ),
                         reduceMotionOverride: false
                     )
@@ -732,6 +1019,29 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                 )
             ),
             CheckpointAttemptRenderFixture(
+                name: "attempt-fail-early-resolution-narrow-accessibility5-expanded-dark-reduced",
+                width: 320,
+                height: 2_600,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    CheckpointAttemptView(
+                        store: store,
+                        workflow: workflow,
+                        session: session,
+                        initialPresentation: .terminal(
+                            questionIndex: 2,
+                            correctAnswerCount: 1,
+                            answer: questions[2].expectedAnswer,
+                            result: .correct,
+                            didPass: false
+                        ),
+                        reduceMotionOverride: true,
+                        initiallyExpandsTerminalReview: true
+                    )
+                )
+            ),
+            CheckpointAttemptRenderFixture(
                 name: "attempt-fail-early-resolution-accessibility-full-dark-reduced",
                 width: 393,
                 height: 2_200,
@@ -777,6 +1087,10 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             )
         ]
 
+        var capturedFramesByFixture: [
+            String: [CheckpointChoiceLayoutElement: CGRect]
+        ] = [:]
+
         for fixture in fixtures {
             let choiceLayoutCapture = CheckpointAttemptChoiceLayoutCapture()
             let image = HostedViewRenderer.image(
@@ -795,6 +1109,7 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
 
             XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
             XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+            capturedFramesByFixture[fixture.name] = choiceLayoutCapture.frames
 
             switch fixture.name {
             case "attempt-selected-answer-full-light":
@@ -805,6 +1120,10 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                     viewportWidth: fixture.width,
                     fixtureName: fixture.name
                 )
+                assertTerminalRecapIsAbsent(
+                    choiceLayoutCapture,
+                    fixtureName: fixture.name
+                )
             case "attempt-selected-answer-narrow-accessibility5-dark-reduced":
                 try assertChoiceLayout(
                     choiceLayoutCapture,
@@ -813,8 +1132,18 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                     viewportWidth: fixture.width,
                     fixtureName: fixture.name
                 )
+                assertTerminalRecapIsAbsent(
+                    choiceLayoutCapture,
+                    fixtureName: fixture.name
+                )
             default:
-                break
+                try assertTerminalRecapReplacesQuizControls(
+                    choiceLayoutCapture,
+                    choices: questions[0].choices,
+                    isExpanded: fixture.name.contains("expanded"),
+                    expectsPinnedAction: !fixture.dynamicTypeSize.isAccessibilitySize,
+                    fixtureName: fixture.name
+                )
             }
 
             let attachment = XCTAttachment(image: image)
@@ -822,6 +1151,253 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             attachment.lifetime = .keepAlways
             add(attachment)
         }
+
+        try assertCompactTerminalComparisonClearsPinnedAction(
+            frames: XCTUnwrap(
+                capturedFramesByFixture["attempt-pass-final-miss-compact-light"]
+            ),
+            fixtureName: "attempt-pass-final-miss-compact-light"
+        )
+        try assertCompactTerminalComparisonClearsPinnedAction(
+            frames: XCTUnwrap(
+                capturedFramesByFixture[
+                    "attempt-fail-early-resolution-longest-compact-dark"
+                ]
+            ),
+            fixtureName: "attempt-fail-early-resolution-longest-compact-dark"
+        )
+        try assertExpandedTerminalRecapGrowsFromCollapsedState(
+            collapsedFrames: XCTUnwrap(
+                capturedFramesByFixture["attempt-pass-final-miss-compact-light"]
+            ),
+            expandedFrames: XCTUnwrap(
+                capturedFramesByFixture["attempt-pass-final-miss-compact-expanded-light"]
+            ),
+            fixtureName: "attempt-pass-final-miss-compact"
+        )
+        try assertExpandedTerminalRecapGrowsFromCollapsedState(
+            collapsedFrames: XCTUnwrap(
+                capturedFramesByFixture[
+                    "attempt-fail-early-resolution-narrow-accessibility5-dark-reduced"
+                ]
+            ),
+            expandedFrames: XCTUnwrap(
+                capturedFramesByFixture[
+                    "attempt-fail-early-resolution-narrow-accessibility5-expanded-dark-reduced"
+                ]
+            ),
+            fixtureName: "attempt-fail-early-resolution-narrow-accessibility5"
+        )
+    }
+
+    @MainActor
+    private func assertTerminalRecapReplacesQuizControls(
+        _ capture: CheckpointAttemptChoiceLayoutCapture,
+        choices: [String],
+        isExpanded: Bool,
+        expectsPinnedAction: Bool,
+        fixtureName: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let frames = capture.frames
+        let card = try XCTUnwrap(
+            frames[.terminalReviewCard],
+            "\(fixtureName): missing terminal review card",
+            file: file,
+            line: line
+        )
+        let toggle = try XCTUnwrap(
+            frames[.terminalReviewToggle],
+            "\(fixtureName): missing terminal review disclosure",
+            file: file,
+            line: line
+        )
+        let comparison = try XCTUnwrap(
+            frames[.terminalReviewComparison],
+            "\(fixtureName): missing terminal answer comparison",
+            file: file,
+            line: line
+        )
+        let expandedCard = card.insetBy(dx: -0.75, dy: -0.75)
+
+        XCTAssertTrue(
+            expandedCard.contains(toggle),
+            "\(fixtureName): disclosure escaped its review card",
+            file: file,
+            line: line
+        )
+        XCTAssertTrue(
+            expandedCard.contains(comparison),
+            "\(fixtureName): answer comparison escaped its review card",
+            file: file,
+            line: line
+        )
+        XCTAssertGreaterThanOrEqual(
+            toggle.height,
+            44,
+            "\(fixtureName): disclosure must preserve a 44-point target",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            frames[.terminalReviewDetails] != nil,
+            isExpanded,
+            "\(fixtureName): detail visibility must follow disclosure state",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            frames[.primaryActionBar] != nil,
+            expectsPinnedAction,
+            "\(fixtureName): resolved action placement changed unexpectedly",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            frames[.inlinePrimaryAction] != nil,
+            !expectsPinnedAction,
+            "\(fixtureName): resolved inline action placement changed unexpectedly",
+            file: file,
+            line: line
+        )
+        XCTAssertNil(
+            frames[.questionPanel],
+            "\(fixtureName): terminal state retained the full question panel",
+            file: file,
+            line: line
+        )
+        XCTAssertNil(
+            frames[.answerGroup],
+            "\(fixtureName): terminal state retained the full answer group",
+            file: file,
+            line: line
+        )
+
+        for choice in choices {
+            XCTAssertNil(
+                frames[.control(choice)],
+                "\(fixtureName): terminal state retained choice control \(choice)",
+                file: file,
+                line: line
+            )
+            XCTAssertNil(frames[.indicator(choice)], file: file, line: line)
+            XCTAssertNil(frames[.title(choice)], file: file, line: line)
+        }
+    }
+
+    @MainActor
+    private func assertTerminalRecapIsAbsent(
+        _ capture: CheckpointAttemptChoiceLayoutCapture,
+        fixtureName: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertNil(
+            capture.frames[.terminalReviewCard],
+            "\(fixtureName): nonterminal state unexpectedly showed a terminal recap",
+            file: file,
+            line: line
+        )
+        XCTAssertNil(
+            capture.frames[.terminalReviewToggle],
+            "\(fixtureName): nonterminal state unexpectedly showed a recap disclosure",
+            file: file,
+            line: line
+        )
+    }
+
+    @MainActor
+    private func assertCompactTerminalComparisonClearsPinnedAction(
+        frames: [CheckpointChoiceLayoutElement: CGRect],
+        fixtureName: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let comparison = try XCTUnwrap(
+            frames[.terminalReviewComparison],
+            file: file,
+            line: line
+        )
+        let card = try XCTUnwrap(
+            frames[.terminalReviewCard],
+            file: file,
+            line: line
+        )
+        let primaryActionBar = try XCTUnwrap(
+            frames[.primaryActionBar],
+            file: file,
+            line: line
+        )
+
+        XCTAssertLessThanOrEqual(
+            comparison.maxY,
+            primaryActionBar.minY + 0.75,
+            "\(fixtureName): pinned action obscured the critical answer comparison",
+            file: file,
+            line: line
+        )
+        XCTAssertLessThanOrEqual(
+            card.maxY,
+            primaryActionBar.minY + 0.75,
+            "\(fixtureName): pinned action overlapped the collapsed recap",
+            file: file,
+            line: line
+        )
+    }
+
+    @MainActor
+    private func assertExpandedTerminalRecapGrowsFromCollapsedState(
+        collapsedFrames: [CheckpointChoiceLayoutElement: CGRect],
+        expandedFrames: [CheckpointChoiceLayoutElement: CGRect],
+        fixtureName: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let collapsedCard = try XCTUnwrap(
+            collapsedFrames[.terminalReviewCard],
+            file: file,
+            line: line
+        )
+        let expandedCard = try XCTUnwrap(
+            expandedFrames[.terminalReviewCard],
+            file: file,
+            line: line
+        )
+        let collapsedToggle = try XCTUnwrap(
+            collapsedFrames[.terminalReviewToggle],
+            file: file,
+            line: line
+        )
+        let expandedToggle = try XCTUnwrap(
+            expandedFrames[.terminalReviewToggle],
+            file: file,
+            line: line
+        )
+
+        XCTAssertGreaterThan(
+            expandedCard.height,
+            collapsedCard.height + 1,
+            "\(fixtureName): expanding did not reveal additional review content",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            expandedCard.width,
+            collapsedCard.width,
+            accuracy: 1,
+            "\(fixtureName): expansion changed the recap width",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            expandedToggle.width,
+            collapsedToggle.width,
+            accuracy: 1,
+            "\(fixtureName): expansion changed the disclosure width",
+            file: file,
+            line: line
+        )
     }
 
     @MainActor
@@ -1204,10 +1780,16 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         ]
 
         for fixture in fixtures {
+            let choiceLayoutCapture = CheckpointAttemptChoiceLayoutCapture()
             let image = HostedViewRenderer.image(
-                for: fixture.content
-                    .environment(\.colorScheme, fixture.colorScheme)
-                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                for: CheckpointAttemptChoiceLayoutScene(
+                    content: AnyView(
+                        fixture.content
+                            .environment(\.colorScheme, fixture.colorScheme)
+                            .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+                    ),
+                    capture: choiceLayoutCapture
+                ),
                 width: fixture.width,
                 height: fixture.height,
                 colorScheme: fixture.colorScheme
@@ -1215,6 +1797,36 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
 
             XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
             XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            switch fixture.name {
+            case "attempt-reviewed-incorrect-compact-light":
+                assertTerminalRecapIsAbsent(
+                    choiceLayoutCapture,
+                    fixtureName: fixture.name
+                )
+                try assertChoiceLayout(
+                    choiceLayoutCapture,
+                    titles: multipleChoiceQuestions[1].choices,
+                    style: .inline,
+                    viewportWidth: fixture.width,
+                    fixtureName: fixture.name
+                )
+            case "attempt-standard-secured-long-accessibility5-dark-reduced":
+                assertTerminalRecapIsAbsent(
+                    choiceLayoutCapture,
+                    fixtureName: fixture.name
+                )
+                try assertChoiceLayout(
+                    choiceLayoutCapture,
+                    titles: stopBlockingQuestions[1].choices,
+                    style: .stacked,
+                    viewportWidth: fixture.width,
+                    fixtureName: fixture.name
+                )
+            default:
+                break
+            }
+
             let attachment = XCTAttachment(image: image)
             attachment.name = fixture.name
             attachment.lifetime = .keepAlways

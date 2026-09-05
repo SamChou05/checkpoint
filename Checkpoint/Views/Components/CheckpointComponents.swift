@@ -817,10 +817,16 @@ struct SecondaryActionButton: View {
 
 struct SectionPanel<Content: View>: View {
     var title: String?
+    var contentPadding: CGFloat
     @ViewBuilder var content: Content
 
-    init(_ title: String? = nil, @ViewBuilder content: () -> Content) {
+    init(
+        _ title: String? = nil,
+        contentPadding: CGFloat = 16,
+        @ViewBuilder content: () -> Content
+    ) {
         self.title = title
+        self.contentPadding = contentPadding
         self.content = content()
     }
 
@@ -835,7 +841,7 @@ struct SectionPanel<Content: View>: View {
 
             content
         }
-        .padding(16)
+        .padding(contentPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
