@@ -865,26 +865,40 @@ struct SettingsPlanPresentation: Equatable, Sendable {
     let state: SettingsPlanState
     let proActivity: SettingsProActivityPresentation?
     let activePlanKind: MembershipPlanKind?
+    let upgradePlanOption: MembershipPlanOption?
 
     init(
         membershipTier: MembershipTier,
         purchaseNotice: MembershipPurchaseNotice?,
         hasUnresolvedPurchase: Bool = false,
         proActivity: SettingsProActivityPresentation? = nil,
-        activePlanSnapshot: MembershipActivePlanSnapshot? = nil
+        activePlanSnapshot: MembershipActivePlanSnapshot? = nil,
+        upgradePlanOption: MembershipPlanOption? = nil
     ) {
+        let resolvedState: SettingsPlanState
         if membershipTier == .member {
-            state = .pro
+            resolvedState = .pro
         } else if hasUnresolvedPurchase,
                   purchaseNotice == .previousPurchaseUnconfirmed {
-            state = .unconfirmedPurchase
+            resolvedState = .unconfirmedPurchase
         } else if hasUnresolvedPurchase || purchaseNotice?.isPending == true {
-            state = .pendingPurchase
+            resolvedState = .pendingPurchase
         } else {
-            state = .free
+            resolvedState = .free
         }
-        self.proActivity = state == .pro ? proActivity : nil
-        activePlanKind = state == .pro ? activePlanSnapshot?.planKind : nil
+        state = resolvedState
+        self.proActivity = resolvedState == .pro ? proActivity : nil
+        activePlanKind = resolvedState == .pro ? activePlanSnapshot?.planKind : nil
+        let isCatalogUnavailable: Bool
+        switch purchaseNotice {
+        case .catalogUnavailable:
+            isCatalogUnavailable = true
+        default:
+            isCatalogUnavailable = false
+        }
+        self.upgradePlanOption = resolvedState == .free && !isCatalogUnavailable
+            ? upgradePlanOption
+            : nil
     }
 
     var planName: String {
@@ -988,7 +1002,11 @@ struct SettingsPlanPresentation: Equatable, Sendable {
     var accessibilityValue: String {
         switch state {
         case .free:
-            "Current plan. App protection for one focused goal. Checkpoint Pro adds up to \(ProductLimits.memberGoalProfileLimit) goals, fresh checkpoints, and adaptive Next Focus."
+            if let upgradePlanOption {
+                "Current plan. App protection for one focused goal. Checkpoint Pro adds up to \(ProductLimits.memberGoalProfileLimit) goals, fresh checkpoints, and adaptive Next Focus. App Store price. \(upgradePlanOption.accessibilityLabel)"
+            } else {
+                "Current plan. App protection for one focused goal. Checkpoint Pro adds up to \(ProductLimits.memberGoalProfileLimit) goals, fresh checkpoints, and adaptive Next Focus."
+            }
         case .pendingPurchase:
             "Waiting for the App Store to complete this purchase. Pro unlocks automatically when it finishes. You may need to take action in the App Store."
         case .unconfirmedPurchase:
@@ -1055,12 +1073,17 @@ struct SettingsPlanMotionPolicy: Equatable {
             .identity
         }
     }
+
+    var offerTransition: AnyTransition {
+        style == .animated ? .opacity : .identity
+    }
 }
 
 enum SettingsPlanLayoutElement: Hashable {
     case card
     case proActivity
     case proActivityRow(SettingsProActivityID)
+    case upgradeOffer
     case action
 }
 
@@ -1154,6 +1177,7 @@ struct SettingsPlanCard: View {
         .accessibilityHint(presentation.accessibilityHint)
         .animation(motionPolicy.animation, value: presentation.visualStateKey)
         .animation(motionPolicy.animation, value: presentation.proActivity)
+        .animation(motionPolicy.animation, value: presentation.upgradePlanOption)
         .onAppear {
             triggerSymbolEffectIfNeeded()
         }
@@ -1180,7 +1204,103 @@ struct SettingsPlanCard: View {
                     .foregroundStyle(CheckpointTheme.heroMuted)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.interpolate)
+
+                if let upgradePlanOption = presentation.upgradePlanOption {
+                    upgradeOffer(upgradePlanOption)
+                        .transition(motionPolicy.offerTransition)
+                }
             }
+        }
+    }
+
+    private func upgradeOffer(_ option: MembershipPlanOption) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 8) {
+                    upgradeOfferLabel
+                    Spacer(minLength: 8)
+                    recommendedOfferBadge(option)
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    upgradeOfferLabel
+                    recommendedOfferBadge(option)
+                }
+            }
+
+            upgradeOfferCharge(option)
+
+            Text(option.detail)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let valueBadge = option.valueBadge {
+                Text(valueBadge)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.mint)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(13)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.heroSubtleFill,
+            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
+        }
+        .reportSettingsPlanLayoutFrame(.upgradeOffer, using: layoutReporter)
+        .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private func upgradeOfferCharge(_ option: MembershipPlanOption) -> some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(option.title)
+                    .font(.subheadline.weight(.semibold))
+
+                Text(option.displayPrice)
+                    .font(.title3.weight(.bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                    .allowsTightening(true)
+
+                Text(option.cadence)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+            }
+            .foregroundStyle(CheckpointTheme.heroText)
+        } else {
+            Text(option.chargeSummary)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var upgradeOfferLabel: some View {
+        Text("APP STORE PRICE")
+            .font(.caption2.weight(.bold))
+            .tracking(0.7)
+            .foregroundStyle(CheckpointTheme.heroMuted)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    @ViewBuilder
+    private func recommendedOfferBadge(_ option: MembershipPlanOption) -> some View {
+        if option.isRecommended {
+            Text("BEST VALUE")
+                .font(.caption2.weight(.bold))
+                .tracking(0.3)
+                .foregroundStyle(CheckpointTheme.mint)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .background(CheckpointTheme.mint.opacity(0.12), in: Capsule())
         }
     }
 

@@ -113,6 +113,8 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertEqual(presentation.defaultPlanID, MembershipProductID.yearly)
 
         let annual = try XCTUnwrap(presentation.planOptions.first)
+        XCTAssertEqual(presentation.defaultPlanOption, annual)
+        XCTAssertEqual(annual.chargeSummary, "Annual · $29.99 per year")
         XCTAssertEqual(annual.detail, "$2.50 per month when billed annually.")
         XCTAssertEqual(annual.valueBadge, "Save 49%")
         XCTAssertTrue(annual.isRecommended)
@@ -155,6 +157,10 @@ final class StoreKitPaymentTests: XCTestCase {
 
         for presentation in [mismatchedCurrency, noDiscount] {
             XCTAssertEqual(presentation.defaultPlanID, MembershipProductID.monthly)
+            let monthly = try XCTUnwrap(
+                presentation.planOptions.first { $0.id == MembershipProductID.monthly }
+            )
+            XCTAssertEqual(presentation.defaultPlanOption, monthly)
             let annual = try XCTUnwrap(
                 presentation.planOptions.first { $0.id == MembershipProductID.yearly }
             )
@@ -195,6 +201,10 @@ final class StoreKitPaymentTests: XCTestCase {
             presentation.resolvedSelection(currentID: MembershipProductID.monthly),
             MembershipProductID.yearly
         )
+
+        let emptyPresentation = MembershipCatalogPresentation(storeProducts: [])
+        XCTAssertNil(emptyPresentation.defaultPlanID)
+        XCTAssertNil(emptyPresentation.defaultPlanOption)
     }
 
     func testPendingPurchasePlanWinsSelectionAndMissingPlanFallsBackSafely() throws {

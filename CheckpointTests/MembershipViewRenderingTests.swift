@@ -1728,7 +1728,10 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertNil(store.pendingMembershipFeature)
     }
 
-    func testSettingsPlanPresentationIsStateHonestAndPrioritizesProAccess() {
+    func testSettingsPlanPresentationIsStateHonestAndPrioritizesProAccess() throws {
+        let annualOption = try XCTUnwrap(
+            try makePlanOptions().first { $0.id == MembershipProductID.yearly }
+        )
         let proActivity = SettingsProActivityPresentation(
             hasGoal: true,
             hasReadyCheckpoint: true,
@@ -1744,25 +1747,38 @@ final class MembershipViewRenderingTests: XCTestCase {
         let free = SettingsPlanPresentation(
             membershipTier: .starter,
             purchaseNotice: nil,
-            proActivity: proActivity
+            proActivity: proActivity,
+            upgradePlanOption: annualOption
+        )
+        let freeWithoutCatalog = SettingsPlanPresentation(
+            membershipTier: .starter,
+            purchaseNotice: nil
+        )
+        let freeWithUnavailableCatalog = SettingsPlanPresentation(
+            membershipTier: .starter,
+            purchaseNotice: .catalogUnavailable("Could not load App Store plans yet."),
+            upgradePlanOption: annualOption
         )
         let pending = SettingsPlanPresentation(
             membershipTier: .starter,
             purchaseNotice: .pendingApproval,
             hasUnresolvedPurchase: true,
-            proActivity: proActivity
+            proActivity: proActivity,
+            upgradePlanOption: annualOption
         )
         let unconfirmed = SettingsPlanPresentation(
             membershipTier: .starter,
             purchaseNotice: .previousPurchaseUnconfirmed,
             hasUnresolvedPurchase: true,
-            proActivity: proActivity
+            proActivity: proActivity,
+            upgradePlanOption: annualOption
         )
         let pro = SettingsPlanPresentation(
             membershipTier: .member,
             purchaseNotice: .pendingApproval,
             hasUnresolvedPurchase: true,
-            proActivity: proActivity
+            proActivity: proActivity,
+            upgradePlanOption: annualOption
         )
 
         XCTAssertEqual(free.state, .free)
@@ -1777,6 +1793,16 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(free.accessibilityLabel, "Checkpoint Free")
         XCTAssertEqual(free.accessibilityHint, "Opens Checkpoint Pro plans.")
         XCTAssertNil(free.proActivity)
+        XCTAssertEqual(free.upgradePlanOption, annualOption)
+        XCTAssertTrue(free.accessibilityValue.contains("App Store price"))
+        XCTAssertTrue(free.accessibilityValue.contains(annualOption.accessibilityLabel))
+        XCTAssertNil(freeWithoutCatalog.upgradePlanOption)
+        XCTAssertFalse(freeWithoutCatalog.accessibilityValue.contains("App Store price"))
+        XCTAssertEqual(freeWithUnavailableCatalog.state, .free)
+        XCTAssertNil(freeWithUnavailableCatalog.upgradePlanOption)
+        XCTAssertFalse(
+            freeWithUnavailableCatalog.accessibilityValue.contains(annualOption.displayPrice)
+        )
 
         XCTAssertEqual(pending.state, .pendingPurchase)
         XCTAssertEqual(pending.badgeText, "PENDING")
@@ -1793,6 +1819,8 @@ final class MembershipViewRenderingTests: XCTestCase {
         )
         XCTAssertEqual(pending.accessibilityHint, "Opens purchase status and plan options.")
         XCTAssertNil(pending.proActivity)
+        XCTAssertNil(pending.upgradePlanOption)
+        XCTAssertFalse(pending.accessibilityValue.contains(annualOption.displayPrice))
 
         XCTAssertEqual(unconfirmed.state, .unconfirmedPurchase)
         XCTAssertEqual(unconfirmed.badgeText, "UNCONFIRMED")
@@ -1807,6 +1835,8 @@ final class MembershipViewRenderingTests: XCTestCase {
             "Unconfirmed App Store purchase. It may still complete."
         )
         XCTAssertNil(unconfirmed.proActivity)
+        XCTAssertNil(unconfirmed.upgradePlanOption)
+        XCTAssertFalse(unconfirmed.accessibilityValue.contains(annualOption.displayPrice))
 
         XCTAssertEqual(pro.state, .pro)
         XCTAssertEqual(pro.badgeText, "PRO ACTIVE")
@@ -1819,6 +1849,8 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(pro.accessibilityLabel, "Checkpoint Pro")
         XCTAssertEqual(pro.accessibilityHint, "Opens plan and billing.")
         XCTAssertEqual(pro.proActivity, proActivity)
+        XCTAssertNil(pro.upgradePlanOption)
+        XCTAssertFalse(pro.accessibilityValue.contains(annualOption.displayPrice))
         XCTAssertTrue(pro.accessibilityValue.contains("Next Focus: Caught up for now"))
         XCTAssertTrue(pro.accessibilityValue.contains("Goal Lanes: 2 of 5 in use"))
     }
@@ -2001,18 +2033,52 @@ final class MembershipViewRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testSettingsPlanCardRendersAcrossKeyLayoutsAndStates() {
+    func testSettingsPlanCardRendersAcrossKeyLayoutsAndStates() throws {
+        let annualOption = try XCTUnwrap(
+            try makePlanOptions().first { $0.id == MembershipProductID.yearly }
+        )
+        let longAnnualOption = try XCTUnwrap(
+            try makeLongLocalizedPlanOptions().first {
+                $0.id == MembershipProductID.yearly
+            }
+        )
         let fixtures = [
             SettingsPlanRenderFixture(
                 name: "settings-plan-free-light",
                 presentation: SettingsPlanPresentation(
                     membershipTier: .starter,
-                    purchaseNotice: nil
+                    purchaseNotice: nil,
+                    upgradePlanOption: annualOption
                 ),
                 width: 393,
                 height: 852,
                 colorScheme: .light,
                 dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-free-long-localized-compact-dark",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: nil,
+                    upgradePlanOption: longAnnualOption
+                ),
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-free-long-localized-compact-accessibility3",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .starter,
+                    purchaseNotice: nil,
+                    upgradePlanOption: longAnnualOption
+                ),
+                width: 320,
+                height: 1_800,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility3,
+                reduceMotion: true
             ),
             SettingsPlanRenderFixture(
                 name: "settings-plan-pending-dark",
@@ -2124,7 +2190,8 @@ final class MembershipViewRenderingTests: XCTestCase {
                 name: "settings-plan-free-accessibility5-reduce-motion",
                 presentation: SettingsPlanPresentation(
                     membershipTier: .starter,
-                    purchaseNotice: nil
+                    purchaseNotice: nil,
+                    upgradePlanOption: annualOption
                 ),
                 width: 393,
                 height: 1_600,
@@ -2175,6 +2242,31 @@ final class MembershipViewRenderingTests: XCTestCase {
                         action.height,
                         43.5,
                         "\(fixture.name) plan action is below the 44-point affordance"
+                    )
+                }
+
+                if fixture.presentation.upgradePlanOption != nil {
+                    let upgradeOffer = try? XCTUnwrap(
+                        layoutCapture.frames[.upgradeOffer],
+                        fixture.name
+                    )
+                    if let card, let action, let upgradeOffer {
+                        XCTAssertGreaterThan(upgradeOffer.width, 0, fixture.name)
+                        XCTAssertGreaterThan(upgradeOffer.height, 0, fixture.name)
+                        XCTAssertTrue(
+                            card.insetBy(dx: -0.5, dy: -0.5).contains(upgradeOffer),
+                            "\(fixture.name) price preview escaped the plan card"
+                        )
+                        XCTAssertLessThanOrEqual(
+                            upgradeOffer.maxY,
+                            action.minY + 0.5,
+                            "\(fixture.name) price preview overlaps the plan action"
+                        )
+                    }
+                } else {
+                    XCTAssertNil(
+                        layoutCapture.frames[.upgradeOffer],
+                        "\(fixture.name) exposed a price preview outside the Free state"
                     )
                 }
 

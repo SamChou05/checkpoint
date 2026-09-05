@@ -1174,7 +1174,10 @@ struct SettingsView: View {
                 purchaseNotice: purchaseController.purchaseNotice,
                 hasUnresolvedPurchase: purchaseController.hasUnresolvedPurchase,
                 proActivity: store.isMember ? proActivityPresentation : nil,
-                activePlanSnapshot: purchaseController.activePlanSnapshot
+                activePlanSnapshot: purchaseController.activePlanSnapshot,
+                upgradePlanOption: MembershipCatalogPresentation(
+                    products: purchaseController.products
+                ).defaultPlanOption
             )
         ) {
             store.requestMembershipOverview()

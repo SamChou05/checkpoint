@@ -129,6 +129,10 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
         self.isRecommended = isRecommended
     }
 
+    var chargeSummary: String {
+        "\(title) · \(displayPrice) \(cadence)"
+    }
+
     var accessibilityLabel: String {
         var parts = [
             "\(title) plan",
@@ -586,6 +590,11 @@ enum MembershipSubscriptionManagementScope: Equatable, Sendable {
 struct MembershipCatalogPresentation: Equatable, Sendable {
     let planOptions: [MembershipPlanOption]
     let defaultPlanID: String?
+
+    var defaultPlanOption: MembershipPlanOption? {
+        guard let defaultPlanID else { return nil }
+        return planOptions.first { $0.id == defaultPlanID }
+    }
 
     init(products: [Product]) {
         self.init(storeProducts: products.compactMap(MembershipStoreProduct.init(product:)))
