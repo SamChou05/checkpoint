@@ -10,7 +10,7 @@ struct WeeklyPracticeDay: Identifiable, Equatable, Sendable {
     var id: Date { date }
 
     var hasActivity: Bool {
-        questionsAnswered > 0 || checkpointsCleared > 0 || earnedBreakMinutes > 0
+        questionsAnswered > 0 || checkpointsCleared > 0
     }
 
     var accuracyPercent: Int? {
@@ -184,9 +184,7 @@ struct WeeklyMetricsCalculator {
                 in: scopedAttempts,
                 during: week
             ),
-            activePracticeDays: Set(
-                weeklyAttempts.map { calendar.startOfDay(for: $0.createdAt) }
-            ).count,
+            activePracticeDays: practiceDays.lazy.filter(\.hasActivity).count,
             previousWeekQuestions: scopedAttempts.lazy.filter {
                 previousComparablePeriod.contains($0.createdAt)
             }.count
@@ -287,7 +285,6 @@ struct WeeklyMetricsCalculator {
 
         return (strongest.topic, review.topic)
     }
-
 }
 
 private func weeklyDurationText(minutes: Int) -> String {
@@ -302,4 +299,22 @@ private func weeklyDurationText(minutes: Int) -> String {
         return "\(hours)h"
     }
     return "\(remainingMinutes)m"
+}
+
+func weeklyAccessibleDurationText(minutes: Int) -> String {
+    let normalizedMinutes = max(0, minutes)
+    let hours = normalizedMinutes / 60
+    let remainingMinutes = normalizedMinutes % 60
+    var parts: [String] = []
+
+    if hours > 0 {
+        parts.append("\(hours) \(hours == 1 ? "hour" : "hours")")
+    }
+    if remainingMinutes > 0 || parts.isEmpty {
+        parts.append(
+            "\(remainingMinutes) "
+                + (remainingMinutes == 1 ? "minute" : "minutes")
+        )
+    }
+    return parts.joined(separator: " and ")
 }

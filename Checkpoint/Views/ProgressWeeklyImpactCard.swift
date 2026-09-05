@@ -15,13 +15,12 @@ struct ProgressWeeklyImpactDayPresentation: Identifiable, Equatable {
 }
 
 enum ProgressMomentumState: Equatable {
-    case earnedBreak
-    case practiceOnly
+    case learning
+    case checkpointOnly
     case empty
 }
 
 enum ProgressMomentumMetricKind: Hashable {
-    case earnedBreakTime
     case checkpointsCleared
     case questionsAnswered
     case accuracy
@@ -51,6 +50,7 @@ struct ProgressMomentumPresentation: Equatable {
     let supportingMetrics: [ProgressMomentumMetric]
     let streakBadgeText: String?
     let trendText: String?
+    let breakAccessText: String?
     let summaryText: String
     let footerText: String
     let days: [ProgressWeeklyImpactDayPresentation]
@@ -80,13 +80,17 @@ struct ProgressMomentumPresentation: Equatable {
         let practiceDays = min(max(0, details.activePracticeDays), 7)
         let streak = max(0, metrics.checkpointStreakDays)
 
-        if clears > 0 {
-            state = .earnedBreak
-        } else if questions > 0 {
-            state = .practiceOnly
+        if questions > 0 {
+            state = .learning
+        } else if clears > 0 {
+            state = .checkpointOnly
         } else {
             state = .empty
         }
+
+        breakAccessText = clears > 0 && minutes > 0
+            ? "Break access · \(details.earnedBreakTimeText) granted"
+            : nil
 
         let dateLabelFormatter = WeeklyReviewDateLabelFormatter(
             calendar: calendar,
@@ -123,27 +127,7 @@ struct ProgressMomentumPresentation: Equatable {
         )
 
         switch state {
-        case .earnedBreak:
-            if minutes > 0 {
-                primaryMetric = ProgressMomentumMetric(
-                    kind: .earnedBreakTime,
-                    valueText: details.earnedBreakTimeText,
-                    labelText: "BREAK TIME EARNED",
-                    detailText: nil,
-                    accessibilityText: Self.accessibleDuration(minutes)
-                        + " of break time earned this week"
-                )
-            } else {
-                let noun = clears == 1 ? "CHECKPOINT CLEARED" : "CHECKPOINTS CLEARED"
-                primaryMetric = ProgressMomentumMetric(
-                    kind: .checkpointsCleared,
-                    valueText: "\(clears)",
-                    labelText: noun,
-                    detailText: nil,
-                    accessibilityText: Self.checkpointAccessibilityText(clears)
-                )
-            }
-        case .practiceOnly:
+        case .learning:
             primaryMetric = ProgressMomentumMetric(
                 kind: .questionsAnswered,
                 valueText: "\(questions)",
@@ -151,22 +135,20 @@ struct ProgressMomentumPresentation: Equatable {
                 detailText: nil,
                 accessibilityText: Self.questionAccessibilityText(questions)
             )
+        case .checkpointOnly:
+            let label = clears == 1 ? "CHECKPOINT CLEARED" : "CHECKPOINTS CLEARED"
+            primaryMetric = ProgressMomentumMetric(
+                kind: .checkpointsCleared,
+                valueText: "\(clears)",
+                labelText: label,
+                detailText: nil,
+                accessibilityText: Self.checkpointAccessibilityText(clears)
+            )
         case .empty:
             primaryMetric = nil
         }
 
         var metricCandidates: [ProgressMomentumMetric] = []
-        if clears > 0, primaryMetric?.kind != .checkpointsCleared {
-            metricCandidates.append(
-                ProgressMomentumMetric(
-                    kind: .checkpointsCleared,
-                    valueText: "\(clears)",
-                    labelText: "CLEARED",
-                    detailText: nil,
-                    accessibilityText: Self.checkpointAccessibilityText(clears)
-                )
-            )
-        }
         if let accuracy {
             metricCandidates.append(
                 ProgressMomentumMetric(
@@ -190,7 +172,18 @@ struct ProgressMomentumPresentation: Equatable {
                 )
             )
         }
-        if practiceDays > 0 {
+        if clears > 0, primaryMetric?.kind != .checkpointsCleared {
+            metricCandidates.append(
+                ProgressMomentumMetric(
+                    kind: .checkpointsCleared,
+                    valueText: "\(clears)",
+                    labelText: clears == 1 ? "CHECKPOINT CLEARED" : "CHECKPOINTS CLEARED",
+                    detailText: nil,
+                    accessibilityText: Self.checkpointAccessibilityText(clears)
+                )
+            )
+        }
+        if practiceDays > 0, questions > 0 {
             let noun = practiceDays == 1 ? "day" : "days"
             metricCandidates.append(
                 ProgressMomentumMetric(
@@ -212,31 +205,29 @@ struct ProgressMomentumPresentation: Equatable {
             : nil
 
         switch state {
-        case .earnedBreak where questions > 0:
-            summaryText = "\(questions) \(Self.questionNoun(questions)) · \(accuracy ?? 0)% correct"
-        case .earnedBreak where minutes == 0:
+        case .learning where clears > 0:
+            let checkpointNoun = clears == 1 ? "checkpoint" : "checkpoints"
+            summaryText = "\(questions) \(Self.questionNoun(questions)) answered · \(clears) \(checkpointNoun) cleared"
+        case .learning:
+            summaryText = "\(questions) \(Self.questionNoun(questions)) answered this week"
+        case .checkpointOnly:
             summaryText = clears == 1
                 ? "1 checkpoint cleared this week"
                 : "\(clears) checkpoints cleared this week"
-        case .earnedBreak where clears > 0:
-            summaryText = clears == 1
-                ? "1 break earned this week"
-                : "\(clears) breaks earned this week"
-        case .earnedBreak:
-            summaryText = "Break time earned this week"
-        case .practiceOnly:
-            summaryText = "Your answers are shaping this week’s learning signal."
         case .empty:
             summaryText = "Your next checkpoint starts this week’s momentum."
         }
 
-        if let trendText {
-            footerText = state == .earnedBreak
-                ? "\(questions) \(Self.questionNoun(questions)) · \(trendText)"
-                : trendText
-        } else {
-            footerText = summaryText
+        var footerParts: [String] = []
+        if let breakAccessText {
+            footerParts.append(breakAccessText)
         }
+        if let trendText {
+            footerParts.append(trendText)
+        }
+        footerText = footerParts.isEmpty
+            ? summaryText
+            : footerParts.joined(separator: " · ")
 
         if state == .empty {
             accessibilityValue = "No checkpoint activity this week. " + summaryText
@@ -246,6 +237,12 @@ struct ProgressMomentumPresentation: Equatable {
                 accessibilityParts.append(primaryMetric.accessibilityText)
             }
             accessibilityParts.append(contentsOf: supportingMetrics.map(\.accessibilityText))
+            if clears > 0, minutes > 0 {
+                accessibilityParts.append(
+                    weeklyAccessibleDurationText(minutes: minutes)
+                        + " of break access granted this week"
+                )
+            }
             if streak > 1 {
                 accessibilityParts.append(Self.streakAccessibilityText(streak))
             }
@@ -257,15 +254,27 @@ struct ProgressMomentumPresentation: Equatable {
                 day, presentation -> String? in
                 guard presentation.state == .active else { return nil }
                 let weekday = dateLabelFormatter.wideWeekday(for: day.date)
+                var dayParts: [String] = []
                 if day.questionsAnswered > 0 {
-                    return "\(weekday), \(day.questionsAnswered) "
-                        + Self.questionNoun(day.questionsAnswered)
+                    dayParts.append(
+                        "\(day.questionsAnswered) "
+                            + Self.questionNoun(day.questionsAnswered)
+                    )
                 }
                 if day.checkpointsCleared > 0 {
                     let noun = day.checkpointsCleared == 1 ? "checkpoint" : "checkpoints"
-                    return "\(weekday), \(day.checkpointsCleared) \(noun) cleared"
+                    dayParts.append("\(day.checkpointsCleared) \(noun) cleared")
                 }
-                return "\(weekday), \(day.earnedBreakTimeText) of break time earned"
+                if day.checkpointsCleared > 0, day.earnedBreakMinutes > 0 {
+                    dayParts.append(
+                        weeklyAccessibleDurationText(
+                            minutes: day.earnedBreakMinutes
+                        )
+                            + " of break access granted"
+                    )
+                }
+                guard !dayParts.isEmpty else { return nil }
+                return "\(weekday), " + dayParts.joined(separator: ", ")
             }
             if !activeDayDetails.isEmpty {
                 accessibilityParts.append(
@@ -291,22 +300,6 @@ struct ProgressMomentumPresentation: Equatable {
 
     private static func streakAccessibilityText(_ count: Int) -> String {
         "\(count)-day checkpoint streak"
-    }
-
-    private static func accessibleDuration(_ minutes: Int) -> String {
-        let normalizedMinutes = max(0, minutes)
-        let hours = normalizedMinutes / 60
-        let remainingMinutes = normalizedMinutes % 60
-        var parts: [String] = []
-        if hours > 0 {
-            parts.append("\(hours) \(hours == 1 ? "hour" : "hours")")
-        }
-        if remainingMinutes > 0 || parts.isEmpty {
-            parts.append(
-                "\(remainingMinutes) \(remainingMinutes == 1 ? "minute" : "minutes")"
-            )
-        }
-        return parts.joined(separator: " and ")
     }
 }
 
@@ -572,8 +565,9 @@ struct ProgressMomentumCard: View {
                 .font(.caption2.weight(.bold))
                 .tracking(0.4)
                 .foregroundStyle(CheckpointTheme.heroMuted)
-                .lineLimit(2)
-                .minimumScaleFactor(0.78)
+                .lineLimit(metric.labelText.contains(" ") ? 2 : 1)
+                .minimumScaleFactor(0.65)
+                .allowsTightening(true)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)

@@ -148,6 +148,58 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(details.recoveredQuestions, 0)
     }
 
+    @MainActor
+    func testWeeklyImpactCountsCheckpointOnlyDatesAsPracticeDays() throws {
+        let goal = makeGoal()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let asOf = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(
+                    year: 2026,
+                    month: 9,
+                    day: 3,
+                    hour: 12
+                )
+            )
+        )
+        let week = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: asOf)
+        )
+        let checkpointOnlyDate = week.start.addingTimeInterval(3_600)
+        let questionDate = week.start.addingTimeInterval(86_400 + 3_600)
+        let calculator = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(
+                    goal: goal,
+                    result: .correct,
+                    createdAt: questionDate
+                )
+            ],
+            unlockEvents: [
+                UnlockEvent(
+                    goalID: goal.id,
+                    minutes: 15,
+                    createdAt: checkpointOnlyDate
+                )
+            ],
+            asOf: asOf,
+            calendar: calendar
+        )
+
+        let details = calculator.impactDetails(goalID: goal.id)
+
+        XCTAssertEqual(details.activePracticeDays, 2)
+        XCTAssertEqual(details.practiceDays.filter(\.hasActivity).count, 2)
+        XCTAssertEqual(
+            details.practiceDays.filter {
+                $0.questionsAnswered == 0 && $0.checkpointsCleared == 1
+            }.count,
+            1
+        )
+    }
+
     func testWeeklyDateLabelsUseTheInjectedTimeZone() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
@@ -463,6 +515,13 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         var mixed = base
         mixed.earnedBreakMinutes = 75
         XCTAssertEqual(mixed.earnedBreakTimeText, "1h 15m")
+        XCTAssertEqual(weeklyAccessibleDurationText(minutes: 0), "0 minutes")
+        XCTAssertEqual(weeklyAccessibleDurationText(minutes: 1), "1 minute")
+        XCTAssertEqual(weeklyAccessibleDurationText(minutes: 60), "1 hour")
+        XCTAssertEqual(
+            weeklyAccessibleDurationText(minutes: 75),
+            "1 hour and 15 minutes"
+        )
     }
 
     @MainActor
@@ -794,17 +853,131 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertTrue(presentation.items[0].title.contains("profile 2"))
         XCTAssertTrue(presentation.items[1].title.contains("profile 1"))
         XCTAssertTrue(presentation.items[0].isCurrentGoal)
-        XCTAssertEqual(presentation.items[0].questionShare, 1.0 / 3.0, accuracy: 0.001)
-        XCTAssertEqual(presentation.items[1].questionShare, 2.0 / 3.0, accuracy: 0.001)
-        XCTAssertEqual(presentation.items[2].questionShare, 0, accuracy: 0.001)
+        XCTAssertEqual(presentation.shareBasis, .questionsAnswered)
+        XCTAssertEqual(
+            presentation.shareDescription,
+            "Bars compare each goal's share of this week's questions. Choose one to inspect its own signals."
+        )
+        XCTAssertEqual(presentation.items[0].impactShare, 1.0 / 3.0, accuracy: 0.001)
+        XCTAssertEqual(presentation.items[1].impactShare, 2.0 / 3.0, accuracy: 0.001)
+        XCTAssertEqual(presentation.items[2].impactShare, 0, accuracy: 0.001)
         XCTAssertEqual(presentation.items[2].activityText, "No checkpoint activity this week")
         XCTAssertEqual(presentation.items[2].supportingText, "Ready for your next checkpoint")
         XCTAssertTrue(presentation.items[0].accessibilityLabel.contains("current goal"))
+        XCTAssertTrue(presentation.items[0].supportingText.contains("practice day"))
+        XCTAssertFalse(presentation.items[0].supportingText.contains("active day"))
+        XCTAssertTrue(presentation.items[0].supportingText.contains("1 checkpoint cleared"))
+        XCTAssertTrue(presentation.items[0].supportingText.contains("Break access · 15m granted"))
+        XCTAssertTrue(
+            presentation.items[0].accessibilityLabel.contains(
+                "15 minutes of break access granted"
+            )
+        )
         XCTAssertEqual(
-            presentation.items.map(\.questionShare).reduce(0, +),
+            presentation.items.map(\.impactShare).reduce(0, +),
             1,
             accuracy: 0.001
         )
+    }
+
+    @MainActor
+    func testWeeklyGoalPulseUsesClearedCheckpointShareWhenThereAreNoQuestions() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let now = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 3, hour: 12))
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: now))
+        let firstGoal = makeGoal()
+        let currentGoal = Goal(
+            title: "Prepare for a systems interview",
+            deadline: now.addingTimeInterval(86_400 * 30),
+            category: .codingInterview,
+            currentLevel: "Advanced",
+            focusAreas: "reliability",
+            preferredQuestionStyle: .shortAnswer,
+            createdAt: now.addingTimeInterval(-100)
+        )
+        let firstClear = week.start.addingTimeInterval(3_600)
+        let unlockEvents = [
+            UnlockEvent(goalID: firstGoal.id, minutes: 20, createdAt: firstClear),
+            UnlockEvent(goalID: firstGoal.id, minutes: 25, createdAt: firstClear.addingTimeInterval(60)),
+            UnlockEvent(goalID: currentGoal.id, minutes: 15, createdAt: firstClear.addingTimeInterval(120))
+        ]
+        let goals = [firstGoal, currentGoal]
+        let calculator = WeeklyMetricsCalculator(
+            attempts: [],
+            unlockEvents: unlockEvents,
+            asOf: now,
+            calendar: calendar
+        )
+        let metrics = goals.map { goal in
+            calculator.summary(
+                id: goal.id.uuidString,
+                title: goal.title,
+                goalID: goal.id,
+                isCurrentGoal: goal.id == currentGoal.id,
+                skillCompetencies: []
+            )
+        }
+
+        let presentation = WeeklyGoalPulsePresentation(
+            goals: goals,
+            metrics: metrics,
+            attempts: [],
+            unlockEvents: unlockEvents,
+            activeGoalID: currentGoal.id,
+            asOf: now,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(presentation.shareBasis, .checkpointsCleared)
+        XCTAssertEqual(
+            presentation.shareDescription,
+            "Bars compare each goal's share of this week's cleared checkpoints. Choose one to inspect its own signals."
+        )
+        let currentItem = try XCTUnwrap(
+            presentation.items.first { $0.id == currentGoal.id }
+        )
+        let firstItem = try XCTUnwrap(
+            presentation.items.first { $0.id == firstGoal.id }
+        )
+        XCTAssertEqual(currentItem.impactShare, 1.0 / 3.0, accuracy: 0.001)
+        XCTAssertEqual(firstItem.impactShare, 2.0 / 3.0, accuracy: 0.001)
+        XCTAssertEqual(currentItem.activityText, "1 checkpoint cleared this week")
+        XCTAssertEqual(firstItem.activityText, "2 checkpoints cleared this week")
+        XCTAssertTrue(currentItem.supportingText.contains("1 practice day"))
+        XCTAssertTrue(currentItem.supportingText.contains("Break access · 15m granted"))
+        XCTAssertTrue(
+            currentItem.accessibilityLabel.contains("15 minutes of break access granted")
+        )
+        XCTAssertFalse(currentItem.activityText.contains("question"))
+    }
+
+    func testWeeklyGoalPulseOmitsUnavailableAccessForAZeroMinuteClear() {
+        let item = WeeklyGoalPulseItem(
+            id: Goal.ID(),
+            metricsID: UUID().uuidString,
+            title: "Prepare for a systems interview",
+            isCurrentGoal: true,
+            questionsAnswered: 0,
+            accuracyText: nil,
+            checkpointStreakDays: 0,
+            checkpointsCleared: 1,
+            activePracticeDays: 1,
+            earnedBreakMinutes: 0,
+            earnedBreakTimeText: "0m",
+            impactShare: 1,
+            hasActivity: true,
+            isCurrentWeek: true
+        )
+
+        XCTAssertEqual(item.activityText, "1 checkpoint cleared this week")
+        XCTAssertEqual(item.supportingText, "1 practice day")
+        XCTAssertFalse(item.accessibilityLabel.contains("break access"))
     }
 
     @MainActor
@@ -864,6 +1037,7 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertFalse(carriedItem.hasActivity)
         XCTAssertEqual(carriedItem.activityText, "No checkpoint activity this week")
         XCTAssertEqual(carriedItem.supportingText, "Ready for your next checkpoint")
+        XCTAssertFalse(carriedItem.accessibilityLabel.contains("streak"))
 
         let mondayAttempt = makeAttempt(
             goal: goal,
@@ -1328,7 +1502,7 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(current.emptyTitle, "Your signal starts with one checkpoint")
         XCTAssertEqual(
             current.emptyDetail,
-            "Questions, recovered misses, and earned breaks will collect here without any extra setup."
+            "Questions, recovered misses, and cleared checkpoints will collect here without any extra setup."
         )
 
         XCTAssertEqual(archived.eyebrowText, "WEEKLY ARCHIVE")
@@ -1376,6 +1550,99 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
             presentation.accessibilityLabel,
             "Week of Monday, December 28, 2026 through Sunday, January 3, 2027"
         )
+    }
+
+    func testWeeklyReviewImpactPresentationsKeepLearningPrimaryAndBreakAccessFactual() {
+        var metrics = WeeklyMetricsSummary(
+            id: WeeklyMetricsSummary.allGoalsID,
+            title: "All goals",
+            questionsAnswered: 9,
+            correctAnswers: 7,
+            missedAnswers: 2,
+            checkpointStreakDays: 2,
+            checkpointsCleared: 2,
+            strongestSkill: nil,
+            reviewSkill: nil
+        )
+
+        let learning = WeeklyReviewPrimaryMetricPresentation(
+            metrics: metrics,
+            isCurrentWeek: true
+        )
+        XCTAssertEqual(learning.kind, .questionsAnswered)
+        XCTAssertEqual(learning.eyebrowText, "LEARNING OUTPUT")
+        XCTAssertEqual(learning.value, 9)
+        XCTAssertEqual(learning.nounText, "questions")
+        XCTAssertEqual(learning.accessibilityLabel, "9 questions answered this week")
+        XCTAssertEqual(
+            WeeklyReviewSignalOrderPolicy.orderedKinds(
+                primaryMetricKind: learning.kind
+            ),
+            [.accuracy, .recoveredMisses, .checkpointsCleared, .practiceDays]
+        )
+
+        metrics.questionsAnswered = 0
+        metrics.correctAnswers = 0
+        metrics.missedAnswers = 0
+        let clearOnly = WeeklyReviewPrimaryMetricPresentation(
+            metrics: metrics,
+            isCurrentWeek: false
+        )
+        XCTAssertEqual(clearOnly.kind, .checkpointsCleared)
+        XCTAssertEqual(clearOnly.eyebrowText, "CHECKPOINT ACTIVITY")
+        XCTAssertEqual(clearOnly.value, 2)
+        XCTAssertEqual(clearOnly.nounText, "checkpoints cleared")
+        XCTAssertEqual(clearOnly.accessibilityLabel, "2 checkpoints cleared that week")
+        XCTAssertEqual(
+            WeeklyReviewSignalOrderPolicy.orderedKinds(
+                primaryMetricKind: clearOnly.kind
+            ),
+            [.checkpointsCleared, .practiceDays, .accuracy, .recoveredMisses]
+        )
+
+        metrics.checkpointsCleared = 0
+        let empty = WeeklyReviewPrimaryMetricPresentation(
+            metrics: metrics,
+            isCurrentWeek: true
+        )
+        XCTAssertEqual(empty.kind, .questionsAnswered)
+        XCTAssertEqual(empty.accessibilityLabel, "0 questions answered this week")
+
+        let checkpointMetric = WeeklyReviewCheckpointMetricPresentation(
+            checkpointsCleared: 2,
+            earnedBreakMinutes: 75,
+            earnedBreakTimeText: "1h 15m",
+            isCurrentWeek: true
+        )
+        XCTAssertEqual(checkpointMetric.label, "Checkpoints cleared")
+        XCTAssertEqual(checkpointMetric.value, "2")
+        XCTAssertEqual(checkpointMetric.detail, "Break access · 1h 15m granted")
+        XCTAssertEqual(
+            checkpointMetric.accessibilityLabel,
+            "2 checkpoints cleared this week. 1 hour and 15 minutes of break access granted"
+        )
+
+        let checkpointWithoutAccess = WeeklyReviewCheckpointMetricPresentation(
+            checkpointsCleared: 1,
+            earnedBreakMinutes: 0,
+            earnedBreakTimeText: "0m",
+            isCurrentWeek: false
+        )
+        XCTAssertEqual(checkpointWithoutAccess.label, "Checkpoint cleared")
+        XCTAssertNil(checkpointWithoutAccess.detail)
+        XCTAssertEqual(
+            checkpointWithoutAccess.accessibilityLabel,
+            "1 checkpoint cleared that week"
+        )
+
+        let orphanedAccess = WeeklyReviewCheckpointMetricPresentation(
+            checkpointsCleared: 0,
+            earnedBreakMinutes: 15,
+            earnedBreakTimeText: "15m",
+            isCurrentWeek: true
+        )
+        XCTAssertEqual(orphanedAccess.detail, "No break access granted")
+        XCTAssertFalse(orphanedAccess.accessibilityLabel.contains("15 minutes"))
     }
 
     func testWeeklyPracticeSelectionReconcilesToAnElapsedActivityDay() throws {
@@ -1484,10 +1751,10 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(activity.dateText, "Tuesday, Sep 1")
         XCTAssertEqual(activity.dateEyebrowText, "TUESDAY, SEP 1")
         XCTAssertEqual(activity.activityText, "3 questions · 66% correct")
-        XCTAssertEqual(activity.breakText, "2 breaks · 1h 15m unlocked")
+        XCTAssertEqual(activity.checkpointText, "2 checkpoints cleared · 1h 15m break access granted")
         XCTAssertEqual(
             activity.accessibilityLabel,
-            "Tuesday, Sep 1. 3 questions · 66% correct. 2 breaks · 1h 15m unlocked"
+            "Tuesday, Sep 1. 3 questions, 66 percent correct. 2 checkpoints cleared. 1 hour and 15 minutes of break access granted"
         )
         XCTAssertTrue(activity.hasActivity)
         XCTAssertFalse(activity.isFuture)
@@ -1504,7 +1771,10 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
             dateLabelFormatter: formatter
         )
         XCTAssertEqual(singular.activityText, "1 question · 100% correct")
-        XCTAssertEqual(singular.breakText, "1 break · 15m unlocked")
+        XCTAssertEqual(singular.checkpointText, "1 checkpoint cleared · 15m break access granted")
+        XCTAssertTrue(
+            singular.accessibilityLabel.contains("15 minutes of break access granted")
+        )
 
         let empty = WeeklyPracticeDayDetailPresentation(
             day: WeeklyPracticeDay(date: tuesday, questionsAnswered: 0),
@@ -1512,8 +1782,57 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
             dateLabelFormatter: formatter
         )
         XCTAssertEqual(empty.activityText, "No questions answered")
-        XCTAssertEqual(empty.breakText, "No break earned")
+        XCTAssertEqual(empty.checkpointText, "No checkpoint cleared")
         XCTAssertFalse(empty.hasActivity)
+
+        let clearOnly = WeeklyPracticeDayDetailPresentation(
+            day: WeeklyPracticeDay(
+                date: tuesday,
+                questionsAnswered: 0,
+                checkpointsCleared: 1,
+                earnedBreakMinutes: 15
+            ),
+            referenceDate: referenceDate,
+            dateLabelFormatter: formatter
+        )
+        XCTAssertEqual(clearOnly.activityText, "1 checkpoint cleared")
+        XCTAssertEqual(clearOnly.checkpointText, "Break access · 15m granted")
+        XCTAssertEqual(
+            clearOnly.accessibilityLabel,
+            "Tuesday, Sep 1. 1 checkpoint cleared. 15 minutes of break access granted"
+        )
+
+        let clearWithoutAccess = WeeklyPracticeDayDetailPresentation(
+            day: WeeklyPracticeDay(
+                date: tuesday,
+                questionsAnswered: 0,
+                checkpointsCleared: 1,
+                earnedBreakMinutes: 0
+            ),
+            referenceDate: referenceDate,
+            dateLabelFormatter: formatter
+        )
+        XCTAssertEqual(clearWithoutAccess.activityText, "1 checkpoint cleared")
+        XCTAssertNil(clearWithoutAccess.checkpointText)
+        XCTAssertEqual(
+            clearWithoutAccess.accessibilityLabel,
+            "Tuesday, Sep 1. 1 checkpoint cleared"
+        )
+
+        let legacyAccessOnly = WeeklyPracticeDayDetailPresentation(
+            day: WeeklyPracticeDay(
+                date: tuesday,
+                questionsAnswered: 0,
+                checkpointsCleared: 0,
+                earnedBreakMinutes: 15
+            ),
+            referenceDate: referenceDate,
+            dateLabelFormatter: formatter
+        )
+        XCTAssertEqual(legacyAccessOnly.activityText, "No questions answered")
+        XCTAssertEqual(legacyAccessOnly.checkpointText, "No checkpoint cleared")
+        XCTAssertFalse(legacyAccessOnly.hasActivity)
+        XCTAssertFalse(legacyAccessOnly.accessibilityLabel.contains("break access"))
 
         let friday = try XCTUnwrap(
             calendar.date(from: DateComponents(year: 2026, month: 9, day: 4))
@@ -1525,10 +1844,56 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         )
         XCTAssertTrue(future.isFuture)
         XCTAssertEqual(future.activityText, "Not yet")
-        XCTAssertEqual(future.breakText, "This day is still ahead.")
+        XCTAssertEqual(future.checkpointText, "This day is still ahead.")
     }
 
     func testWeeklyPracticeLayoutAndMotionRespectAccessibilityContracts() {
+        let elapsedDate = Date(timeIntervalSinceReferenceDate: 0)
+        let referenceDate = Date(timeIntervalSinceReferenceDate: 86_400)
+        let futureDate = Date(timeIntervalSinceReferenceDate: 172_800)
+        let days = [
+            WeeklyPracticeDay(
+                date: elapsedDate,
+                questionsAnswered: 3
+            ),
+            WeeklyPracticeDay(
+                date: elapsedDate.addingTimeInterval(3_600),
+                questionsAnswered: 0,
+                checkpointsCleared: 1
+            ),
+            WeeklyPracticeDay(
+                date: elapsedDate.addingTimeInterval(7_200),
+                questionsAnswered: 0
+            ),
+            WeeklyPracticeDay(
+                date: futureDate,
+                questionsAnswered: 2
+            )
+        ]
+        let barPresentations = days.map {
+            WeeklyPracticeBarPresentation(
+                day: $0,
+                referenceDate: referenceDate
+            )
+        }
+
+        XCTAssertEqual(
+            barPresentations.map(\.state),
+            [.learning, .checkpointOnly, .inactive, .future]
+        )
+        XCTAssertEqual(barPresentations.map(\.activityCount), [3, 1, 0, 0])
+        XCTAssertEqual(
+            WeeklyPracticeBarPresentation.maximumCount(
+                for: days,
+                referenceDate: referenceDate
+            ),
+            3
+        )
+        XCTAssertGreaterThan(
+            barPresentations[1].height(maximumCount: 3),
+            barPresentations[2].height(maximumCount: 3)
+        )
+
         XCTAssertEqual(WeeklyPracticeChartLayoutPolicy.minimumDayWidth, 44)
         XCTAssertFalse(
             WeeklyPracticeChartLayoutPolicy.requiresHorizontalScrolling(

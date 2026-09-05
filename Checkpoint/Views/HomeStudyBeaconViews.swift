@@ -1925,7 +1925,7 @@ struct HomeWeeklySignalMetricPresentation: Equatable, Identifiable {
     enum ID: Equatable, Hashable {
         case questions
         case accuracy
-        case breaks
+        case checkpointsCleared
         case practicedSkills
         case currentStreak
     }
@@ -1946,7 +1946,7 @@ struct HomeWeeklySignalHeroPresentation: Equatable {
     let title: String
     let questions: HomeWeeklySignalMetricPresentation
     let accuracy: HomeWeeklySignalMetricPresentation?
-    let breaks: HomeWeeklySignalMetricPresentation
+    let checkpointsCleared: HomeWeeklySignalMetricPresentation
     let practicedSkills: HomeWeeklySignalMetricPresentation?
     let currentStreak: HomeWeeklySignalMetricPresentation?
     let insight: WeeklySignalInsight?
@@ -1959,7 +1959,7 @@ struct HomeWeeklySignalHeroPresentation: Equatable {
         hasActivity = metrics.questionsAnswered > 0 || metrics.checkpointsCleared > 0
         title = metrics.title
         let questionNoun = metrics.questionsAnswered == 1 ? "question" : "questions"
-        let breakNoun = metrics.checkpointsCleared == 1 ? "break" : "breaks"
+        let checkpointNoun = metrics.checkpointsCleared == 1 ? "checkpoint" : "checkpoints"
         questions = HomeWeeklySignalMetricPresentation(
             id: .questions,
             value: "\(metrics.questionsAnswered)",
@@ -1967,7 +1967,7 @@ struct HomeWeeklySignalHeroPresentation: Equatable {
                 ? "QUESTION ANSWERED"
                 : "QUESTIONS ANSWERED",
             numericValue: Double(metrics.questionsAnswered),
-            accessibilityValue: "\(metrics.questionsAnswered) \(questionNoun) answered"
+            accessibilityValue: "\(metrics.questionsAnswered) \(questionNoun) answered this week"
         )
 
         if metrics.questionsAnswered > 0 {
@@ -1979,18 +1979,23 @@ struct HomeWeeklySignalHeroPresentation: Equatable {
                 value: "\(accuracyPercent)%",
                 label: "ACCURACY",
                 numericValue: Double(accuracyPercent),
-                accessibilityValue: "\(accuracyPercent)% accuracy"
+                accessibilityValue:
+                    "\(accuracyPercent) percent accuracy, " +
+                    "\(metrics.correctAnswers) of \(metrics.questionsAnswered) correct"
             )
         } else {
             accuracy = nil
         }
 
-        breaks = HomeWeeklySignalMetricPresentation(
-            id: .breaks,
+        checkpointsCleared = HomeWeeklySignalMetricPresentation(
+            id: .checkpointsCleared,
             value: "\(metrics.checkpointsCleared)",
-            label: metrics.checkpointsCleared == 1 ? "BREAK EARNED" : "BREAKS EARNED",
+            label: metrics.checkpointsCleared == 1
+                ? "CHECKPOINT CLEARED"
+                : "CHECKPOINTS CLEARED",
             numericValue: Double(metrics.checkpointsCleared),
-            accessibilityValue: "\(metrics.checkpointsCleared) \(breakNoun) earned"
+            accessibilityValue:
+                "\(metrics.checkpointsCleared) \(checkpointNoun) cleared this week"
         )
 
         if practicedSkillCount > 0 {
@@ -2000,7 +2005,7 @@ struct HomeWeeklySignalHeroPresentation: Equatable {
                 value: "\(practicedSkillCount)",
                 label: practicedSkillCount == 1 ? "SKILL PRACTICED" : "SKILLS PRACTICED",
                 numericValue: Double(practicedSkillCount),
-                accessibilityValue: "\(practicedSkillCount) practiced \(skillNoun)"
+                accessibilityValue: "\(practicedSkillCount) practiced \(skillNoun) this week"
             )
         } else {
             practicedSkills = nil
@@ -2018,12 +2023,34 @@ struct HomeWeeklySignalHeroPresentation: Equatable {
             currentStreak = nil
         }
 
-        self.insight = hasActivity ? insight : nil
+        if hasActivity, insight?.role != .checkpointsCleared {
+            self.insight = insight
+        } else {
+            self.insight = nil
+        }
+    }
+
+    var primaryMetric: HomeWeeklySignalMetricPresentation? {
+        guard hasActivity else { return nil }
+        return questions.numericValue > 0 ? questions : checkpointsCleared
+    }
+
+    var supportingMetrics: [HomeWeeklySignalMetricPresentation] {
+        guard hasActivity else { return [] }
+
+        return [
+            accuracy,
+            checkpointsCleared.numericValue > 0 && primaryMetric?.id != .checkpointsCleared
+                ? checkpointsCleared
+                : nil,
+            currentStreak
+        ].compactMap { $0 }
     }
 
     var visibleMetrics: [HomeWeeklySignalMetricPresentation] {
         guard hasActivity else { return [] }
-        return [questions, accuracy, breaks, practicedSkills, currentStreak].compactMap { $0 }
+
+        return [primaryMetric, practicedSkills].compactMap { $0 } + supportingMetrics
     }
 
     var accessibilityValue: String {
@@ -2255,41 +2282,47 @@ struct LightStudyBeaconSection: View {
 
     @ViewBuilder
     private var activitySummary: some View {
-        if layoutPolicy.layout == .stacked {
-            VStack(alignment: .leading, spacing: 16) {
-                primaryMetric
+        if let primaryMetric = heroPresentation.primaryMetric {
+            if heroPresentation.supportingMetrics.isEmpty {
+                primaryMetricView(primaryMetric)
+            } else if layoutPolicy.layout == .stacked {
+                VStack(alignment: .leading, spacing: 16) {
+                    primaryMetricView(primaryMetric)
 
-                Rectangle()
-                    .fill(CheckpointTheme.heroDivider)
-                    .frame(height: 1)
-                    .accessibilityHidden(true)
+                    Rectangle()
+                        .fill(CheckpointTheme.heroDivider)
+                        .frame(height: 1)
+                        .accessibilityHidden(true)
 
-                supportingMetrics
-            }
-        } else {
-            HStack(alignment: .center, spacing: 18) {
-                primaryMetric
+                    supportingMetrics
+                }
+            } else {
+                HStack(alignment: .center, spacing: 18) {
+                    primaryMetricView(primaryMetric)
 
-                Rectangle()
-                    .fill(CheckpointTheme.heroDivider)
-                    .frame(width: 1, height: 76)
-                    .accessibilityHidden(true)
+                    Rectangle()
+                        .fill(CheckpointTheme.heroDivider)
+                        .frame(width: 1, height: 76)
+                        .accessibilityHidden(true)
 
-                supportingMetrics
+                    supportingMetrics
+                }
             }
         }
     }
 
-    private var primaryMetric: some View {
+    private func primaryMetricView(
+        _ primaryMetric: HomeWeeklySignalMetricPresentation
+    ) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(heroPresentation.questions.value)
+            Text(primaryMetric.value)
                 .font(.system(size: primaryMetricSize, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(signalText)
-                .contentTransition(.numericText(value: heroPresentation.questions.numericValue))
-                .animation(motionPolicy.animation, value: heroPresentation.questions.numericValue)
+                .contentTransition(.numericText(value: primaryMetric.numericValue))
+                .animation(motionPolicy.animation, value: primaryMetric.numericValue)
 
-            Text(heroPresentation.questions.label)
+            Text(primaryMetric.label)
                 .font(.caption2.weight(.bold))
                 .tracking(0.8)
                 .foregroundStyle(signalSecondaryText)
@@ -2312,19 +2345,13 @@ struct LightStudyBeaconSection: View {
 
     private var supportingMetrics: some View {
         VStack(alignment: .leading, spacing: 13) {
-            if let accuracy = heroPresentation.accuracy {
-                compactMetric(accuracy)
-            }
-
-            compactMetric(heroPresentation.breaks)
-
-            if let currentStreak = heroPresentation.currentStreak {
-                compactMetric(currentStreak)
+            ForEach(heroPresentation.supportingMetrics) { metric in
+                compactMetric(metric)
                 .transition(motionPolicy.conditionalTransition)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .animation(motionPolicy.animation, value: metrics.checkpointStreakDays > 1)
+        .animation(motionPolicy.animation, value: heroPresentation.supportingMetrics.map(\.id))
         .reportHomeWeeklySignalLayoutFrame(.supportingMetrics, using: layoutReporter)
     }
 

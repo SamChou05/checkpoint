@@ -81,6 +81,115 @@ struct WeeklyReviewActivityPolicy {
     }
 }
 
+enum WeeklyReviewPrimaryMetricKind: Equatable {
+    case questionsAnswered
+    case checkpointsCleared
+}
+
+struct WeeklyReviewPrimaryMetricPresentation: Equatable {
+    let kind: WeeklyReviewPrimaryMetricKind
+    let eyebrowText: String
+    let value: Int
+    let nounText: String
+    let accessibilityLabel: String
+
+    init(metrics: WeeklyMetricsSummary, isCurrentWeek: Bool) {
+        let questionsAnswered = max(0, metrics.questionsAnswered)
+        let checkpointsCleared = max(0, metrics.checkpointsCleared)
+        let periodText = isCurrentWeek ? "this week" : "that week"
+
+        if questionsAnswered > 0 || checkpointsCleared == 0 {
+            let noun = questionsAnswered == 1 ? "question" : "questions"
+            kind = .questionsAnswered
+            eyebrowText = "LEARNING OUTPUT"
+            value = questionsAnswered
+            nounText = noun
+            accessibilityLabel = "\(questionsAnswered) \(noun) answered \(periodText)"
+        } else {
+            let noun = checkpointsCleared == 1
+                ? "checkpoint cleared"
+                : "checkpoints cleared"
+            kind = .checkpointsCleared
+            eyebrowText = "CHECKPOINT ACTIVITY"
+            value = checkpointsCleared
+            nounText = noun
+            accessibilityLabel = "\(checkpointsCleared) \(noun) \(periodText)"
+        }
+    }
+}
+
+struct WeeklyReviewCheckpointMetricPresentation: Equatable {
+    let label: String
+    let value: String
+    let detail: String?
+    let accessibilityLabel: String
+
+    init(
+        checkpointsCleared: Int,
+        earnedBreakMinutes: Int,
+        earnedBreakTimeText: String,
+        isCurrentWeek: Bool
+    ) {
+        let normalizedCheckpoints = max(0, checkpointsCleared)
+        let normalizedMinutes = max(0, earnedBreakMinutes)
+        let checkpointNoun = normalizedCheckpoints == 1 ? "checkpoint" : "checkpoints"
+        let periodText = isCurrentWeek ? "this week" : "that week"
+        let checkpointText = "\(normalizedCheckpoints) \(checkpointNoun) cleared \(periodText)"
+
+        label = normalizedCheckpoints == 1 ? "Checkpoint cleared" : "Checkpoints cleared"
+        value = "\(normalizedCheckpoints)"
+
+        if normalizedCheckpoints > 0, normalizedMinutes > 0 {
+            detail = WeeklyReviewImpactCopy.breakAccess(
+                compactDuration: earnedBreakTimeText
+            )
+            accessibilityLabel = "\(checkpointText). \(WeeklyReviewImpactCopy.accessibleBreakAccess(minutes: normalizedMinutes))"
+        } else if normalizedCheckpoints > 0 {
+            detail = nil
+            accessibilityLabel = checkpointText
+        } else {
+            detail = "No break access granted"
+            accessibilityLabel = "\(checkpointText). No break access granted"
+        }
+    }
+}
+
+enum WeeklyReviewSignalMetricKind: Hashable {
+    case accuracy
+    case recoveredMisses
+    case checkpointsCleared
+    case practiceDays
+}
+
+struct WeeklyReviewSignalOrderPolicy {
+    static func orderedKinds(
+        primaryMetricKind: WeeklyReviewPrimaryMetricKind
+    ) -> [WeeklyReviewSignalMetricKind] {
+        switch primaryMetricKind {
+        case .questionsAnswered:
+            [.accuracy, .recoveredMisses, .checkpointsCleared, .practiceDays]
+        case .checkpointsCleared:
+            [.checkpointsCleared, .practiceDays, .accuracy, .recoveredMisses]
+        }
+    }
+}
+
+private enum WeeklyReviewImpactCopy {
+    static func checkpointCount(_ count: Int) -> String {
+        let normalizedCount = max(0, count)
+        let noun = normalizedCount == 1 ? "checkpoint" : "checkpoints"
+        return "\(normalizedCount) \(noun) cleared"
+    }
+
+    static func breakAccess(compactDuration: String) -> String {
+        "Break access · \(compactDuration) granted"
+    }
+
+    static func accessibleBreakAccess(minutes: Int) -> String {
+        "\(weeklyAccessibleDurationText(minutes: minutes)) of break access granted"
+    }
+}
+
 struct WeeklyReviewReferenceDateState: Equatable {
     let referenceDate: Date
     let selectedWeekStart: Date
@@ -305,7 +414,7 @@ struct WeeklyReviewPeriodPresentation: Equatable {
         if policy.isCurrentWeek {
             summaryText = "A quiet read on what your checkpoints turned into."
             emptyTitle = "Your signal starts with one checkpoint"
-            emptyDetail = "Questions, recovered misses, and earned breaks will collect here without any extra setup."
+            emptyDetail = "Questions, recovered misses, and cleared checkpoints will collect here without any extra setup."
         } else {
             summaryText = "A complete read on what your checkpoints turned into that week."
             emptyTitle = "No checkpoint activity that week"
@@ -453,6 +562,56 @@ struct WeeklyPracticeChartLayoutPolicy {
     }
 }
 
+enum WeeklyPracticeBarState: Equatable {
+    case learning
+    case checkpointOnly
+    case inactive
+    case future
+}
+
+struct WeeklyPracticeBarPresentation: Equatable {
+    let state: WeeklyPracticeBarState
+    let activityCount: Int
+
+    init(day: WeeklyPracticeDay, referenceDate: Date) {
+        if day.date > referenceDate {
+            state = .future
+            activityCount = 0
+        } else if day.questionsAnswered > 0 {
+            state = .learning
+            activityCount = day.questionsAnswered
+        } else if day.checkpointsCleared > 0 {
+            state = .checkpointOnly
+            activityCount = day.checkpointsCleared
+        } else {
+            state = .inactive
+            activityCount = 0
+        }
+    }
+
+    static func maximumCount(
+        for days: [WeeklyPracticeDay],
+        referenceDate: Date
+    ) -> Int {
+        max(
+            1,
+            days.lazy.map {
+                WeeklyPracticeBarPresentation(
+                    day: $0,
+                    referenceDate: referenceDate
+                ).activityCount
+            }.max() ?? 1
+        )
+    }
+
+    func height(maximumCount: Int) -> CGFloat {
+        guard activityCount > 0 else { return 4 }
+        let normalizedMaximum = max(1, maximumCount)
+        let normalizedCount = min(activityCount, normalizedMaximum)
+        return 12 + (42 * CGFloat(normalizedCount) / CGFloat(normalizedMaximum))
+    }
+}
+
 struct WeeklyReviewResponsiveLayoutPolicy: Equatable {
     static let compactWidth: CGFloat = 320
     static let regularInsetWidth: CGFloat = 360
@@ -503,7 +662,7 @@ struct WeeklyPracticeDayDetailPresentation: Equatable {
     let dateText: String
     let dateEyebrowText: String
     let activityText: String
-    let breakText: String
+    let checkpointText: String?
     let accessibilityLabel: String
     let isFuture: Bool
     let hasActivity: Bool
@@ -521,27 +680,85 @@ struct WeeklyPracticeDayDetailPresentation: Equatable {
 
         if isFuture {
             activityText = "Not yet"
-            breakText = "This day is still ahead."
+            checkpointText = "This day is still ahead."
+            accessibilityLabel = "\(dateText). Not yet. This day is still ahead."
         } else {
+            let accessibilityActivityText: String
             if let accuracyPercent = day.accuracyPercent {
                 let questionNoun = day.questionsAnswered == 1 ? "question" : "questions"
                 activityText = "\(day.questionsAnswered) \(questionNoun) · \(accuracyPercent)% correct"
+                accessibilityActivityText = "\(day.questionsAnswered) \(questionNoun), \(accuracyPercent) percent correct"
+            } else if day.checkpointsCleared > 0 {
+                let checkpointText = WeeklyReviewImpactCopy.checkpointCount(
+                    day.checkpointsCleared
+                )
+                activityText = checkpointText
+                accessibilityActivityText = checkpointText
             } else {
                 activityText = "No questions answered"
+                accessibilityActivityText = activityText
             }
 
             if day.checkpointsCleared > 0 {
-                let breakNoun = day.checkpointsCleared == 1 ? "break" : "breaks"
-                breakText = "\(day.checkpointsCleared) \(breakNoun) · \(day.earnedBreakTimeText) unlocked"
-            } else if day.earnedBreakMinutes > 0 {
-                breakText = "\(day.earnedBreakTimeText) unlocked"
+                let checkpointText = WeeklyReviewImpactCopy.checkpointCount(
+                    day.checkpointsCleared
+                )
+                if day.questionsAnswered > 0, day.earnedBreakMinutes > 0 {
+                    self.checkpointText = "\(checkpointText) · \(day.earnedBreakTimeText) break access granted"
+                    accessibilityLabel = [
+                        dateText,
+                        accessibilityActivityText,
+                        checkpointText,
+                        WeeklyReviewImpactCopy.accessibleBreakAccess(
+                            minutes: day.earnedBreakMinutes
+                        )
+                    ]
+                    .joined(separator: ". ")
+                } else if day.questionsAnswered > 0 {
+                    self.checkpointText = checkpointText
+                    accessibilityLabel = [
+                        dateText,
+                        accessibilityActivityText,
+                        checkpointText
+                    ]
+                    .joined(separator: ". ")
+                } else if day.earnedBreakMinutes > 0 {
+                    self.checkpointText = WeeklyReviewImpactCopy.breakAccess(
+                        compactDuration: day.earnedBreakTimeText
+                    )
+                    accessibilityLabel = [
+                        dateText,
+                        accessibilityActivityText,
+                        WeeklyReviewImpactCopy.accessibleBreakAccess(
+                            minutes: day.earnedBreakMinutes
+                        )
+                    ]
+                    .joined(separator: ". ")
+                } else {
+                    self.checkpointText = nil
+                    accessibilityLabel = [
+                        dateText,
+                        accessibilityActivityText
+                    ]
+                    .joined(separator: ". ")
+                }
             } else {
-                breakText = "No break earned"
+                let noCheckpointText = "No checkpoint cleared"
+                checkpointText = noCheckpointText
+                accessibilityLabel = [
+                    dateText,
+                    accessibilityActivityText,
+                    noCheckpointText
+                ]
+                .joined(separator: ". ")
             }
         }
-
-        accessibilityLabel = "\(dateText). \(activityText). \(breakText)"
     }
+}
+
+enum WeeklyGoalPulseShareBasis: Equatable {
+    case questionsAnswered
+    case checkpointsCleared
 }
 
 struct WeeklyGoalPulseItem: Identifiable, Equatable {
@@ -554,8 +771,9 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
     let checkpointStreakDays: Int
     let checkpointsCleared: Int
     let activePracticeDays: Int
+    let earnedBreakMinutes: Int
     let earnedBreakTimeText: String
-    let questionShare: Double
+    let impactShare: Double
     let hasActivity: Bool
     let isCurrentWeek: Bool
 
@@ -571,9 +789,8 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
             return "\(questionsAnswered) \(noun) · \(accuracyText ?? "—") correct"
         }
 
-        let noun = checkpointsCleared == 1 ? "break" : "breaks"
         let period = isCurrentWeek ? "this week" : "that week"
-        return "\(checkpointsCleared) \(noun) earned \(period)"
+        return "\(WeeklyReviewImpactCopy.checkpointCount(checkpointsCleared)) \(period)"
     }
 
     var supportingText: String {
@@ -582,12 +799,19 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
         }
 
         var details: [String] = []
-        if questionsAnswered > 0 {
-            let noun = activePracticeDays == 1 ? "active day" : "active days"
+        if activePracticeDays > 0 {
+            let noun = activePracticeDays == 1 ? "practice day" : "practice days"
             details.append("\(activePracticeDays) \(noun)")
         }
-        if checkpointsCleared > 0 {
-            details.append("\(earnedBreakTimeText) unlocked")
+        if questionsAnswered > 0, checkpointsCleared > 0 {
+            details.append(WeeklyReviewImpactCopy.checkpointCount(checkpointsCleared))
+        }
+        if checkpointsCleared > 0, earnedBreakMinutes > 0 {
+            details.append(
+                WeeklyReviewImpactCopy.breakAccess(
+                    compactDuration: earnedBreakTimeText
+                )
+            )
         }
         if checkpointStreakDays > 0 {
             details.append("\(checkpointStreakDays)-day checkpoint streak")
@@ -596,11 +820,56 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
     }
 
     var accessibilityLabel: String {
-        [
+        guard hasActivity else {
+            return [
+                title,
+                isCurrentGoal ? "current goal" : nil,
+                activityText,
+                supportingText
+            ]
+            .compactMap { $0 }
+            .joined(separator: ", ")
+        }
+
+        let accessibilityActivityText: String
+        if questionsAnswered > 0 {
+            let noun = questionsAnswered == 1 ? "question" : "questions"
+            let accuracy = accuracyText?
+                .replacingOccurrences(of: "%", with: " percent")
+                ?? "accuracy unavailable"
+            accessibilityActivityText = "\(questionsAnswered) \(noun), \(accuracy) correct"
+        } else {
+            accessibilityActivityText = activityText
+        }
+
+        var accessibilityDetails: [String] = []
+        if activePracticeDays > 0 {
+            let noun = activePracticeDays == 1 ? "practice day" : "practice days"
+            accessibilityDetails.append("\(activePracticeDays) \(noun)")
+        }
+        if questionsAnswered > 0, checkpointsCleared > 0 {
+            accessibilityDetails.append(
+                WeeklyReviewImpactCopy.checkpointCount(checkpointsCleared)
+            )
+        }
+        if checkpointsCleared > 0, earnedBreakMinutes > 0 {
+            accessibilityDetails.append(
+                WeeklyReviewImpactCopy.accessibleBreakAccess(
+                    minutes: earnedBreakMinutes
+                )
+            )
+        }
+        if checkpointStreakDays > 0 {
+            accessibilityDetails.append("\(checkpointStreakDays)-day checkpoint streak")
+        }
+
+        return [
             title,
             isCurrentGoal ? "current goal" : nil,
-            activityText,
-            supportingText
+            accessibilityActivityText,
+            accessibilityDetails.isEmpty
+                ? nil
+                : accessibilityDetails.joined(separator: ", ")
         ]
         .compactMap { $0 }
         .joined(separator: ", ")
@@ -610,6 +879,8 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
 @MainActor
 struct WeeklyGoalPulsePresentation: Equatable {
     let items: [WeeklyGoalPulseItem]
+    let shareBasis: WeeklyGoalPulseShareBasis
+    let shareDescription: String
 
     init(
         goals: [Goal],
@@ -640,14 +911,29 @@ struct WeeklyGoalPulsePresentation: Equatable {
             calendar: calendar
         )
         let totalQuestions = metrics.reduce(0) { $0 + $1.questionsAnswered }
+        let totalCheckpoints = metrics.reduce(0) { $0 + $1.checkpointsCleared }
+        let periodText = isCurrentWeek ? "this week's" : "that week's"
+
+        if totalQuestions > 0 {
+            shareBasis = .questionsAnswered
+            shareDescription = "Bars compare each goal's share of \(periodText) questions. Choose one to inspect its own signals."
+        } else {
+            shareBasis = .checkpointsCleared
+            shareDescription = "Bars compare each goal's share of \(periodText) cleared checkpoints. Choose one to inspect its own signals."
+        }
 
         let indexedItems: [(index: Int, item: WeeklyGoalPulseItem)] = goals.enumerated().compactMap { pair in
             let (index, goal) = pair
             guard let metric = metricsByID[goal.id.uuidString] else { return nil }
             let details = calculator.impactDetails(goalID: goal.id)
-            let share = totalQuestions > 0
-                ? Double(metric.questionsAnswered) / Double(totalQuestions)
-                : 0
+            let share: Double
+            if totalQuestions > 0 {
+                share = Double(metric.questionsAnswered) / Double(totalQuestions)
+            } else if totalCheckpoints > 0 {
+                share = Double(metric.checkpointsCleared) / Double(totalCheckpoints)
+            } else {
+                share = 0
+            }
             let item = WeeklyGoalPulseItem(
                 id: goal.id,
                 metricsID: metric.id,
@@ -658,8 +944,9 @@ struct WeeklyGoalPulsePresentation: Equatable {
                 checkpointStreakDays: metric.checkpointStreakDays,
                 checkpointsCleared: metric.checkpointsCleared,
                 activePracticeDays: details.activePracticeDays,
+                earnedBreakMinutes: details.earnedBreakMinutes,
                 earnedBreakTimeText: details.earnedBreakTimeText,
-                questionShare: share,
+                impactShare: share,
                 hasActivity: WeeklyReviewActivityPolicy.hasPeriodActivity(metric),
                 isCurrentWeek: isCurrentWeek
             )
@@ -816,6 +1103,22 @@ struct WeeklyReviewView: View {
             asOf: periodReferenceDate,
             calendar: displayCalendar
         ).impactDetails(goalID: selectedGoalID)
+    }
+
+    private var primaryMetricPresentation: WeeklyReviewPrimaryMetricPresentation {
+        WeeklyReviewPrimaryMetricPresentation(
+            metrics: selectedMetrics,
+            isCurrentWeek: periodPolicy.isCurrentWeek
+        )
+    }
+
+    private var checkpointMetricPresentation: WeeklyReviewCheckpointMetricPresentation {
+        WeeklyReviewCheckpointMetricPresentation(
+            checkpointsCleared: selectedMetrics.checkpointsCleared,
+            earnedBreakMinutes: impactDetails.earnedBreakMinutes,
+            earnedBreakTimeText: impactDetails.earnedBreakTimeText,
+            isCurrentWeek: periodPolicy.isCurrentWeek
+        )
     }
 
     private var dateLabelFormatter: WeeklyReviewDateLabelFormatter {
@@ -1115,8 +1418,11 @@ struct WeeklyReviewView: View {
             Text(selectedMetrics.title)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.muted)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                .multilineTextAlignment(
+                    dynamicTypeSize.isAccessibilitySize ? .leading : .trailing
+                )
                 .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
                 .contentTransition(.opacity)
                 .animation(scopeChangeAnimation, value: selectedMetricsID)
                 .accessibilityLabel("Weekly impact for \(selectedMetrics.title)")
@@ -1186,12 +1492,12 @@ struct WeeklyReviewView: View {
         VStack(alignment: .leading, spacing: 22) {
             if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 16) {
-                    learningOutputMetric
+                    primaryImpactMetric
                     streakBadge
                 }
             } else {
                 HStack(alignment: .top, spacing: 14) {
-                    learningOutputMetric
+                    primaryImpactMetric
                     Spacer(minLength: 0)
                     streakBadge
                 }
@@ -1248,43 +1554,47 @@ struct WeeklyReviewView: View {
         .accessibilityElement(children: .contain)
     }
 
-    private var learningOutputMetric: some View {
+    private var primaryImpactMetric: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text("LEARNING OUTPUT")
+            Text(primaryMetricPresentation.eyebrowText)
                 .font(.caption2.weight(.bold))
                 .tracking(1.05)
                 .foregroundStyle(heroSecondaryText)
+                .contentTransition(.opacity)
 
             if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 0) {
-                    learningOutputValue
-                    learningOutputNoun
+                    primaryImpactValue
+                    primaryImpactNoun
                 }
             } else {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    learningOutputValue
-                    learningOutputNoun
+                    primaryImpactValue
+                    primaryImpactNoun
                 }
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(primaryMetricPresentation.accessibilityLabel)
     }
 
-    private var learningOutputValue: some View {
-        Text("\(selectedMetrics.questionsAnswered)")
+    private var primaryImpactValue: some View {
+        Text("\(primaryMetricPresentation.value)")
             .font(.system(size: heroMetricSize, weight: .bold, design: .rounded))
             .monospacedDigit()
             .foregroundStyle(heroText)
-            .contentTransition(.numericText(value: Double(selectedMetrics.questionsAnswered)))
+            .contentTransition(.numericText(value: Double(primaryMetricPresentation.value)))
             .animation(
                 CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-                value: selectedMetrics.questionsAnswered
+                value: primaryMetricPresentation.value
             )
     }
 
-    private var learningOutputNoun: some View {
-        Text(selectedMetrics.questionsAnswered == 1 ? "question" : "questions")
+    private var primaryImpactNoun: some View {
+        Text(primaryMetricPresentation.nounText)
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(heroSecondaryText)
+            .contentTransition(.opacity)
     }
 
     @ViewBuilder
@@ -1307,9 +1617,7 @@ struct WeeklyReviewView: View {
             sectionLabel("GOAL PULSE")
 
             Text(
-                periodPolicy.isCurrentWeek
-                    ? "Bars compare each goal's share of this week's questions. Choose one to inspect its own signals."
-                    : "Bars compare each goal's share of that week's questions. Choose one to inspect its own signals."
+                presentation.shareDescription
             )
                 .font(.footnote)
                 .foregroundStyle(CheckpointTheme.muted)
@@ -1359,40 +1667,60 @@ struct WeeklyReviewView: View {
                 columns: signalGridColumns,
                 spacing: 10
             ) {
-                ImpactMetricTile(
-                    label: "Accuracy",
-                    value: selectedMetrics.questionsAnswered > 0 ? selectedMetrics.accuracyText : "—",
-                    detail: selectedMetrics.questionsAnswered > 0
-                        ? "\(selectedMetrics.correctAnswers) of \(selectedMetrics.questionsAnswered) correct"
-                        : (periodPolicy.isCurrentWeek
-                            ? "No questions answered this week"
-                            : "No questions answered that week"),
-                    systemImage: "scope"
-                )
-
-                ImpactMetricTile(
-                    label: "Breaks earned",
-                    value: "\(selectedMetrics.checkpointsCleared)",
-                    detail: "\(impactDetails.earnedBreakTimeText) unlocked",
-                    systemImage: "lock.open"
-                )
-
-                ImpactMetricTile(
-                    label: "Misses recovered",
-                    value: "\(impactDetails.recoveredQuestions)",
-                    detail: periodPolicy.isCurrentWeek
-                        ? "Previously missed, currently correct"
-                        : "Previously missed, correct by week's end",
-                    systemImage: "arrow.triangle.2.circlepath"
-                )
-
-                ImpactMetricTile(
-                    label: "Active days",
-                    value: "\(impactDetails.activePracticeDays) / 7",
-                    detail: "Days with goal practice",
-                    systemImage: "calendar"
-                )
+                ForEach(
+                    WeeklyReviewSignalOrderPolicy.orderedKinds(
+                        primaryMetricKind: primaryMetricPresentation.kind
+                    ),
+                    id: \.self
+                ) { signalKind in
+                    signalTile(for: signalKind)
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private func signalTile(
+        for kind: WeeklyReviewSignalMetricKind
+    ) -> some View {
+        switch kind {
+        case .accuracy:
+            ImpactMetricTile(
+                label: "Accuracy",
+                value: selectedMetrics.questionsAnswered > 0
+                    ? selectedMetrics.accuracyText
+                    : "—",
+                detail: selectedMetrics.questionsAnswered > 0
+                    ? "\(selectedMetrics.correctAnswers) of \(selectedMetrics.questionsAnswered) correct"
+                    : (periodPolicy.isCurrentWeek
+                        ? "No questions answered this week"
+                        : "No questions answered that week"),
+                systemImage: "scope"
+            )
+        case .recoveredMisses:
+            ImpactMetricTile(
+                label: "Misses recovered",
+                value: "\(impactDetails.recoveredQuestions)",
+                detail: periodPolicy.isCurrentWeek
+                    ? "Previously missed, currently correct"
+                    : "Previously missed, correct by week's end",
+                systemImage: "arrow.triangle.2.circlepath"
+            )
+        case .checkpointsCleared:
+            ImpactMetricTile(
+                label: checkpointMetricPresentation.label,
+                value: checkpointMetricPresentation.value,
+                detail: checkpointMetricPresentation.detail,
+                systemImage: "shield.checkered",
+                accessibilityLabel: checkpointMetricPresentation.accessibilityLabel
+            )
+        case .practiceDays:
+            ImpactMetricTile(
+                label: "Practice days",
+                value: "\(impactDetails.activePracticeDays) / 7",
+                detail: "Days with goal practice",
+                systemImage: "calendar"
+            )
         }
     }
 
@@ -1657,7 +1985,7 @@ private struct WeeklyGoalPulseRow: View {
             VStack(alignment: .leading, spacing: 7) {
                 goalTitle
                 activityCopy
-                questionShareBar
+                impactShareBar
             }
 
             Spacer(minLength: 4)
@@ -1678,7 +2006,7 @@ private struct WeeklyGoalPulseRow: View {
             }
 
             activityCopy
-            questionShareBar
+            impactShareBar
 
             HStack(spacing: 5) {
                 Text("View impact")
@@ -1717,7 +2045,6 @@ private struct WeeklyGoalPulseRow: View {
         Text(item.title)
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(CheckpointTheme.text)
-            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
             .fixedSize(horizontal: false, vertical: true)
     }
 
@@ -1748,9 +2075,9 @@ private struct WeeklyGoalPulseRow: View {
         }
     }
 
-    private var questionShareBar: some View {
+    private var impactShareBar: some View {
         WeeklyGoalPulseBar(
-            fraction: item.questionShare,
+            fraction: item.impactShare,
             tint: tint,
             revealDelay: revealDelay,
             reduceMotion: reduceMotion
@@ -1817,7 +2144,10 @@ private struct WeeklyPracticeBars: View {
     @Namespace private var selectionNamespace
 
     private var maximumCount: Int {
-        max(1, days.map(\.questionsAnswered).max() ?? 1)
+        WeeklyPracticeBarPresentation.maximumCount(
+            for: days,
+            referenceDate: referenceDate
+        )
     }
 
     private var overflowTreatment: WeeklyPracticeChartLayoutPolicy.OverflowTreatment {
@@ -1937,6 +2267,10 @@ private struct WeeklyPracticeBars: View {
             referenceDate: referenceDate,
             dateLabelFormatter: dateLabelFormatter
         )
+        let barPresentation = WeeklyPracticeBarPresentation(
+            day: day,
+            referenceDate: referenceDate
+        )
 
         return Button {
             selectDay(day)
@@ -1958,14 +2292,24 @@ private struct WeeklyPracticeBars: View {
                             .frame(width: 8, height: 54)
 
                         Capsule()
-                            .fill(barColor(for: day, isSelected: isSelected))
-                            .frame(width: 8, height: barHeight(for: day))
+                            .fill(
+                                barColor(
+                                    for: barPresentation,
+                                    isSelected: isSelected
+                                )
+                            )
+                            .frame(
+                                width: 8,
+                                height: barPresentation.height(
+                                    maximumCount: maximumCount
+                                )
+                            )
                             .animation(
                                 CheckpointMotion.animation(
                                     CheckpointMotion.reveal,
                                     reduceMotion: reduceMotion
                                 ),
-                                value: day.questionsAnswered
+                                value: barPresentation
                             )
                     }
                     .frame(height: 54, alignment: .bottom)
@@ -2010,19 +2354,18 @@ private struct WeeklyPracticeBars: View {
         }
     }
 
-    private func barHeight(for day: WeeklyPracticeDay) -> CGFloat {
-        guard day.questionsAnswered > 0 else { return 4 }
-        return 12 + (42 * CGFloat(day.questionsAnswered) / CGFloat(maximumCount))
-    }
-
     private func barColor(
-        for day: WeeklyPracticeDay,
+        for presentation: WeeklyPracticeBarPresentation,
         isSelected: Bool
     ) -> Color {
-        if day.questionsAnswered > 0 {
+        switch presentation.state {
+        case .learning, .checkpointOnly:
             return isSelected ? CheckpointTheme.heroText : CheckpointTheme.heroSuccess
+        case .inactive:
+            return CheckpointTheme.heroTrack.opacity(0.72)
+        case .future:
+            return CheckpointTheme.heroTrack.opacity(0.28)
         }
-        return CheckpointTheme.heroTrack.opacity(day.date > referenceDate ? 0.28 : 0.72)
     }
 
     private func labelColor(
@@ -2095,10 +2438,12 @@ private struct WeeklyPracticeDayDetail: View {
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text(presentation.breakText)
-                .font(.footnote)
-                .foregroundStyle(CheckpointTheme.heroMuted)
-                .fixedSize(horizontal: false, vertical: true)
+            if let checkpointText = presentation.checkpointText {
+                Text(checkpointText)
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -2107,8 +2452,9 @@ private struct WeeklyPracticeDayDetail: View {
 private struct ImpactMetricTile: View {
     var label: String
     var value: String
-    var detail: String
+    var detail: String?
     var systemImage: String
+    var accessibilityLabel: String? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
@@ -2131,11 +2477,13 @@ private struct ImpactMetricTile: View {
                 .foregroundStyle(CheckpointTheme.text)
                 .monospacedDigit()
 
-            Text(detail)
-                .font(.caption)
-                .foregroundStyle(CheckpointTheme.muted)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            if let detail {
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(15)
         .frame(maxWidth: .infinity, minHeight: 130, alignment: .leading)
@@ -2144,7 +2492,13 @@ private struct ImpactMetricTile: View {
                 .fill(CheckpointTheme.panel.opacity(0.88))
                 .stroke(CheckpointTheme.hairline, lineWidth: 1)
         )
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            accessibilityLabel
+                ?? [label, value, detail]
+                    .compactMap { $0 }
+                    .joined(separator: ", ")
+        )
     }
 }
 

@@ -89,9 +89,25 @@ final class WeeklyReviewRenderingTests: XCTestCase {
     @MainActor
     func testWeeklyReviewRendersDailyImpactAcrossKeyLayouts() throws {
         let suiteName = "WeeklyReviewRenderingTests.\(UUID().uuidString)"
+        let questionsOnlySuiteName =
+            "WeeklyReviewRenderingTests.QuestionsOnly.\(UUID().uuidString)"
+        let checkpointOnlySuiteName =
+            "WeeklyReviewRenderingTests.CheckpointOnly.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        let questionsOnlyDefaults = try XCTUnwrap(
+            UserDefaults(suiteName: questionsOnlySuiteName)
+        )
+        let checkpointOnlyDefaults = try XCTUnwrap(
+            UserDefaults(suiteName: checkpointOnlySuiteName)
+        )
         defer {
             defaults.removePersistentDomain(forName: suiteName)
+            questionsOnlyDefaults.removePersistentDomain(
+                forName: questionsOnlySuiteName
+            )
+            checkpointOnlyDefaults.removePersistentDomain(
+                forName: checkpointOnlySuiteName
+            )
         }
 
         var calendar = Calendar(identifier: .gregorian)
@@ -217,6 +233,117 @@ final class WeeklyReviewRenderingTests: XCTestCase {
             XCTAssertEqual(image.size.height, renderFixture.height, accuracy: 0.5)
             let attachment = XCTAttachment(image: image)
             attachment.name = renderFixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+
+        let questionsOnlyGoal = Goal(
+            title: "Strengthen evidence-based reasoning",
+            deadline: referenceDate.addingTimeInterval(86_400 * 35),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "claims, evidence, assumptions",
+            preferredQuestionStyle: .shortAnswer,
+            createdAt: referenceDate.addingTimeInterval(-200)
+        )
+        let questionsOnlyStore = CheckpointStore(defaults: questionsOnlyDefaults)
+        questionsOnlyStore.membershipTier = .member
+        questionsOnlyStore.goal = questionsOnlyGoal
+        questionsOnlyStore.goalProfiles = [questionsOnlyGoal]
+        questionsOnlyStore.attempts = [
+            makeAttempt(goal: questionsOnlyGoal, result: .correct, createdAt: monday),
+            makeAttempt(
+                goal: questionsOnlyGoal,
+                result: .incorrect,
+                createdAt: monday.addingTimeInterval(120)
+            ),
+            makeAttempt(goal: questionsOnlyGoal, result: .correct, createdAt: tuesday)
+        ]
+
+        let checkpointOnlyGoal = Goal(
+            title: "Complete the first biology checkpoint",
+            deadline: referenceDate.addingTimeInterval(86_400 * 21),
+            category: .examPrep,
+            currentLevel: "Beginner",
+            focusAreas: "cell structure",
+            preferredQuestionStyle: .multipleChoice,
+            createdAt: referenceDate.addingTimeInterval(-100)
+        )
+        let checkpointOnlyStore = CheckpointStore(defaults: checkpointOnlyDefaults)
+        checkpointOnlyStore.membershipTier = .member
+        checkpointOnlyStore.goal = checkpointOnlyGoal
+        checkpointOnlyStore.goalProfiles = [checkpointOnlyGoal]
+        checkpointOnlyStore.unlockEvents = [
+            UnlockEvent(
+                goalID: checkpointOnlyGoal.id,
+                minutes: 15,
+                createdAt: monday
+            )
+        ]
+
+        let isolatedStateFixtures: [(
+            name: String,
+            store: CheckpointStore,
+            goalID: Goal.ID,
+            selectedDate: Date,
+            colorScheme: ColorScheme,
+            dynamicTypeSize: DynamicTypeSize,
+            width: CGFloat,
+            height: CGFloat
+        )] = [
+            (
+                name: "weekly-review-questions-only-compact-dark",
+                store: questionsOnlyStore,
+                goalID: questionsOnlyGoal.id,
+                selectedDate: tuesday,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                width: 320,
+                height: 1_350
+            ),
+            (
+                name: "weekly-review-checkpoint-only-accessibility-light-reduced",
+                store: checkpointOnlyStore,
+                goalID: checkpointOnlyGoal.id,
+                selectedDate: monday,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility2,
+                width: 393,
+                height: 2_200
+            )
+        ]
+
+        for isolatedFixture in isolatedStateFixtures {
+            let image = HostedViewRenderer.image(
+                for: WeeklyReviewView(
+                    store: isolatedFixture.store,
+                    initialMetricsID: isolatedFixture.goalID.uuidString,
+                    referenceDate: referenceDate,
+                    displayCalendar: calendar,
+                    displayLocale: Locale(identifier: "en_US"),
+                    displayTimeZone: calendar.timeZone,
+                    reduceMotionOverride: true,
+                    initialSelectedPracticeDate: isolatedFixture.selectedDate,
+                    initialWeekReferenceDate: referenceDate,
+                    currentDate: { referenceDate }
+                )
+                .environment(\.colorScheme, isolatedFixture.colorScheme)
+                .environment(\.dynamicTypeSize, isolatedFixture.dynamicTypeSize),
+                width: isolatedFixture.width,
+                height: isolatedFixture.height,
+                colorScheme: isolatedFixture.colorScheme,
+                settlingTime: 0.05,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(image.size.width, isolatedFixture.width, accuracy: 0.5)
+            XCTAssertEqual(
+                image.size.height,
+                isolatedFixture.height,
+                accuracy: 0.5
+            )
+            let attachment = XCTAttachment(image: image)
+            attachment.name = isolatedFixture.name
             attachment.lifetime = .keepAlways
             add(attachment)
         }
@@ -364,7 +491,7 @@ final class WeeklyReviewRenderingTests: XCTestCase {
             calendar.dateInterval(of: .weekOfYear, for: referenceDate)
         )
         let activeGoal = Goal(
-            title: "Launch a senior product design portfolio",
+            title: "Launch a senior product design portfolio that explains complex research decisions to executive teams",
             deadline: referenceDate.addingTimeInterval(86_400 * 28),
             category: .custom,
             currentLevel: "Intermediate",
@@ -382,7 +509,7 @@ final class WeeklyReviewRenderingTests: XCTestCase {
             createdAt: referenceDate.addingTimeInterval(-400)
         )
         let quietGoal = Goal(
-            title: "Build conversational Spanish",
+            title: "Build confident conversational Spanish for everyday travel and meaningful family conversations",
             deadline: referenceDate.addingTimeInterval(86_400 * 90),
             category: .languageLearning,
             currentLevel: "Beginner",

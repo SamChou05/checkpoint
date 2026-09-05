@@ -427,7 +427,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testMomentumPresentationLeadsWithEarnedBreakOutcomeAndExcludesFutureDays() throws {
+    func testMomentumPresentationUsesLearningFirstHierarchyAndExcludesFutureDays() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.firstWeekday = 2
         calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
@@ -497,38 +497,46 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             timeZone: calendar.timeZone
         )
 
-        XCTAssertEqual(presentation.state, .earnedBreak)
+        XCTAssertEqual(presentation.state, .learning)
         XCTAssertTrue(presentation.hasActivity)
-        XCTAssertEqual(presentation.primaryMetric?.kind, .earnedBreakTime)
-        XCTAssertEqual(presentation.primaryMetric?.valueText, "50m")
-        XCTAssertEqual(presentation.primaryMetric?.labelText, "BREAK TIME EARNED")
+        XCTAssertEqual(presentation.primaryMetric?.kind, .questionsAnswered)
+        XCTAssertEqual(presentation.primaryMetric?.valueText, "9")
+        XCTAssertEqual(presentation.primaryMetric?.labelText, "QUESTIONS ANSWERED")
         XCTAssertEqual(
             presentation.supportingMetrics.map(\.kind),
-            [.checkpointsCleared, .accuracy, .recoveredMisses]
+            [.accuracy, .recoveredMisses, .checkpointsCleared]
         )
         XCTAssertEqual(
             presentation.supportingMetrics.map(\.valueText),
-            ["2", "66%", "1"]
+            ["66%", "1", "2"]
         )
         XCTAssertEqual(presentation.streakBadgeText, "2d current streak")
         XCTAssertEqual(
             presentation.trendText,
             "5 more questions than this point last week"
         )
-        XCTAssertEqual(presentation.summaryText, "9 questions · 66% correct")
         XCTAssertEqual(
-            presentation.footerText,
-            "9 questions · 5 more questions than this point last week"
+            presentation.summaryText,
+            "9 questions answered · 2 checkpoints cleared"
         )
         XCTAssertEqual(
+            presentation.footerText,
+            "Break access · 50m granted · 5 more questions than this point last week"
+        )
+        XCTAssertEqual(presentation.breakAccessText, "Break access · 50m granted")
+        XCTAssertEqual(
             presentation.accessibilityValue,
-            "50 minutes of break time earned this week. "
-                + "2 checkpoints cleared this week. "
+            "9 questions answered this week. "
                 + "66 percent accuracy, 6 of 9 correct. "
                 + "1 previously missed question currently correct. "
+                + "2 checkpoints cleared this week. "
+                + "50 minutes of break access granted this week. "
                 + "2-day checkpoint streak. "
                 + "5 more questions than this point last week. "
-                + "Activity by day: Monday, 4 questions; Wednesday, 5 questions."
+                + "Activity by day: Monday, 4 questions, "
+                + "1 checkpoint cleared, 30 minutes of break access granted; "
+                + "Wednesday, 5 questions, 1 checkpoint cleared, "
+                + "20 minutes of break access granted."
         )
         XCTAssertEqual(
             presentation.days.map(\.state),
@@ -647,24 +655,23 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             locale: Locale(identifier: "en_US"),
             timeZone: calendar.timeZone
         )
-        XCTAssertEqual(breakOnlyPresentation.state, .earnedBreak)
+        XCTAssertEqual(breakOnlyPresentation.state, .checkpointOnly)
         XCTAssertTrue(breakOnlyPresentation.hasActivity)
-        XCTAssertEqual(breakOnlyPresentation.primaryMetric?.kind, .earnedBreakTime)
-        XCTAssertEqual(breakOnlyPresentation.primaryMetric?.valueText, "15m")
-        XCTAssertEqual(
-            breakOnlyPresentation.supportingMetrics.map(\.kind),
-            [.checkpointsCleared]
-        )
+        XCTAssertEqual(breakOnlyPresentation.primaryMetric?.kind, .checkpointsCleared)
+        XCTAssertEqual(breakOnlyPresentation.primaryMetric?.valueText, "1")
+        XCTAssertTrue(breakOnlyPresentation.supportingMetrics.isEmpty)
         XCTAssertNil(
             breakOnlyPresentation.streakBadgeText,
             "A one-day value should not be promoted as a current streak"
         )
-        XCTAssertEqual(breakOnlyPresentation.summaryText, "1 break earned this week")
+        XCTAssertEqual(breakOnlyPresentation.summaryText, "1 checkpoint cleared this week")
+        XCTAssertEqual(breakOnlyPresentation.footerText, "Break access · 15m granted")
         XCTAssertEqual(
             breakOnlyPresentation.accessibilityValue,
-            "15 minutes of break time earned this week. "
-                + "1 checkpoint cleared this week. "
-                + "Activity by day: Monday, 1 checkpoint cleared."
+            "1 checkpoint cleared this week. "
+                + "15 minutes of break access granted this week. "
+                + "Activity by day: Monday, 1 checkpoint cleared, "
+                + "15 minutes of break access granted."
         )
         XCTAssertEqual(
             breakOnlyPresentation.days[0].activityLevel,
@@ -811,16 +818,18 @@ final class ProgressDashboardRenderingTests: XCTestCase {
 
         XCTAssertEqual(activeSummary.checkpointsCleared, 1)
         XCTAssertEqual(activeSummary.checkpointStreakDays, 2)
-        XCTAssertEqual(activePresentation.state, .earnedBreak)
-        XCTAssertEqual(activePresentation.primaryMetric?.kind, .earnedBreakTime)
-        XCTAssertEqual(activePresentation.primaryMetric?.valueText, "15m")
+        XCTAssertEqual(activePresentation.state, .checkpointOnly)
+        XCTAssertEqual(activePresentation.primaryMetric?.kind, .checkpointsCleared)
+        XCTAssertEqual(activePresentation.primaryMetric?.valueText, "1")
+        XCTAssertEqual(activePresentation.footerText, "Break access · 15m granted")
         XCTAssertEqual(activePresentation.streakBadgeText, "2d current streak")
         XCTAssertEqual(
             activePresentation.accessibilityValue,
-            "15 minutes of break time earned this week. "
-                + "1 checkpoint cleared this week. "
+            "1 checkpoint cleared this week. "
+                + "15 minutes of break access granted this week. "
                 + "2-day checkpoint streak. "
-                + "Activity by day: Monday, 1 checkpoint cleared."
+                + "Activity by day: Monday, 1 checkpoint cleared, "
+                + "15 minutes of break access granted."
         )
     }
 
@@ -1086,7 +1095,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             timeZone: calendar.timeZone
         )
 
-        XCTAssertEqual(practicePresentation.state, .practiceOnly)
+        XCTAssertEqual(practicePresentation.state, .learning)
         XCTAssertEqual(practicePresentation.primaryMetric?.kind, .questionsAnswered)
         XCTAssertEqual(practicePresentation.primaryMetric?.valueText, "3")
         XCTAssertEqual(
@@ -1101,7 +1110,21 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             practicePresentation.trendText,
             "Level with this point last week"
         )
+        XCTAssertNil(practicePresentation.breakAccessText)
+        XCTAssertEqual(
+            practicePresentation.summaryText,
+            "3 questions answered this week"
+        )
         XCTAssertEqual(practicePresentation.footerText, "Level with this point last week")
+        XCTAssertEqual(
+            practicePresentation.accessibilityValue,
+            "3 questions answered this week. "
+                + "33 percent accuracy, 1 of 3 correct. "
+                + "1 previously missed question currently correct. "
+                + "2 practice days this week. "
+                + "Level with this point last week. "
+                + "Activity by day: Monday, 2 questions; Tuesday, 1 question."
+        )
 
         var streakMetrics = practiceMetrics
         streakMetrics.questionsAnswered = 0
@@ -1161,16 +1184,22 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             timeZone: calendar.timeZone
         )
 
-        XCTAssertEqual(legacyClearPresentation.state, .earnedBreak)
+        XCTAssertEqual(legacyClearPresentation.state, .checkpointOnly)
         XCTAssertEqual(
             legacyClearPresentation.primaryMetric?.kind,
             .checkpointsCleared
         )
         XCTAssertEqual(legacyClearPresentation.primaryMetric?.valueText, "1")
         XCTAssertTrue(legacyClearPresentation.supportingMetrics.isEmpty)
+        XCTAssertNil(legacyClearPresentation.breakAccessText)
         XCTAssertEqual(
             legacyClearPresentation.footerText,
             "1 checkpoint cleared this week"
+        )
+        XCTAssertEqual(
+            legacyClearPresentation.accessibilityValue,
+            "1 checkpoint cleared this week. "
+                + "Activity by day: Monday, 1 checkpoint cleared."
         )
 
         var updatedMetrics = practiceMetrics
@@ -1216,6 +1245,166 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             timeZone: calendar.timeZone
         )
         XCTAssertNotEqual(nextWeek.revealID, practicePresentation.revealID)
+    }
+
+    @MainActor
+    func testMomentumCardRendersLearningCheckpointOnlyAndEmptyStates() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let week = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: referenceDate)
+        )
+
+        func presentation(
+            questions: Int,
+            correct: Int,
+            clears: Int,
+            minutes: Int,
+            recovered: Int = 0,
+            previousWeekQuestions: Int = 0
+        ) throws -> ProgressMomentumPresentation {
+            let practiceDays = try (0..<7).map { offset -> WeeklyPracticeDay in
+                let date = try XCTUnwrap(
+                    calendar.date(byAdding: .day, value: offset, to: week.start)
+                )
+                guard offset == 0 else {
+                    return WeeklyPracticeDay(date: date, questionsAnswered: 0)
+                }
+                return WeeklyPracticeDay(
+                    date: date,
+                    questionsAnswered: questions,
+                    correctAnswers: correct,
+                    checkpointsCleared: clears,
+                    earnedBreakMinutes: minutes
+                )
+            }
+            return ProgressMomentumPresentation(
+                metrics: WeeklyMetricsSummary(
+                    id: Goal.ID().uuidString,
+                    title: "Lead a production architecture review",
+                    questionsAnswered: questions,
+                    correctAnswers: correct,
+                    missedAnswers: max(0, questions - correct),
+                    checkpointStreakDays: clears > 0 ? 1 : 0,
+                    checkpointsCleared: clears,
+                    strongestSkill: nil,
+                    reviewSkill: nil,
+                    isCurrentGoal: true
+                ),
+                details: WeeklyImpactDetails(
+                    practiceDays: practiceDays,
+                    earnedBreakMinutes: minutes,
+                    recoveredQuestions: recovered,
+                    activePracticeDays: questions > 0 ? 1 : 0,
+                    previousWeekQuestions: previousWeekQuestions
+                ),
+                referenceDate: referenceDate,
+                calendar: calendar,
+                locale: Locale(identifier: "en_US"),
+                timeZone: calendar.timeZone
+            )
+        }
+
+        let fixtures = [
+            ProgressDashboardRenderFixture(
+                name: "progress-momentum-learning-with-access-light",
+                width: 393,
+                height: 390,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                settlingTime: 0.35,
+                content: AnyView(
+                    ProgressMomentumCardAuditView(
+                        presentation: try presentation(
+                            questions: 9,
+                            correct: 7,
+                            clears: 2,
+                            minutes: 50,
+                            recovered: 1,
+                            previousWeekQuestions: 4
+                        )
+                    )
+                )
+            ),
+            ProgressDashboardRenderFixture(
+                name: "progress-momentum-learning-only-compact-dark",
+                width: 320,
+                height: 390,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    ProgressMomentumCardAuditView(
+                        presentation: try presentation(
+                            questions: 6,
+                            correct: 5,
+                            clears: 0,
+                            minutes: 0,
+                            recovered: 1,
+                            previousWeekQuestions: 3
+                        )
+                    )
+                )
+            ),
+            ProgressDashboardRenderFixture(
+                name: "progress-momentum-checkpoint-only-accessibility",
+                width: 393,
+                height: 540,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility2,
+                content: AnyView(
+                    ProgressMomentumCardAuditView(
+                        presentation: try presentation(
+                            questions: 0,
+                            correct: 0,
+                            clears: 1,
+                            minutes: 15
+                        )
+                    )
+                )
+            ),
+            ProgressDashboardRenderFixture(
+                name: "progress-momentum-empty-accessibility5-dark",
+                width: 320,
+                height: 1_100,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                content: AnyView(
+                    ProgressMomentumCardAuditView(
+                        presentation: try presentation(
+                            questions: 0,
+                            correct: 0,
+                            clears: 0,
+                            minutes: 0
+                        )
+                    )
+                )
+            )
+        ]
+
+        for fixture in fixtures {
+            let image = HostedViewRenderer.image(
+                for: fixture.content
+                    .environment(\.colorScheme, fixture.colorScheme)
+                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: fixture.settlingTime
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
     }
 
     @MainActor
@@ -2056,6 +2245,23 @@ private struct ProgressDashboardRenderFixture {
     var dynamicTypeSize: DynamicTypeSize
     var settlingTime: TimeInterval = 0.05
     var content: AnyView
+}
+
+private struct ProgressMomentumCardAuditView: View {
+    let presentation: ProgressMomentumPresentation
+
+    var body: some View {
+        VStack {
+            ProgressMomentumCard(
+                presentation: presentation,
+                reduceMotion: true
+            ) {}
+
+            Spacer(minLength: 0)
+        }
+        .padding(20)
+        .checkpointScreenBackground()
+    }
 }
 
 @MainActor

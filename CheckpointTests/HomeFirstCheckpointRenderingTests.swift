@@ -531,17 +531,23 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         XCTAssertEqual(HomeWeeklySignalHeroPresentation.actionLabel, "View weekly impact")
         XCTAssertEqual(
             presentation.visibleMetrics.map(\.id),
-            [.questions, .accuracy, .breaks, .practicedSkills, .currentStreak]
+            [.questions, .practicedSkills, .accuracy, .checkpointsCleared, .currentStreak]
         )
+        XCTAssertEqual(
+            presentation.supportingMetrics.map(\.id),
+            [.accuracy, .checkpointsCleared, .currentStreak]
+        )
+        XCTAssertEqual(presentation.primaryMetric?.id, .questions)
         XCTAssertEqual(presentation.questions.value, "12")
         XCTAssertEqual(presentation.accuracy?.value, "75%")
-        XCTAssertEqual(presentation.breaks.value, "2")
+        XCTAssertEqual(presentation.checkpointsCleared.value, "2")
+        XCTAssertEqual(presentation.checkpointsCleared.label, "CHECKPOINTS CLEARED")
         XCTAssertEqual(presentation.practicedSkills?.value, "3")
         XCTAssertEqual(presentation.currentStreak?.value, "4d")
         XCTAssertEqual(presentation.currentStreak?.label, "CURRENT STREAK")
         XCTAssertEqual(
             presentation.accessibilityValue,
-            "For Algebra foundations. 12 questions answered. 75% accuracy. 2 breaks earned. 3 practiced skills. 4-day checkpoint streak. Insight: Lowest current mastery estimate, \(longSkill)."
+            "For Algebra foundations. 12 questions answered this week. 3 practiced skills this week. 75 percent accuracy, 9 of 12 correct. 2 checkpoints cleared this week. 4-day checkpoint streak. Insight: Lowest current mastery estimate, \(longSkill)."
         )
 
         let singular = HomeWeeklySignalHeroPresentation(
@@ -560,9 +566,11 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
             practicedSkillCount: 1,
             insight: .answersLogged
         )
+        XCTAssertEqual(singular.primaryMetric?.id, .questions)
+        XCTAssertEqual(singular.checkpointsCleared.label, "CHECKPOINT CLEARED")
         XCTAssertEqual(
             singular.accessibilityValue,
-            "For Writing. 1 question answered. 100% accuracy. 1 break earned. 1 practiced skill. 2-day checkpoint streak. Insight: Answers are shaping the skill map."
+            "For Writing. 1 question answered this week. 1 practiced skill this week. 100 percent accuracy, 1 of 1 correct. 1 checkpoint cleared this week. 2-day checkpoint streak. Insight: Answers are shaping the skill map."
         )
     }
 
@@ -585,15 +593,16 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         )
 
         XCTAssertFalse(presentation.hasActivity)
+        XCTAssertNil(presentation.primaryMetric)
         XCTAssertTrue(presentation.visibleMetrics.isEmpty)
         XCTAssertEqual(
             presentation.accessibilityValue,
             "For Long-term goal. No checkpoint activity this week. Your next checkpoint will start this week's impact view."
         )
 
-        let breakOnly = HomeWeeklySignalHeroPresentation(
+        let checkpointOnly = HomeWeeklySignalHeroPresentation(
             metrics: WeeklyMetricsSummary(
-                id: "goal-break",
+                id: "goal-checkpoint",
                 title: "Biology",
                 questionsAnswered: 0,
                 correctAnswers: 0,
@@ -607,11 +616,14 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
             practicedSkillCount: 0,
             insight: .checkpointsCleared(1)
         )
-        XCTAssertEqual(breakOnly.visibleMetrics.map(\.id), [.questions, .breaks])
-        XCTAssertNil(breakOnly.accuracy)
+        XCTAssertEqual(checkpointOnly.primaryMetric?.id, .checkpointsCleared)
+        XCTAssertEqual(checkpointOnly.visibleMetrics.map(\.id), [.checkpointsCleared])
+        XCTAssertTrue(checkpointOnly.supportingMetrics.isEmpty)
+        XCTAssertNil(checkpointOnly.accuracy)
+        XCTAssertNil(checkpointOnly.insight)
         XCTAssertEqual(
-            breakOnly.accessibilityValue,
-            "For Biology. 0 questions answered. 1 break earned. Insight: 1 checkpoint cleared this week."
+            checkpointOnly.accessibilityValue,
+            "For Biology. 1 checkpoint cleared this week."
         )
     }
 
@@ -708,8 +720,15 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
             insight: activeSummary.weeklySignalInsight
         )
         XCTAssertTrue(activePresentation.hasActivity)
-        XCTAssertEqual(activePresentation.visibleMetrics.map(\.id), [.questions, .accuracy, .breaks])
+        XCTAssertEqual(activePresentation.primaryMetric?.id, .questions)
+        XCTAssertEqual(activePresentation.visibleMetrics.map(\.id), [.questions, .accuracy])
+        XCTAssertEqual(activePresentation.supportingMetrics.map(\.id), [.accuracy])
+        XCTAssertEqual(activePresentation.checkpointsCleared.numericValue, 0)
         XCTAssertEqual(activePresentation.insight, .answersLogged)
+        XCTAssertEqual(
+            activePresentation.accessibilityValue,
+            "For Monday study plan. 1 question answered this week. 100 percent accuracy, 1 of 1 correct. Insight: Answers are shaping the skill map."
+        )
     }
 
     func testWeeklySignalSkillPolicyCountsOnlySkillsPracticedThisWeek() {
@@ -950,6 +969,30 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
             reviewSkill: longSkill,
             isCurrentGoal: true
         )
+        let questionsOnlyMetrics = WeeklyMetricsSummary(
+            id: "questions-only-goal",
+            title: "Evidence-based reasoning",
+            questionsAnswered: 8,
+            correctAnswers: 6,
+            missedAnswers: 2,
+            checkpointStreakDays: 0,
+            checkpointsCleared: 0,
+            strongestSkill: nil,
+            reviewSkill: nil,
+            isCurrentGoal: true
+        )
+        let checkpointOnlyMetrics = WeeklyMetricsSummary(
+            id: "checkpoint-only-goal",
+            title: "Cellular biology",
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            missedAnswers: 0,
+            checkpointStreakDays: 1,
+            checkpointsCleared: 1,
+            strongestSkill: nil,
+            reviewSkill: nil,
+            isCurrentGoal: true
+        )
         let practicedCompetencies = [
             makeWeeklySignalCompetency(
                 topic: longSkill,
@@ -985,6 +1028,28 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 metrics: emptyMetrics,
                 competencies: [],
                 insight: nil,
+                expectedLayout: .regular
+            ),
+            HomeWeeklySignalRenderFixture(
+                name: "home-weekly-signal-questions-only-regular-light",
+                width: 393,
+                height: 700,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                metrics: questionsOnlyMetrics,
+                competencies: [],
+                insight: .answersLogged,
+                expectedLayout: .regular
+            ),
+            HomeWeeklySignalRenderFixture(
+                name: "home-weekly-signal-checkpoint-only-regular-dark",
+                width: 393,
+                height: 700,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                metrics: checkpointOnlyMetrics,
+                competencies: [],
+                insight: .checkpointsCleared(1),
                 expectedLayout: .regular
             ),
             HomeWeeklySignalRenderFixture(
@@ -1089,37 +1154,54 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 "\(fixture.name) weekly-impact Button escaped its section"
             )
 
-            if fixture.metrics.hasWeeklyReviewActivity {
+            let presentation = HomeWeeklySignalHeroPresentation(
+                metrics: fixture.metrics,
+                practicedSkillCount: HomeWeeklySignalSkillPolicy.practicedSkillCount(
+                    competencies: fixture.competencies,
+                    asOf: referenceDate,
+                    calendar: fixedGoalSwitchCalendar
+                ),
+                insight: fixture.insight
+            )
+            if presentation.hasActivity {
                 let primaryMetric = try XCTUnwrap(
                     layoutCapture.frames[.primaryMetric],
                     fixture.name
                 )
-                let supportingMetrics = try XCTUnwrap(
-                    layoutCapture.frames[.supportingMetrics],
-                    fixture.name
-                )
-                switch fixture.expectedLayout {
-                case .regular:
-                    XCTAssertGreaterThanOrEqual(
-                        supportingMetrics.minX,
-                        primaryMetric.maxX,
-                        "\(fixture.name) regular metrics overlap"
-                    )
-                case .stacked:
-                    XCTAssertGreaterThanOrEqual(
-                        supportingMetrics.minY,
-                        primaryMetric.maxY,
-                        "\(fixture.name) stacked metrics overlap"
-                    )
-                }
                 XCTAssertTrue(
                     actionButton.insetBy(dx: -0.5, dy: -0.5).contains(primaryMetric),
                     "\(fixture.name) primary metric escaped the weekly-impact Button"
                 )
-                XCTAssertTrue(
-                    actionButton.insetBy(dx: -0.5, dy: -0.5).contains(supportingMetrics),
-                    "\(fixture.name) supporting metrics escaped the weekly-impact Button"
-                )
+
+                if presentation.supportingMetrics.isEmpty {
+                    XCTAssertNil(
+                        layoutCapture.frames[.supportingMetrics],
+                        "\(fixture.name) rendered an empty supporting-metrics region"
+                    )
+                } else {
+                    let supportingMetrics = try XCTUnwrap(
+                        layoutCapture.frames[.supportingMetrics],
+                        fixture.name
+                    )
+                    switch fixture.expectedLayout {
+                    case .regular:
+                        XCTAssertGreaterThanOrEqual(
+                            supportingMetrics.minX,
+                            primaryMetric.maxX,
+                            "\(fixture.name) regular metrics overlap"
+                        )
+                    case .stacked:
+                        XCTAssertGreaterThanOrEqual(
+                            supportingMetrics.minY,
+                            primaryMetric.maxY,
+                            "\(fixture.name) stacked metrics overlap"
+                        )
+                    }
+                    XCTAssertTrue(
+                        actionButton.insetBy(dx: -0.5, dy: -0.5).contains(supportingMetrics),
+                        "\(fixture.name) supporting metrics escaped the weekly-impact Button"
+                    )
+                }
             }
 
             let attachment = XCTAttachment(image: image)
