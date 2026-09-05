@@ -316,7 +316,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             presentation.supportingMetrics.map(\.valueText),
             ["2", "66%", "1"]
         )
-        XCTAssertEqual(presentation.streakBadgeText, "2d streak")
+        XCTAssertEqual(presentation.streakBadgeText, "2d current streak")
         XCTAssertEqual(
             presentation.trendText,
             "5 more questions than this point last week"
@@ -407,10 +407,37 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             "No checkpoint activity this week. Your next checkpoint starts this week’s momentum."
         )
 
+        var orphanedBreakDays = days
+        orphanedBreakDays[0].earnedBreakMinutes = 15
+        let orphanedBreakPresentation = ProgressMomentumPresentation(
+            metrics: metrics,
+            details: WeeklyImpactDetails(
+                practiceDays: orphanedBreakDays,
+                earnedBreakMinutes: 15,
+                recoveredQuestions: 0,
+                activePracticeDays: 0,
+                previousWeekQuestions: 0
+            ),
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        XCTAssertEqual(orphanedBreakPresentation.state, .empty)
+        XCTAssertFalse(orphanedBreakPresentation.hasActivity)
+        XCTAssertNil(orphanedBreakPresentation.primaryMetric)
+        XCTAssertNil(orphanedBreakPresentation.streakBadgeText)
+        XCTAssertEqual(orphanedBreakPresentation.days[0].state, .inactive)
+        XCTAssertEqual(
+            orphanedBreakPresentation.accessibilityValue,
+            "No checkpoint activity this week. Your next checkpoint starts this week’s momentum."
+        )
+
         var breakOnlyDays = days
         breakOnlyDays[0].checkpointsCleared = 1
         breakOnlyDays[0].earnedBreakMinutes = 15
         var breakOnlyMetrics = metrics
+        breakOnlyMetrics.checkpointStreakDays = 1
         breakOnlyMetrics.checkpointsCleared = 1
         let breakOnlyPresentation = ProgressMomentumPresentation(
             metrics: breakOnlyMetrics,
@@ -433,6 +460,10 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         XCTAssertEqual(
             breakOnlyPresentation.supportingMetrics.map(\.kind),
             [.checkpointsCleared]
+        )
+        XCTAssertNil(
+            breakOnlyPresentation.streakBadgeText,
+            "A one-day value should not be promoted as a current streak"
         )
         XCTAssertEqual(breakOnlyPresentation.summaryText, "1 break earned this week")
         XCTAssertEqual(
@@ -478,6 +509,124 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 activeGoalID: nil,
                 hasReviewedSkillMap: true
             )
+        )
+    }
+
+    @MainActor
+    func testMomentumPresentationTreatsCarriedStreakAsEmptyAtMondayBoundary() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.minimumDaysInFirstWeek = 4
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let sunday = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(year: 2027, month: 1, day: 3, hour: 12)
+            )
+        )
+        let mondayMorning = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(year: 2027, month: 1, day: 4, hour: 9)
+            )
+        )
+        let mondayNoon = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(year: 2027, month: 1, day: 4, hour: 12)
+            )
+        )
+        let goal = Goal(
+            title: "Monday study plan",
+            deadline: try XCTUnwrap(
+                calendar.date(from: DateComponents(year: 2027, month: 2, day: 1))
+            ),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "weekly boundaries",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let sundayClear = UnlockEvent(
+            goalID: goal.id,
+            minutes: 10,
+            createdAt: sunday
+        )
+        let carriedCalculator = WeeklyMetricsCalculator(
+            attempts: [],
+            unlockEvents: [sundayClear],
+            asOf: mondayNoon,
+            calendar: calendar
+        )
+        let carriedSummary = carriedCalculator.summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: []
+        )
+        let carriedPresentation = ProgressMomentumPresentation(
+            metrics: carriedSummary,
+            details: carriedCalculator.impactDetails(goalID: goal.id),
+            referenceDate: mondayNoon,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(calendar.component(.weekday, from: mondayNoon), 2)
+        XCTAssertEqual(carriedSummary.questionsAnswered, 0)
+        XCTAssertEqual(carriedSummary.checkpointsCleared, 0)
+        XCTAssertEqual(carriedSummary.checkpointStreakDays, 1)
+        XCTAssertTrue(carriedSummary.hasWeeklyReviewActivity)
+        XCTAssertEqual(carriedPresentation.state, .empty)
+        XCTAssertFalse(carriedPresentation.hasActivity)
+        XCTAssertNil(carriedPresentation.primaryMetric)
+        XCTAssertNil(carriedPresentation.streakBadgeText)
+        XCTAssertEqual(
+            carriedPresentation.days.map(\.state),
+            [.inactive, .future, .future, .future, .future, .future, .future]
+        )
+        XCTAssertEqual(
+            carriedPresentation.accessibilityValue,
+            "No checkpoint activity this week. Your next checkpoint starts this week’s momentum."
+        )
+
+        let mondayClear = UnlockEvent(
+            goalID: goal.id,
+            minutes: 15,
+            createdAt: mondayMorning
+        )
+        let activeCalculator = WeeklyMetricsCalculator(
+            attempts: [],
+            unlockEvents: [sundayClear, mondayClear],
+            asOf: mondayNoon,
+            calendar: calendar
+        )
+        let activeSummary = activeCalculator.summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: []
+        )
+        let activePresentation = ProgressMomentumPresentation(
+            metrics: activeSummary,
+            details: activeCalculator.impactDetails(goalID: goal.id),
+            referenceDate: mondayNoon,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(activeSummary.checkpointsCleared, 1)
+        XCTAssertEqual(activeSummary.checkpointStreakDays, 2)
+        XCTAssertEqual(activePresentation.state, .earnedBreak)
+        XCTAssertEqual(activePresentation.primaryMetric?.kind, .earnedBreakTime)
+        XCTAssertEqual(activePresentation.primaryMetric?.valueText, "15m")
+        XCTAssertEqual(activePresentation.streakBadgeText, "2d current streak")
+        XCTAssertEqual(
+            activePresentation.accessibilityValue,
+            "15 minutes of break time earned this week. "
+                + "1 checkpoint cleared this week. "
+                + "2-day checkpoint streak. "
+                + "Activity by day: Monday, 1 checkpoint cleared."
         )
     }
 
@@ -639,7 +788,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testMomentumPresentationDistinguishesPracticeStreakAndLegacyClear() throws {
+    func testMomentumPresentationTreatsCarriedStreakAsEmptyAndPreservesWeeklyStates() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.firstWeekday = 2
         calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
@@ -715,7 +864,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         let quietDays = days.map {
             WeeklyPracticeDay(date: $0.date, questionsAnswered: 0)
         }
-        let streakPresentation = ProgressMomentumPresentation(
+        let carriedStreakPresentation = ProgressMomentumPresentation(
             metrics: streakMetrics,
             details: WeeklyImpactDetails(
                 practiceDays: quietDays,
@@ -730,19 +879,19 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             timeZone: calendar.timeZone
         )
 
-        XCTAssertEqual(streakPresentation.state, .streakHolding)
-        XCTAssertEqual(streakPresentation.primaryMetric?.kind, .checkpointStreak)
-        XCTAssertEqual(streakPresentation.primaryMetric?.valueText, "4d")
-        XCTAssertTrue(streakPresentation.supportingMetrics.isEmpty)
-        XCTAssertNil(streakPresentation.streakBadgeText)
-        XCTAssertNil(streakPresentation.trendText)
+        XCTAssertEqual(carriedStreakPresentation.state, .empty)
+        XCTAssertFalse(carriedStreakPresentation.hasActivity)
+        XCTAssertNil(carriedStreakPresentation.primaryMetric)
+        XCTAssertTrue(carriedStreakPresentation.supportingMetrics.isEmpty)
+        XCTAssertNil(carriedStreakPresentation.streakBadgeText)
+        XCTAssertNil(carriedStreakPresentation.trendText)
         XCTAssertEqual(
-            streakPresentation.summaryText,
-            "Clear a checkpoint today to keep it going."
+            carriedStreakPresentation.summaryText,
+            "Your next checkpoint starts this week’s momentum."
         )
         XCTAssertEqual(
-            streakPresentation.accessibilityValue,
-            "4-day checkpoint streak. Clear a checkpoint today to keep it going."
+            carriedStreakPresentation.accessibilityValue,
+            "No checkpoint activity this week. Your next checkpoint starts this week’s momentum."
         )
 
         var legacyClearMetrics = streakMetrics

@@ -17,7 +17,6 @@ struct ProgressWeeklyImpactDayPresentation: Identifiable, Equatable {
 enum ProgressMomentumState: Equatable {
     case earnedBreak
     case practiceOnly
-    case streakHolding
     case empty
 }
 
@@ -28,7 +27,6 @@ enum ProgressMomentumMetricKind: Hashable {
     case accuracy
     case recoveredMisses
     case practiceDays
-    case checkpointStreak
 }
 
 struct ProgressMomentumMetric: Identifiable, Equatable {
@@ -82,12 +80,10 @@ struct ProgressMomentumPresentation: Equatable {
         let practiceDays = min(max(0, details.activePracticeDays), 7)
         let streak = max(0, metrics.checkpointStreakDays)
 
-        if minutes > 0 || clears > 0 {
+        if clears > 0 {
             state = .earnedBreak
         } else if questions > 0 {
             state = .practiceOnly
-        } else if streak > 0 {
-            state = .streakHolding
         } else {
             state = .empty
         }
@@ -103,7 +99,7 @@ struct ProgressMomentumPresentation: Equatable {
             let dayState: ProgressWeeklyImpactDayState
             if normalizedDay > referenceDay {
                 dayState = .future
-            } else if day.hasActivity {
+            } else if day.questionsAnswered > 0 || day.checkpointsCleared > 0 {
                 dayState = .active
             } else {
                 dayState = .inactive
@@ -154,14 +150,6 @@ struct ProgressMomentumPresentation: Equatable {
                 labelText: questions == 1 ? "QUESTION ANSWERED" : "QUESTIONS ANSWERED",
                 detailText: nil,
                 accessibilityText: Self.questionAccessibilityText(questions)
-            )
-        case .streakHolding:
-            primaryMetric = ProgressMomentumMetric(
-                kind: .checkpointStreak,
-                valueText: "\(streak)d",
-                labelText: "CHECKPOINT STREAK",
-                detailText: nil,
-                accessibilityText: Self.streakAccessibilityText(streak)
             )
         case .empty:
             primaryMetric = nil
@@ -216,8 +204,8 @@ struct ProgressMomentumPresentation: Equatable {
         }
         supportingMetrics = Array(metricCandidates.prefix(3))
 
-        streakBadgeText = streak > 0 && state != .streakHolding
-            ? "\(streak)d streak"
+        streakBadgeText = streak > 1 && state != .empty
+            ? "\(streak)d current streak"
             : nil
         trendText = questions > 0
             ? details.questionTrendText(currentQuestions: questions)
@@ -238,8 +226,6 @@ struct ProgressMomentumPresentation: Equatable {
             summaryText = "Break time earned this week"
         case .practiceOnly:
             summaryText = "Your answers are shaping this week’s learning signal."
-        case .streakHolding:
-            summaryText = "Clear a checkpoint today to keep it going."
         case .empty:
             summaryText = "Your next checkpoint starts this week’s momentum."
         }
@@ -260,14 +246,11 @@ struct ProgressMomentumPresentation: Equatable {
                 accessibilityParts.append(primaryMetric.accessibilityText)
             }
             accessibilityParts.append(contentsOf: supportingMetrics.map(\.accessibilityText))
-            if streak > 0, state != .streakHolding {
+            if streak > 1 {
                 accessibilityParts.append(Self.streakAccessibilityText(streak))
             }
             if let trendText {
                 accessibilityParts.append(trendText)
-            }
-            if state == .streakHolding {
-                accessibilityParts.append("Clear a checkpoint today to keep it going")
             }
 
             let activeDayDetails = zip(details.practiceDays, days).compactMap {
