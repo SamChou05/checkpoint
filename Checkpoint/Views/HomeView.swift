@@ -1,6 +1,14 @@
 import Accessibility
 import SwiftUI
 
+struct HomeWeeklyReviewDestination: Identifiable, Equatable {
+    let metricsID: String
+    let referenceDate: Date
+    let calendar: Calendar
+
+    var id: String { metricsID }
+}
+
 struct HomeView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
@@ -8,6 +16,7 @@ struct HomeView: View {
     private let refreshesQuestionsOnActivation: Bool
     private let reduceMotionOverride: Bool?
     private let referenceDateOverride: Date?
+    private let calendar: Calendar
     private let isVisible: Bool
     private let isSceneActive: Bool
     private let isCoveredByParentModal: Bool
@@ -21,7 +30,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isRestrictedAppsPresented = false
-    @State private var isWeeklyReviewPresented = false
+    @State private var weeklyReviewDestination: HomeWeeklyReviewDestination?
     @State private var isAcceptingLevelIncrease = false
     @State private var isRetryingInitialQuestions = false
     @State private var isQuestionsReadyConfirmationVisible = false
@@ -43,6 +52,7 @@ struct HomeView: View {
         refreshesQuestionsOnActivation: Bool = true,
         reduceMotionOverride: Bool? = nil,
         referenceDate: Date? = nil,
+        calendar: Calendar = .current,
         isVisible: Bool = true,
         isSceneActive: Bool = true,
         isCoveredByParentModal: Bool = false,
@@ -55,6 +65,7 @@ struct HomeView: View {
         self.refreshesQuestionsOnActivation = refreshesQuestionsOnActivation
         self.reduceMotionOverride = reduceMotionOverride
         referenceDateOverride = referenceDate
+        self.calendar = calendar
         self.isVisible = isVisible
         self.isSceneActive = isSceneActive
         self.isCoveredByParentModal = isCoveredByParentModal
@@ -69,13 +80,22 @@ struct HomeView: View {
     }
 
     var body: some View {
+        GeometryReader { geometry in
+            homeContent(viewportWidth: geometry.size.width)
+        }
+    }
+
+    private func homeContent(viewportWidth: CGFloat) -> some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: homeSectionSpacing) {
+                VStack(
+                    alignment: .leading,
+                    spacing: homeSectionSpacing(viewportWidth: viewportWidth)
+                ) {
                     checkpointNoticePanel
 
                     if let goal = store.goal {
-                        goalScopedContent(goal)
+                        goalScopedContent(goal, viewportWidth: viewportWidth)
                             .id(goal.id)
                             .transition(goalIdentityMotionPolicy.transition)
                     } else {
@@ -100,8 +120,8 @@ struct HomeView: View {
                     goalIdentityMotionPolicy.animation,
                     value: store.goal?.id
                 )
-                .padding(.horizontal, usesCompactFirstWinHomeLayout ? 16 : 24)
-                .padding(.top, usesCompactFirstWinHomeLayout ? 8 : 20)
+                .padding(.horizontal, homeHorizontalMargin(viewportWidth: viewportWidth))
+                .padding(.top, homeTopMargin(viewportWidth: viewportWidth))
                 .padding(.bottom, 112)
             }
             .checkpointScreenBackground()
@@ -110,10 +130,15 @@ struct HomeView: View {
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
             }
-            .sheet(isPresented: $isWeeklyReviewPresented) {
+            .sheet(item: $weeklyReviewDestination) { destination in
                 WeeklyReviewView(
                     store: store,
-                    initialMetricsID: (store.weeklyActiveGoalMetrics ?? store.weeklyTotalMetrics).id
+                    initialMetricsID: destination.metricsID,
+                    referenceDate: destination.referenceDate,
+                    displayCalendar: destination.calendar,
+                    displayTimeZone: destination.calendar.timeZone,
+                    reduceMotionOverride: reduceMotion,
+                    initialWeekReferenceDate: destination.referenceDate
                 )
             }
             .onAppear {
@@ -168,7 +193,7 @@ struct HomeView: View {
                 ), let message else { return }
                 guard isVisible,
                       !parentModalOwnsProtectionErrors,
-                      !isRestrictedAppsPresented else { return }
+                      !isCoveredByLocalPresentation else { return }
                 announceOrQueue(
                     AccessibilityAnnouncementRequest(
                         message: message,
@@ -195,13 +220,14 @@ struct HomeView: View {
             .onDisappear {
                 hideQuestionsReadyConfirmation()
             }
+            .environment(\.homeWeeklySignalViewportWidth, viewportWidth)
         }
     }
 
-    private func goalScopedContent(_ goal: Goal) -> some View {
+    private func goalScopedContent(_ goal: Goal, viewportWidth: CGFloat) -> some View {
         VStack(
             alignment: .leading,
-            spacing: usesCompactFirstWinHomeLayout ? 14 : 24
+            spacing: usesCompactHomeMargins(viewportWidth: viewportWidth) ? 14 : 24
         ) {
             if isTemporarilyUnblocked {
                 activeBreakCard
@@ -392,9 +418,12 @@ struct HomeView: View {
             isVisible: isVisible,
             isSceneActive: isSceneActive,
             isCoveredByParentPresentation: isCoveredByParentModal,
-            isCoveredByLocalPresentation: isRestrictedAppsPresented
-                || isWeeklyReviewPresented
+            isCoveredByLocalPresentation: isCoveredByLocalPresentation
         )
+    }
+
+    private var isCoveredByLocalPresentation: Bool {
+        isRestrictedAppsPresented || weeklyReviewDestination != nil
     }
 
     @ViewBuilder
@@ -480,14 +509,23 @@ struct HomeView: View {
     }
 
     private var studyBeaconPanel: some View {
-        let metrics = store.weeklyActiveGoalMetrics ?? store.weeklyTotalMetrics
+        let asOf = referenceDateOverride ?? Date()
+        let metrics = store.weeklyActiveGoalMetrics(asOf: asOf, calendar: calendar)
+            ?? store.weeklyTotalMetrics(asOf: asOf, calendar: calendar)
 
         return LightStudyBeaconSection(
             metrics: metrics,
             competencies: store.activeProgressCompetencies,
-            insight: metrics.weeklySignalInsight
+            insight: metrics.weeklySignalInsight,
+            reduceMotionOverride: reduceMotion,
+            referenceDate: asOf,
+            calendar: calendar
         ) {
-            isWeeklyReviewPresented = true
+            weeklyReviewDestination = HomeWeeklyReviewDestination(
+                metricsID: metrics.id,
+                referenceDate: asOf,
+                calendar: calendar
+            )
         }
     }
 
@@ -785,8 +823,28 @@ struct HomeView: View {
             dynamicTypeSize == .large
     }
 
-    private var homeSectionSpacing: CGFloat {
-        usesCompactFirstWinHomeLayout ? 16 : 24
+    private func usesCompactHomeMargins(viewportWidth: CGFloat) -> Bool {
+        usesCompactFirstWinHomeLayout || (
+            homeStudyBeaconPresentation.kind == .weeklySignal &&
+                HomeWeeklySignalLayoutPolicy.usesCompactHomeMargins(
+                    viewportWidth: viewportWidth
+                )
+        )
+    }
+
+    private func homeHorizontalMargin(viewportWidth: CGFloat) -> CGFloat {
+        usesCompactHomeMargins(viewportWidth: viewportWidth) ? 16 : 24
+    }
+
+    private func homeTopMargin(viewportWidth: CGFloat) -> CGFloat {
+        if usesCompactFirstWinHomeLayout {
+            return 8
+        }
+        return usesCompactHomeMargins(viewportWidth: viewportWidth) ? 12 : 20
+    }
+
+    private func homeSectionSpacing(viewportWidth: CGFloat) -> CGFloat {
+        usesCompactHomeMargins(viewportWidth: viewportWidth) ? 16 : 24
     }
 
     private var referenceDate: Date {

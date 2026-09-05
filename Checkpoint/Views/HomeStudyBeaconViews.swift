@@ -1853,73 +1853,339 @@ struct HomeFirstWinJourneyCard: View {
     }
 }
 
+enum HomeWeeklySignalLayout: Equatable {
+    case regular
+    case stacked
+}
+
+struct HomeWeeklySignalLayoutPolicy: Equatable {
+    static let compactViewportMaximum: CGFloat = 320
+
+    let viewportWidth: CGFloat
+    let dynamicTypeSize: DynamicTypeSize
+
+    var layout: HomeWeeklySignalLayout {
+        if Self.usesCompactHomeMargins(viewportWidth: viewportWidth) {
+            return .stacked
+        }
+
+        switch dynamicTypeSize {
+        case .xSmall, .small, .medium, .large:
+            return .regular
+        default:
+            return .stacked
+        }
+    }
+
+    var contentPadding: CGFloat {
+        Self.usesCompactHomeMargins(viewportWidth: viewportWidth) ? 16 : 18
+    }
+
+    var stacksSupportingMetricLabels: Bool {
+        switch dynamicTypeSize {
+        case .accessibility1, .accessibility2, .accessibility3, .accessibility4,
+             .accessibility5:
+            true
+        default:
+            false
+        }
+    }
+
+    static func usesCompactHomeMargins(viewportWidth: CGFloat) -> Bool {
+        viewportWidth <= compactViewportMaximum
+    }
+}
+
+enum HomeWeeklySignalMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct HomeWeeklySignalMotionPolicy {
+    let style: HomeWeeklySignalMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var conditionalTransition: AnyTransition {
+        style == .animated ? .opacity : .identity
+    }
+
+    var permitsSignalEffect: Bool {
+        style == .animated
+    }
+}
+
+struct HomeWeeklySignalMetricPresentation: Equatable, Identifiable {
+    enum ID: Equatable, Hashable {
+        case questions
+        case accuracy
+        case breaks
+        case practicedSkills
+        case currentStreak
+    }
+
+    let id: ID
+    let value: String
+    let label: String
+    let numericValue: Double
+    let accessibilityValue: String
+}
+
+struct HomeWeeklySignalHeroPresentation: Equatable {
+    static let actionLabel = "View weekly impact"
+    static let emptyAccessibilityValue =
+        "No checkpoint activity this week. Your next checkpoint will start this week's impact view."
+
+    let hasActivity: Bool
+    let title: String
+    let questions: HomeWeeklySignalMetricPresentation
+    let accuracy: HomeWeeklySignalMetricPresentation?
+    let breaks: HomeWeeklySignalMetricPresentation
+    let practicedSkills: HomeWeeklySignalMetricPresentation?
+    let currentStreak: HomeWeeklySignalMetricPresentation?
+    let insight: WeeklySignalInsight?
+
+    init(
+        metrics: WeeklyMetricsSummary,
+        practicedSkillCount: Int,
+        insight: WeeklySignalInsight?
+    ) {
+        hasActivity = metrics.questionsAnswered > 0 || metrics.checkpointsCleared > 0
+        title = metrics.title
+        let questionNoun = metrics.questionsAnswered == 1 ? "question" : "questions"
+        let breakNoun = metrics.checkpointsCleared == 1 ? "break" : "breaks"
+        questions = HomeWeeklySignalMetricPresentation(
+            id: .questions,
+            value: "\(metrics.questionsAnswered)",
+            label: metrics.questionsAnswered == 1
+                ? "QUESTION ANSWERED"
+                : "QUESTIONS ANSWERED",
+            numericValue: Double(metrics.questionsAnswered),
+            accessibilityValue: "\(metrics.questionsAnswered) \(questionNoun) answered"
+        )
+
+        if metrics.questionsAnswered > 0 {
+            let accuracyPercent = Int(
+                (Double(metrics.correctAnswers) / Double(metrics.questionsAnswered)) * 100
+            )
+            accuracy = HomeWeeklySignalMetricPresentation(
+                id: .accuracy,
+                value: "\(accuracyPercent)%",
+                label: "ACCURACY",
+                numericValue: Double(accuracyPercent),
+                accessibilityValue: "\(accuracyPercent)% accuracy"
+            )
+        } else {
+            accuracy = nil
+        }
+
+        breaks = HomeWeeklySignalMetricPresentation(
+            id: .breaks,
+            value: "\(metrics.checkpointsCleared)",
+            label: metrics.checkpointsCleared == 1 ? "BREAK EARNED" : "BREAKS EARNED",
+            numericValue: Double(metrics.checkpointsCleared),
+            accessibilityValue: "\(metrics.checkpointsCleared) \(breakNoun) earned"
+        )
+
+        if practicedSkillCount > 0 {
+            let skillNoun = practicedSkillCount == 1 ? "skill" : "skills"
+            practicedSkills = HomeWeeklySignalMetricPresentation(
+                id: .practicedSkills,
+                value: "\(practicedSkillCount)",
+                label: practicedSkillCount == 1 ? "SKILL PRACTICED" : "SKILLS PRACTICED",
+                numericValue: Double(practicedSkillCount),
+                accessibilityValue: "\(practicedSkillCount) practiced \(skillNoun)"
+            )
+        } else {
+            practicedSkills = nil
+        }
+
+        if metrics.checkpointStreakDays > 1 {
+            currentStreak = HomeWeeklySignalMetricPresentation(
+                id: .currentStreak,
+                value: "\(metrics.checkpointStreakDays)d",
+                label: "CURRENT STREAK",
+                numericValue: Double(metrics.checkpointStreakDays),
+                accessibilityValue: "\(metrics.checkpointStreakDays)-day checkpoint streak"
+            )
+        } else {
+            currentStreak = nil
+        }
+
+        self.insight = hasActivity ? insight : nil
+    }
+
+    var visibleMetrics: [HomeWeeklySignalMetricPresentation] {
+        guard hasActivity else { return [] }
+        return [questions, accuracy, breaks, practicedSkills, currentStreak].compactMap { $0 }
+    }
+
+    var accessibilityValue: String {
+        guard hasActivity else { return "For \(title). \(Self.emptyAccessibilityValue)" }
+
+        var parts = ["For \(title)"] + visibleMetrics.map(\.accessibilityValue)
+        if let insight {
+            parts.append("Insight: \(insight.accessibilityLabel)")
+        }
+        return parts.joined(separator: ". ") + "."
+    }
+}
+
+enum HomeWeeklySignalSkillPolicy {
+    static func practicedSkillCount(
+        competencies: [TopicCompetency],
+        asOf referenceDate: Date,
+        calendar: Calendar
+    ) -> Int {
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: referenceDate) else {
+            return 0
+        }
+
+        return competencies.filter { competency in
+            guard let lastPracticedAt = competency.lastPracticedAt else { return false }
+            return competency.attempts > 0
+                && lastPracticedAt <= referenceDate
+                && week.contains(lastPracticedAt)
+        }.count
+    }
+}
+
+enum HomeWeeklySignalLayoutElement: Hashable {
+    case section
+    case actionButton
+    case actionAffordance
+    case primaryMetric
+    case supportingMetrics
+}
+
+private struct HomeWeeklySignalViewportWidthKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 393
+}
+
+extension EnvironmentValues {
+    var homeWeeklySignalViewportWidth: CGFloat {
+        get { self[HomeWeeklySignalViewportWidthKey.self] }
+        set { self[HomeWeeklySignalViewportWidthKey.self] = newValue }
+    }
+}
+
+private let homeWeeklySignalLayoutCoordinateSpaceName = "Checkpoint.Home.WeeklySignal.Layout"
+
+private struct HomeWeeklySignalLayoutFrameReporter: ViewModifier {
+    let element: HomeWeeklySignalLayoutElement
+    let report: (@MainActor (HomeWeeklySignalLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(in: .named(homeWeeklySignalLayoutCoordinateSpaceName))
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportHomeWeeklySignalLayoutFrame(
+        _ element: HomeWeeklySignalLayoutElement,
+        using report: (@MainActor (HomeWeeklySignalLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(HomeWeeklySignalLayoutFrameReporter(element: element, report: report))
+    }
+}
+
 struct LightStudyBeaconSection: View {
     var metrics: WeeklyMetricsSummary
     var competencies: [TopicCompetency]
     var insight: WeeklySignalInsight?
     var action: () -> Void
 
+    private let reduceMotionOverride: Bool?
+    private let layoutReporter: (@MainActor (HomeWeeklySignalLayoutElement, CGRect) -> Void)?
+    private let referenceDate: Date
+    private let calendar: Calendar
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.homeWeeklySignalViewportWidth) private var viewportWidth
     @ScaledMetric(relativeTo: .largeTitle) private var primaryMetricSize: CGFloat = 50
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionHeader
-
-            Button(action: action) {
-                VStack(alignment: .leading, spacing: 16) {
-                    if metrics.hasWeeklyReviewActivity {
-                        activitySummary
-                    } else {
-                        emptySummary
-                    }
-
-                    if let insight {
-                        Divider()
-                            .overlay(CheckpointTheme.heroDivider)
-
-                        insightRow(insight)
-                    }
-                }
-                .padding(18)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .fill(CheckpointTheme.ink)
-                        .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                        .overlay(alignment: .topTrailing) {
-                            Circle()
-                                .fill(signalAccent.opacity(0.08))
-                                .frame(width: 140, height: 140)
-                                .blur(radius: 10)
-                                .offset(x: 60, y: -78)
-                                .allowsHitTesting(false)
-                        }
-                )
-                .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
-            }
-            .buttonStyle(CheckpointPressButtonStyle())
-            .accessibilityLabel(weeklySignalAccessibilityLabel)
-            .accessibilityHint("Opens weekly impact")
-        }
-        .padding(.horizontal, 4)
+    init(
+        metrics: WeeklyMetricsSummary,
+        competencies: [TopicCompetency],
+        insight: WeeklySignalInsight?,
+        reduceMotionOverride: Bool? = nil,
+        referenceDate: Date = Date(),
+        calendar: Calendar = .current,
+        layoutReporter: (@MainActor (HomeWeeklySignalLayoutElement, CGRect) -> Void)? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.metrics = metrics
+        self.competencies = competencies
+        self.insight = insight
+        self.reduceMotionOverride = reduceMotionOverride
+        self.referenceDate = referenceDate
+        self.calendar = calendar
+        self.layoutReporter = layoutReporter
+        self.action = action
     }
 
-    @ViewBuilder
-    private var sectionHeader: some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 5) {
-                sectionHeaderLabel
-                viewImpactLabel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeaderLabel
+
+            Button(action: action) {
+                CheckpointHeroSurface(
+                    glowColor: signalAccent,
+                    glowOpacity: heroPresentation.hasActivity ? 0.12 : 0.07,
+                    glowDiameter: 142,
+                    contentPadding: layoutPolicy.contentPadding
+                ) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        signalHeader
+
+                        if heroPresentation.hasActivity {
+                            activitySummary
+                        } else {
+                            emptySummary
+                        }
+
+                        if let insight = heroPresentation.insight {
+                            Divider()
+                                .overlay(CheckpointTheme.heroDivider)
+
+                            insightRow(insight)
+                                .transition(motionPolicy.conditionalTransition)
+                        }
+                    }
+                    .animation(motionPolicy.animation, value: heroPresentation.insight)
+                }
+                .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             }
-        } else {
-            HStack {
-                sectionHeaderLabel
-                Spacer()
-                viewImpactLabel
-            }
+            .buttonStyle(CheckpointPressButtonStyle())
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(HomeWeeklySignalHeroPresentation.actionLabel)
+            .accessibilityValue(weeklySignalAccessibilityValue)
+            .accessibilityHint("Opens weekly impact")
+            .accessibilityIdentifier("home-weekly-signal-action")
+            .reportHomeWeeklySignalLayoutFrame(.actionButton, using: layoutReporter)
         }
+        .reportHomeWeeklySignalLayoutFrame(.section, using: layoutReporter)
+        .coordinateSpace(name: homeWeeklySignalLayoutCoordinateSpaceName)
     }
 
     private var sectionHeaderLabel: some View {
@@ -1930,22 +2196,74 @@ struct LightStudyBeaconSection: View {
             .accessibilityAddTraits(.isHeader)
     }
 
-    private var viewImpactLabel: some View {
-        HStack(spacing: 5) {
-            Text("View impact")
-            Image(systemName: "arrow.up.right")
-                .font(.system(size: 9, weight: .bold))
+    @ViewBuilder
+    private var signalHeader: some View {
+        if layoutPolicy.layout == .stacked {
+            VStack(alignment: .leading, spacing: 8) {
+                signalIdentity
+                viewImpactLabel
+            }
+        } else {
+            HStack(alignment: .center, spacing: 12) {
+                signalIdentity
+                Spacer(minLength: 8)
+                viewImpactLabel
+            }
         }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(CheckpointTheme.teal)
+    }
+
+    private var signalIdentity: some View {
+        HStack(spacing: 9) {
+            Image(systemName: heroPresentation.hasActivity ? "waveform.path.ecg" : "circle.dotted")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(signalAccent)
+                .frame(width: 32, height: 32)
+                .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 10))
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(
+                    .bounce,
+                    options: .nonRepeating,
+                    value: signalChangeToken
+                )
+                .symbolEffectsRemoved(!motionPolicy.permitsSignalEffect)
+                .accessibilityHidden(true)
+
+            Text("THIS WEEK")
+                .font(.caption2.weight(.bold))
+                .tracking(0.8)
+                .foregroundStyle(signalSecondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var viewImpactLabel: some View {
+        HStack(spacing: 6) {
+            Text("View impact")
+                .fixedSize(horizontal: false, vertical: true)
+            Image(systemName: "arrow.up.right")
+                .font(.caption2.weight(.bold))
+                .accessibilityHidden(true)
+        }
+        .font(.caption.weight(.bold))
+        .foregroundStyle(CheckpointTheme.heroSuccess)
+        .padding(.horizontal, 12)
+        .frame(minHeight: 44)
+        .background(CheckpointTheme.heroSubtleFill, in: Capsule())
         .accessibilityHidden(true)
+        .reportHomeWeeklySignalLayoutFrame(.actionAffordance, using: layoutReporter)
     }
 
     @ViewBuilder
     private var activitySummary: some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 18) {
+        if layoutPolicy.layout == .stacked {
+            VStack(alignment: .leading, spacing: 16) {
                 primaryMetric
+
+                Rectangle()
+                    .fill(CheckpointTheme.heroDivider)
+                    .frame(height: 1)
+                    .accessibilityHidden(true)
+
                 supportingMetrics
             }
         } else {
@@ -1954,7 +2272,7 @@ struct LightStudyBeaconSection: View {
 
                 Rectangle()
                     .fill(CheckpointTheme.heroDivider)
-                    .frame(width: 1, height: 70)
+                    .frame(width: 1, height: 76)
                     .accessibilityHidden(true)
 
                 supportingMetrics
@@ -1964,98 +2282,105 @@ struct LightStudyBeaconSection: View {
 
     private var primaryMetric: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("\(metrics.questionsAnswered)")
+            Text(heroPresentation.questions.value)
                 .font(.system(size: primaryMetricSize, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(signalText)
-                .contentTransition(.numericText(value: Double(metrics.questionsAnswered)))
-                .animation(
-                    CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-                    value: metrics.questionsAnswered
-                )
+                .contentTransition(.numericText(value: heroPresentation.questions.numericValue))
+                .animation(motionPolicy.animation, value: heroPresentation.questions.numericValue)
 
-            Text(metrics.questionsAnswered == 1 ? "QUESTION" : "QUESTIONS")
+            Text(heroPresentation.questions.label)
                 .font(.caption2.weight(.bold))
                 .tracking(0.8)
                 .foregroundStyle(signalSecondaryText)
+                .fixedSize(horizontal: false, vertical: true)
 
-            if practicedSkillCount > 0 {
-                Text("\(practicedSkillCount) \(practicedSkillCount == 1 ? "skill" : "skills") tracked")
+            if let practicedSkills = heroPresentation.practicedSkills {
+                Text("\(practicedSkills.value) \(practicedSkills.label.lowercased())")
                     .font(.caption2.weight(.medium))
                     .foregroundStyle(signalSecondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 2)
+                    .contentTransition(.numericText(value: practicedSkills.numericValue))
+                    .animation(motionPolicy.animation, value: practicedSkills.numericValue)
             }
         }
-        .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, alignment: .leading)
+        .frame(maxWidth: layoutPolicy.layout == .stacked ? .infinity : nil, alignment: .leading)
         .accessibilityElement(children: .combine)
+        .reportHomeWeeklySignalLayoutFrame(.primaryMetric, using: layoutReporter)
     }
 
     private var supportingMetrics: some View {
         VStack(alignment: .leading, spacing: 13) {
-            compactMetric(
-                value: metrics.questionsAnswered > 0 ? metrics.accuracyText : "—",
-                label: "ACCURACY"
-            )
+            if let accuracy = heroPresentation.accuracy {
+                compactMetric(accuracy)
+            }
 
-            compactMetric(
-                value: "\(metrics.checkpointsCleared)",
-                label: metrics.checkpointsCleared == 1 ? "BREAK EARNED" : "BREAKS EARNED"
-            )
+            compactMetric(heroPresentation.breaks)
 
-            if metrics.checkpointStreakDays > 1 {
-                compactMetric(
-                    value: "\(metrics.checkpointStreakDays)d",
-                    label: "CONSISTENCY"
-                )
+            if let currentStreak = heroPresentation.currentStreak {
+                compactMetric(currentStreak)
+                .transition(motionPolicy.conditionalTransition)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .animation(motionPolicy.animation, value: metrics.checkpointStreakDays > 1)
+        .reportHomeWeeklySignalLayoutFrame(.supportingMetrics, using: layoutReporter)
     }
 
-    private func compactMetric(value: String, label: String) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 7) {
-            Text(value)
-                .font(.headline.weight(.bold))
-                .monospacedDigit()
-                .foregroundStyle(signalAccent)
-
-            Text(label)
-                .font(.caption2.weight(.bold))
-                .tracking(0.55)
-                .foregroundStyle(signalSecondaryText)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
+    @ViewBuilder
+    private func compactMetric(_ metric: HomeWeeklySignalMetricPresentation) -> some View {
+        Group {
+            if layoutPolicy.stacksSupportingMetricLabels {
+                VStack(alignment: .leading, spacing: 2) {
+                    compactMetricValue(metric)
+                    compactMetricLabel(metric)
+                }
+            } else {
+                HStack(alignment: .firstTextBaseline, spacing: 7) {
+                    compactMetricValue(metric)
+                    compactMetricLabel(metric)
+                }
+            }
         }
         .accessibilityElement(children: .combine)
     }
 
+    private func compactMetricValue(_ metric: HomeWeeklySignalMetricPresentation) -> some View {
+        Text(metric.value)
+            .font(.headline.weight(.bold))
+            .monospacedDigit()
+            .foregroundStyle(signalAccent)
+            .contentTransition(.numericText(value: metric.numericValue))
+            .animation(motionPolicy.animation, value: metric.numericValue)
+    }
+
+    private func compactMetricLabel(_ metric: HomeWeeklySignalMetricPresentation) -> some View {
+        Text(metric.label)
+            .font(.caption2.weight(.bold))
+            .tracking(0.55)
+            .foregroundStyle(signalSecondaryText)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
     private func insightRow(_ insight: WeeklySignalInsight) -> some View {
         Group {
-            if dynamicTypeSize.isAccessibilitySize {
+            if layoutPolicy.layout == .stacked {
                 VStack(alignment: .leading, spacing: 10) {
                     insightIcon(insight)
                     insightText(insight)
                 }
             } else {
-                HStack(spacing: 10) {
+                HStack(alignment: .top, spacing: 10) {
                     insightIcon(insight)
                     insightText(insight)
 
-                    Spacer(minLength: 4)
-
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(signalSecondaryText)
-                        .accessibilityHidden(true)
+                    Spacer(minLength: 0)
                 }
             }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(insight.accessibilityLabel)
-        .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
-            value: insight
-        )
     }
 
     private func insightIcon(_ insight: WeeklySignalInsight) -> some View {
@@ -2075,7 +2400,6 @@ struct LightStudyBeaconSection: View {
             .font(.subheadline.weight(.medium))
             .foregroundStyle(signalText)
             .multilineTextAlignment(.leading)
-            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
             .fixedSize(horizontal: false, vertical: true)
             .contentTransition(.opacity)
     }
@@ -2107,47 +2431,89 @@ struct LightStudyBeaconSection: View {
     }
 
     private var emptySummary: some View {
-        HStack(spacing: 13) {
-            Image(systemName: "waveform.path.ecg")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(signalAccent)
-                .frame(width: 40, height: 40)
-                .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 12))
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Signal ready")
-                    .font(.headline)
-                    .foregroundStyle(signalText)
-
-                Text("Your first checkpoint will start this week's impact view.")
-                    .font(.subheadline)
-                    .foregroundStyle(signalSecondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
+        Group {
+            if layoutPolicy.layout == .stacked {
+                VStack(alignment: .leading, spacing: 8) {
+                    emptySignalIcon
+                    emptySummaryCopy
+                }
+            } else {
+                HStack(alignment: .top, spacing: 13) {
+                    emptySignalIcon
+                    emptySummaryCopy
+                    Spacer(minLength: 0)
+                }
             }
-
-            Spacer(minLength: 0)
         }
         .accessibilityElement(children: .combine)
     }
 
-    private var practicedSkillCount: Int {
-        competencies.filter { $0.attempts > 0 }.count
+    private var emptySignalIcon: some View {
+        Image(systemName: "point.3.connected.trianglepath.dotted")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(signalAccent)
+            .frame(width: 40, height: 40)
+            .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 12))
+            .accessibilityHidden(true)
     }
 
-    private var weeklySignalAccessibilityLabel: String {
-        guard metrics.hasWeeklyReviewActivity else {
-            return "Weekly signal for \(metrics.title). No checkpoint activity yet."
-        }
+    private var emptySummaryCopy: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("No checkpoint activity this week")
+                .font(.headline)
+                .foregroundStyle(signalText)
 
-        let questionNoun = metrics.questionsAnswered == 1 ? "question" : "questions"
-        let breakNoun = metrics.checkpointsCleared == 1 ? "break" : "breaks"
-        let questionSummary = metrics.questionsAnswered > 0
-            ? "\(metrics.questionsAnswered) \(questionNoun), \(metrics.accuracyText) accuracy"
-            : "No questions answered this week"
-        let summary = "Weekly signal for \(metrics.title). \(questionSummary), \(metrics.checkpointsCleared) \(breakNoun) earned."
-        guard let insight else { return summary }
-        return "\(summary) \(insight.accessibilityLabel)."
+            Text("Your next checkpoint will start this week's impact view.")
+                .font(.subheadline)
+                .foregroundStyle(signalSecondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var practicedSkillCount: Int {
+        HomeWeeklySignalSkillPolicy.practicedSkillCount(
+            competencies: competencies,
+            asOf: referenceDate,
+            calendar: calendar
+        )
+    }
+
+    private var weeklySignalAccessibilityValue: String {
+        heroPresentation.accessibilityValue
+    }
+
+    private var heroPresentation: HomeWeeklySignalHeroPresentation {
+        HomeWeeklySignalHeroPresentation(
+            metrics: metrics,
+            practicedSkillCount: practicedSkillCount,
+            insight: insight
+        )
+    }
+
+    private var layoutPolicy: HomeWeeklySignalLayoutPolicy {
+        HomeWeeklySignalLayoutPolicy(
+            viewportWidth: viewportWidth,
+            dynamicTypeSize: dynamicTypeSize
+        )
+    }
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
+
+    private var motionPolicy: HomeWeeklySignalMotionPolicy {
+        HomeWeeklySignalMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var signalChangeToken: String {
+        [
+            String(metrics.questionsAnswered),
+            String(metrics.correctAnswers),
+            String(metrics.checkpointsCleared),
+            String(metrics.checkpointStreakDays),
+            String(practicedSkillCount),
+            heroPresentation.insight?.text ?? "none"
+        ].joined(separator: ":")
     }
 
     private var signalText: Color { CheckpointTheme.heroText }

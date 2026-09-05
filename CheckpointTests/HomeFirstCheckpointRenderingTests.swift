@@ -444,6 +444,312 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         XCTAssertNil(reduced.animation)
     }
 
+    func testWeeklySignalLayoutPolicyUsesCompactAndDynamicTypeBreakpoints() {
+        let compact = HomeWeeklySignalLayoutPolicy(
+            viewportWidth: 320,
+            dynamicTypeSize: .large
+        )
+        XCTAssertEqual(compact.layout, .stacked)
+        XCTAssertEqual(compact.contentPadding, 16)
+        XCTAssertTrue(
+            HomeWeeklySignalLayoutPolicy.usesCompactHomeMargins(viewportWidth: 320)
+        )
+
+        let regular = HomeWeeklySignalLayoutPolicy(
+            viewportWidth: 393,
+            dynamicTypeSize: .large
+        )
+        XCTAssertEqual(regular.layout, .regular)
+        XCTAssertEqual(regular.contentPadding, 18)
+        XCTAssertFalse(regular.stacksSupportingMetricLabels)
+        XCTAssertFalse(
+            HomeWeeklySignalLayoutPolicy.usesCompactHomeMargins(viewportWidth: 321)
+        )
+
+        for size in [
+            DynamicTypeSize.xLarge,
+            .xxLarge,
+            .xxxLarge,
+            .accessibility1,
+            .accessibility5
+        ] {
+            XCTAssertEqual(
+                HomeWeeklySignalLayoutPolicy(
+                    viewportWidth: 393,
+                    dynamicTypeSize: size
+                ).layout,
+                .stacked,
+                "Expected stacked Weekly Signal layout at \(size)"
+            )
+        }
+        XCTAssertFalse(
+            HomeWeeklySignalLayoutPolicy(
+                viewportWidth: 393,
+                dynamicTypeSize: .xxxLarge
+            ).stacksSupportingMetricLabels
+        )
+        XCTAssertTrue(
+            HomeWeeklySignalLayoutPolicy(
+                viewportWidth: 393,
+                dynamicTypeSize: .accessibility1
+            ).stacksSupportingMetricLabels
+        )
+    }
+
+    func testWeeklySignalMotionPolicyHonorsReduceMotion() {
+        let standard = HomeWeeklySignalMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertNotNil(standard.animation)
+        XCTAssertTrue(standard.permitsSignalEffect)
+
+        let reduced = HomeWeeklySignalMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.animation)
+        XCTAssertFalse(reduced.permitsSignalEffect)
+    }
+
+    func testWeeklySignalPresentationDrivesVisibleMetricsAndAccessibilityValue() {
+        let longSkill = "Multi-stage causal inference with counterfactual model calibration"
+        let metrics = WeeklyMetricsSummary(
+            id: "goal-1",
+            title: "Algebra foundations",
+            questionsAnswered: 12,
+            correctAnswers: 9,
+            missedAnswers: 3,
+            checkpointStreakDays: 4,
+            checkpointsCleared: 2,
+            strongestSkill: nil,
+            reviewSkill: longSkill,
+            isCurrentGoal: true
+        )
+        let presentation = HomeWeeklySignalHeroPresentation(
+            metrics: metrics,
+            practicedSkillCount: 3,
+            insight: .lowestCurrentEstimate(longSkill)
+        )
+
+        XCTAssertEqual(HomeWeeklySignalHeroPresentation.actionLabel, "View weekly impact")
+        XCTAssertEqual(
+            presentation.visibleMetrics.map(\.id),
+            [.questions, .accuracy, .breaks, .practicedSkills, .currentStreak]
+        )
+        XCTAssertEqual(presentation.questions.value, "12")
+        XCTAssertEqual(presentation.accuracy?.value, "75%")
+        XCTAssertEqual(presentation.breaks.value, "2")
+        XCTAssertEqual(presentation.practicedSkills?.value, "3")
+        XCTAssertEqual(presentation.currentStreak?.value, "4d")
+        XCTAssertEqual(presentation.currentStreak?.label, "CURRENT STREAK")
+        XCTAssertEqual(
+            presentation.accessibilityValue,
+            "For Algebra foundations. 12 questions answered. 75% accuracy. 2 breaks earned. 3 practiced skills. 4-day checkpoint streak. Insight: Lowest current mastery estimate, \(longSkill)."
+        )
+
+        let singular = HomeWeeklySignalHeroPresentation(
+            metrics: WeeklyMetricsSummary(
+                id: "goal-2",
+                title: "Writing",
+                questionsAnswered: 1,
+                correctAnswers: 1,
+                missedAnswers: 0,
+                checkpointStreakDays: 2,
+                checkpointsCleared: 1,
+                strongestSkill: nil,
+                reviewSkill: nil,
+                isCurrentGoal: true
+            ),
+            practicedSkillCount: 1,
+            insight: .answersLogged
+        )
+        XCTAssertEqual(
+            singular.accessibilityValue,
+            "For Writing. 1 question answered. 100% accuracy. 1 break earned. 1 practiced skill. 2-day checkpoint streak. Insight: Answers are shaping the skill map."
+        )
+    }
+
+    func testWeeklySignalEmptyPresentationUsesReturningSafeCopy() {
+        let presentation = HomeWeeklySignalHeroPresentation(
+            metrics: WeeklyMetricsSummary(
+                id: "goal-empty",
+                title: "Long-term goal",
+                questionsAnswered: 0,
+                correctAnswers: 0,
+                missedAnswers: 0,
+                checkpointStreakDays: 0,
+                checkpointsCleared: 0,
+                strongestSkill: nil,
+                reviewSkill: nil,
+                isCurrentGoal: true
+            ),
+            practicedSkillCount: 4,
+            insight: nil
+        )
+
+        XCTAssertFalse(presentation.hasActivity)
+        XCTAssertTrue(presentation.visibleMetrics.isEmpty)
+        XCTAssertEqual(
+            presentation.accessibilityValue,
+            "For Long-term goal. No checkpoint activity this week. Your next checkpoint will start this week's impact view."
+        )
+
+        let breakOnly = HomeWeeklySignalHeroPresentation(
+            metrics: WeeklyMetricsSummary(
+                id: "goal-break",
+                title: "Biology",
+                questionsAnswered: 0,
+                correctAnswers: 0,
+                missedAnswers: 0,
+                checkpointStreakDays: 0,
+                checkpointsCleared: 1,
+                strongestSkill: nil,
+                reviewSkill: nil,
+                isCurrentGoal: true
+            ),
+            practicedSkillCount: 0,
+            insight: .checkpointsCleared(1)
+        )
+        XCTAssertEqual(breakOnly.visibleMetrics.map(\.id), [.questions, .breaks])
+        XCTAssertNil(breakOnly.accuracy)
+        XCTAssertEqual(
+            breakOnly.accessibilityValue,
+            "For Biology. 0 questions answered. 1 break earned. Insight: 1 checkpoint cleared this week."
+        )
+    }
+
+    func testWeeklyReviewDestinationFreezesTappedCohort() {
+        var calendar = fixedGoalSwitchCalendar
+        calendar.firstWeekday = 2
+        let referenceDate = fixedGoalSwitchDate(month: 1, day: 4, hour: 9)
+        let destination = HomeWeeklyReviewDestination(
+            metricsID: "goal-weekly-scope",
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+
+        XCTAssertEqual(destination.id, "goal-weekly-scope")
+        XCTAssertEqual(destination.metricsID, "goal-weekly-scope")
+        XCTAssertEqual(destination.referenceDate, referenceDate)
+        XCTAssertEqual(destination.calendar, calendar)
+    }
+
+    @MainActor
+    func testWeeklySignalPresentationTreatsCarriedStreakAsEmptyAtMondayBoundary() {
+        var calendar = fixedGoalSwitchCalendar
+        calendar.firstWeekday = 2
+        calendar.minimumDaysInFirstWeek = 4
+        let sunday = fixedGoalSwitchDate(month: 1, day: 3)
+        let mondayMorning = fixedGoalSwitchDate(month: 1, day: 4, hour: 9)
+        let mondayNoon = fixedGoalSwitchDate(month: 1, day: 4)
+        let goal = Goal(
+            title: "Monday study plan",
+            deadline: fixedGoalSwitchDate(month: 2, day: 1),
+            category: .examPrep,
+            currentLevel: "Intermediate",
+            focusAreas: "weekly boundaries",
+            preferredQuestionStyle: .multipleChoice
+        )
+        let sundayClear = UnlockEvent(
+            goalID: goal.id,
+            minutes: 10,
+            createdAt: sunday
+        )
+        let carriedSummary = WeeklyMetricsCalculator(
+            attempts: [],
+            unlockEvents: [sundayClear],
+            asOf: mondayNoon,
+            calendar: calendar
+        ).summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: []
+        )
+
+        XCTAssertEqual(calendar.component(.weekday, from: mondayNoon), 2)
+        XCTAssertEqual(carriedSummary.questionsAnswered, 0)
+        XCTAssertEqual(carriedSummary.checkpointsCleared, 0)
+        XCTAssertEqual(carriedSummary.checkpointStreakDays, 1)
+        XCTAssertTrue(carriedSummary.hasWeeklyReviewActivity)
+
+        let carriedPresentation = HomeWeeklySignalHeroPresentation(
+            metrics: carriedSummary,
+            practicedSkillCount: 0,
+            insight: carriedSummary.weeklySignalInsight
+        )
+        XCTAssertFalse(carriedPresentation.hasActivity)
+        XCTAssertTrue(carriedPresentation.visibleMetrics.isEmpty)
+        XCTAssertNil(carriedPresentation.insight)
+        XCTAssertEqual(
+            carriedPresentation.accessibilityValue,
+            "For Monday study plan. No checkpoint activity this week. Your next checkpoint will start this week's impact view."
+        )
+
+        let activeSummary = WeeklyMetricsCalculator(
+            attempts: [
+                makeAttempt(
+                    goal: goal,
+                    result: .correct,
+                    createdAt: mondayMorning
+                )
+            ],
+            unlockEvents: [sundayClear],
+            asOf: mondayNoon,
+            calendar: calendar
+        ).summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: []
+        )
+        let activePresentation = HomeWeeklySignalHeroPresentation(
+            metrics: activeSummary,
+            practicedSkillCount: 0,
+            insight: activeSummary.weeklySignalInsight
+        )
+        XCTAssertTrue(activePresentation.hasActivity)
+        XCTAssertEqual(activePresentation.visibleMetrics.map(\.id), [.questions, .accuracy, .breaks])
+        XCTAssertEqual(activePresentation.insight, .answersLogged)
+    }
+
+    func testWeeklySignalSkillPolicyCountsOnlySkillsPracticedThisWeek() {
+        let calendar = fixedGoalSwitchCalendar
+        let referenceDate = fixedGoalSwitchDate(month: 1, day: 8)
+        let competencies = [
+            makeWeeklySignalCompetency(
+                topic: "This week",
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 7)
+            ),
+            makeWeeklySignalCompetency(
+                topic: "Earlier this week",
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 4)
+            ),
+            makeWeeklySignalCompetency(
+                topic: "Previous week",
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 1)
+            ),
+            makeWeeklySignalCompetency(
+                topic: "Future",
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 9)
+            ),
+            makeWeeklySignalCompetency(
+                topic: "Migrated date without attempts",
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 7),
+                attempts: 0
+            ),
+            makeWeeklySignalCompetency(topic: "Never", lastPracticedAt: nil)
+        ]
+
+        XCTAssertEqual(
+            HomeWeeklySignalSkillPolicy.practicedSkillCount(
+                competencies: competencies,
+                asOf: referenceDate,
+                calendar: calendar
+            ),
+            2
+        )
+    }
+
     @MainActor
     func testGoalOverviewRendersAcrossKeyLayoutsAndStates() throws {
         let fixtures = [
@@ -493,6 +799,16 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 width: 393,
                 height: 1_200,
                 colorScheme: .dark,
+                dynamicTypeSize: .large,
+                state: .practiced,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5),
+                isProtectionActive: true
+            ),
+            HomeGoalSwitchRenderFixture(
+                name: "home-weekly-signal-populated-compact-320-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
                 dynamicTypeSize: .large,
                 state: .practiced,
                 referenceDate: fixedGoalSwitchDate(month: 1, day: 5),
@@ -562,7 +878,8 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
 
             let store = makeGoalSwitchRenderStore(
                 defaults: storeDefaults,
-                state: fixture.state
+                state: fixture.state,
+                referenceDate: fixture.referenceDate
             )
             let screenTime = ScreenTimeController(
                 defaults: screenTimeDefaults,
@@ -584,7 +901,8 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                     workflow: workflow,
                     refreshesQuestionsOnActivation: false,
                     reduceMotionOverride: fixture.reduceMotion,
-                    referenceDate: fixture.referenceDate
+                    referenceDate: fixture.referenceDate,
+                    calendar: fixedGoalSwitchCalendar
                 )
                 .environment(\.colorScheme, fixture.colorScheme)
                 .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
@@ -600,6 +918,213 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
             let attachment = XCTAttachment(image: image)
             attachment.name = fixture.name
             attachment.lifetime = XCTAttachment.Lifetime.keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
+    func testWeeklySignalHeroRendersAcrossResponsiveAndAccessibleLayouts() throws {
+        let referenceDate = fixedGoalSwitchDate(month: 1, day: 8)
+        let longSkill = "Multi-stage causal inference with counterfactual model calibration"
+        let emptyMetrics = WeeklyMetricsSummary(
+            id: "empty-goal",
+            title: "Build a durable study habit",
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            missedAnswers: 0,
+            checkpointStreakDays: 0,
+            checkpointsCleared: 0,
+            strongestSkill: nil,
+            reviewSkill: nil,
+            isCurrentGoal: true
+        )
+        let populatedMetrics = WeeklyMetricsSummary(
+            id: "populated-goal",
+            title: "Advanced quantitative reasoning",
+            questionsAnswered: 18,
+            correctAnswers: 13,
+            missedAnswers: 5,
+            checkpointStreakDays: 6,
+            checkpointsCleared: 3,
+            strongestSkill: "Probabilistic modeling",
+            reviewSkill: longSkill,
+            isCurrentGoal: true
+        )
+        let practicedCompetencies = [
+            makeWeeklySignalCompetency(
+                topic: longSkill,
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 7)
+            ),
+            makeWeeklySignalCompetency(
+                topic: "Probabilistic modeling",
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 6)
+            ),
+            makeWeeklySignalCompetency(
+                topic: "Durable knowledge retrieval under changing constraints",
+                lastPracticedAt: fixedGoalSwitchDate(month: 1, day: 5)
+            )
+        ]
+        let fixtures = [
+            HomeWeeklySignalRenderFixture(
+                name: "home-weekly-signal-populated-compact-320-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                metrics: populatedMetrics,
+                competencies: practicedCompetencies,
+                insight: .lowestCurrentEstimate(longSkill),
+                expectedLayout: .stacked
+            ),
+            HomeWeeklySignalRenderFixture(
+                name: "home-weekly-signal-empty-regular-light",
+                width: 393,
+                height: 700,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                metrics: emptyMetrics,
+                competencies: [],
+                insight: nil,
+                expectedLayout: .regular
+            ),
+            HomeWeeklySignalRenderFixture(
+                name: "home-weekly-signal-populated-regular-dark",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                metrics: populatedMetrics,
+                competencies: practicedCompetencies,
+                insight: .lowestCurrentEstimate(longSkill),
+                expectedLayout: .regular
+            ),
+            HomeWeeklySignalRenderFixture(
+                name: "home-weekly-signal-long-xxxlarge-dark",
+                width: 393,
+                height: 1_200,
+                colorScheme: .dark,
+                dynamicTypeSize: .xxxLarge,
+                metrics: populatedMetrics,
+                competencies: practicedCompetencies,
+                insight: .lowestCurrentEstimate(longSkill),
+                expectedLayout: .stacked
+            ),
+            HomeWeeklySignalRenderFixture(
+                name: "home-weekly-signal-long-accessibility5-light-reduced",
+                width: 393,
+                height: 1_800,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                metrics: populatedMetrics,
+                competencies: practicedCompetencies,
+                insight: .lowestCurrentEstimate(longSkill),
+                reduceMotion: true,
+                expectedLayout: .stacked
+            )
+        ]
+
+        for fixture in fixtures {
+            let layoutCapture = HomeWeeklySignalLayoutCapture()
+            let horizontalMargin: CGFloat =
+                HomeWeeklySignalLayoutPolicy.usesCompactHomeMargins(
+                    viewportWidth: fixture.width
+                ) ? 16 : 24
+            let image = HostedViewRenderer.image(
+                for: ScrollView {
+                    LightStudyBeaconSection(
+                        metrics: fixture.metrics,
+                        competencies: fixture.competencies,
+                        insight: fixture.insight,
+                        reduceMotionOverride: fixture.reduceMotion,
+                        referenceDate: referenceDate,
+                        calendar: fixedGoalSwitchCalendar,
+                        layoutReporter: { element, frame in
+                            layoutCapture.frames[element] = frame
+                        },
+                        action: {}
+                    )
+                    .padding(.horizontal, horizontalMargin)
+                    .padding(.vertical, 20)
+                }
+                .checkpointScreenBackground()
+                .environment(\.homeWeeklySignalViewportWidth, fixture.width)
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: fixture.reduceMotion ? 0.05 : 0.35,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            let section = try XCTUnwrap(layoutCapture.frames[.section], fixture.name)
+            let actionButton = try XCTUnwrap(
+                layoutCapture.frames[.actionButton],
+                fixture.name
+            )
+            let actionAffordance = try XCTUnwrap(
+                layoutCapture.frames[.actionAffordance],
+                fixture.name
+            )
+            for frame in [section, actionButton, actionAffordance] {
+                XCTAssertFalse(frame.isNull, fixture.name)
+                XCTAssertFalse(frame.isInfinite, fixture.name)
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+            }
+            XCTAssertTrue(
+                actionButton.insetBy(dx: -0.5, dy: -0.5).contains(actionAffordance),
+                "\(fixture.name) View impact pixels escaped the single weekly-impact Button"
+            )
+            XCTAssertGreaterThanOrEqual(
+                actionAffordance.height,
+                43.5,
+                "\(fixture.name) View impact affordance is below the 44-point target"
+            )
+            XCTAssertTrue(
+                section.insetBy(dx: -0.5, dy: -0.5).contains(actionButton),
+                "\(fixture.name) weekly-impact Button escaped its section"
+            )
+
+            if fixture.metrics.hasWeeklyReviewActivity {
+                let primaryMetric = try XCTUnwrap(
+                    layoutCapture.frames[.primaryMetric],
+                    fixture.name
+                )
+                let supportingMetrics = try XCTUnwrap(
+                    layoutCapture.frames[.supportingMetrics],
+                    fixture.name
+                )
+                switch fixture.expectedLayout {
+                case .regular:
+                    XCTAssertGreaterThanOrEqual(
+                        supportingMetrics.minX,
+                        primaryMetric.maxX,
+                        "\(fixture.name) regular metrics overlap"
+                    )
+                case .stacked:
+                    XCTAssertGreaterThanOrEqual(
+                        supportingMetrics.minY,
+                        primaryMetric.maxY,
+                        "\(fixture.name) stacked metrics overlap"
+                    )
+                }
+                XCTAssertTrue(
+                    actionButton.insetBy(dx: -0.5, dy: -0.5).contains(primaryMetric),
+                    "\(fixture.name) primary metric escaped the weekly-impact Button"
+                )
+                XCTAssertTrue(
+                    actionButton.insetBy(dx: -0.5, dy: -0.5).contains(supportingMetrics),
+                    "\(fixture.name) supporting metrics escaped the weekly-impact Button"
+                )
+            }
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
             add(attachment)
         }
     }
@@ -888,7 +1413,8 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     @MainActor
     private func makeGoalSwitchRenderStore(
         defaults: UserDefaults,
-        state: HomeGoalSwitchRenderState
+        state: HomeGoalSwitchRenderState,
+        referenceDate: Date
     ) -> CheckpointStore {
         let firstGoal = Goal(
             title: "Build a polished, production-ready learning system",
@@ -943,17 +1469,37 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 makeAttempt(
                     goal: firstGoal,
                     result: .correct,
-                    createdAt: Date()
+                    createdAt: referenceDate
                 ),
                 makeAttempt(
                     goal: firstGoal,
                     result: .incorrect,
-                    createdAt: Date().addingTimeInterval(-60)
+                    createdAt: referenceDate.addingTimeInterval(-60)
                 )
             ]
         }
 
         return store
+    }
+
+    private func makeWeeklySignalCompetency(
+        topic: String,
+        lastPracticedAt: Date?,
+        attempts: Int? = nil
+    ) -> TopicCompetency {
+        let resolvedAttempts = attempts ?? (lastPracticedAt == nil ? 0 : 1)
+        return TopicCompetency(
+            goalID: nil,
+            topic: topic,
+            estimatedLevel: 2.5,
+            attempts: resolvedAttempts,
+            correct: resolvedAttempts > 0 ? 1 : 0,
+            partial: 0,
+            incorrect: 0,
+            currentStreak: resolvedAttempts > 0 ? 1 : 0,
+            lastResult: resolvedAttempts > 0 ? .correct : nil,
+            lastPracticedAt: lastPracticedAt
+        )
     }
 
     private var fixedGoalSwitchTimeZone: TimeZone {
@@ -987,6 +1533,24 @@ private struct HomeJourneyRenderFixture {
     var dynamicTypeSize: DynamicTypeSize
     var state: HomeJourneyRenderState
     var reduceMotion = false
+}
+
+private struct HomeWeeklySignalRenderFixture {
+    var name: String
+    var width: CGFloat
+    var height: CGFloat
+    var colorScheme: ColorScheme
+    var dynamicTypeSize: DynamicTypeSize
+    var metrics: WeeklyMetricsSummary
+    var competencies: [TopicCompetency]
+    var insight: WeeklySignalInsight?
+    var reduceMotion = false
+    var expectedLayout: HomeWeeklySignalLayout
+}
+
+@MainActor
+private final class HomeWeeklySignalLayoutCapture {
+    var frames: [HomeWeeklySignalLayoutElement: CGRect] = [:]
 }
 
 private enum HomeJourneyRenderState: Equatable {
