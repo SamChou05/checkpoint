@@ -22,8 +22,18 @@ struct HomeView: View {
     private let isCoveredByParentModal: Bool
     private let parentModalOwnsQuestionReadiness: Bool
     private let parentModalOwnsProtectionErrors: Bool
+    private let earnedBreakHandoff: EarnedBreakHandoffToken?
+    private let resolveEarnedBreakHandoff: @MainActor (
+        EarnedBreakHandoffToken,
+        EarnedBreakHandoffDisposition
+    ) -> Bool
+    private let onEarnedBreakHandoffDelivered: @MainActor (
+        EarnedBreakHandoffDeliveryEffect
+    ) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @Environment(\.checkpointGoalSelection) private var selectGoal
     @Environment(\.checkpointProgressSkillEvidenceNavigation)
     private var navigateToProgressSkillEvidence
@@ -40,6 +50,9 @@ struct HomeView: View {
     @State private var accessibilityAnnouncementQueue = AccessibilityAnnouncementDeliveryQueue()
     @State private var protectionStartErrorFeedback = ProtectionStartErrorFeedbackState()
     @State private var suppressedQuestionReadyGoalID: Goal.ID?
+    @State private var earnedBreakHandoffDelivery: EarnedBreakHandoffDeliveryState
+    @State private var earnedBreakRevealSequence = 0
+    @State private var earnedBreakCelebrationSequence = 0
 
     private static let activationRefreshDebounceInterval: TimeInterval = 20
     private static let questionsReadyConfirmationText = "Your questions are ready."
@@ -57,7 +70,15 @@ struct HomeView: View {
         isSceneActive: Bool = true,
         isCoveredByParentModal: Bool = false,
         parentModalOwnsQuestionReadiness: Bool = false,
-        parentModalOwnsProtectionErrors: Bool = false
+        parentModalOwnsProtectionErrors: Bool = false,
+        earnedBreakHandoff: EarnedBreakHandoffToken? = nil,
+        resolveEarnedBreakHandoff: @escaping @MainActor (
+            EarnedBreakHandoffToken,
+            EarnedBreakHandoffDisposition
+        ) -> Bool = { _, _ in false },
+        onEarnedBreakHandoffDelivered: @escaping @MainActor (
+            EarnedBreakHandoffDeliveryEffect
+        ) -> Void = { _ in }
     ) {
         self.store = store
         self.screenTime = screenTime
@@ -71,12 +92,31 @@ struct HomeView: View {
         self.isCoveredByParentModal = isCoveredByParentModal
         self.parentModalOwnsQuestionReadiness = parentModalOwnsQuestionReadiness
         self.parentModalOwnsProtectionErrors = parentModalOwnsProtectionErrors
+        self.earnedBreakHandoff = earnedBreakHandoff
+        self.resolveEarnedBreakHandoff = resolveEarnedBreakHandoff
+        self.onEarnedBreakHandoffDelivered = onEarnedBreakHandoffDelivered
+        _earnedBreakHandoffDelivery = State(
+            initialValue: EarnedBreakHandoffDeliveryState(token: earnedBreakHandoff)
+        )
     }
 
     private struct QuestionPreparationSnapshot: Equatable {
         let goalID: Goal.ID?
         let isPreparing: Bool
         let hasReadyCheckpointSet: Bool
+    }
+
+    private struct EarnedBreakDeliveryTaskID: Equatable, Hashable {
+        let handoff: EarnedBreakHandoffToken?
+        let activeGoalID: Goal.ID?
+        let canonicalUnlockStartedAt: Date?
+        let canonicalUnlockExpiresAt: Date?
+        let isTemporaryUnlockAvailable: Bool
+        let isExposed: Bool
+    }
+
+    private enum ScrollAnchor: Hashable {
+        case activeBreak
     }
 
     var body: some View {
@@ -87,140 +127,152 @@ struct HomeView: View {
 
     private func homeContent(viewportWidth: CGFloat) -> some View {
         NavigationStack {
-            ScrollView {
-                VStack(
-                    alignment: .leading,
-                    spacing: homeSectionSpacing(viewportWidth: viewportWidth)
-                ) {
-                    checkpointNoticePanel
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    VStack(
+                        alignment: .leading,
+                        spacing: homeSectionSpacing(viewportWidth: viewportWidth)
+                    ) {
+                        checkpointNoticePanel
 
-                    if let goal = store.goal {
-                        goalScopedContent(goal, viewportWidth: viewportWidth)
-                            .id(goal.id)
-                            .transition(goalIdentityMotionPolicy.transition)
-                    } else {
-                        emptyState
+                        if let goal = store.goal {
+                            goalScopedContent(goal, viewportWidth: viewportWidth)
+                                .id(goal.id)
+                                .transition(goalIdentityMotionPolicy.transition)
+                        } else {
+                            emptyState
+                        }
                     }
+                    .animation(
+                        CheckpointMotion.animation(
+                            CheckpointMotion.reveal,
+                            reduceMotion: reduceMotion
+                        ),
+                        value: homeStudyBeaconPresentation.kind
+                    )
+                    .animation(
+                        CheckpointMotion.animation(
+                            CheckpointMotion.reveal,
+                            reduceMotion: reduceMotion
+                        ),
+                        value: isTemporarilyUnblocked
+                    )
+                    .animation(
+                        goalIdentityMotionPolicy.animation,
+                        value: store.goal?.id
+                    )
+                    .padding(.horizontal, homeHorizontalMargin(viewportWidth: viewportWidth))
+                    .padding(.top, homeTopMargin(viewportWidth: viewportWidth))
+                    .padding(.bottom, 112)
                 }
-                .animation(
-                    CheckpointMotion.animation(
-                        CheckpointMotion.reveal,
-                        reduceMotion: reduceMotion
-                    ),
-                    value: homeStudyBeaconPresentation.kind
-                )
-                .animation(
-                    CheckpointMotion.animation(
-                        CheckpointMotion.reveal,
-                        reduceMotion: reduceMotion
-                    ),
-                    value: isTemporarilyUnblocked
-                )
-                .animation(
-                    goalIdentityMotionPolicy.animation,
-                    value: store.goal?.id
-                )
-                .padding(.horizontal, homeHorizontalMargin(viewportWidth: viewportWidth))
-                .padding(.top, homeTopMargin(viewportWidth: viewportWidth))
-                .padding(.bottom, 112)
-            }
-            .checkpointScreenBackground()
-            .navigationTitle("Checkpoint")
-            .toolbarTitleDisplayMode(.inline)
-            .sheet(isPresented: $isRestrictedAppsPresented) {
-                RestrictedAppsView(screenTime: screenTime)
-            }
-            .sheet(item: $weeklyReviewDestination) { destination in
-                WeeklyReviewView(
-                    store: store,
-                    initialMetricsID: destination.metricsID,
-                    referenceDate: destination.referenceDate,
-                    displayCalendar: destination.calendar,
-                    displayTimeZone: destination.calendar.timeZone,
-                    reduceMotionOverride: reduceMotion,
-                    initialWeekReferenceDate: destination.referenceDate
-                )
-            }
-            .onAppear {
-                refreshDeadlineReferenceDate()
-                handleQuestionRefreshOnActivation()
-            }
-            .onChange(of: scenePhase) { _, phase in
-                if phase == .active {
+                .checkpointScreenBackground()
+                .navigationTitle("Checkpoint")
+                .toolbarTitleDisplayMode(.inline)
+                .sheet(isPresented: $isRestrictedAppsPresented) {
+                    RestrictedAppsView(screenTime: screenTime)
+                }
+                .sheet(item: $weeklyReviewDestination) { destination in
+                    WeeklyReviewView(
+                        store: store,
+                        initialMetricsID: destination.metricsID,
+                        referenceDate: destination.referenceDate,
+                        displayCalendar: destination.calendar,
+                        displayTimeZone: destination.calendar.timeZone,
+                        reduceMotionOverride: reduceMotion,
+                        initialWeekReferenceDate: destination.referenceDate
+                    )
+                }
+                .onAppear {
                     refreshDeadlineReferenceDate()
                     handleQuestionRefreshOnActivation()
                 }
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .NSCalendarDayChanged)
-            ) { _ in
-                refreshDeadlineReferenceDate()
-            }
-            .onChange(of: questionPreparationSnapshot) { previous, current in
-                guard previous.goalID == current.goalID else {
-                    suppressedQuestionReadyGoalID = nil
-                    hideQuestionsReadyConfirmation()
-                    return
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .active {
+                        refreshDeadlineReferenceDate()
+                        handleQuestionRefreshOnActivation()
+                    }
                 }
-
-                if !previous.hasReadyCheckpointSet,
-                   current.hasReadyCheckpointSet {
-                    if ProtectionStartReadinessAnnouncementPolicy.shouldSuppress(
-                        for: current.goalID,
-                        locallySuppressedGoalID: suppressedQuestionReadyGoalID,
-                        parentPresentationOwnsReadiness: parentModalOwnsQuestionReadiness,
-                        startingProtectionReadinessGoalID: workflow.startingProtectionReadinessGoalID,
-                        pendingResult: workflow.pendingProtectionStartResult
-                    ) {
+                .onReceive(
+                    NotificationCenter.default.publisher(for: .NSCalendarDayChanged)
+                ) { _ in
+                    refreshDeadlineReferenceDate()
+                }
+                .onChange(of: questionPreparationSnapshot) { previous, current in
+                    guard previous.goalID == current.goalID else {
                         suppressedQuestionReadyGoalID = nil
+                        hideQuestionsReadyConfirmation()
                         return
                     }
-                    guard previous.isPreparing else { return }
-                    showQuestionsReadyConfirmation()
-                } else if previous.isPreparing,
-                          !current.isPreparing,
-                          !current.hasReadyCheckpointSet,
-                          suppressedQuestionReadyGoalID == current.goalID {
-                    suppressedQuestionReadyGoalID = nil
+
+                    if !previous.hasReadyCheckpointSet,
+                       current.hasReadyCheckpointSet {
+                        if ProtectionStartReadinessAnnouncementPolicy.shouldSuppress(
+                            for: current.goalID,
+                            locallySuppressedGoalID: suppressedQuestionReadyGoalID,
+                            parentPresentationOwnsReadiness: parentModalOwnsQuestionReadiness,
+                            startingProtectionReadinessGoalID: workflow.startingProtectionReadinessGoalID,
+                            pendingResult: workflow.pendingProtectionStartResult
+                        ) {
+                            suppressedQuestionReadyGoalID = nil
+                            return
+                        }
+                        guard previous.isPreparing else { return }
+                        showQuestionsReadyConfirmation()
+                    } else if previous.isPreparing,
+                              !current.isPreparing,
+                              !current.hasReadyCheckpointSet,
+                              suppressedQuestionReadyGoalID == current.goalID {
+                        suppressedQuestionReadyGoalID = nil
+                    }
                 }
-            }
-            .onChange(of: screenTime.userFacingErrorMessage) { _, message in
-                let isStartFeedbackPending = workflow.isStartingProtection
-                    || workflow.pendingProtectionStartResult?.protectionErrorMessage == message
-                guard protectionStartErrorFeedback.shouldDeliverPassiveError(
-                    message,
-                    isStartFeedbackPending: isStartFeedbackPending
-                ), let message else { return }
-                guard isVisible,
-                      !parentModalOwnsProtectionErrors,
-                      !isCoveredByLocalPresentation else { return }
-                announceOrQueue(
-                    AccessibilityAnnouncementRequest(
-                        message: message,
-                        context: .screenTimeError(message)
+                .onChange(of: screenTime.userFacingErrorMessage) { _, message in
+                    let isStartFeedbackPending = workflow.isStartingProtection
+                        || workflow.pendingProtectionStartResult?.protectionErrorMessage == message
+                    guard protectionStartErrorFeedback.shouldDeliverPassiveError(
+                        message,
+                        isStartFeedbackPending: isStartFeedbackPending
+                    ), let message else { return }
+                    guard isVisible,
+                          !parentModalOwnsProtectionErrors,
+                          !isCoveredByLocalPresentation else { return }
+                    announceOrQueue(
+                        AccessibilityAnnouncementRequest(
+                            message: message,
+                            context: .screenTimeError(message)
+                        )
                     )
-                )
-            }
-            .onChange(of: workflow.pendingProtectionStartResult) { _, _ in
-                deliverPendingProtectionStartResultIfPossible()
-            }
-            .onChange(of: parentModalOwnsQuestionReadiness) { _, ownsReadiness in
-                guard ownsReadiness else { return }
-                accessibilityAnnouncementQueue.discard()
-                hideQuestionsReadyConfirmation()
-            }
-            .onChange(of: ownsQuestionReadinessFeedback) { _, ownsFeedback in
-                if !ownsFeedback {
-                    hideQuestionsReadyConfirmation()
-                } else {
-                    deliverPendingAccessibilityAnnouncement()
+                }
+                .onChange(of: workflow.pendingProtectionStartResult) { _, _ in
                     deliverPendingProtectionStartResultIfPossible()
                 }
+                .onChange(of: parentModalOwnsQuestionReadiness) { _, ownsReadiness in
+                    guard ownsReadiness else { return }
+                    accessibilityAnnouncementQueue.discard()
+                    hideQuestionsReadyConfirmation()
+                }
+                .onChange(of: ownsQuestionReadinessFeedback) { _, ownsFeedback in
+                    if !ownsFeedback {
+                        hideQuestionsReadyConfirmation()
+                    } else {
+                        deliverPendingAccessibilityAnnouncement()
+                        deliverPendingProtectionStartResultIfPossible()
+                    }
+                }
+                .onChange(of: earnedBreakRevealSequence) { previous, current in
+                    guard current > previous else { return }
+                    scrollToEarnedBreak(using: scrollProxy)
+                }
+                .task(id: earnedBreakDeliveryTaskID) {
+                    await Task.yield()
+                    guard !Task.isCancelled else { return }
+                    deliverEarnedBreakHandoffIfPossible()
+                }
+                .sensoryFeedback(.success, trigger: earnedBreakCelebrationSequence)
+                .onDisappear {
+                    hideQuestionsReadyConfirmation()
+                }
+                .environment(\.homeWeeklySignalViewportWidth, viewportWidth)
             }
-            .onDisappear {
-                hideQuestionsReadyConfirmation()
-            }
-            .environment(\.homeWeeklySignalViewportWidth, viewportWidth)
         }
     }
 
@@ -424,6 +476,60 @@ struct HomeView: View {
 
     private var isCoveredByLocalPresentation: Bool {
         isRestrictedAppsPresented || weeklyReviewDestination != nil
+    }
+
+    private func earnedBreakDeliveryContext(now: Date) -> EarnedBreakHandoffDeliveryContext {
+        EarnedBreakHandoffDeliveryContext(
+            activeGoalID: store.goal?.id,
+            canonicalUnlockStartedAt: store.unlockSession?.startedAt,
+            canonicalUnlockExpiresAt: store.unlockSession?.expiresAt,
+            isTemporaryUnlockAvailable: isTemporarilyUnblocked
+                && screenTime.setupState == .temporarilyUnlocked,
+            isExposed: ownsQuestionReadinessFeedback,
+            now: now
+        )
+    }
+
+    private var earnedBreakDeliveryTaskID: EarnedBreakDeliveryTaskID {
+        EarnedBreakDeliveryTaskID(
+            handoff: earnedBreakHandoff,
+            activeGoalID: store.goal?.id,
+            canonicalUnlockStartedAt: store.unlockSession?.startedAt,
+            canonicalUnlockExpiresAt: store.unlockSession?.expiresAt,
+            isTemporaryUnlockAvailable: isTemporarilyUnblocked
+                && screenTime.setupState == .temporarilyUnlocked,
+            isExposed: ownsQuestionReadinessFeedback
+        )
+    }
+
+    private func deliverEarnedBreakHandoffIfPossible() {
+        earnedBreakHandoffDelivery.receive(earnedBreakHandoff)
+        let context = earnedBreakDeliveryContext(
+            now: referenceDateOverride ?? Date()
+        )
+        guard let effect = earnedBreakHandoffDelivery.attemptDelivery(
+            in: context,
+            authoritativeResolve: resolveEarnedBreakHandoff
+        ) else { return }
+
+        earnedBreakRevealSequence += effect.revealSequenceIncrement
+        earnedBreakCelebrationSequence += effect.celebrationSequenceIncrement
+        onEarnedBreakHandoffDelivered(effect)
+        AccessibilityNotification.Announcement(effect.accessibilityAnnouncement).post()
+    }
+
+    private func scrollToEarnedBreak(using scrollProxy: ScrollViewProxy) {
+        guard isTemporarilyUnblocked,
+              !voiceOverEnabled,
+              !switchControlEnabled else { return }
+
+        if reduceMotion {
+            scrollProxy.scrollTo(ScrollAnchor.activeBreak, anchor: .top)
+        } else {
+            withAnimation(CheckpointMotion.reveal) {
+                scrollProxy.scrollTo(ScrollAnchor.activeBreak, anchor: .top)
+            }
+        }
     }
 
     @ViewBuilder
@@ -634,12 +740,15 @@ struct HomeView: View {
             expiresAt: activeBreakExpiration,
             relockReadiness: activeBreakRelockReadiness,
             areProtectedAppsAvailable: screenTime.setupState == .temporarilyUnlocked,
-            protectedAppsSummary: screenTime.restrictedAppsSummary
+            protectedAppsSummary: screenTime.restrictedAppsSummary,
+            revealTrigger: earnedBreakRevealSequence,
+            reduceMotionOverride: reduceMotion
         ) {
             isRestrictedAppsPresented = true
         } endBreakEarly: {
             workflow.endBreakEarly()
         }
+        .id(ScrollAnchor.activeBreak)
     }
 
     private var homeActiveBreakTransition: AnyTransition {

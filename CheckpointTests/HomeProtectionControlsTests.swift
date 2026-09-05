@@ -608,6 +608,141 @@ final class HomeProtectionControlsTests: XCTestCase {
         XCTAssertEqual(HomeActiveBreakMotionPolicy(reduceMotion: true).style, .identity)
     }
 
+    func testActiveBreakRevealPolicyUsesOneRestrainedMotionWindow() {
+        let animated = HomeActiveBreakRevealPolicy(reduceMotion: false)
+        XCTAssertEqual(animated.style, .animated)
+        XCTAssertTrue(animated.animatesReveal)
+        XCTAssertEqual(animated.concealedScale, 0.985, accuracy: 0.000_001)
+        XCTAssertEqual(animated.concealedOpacity, 0.88, accuracy: 0.000_001)
+        XCTAssertGreaterThanOrEqual(HomeActiveBreakRevealPolicy.duration, 0.45)
+        XCTAssertLessThanOrEqual(HomeActiveBreakRevealPolicy.duration, 0.6)
+        XCTAssertNil(animated.animation(for: .concealed))
+        XCTAssertNotNil(animated.animation(for: .revealing))
+        XCTAssertNil(animated.animation(for: .settled))
+
+        let identity = HomeActiveBreakRevealPolicy(reduceMotion: true)
+        XCTAssertEqual(identity.style, .identity)
+        XCTAssertFalse(identity.animatesReveal)
+        XCTAssertEqual(identity.concealedScale, 1)
+        XCTAssertEqual(identity.concealedOpacity, 1)
+        XCTAssertNil(identity.animation(for: .revealing))
+    }
+
+    func testActiveBreakRevealPolicyMapsRingFromZeroToTheLiveFraction() {
+        let animated = HomeActiveBreakRevealPolicy(reduceMotion: false)
+
+        XCTAssertEqual(
+            animated.ringProgress(liveFraction: 0.64, phase: .concealed),
+            0
+        )
+        XCTAssertEqual(
+            animated.ringProgress(liveFraction: 0.64, phase: .revealing),
+            0.64
+        )
+        XCTAssertEqual(
+            animated.ringProgress(liveFraction: 0.64, phase: .settled),
+            0.64
+        )
+        XCTAssertEqual(
+            animated.ringProgress(liveFraction: 1.4, phase: .settled),
+            1
+        )
+        XCTAssertEqual(
+            animated.ringProgress(liveFraction: -0.2, phase: .settled),
+            0
+        )
+        XCTAssertNil(animated.ringProgress(liveFraction: nil, phase: .concealed))
+
+        let identity = HomeActiveBreakRevealPolicy(reduceMotion: true)
+        XCTAssertEqual(
+            identity.ringProgress(liveFraction: 0.64, phase: .concealed),
+            0.64,
+            "Reduce Motion must render the live ring immediately."
+        )
+    }
+
+    func testActiveBreakRevealDefaultsToFinalGeometry() {
+        let state = HomeActiveBreakRevealState()
+        let policy = HomeActiveBreakRevealPolicy(reduceMotion: false)
+        let phase = state.renderedPhase(trigger: 0, policy: policy)
+
+        XCTAssertEqual(state.phase, .settled)
+        XCTAssertEqual(state.handledTrigger, 0)
+        XCTAssertEqual(state.symbolEffectSequence, 0)
+        XCTAssertEqual(phase, .settled)
+        XCTAssertEqual(policy.cardScale(for: phase), 1)
+        XCTAssertEqual(policy.cardOpacity(for: phase), 1)
+        XCTAssertEqual(policy.ringProgress(liveFraction: 0.72, phase: phase), 0.72)
+    }
+
+    func testActiveBreakRevealConsumesEachNonzeroTriggerExactlyOnce() {
+        var state = HomeActiveBreakRevealState()
+        let policy = HomeActiveBreakRevealPolicy(reduceMotion: false)
+
+        XCTAssertEqual(state.renderedPhase(trigger: 7, policy: policy), .concealed)
+        XCTAssertTrue(state.receive(trigger: 7, policy: policy))
+        XCTAssertEqual(state.phase, .concealed)
+        XCTAssertTrue(state.begin(trigger: 7))
+        XCTAssertEqual(state.phase, .revealing)
+        XCTAssertEqual(state.symbolEffectSequence, 1)
+
+        XCTAssertFalse(state.begin(trigger: 7))
+        XCTAssertEqual(
+            state.symbolEffectSequence,
+            1,
+            "A reveal must emit exactly one leading-symbol effect."
+        )
+
+        state.finish(trigger: 7)
+        XCTAssertEqual(state.phase, .settled)
+        XCTAssertFalse(state.receive(trigger: 7, policy: policy))
+        XCTAssertEqual(state.symbolEffectSequence, 1)
+
+        XCTAssertTrue(state.receive(trigger: 8, policy: policy))
+        XCTAssertTrue(state.begin(trigger: 8))
+        XCTAssertEqual(state.symbolEffectSequence, 2)
+    }
+
+    func testActiveBreakRevealReduceMotionIsIdentityAndDoesNotReplay() {
+        var state = HomeActiveBreakRevealState()
+        let identity = HomeActiveBreakRevealPolicy(reduceMotion: true)
+        let animated = HomeActiveBreakRevealPolicy(reduceMotion: false)
+
+        XCTAssertFalse(state.receive(trigger: 3, policy: identity))
+        XCTAssertEqual(state.phase, .settled)
+        XCTAssertEqual(state.handledTrigger, 3)
+        XCTAssertEqual(state.symbolEffectSequence, 0)
+        XCTAssertEqual(state.renderedPhase(trigger: 3, policy: identity), .settled)
+
+        XCTAssertFalse(
+            state.receive(trigger: 3, policy: animated),
+            "Turning Reduce Motion back off must not replay a handled reveal."
+        )
+        XCTAssertEqual(state.phase, .settled)
+        XCTAssertEqual(state.symbolEffectSequence, 0)
+    }
+
+    func testActiveBreakRevealSnapsToFinalWhenMotionIsReducedMidReveal() {
+        var state = HomeActiveBreakRevealState()
+        let animated = HomeActiveBreakRevealPolicy(reduceMotion: false)
+        let identity = HomeActiveBreakRevealPolicy(reduceMotion: true)
+
+        XCTAssertTrue(state.receive(trigger: 11, policy: animated))
+        XCTAssertTrue(state.begin(trigger: 11))
+        XCTAssertEqual(state.phase, .revealing)
+
+        state.snapToFinal(trigger: 11)
+        let snappedPhase = state.renderedPhase(trigger: 11, policy: identity)
+        XCTAssertEqual(snappedPhase, .settled)
+        XCTAssertEqual(identity.cardScale(for: snappedPhase), 1)
+        XCTAssertEqual(identity.cardOpacity(for: snappedPhase), 1)
+        XCTAssertEqual(
+            identity.ringProgress(liveFraction: 0.58, phase: snappedPhase),
+            0.58
+        )
+        XCTAssertFalse(state.receive(trigger: 11, policy: animated))
+    }
+
     private func makeBreakPresentation(
         now: Date,
         secondsRemaining: TimeInterval,

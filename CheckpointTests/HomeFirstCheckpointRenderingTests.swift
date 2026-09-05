@@ -1307,6 +1307,83 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testCommittedEarnedBreakHandoffWaitsForHomeToBecomeExposedBeforeRevealing() throws {
+        let storeSuiteName = "HomeEarnedBreakHandoffTests.Store.\(UUID().uuidString)"
+        let screenTimeSuiteName = "HomeEarnedBreakHandoffTests.ScreenTime.\(UUID().uuidString)"
+        let storeDefaults = try XCTUnwrap(UserDefaults(suiteName: storeSuiteName))
+        let screenTimeDefaults = try XCTUnwrap(UserDefaults(suiteName: screenTimeSuiteName))
+        defer {
+            storeDefaults.removePersistentDomain(forName: storeSuiteName)
+            screenTimeDefaults.removePersistentDomain(forName: screenTimeSuiteName)
+        }
+        resetSharedAppGroupState()
+        defer { resetSharedAppGroupState() }
+
+        let initialReferenceDate = Date()
+        let store = makeGoalSwitchRenderStore(
+            defaults: storeDefaults,
+            state: .ready,
+            referenceDate: initialReferenceDate
+        )
+        let goal = try XCTUnwrap(store.goal)
+        store.startUnlockSession(
+            minutes: 10,
+            expiresAt: initialReferenceDate.addingTimeInterval(10 * 60),
+            goalID: goal.id
+        )
+        let unlock = try XCTUnwrap(store.unlockSession)
+        let screenTime = ScreenTimeController(
+            defaults: screenTimeDefaults,
+            authorizer: HomeRenderScreenTimeAuthorizer()
+        )
+        screenTime.setupState = .temporarilyUnlocked
+        screenTime.isShieldingEnabled = false
+        screenTime.restrictedAppsSummary = "3 apps and 2 websites selected"
+        SharedAppGroup.publishProtectionState(
+            isActive: true,
+            unlockExpiration: unlock.expiresAt
+        )
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: screenTime)
+        let handoff = EarnedBreakHandoffToken(
+            deliveryID: UUID(uuidString: "0A70C393-2327-41AF-B9D7-75210458A220")!,
+            checkpointSessionID: UUID(uuidString: "64E71A91-86BD-46A8-A8F6-12DC2C66FD38")!,
+            goalID: goal.id,
+            startedAt: unlock.startedAt,
+            expiresAt: unlock.expiresAt,
+            unlockMinutes: 10
+        )
+        let capture = HomeEarnedBreakHandoffCapture(handoff: handoff)
+
+        let image = HostedViewRenderer.image(
+            for: HomeEarnedBreakHandoffHarness(
+                store: store,
+                screenTime: screenTime,
+                workflow: workflow,
+                referenceDate: unlock.startedAt.addingTimeInterval(1),
+                calendar: fixedGoalSwitchCalendar,
+                handoff: handoff,
+                capture: capture
+            )
+            .environment(\.colorScheme, .light)
+            .environment(\.dynamicTypeSize, .large),
+            width: 393,
+            height: 852,
+            colorScheme: .light,
+            settlingTime: 0.7,
+            renderScale: 0.5
+        )
+
+        XCTAssertNil(capture.queue.pendingToken)
+        XCTAssertEqual(capture.effects, [EarnedBreakHandoffDeliveryEffect(token: handoff)])
+        XCTAssertEqual(image.size.width, 393, accuracy: 1)
+        XCTAssertEqual(image.size.height, 852, accuracy: 1)
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "earned-break-committed-handoff"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    @MainActor
     private func journeySurface(for fixture: HomeJourneyRenderFixture) -> some View {
         ScrollView {
             HomeFirstWinJourneyCard(
@@ -1551,6 +1628,64 @@ private struct HomeWeeklySignalRenderFixture {
 @MainActor
 private final class HomeWeeklySignalLayoutCapture {
     var frames: [HomeWeeklySignalLayoutElement: CGRect] = [:]
+}
+
+@MainActor
+private final class HomeEarnedBreakHandoffCapture {
+    var queue = EarnedBreakHandoffQueue()
+    private(set) var effects: [EarnedBreakHandoffDeliveryEffect] = []
+
+    init(handoff: EarnedBreakHandoffToken) {
+        queue.issue(handoff)
+    }
+
+    func resolve(
+        _ handoff: EarnedBreakHandoffToken,
+        _ disposition: EarnedBreakHandoffDisposition
+    ) -> Bool {
+        queue.resolve(handoff, as: disposition)
+    }
+
+    func record(_ effect: EarnedBreakHandoffDeliveryEffect) {
+        effects.append(effect)
+    }
+}
+
+@MainActor
+private struct HomeEarnedBreakHandoffHarness: View {
+    let store: CheckpointStore
+    let screenTime: ScreenTimeController
+    let workflow: CheckpointWorkflowCoordinator
+    let referenceDate: Date
+    let calendar: Calendar
+    let handoff: EarnedBreakHandoffToken
+    let capture: HomeEarnedBreakHandoffCapture
+
+    @State private var isCoveredByCheckpointSheet = true
+
+    var body: some View {
+        HomeView(
+            store: store,
+            screenTime: screenTime,
+            workflow: workflow,
+            refreshesQuestionsOnActivation: false,
+            reduceMotionOverride: false,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            isVisible: true,
+            isSceneActive: true,
+            isCoveredByParentModal: isCoveredByCheckpointSheet,
+            earnedBreakHandoff: handoff,
+            resolveEarnedBreakHandoff: capture.resolve,
+            onEarnedBreakHandoffDelivered: capture.record
+        )
+        .task {
+            await Task.yield()
+            try? await Task.sleep(for: .milliseconds(80))
+            guard !Task.isCancelled else { return }
+            isCoveredByCheckpointSheet = false
+        }
+    }
 }
 
 private enum HomeJourneyRenderState: Equatable {

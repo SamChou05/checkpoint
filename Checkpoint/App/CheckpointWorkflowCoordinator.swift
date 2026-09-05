@@ -108,6 +108,200 @@ struct ProtectionStartResultEvent: Identifiable, Equatable, Sendable {
     let protectionErrorMessage: String?
 }
 
+enum CheckpointPassResolution: Equatable, Sendable {
+    case failed(message: String)
+    case completed(earnedBreak: EarnedBreakHandoffToken?)
+}
+
+struct EarnedBreakHandoffToken: Identifiable, Equatable, Hashable, Sendable {
+    let deliveryID: UUID
+    let checkpointSessionID: CheckpointSession.ID
+    let goalID: Goal.ID
+    let startedAt: Date
+    let expiresAt: Date
+    let unlockMinutes: Int
+
+    var id: UUID { deliveryID }
+
+    init(
+        deliveryID: UUID = UUID(),
+        checkpointSessionID: CheckpointSession.ID,
+        goalID: Goal.ID,
+        startedAt: Date,
+        expiresAt: Date,
+        unlockMinutes: Int
+    ) {
+        self.deliveryID = deliveryID
+        self.checkpointSessionID = checkpointSessionID
+        self.goalID = goalID
+        self.startedAt = startedAt
+        self.expiresAt = expiresAt
+        self.unlockMinutes = unlockMinutes
+    }
+
+    var accessibilityAnnouncement: String {
+        let duration = unlockMinutes == 1 ? "1-minute" : "\(unlockMinutes)-minute"
+        return "Checkpoint passed. You earned a \(duration) break, and it is active now."
+    }
+
+    fileprivate var hasValidUnlockWindow: Bool {
+        unlockMinutes > 0 && startedAt < expiresAt
+    }
+}
+
+enum EarnedBreakHandoffDiscardReason: Equatable, Hashable, Sendable {
+    case activeGoalMismatch
+    case canonicalUnlockMismatch
+    case temporaryUnlockUnavailable
+    case expired
+}
+
+enum EarnedBreakHandoffDisposition: Equatable, Hashable, Sendable {
+    case delivered
+    case discarded(EarnedBreakHandoffDiscardReason)
+}
+
+struct EarnedBreakHandoffQueue: Equatable, Sendable {
+    private(set) var pendingToken: EarnedBreakHandoffToken?
+    private(set) var resolvedDeliveryIDs: Set<UUID> = []
+
+    @discardableResult
+    mutating func issue(_ token: EarnedBreakHandoffToken) -> Bool {
+        guard token.hasValidUnlockWindow,
+              !resolvedDeliveryIDs.contains(token.deliveryID),
+              pendingToken?.deliveryID != token.deliveryID else {
+            return false
+        }
+
+        if let pendingToken {
+            resolvedDeliveryIDs.insert(pendingToken.deliveryID)
+        }
+        pendingToken = token
+        return true
+    }
+
+    @discardableResult
+    mutating func resolve(
+        _ token: EarnedBreakHandoffToken,
+        as disposition: EarnedBreakHandoffDisposition
+    ) -> Bool {
+        guard pendingToken == token,
+              !resolvedDeliveryIDs.contains(token.deliveryID) else {
+            return false
+        }
+
+        pendingToken = nil
+        resolvedDeliveryIDs.insert(token.deliveryID)
+        return true
+    }
+
+    mutating func discardPending() {
+        guard let pendingToken else { return }
+        self.pendingToken = nil
+        resolvedDeliveryIDs.insert(pendingToken.deliveryID)
+    }
+}
+
+struct EarnedBreakHandoffDeliveryContext: Equatable, Hashable, Sendable {
+    let activeGoalID: Goal.ID?
+    let canonicalUnlockStartedAt: Date?
+    let canonicalUnlockExpiresAt: Date?
+    let isTemporaryUnlockAvailable: Bool
+    let isExposed: Bool
+    let now: Date
+}
+
+struct EarnedBreakHandoffDeliveryEffect: Equatable, Sendable {
+    let token: EarnedBreakHandoffToken
+
+    var revealSequenceIncrement: Int { 1 }
+    var celebrationSequenceIncrement: Int { 1 }
+    var accessibilityAnnouncement: String { token.accessibilityAnnouncement }
+}
+
+struct EarnedBreakHandoffDeliveryState: Equatable, Sendable {
+    private(set) var pendingToken: EarnedBreakHandoffToken?
+    private(set) var presentedToken: EarnedBreakHandoffToken?
+    private(set) var resolvedDeliveryIDs: Set<UUID> = []
+
+    init(token: EarnedBreakHandoffToken? = nil) {
+        pendingToken = token
+    }
+
+    mutating func receive(_ token: EarnedBreakHandoffToken?) {
+        guard let token else {
+            pendingToken = nil
+            return
+        }
+        guard !resolvedDeliveryIDs.contains(token.deliveryID),
+              pendingToken?.deliveryID != token.deliveryID else {
+            return
+        }
+
+        if let pendingToken {
+            resolvedDeliveryIDs.insert(pendingToken.deliveryID)
+        }
+        pendingToken = token
+    }
+
+    var candidateForDelivery: EarnedBreakHandoffToken? {
+        guard let pendingToken,
+              !resolvedDeliveryIDs.contains(pendingToken.deliveryID) else {
+            return nil
+        }
+        return pendingToken
+    }
+
+    mutating func attemptDelivery(
+        in context: EarnedBreakHandoffDeliveryContext,
+        authoritativeResolve: (
+            EarnedBreakHandoffToken,
+            EarnedBreakHandoffDisposition
+        ) -> Bool
+    ) -> EarnedBreakHandoffDeliveryEffect? {
+        guard let candidate = candidateForDelivery else { return nil }
+        guard context.isExposed else { return nil }
+
+        let disposition = disposition(for: candidate, in: context)
+        pendingToken = nil
+        resolvedDeliveryIDs.insert(candidate.deliveryID)
+
+        guard authoritativeResolve(candidate, disposition) else {
+            return nil
+        }
+        guard disposition == .delivered else {
+            return nil
+        }
+
+        presentedToken = candidate
+        return EarnedBreakHandoffDeliveryEffect(token: candidate)
+    }
+
+    private func disposition(
+        for token: EarnedBreakHandoffToken,
+        in context: EarnedBreakHandoffDeliveryContext
+    ) -> EarnedBreakHandoffDisposition {
+        guard token.hasValidUnlockWindow else {
+            return .discarded(.canonicalUnlockMismatch)
+        }
+        guard context.activeGoalID == token.goalID else {
+            return .discarded(.activeGoalMismatch)
+        }
+        guard context.canonicalUnlockStartedAt == token.startedAt,
+              context.canonicalUnlockExpiresAt == token.expiresAt else {
+            return .discarded(.canonicalUnlockMismatch)
+        }
+        guard context.isTemporaryUnlockAvailable else {
+            return .discarded(.temporaryUnlockUnavailable)
+        }
+        guard context.now >= token.startedAt,
+              context.now < token.expiresAt else {
+            return .discarded(.expired)
+        }
+        return .delivered
+    }
+}
+
 @MainActor
 @Observable
 final class CheckpointWorkflowCoordinator {
@@ -586,35 +780,71 @@ final class CheckpointWorkflowCoordinator {
         return true
     }
 
-    func finishPassed(_ session: CheckpointSession) -> String? {
+    func finishPassed(_ session: CheckpointSession) -> CheckpointPassResolution {
         if session.purpose != .preview,
-           store.activeCheckpointRun?.sessionID != session.id {
-            return "This checkpoint is no longer active. Start a new checkpoint to change protection."
+           (store.activeCheckpointRun?.sessionID != session.id
+            || store.activeCheckpointRun?.purpose != session.purpose) {
+            return .failed(
+                message: "This checkpoint is no longer active. Start a new checkpoint to change protection."
+            )
         }
 
         switch session.purpose {
         case .temporaryUnlock:
+            guard let activeRun = store.activeCheckpointRun,
+                  activeRun.sessionID == session.id else {
+                return .failed(
+                    message: "This checkpoint is no longer active. Start a new checkpoint to change protection."
+                )
+            }
             let unlockMinutes = store.unlockPolicy.unlockMinutes
             let expiration = now().addingTimeInterval(TimeInterval(unlockMinutes * 60))
             guard protection.temporarilyUnshield(until: expiration) else {
-                return protection.userFacingErrorMessage
-                    ?? "The break could not start. Protection is still on; try again."
+                return .failed(
+                    message: protection.userFacingErrorMessage
+                        ?? "The break could not start. Protection is still on; try again."
+                )
             }
             store.startUnlockSession(
                 minutes: unlockMinutes,
                 expiresAt: expiration,
-                goalID: session.questions.first?.goalID
+                goalID: activeRun.goalID
             )
-            store.resolveCheckpointRun(sessionID: session.id, didPass: true)
+            guard let committedUnlock = store.unlockSession,
+                  committedUnlock.expiresAt == expiration,
+                  committedUnlock.startedAt < committedUnlock.expiresAt,
+                  committedUnlock.isActive,
+                  let committedEvent = store.unlockEvents.first,
+                  committedEvent.goalID == activeRun.goalID,
+                  committedEvent.minutes == unlockMinutes,
+                  committedEvent.createdAt == committedUnlock.startedAt,
+                  store.resolveCheckpointRun(sessionID: session.id, didPass: true),
+                  store.unlockSession == committedUnlock else {
+                return .failed(
+                    message: "The break started, but Checkpoint could not confirm it. Reopen Checkpoint before changing protection again."
+                )
+            }
+            return .completed(
+                earnedBreak: EarnedBreakHandoffToken(
+                    checkpointSessionID: session.id,
+                    goalID: activeRun.goalID,
+                    startedAt: committedUnlock.startedAt,
+                    expiresAt: committedUnlock.expiresAt,
+                    unlockMinutes: committedEvent.minutes
+                )
+            )
         case .stopBlocking:
             protection.clearShield()
             store.clearUnlockSession()
-            store.resolveCheckpointRun(sessionID: session.id, didPass: true)
+            guard store.resolveCheckpointRun(sessionID: session.id, didPass: true) else {
+                return .failed(
+                    message: "This checkpoint is no longer active. Start a new checkpoint to change protection."
+                )
+            }
+            return .completed(earnedBreak: nil)
         case .preview:
-            break
+            return .completed(earnedBreak: nil)
         }
-
-        return nil
     }
 
     private static let unavailableCheckpointMessage =

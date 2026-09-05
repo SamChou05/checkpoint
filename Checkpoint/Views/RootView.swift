@@ -212,6 +212,15 @@ struct TabContentAnnouncementOwnership {
     }
 }
 
+struct CheckpointPresentationLifecycle {
+    static func isActive(
+        hasSession: Bool,
+        isSheetActive: Bool
+    ) -> Bool {
+        hasSession || isSheetActive
+    }
+}
+
 enum AccessibilityAnnouncementContext: Equatable {
     case goalReady(Goal.ID)
     case screenTimeError(String)
@@ -418,6 +427,8 @@ struct RootView: View {
     @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
     @State private var activeCheckpointSession: CheckpointSession?
+    @State private var isCheckpointSheetActive = false
+    @State private var earnedBreakHandoff = EarnedBreakHandoffQueue()
     @State private var pendingShieldRetryTask: Task<Void, Never>?
     @State private var suggestedSkillMapReviewPresentation = SkillMapReviewPresentationState()
     @State private var lastPresentedSkillMapReviewRevision: SkillMapReviewContext.Revision?
@@ -438,6 +449,12 @@ struct RootView: View {
     private var screenTime: ScreenTimeController { appModel.screenTime }
     private var purchaseController: PurchaseController { appModel.purchaseController }
     private var workflow: CheckpointWorkflowCoordinator { appModel.workflow }
+    private var isCheckpointPresentationActive: Bool {
+        CheckpointPresentationLifecycle.isActive(
+            hasSession: activeCheckpointSession != nil,
+            isSheetActive: isCheckpointSheetActive
+        )
+    }
     private var suggestedSkillMapReviewBinding: Binding<SkillMapReviewContext?> {
         Binding(
             get: { suggestedSkillMapReviewPresentation.destination },
@@ -465,7 +482,9 @@ struct RootView: View {
                 isSceneActive: scenePhase == .active,
                 isCoveredByParentModal: isTabContentCoveredByParentPresentation,
                 parentModalOwnsQuestionReadiness: firstRunSetup.isAppSelectionPresented,
-                parentModalOwnsProtectionErrors: parentPresentationOwnsProtectionErrors
+                parentModalOwnsProtectionErrors: parentPresentationOwnsProtectionErrors,
+                earnedBreakHandoff: earnedBreakHandoff.pendingToken,
+                resolveEarnedBreakHandoff: resolveEarnedBreakHandoff
             )
                 .tabItem {
                     Label("Home", systemImage: "target")
@@ -548,7 +567,12 @@ struct RootView: View {
             RestrictedAppsView(screenTime: screenTime)
         }
         .sheet(item: $activeCheckpointSession, onDismiss: handleCheckpointDismissed) { session in
-            CheckpointAttemptView(store: store, workflow: workflow, session: session)
+            CheckpointAttemptView(
+                store: store,
+                workflow: workflow,
+                session: session,
+                onEarnedBreak: queueEarnedBreakHandoff
+            )
         }
         .sheet(item: membershipPresentationBinding, onDismiss: handleMembershipDismissed) { context in
             MembershipView(context: context, store: store, purchaseController: purchaseController)
@@ -627,7 +651,7 @@ struct RootView: View {
             presentSuggestedSkillMapReviewIfNeeded()
         }
         .onChange(of: protectionReconciliationKey) { _, _ in
-            guard activeCheckpointSession == nil else { return }
+            guard !isCheckpointPresentationActive else { return }
             reconcileProtectionAndHandlePendingAttempt()
         }
         .onChange(of: store.activeDerivedSkillMap) { _, _ in
@@ -906,7 +930,7 @@ struct RootView: View {
 
     private func handlePendingShieldActivation() {
         guard !screenTimeAccessGate.blocksUnderlyingPresentations else { return }
-        guard activeCheckpointSession == nil else { return }
+        guard !isCheckpointPresentationActive else { return }
         guard workflow.operation == nil else { return }
         guard SharedAppGroup.currentPendingShieldAttempt != nil else {
             pendingShieldRetryTask?.cancel()
@@ -937,7 +961,7 @@ struct RootView: View {
               !authorizationRecoveryQueue.isQueued,
               !authorizationRecoveryQueue.isScheduling,
               !firstRunSetup.isAppSelectionPresented,
-              activeCheckpointSession == nil,
+              !isCheckpointPresentationActive,
               store.pendingMembershipPresentation == nil,
               !store.hasDeferredMembershipActivationPresentation,
               pendingGoalSwitchConfirmation == nil,
@@ -979,9 +1003,22 @@ struct RootView: View {
     }
 
     private func handleCheckpointDismissed() {
+        isCheckpointSheetActive = false
         handlePendingShieldActivation()
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
         presentDeferredMembershipActivationIfPossible()
+    }
+
+    private func queueEarnedBreakHandoff(_ handoff: EarnedBreakHandoffToken) {
+        guard earnedBreakHandoff.issue(handoff) else { return }
+        selectedTab = .home
+    }
+
+    private func resolveEarnedBreakHandoff(
+        _ handoff: EarnedBreakHandoffToken,
+        as disposition: EarnedBreakHandoffDisposition
+    ) -> Bool {
+        earnedBreakHandoff.resolve(handoff, as: disposition)
     }
 
     private func handleMembershipDismissed() {
@@ -1041,7 +1078,7 @@ struct RootView: View {
               !authorizationRecoveryQueue.isQueued,
               !authorizationRecoveryQueue.isScheduling,
               !firstRunSetup.isAppSelectionPresented,
-              activeCheckpointSession == nil,
+              !isCheckpointPresentationActive,
               store.pendingMembershipPresentation == nil,
               pendingGoalSwitchConfirmation == nil,
               queuedGoalSwitchConfirmation == nil,
@@ -1090,7 +1127,7 @@ struct RootView: View {
         )
         let canPresent = !isAuthorizationRecoveryAppSelectionPresented &&
             !screenTimeAccessGate.blocksUnderlyingPresentations &&
-            activeCheckpointSession == nil &&
+            !isCheckpointPresentationActive &&
             store.pendingMembershipPresentation == nil &&
             !store.isOnboardingPresented &&
             !isOnboardingSheetActive &&
@@ -1113,7 +1150,7 @@ struct RootView: View {
             )
             let canPresent = !isAuthorizationRecoveryAppSelectionPresented &&
                 !screenTimeAccessGate.blocksUnderlyingPresentations &&
-                activeCheckpointSession == nil &&
+                !isCheckpointPresentationActive &&
                 store.pendingMembershipPresentation == nil &&
                 !store.isOnboardingPresented &&
                 !isOnboardingSheetActive &&
@@ -1215,11 +1252,13 @@ struct RootView: View {
 
     @discardableResult
     private func presentCheckpoint(_ session: CheckpointSession) -> Bool {
-        guard activeCheckpointSession == nil, workflow.operation == nil else {
+        guard !isCheckpointPresentationActive,
+              workflow.operation == nil else {
             store.discardCheckpointRunBeforePresentation(sessionID: session.id)
             return false
         }
         activeCheckpointSession = session
+        isCheckpointSheetActive = true
         return true
     }
 
@@ -1335,7 +1374,7 @@ struct RootView: View {
             || store.requiresPersistenceEraseRecovery
             || screenTimeAccessGate.blocksUnderlyingPresentations
             || isAuthorizationRecoveryAppSelectionPresented
-            || activeCheckpointSession != nil
+            || isCheckpointPresentationActive
             || store.pendingMembershipPresentation != nil
             || (store.isOnboardingPresented
                 && screenTime.hasRequiredScreenTimeAuthorization)

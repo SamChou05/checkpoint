@@ -255,12 +255,126 @@ struct HomeActiveBreakMotionPolicy: Equatable {
     }
 }
 
+enum HomeActiveBreakRevealPhase: Equatable {
+    case settled
+    case concealed
+    case revealing
+}
+
+struct HomeActiveBreakRevealPolicy: Equatable {
+    static let duration: TimeInterval = 0.52
+
+    let style: HomeActiveBreakMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var animatesReveal: Bool {
+        style == .animated
+    }
+
+    var concealedScale: CGFloat {
+        animatesReveal ? 0.985 : 1
+    }
+
+    var concealedOpacity: Double {
+        animatesReveal ? 0.88 : 1
+    }
+
+    func animation(for phase: HomeActiveBreakRevealPhase) -> Animation? {
+        guard animatesReveal, phase == .revealing else { return nil }
+        return .smooth(duration: Self.duration, extraBounce: 0)
+    }
+
+    func cardScale(for phase: HomeActiveBreakRevealPhase) -> CGFloat {
+        phase == .concealed ? concealedScale : 1
+    }
+
+    func cardOpacity(for phase: HomeActiveBreakRevealPhase) -> Double {
+        phase == .concealed ? concealedOpacity : 1
+    }
+
+    func ringProgress(
+        liveFraction: Double?,
+        phase: HomeActiveBreakRevealPhase
+    ) -> Double? {
+        guard let liveFraction else { return nil }
+        let clampedFraction = min(1, max(0, liveFraction))
+        return phase == .concealed && animatesReveal ? 0 : clampedFraction
+    }
+}
+
+struct HomeActiveBreakRevealState: Equatable {
+    private(set) var phase: HomeActiveBreakRevealPhase = .settled
+    private(set) var handledTrigger = 0
+    private(set) var symbolEffectSequence = 0
+
+    func renderedPhase(
+        trigger: Int,
+        policy: HomeActiveBreakRevealPolicy
+    ) -> HomeActiveBreakRevealPhase {
+        guard trigger != 0, policy.animatesReveal else { return .settled }
+        return trigger == handledTrigger ? phase : .concealed
+    }
+
+    @discardableResult
+    mutating func receive(
+        trigger: Int,
+        policy: HomeActiveBreakRevealPolicy
+    ) -> Bool {
+        guard trigger != 0 else {
+            handledTrigger = 0
+            phase = .settled
+            return false
+        }
+
+        guard policy.animatesReveal else {
+            handledTrigger = trigger
+            phase = .settled
+            return false
+        }
+
+        guard trigger != handledTrigger else { return false }
+        handledTrigger = trigger
+        phase = .concealed
+        return true
+    }
+
+    @discardableResult
+    mutating func begin(trigger: Int) -> Bool {
+        guard trigger != 0,
+              trigger == handledTrigger,
+              phase == .concealed else { return false }
+
+        phase = .revealing
+        symbolEffectSequence += 1
+        return true
+    }
+
+    mutating func finish(trigger: Int) {
+        guard trigger == handledTrigger, phase == .revealing else { return }
+        phase = .settled
+    }
+
+    mutating func snapToFinal(trigger: Int) {
+        handledTrigger = trigger
+        phase = .settled
+    }
+}
+
+private struct HomeActiveBreakRevealRequest: Equatable {
+    let trigger: Int
+    let reduceMotion: Bool
+}
+
 struct HomeActiveBreakCard: View {
     var startedAt: Date?
     var expiresAt: Date?
     var relockReadiness: HomeActiveBreakRelockReadiness
     var areProtectedAppsAvailable: Bool
     var protectedAppsSummary: String
+    var revealTrigger: Int
     var manageApps: () -> Void
     var endBreakEarly: () -> Void
 
@@ -269,6 +383,7 @@ struct HomeActiveBreakCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .largeTitle) private var countdownMetricSize: CGFloat = 50
     @ScaledMetric(relativeTo: .title) private var progressRingSize: CGFloat = 78
+    @State private var revealState = HomeActiveBreakRevealState()
 
     init(
         startedAt: Date?,
@@ -276,6 +391,7 @@ struct HomeActiveBreakCard: View {
         relockReadiness: HomeActiveBreakRelockReadiness,
         areProtectedAppsAvailable: Bool,
         protectedAppsSummary: String,
+        revealTrigger: Int = 0,
         reduceMotionOverride: Bool? = nil,
         manageApps: @escaping () -> Void,
         endBreakEarly: @escaping () -> Void
@@ -285,6 +401,7 @@ struct HomeActiveBreakCard: View {
         self.relockReadiness = relockReadiness
         self.areProtectedAppsAvailable = areProtectedAppsAvailable
         self.protectedAppsSummary = protectedAppsSummary
+        self.revealTrigger = revealTrigger
         self.reduceMotionOverride = reduceMotionOverride
         self.manageApps = manageApps
         self.endBreakEarly = endBreakEarly
@@ -292,6 +409,7 @@ struct HomeActiveBreakCard: View {
 
     var body: some View {
         TimelineView(HomeActiveBreakTimelineSchedule(expiresAt: expiresAt)) { context in
+            let revealPhase = renderedRevealPhase
             let presentation = HomeActiveBreakPresentation(
                 startedAt: startedAt,
                 expiresAt: expiresAt,
@@ -319,9 +437,18 @@ struct HomeActiveBreakCard: View {
                     actions(presentation)
                 }
             }
-            .transition(motionPolicy.transition)
+            .scaleEffect(revealPolicy.cardScale(for: revealPhase))
+            .opacity(revealPolicy.cardOpacity(for: revealPhase))
+            .animation(revealPolicy.animation(for: revealPhase), value: revealPhase)
         }
         .padding(.horizontal, 4)
+        .task(id: revealRequest) {
+            await performReveal(revealRequest)
+        }
+        .onChange(of: reduceMotion) { _, shouldReduceMotion in
+            guard shouldReduceMotion else { return }
+            snapRevealToFinal()
+        }
     }
 
     @ViewBuilder
@@ -365,6 +492,11 @@ struct HomeActiveBreakCard: View {
                     in: RoundedRectangle(cornerRadius: 14, style: .continuous)
                 )
                 .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(
+                    .bounce,
+                    options: .nonRepeating,
+                    value: revealState.symbolEffectSequence
+                )
                 .symbolEffectsRemoved(reduceMotion)
                 .animation(motionPolicy.animation, value: presentation.phase)
                 .fixedSize()
@@ -444,6 +576,7 @@ struct HomeActiveBreakCard: View {
     private func progressRing(_ presentation: HomeActiveBreakPresentation) -> some View {
         let tint = accent(for: presentation.phase)
         let size = min(progressRingSize, dynamicTypeSize.isAccessibilitySize ? 98 : 86)
+        let revealPhase = renderedRevealPhase
 
         return ZStack {
             Circle()
@@ -451,12 +584,19 @@ struct HomeActiveBreakCard: View {
 
             if let remainingFraction = presentation.remainingFraction {
                 Circle()
-                    .trim(from: 0, to: remainingFraction)
+                    .trim(
+                        from: 0,
+                        to: revealPolicy.ringProgress(
+                            liveFraction: remainingFraction,
+                            phase: revealPhase
+                        ) ?? remainingFraction
+                    )
                     .stroke(
                         tint,
                         style: StrokeStyle(lineWidth: 7, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
+                    .animation(revealPolicy.animation(for: revealPhase), value: revealPhase)
                     .animation(motionPolicy.animation, value: remainingFraction)
             } else {
                 Circle()
@@ -583,8 +723,61 @@ struct HomeActiveBreakCard: View {
         HomeActiveBreakMotionPolicy(reduceMotion: reduceMotion)
     }
 
+    private var revealPolicy: HomeActiveBreakRevealPolicy {
+        HomeActiveBreakRevealPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var revealRequest: HomeActiveBreakRevealRequest {
+        HomeActiveBreakRevealRequest(
+            trigger: revealTrigger,
+            reduceMotion: reduceMotion
+        )
+    }
+
+    private var renderedRevealPhase: HomeActiveBreakRevealPhase {
+        revealState.renderedPhase(trigger: revealTrigger, policy: revealPolicy)
+    }
+
     private var reduceMotion: Bool {
         reduceMotionOverride ?? systemReduceMotion
+    }
+
+    @MainActor
+    private func performReveal(_ request: HomeActiveBreakRevealRequest) async {
+        let policy = HomeActiveBreakRevealPolicy(reduceMotion: request.reduceMotion)
+        var immediateTransaction = Transaction()
+        immediateTransaction.disablesAnimations = true
+        let shouldReveal = withTransaction(immediateTransaction) {
+            revealState.receive(trigger: request.trigger, policy: policy)
+        }
+        guard shouldReveal else { return }
+
+        await Task.yield()
+        guard !Task.isCancelled else { return }
+
+        let didBegin = withAnimation(policy.animation(for: .revealing)) {
+            revealState.begin(trigger: request.trigger)
+        }
+        guard didBegin else { return }
+
+        do {
+            try await Task.sleep(for: .seconds(HomeActiveBreakRevealPolicy.duration))
+        } catch {
+            return
+        }
+        guard !Task.isCancelled else { return }
+
+        withTransaction(immediateTransaction) {
+            revealState.finish(trigger: request.trigger)
+        }
+    }
+
+    private func snapRevealToFinal() {
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            revealState.snapToFinal(trigger: revealTrigger)
+        }
     }
 
     private func accent(for phase: HomeActiveBreakPhase) -> Color {

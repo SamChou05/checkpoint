@@ -999,6 +999,7 @@ struct CheckpointAttemptView: View {
     let workflow: CheckpointWorkflowCoordinator
     let session: CheckpointSession
     private let reduceMotionOverride: Bool?
+    private let onEarnedBreak: @MainActor (EarnedBreakHandoffToken) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
@@ -1031,12 +1032,14 @@ struct CheckpointAttemptView: View {
         workflow: CheckpointWorkflowCoordinator,
         session: CheckpointSession,
         initialPresentation: CheckpointAttemptInitialPresentation = .unanswered,
-        reduceMotionOverride: Bool? = nil
+        reduceMotionOverride: Bool? = nil,
+        onEarnedBreak: @escaping @MainActor (EarnedBreakHandoffToken) -> Void = { _ in }
     ) {
         self.store = store
         self.workflow = workflow
         self.session = session
         self.reduceMotionOverride = reduceMotionOverride
+        self.onEarnedBreak = onEarnedBreak
 
         switch initialPresentation {
         case .unanswered:
@@ -1590,14 +1593,19 @@ struct CheckpointAttemptView: View {
         guard !checkedAnswer.shouldFinish else {
             guard !hasCommittedResolutionAction else { return }
             if checkedAnswer.shouldPass {
-                if let errorMessage = workflow.finishPassed(session) {
+                switch workflow.finishPassed(session) {
+                case let .failed(message):
                     withAnimation(resolutionMotionPolicy.animation) {
-                        protectionActionErrorMessage = errorMessage
+                        protectionActionErrorMessage = message
                         protectionActionErrorSequence += 1
                     }
                     return
+                case let .completed(earnedBreak):
+                    protectionActionErrorMessage = nil
+                    if let earnedBreak {
+                        onEarnedBreak(earnedBreak)
+                    }
                 }
-                protectionActionErrorMessage = nil
             }
             hasCommittedResolutionAction = true
             dismiss()

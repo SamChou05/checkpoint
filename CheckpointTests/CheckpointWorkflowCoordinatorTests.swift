@@ -517,6 +517,271 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertNil(relaunchedQueue.pendingToken)
     }
 
+    // MARK: - Earned-break handoff
+
+    func testEarnedBreakQueueIssuesReplacesAndResolvesExactTokensOnce() throws {
+        let first = makeEarnedBreakToken(
+            checkpointSessionID: UUID(),
+            goalID: UUID(),
+            startedAt: Date(timeIntervalSinceReferenceDate: 1_000)
+        )
+        let replacement = makeEarnedBreakToken(
+            checkpointSessionID: UUID(),
+            goalID: UUID(),
+            startedAt: Date(timeIntervalSinceReferenceDate: 2_000)
+        )
+        var queue = EarnedBreakHandoffQueue()
+
+        XCTAssertTrue(queue.issue(first))
+        XCTAssertEqual(queue.pendingToken, first)
+        XCTAssertFalse(queue.issue(first))
+
+        XCTAssertTrue(queue.issue(replacement))
+        XCTAssertEqual(queue.pendingToken, replacement)
+        XCTAssertTrue(queue.resolvedDeliveryIDs.contains(first.deliveryID))
+        XCTAssertFalse(
+            queue.issue(first),
+            "A token replaced by newer canonical work must remain terminal."
+        )
+
+        let unrelated = makeEarnedBreakToken(
+            checkpointSessionID: UUID(),
+            goalID: UUID(),
+            startedAt: Date(timeIntervalSinceReferenceDate: 3_000)
+        )
+        XCTAssertFalse(queue.resolve(unrelated, as: .delivered))
+        XCTAssertEqual(queue.pendingToken, replacement)
+        XCTAssertTrue(queue.resolve(replacement, as: .delivered))
+        XCTAssertNil(queue.pendingToken)
+        XCTAssertTrue(queue.resolvedDeliveryIDs.contains(replacement.deliveryID))
+        XCTAssertFalse(queue.resolve(replacement, as: .delivered))
+        XCTAssertFalse(queue.issue(replacement))
+
+        XCTAssertTrue(queue.issue(unrelated))
+        queue.discardPending()
+        XCTAssertNil(queue.pendingToken)
+        XCTAssertTrue(queue.resolvedDeliveryIDs.contains(unrelated.deliveryID))
+        XCTAssertFalse(queue.issue(unrelated))
+    }
+
+    func testEarnedBreakDeliveryWaitsUntilExposedThenDeliversExactlyOnce() throws {
+        let startedAt = Date(timeIntervalSinceReferenceDate: 10_000)
+        let token = makeEarnedBreakToken(
+            checkpointSessionID: UUID(),
+            goalID: UUID(),
+            startedAt: startedAt
+        )
+        var queue = EarnedBreakHandoffQueue()
+        XCTAssertTrue(queue.issue(token))
+        var delivery = EarnedBreakHandoffDeliveryState(token: queue.pendingToken)
+        var resolutions: [EarnedBreakHandoffDisposition] = []
+
+        func context(isExposed: Bool) -> EarnedBreakHandoffDeliveryContext {
+            EarnedBreakHandoffDeliveryContext(
+                activeGoalID: token.goalID,
+                canonicalUnlockStartedAt: token.startedAt,
+                canonicalUnlockExpiresAt: token.expiresAt,
+                isTemporaryUnlockAvailable: true,
+                isExposed: isExposed,
+                now: token.startedAt.addingTimeInterval(1)
+            )
+        }
+
+        XCTAssertNil(
+            delivery.attemptDelivery(
+                in: context(isExposed: false),
+                authoritativeResolve: { candidate, disposition in
+                    resolutions.append(disposition)
+                    return queue.resolve(candidate, as: disposition)
+                }
+            )
+        )
+        XCTAssertEqual(delivery.candidateForDelivery, token)
+        XCTAssertEqual(queue.pendingToken, token)
+        XCTAssertTrue(resolutions.isEmpty)
+
+        let effect = try XCTUnwrap(
+            delivery.attemptDelivery(
+                in: context(isExposed: true),
+                authoritativeResolve: { candidate, disposition in
+                    resolutions.append(disposition)
+                    return queue.resolve(candidate, as: disposition)
+                }
+            )
+        )
+        XCTAssertEqual(effect.token, token)
+        XCTAssertEqual(effect.revealSequenceIncrement, 1)
+        XCTAssertEqual(effect.celebrationSequenceIncrement, 1)
+        XCTAssertEqual(effect.accessibilityAnnouncement, token.accessibilityAnnouncement)
+        XCTAssertEqual(resolutions, [.delivered])
+        XCTAssertNil(queue.pendingToken)
+        XCTAssertNil(delivery.pendingToken)
+        XCTAssertEqual(delivery.presentedToken, token)
+
+        delivery.receive(nil)
+        delivery.receive(token)
+        XCTAssertNil(delivery.candidateForDelivery)
+        XCTAssertNil(
+            delivery.attemptDelivery(
+                in: context(isExposed: true),
+                authoritativeResolve: { candidate, disposition in
+                    resolutions.append(disposition)
+                    return queue.resolve(candidate, as: disposition)
+                }
+            )
+        )
+        XCTAssertEqual(resolutions, [.delivered])
+    }
+
+    func testEarnedBreakDeliveryAuthoritativelyDiscardsInvalidTokensWithoutReplay() throws {
+        let startedAt = Date(timeIntervalSinceReferenceDate: 20_000)
+        let token = makeEarnedBreakToken(
+            checkpointSessionID: UUID(),
+            goalID: UUID(),
+            startedAt: startedAt
+        )
+        let validContext = EarnedBreakHandoffDeliveryContext(
+            activeGoalID: token.goalID,
+            canonicalUnlockStartedAt: token.startedAt,
+            canonicalUnlockExpiresAt: token.expiresAt,
+            isTemporaryUnlockAvailable: true,
+            isExposed: true,
+            now: token.startedAt.addingTimeInterval(1)
+        )
+        let invalidContexts: [(EarnedBreakHandoffDeliveryContext, EarnedBreakHandoffDiscardReason)] = [
+            (
+                EarnedBreakHandoffDeliveryContext(
+                    activeGoalID: UUID(),
+                    canonicalUnlockStartedAt: validContext.canonicalUnlockStartedAt,
+                    canonicalUnlockExpiresAt: validContext.canonicalUnlockExpiresAt,
+                    isTemporaryUnlockAvailable: true,
+                    isExposed: true,
+                    now: validContext.now
+                ),
+                .activeGoalMismatch
+            ),
+            (
+                EarnedBreakHandoffDeliveryContext(
+                    activeGoalID: token.goalID,
+                    canonicalUnlockStartedAt: token.startedAt.addingTimeInterval(1),
+                    canonicalUnlockExpiresAt: token.expiresAt,
+                    isTemporaryUnlockAvailable: true,
+                    isExposed: true,
+                    now: validContext.now
+                ),
+                .canonicalUnlockMismatch
+            ),
+            (
+                EarnedBreakHandoffDeliveryContext(
+                    activeGoalID: token.goalID,
+                    canonicalUnlockStartedAt: token.startedAt,
+                    canonicalUnlockExpiresAt: token.expiresAt.addingTimeInterval(1),
+                    isTemporaryUnlockAvailable: true,
+                    isExposed: true,
+                    now: validContext.now
+                ),
+                .canonicalUnlockMismatch
+            ),
+            (
+                EarnedBreakHandoffDeliveryContext(
+                    activeGoalID: token.goalID,
+                    canonicalUnlockStartedAt: token.startedAt,
+                    canonicalUnlockExpiresAt: token.expiresAt,
+                    isTemporaryUnlockAvailable: false,
+                    isExposed: true,
+                    now: validContext.now
+                ),
+                .temporaryUnlockUnavailable
+            ),
+            (
+                EarnedBreakHandoffDeliveryContext(
+                    activeGoalID: token.goalID,
+                    canonicalUnlockStartedAt: token.startedAt,
+                    canonicalUnlockExpiresAt: token.expiresAt,
+                    isTemporaryUnlockAvailable: true,
+                    isExposed: true,
+                    now: token.expiresAt
+                ),
+                .expired
+            )
+        ]
+
+        for (index, invalidContext) in invalidContexts.enumerated() {
+            let candidate = EarnedBreakHandoffToken(
+                deliveryID: UUID(),
+                checkpointSessionID: token.checkpointSessionID,
+                goalID: token.goalID,
+                startedAt: token.startedAt,
+                expiresAt: token.expiresAt,
+                unlockMinutes: token.unlockMinutes
+            )
+            var queue = EarnedBreakHandoffQueue()
+            XCTAssertTrue(queue.issue(candidate))
+            var delivery = EarnedBreakHandoffDeliveryState(token: candidate)
+            var resolutions: [EarnedBreakHandoffDisposition] = []
+
+            XCTAssertNil(
+                delivery.attemptDelivery(
+                    in: invalidContext.0,
+                    authoritativeResolve: { resolvedToken, disposition in
+                        resolutions.append(disposition)
+                        return queue.resolve(resolvedToken, as: disposition)
+                    }
+                ),
+                "Invalid delivery case \(index) must not emit presentation work."
+            )
+            XCTAssertEqual(resolutions, [.discarded(invalidContext.1)])
+            XCTAssertNil(queue.pendingToken)
+            XCTAssertTrue(queue.resolvedDeliveryIDs.contains(candidate.deliveryID))
+            delivery.receive(candidate)
+            XCTAssertNil(delivery.candidateForDelivery)
+        }
+    }
+
+    func testEarnedBreakDeliveryLosesLocalCandidateWhenAuthorityRejectsIt() {
+        let token = makeEarnedBreakToken(
+            checkpointSessionID: UUID(),
+            goalID: UUID(),
+            startedAt: Date(timeIntervalSinceReferenceDate: 30_000)
+        )
+        let context = EarnedBreakHandoffDeliveryContext(
+            activeGoalID: token.goalID,
+            canonicalUnlockStartedAt: token.startedAt,
+            canonicalUnlockExpiresAt: token.expiresAt,
+            isTemporaryUnlockAvailable: true,
+            isExposed: true,
+            now: token.startedAt.addingTimeInterval(1)
+        )
+        var delivery = EarnedBreakHandoffDeliveryState(token: token)
+        var resolutionAttempts = 0
+
+        XCTAssertNil(
+            delivery.attemptDelivery(
+                in: context,
+                authoritativeResolve: { _, disposition in
+                    resolutionAttempts += 1
+                    XCTAssertEqual(disposition, .delivered)
+                    return false
+                }
+            )
+        )
+        XCTAssertEqual(resolutionAttempts, 1)
+        XCTAssertNil(delivery.pendingToken)
+        XCTAssertNil(delivery.presentedToken)
+        delivery.receive(token)
+        XCTAssertNil(delivery.candidateForDelivery)
+        XCTAssertNil(
+            delivery.attemptDelivery(
+                in: context,
+                authoritativeResolve: { _, _ in
+                    resolutionAttempts += 1
+                    return true
+                }
+            )
+        )
+        XCTAssertEqual(resolutionAttempts, 1)
+    }
+
     @MainActor
     func testFailedFirstRunProtectionStartKeepsSetupPending() async {
         FirstRunSetupProgress.begin(defaults: defaults)
@@ -737,17 +1002,41 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         protection.shouldBeginBreak = false
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
 
-        let errorMessage = workflow.finishPassed(session)
+        let resolution = workflow.finishPassed(session)
 
-        XCTAssertNotNil(errorMessage)
+        XCTAssertEqual(resolution, .failed(message: "Break failed"))
         XCTAssertEqual(store.activeCheckpointRun?.sessionID, session.id)
         XCTAssertNil(store.unlockSession)
         XCTAssertTrue(store.unlockEvents.isEmpty)
     }
 
     @MainActor
+    func testPostUnshieldRunMismatchFailsWithoutIssuingAnEarnedBreak() throws {
+        let store = makeStore(questionCount: 5)
+        let session = try XCTUnwrap(store.startManualCheckpointSession())
+        let protection = FakeAppProtectionController()
+        protection.onTemporarilyUnshield = {
+            store.discardCheckpointRunBeforePresentation(sessionID: session.id)
+        }
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let resolution = workflow.finishPassed(session)
+
+        XCTAssertEqual(
+            resolution,
+            .failed(
+                message: "The break started, but Checkpoint could not confirm it. Reopen Checkpoint before changing protection again."
+            )
+        )
+        XCTAssertEqual(protection.beginBreakCount, 1)
+        XCTAssertNil(store.activeCheckpointRun)
+        XCTAssertNotNil(store.unlockSession)
+        XCTAssertEqual(store.unlockEvents.count, 1)
+    }
+
+    @MainActor
     func testSuccessfulBreakRecordsUnlockAndResolvesRun() throws {
-        let now = Date(timeIntervalSinceReferenceDate: 10_000)
+        let now = Date()
         let store = makeStore(questionCount: 5)
         store.updateUnlockMinutes(10)
         let session = try XCTUnwrap(store.startManualCheckpointSession())
@@ -758,13 +1047,25 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             now: { now }
         )
 
-        let errorMessage = workflow.finishPassed(session)
+        let resolution = workflow.finishPassed(session)
 
-        XCTAssertNil(errorMessage)
+        guard case let .completed(earnedBreak?) = resolution else {
+            return XCTFail("A committed temporary unlock should issue an earned-break handoff.")
+        }
         XCTAssertNil(store.activeCheckpointRun)
         XCTAssertEqual(store.unlockSession?.expiresAt, now.addingTimeInterval(600))
         XCTAssertEqual(store.unlockEvents.count, 1)
         XCTAssertEqual(protection.beginBreakCount, 1)
+        XCTAssertEqual(earnedBreak.id, earnedBreak.deliveryID)
+        XCTAssertEqual(earnedBreak.checkpointSessionID, session.id)
+        XCTAssertEqual(earnedBreak.goalID, store.goal?.id)
+        XCTAssertEqual(earnedBreak.startedAt, store.unlockSession?.startedAt)
+        XCTAssertEqual(earnedBreak.expiresAt, store.unlockSession?.expiresAt)
+        XCTAssertEqual(earnedBreak.unlockMinutes, 10)
+        XCTAssertEqual(
+            earnedBreak.accessibilityAnnouncement,
+            "Checkpoint passed. You earned a 10-minute break, and it is active now."
+        )
     }
 
     @MainActor
@@ -775,9 +1076,14 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         let protection = FakeAppProtectionController()
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
 
-        let errorMessage = workflow.finishPassed(session)
+        let resolution = workflow.finishPassed(session)
 
-        XCTAssertNotNil(errorMessage)
+        XCTAssertEqual(
+            resolution,
+            .failed(
+                message: "This checkpoint is no longer active. Start a new checkpoint to change protection."
+            )
+        )
         XCTAssertEqual(protection.beginBreakCount, 0)
         XCTAssertEqual(protection.clearShieldCount, 0)
     }
@@ -916,6 +1222,25 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testPassedPreviewCompletesWithoutIssuingAnEarnedBreak() throws {
+        let store = makeStore(questionCount: 5)
+        let session = try XCTUnwrap(store.startPreviewCheckpointSession())
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        let resolution = workflow.finishPassed(session)
+
+        XCTAssertEqual(resolution, .completed(earnedBreak: nil))
+        XCTAssertNil(store.activeCheckpointRun)
+        XCTAssertNil(store.unlockSession)
+        XCTAssertTrue(store.unlockEvents.isEmpty)
+        XCTAssertEqual(protection.beginBreakCount, 0)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+        XCTAssertTrue(protection.isShieldingEnabled)
+    }
+
+    @MainActor
     func testEndingBreakRelocksBeforeClearingUnlockJournal() {
         let store = makeStore(questionCount: 5)
         store.startUnlockSession(minutes: 10)
@@ -938,9 +1263,9 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         protection.isShieldingEnabled = true
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
 
-        let errorMessage = workflow.finishPassed(session)
+        let resolution = workflow.finishPassed(session)
 
-        XCTAssertNil(errorMessage)
+        XCTAssertEqual(resolution, .completed(earnedBreak: nil))
         XCTAssertEqual(protection.clearShieldCount, 1)
         XCTAssertNil(store.unlockSession)
         XCTAssertNil(store.activeCheckpointRun)
@@ -1053,6 +1378,28 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
                 hasQueuedConfirmation: false
             ),
             .drainDeferredPresentations
+        )
+    }
+
+    func testCheckpointPresentationLifecycleCoversTheDismissalGap() {
+        XCTAssertTrue(
+            CheckpointPresentationLifecycle.isActive(
+                hasSession: true,
+                isSheetActive: true
+            )
+        )
+        XCTAssertTrue(
+            CheckpointPresentationLifecycle.isActive(
+                hasSession: false,
+                isSheetActive: true
+            ),
+            "The checkpoint presentation must keep owning the screen until sheet dismissal finishes."
+        )
+        XCTAssertFalse(
+            CheckpointPresentationLifecycle.isActive(
+                hasSession: false,
+                isSheetActive: false
+            )
         )
     }
 
@@ -2107,6 +2454,21 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertEqual(store.questionBatchState, .failed)
     }
 
+    private func makeEarnedBreakToken(
+        checkpointSessionID: CheckpointSession.ID,
+        goalID: Goal.ID,
+        startedAt: Date,
+        unlockMinutes: Int = 10
+    ) -> EarnedBreakHandoffToken {
+        EarnedBreakHandoffToken(
+            checkpointSessionID: checkpointSessionID,
+            goalID: goalID,
+            startedAt: startedAt,
+            expiresAt: startedAt.addingTimeInterval(TimeInterval(unlockMinutes * 60)),
+            unlockMinutes: unlockMinutes
+        )
+    }
+
     @MainActor
     private func makeStore(
         questionCount: Int,
@@ -2148,6 +2510,7 @@ private final class FakeAppProtectionController: AppProtectionControlling {
     var isShieldingEnabled = false
     var userFacingErrorMessage: String?
     var shouldBeginBreak = true
+    var onTemporarilyUnshield: (() -> Void)?
     private(set) var applyShieldCount = 0
     private(set) var clearShieldCount = 0
     private(set) var beginBreakCount = 0
@@ -2168,6 +2531,7 @@ private final class FakeAppProtectionController: AppProtectionControlling {
             userFacingErrorMessage = "Break failed"
             return false
         }
+        onTemporarilyUnshield?()
         isShieldingEnabled = false
         return true
     }
