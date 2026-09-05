@@ -842,11 +842,13 @@ struct SettingsProActivityPresentation: Equatable, Hashable, Sendable {
 struct SettingsPlanPresentation: Equatable, Sendable {
     let state: SettingsPlanState
     let proActivity: SettingsProActivityPresentation?
+    let activePlanKind: MembershipPlanKind?
 
     init(
         membershipTier: MembershipTier,
         purchaseNotice: MembershipPurchaseNotice?,
-        proActivity: SettingsProActivityPresentation? = nil
+        proActivity: SettingsProActivityPresentation? = nil,
+        activePlanSnapshot: MembershipActivePlanSnapshot? = nil
     ) {
         if membershipTier == .member {
             state = .pro
@@ -856,14 +858,17 @@ struct SettingsPlanPresentation: Equatable, Sendable {
             state = .free
         }
         self.proActivity = state == .pro ? proActivity : nil
+        activePlanKind = state == .pro ? activePlanSnapshot?.planKind : nil
     }
 
     var planName: String {
         switch state {
         case .free:
             "Checkpoint Free"
-        case .pendingPurchase, .pro:
+        case .pendingPurchase:
             "Checkpoint Pro"
+        case .pro:
+            activePlanKind.map { "Checkpoint Pro · \($0.shortTitle)" } ?? "Checkpoint Pro"
         }
     }
 
@@ -940,7 +945,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .pendingPurchase:
             "Checkpoint Pro purchase"
         case .pro:
-            "Checkpoint Pro"
+            planName
         }
     }
 
@@ -952,9 +957,9 @@ struct SettingsPlanPresentation: Equatable, Sendable {
             "Pending App Store approval. Pro unlocks after confirmation."
         case .pro:
             if let proActivity {
-                "Active access. \(proActivity.accessibilityValue)."
+                "Active access. \(activePlanAccessibilityValue)\(proActivity.accessibilityValue)."
             } else {
-                "Active access. Fresh checkpoints, adaptive guidance, and separate goal lanes are unlocked."
+                "Active access. \(activePlanAccessibilityValue)Fresh checkpoints, adaptive guidance, and separate goal lanes are unlocked."
             }
         }
     }
@@ -969,6 +974,19 @@ struct SettingsPlanPresentation: Equatable, Sendable {
             "Opens plan and billing."
         }
     }
+
+    var visualStateKey: SettingsPlanVisualStateKey {
+        SettingsPlanVisualStateKey(state: state, activePlanKind: activePlanKind)
+    }
+
+    private var activePlanAccessibilityValue: String {
+        activePlanKind.map { "\($0.shortTitle) plan. " } ?? ""
+    }
+}
+
+struct SettingsPlanVisualStateKey: Equatable, Sendable {
+    let state: SettingsPlanState
+    let activePlanKind: MembershipPlanKind?
 }
 
 enum SettingsPlanMotionStyle: Equatable {
@@ -1100,12 +1118,12 @@ struct SettingsPlanCard: View {
         .accessibilityLabel(presentation.accessibilityLabel)
         .accessibilityValue(presentation.accessibilityValue)
         .accessibilityHint(presentation.accessibilityHint)
-        .animation(motionPolicy.animation, value: presentation.state)
+        .animation(motionPolicy.animation, value: presentation.visualStateKey)
         .animation(motionPolicy.animation, value: presentation.proActivity)
         .onAppear {
             triggerSymbolEffectIfNeeded()
         }
-        .onChange(of: presentation.state) { _, _ in
+        .onChange(of: presentation.visualStateKey) { _, _ in
             triggerSymbolEffectIfNeeded()
         }
     }

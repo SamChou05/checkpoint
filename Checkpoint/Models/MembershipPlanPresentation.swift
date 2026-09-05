@@ -345,6 +345,201 @@ struct MembershipCheckoutPresentation: Equatable, Sendable {
     }
 }
 
+enum MembershipActivePlanTone: Equatable, Sendable {
+    case active
+    case scheduled
+    case attention
+}
+
+struct MembershipActivePlanVisualStateKey: Equatable, Sendable {
+    let planTitle: String
+    let badgeText: String
+    let statusText: String
+    let statusSystemImage: String
+}
+
+struct MembershipActivePlanPresentation: Equatable, Sendable {
+    let planTitle: String
+    let planSystemImage: String
+    let badgeText: String
+    let tone: MembershipActivePlanTone
+    let statusText: String
+    let supportText: String
+    let statusSystemImage: String
+    let managementTitle: String
+    let managementAccessibilityHint: String
+    let accessibilityLabel: String
+
+    init(
+        snapshot: MembershipActivePlanSnapshot?,
+        now: Date = Date(),
+        locale: Locale = .autoupdatingCurrent,
+        calendar: Calendar = .autoupdatingCurrent,
+        timeZone: TimeZone = .autoupdatingCurrent
+    ) {
+        guard let snapshot else {
+            planTitle = "Checkpoint Pro"
+            planSystemImage = "checkmark.seal.fill"
+            badgeText = "ACTIVE"
+            tone = .active
+            statusText = "Pro access is active"
+            supportText = "Open Apple subscriptions for plan and billing details."
+            statusSystemImage = "checkmark.circle.fill"
+            managementTitle = "View plan & billing"
+            managementAccessibilityHint = "Opens Apple subscription management."
+            accessibilityLabel = [planTitle, badgeText, statusText, supportText]
+                .joined(separator: ". ")
+            return
+        }
+
+        planTitle = snapshot.planKind.planTitle
+        planSystemImage = snapshot.planKind.planSystemImage
+
+        if snapshot.ownership == .familyShared {
+            badgeText = "ACTIVE"
+            tone = .active
+            statusText = "Shared through Family Sharing"
+            supportText = "The purchaser manages billing with Apple."
+            statusSystemImage = "person.2.fill"
+            managementTitle = "View Apple subscriptions"
+            managementAccessibilityHint =
+                "Shows subscriptions for this Apple Account. The purchaser manages the shared plan."
+        } else {
+            let periodEnd = Self.futureDateText(
+                snapshot.currentPeriodEnd,
+                now: now,
+                locale: locale,
+                calendar: calendar,
+                timeZone: timeZone
+            )
+
+            switch snapshot.renewalDisposition {
+            case .active:
+                badgeText = "ACTIVE"
+                tone = .active
+                statusText = "Active access verified by Apple"
+                supportText = "Billing and cancellation are managed by Apple."
+                statusSystemImage = "checkmark.circle.fill"
+            case .renews:
+                badgeText = "ACTIVE"
+                tone = .active
+                statusText = periodEnd.map { "Renews \($0)" } ?? "Auto-renew is on"
+                supportText = "Billing and cancellation are managed by Apple."
+                statusSystemImage = "arrow.triangle.2.circlepath"
+            case .ends:
+                badgeText = "ACTIVE"
+                tone = .active
+                statusText = periodEnd.map { "Access through \($0)" } ?? "Renewal is off"
+                supportText = "Your Pro benefits stay active through the current billing period."
+                statusSystemImage = "calendar.badge.clock"
+            case .changesTo(let nextPlan):
+                badgeText = "SCHEDULED"
+                tone = .scheduled
+                statusText = periodEnd.map {
+                    "Changes to \(nextPlan.shortTitle) on \($0)"
+                } ?? "\(nextPlan.shortTitle) plan scheduled next"
+                supportText = "Your current plan stays active until the switch."
+                statusSystemImage = "arrow.triangle.swap"
+            case .gracePeriod(let gracePeriodEnd):
+                badgeText = "NEEDS ATTENTION"
+                tone = .attention
+                let graceEnd = Self.futureDateText(
+                    gracePeriodEnd,
+                    now: now,
+                    locale: locale,
+                    calendar: calendar,
+                    timeZone: timeZone
+                )
+                statusText = graceEnd.map {
+                    "Billing issue · Pro remains active through \($0)"
+                } ?? "Billing issue · Pro remains active"
+                supportText = "Update payment details with Apple to keep Pro active."
+                statusSystemImage = "exclamationmark.circle.fill"
+            }
+
+            managementTitle = "Manage with Apple"
+            managementAccessibilityHint = "Opens Apple subscription management."
+        }
+
+        accessibilityLabel = [planTitle, badgeText, statusText, supportText]
+            .joined(separator: ". ")
+    }
+
+    var visualStateKey: MembershipActivePlanVisualStateKey {
+        MembershipActivePlanVisualStateKey(
+            planTitle: planTitle,
+            badgeText: badgeText,
+            statusText: statusText,
+            statusSystemImage: statusSystemImage
+        )
+    }
+
+    private static func futureDateText(
+        _ date: Date?,
+        now: Date,
+        locale: Locale,
+        calendar: Calendar,
+        timeZone: TimeZone
+    ) -> String? {
+        guard let date, date > now else { return nil }
+
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.calendar = calendar
+        formatter.timeZone = timeZone
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter.string(from: date)
+    }
+}
+
+extension MembershipPlanKind {
+    var planTitle: String {
+        "\(shortTitle) plan"
+    }
+
+    var shortTitle: String {
+        switch self {
+        case .monthly:
+            "Monthly"
+        case .annual:
+            "Annual"
+        }
+    }
+
+    var planSystemImage: String {
+        switch self {
+        case .monthly:
+            "calendar"
+        case .annual:
+            "calendar.badge.checkmark"
+        }
+    }
+}
+
+enum MembershipSubscriptionManagementScope: Equatable, Sendable {
+    case allSubscriptions
+    case subscriptionGroup(String)
+
+    init(activePlanSnapshot: MembershipActivePlanSnapshot?) {
+        guard activePlanSnapshot?.ownership != .familyShared else {
+            self = .allSubscriptions
+            return
+        }
+        self.init(subscriptionGroupID: activePlanSnapshot?.subscriptionGroupID)
+    }
+
+    init(subscriptionGroupID: String?) {
+        guard let subscriptionGroupID = subscriptionGroupID?
+            .trimmingCharacters(in: .whitespacesAndNewlines),
+              !subscriptionGroupID.isEmpty else {
+            self = .allSubscriptions
+            return
+        }
+        self = .subscriptionGroup(subscriptionGroupID)
+    }
+}
+
 struct MembershipCatalogPresentation: Equatable, Sendable {
     let planOptions: [MembershipPlanOption]
     let defaultPlanID: String?

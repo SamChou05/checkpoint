@@ -312,7 +312,9 @@ struct MembershipPaywallPresentation: Equatable, Sendable {
         let usesCompactOffer = viewportClass != .regular && !usesLargeText
 
         if isMember {
-            sectionOrder = [.hero, .memberManagement, .benefits, .notice, .legal]
+            sectionOrder = viewportClass == .regular
+                ? [.hero, .memberManagement, .benefits, .notice, .legal]
+                : [.memberManagement, .hero, .benefits, .notice, .legal]
             checkoutPlacement = .hidden
             laysOutPlansSideBySide = false
             contentDensity = .regular

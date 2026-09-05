@@ -7,6 +7,7 @@ final class MembershipViewRenderingTests: XCTestCase {
     func testMembershipJourneyRendersAcrossKeyLayoutsAndStates() throws {
         let legalLinks = try makeLegalLinks()
         let planOptions = try makePlanOptions()
+        let futurePlanDate = Date(timeIntervalSince1970: 2_000_000_000)
 
         let fixtures = [
             MembershipRenderFixture(
@@ -131,6 +132,62 @@ final class MembershipViewRenderingTests: XCTestCase {
                 dynamicTypeSize: .accessibility2,
                 reduceMotion: true,
                 isMember: true
+            ),
+            MembershipRenderFixture(
+                name: "membership-active-annual-renews-light",
+                context: .overview,
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                isMember: true,
+                activePlanSnapshot: makeActivePlanSnapshot(
+                    planKind: .annual,
+                    currentPeriodEnd: futurePlanDate,
+                    renewalDisposition: .renews
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-active-monthly-ending-compact-dark",
+                context: .overview,
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                isMember: true,
+                activePlanSnapshot: makeActivePlanSnapshot(
+                    planKind: .monthly,
+                    currentPeriodEnd: futurePlanDate,
+                    renewalDisposition: .ends
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-active-grace-dark",
+                context: .overview,
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                isMember: true,
+                activePlanSnapshot: makeActivePlanSnapshot(
+                    planKind: .annual,
+                    renewalDisposition: .gracePeriod(until: futurePlanDate)
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-active-family-accessibility5",
+                context: .overview,
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                isMember: true,
+                activePlanSnapshot: makeActivePlanSnapshot(
+                    planKind: .annual,
+                    renewalDisposition: .renews,
+                    ownership: .familyShared
+                )
             )
         ]
 
@@ -378,6 +435,132 @@ final class MembershipViewRenderingTests: XCTestCase {
 
             let attachment = XCTAttachment(image: image)
             attachment.name = "membership-\(fixture.name)-inline-checkout"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
+    func testActiveMemberReceiptContainsItsSummaryAndAppleManagementAction() throws {
+        let legalLinks = try makeLegalLinks()
+        let futurePlanDate = Date(timeIntervalSince1970: 2_000_000_000)
+        let fixtures = [
+            MembershipActiveReceiptLayoutFixture(
+                name: "regular-annual",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                snapshot: makeActivePlanSnapshot(
+                    planKind: .annual,
+                    currentPeriodEnd: futurePlanDate,
+                    renewalDisposition: .renews
+                )
+            ),
+            MembershipActiveReceiptLayoutFixture(
+                name: "compact-grace",
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                snapshot: makeActivePlanSnapshot(
+                    planKind: .monthly,
+                    renewalDisposition: .gracePeriod(until: futurePlanDate)
+                )
+            ),
+            MembershipActiveReceiptLayoutFixture(
+                name: "accessibility5-family",
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                snapshot: makeActivePlanSnapshot(
+                    planKind: .annual,
+                    renewalDisposition: .renews,
+                    ownership: .familyShared
+                )
+            ),
+        ]
+
+        for fixture in fixtures {
+            let suiteName = "MembershipActiveReceipt.\(fixture.name).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let capture = MembershipPaywallLayoutCapture()
+            let store = CheckpointStore(defaults: defaults)
+            store.updateMembershipTier(.member)
+            let purchaseController = PurchaseController(
+                grantsDebugTesterEntitlement: false,
+                initialActivePlanSnapshot: fixture.snapshot
+            )
+            let view = MembershipView(
+                context: .overview,
+                store: store,
+                purchaseController: purchaseController,
+                renderConfiguration: MembershipViewRenderConfiguration(
+                    planOptions: [],
+                    selectedPlanID: nil,
+                    legalLinks: legalLinks,
+                    reduceMotion: true,
+                    layoutReporter: { element, frame in
+                        capture.frames[element] = frame
+                    }
+                )
+            )
+            .environment(\.colorScheme, fixture.colorScheme)
+            .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+
+            let image = HostedViewRenderer.image(
+                for: view,
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.15,
+                renderScale: 0.5
+            )
+
+            let section = try XCTUnwrap(
+                capture.frames[.section(.memberManagement)],
+                fixture.name
+            )
+            let receipt = try XCTUnwrap(capture.frames[.memberPlanReceipt], fixture.name)
+            let identity = try XCTUnwrap(capture.frames[.memberPlanIdentity], fixture.name)
+            let badge = try XCTUnwrap(capture.frames[.memberPlanBadge], fixture.name)
+            let action = try XCTUnwrap(capture.frames[.memberManagementAction], fixture.name)
+
+            for frame in [section, receipt, identity, badge, action] {
+                XCTAssertFalse(frame.isNull, fixture.name)
+                XCTAssertFalse(frame.isInfinite, fixture.name)
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+            }
+            XCTAssertTrue(
+                section.insetBy(dx: -0.5, dy: -0.5).contains(receipt),
+                fixture.name
+            )
+            XCTAssertTrue(
+                section.insetBy(dx: -0.5, dy: -0.5).contains(action),
+                fixture.name
+            )
+            XCTAssertGreaterThanOrEqual(action.height, 44, fixture.name)
+            XCTAssertGreaterThanOrEqual(action.minY, receipt.maxY - 0.5, fixture.name)
+            XCTAssertTrue(receipt.intersection(action).isNull, fixture.name)
+
+            if fixture.name == "compact-grace" {
+                XCTAssertGreaterThanOrEqual(
+                    badge.minY,
+                    identity.maxY - 0.5,
+                    "Compact attention state should stack instead of compressing plan identity"
+                )
+                XCTAssertGreaterThanOrEqual(
+                    badge.width,
+                    118,
+                    "Attention badge should retain enough intrinsic width to show its full label"
+                )
+            }
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = "membership-active-receipt-\(fixture.name)"
             attachment.lifetime = .keepAlways
             add(attachment)
         }
@@ -723,6 +906,11 @@ final class MembershipViewRenderingTests: XCTestCase {
 
     func testMembershipPaywallPresentationHidesCheckoutForMembers() {
         let presentation = MembershipPaywallPresentation(isMember: true, accessibilitySize: true)
+        let compact = MembershipPaywallPresentation(
+            isMember: true,
+            accessibilitySize: false,
+            availableHeight: 568
+        )
 
         XCTAssertEqual(
             presentation.sectionOrder,
@@ -735,6 +923,11 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertFalse(presentation.sectionOrder.contains(.offer))
         XCTAssertFalse(presentation.sectionOrder.contains(.valueProof))
         XCTAssertFalse(presentation.sectionOrder.contains(.restore))
+        XCTAssertEqual(
+            compact.sectionOrder,
+            [.memberManagement, .hero, .benefits, .notice, .legal]
+        )
+        XCTAssertEqual(compact.checkoutPlacement, .hidden)
     }
 
     func testMembershipOfferTrustCopyNamesAppleRenewalAndCancellation() {
@@ -746,6 +939,202 @@ final class MembershipViewRenderingTests: XCTestCase {
             MembershipPaywallPresentation.subscriptionDisclosureText,
             "Payment is charged by Apple. Subscriptions renew automatically until canceled in App Store account settings."
         )
+    }
+
+    func testActivePlanPresentationUsesVerifiedRenewalAndEndCopy() throws {
+        let context = try makeActivePlanDateContext()
+        let periodEnd = try XCTUnwrap(
+            context.calendar.date(
+                from: DateComponents(year: 2026, month: 9, day: 18)
+            )
+        )
+        let annual = MembershipActivePlanPresentation(
+            snapshot: makeActivePlanSnapshot(
+                planKind: .annual,
+                currentPeriodEnd: periodEnd,
+                renewalDisposition: .renews
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+        let monthly = MembershipActivePlanPresentation(
+            snapshot: makeActivePlanSnapshot(
+                planKind: .monthly,
+                currentPeriodEnd: periodEnd,
+                renewalDisposition: .ends
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+
+        XCTAssertEqual(annual.planTitle, "Annual plan")
+        XCTAssertEqual(annual.badgeText, "ACTIVE")
+        XCTAssertEqual(annual.tone, .active)
+        XCTAssertEqual(annual.statusText, "Renews Sep 18, 2026")
+        XCTAssertEqual(annual.managementTitle, "Manage with Apple")
+        XCTAssertTrue(annual.accessibilityLabel.contains("Renews Sep 18, 2026"))
+
+        XCTAssertEqual(monthly.planTitle, "Monthly plan")
+        XCTAssertEqual(monthly.statusText, "Access through Sep 18, 2026")
+        XCTAssertEqual(
+            monthly.supportText,
+            "Your Pro benefits stay active through the current billing period."
+        )
+    }
+
+    func testActivePlanPresentationDistinguishesScheduledChangeAndGrace() throws {
+        let context = try makeActivePlanDateContext()
+        let periodEnd = try XCTUnwrap(
+            context.calendar.date(
+                from: DateComponents(year: 2026, month: 10, day: 2)
+            )
+        )
+        let scheduled = MembershipActivePlanPresentation(
+            snapshot: makeActivePlanSnapshot(
+                planKind: .annual,
+                currentPeriodEnd: periodEnd,
+                renewalDisposition: .changesTo(.monthly)
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+        let grace = MembershipActivePlanPresentation(
+            snapshot: makeActivePlanSnapshot(
+                planKind: .monthly,
+                renewalDisposition: .gracePeriod(until: periodEnd)
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+
+        XCTAssertEqual(scheduled.badgeText, "SCHEDULED")
+        XCTAssertEqual(scheduled.tone, .scheduled)
+        XCTAssertEqual(scheduled.statusText, "Changes to Monthly on Oct 2, 2026")
+        XCTAssertEqual(
+            scheduled.supportText,
+            "Your current plan stays active until the switch."
+        )
+
+        XCTAssertEqual(grace.badgeText, "NEEDS ATTENTION")
+        XCTAssertEqual(grace.tone, .attention)
+        XCTAssertEqual(
+            grace.statusText,
+            "Billing issue · Pro remains active through Oct 2, 2026"
+        )
+        XCTAssertEqual(
+            grace.supportText,
+            "Update payment details with Apple to keep Pro active."
+        )
+    }
+
+    func testActivePlanPresentationAvoidsStaleDatesAndUnsupportedBillingClaims() throws {
+        let context = try makeActivePlanDateContext()
+        let pastDate = try XCTUnwrap(
+            context.calendar.date(
+                from: DateComponents(year: 2026, month: 8, day: 1)
+            )
+        )
+        let noRenewalMetadata = MembershipActivePlanPresentation(
+            snapshot: makeActivePlanSnapshot(
+                planKind: .annual,
+                currentPeriodEnd: pastDate,
+                renewalDisposition: .active
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+        let staleGrace = MembershipActivePlanPresentation(
+            snapshot: makeActivePlanSnapshot(
+                planKind: .monthly,
+                renewalDisposition: .gracePeriod(until: pastDate)
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+
+        XCTAssertEqual(noRenewalMetadata.statusText, "Active access verified by Apple")
+        XCTAssertFalse(noRenewalMetadata.statusText.contains("Renews"))
+        XCTAssertFalse(noRenewalMetadata.statusText.contains("Aug"))
+        XCTAssertEqual(staleGrace.statusText, "Billing issue · Pro remains active")
+        XCTAssertFalse(staleGrace.statusText.contains("Aug"))
+    }
+
+    func testActivePlanPresentationHandlesFamilySharingAndSnapshotFallback() {
+        let family = MembershipActivePlanPresentation(
+            snapshot: makeActivePlanSnapshot(
+                planKind: .annual,
+                renewalDisposition: .renews,
+                ownership: .familyShared
+            )
+        )
+        let fallback = MembershipActivePlanPresentation(snapshot: nil)
+
+        XCTAssertEqual(family.statusText, "Shared through Family Sharing")
+        XCTAssertEqual(family.supportText, "The purchaser manages billing with Apple.")
+        XCTAssertEqual(family.managementTitle, "View Apple subscriptions")
+        XCTAssertEqual(
+            family.managementAccessibilityHint,
+            "Shows subscriptions for this Apple Account. The purchaser manages the shared plan."
+        )
+        XCTAssertFalse(family.statusText.contains("Renews"))
+
+        XCTAssertEqual(fallback.planTitle, "Checkpoint Pro")
+        XCTAssertEqual(fallback.statusText, "Pro access is active")
+        XCTAssertEqual(
+            fallback.supportText,
+            "Open Apple subscriptions for plan and billing details."
+        )
+        XCTAssertFalse(fallback.statusText.contains("verified"))
+    }
+
+    func testSubscriptionManagementScopeUsesVerifiedGroupWhenAvailable() {
+        XCTAssertEqual(
+            MembershipSubscriptionManagementScope(subscriptionGroupID: " checkpoint.pro "),
+            .subscriptionGroup("checkpoint.pro")
+        )
+        XCTAssertEqual(
+            MembershipSubscriptionManagementScope(subscriptionGroupID: nil),
+            .allSubscriptions
+        )
+        XCTAssertEqual(
+            MembershipSubscriptionManagementScope(subscriptionGroupID: "  "),
+            .allSubscriptions
+        )
+        XCTAssertEqual(
+            MembershipSubscriptionManagementScope(
+                activePlanSnapshot: makeActivePlanSnapshot(
+                    planKind: .annual,
+                    renewalDisposition: .renews,
+                    ownership: .familyShared
+                )
+            ),
+            .allSubscriptions
+        )
+    }
+
+    func testActivePlanMotionPolicyRespectsReduceMotion() {
+        let animated = MembershipActivePlanMotionPolicy(reduceMotion: false)
+        let reduced = MembershipActivePlanMotionPolicy(reduceMotion: true)
+
+        XCTAssertEqual(animated.style, .animated)
+        XCTAssertNotNil(animated.animation)
+        XCTAssertTrue(animated.animatesSymbol)
+
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.animation)
+        XCTAssertFalse(reduced.animatesSymbol)
     }
 
     func testMembershipPlanAccessibilityLabelKeepsOfferDetailsInReadingOrder() {
@@ -1006,6 +1395,31 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertTrue(pro.accessibilityValue.contains("Goal Lanes: 2 of 5 in use"))
     }
 
+    func testSettingsPlanPresentationIdentifiesVerifiedPlanWithoutAffectingOtherStates() {
+        let annualSnapshot = makeActivePlanSnapshot(
+            planKind: .annual,
+            renewalDisposition: .renews
+        )
+        let annual = SettingsPlanPresentation(
+            membershipTier: .member,
+            purchaseNotice: nil,
+            activePlanSnapshot: annualSnapshot
+        )
+        let ignoredWhileFree = SettingsPlanPresentation(
+            membershipTier: .starter,
+            purchaseNotice: nil,
+            activePlanSnapshot: annualSnapshot
+        )
+
+        XCTAssertEqual(annual.planName, "Checkpoint Pro · Annual")
+        XCTAssertEqual(annual.accessibilityLabel, "Checkpoint Pro · Annual")
+        XCTAssertTrue(annual.accessibilityValue.contains("Annual plan"))
+        XCTAssertEqual(annual.visualStateKey.activePlanKind, .annual)
+
+        XCTAssertEqual(ignoredWhileFree.planName, "Checkpoint Free")
+        XCTAssertNil(ignoredWhileFree.activePlanKind)
+    }
+
     func testSettingsProActivityPresentationUsesTruthfulLiveStates() throws {
         let goal = makeLSATGoal()
         let longSkillName = "Reliability and failure recovery under distributed load"
@@ -1193,6 +1607,10 @@ final class MembershipViewRenderingTests: XCTestCase {
                     proActivity: makeSettingsProActivity(
                         studyFocusState: .caughtUp,
                         goalCount: 2
+                    ),
+                    activePlanSnapshot: makeActivePlanSnapshot(
+                        planKind: .annual,
+                        renewalDisposition: .renews
                     )
                 ),
                 width: 393,
@@ -1209,6 +1627,10 @@ final class MembershipViewRenderingTests: XCTestCase {
                         isMaintaining: true,
                         nextFocusValue: "Multi-stage causal inference with counterfactual calibration",
                         goalCount: 4
+                    ),
+                    activePlanSnapshot: makeActivePlanSnapshot(
+                        planKind: .monthly,
+                        renewalDisposition: .renews
                     )
                 ),
                 width: 320,
@@ -1415,6 +1837,48 @@ final class MembershipViewRenderingTests: XCTestCase {
         ).planOptions
     }
 
+    private func makeActivePlanSnapshot(
+        planKind: MembershipPlanKind,
+        currentPeriodEnd: Date? = nil,
+        renewalDisposition: MembershipRenewalDisposition,
+        ownership: MembershipPlanOwnership = .purchased,
+        subscriptionGroupID: String? = "checkpoint.pro"
+    ) -> MembershipActivePlanSnapshot {
+        let productID: String
+        switch planKind {
+        case .monthly:
+            productID = MembershipProductID.monthly
+        case .annual:
+            productID = MembershipProductID.yearly
+        }
+
+        return MembershipActivePlanSnapshot(
+            transactionID: planKind == .annual ? 100 : 101,
+            productID: productID,
+            planKind: planKind,
+            subscriptionGroupID: subscriptionGroupID,
+            purchaseDate: Date(timeIntervalSince1970: 1_780_000_000),
+            currentPeriodEnd: currentPeriodEnd,
+            renewalDisposition: renewalDisposition,
+            ownership: ownership
+        )
+    }
+
+    private func makeActivePlanDateContext() throws -> ActivePlanDateContext {
+        let timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        let now = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 5))
+        )
+        return ActivePlanDateContext(
+            now: now,
+            locale: Locale(identifier: "en_US_POSIX"),
+            calendar: calendar,
+            timeZone: timeZone
+        )
+    }
+
     @MainActor
     private func renderMembershipFixtures(
         _ fixtures: [MembershipRenderFixture],
@@ -1443,7 +1907,8 @@ final class MembershipViewRenderingTests: XCTestCase {
                     : nil
                 let purchaseController = PurchaseController(
                     grantsDebugTesterEntitlement: false,
-                    initialStoreOperation: initialStoreOperation
+                    initialStoreOperation: initialStoreOperation,
+                    initialActivePlanSnapshot: fixture.activePlanSnapshot
                 )
                 purchaseController.purchaseNotice = fixture.purchaseNotice
 
@@ -1483,6 +1948,13 @@ final class MembershipViewRenderingTests: XCTestCase {
     }
 }
 
+private struct ActivePlanDateContext {
+    let now: Date
+    let locale: Locale
+    let calendar: Calendar
+    let timeZone: TimeZone
+}
+
 @MainActor
 private final class MembershipPaywallLayoutCapture {
     var frames: [MembershipPaywallLayoutElement: CGRect] = [:]
@@ -1517,6 +1989,15 @@ private struct MembershipInlineCheckoutFixture {
     }
 }
 
+private struct MembershipActiveReceiptLayoutFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let snapshot: MembershipActivePlanSnapshot
+}
+
 private struct MembershipRenderFixture {
     let name: String
     let context: MembershipPresentationContext
@@ -1531,6 +2012,7 @@ private struct MembershipRenderFixture {
     var purchaseNotice: MembershipPurchaseNotice?
     var isMember = false
     var activationPresentation: MembershipActivationPresentation?
+    var activePlanSnapshot: MembershipActivePlanSnapshot?
 }
 
 private struct MembershipValuePreviewRenderFixture {

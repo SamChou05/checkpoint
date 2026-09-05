@@ -1115,7 +1115,8 @@ struct SettingsView: View {
             presentation: SettingsPlanPresentation(
                 membershipTier: store.membershipTier,
                 purchaseNotice: purchaseController.purchaseNotice,
-                proActivity: store.isMember ? proActivityPresentation : nil
+                proActivity: store.isMember ? proActivityPresentation : nil,
+                activePlanSnapshot: purchaseController.activePlanSnapshot
             )
         ) {
             store.requestMembershipOverview()

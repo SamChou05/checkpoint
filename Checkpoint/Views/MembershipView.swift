@@ -10,6 +10,10 @@ enum MembershipPaywallLayoutElement: Hashable {
     case subscriptionDisclosure
     case checkoutBar
     case primaryAction
+    case memberPlanReceipt
+    case memberPlanIdentity
+    case memberPlanBadge
+    case memberManagementAction
 }
 
 private let membershipPaywallLayoutCoordinateSpaceName = "Checkpoint.MembershipPaywall.Layout"
@@ -45,6 +49,24 @@ private extension View {
         using report: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)?
     ) -> some View {
         modifier(MembershipPaywallLayoutFrameReporter(element: element, report: report))
+    }
+}
+
+private struct MembershipSubscriptionManagementSheetModifier: ViewModifier {
+    @Binding var isPresented: Bool
+    let scope: MembershipSubscriptionManagementScope
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        switch scope {
+        case .allSubscriptions:
+            content.manageSubscriptionsSheet(isPresented: $isPresented)
+        case .subscriptionGroup(let groupID):
+            content.manageSubscriptionsSheet(
+                isPresented: $isPresented,
+                subscriptionGroupID: groupID
+            )
+        }
     }
 }
 
@@ -107,6 +129,27 @@ struct MembershipActivationMotionPolicy {
     var animatesSymbol: Bool { !reduceMotion }
 }
 
+enum MembershipActivePlanMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct MembershipActivePlanMotionPolicy {
+    let style: MembershipActivePlanMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var animatesSymbol: Bool {
+        style == .animated
+    }
+}
+
 struct MembershipActivationFeedbackTaskID: Hashable {
     let presentationID: UUID?
     let isSceneActive: Bool
@@ -144,7 +187,6 @@ struct MembershipView: View {
     private let renderCheckPurchaseStatusAction: (() -> Void)?
     private let layoutReporter: (@MainActor (MembershipPaywallLayoutElement, CGRect) -> Void)?
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.scenePhase) private var scenePhase
@@ -154,6 +196,7 @@ struct MembershipView: View {
     @State private var activationFeedback = MembershipActivationFeedbackState()
     @State private var activationFeedbackSequence = 0
     @State private var isActivationRevealed = false
+    @State private var isSubscriptionManagementPresented = false
 
     init(
         context: MembershipPresentationContext,
@@ -228,6 +271,18 @@ struct MembershipView: View {
             .sensoryFeedback(.success, trigger: activationFeedbackSequence)
         }
         .coordinateSpace(name: membershipPaywallLayoutCoordinateSpaceName)
+        .modifier(
+            MembershipSubscriptionManagementSheetModifier(
+                isPresented: $isSubscriptionManagementPresented,
+                scope: subscriptionManagementScope
+            )
+        )
+        .onChange(of: isSubscriptionManagementPresented) { wasPresented, isPresented in
+            guard wasPresented, !isPresented else { return }
+            Task {
+                _ = await purchaseController.refreshEntitlements()
+            }
+        }
     }
 
     private var navigationTitle: String {
@@ -895,39 +950,211 @@ struct MembershipView: View {
     }
 
     private var memberManagement: some View {
-        SectionPanel("Subscription") {
-            VStack(alignment: .leading, spacing: 12) {
-                if dynamicTypeSize.isAccessibilitySize {
-                    VStack(alignment: .leading, spacing: 10) {
-                        memberPlanSummary
-                        StatusBadge(text: "Current", tint: CheckpointTheme.teal)
-                    }
-                } else {
-                    HStack {
-                        memberPlanSummary
-                        Spacer(minLength: 8)
-                        StatusBadge(text: "Current", tint: CheckpointTheme.teal)
-                    }
-                }
+        let presentation = activePlanPresentation
 
-                SecondaryActionButton(title: "Manage subscription", systemImage: "creditcard") {
-                    openSubscriptionManagement()
-                }
+        return SectionPanel("Plan & billing") {
+            VStack(alignment: .leading, spacing: 12) {
+                memberPlanReceipt(presentation)
+                    .reportMembershipPaywallLayoutFrame(
+                        .memberPlanReceipt,
+                        using: layoutReporter
+                    )
+
+                memberManagementButton(presentation)
+                    .reportMembershipPaywallLayoutFrame(
+                        .memberManagementAction,
+                        using: layoutReporter
+                    )
             }
         }
     }
 
-    private var memberPlanSummary: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text("Pro access is active")
-                .font(.headline)
-                .foregroundStyle(CheckpointTheme.text)
+    private func memberPlanReceipt(
+        _ presentation: MembershipActivePlanPresentation
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 13) {
+            memberPlanHeader(presentation)
 
-            Text("Billing and cancellation are managed by Apple.")
-                .font(.footnote)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            HStack(alignment: .top, spacing: 11) {
+                Image(systemName: presentation.statusSystemImage)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(memberPlanTint(for: presentation.tone))
+                    .frame(width: 30, height: 30)
+                    .background(
+                        memberPlanTint(for: presentation.tone).opacity(0.11),
+                        in: Circle()
+                    )
+                    .contentTransition(.symbolEffect(.replace))
+                    .symbolEffect(
+                        .bounce,
+                        options: .nonRepeating,
+                        value: presentation.visualStateKey
+                    )
+                    .symbolEffectsRemoved(!activePlanMotionPolicy.animatesSymbol)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(presentation.statusText)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                        .contentTransition(.interpolate)
+
+                    Text(presentation.supportText)
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.interpolate)
+                }
+            }
         }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.panelRaised.opacity(0.72),
+            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(CheckpointTheme.hairline, lineWidth: 1)
+        }
+        .animation(activePlanMotionPolicy.animation, value: presentation.visualStateKey)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(presentation.accessibilityLabel)
+    }
+
+    @ViewBuilder
+    private func memberPlanHeader(
+        _ presentation: MembershipActivePlanPresentation
+    ) -> some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedMemberPlanHeader(presentation, keepsBadgeOnOneLine: false)
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 12) {
+                    memberPlanIdentity(presentation)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .reportMembershipPaywallLayoutFrame(
+                            .memberPlanIdentity,
+                            using: layoutReporter
+                        )
+
+                    Spacer(minLength: 8)
+
+                    memberPlanBadge(presentation)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+
+                stackedMemberPlanHeader(presentation, keepsBadgeOnOneLine: true)
+            }
+        }
+    }
+
+    private func stackedMemberPlanHeader(
+        _ presentation: MembershipActivePlanPresentation,
+        keepsBadgeOnOneLine: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 11) {
+            memberPlanIdentity(presentation)
+                .reportMembershipPaywallLayoutFrame(
+                    .memberPlanIdentity,
+                    using: layoutReporter
+                )
+
+            memberPlanBadge(presentation)
+                .fixedSize(horizontal: keepsBadgeOnOneLine, vertical: false)
+        }
+    }
+
+    private func memberPlanBadge(
+        _ presentation: MembershipActivePlanPresentation
+    ) -> some View {
+        StatusBadge(
+            text: presentation.badgeText,
+            tint: memberPlanTint(for: presentation.tone)
+        )
+        .reportMembershipPaywallLayoutFrame(
+            .memberPlanBadge,
+            using: layoutReporter
+        )
+    }
+
+    private func memberPlanIdentity(
+        _ presentation: MembershipActivePlanPresentation
+    ) -> some View {
+        HStack(spacing: 11) {
+            Image(systemName: presentation.planSystemImage)
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 40, height: 40)
+                .background(CheckpointTheme.teal.opacity(0.11), in: Circle())
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffectsRemoved(!activePlanMotionPolicy.animatesSymbol)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("PRO PLAN")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.8)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .lineLimit(1)
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+
+                Text(presentation.planTitle)
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.interpolate)
+            }
+        }
+    }
+
+    private func memberManagementButton(
+        _ presentation: MembershipActivePlanPresentation
+    ) -> some View {
+        Button {
+            openSubscriptionManagement()
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "creditcard")
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .accessibilityHidden(true)
+
+                Text(presentation.managementTitle)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentTransition(.interpolate)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, 13)
+            .frame(maxWidth: .infinity, minHeight: 46)
+            .background(
+                CheckpointTheme.panelRaised.opacity(0.58),
+                in: RoundedRectangle(
+                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                    style: .continuous
+                )
+                .stroke(CheckpointTheme.controlStroke, lineWidth: 1)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(CheckpointPressButtonStyle())
+        .accessibilityLabel(presentation.managementTitle)
+        .accessibilityHint(presentation.managementAccessibilityHint)
     }
 
     private func purchaseBar(presentation: MembershipPaywallPresentation) -> some View {
@@ -1232,9 +1459,7 @@ struct MembershipView: View {
     }
 
     private func openSubscriptionManagement() {
-        if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
-            openURL(url)
-        }
+        isSubscriptionManagementPresented = true
     }
 
     private func close() {
@@ -1245,6 +1470,31 @@ struct MembershipView: View {
     private var proText: Color { CheckpointTheme.heroText }
     private var proSecondaryText: Color { CheckpointTheme.heroMuted }
     private var reduceMotion: Bool { reduceMotionOverride ?? systemReduceMotion }
+
+    private var activePlanPresentation: MembershipActivePlanPresentation {
+        MembershipActivePlanPresentation(snapshot: purchaseController.activePlanSnapshot)
+    }
+
+    private var activePlanMotionPolicy: MembershipActivePlanMotionPolicy {
+        MembershipActivePlanMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var subscriptionManagementScope: MembershipSubscriptionManagementScope {
+        MembershipSubscriptionManagementScope(
+            activePlanSnapshot: purchaseController.activePlanSnapshot
+        )
+    }
+
+    private func memberPlanTint(for tone: MembershipActivePlanTone) -> Color {
+        switch tone {
+        case .active:
+            CheckpointTheme.teal
+        case .scheduled:
+            CheckpointTheme.blue
+        case .attention:
+            CheckpointTheme.amber
+        }
+    }
 }
 
 enum MembershipValuePreviewMotionStyle: Equatable {
