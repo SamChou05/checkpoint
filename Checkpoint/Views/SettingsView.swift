@@ -172,6 +172,7 @@ struct SettingsView: View {
     @State private var isAppDataExpanded = false
     @State private var isDeveloperToolsExpanded = false
     @State private var advancedAction: AdvancedSettingsAction?
+    @State private var dataEraseOnboardingHandoff = DataEraseOnboardingHandoff()
     @State private var previewCheckpointMessage: String?
     @State private var isPreparingPreviewCheckpoint = false
     @State private var stopBlockingMessage: String?
@@ -259,12 +260,18 @@ struct SettingsView: View {
             .sheet(isPresented: $isGenerationDiagnosticsPresented) {
                 QuestionGenerationDiagnosticsView(store: store)
             }
-            .sheet(item: $advancedAction) { action in
+            .sheet(
+                item: $advancedAction,
+                onDismiss: completeDataEraseOnboardingHandoffIfNeeded
+            ) { action in
                 AdvancedConfirmationView(
                     action: action,
                     store: store,
                     screenTime: screenTime,
-                    purchaseController: purchaseController
+                    purchaseController: purchaseController,
+                    onLocalDataEraseCompleted: {
+                        dataEraseOnboardingHandoff.schedule()
+                    }
                 )
             }
             .alert("Turn off protection?", isPresented: $isStopProtectionConfirmationPresented) {
@@ -1090,6 +1097,13 @@ struct SettingsView: View {
         return uniqueMessages.isEmpty ? nil : uniqueMessages.joined(separator: " ")
     }
 
+    private func completeDataEraseOnboardingHandoffIfNeeded() {
+        guard dataEraseOnboardingHandoff.consumeAfterConfirmationDismissal() else {
+            return
+        }
+        store.isOnboardingPresented = true
+    }
+
     private var practiceHistorySettingsPresentation: PracticeHistorySettingsPresentation {
         PracticeHistorySettingsPresentation(attempts: store.attempts)
     }
@@ -1244,7 +1258,7 @@ struct SettingsView: View {
 
             DisclosureGroup(isExpanded: $isAppDataExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Erase goals, progress, protected-app selections, diagnostics, and the anonymous backend install ID, then turn off app protection.")
+                    Text("Erase local goals, progress, protected-app selections, diagnostics, and the anonymous backend install ID, then turn off app protection. Some backend records age out later.")
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)

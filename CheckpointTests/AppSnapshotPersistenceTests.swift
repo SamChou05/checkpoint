@@ -1981,6 +1981,7 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         )
 
         XCTAssertTrue(store.hasNoPersistedAppData)
+        XCTAssertTrue(store.isOnboardingPresented)
         XCTAssertTrue(store.focusWins.isEmpty)
         XCTAssertNil(store.membershipActivationHandoff)
         XCTAssertFalse(SharedAppGroup.hasPersistedData)
@@ -1992,6 +1993,83 @@ final class AppSnapshotPersistenceTests: XCTestCase {
         XCTAssertNil(relaunchedPurchaseController.pendingPurchaseProductID)
         XCTAssertNil(relaunchedPurchaseController.purchaseNotice)
         XCTAssertNil(relaunchedStore.membershipActivationHandoff)
+    }
+
+    @MainActor
+    func testSettingsDataEraseDefersOnboardingAndCanRetryARealPartialFailure() {
+        let goal = makeGoal()
+        let store = makeFileBackedStore(goal: goal)
+        SharedAppGroup.publishShieldContext(
+            goalTitle: "Erase recovery context",
+            promptPreview: "A shared prompt that must not survive retry"
+        )
+        XCTAssertTrue(SharedAppGroup.hasPersistedData)
+        var sharedEraseShouldFail = true
+        let screenTime = ScreenTimeController(
+            sharedDataEraser: {
+                if sharedEraseShouldFail {
+                    throw NSError(domain: "SettingsDataEraseTests", code: 1)
+                }
+                try SharedAppGroup.eraseAllData()
+            }
+        )
+        let purchaseController = PurchaseController(
+            grantsDebugTesterEntitlement: false,
+            pendingPurchaseDefaults: nil
+        )
+
+        let partialResult = CheckpointDataEraseCoordinator.eraseAllData(
+            store: store,
+            screenTime: screenTime,
+            purchaseController: purchaseController,
+            presentsOnboardingAfterErase: false
+        )
+
+        XCTAssertTrue(partialResult.didEraseLocalData)
+        XCTAssertFalse(partialResult.succeeded)
+        XCTAssertNotNil(partialResult.recoveryMessage)
+        XCTAssertNotNil(screenTime.sharedDataEraseErrorMessage)
+        XCTAssertTrue(SharedAppGroup.hasPersistedData)
+        XCTAssertTrue(
+            UserDefaults.standard.bool(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        )
+        XCTAssertFalse(store.isOnboardingPresented)
+
+        var handoff = DataEraseOnboardingHandoff()
+        if partialResult.didEraseLocalData {
+            handoff.schedule()
+        }
+        XCTAssertTrue(handoff.isPending)
+
+        sharedEraseShouldFail = false
+        let retryResult = CheckpointDataEraseCoordinator.eraseAllData(
+            store: store,
+            screenTime: screenTime,
+            purchaseController: purchaseController,
+            presentsOnboardingAfterErase: false
+        )
+
+        XCTAssertTrue(retryResult.succeeded)
+        XCTAssertNil(retryResult.recoveryMessage)
+        XCTAssertNil(screenTime.sharedDataEraseErrorMessage)
+        XCTAssertFalse(SharedAppGroup.hasPersistedData)
+        XCTAssertFalse(
+            UserDefaults.standard.bool(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        )
+        XCTAssertFalse(store.isOnboardingPresented)
+
+        if retryResult.didEraseLocalData {
+            handoff.schedule()
+        }
+        if handoff.consumeAfterConfirmationDismissal() {
+            store.isOnboardingPresented = true
+        }
+        XCTAssertTrue(store.isOnboardingPresented)
+        XCTAssertFalse(handoff.consumeAfterConfirmationDismissal())
     }
 
     @MainActor

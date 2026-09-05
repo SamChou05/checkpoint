@@ -11,12 +11,205 @@ import ManagedSettings
 final class SettingsViewRenderingTests: XCTestCase {
     func testDataEraseWarningNamesExternalStateThatContinues() {
         let warning = CheckpointDataEraseCopy.warningMessage
+        let removedDetails = CheckpointDataEraseCopy.removedItems
+            .map { "\($0.title). \($0.detail)" }
+            .joined(separator: " ")
+        let retainedDetails = CheckpointDataEraseCopy.retainedItems
+            .map { "\($0.title). \($0.detail)" }
+            .joined(separator: " ")
 
         XCTAssertEqual(AdvancedSettingsAction.resetData.detail, warning)
+        XCTAssertEqual(CheckpointDataEraseCopy.removedItems.count, 3)
+        XCTAssertEqual(CheckpointDataEraseCopy.retainedItems.count, 3)
+        XCTAssertTrue(removedDetails.contains("Goals and learning history"))
+        XCTAssertTrue(removedDetails.contains("Focus Wins"))
+        XCTAssertTrue(removedDetails.contains("Protected app and website selections"))
         XCTAssertTrue(warning.contains("local purchase-status reminders"))
-        XCTAssertTrue(warning.contains("purchases in progress"))
+        XCTAssertTrue(retainedDetails.contains("purchases already in progress are not canceled"))
+        XCTAssertTrue(retainedDetails.contains("Screen Time permission"))
+        XCTAssertTrue(retainedDetails.contains("Backend records age out"))
+        XCTAssertTrue(retainedDetails.contains("aren’t deleted immediately"))
+        for recordClass in ["Question-bank", "quota", "stream", "queued-job"] {
+            XCTAssertTrue(retainedDetails.contains(recordClass), recordClass)
+        }
+        XCTAssertTrue(retainedDetails.contains("queued work may finish after reset"))
+        XCTAssertTrue(warning.contains("purchases in progress are not canceled"))
         XCTAssertTrue(warning.contains("Screen Time permission"))
-        XCTAssertTrue(warning.contains("not canceled"))
+        XCTAssertTrue(warning.contains("age out under their retention windows"))
+        XCTAssertTrue(CheckpointDataEraseCopy.irreversibleDetail.contains("can’t be undone"))
+    }
+
+    func testDataEraseConfirmationRequiresThePhraseAndExplainsEveryActionState() {
+        let action = AdvancedSettingsAction.resetData
+        let empty = AdvancedConfirmationPresentation(
+            action: action,
+            confirmationText: " \n ",
+            hasActionError: false,
+            isErasing: false
+        )
+        XCTAssertEqual(empty.inputState, .empty)
+        XCTAssertFalse(empty.isConfirmed)
+        XCTAssertFalse(empty.isActionEnabled)
+        XCTAssertEqual(empty.actionTitle, "Type RESET to continue")
+        XCTAssertTrue(empty.actionAccessibilityValue.contains("Unavailable"))
+
+        for input in ["R", "RES", "DELETE", "RESET NOW"] {
+            let incomplete = AdvancedConfirmationPresentation(
+                action: action,
+                confirmationText: input,
+                hasActionError: false,
+                isErasing: false
+            )
+            XCTAssertEqual(incomplete.inputState, .incomplete, input)
+            XCTAssertFalse(incomplete.isActionEnabled, input)
+            XCTAssertEqual(
+                incomplete.confirmationStatusText,
+                "The phrase must match RESET.",
+                input
+            )
+        }
+
+        let ready = AdvancedConfirmationPresentation(
+            action: action,
+            confirmationText: "  reset\n",
+            hasActionError: false,
+            isErasing: false
+        )
+        XCTAssertEqual(ready.inputState, .ready)
+        XCTAssertTrue(ready.isConfirmed)
+        XCTAssertTrue(ready.isActionEnabled)
+        XCTAssertEqual(ready.actionTitle, "Erase all data")
+        XCTAssertEqual(ready.confirmationStatusText, "Confirmation ready.")
+        XCTAssertEqual(
+            ready.fieldAccessibilityHint,
+            "Confirmation ready. The erase action is now available."
+        )
+
+        let retry = AdvancedConfirmationPresentation(
+            action: action,
+            confirmationText: "RESET",
+            hasActionError: true,
+            isErasing: false
+        )
+        XCTAssertTrue(retry.isActionEnabled)
+        XCTAssertEqual(retry.actionTitle, "Retry erasure")
+        XCTAssertEqual(retry.actionSystemImage, "arrow.clockwise")
+        XCTAssertEqual(retry.actionAccessibilityValue, "Ready to retry")
+
+        let erasing = AdvancedConfirmationPresentation(
+            action: action,
+            confirmationText: "RESET",
+            hasActionError: false,
+            isErasing: true
+        )
+        XCTAssertFalse(erasing.isActionEnabled)
+        XCTAssertEqual(erasing.actionTitle, "Erasing…")
+        XCTAssertEqual(erasing.actionAccessibilityValue, "Erasure in progress")
+
+        let succeeded = AdvancedConfirmationPresentation(
+            action: action,
+            confirmationText: "",
+            hasActionError: false,
+            isErasing: false,
+            didSucceed: true
+        )
+        XCTAssertTrue(succeeded.isActionEnabled)
+        XCTAssertEqual(succeeded.actionTitle, "Start fresh")
+        XCTAssertEqual(succeeded.actionSystemImage, "arrow.right")
+        XCTAssertTrue(succeeded.actionAccessibilityValue.contains("ready to start fresh"))
+    }
+
+    func testDataEraseOnboardingHandoffWaitsForConfirmationDismissalAndConsumesOnce() {
+        var handoff = DataEraseOnboardingHandoff()
+
+        XCTAssertFalse(handoff.isPending)
+        XCTAssertFalse(handoff.consumeAfterConfirmationDismissal())
+
+        handoff.schedule()
+        XCTAssertTrue(handoff.isPending)
+        XCTAssertTrue(handoff.consumeAfterConfirmationDismissal())
+        XCTAssertFalse(handoff.isPending)
+        XCTAssertFalse(handoff.consumeAfterConfirmationDismissal())
+    }
+
+    func testDataEraseErrorDeliveryPublishesEveryFailedAttempt() {
+        var delivery = AdvancedConfirmationErrorDelivery()
+
+        XCTAssertNil(delivery.message)
+        XCTAssertEqual(delivery.revision, 0)
+
+        delivery.publish("Shared Screen Time cleanup failed.")
+        let firstRevision = delivery.revision
+        XCTAssertEqual(delivery.message, "Shared Screen Time cleanup failed.")
+
+        delivery.publish("Shared Screen Time cleanup failed.")
+        XCTAssertEqual(delivery.message, "Shared Screen Time cleanup failed.")
+        XCTAssertGreaterThan(delivery.revision, firstRevision)
+
+        delivery.clear()
+        XCTAssertNil(delivery.message)
+    }
+
+    @MainActor
+    func testDataEraseConfirmationMotionBecomesTonalForAssistiveNavigation() {
+        let standard = AdvancedConfirmationMotionPolicy(
+            reduceMotion: false,
+            voiceOverEnabled: false,
+            switchControlEnabled: false
+        )
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertNotNil(standard.animation)
+        XCTAssertTrue(standard.animatesSymbolTransitions)
+        XCTAssertTrue(standard.animatesErrorInsertion)
+        XCTAssertFalse(standard.usesAssistiveNavigation)
+        XCTAssertFalse(
+            standard.shouldAnnounceReadyTransition(from: .incomplete, to: .ready)
+        )
+
+        let reduceMotionOnly = AdvancedConfirmationMotionPolicy(
+            reduceMotion: true,
+            voiceOverEnabled: false,
+            switchControlEnabled: false
+        )
+        let voiceOverOnly = AdvancedConfirmationMotionPolicy(
+            reduceMotion: false,
+            voiceOverEnabled: true,
+            switchControlEnabled: false
+        )
+        let switchControlOnly = AdvancedConfirmationMotionPolicy(
+            reduceMotion: false,
+            voiceOverEnabled: false,
+            switchControlEnabled: true
+        )
+        let combined = AdvancedConfirmationMotionPolicy(
+            reduceMotion: true,
+            voiceOverEnabled: true,
+            switchControlEnabled: true
+        )
+        let tonalPolicies = [
+            reduceMotionOnly,
+            voiceOverOnly,
+            switchControlOnly,
+            combined,
+        ]
+        for policy in tonalPolicies {
+            XCTAssertEqual(policy.style, .tonalOnly)
+            XCTAssertNil(policy.animation)
+            XCTAssertFalse(policy.animatesSymbolTransitions)
+            XCTAssertFalse(policy.animatesErrorInsertion)
+        }
+        XCTAssertFalse(reduceMotionOnly.usesAssistiveNavigation)
+        XCTAssertFalse(
+            reduceMotionOnly.shouldAnnounceReadyTransition(from: .incomplete, to: .ready)
+        )
+        for policy in [voiceOverOnly, switchControlOnly, combined] {
+            XCTAssertTrue(policy.usesAssistiveNavigation)
+            XCTAssertTrue(
+                policy.shouldAnnounceReadyTransition(from: .incomplete, to: .ready)
+            )
+            XCTAssertFalse(policy.shouldAnnounceReadyTransition(from: .ready, to: .ready))
+            XCTAssertFalse(policy.shouldAnnounceReadyTransition(from: .ready, to: .incomplete))
+        }
     }
 
     func testPracticeStandardPresentationKeepsExactContractPrimary() {
@@ -567,6 +760,182 @@ final class SettingsViewRenderingTests: XCTestCase {
             presentation.detail,
             "When protection is on, passing opens protected apps for 15 minutes."
         )
+    }
+
+    @MainActor
+    func testDataEraseConfirmationRendersAcrossTrustAndAccessibilityStates() throws {
+        let fixtures = [
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-empty-light",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-ready-dark",
+                width: 393,
+                height: 980,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                confirmationText: "RESET"
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-partial-compact",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                confirmationText: "RES"
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-accessibility5-tonal-only",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-voiceover-ready-light",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                confirmationText: "RESET",
+                voiceOverEnabled: true
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-switch-control-ready-dark",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                confirmationText: "RESET",
+                switchControlEnabled: true
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-working-dark",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                confirmationText: "RESET",
+                initiallyErasing: true
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-success-light",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                confirmationText: "RESET",
+                initiallySucceeded: true
+            ),
+            AdvancedConfirmationRenderFixture(
+                name: "data-erase-retry-error-dark",
+                width: 393,
+                height: 1_200,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                confirmationText: "RESET",
+                errorMessage: "Checkpoint could not remove one shared Screen Time record. Keep this screen open and retry erasure."
+            ),
+        ]
+
+        for fixture in fixtures {
+            let storeSuiteName = "SettingsDataErase.Store.\(fixture.name).\(UUID().uuidString)"
+            let screenTimeSuiteName = "SettingsDataErase.ScreenTime.\(fixture.name).\(UUID().uuidString)"
+            let storeDefaults = try XCTUnwrap(UserDefaults(suiteName: storeSuiteName))
+            let screenTimeDefaults = try XCTUnwrap(UserDefaults(suiteName: screenTimeSuiteName))
+            defer {
+                storeDefaults.removePersistentDomain(forName: storeSuiteName)
+                screenTimeDefaults.removePersistentDomain(forName: screenTimeSuiteName)
+            }
+
+            let store = CheckpointStore(defaults: storeDefaults)
+            let screenTime = ScreenTimeController(
+                defaults: screenTimeDefaults,
+                authorizer: SettingsRenderScreenTimeAuthorizer()
+            )
+            let purchaseController = PurchaseController(
+                grantsDebugTesterEntitlement: false,
+                pendingPurchaseDefaults: nil
+            )
+            let capture = AdvancedConfirmationLayoutCapture()
+            let image = HostedViewRenderer.image(
+                for: AdvancedConfirmationView(
+                    action: .resetData,
+                    store: store,
+                    screenTime: screenTime,
+                    purchaseController: purchaseController,
+                    initialConfirmationText: fixture.confirmationText,
+                    initialActionErrorMessage: fixture.errorMessage,
+                    initiallyErasing: fixture.initiallyErasing,
+                    initiallySucceeded: fixture.initiallySucceeded,
+                    reduceMotionOverride: fixture.reduceMotion,
+                    voiceOverOverride: fixture.voiceOverEnabled,
+                    switchControlOverride: fixture.switchControlEnabled,
+                    layoutReporter: { element, frame in
+                        capture.frames[element] = frame
+                    }
+                )
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.25,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            let viewport = try XCTUnwrap(capture.frames[.viewport], fixture.name)
+            let hero = try XCTUnwrap(capture.frames[.hero], fixture.name)
+            let confirmation = try XCTUnwrap(capture.frames[.confirmation], fixture.name)
+            let actionBar = try XCTUnwrap(capture.frames[.actionBar], fixture.name)
+            let canvas = CGRect(
+                x: 0,
+                y: 0,
+                width: fixture.width,
+                height: fixture.height
+            )
+
+            var requiredFrames = [viewport, hero, confirmation, actionBar]
+            if let consequences = capture.frames[.consequences] {
+                requiredFrames.append(consequences)
+            }
+            for frame in requiredFrames {
+                XCTAssertFalse(frame.isNull, fixture.name)
+                XCTAssertFalse(frame.isInfinite, fixture.name)
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+            }
+            for frame in requiredFrames.filter({ $0 != viewport && $0 != actionBar }) {
+                XCTAssertGreaterThanOrEqual(frame.minX, viewport.minX - 0.5, fixture.name)
+                XCTAssertLessThanOrEqual(frame.maxX, viewport.maxX + 0.5, fixture.name)
+            }
+            if fixture.initiallySucceeded {
+                XCTAssertNil(capture.frames[.consequences], fixture.name)
+                XCTAssertLessThanOrEqual(hero.maxY, confirmation.minY + 0.5, fixture.name)
+            } else {
+                let consequences = try XCTUnwrap(capture.frames[.consequences], fixture.name)
+                XCTAssertLessThanOrEqual(hero.maxY, consequences.minY + 0.5, fixture.name)
+                XCTAssertLessThanOrEqual(consequences.maxY, confirmation.minY + 0.5, fixture.name)
+            }
+            XCTAssertTrue(
+                canvas.insetBy(dx: -0.5, dy: -0.5).contains(actionBar),
+                "\(fixture.name) sticky action bar escaped the rendered screen"
+            )
+            XCTAssertGreaterThanOrEqual(actionBar.height, 44, fixture.name)
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
     }
 
     @MainActor
@@ -1209,6 +1578,54 @@ final class SettingsViewRenderingTests: XCTestCase {
 @MainActor
 private final class SettingsLayoutCapture {
     var frames: [SettingsLayoutElement: CGRect] = [:]
+}
+
+@MainActor
+private final class AdvancedConfirmationLayoutCapture {
+    var frames: [AdvancedConfirmationLayoutElement: CGRect] = [:]
+}
+
+private struct AdvancedConfirmationRenderFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let confirmationText: String
+    let errorMessage: String?
+    let initiallyErasing: Bool
+    let initiallySucceeded: Bool
+    let reduceMotion: Bool
+    let voiceOverEnabled: Bool
+    let switchControlEnabled: Bool
+
+    init(
+        name: String,
+        width: CGFloat,
+        height: CGFloat,
+        colorScheme: ColorScheme,
+        dynamicTypeSize: DynamicTypeSize,
+        confirmationText: String = "",
+        errorMessage: String? = nil,
+        initiallyErasing: Bool = false,
+        initiallySucceeded: Bool = false,
+        reduceMotion: Bool = false,
+        voiceOverEnabled: Bool = false,
+        switchControlEnabled: Bool = false
+    ) {
+        self.name = name
+        self.width = width
+        self.height = height
+        self.colorScheme = colorScheme
+        self.dynamicTypeSize = dynamicTypeSize
+        self.confirmationText = confirmationText
+        self.errorMessage = errorMessage
+        self.initiallyErasing = initiallyErasing
+        self.initiallySucceeded = initiallySucceeded
+        self.reduceMotion = reduceMotion
+        self.voiceOverEnabled = voiceOverEnabled
+        self.switchControlEnabled = switchControlEnabled
+    }
 }
 
 private struct SettingsProtectionHeaderRenderFixture {

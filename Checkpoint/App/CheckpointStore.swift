@@ -3292,7 +3292,10 @@ final class CheckpointStore {
         save()
     }
 
-    func eraseAllData(backendIdentityDefaults: UserDefaults = .standard) {
+    func eraseAllData(
+        backendIdentityDefaults: UserDefaults = .standard,
+        presentsOnboardingAfterErase: Bool = true
+    ) {
         permitsPersistenceWrites = false
         requiresPersistenceEraseRecovery = true
         hasNoPersistedAppData = false
@@ -3339,7 +3342,7 @@ final class CheckpointStore {
         durableQuestionBankUnavailableForLifecycle = false
         questionBankSyncIntents = []
         skillMapEvolutionIntents = []
-        isOnboardingPresented = true
+        isOnboardingPresented = presentsOnboardingAfterErase
         persistenceRecoveryMessage = nil
         do {
             try snapshotPersistence.erase()

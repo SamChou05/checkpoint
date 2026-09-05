@@ -520,13 +520,322 @@ enum AdvancedSettingsAction: String, Identifiable {
     var systemImage: String {
         switch self {
         case .resetData:
-            return "arrow.counterclockwise"
+            return "trash"
         }
     }
 }
 
+struct CheckpointDataEraseConsequence: Identifiable, Equatable {
+    let id: String
+    let title: String
+    let detail: String
+    let systemImage: String
+}
+
 enum CheckpointDataEraseCopy {
-    static let warningMessage = "This erases goals, progress, protected-app selections, local diagnostics, the anonymous backend install ID, and local purchase-status reminders, then turns off app protection. App Store subscriptions or purchases in progress and your iOS Screen Time permission are not canceled. This can't be undone."
+    static let removedItems = [
+        CheckpointDataEraseConsequence(
+            id: "learning-history",
+            title: "Goals and learning history",
+            detail: "Generated questions, answers, progress, Focus Wins, and local feedback drafts.",
+            systemImage: "book.closed"
+        ),
+        CheckpointDataEraseConsequence(
+            id: "protection-setup",
+            title: "App protection setup",
+            detail: "Protected app and website selections, unlock state, and local Screen Time coordination. Protection turns off.",
+            systemImage: "shield.slash"
+        ),
+        CheckpointDataEraseConsequence(
+            id: "service-records",
+            title: "Local service records",
+            detail: "Diagnostics, the anonymous backend install ID, and purchase-status reminders.",
+            systemImage: "externaldrive"
+        ),
+    ]
+
+    static let retainedItems = [
+        CheckpointDataEraseConsequence(
+            id: "app-store",
+            title: "App Store activity",
+            detail: "Your subscription and purchases already in progress are not canceled. Manage them with Apple.",
+            systemImage: "apple.logo"
+        ),
+        CheckpointDataEraseConsequence(
+            id: "screen-time-permission",
+            title: "Screen Time permission",
+            detail: "iOS keeps Checkpoint’s permission until you change it in Settings.",
+            systemImage: "hand.raised"
+        ),
+        CheckpointDataEraseConsequence(
+            id: "backend-retention",
+            title: "Backend records age out",
+            detail: "Question-bank, quota, stream, and queued-job records aren’t deleted immediately. They age out under their retention windows, and queued work may finish after reset.",
+            systemImage: "cloud"
+        ),
+    ]
+
+    static let irreversibleDetail = "This permanently removes Checkpoint’s local data from this iPhone and can’t be undone."
+
+    static let warningMessage = "This erases goals, questions, answers, progress, Focus Wins, feedback drafts, protected-app and website selections, local diagnostics, the anonymous backend install ID, and local purchase-status reminders from this iPhone, then turns off app protection. Your App Store subscription and purchases in progress are not canceled. Your iOS Screen Time permission stays granted until you change it in Settings. Existing backend question-bank, quota, stream, and queued-job records are not deleted immediately; they age out under their retention windows, and queued work may finish after reset. This can't be undone."
+}
+
+enum AdvancedConfirmationInputState: Equatable {
+    case empty
+    case incomplete
+    case ready
+}
+
+enum AdvancedConfirmationStatusTone: Equatable {
+    case neutral
+    case ready
+}
+
+struct AdvancedConfirmationPresentation: Equatable {
+    let action: AdvancedSettingsAction
+    let inputState: AdvancedConfirmationInputState
+    let hasActionError: Bool
+    let isErasing: Bool
+    let didSucceed: Bool
+
+    init(
+        action: AdvancedSettingsAction,
+        confirmationText: String,
+        hasActionError: Bool,
+        isErasing: Bool,
+        didSucceed: Bool = false
+    ) {
+        self.action = action
+        self.hasActionError = hasActionError
+        self.isErasing = isErasing
+        self.didSucceed = didSucceed
+
+        let normalizedText = confirmationText
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
+        if normalizedText.isEmpty {
+            inputState = .empty
+        } else if normalizedText == action.confirmationPhrase {
+            inputState = .ready
+        } else {
+            inputState = .incomplete
+        }
+    }
+
+    var isConfirmed: Bool {
+        inputState == .ready
+    }
+
+    var isActionEnabled: Bool {
+        (isConfirmed || didSucceed) && !isErasing
+    }
+
+    var actionTitle: String {
+        if isErasing {
+            return "Erasing…"
+        }
+        if didSucceed {
+            return "Start fresh"
+        }
+        if hasActionError {
+            return "Retry erasure"
+        }
+        return isConfirmed ? action.buttonTitle : "Type \(action.confirmationPhrase) to continue"
+    }
+
+    var actionSystemImage: String {
+        if isErasing {
+            return "hourglass"
+        }
+        if didSucceed {
+            return "arrow.right"
+        }
+        return hasActionError ? "arrow.clockwise" : action.systemImage
+    }
+
+    var confirmationStatusText: String {
+        switch inputState {
+        case .empty:
+            "Enter \(action.confirmationPhrase) to continue."
+        case .incomplete:
+            "The phrase must match \(action.confirmationPhrase)."
+        case .ready:
+            "Confirmation ready."
+        }
+    }
+
+    var confirmationSystemImage: String {
+        switch inputState {
+        case .empty:
+            "text.cursor"
+        case .incomplete:
+            "ellipsis.circle"
+        case .ready:
+            "checkmark.circle.fill"
+        }
+    }
+
+    var confirmationTone: AdvancedConfirmationStatusTone {
+        isConfirmed ? .ready : .neutral
+    }
+
+    var fieldAccessibilityHint: String {
+        switch inputState {
+        case .empty:
+            "Type \(action.confirmationPhrase) to continue."
+        case .incomplete:
+            "The entry does not match \(action.confirmationPhrase). Type the phrase again to continue."
+        case .ready:
+            "Confirmation ready. The erase action is now available."
+        }
+    }
+
+    var actionAccessibilityValue: String {
+        if isErasing {
+            return "Erasure in progress"
+        }
+        if didSucceed {
+            return "Local data erased; ready to start fresh"
+        }
+        if isConfirmed {
+            return hasActionError ? "Ready to retry" : "Ready"
+        }
+        return "Unavailable until \(action.confirmationPhrase) is entered"
+    }
+}
+
+struct DataEraseOnboardingHandoff: Equatable {
+    private(set) var isPending = false
+
+    mutating func schedule() {
+        isPending = true
+    }
+
+    mutating func consumeAfterConfirmationDismissal() -> Bool {
+        guard isPending else { return false }
+        isPending = false
+        return true
+    }
+}
+
+struct AdvancedConfirmationErrorDelivery: Equatable {
+    private(set) var message: String?
+    private(set) var revision = 0
+
+    init(message: String? = nil) {
+        self.message = message
+    }
+
+    mutating func publish(_ message: String?) {
+        self.message = message
+        revision &+= 1
+    }
+
+    mutating func clear() {
+        message = nil
+    }
+}
+
+enum AdvancedConfirmationMotionStyle: Equatable {
+    case animated
+    case tonalOnly
+}
+
+struct AdvancedConfirmationMotionPolicy {
+    let style: AdvancedConfirmationMotionStyle
+    let usesAssistiveNavigation: Bool
+
+    init(
+        reduceMotion: Bool,
+        voiceOverEnabled: Bool,
+        switchControlEnabled: Bool
+    ) {
+        usesAssistiveNavigation = voiceOverEnabled || switchControlEnabled
+        style = reduceMotion || voiceOverEnabled || switchControlEnabled
+            ? .tonalOnly
+            : .animated
+    }
+
+    var animation: Animation? {
+        style == .animated ? CheckpointMotion.change : nil
+    }
+
+    var animatesSymbolTransitions: Bool {
+        style == .animated
+    }
+
+    var errorTransition: AnyTransition {
+        style == .animated
+            ? .opacity.combined(with: .move(edge: .bottom))
+            : .identity
+    }
+
+    var animatesErrorInsertion: Bool {
+        style == .animated
+    }
+
+    func shouldAnnounceReadyTransition(
+        from oldState: AdvancedConfirmationInputState,
+        to newState: AdvancedConfirmationInputState
+    ) -> Bool {
+        usesAssistiveNavigation && oldState != .ready && newState == .ready
+    }
+}
+
+enum AdvancedConfirmationLayoutElement: Hashable {
+    case viewport
+    case hero
+    case consequences
+    case confirmation
+    case actionBar
+}
+
+private enum AdvancedConfirmationScrollTarget: Hashable {
+    case top
+    case confirmation
+}
+
+private let advancedConfirmationLayoutCoordinateSpaceName = "advanced-confirmation-layout"
+
+private struct AdvancedConfirmationLayoutFrameReporter: ViewModifier {
+    let element: AdvancedConfirmationLayoutElement
+    let report: (@MainActor (AdvancedConfirmationLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        if let report {
+            content.background {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(
+                        in: .named(advancedConfirmationLayoutCoordinateSpaceName)
+                    )
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        } else {
+            content
+        }
+    }
+}
+
+private extension View {
+    func reportAdvancedConfirmationLayoutFrame(
+        _ element: AdvancedConfirmationLayoutElement,
+        using report: (@MainActor (AdvancedConfirmationLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(
+            AdvancedConfirmationLayoutFrameReporter(
+                element: element,
+                report: report
+            )
+        )
+    }
 }
 
 struct AdvancedConfirmationView: View {
@@ -534,139 +843,699 @@ struct AdvancedConfirmationView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
     let purchaseController: PurchaseController
+    private let onLocalDataEraseCompleted: @MainActor () -> Void
+    private let reduceMotionOverride: Bool?
+    private let voiceOverOverride: Bool?
+    private let switchControlOverride: Bool?
+    private let layoutReporter: (@MainActor (AdvancedConfirmationLayoutElement, CGRect) -> Void)?
 
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var systemVoiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var systemSwitchControlEnabled
     @Environment(\.dismiss) private var dismiss
-    @State private var confirmationText = ""
-    @State private var actionErrorMessage: String?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var confirmationText: String
+    @State private var actionErrorDelivery: AdvancedConfirmationErrorDelivery
+    @State private var isErasing: Bool
+    @State private var didEraseSuccessfully: Bool
     @AccessibilityFocusState private var isActionErrorFocused: Bool
+    @FocusState private var isConfirmationFieldFocused: Bool
+
+    init(
+        action: AdvancedSettingsAction,
+        store: CheckpointStore,
+        screenTime: ScreenTimeController,
+        purchaseController: PurchaseController,
+        initialConfirmationText: String = "",
+        initialActionErrorMessage: String? = nil,
+        initiallyErasing: Bool = false,
+        initiallySucceeded: Bool = false,
+        reduceMotionOverride: Bool? = nil,
+        voiceOverOverride: Bool? = nil,
+        switchControlOverride: Bool? = nil,
+        layoutReporter: (@MainActor (AdvancedConfirmationLayoutElement, CGRect) -> Void)? = nil,
+        onLocalDataEraseCompleted: @escaping @MainActor () -> Void = {}
+    ) {
+        self.action = action
+        self.store = store
+        self.screenTime = screenTime
+        self.purchaseController = purchaseController
+        self.onLocalDataEraseCompleted = onLocalDataEraseCompleted
+        self.reduceMotionOverride = reduceMotionOverride
+        self.voiceOverOverride = voiceOverOverride
+        self.switchControlOverride = switchControlOverride
+        self.layoutReporter = layoutReporter
+        _confirmationText = State(initialValue: initialConfirmationText)
+        _actionErrorDelivery = State(
+            initialValue: AdvancedConfirmationErrorDelivery(
+                message: initialActionErrorMessage
+            )
+        )
+        _isErasing = State(initialValue: initiallyErasing)
+        _didEraseSuccessfully = State(initialValue: initiallySucceeded)
+    }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(action.title)
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(CheckpointTheme.text)
-
-                        Text(action.detail)
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
-                    SectionPanel("Confirm") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Type \(action.confirmationPhrase) to continue.")
-                                .font(.subheadline)
-                                .foregroundStyle(CheckpointTheme.muted)
-
-                            TextField(action.confirmationPhrase, text: $confirmationText)
-                                .textFieldStyle(.plain)
-                                .font(.headline)
-                                .foregroundStyle(CheckpointTheme.text)
-                                .textInputAutocapitalization(.characters)
-                                .autocorrectionDisabled()
-                                .padding(12)
-                                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8))
-                                .accessibilityLabel("Confirmation phrase")
-                                .accessibilityHint("Type \(action.confirmationPhrase) to continue.")
-
-                            Button(role: .destructive) {
-                                performAction()
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: action.systemImage)
-
-                                    Text(action.buttonTitle)
-                                }
-                                .font(.headline)
-                                .foregroundStyle(CheckpointTheme.paper)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity, minHeight: 52)
-                                .padding(.horizontal, 12)
-                                .background(
-                                    CheckpointTheme.destructiveFill,
-                                    in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
-                                )
-                            }
-                            .buttonStyle(CheckpointPressButtonStyle())
-                            .disabled(!isConfirmed)
-                            .opacity(isConfirmed ? 1 : 0.58)
-                            .accessibilityLabel(action.buttonTitle)
-
-                            if let actionErrorMessage {
-                                Label(actionErrorMessage, systemImage: "exclamationmark.triangle.fill")
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.coral)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .accessibilityFocused($isActionErrorFocused)
-                            }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        if didEraseSuccessfully {
+                            erasureSuccessHero
+                                .id(AdvancedConfirmationScrollTarget.top)
+                                .reportAdvancedConfirmationLayoutFrame(.hero, using: layoutReporter)
+                            erasureSuccessPanel
+                                .reportAdvancedConfirmationLayoutFrame(.confirmation, using: layoutReporter)
+                        } else {
+                            eraseHero
+                                .id(AdvancedConfirmationScrollTarget.top)
+                                .reportAdvancedConfirmationLayoutFrame(.hero, using: layoutReporter)
+                            consequencesPanel
+                                .reportAdvancedConfirmationLayoutFrame(.consequences, using: layoutReporter)
+                            confirmationPanel
+                                .id(AdvancedConfirmationScrollTarget.confirmation)
+                                .reportAdvancedConfirmationLayoutFrame(.confirmation, using: layoutReporter)
                         }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
+                    .padding(.bottom, 24)
                 }
-                .padding(20)
+                .reportAdvancedConfirmationLayoutFrame(.viewport, using: layoutReporter)
+                .scrollDismissesKeyboard(.interactively)
+                .defaultScrollAnchor(actionErrorDelivery.message == nil ? .top : .bottom)
+                .checkpointScreenBackground()
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    actionBar
+                        .reportAdvancedConfirmationLayoutFrame(.actionBar, using: layoutReporter)
+                }
+                .onAppear {
+                    if actionErrorDelivery.message != nil {
+                        revealConfirmation(using: proxy)
+                    }
+                }
+                .onChange(of: actionErrorDelivery.message) { _, message in
+                    if message == nil {
+                        isActionErrorFocused = false
+                    }
+                }
+                .onChange(of: actionErrorDelivery.revision) { _, _ in
+                    guard actionErrorDelivery.message != nil else { return }
+                    revealConfirmation(using: proxy)
+                }
+                .onChange(of: didEraseSuccessfully) { _, succeeded in
+                    guard succeeded else { return }
+                    revealSuccess(using: proxy)
+                }
             }
-            .checkpointScreenBackground()
-            .navigationTitle(action.buttonTitle)
+            .navigationTitle(didEraseSuccessfully ? "Reset complete" : action.buttonTitle)
             .toolbarTitleDisplayMode(.inline)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(didEraseSuccessfully ? "Close" : "Cancel") {
                         dismiss()
                     }
                     .foregroundStyle(CheckpointTheme.teal)
+                    .disabled(isErasing)
+                }
+
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+
+                    Button("Done") {
+                        isConfirmationFieldFocused = false
+                    }
+                }
+            }
+        }
+        .coordinateSpace(name: advancedConfirmationLayoutCoordinateSpaceName)
+        .interactiveDismissDisabled(isErasing)
+        .animation(motionPolicy.animation, value: presentation)
+        .onChange(of: presentation.inputState) { oldState, newState in
+            announceReadyTransition(from: oldState, to: newState)
+        }
+    }
+
+    private var presentation: AdvancedConfirmationPresentation {
+        AdvancedConfirmationPresentation(
+            action: action,
+            confirmationText: confirmationText,
+            hasActionError: actionErrorDelivery.message != nil,
+            isErasing: isErasing,
+            didSucceed: didEraseSuccessfully
+        )
+    }
+
+    private var motionPolicy: AdvancedConfirmationMotionPolicy {
+        AdvancedConfirmationMotionPolicy(
+            reduceMotion: reduceMotionOverride ?? systemReduceMotion,
+            voiceOverEnabled: voiceOverOverride ?? systemVoiceOverEnabled,
+            switchControlEnabled: switchControlOverride ?? systemSwitchControlEnabled
+        )
+    }
+
+    private var confirmationBinding: Binding<String> {
+        Binding(
+            get: { confirmationText },
+            set: { updatedText in
+                confirmationText = updatedText
+            }
+        )
+    }
+
+    private var eraseHero: some View {
+        CheckpointHeroSurface(
+            glowColor: CheckpointTheme.heroDanger,
+            glowOpacity: 0.12,
+            glowDiameter: 190,
+            glowBlurRadius: 16,
+            glowOffset: CGSize(width: 82, height: -92),
+            contentPadding: dynamicTypeSize.isAccessibilitySize ? 18 : 20
+        ) {
+            VStack(alignment: .leading, spacing: 14) {
+                if dynamicTypeSize.isAccessibilitySize {
+                    StatusBadge(text: "IRREVERSIBLE", tint: CheckpointTheme.heroDanger)
+                } else {
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 10) {
+                            heroEyebrow
+                            Spacer(minLength: 8)
+                            StatusBadge(text: "IRREVERSIBLE", tint: CheckpointTheme.heroDanger)
+                        }
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            heroEyebrow
+                            StatusBadge(text: "IRREVERSIBLE", tint: CheckpointTheme.heroDanger)
+                        }
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 7) {
+                    Text(action.title)
+                        .font(.system(.title, design: .rounded, weight: .bold))
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        Text("Review what leaves this iPhone—and what remains outside this reset—before you confirm.")
+                            .font(.subheadline)
+                            .foregroundStyle(CheckpointTheme.heroMuted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
+                Divider()
+                    .overlay(CheckpointTheme.heroDivider)
+
+                irreversibleWarning
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.heroDanger)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
+    }
+
+    private var heroEyebrow: some View {
+        Label("DATA RESET", systemImage: "trash.fill")
+            .font(.caption.weight(.bold))
+            .tracking(0.75)
+            .foregroundStyle(CheckpointTheme.heroDanger)
+            .fixedSize(horizontal: true, vertical: true)
+    }
+
+    @ViewBuilder
+    private var irreversibleWarning: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .accessibilityHidden(true)
+
+                Text("Local data will be permanently erased. This can’t be undone.")
+            }
+            .accessibilityElement(children: .combine)
+        } else {
+            Label(
+                CheckpointDataEraseCopy.irreversibleDetail,
+                systemImage: "exclamationmark.triangle.fill"
+            )
+        }
+    }
+
+    private var consequencesPanel: some View {
+        SectionPanel("Before you erase") {
+            VStack(alignment: .leading, spacing: 16) {
+                consequenceGroup(
+                    title: "Removed from this iPhone",
+                    systemImage: "minus.circle.fill",
+                    tint: CheckpointTheme.coral,
+                    items: CheckpointDataEraseCopy.removedItems
+                )
+
+                Divider()
+                    .overlay(CheckpointTheme.hairline)
+
+                consequenceGroup(
+                    title: "Remains outside this reset",
+                    systemImage: "checkmark.shield.fill",
+                    tint: CheckpointTheme.teal,
+                    items: CheckpointDataEraseCopy.retainedItems
+                )
+            }
+        }
+    }
+
+    private var erasureSuccessHero: some View {
+        CheckpointHeroSurface(
+            glowColor: CheckpointTheme.heroSuccess,
+            glowOpacity: 0.12,
+            glowDiameter: 190,
+            glowBlurRadius: 16,
+            glowOffset: CGSize(width: 82, height: -92),
+            contentPadding: dynamicTypeSize.isAccessibilitySize ? 18 : 20
+        ) {
+            VStack(alignment: .leading, spacing: 14) {
+                Label("RESET COMPLETE", systemImage: "checkmark.seal.fill")
+                    .font(.caption.weight(.bold))
+                    .tracking(0.75)
+                    .foregroundStyle(CheckpointTheme.heroSuccess)
+
+                VStack(alignment: .leading, spacing: 7) {
+                    Text("Ready for a fresh start")
+                        .font(.system(.title, design: .rounded, weight: .bold))
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text("Checkpoint’s data was removed from this iPhone.")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Divider()
+                    .overlay(CheckpointTheme.heroDivider)
+
+                Label(
+                    "Backend records disclosed before reset will continue aging out under their retention windows.",
+                    systemImage: "cloud"
+                )
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
+    }
+
+    private var erasureSuccessPanel: some View {
+        SectionPanel("What happens next") {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "arrow.forward.circle.fill")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Set up Checkpoint again")
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    Text("Start fresh closes this confirmation and opens goal setup.")
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .accessibilityElement(children: .combine)
+        }
+    }
+
+    private func consequenceGroup(
+        title: String,
+        systemImage: String,
+        tint: Color,
+        items: [CheckpointDataEraseConsequence]
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label(title, systemImage: systemImage)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(tint)
+                .accessibilityAddTraits(.isHeader)
+
+            ForEach(items) { item in
+                HStack(alignment: .top, spacing: 11) {
+                    Image(systemName: item.systemImage)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(tint)
+                        .frame(width: 32, height: 32)
+                        .background(
+                            tint.opacity(0.10),
+                            in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        )
+                        .accessibilityHidden(true)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(item.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+
+                        Text(item.detail)
+                            .font(.caption)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .accessibilityElement(children: .combine)
+            }
+        }
+    }
+
+    private var confirmationPanel: some View {
+        SectionPanel("Confirm erasure") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Type \(action.confirmationPhrase) to enable the final action.")
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 10) {
+                    TextField(action.confirmationPhrase, text: confirmationBinding)
+                        .textFieldStyle(.plain)
+                        .font(.system(.title3, design: .monospaced, weight: .bold))
+                        .foregroundStyle(CheckpointTheme.text)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+                        .submitLabel(.done)
+                        .disabled(isErasing)
+                        .focused($isConfirmationFieldFocused)
+                        .onSubmit {
+                            isConfirmationFieldFocused = false
+                        }
+                        .accessibilityLabel("Confirmation phrase")
+                        .accessibilityHint(presentation.fieldAccessibilityHint)
+
+                    Image(systemName: presentation.confirmationSystemImage)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(confirmationTint)
+                        .contentTransition(.symbolEffect(.replace))
+                        .symbolEffectsRemoved(!motionPolicy.animatesSymbolTransitions)
+                        .accessibilityHidden(true)
+                }
+                .padding(.horizontal, 13)
+                .frame(minHeight: 52)
+                .background(
+                    confirmationTint.opacity(presentation.isConfirmed ? 0.09 : 0.04),
+                    in: RoundedRectangle(
+                        cornerRadius: CheckpointTheme.compactCornerRadius,
+                        style: .continuous
+                    )
+                )
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: CheckpointTheme.compactCornerRadius,
+                        style: .continuous
+                    )
+                    .stroke(
+                        confirmationTint.opacity(presentation.isConfirmed ? 0.62 : 0.26),
+                        lineWidth: presentation.isConfirmed ? 1.5 : 1
+                    )
+                }
+                Label(
+                    presentation.confirmationStatusText,
+                    systemImage: presentation.confirmationSystemImage
+                )
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(confirmationTint)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(presentation.confirmationStatusText)
+
+                if let actionErrorMessage = actionErrorDelivery.message {
+                    Label(actionErrorMessage, systemImage: "exclamationmark.triangle.fill")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.coral)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            CheckpointTheme.coral.opacity(0.08),
+                            in: RoundedRectangle(
+                                cornerRadius: CheckpointTheme.compactCornerRadius,
+                                style: .continuous
+                            )
+                        )
+                        .transition(motionPolicy.errorTransition)
+                        .accessibilityFocused($isActionErrorFocused)
+                        .id(actionErrorDelivery.revision)
                 }
             }
         }
     }
 
-    private var isConfirmed: Bool {
-        confirmationText.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == action.confirmationPhrase
+    private var confirmationTint: Color {
+        switch presentation.confirmationTone {
+        case .neutral:
+            CheckpointTheme.muted
+        case .ready:
+            CheckpointTheme.teal
+        }
+    }
+
+    private var actionBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            Button {
+                performAction()
+            } label: {
+                actionLabel
+                .font(.headline)
+                .foregroundStyle(CheckpointTheme.paper)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, minHeight: 52)
+                .padding(.horizontal, 12)
+                .background(
+                    actionFill,
+                    in: RoundedRectangle(
+                        cornerRadius: CheckpointTheme.compactCornerRadius,
+                        style: .continuous
+                    )
+                )
+            }
+            .buttonStyle(CheckpointPressButtonStyle())
+            .disabled(!presentation.isActionEnabled)
+            .opacity(presentation.isActionEnabled ? 1 : 0.50)
+            .accessibilityLabel(presentation.actionTitle)
+            .accessibilityValue(presentation.actionAccessibilityValue)
+            .accessibilityHint(actionAccessibilityHint)
+            .accessibilityIdentifier("erase-all-data-confirm")
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .padding(.bottom, 10)
+        }
+        .background(.ultraThinMaterial)
+    }
+
+    private var actionFill: Color {
+        didEraseSuccessfully ? CheckpointTheme.teal : CheckpointTheme.destructiveFill
+    }
+
+    private var actionAccessibilityHint: String {
+        if didEraseSuccessfully {
+            return "Closes this confirmation and starts a fresh Checkpoint setup"
+        }
+        if presentation.isConfirmed {
+            return "Permanently erases local Checkpoint data and turns off protection"
+        }
+        return "Enter \(action.confirmationPhrase) in the confirmation field first"
+    }
+
+    private var actionLabel: some View {
+        HStack(spacing: dynamicTypeSize.isAccessibilitySize ? 12 : 9) {
+            if !dynamicTypeSize.isAccessibilitySize {
+                actionIcon
+            }
+            Text(displayedActionTitle)
+        }
+    }
+
+    private var displayedActionTitle: String {
+        if dynamicTypeSize.isAccessibilitySize,
+           !presentation.isConfirmed,
+           !presentation.hasActionError,
+           !didEraseSuccessfully {
+            return "Enter \(action.confirmationPhrase)"
+        }
+        return presentation.actionTitle
+    }
+
+    @ViewBuilder
+    private var actionIcon: some View {
+        if isErasing {
+            ProgressView()
+                .tint(CheckpointTheme.paper)
+                .accessibilityHidden(true)
+        } else {
+            Image(systemName: presentation.actionSystemImage)
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffectsRemoved(!motionPolicy.animatesSymbolTransitions)
+                .accessibilityHidden(true)
+        }
     }
 
     private func performAction() {
-        actionErrorMessage = nil
-
-        switch action {
-        case .resetData:
-            CheckpointDataEraseCoordinator.eraseAllData(
-                store: store,
-                screenTime: screenTime,
-                purchaseController: purchaseController
-            )
-        }
-
-        let recoveryMessages = [
-            screenTime.sharedDataEraseErrorMessage,
-            store.persistenceRecoveryMessage
-        ].compactMap { $0 }
-
-        guard recoveryMessages.isEmpty else {
-            let message = recoveryMessages.joined(separator: " ")
-            actionErrorMessage = message
-            Task { @MainActor in
-                await Task.yield()
-                isActionErrorFocused = true
-            }
+        if didEraseSuccessfully {
+            dismiss()
             return
         }
 
-        AccessibilityNotification.Announcement("All Checkpoint data was erased.").post()
-        dismiss()
+        guard presentation.isActionEnabled else { return }
+
+        isActionErrorFocused = false
+        isConfirmationFieldFocused = false
+        isErasing = true
+
+        Task { @MainActor in
+            // Let the keyboard dismiss and the guarded working state render before
+            // the synchronous persistence work begins.
+            await Task.yield()
+            guard isErasing, !didEraseSuccessfully else { return }
+
+            let result: CheckpointDataEraseResult
+            switch action {
+            case .resetData:
+                result = CheckpointDataEraseCoordinator.eraseAllData(
+                    store: store,
+                    screenTime: screenTime,
+                    purchaseController: purchaseController,
+                    presentsOnboardingAfterErase: false
+                )
+            }
+
+            isErasing = false
+
+            if result.didEraseLocalData {
+                onLocalDataEraseCompleted()
+            }
+
+            guard result.succeeded else {
+                actionErrorDelivery.publish(result.recoveryMessage)
+                return
+            }
+
+            actionErrorDelivery.clear()
+            didEraseSuccessfully = true
+            AccessibilityNotification.Announcement(
+                "Data was erased from this iPhone. Checkpoint is ready to start fresh."
+            ).post()
+        }
+    }
+
+    private func revealConfirmation(using proxy: ScrollViewProxy) {
+        Task { @MainActor in
+            await Task.yield()
+            try? await Task.sleep(for: .milliseconds(80))
+            guard actionErrorDelivery.message != nil else { return }
+            if let animation = motionPolicy.animation {
+                withAnimation(animation) {
+                    proxy.scrollTo(AdvancedConfirmationScrollTarget.confirmation, anchor: .bottom)
+                }
+            } else {
+                var transaction = Transaction(animation: nil)
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    proxy.scrollTo(AdvancedConfirmationScrollTarget.confirmation, anchor: .bottom)
+                }
+            }
+
+            guard motionPolicy.usesAssistiveNavigation else { return }
+            await Task.yield()
+            guard actionErrorDelivery.message != nil else { return }
+            isActionErrorFocused = true
+        }
+    }
+
+    private func revealSuccess(using proxy: ScrollViewProxy) {
+        Task { @MainActor in
+            await Task.yield()
+            if let animation = motionPolicy.animation {
+                withAnimation(animation) {
+                    proxy.scrollTo(AdvancedConfirmationScrollTarget.top, anchor: .top)
+                }
+            } else {
+                var transaction = Transaction(animation: nil)
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    proxy.scrollTo(AdvancedConfirmationScrollTarget.top, anchor: .top)
+                }
+            }
+        }
+    }
+
+    private func announceReadyTransition(
+        from oldState: AdvancedConfirmationInputState,
+        to newState: AdvancedConfirmationInputState
+    ) {
+        guard motionPolicy.shouldAnnounceReadyTransition(
+            from: oldState,
+            to: newState
+        ) else {
+            return
+        }
+
+        AccessibilityNotification.Announcement(
+            "Confirmation ready. \(action.buttonTitle) is available."
+        ).post()
+    }
+
+}
+
+struct CheckpointDataEraseResult: Equatable {
+    let didEraseLocalData: Bool
+    let recoveryMessages: [String]
+
+    var succeeded: Bool {
+        didEraseLocalData && recoveryMessages.isEmpty
+    }
+
+    var recoveryMessage: String? {
+        recoveryMessages.isEmpty ? nil : recoveryMessages.joined(separator: " ")
     }
 }
 
 @MainActor
 enum CheckpointDataEraseCoordinator {
+    @discardableResult
     static func eraseAllData(
         store: CheckpointStore,
         screenTime: ScreenTimeController,
-        purchaseController: PurchaseController
-    ) {
+        purchaseController: PurchaseController,
+        presentsOnboardingAfterErase: Bool = true
+    ) -> CheckpointDataEraseResult {
         screenTime.eraseAllData()
-        store.eraseAllData()
+        store.eraseAllData(
+            presentsOnboardingAfterErase: presentsOnboardingAfterErase
+        )
         purchaseController.clearPendingPurchaseState()
+
+        let recoveryMessages = [
+            screenTime.sharedDataEraseErrorMessage,
+            store.persistenceRecoveryMessage,
+        ].compactMap { $0 }
+            .reduce(into: [String]()) { messages, message in
+                if !messages.contains(message) {
+                    messages.append(message)
+                }
+            }
+        return CheckpointDataEraseResult(
+            didEraseLocalData: store.hasNoPersistedAppData,
+            recoveryMessages: recoveryMessages
+        )
     }
 }
 
