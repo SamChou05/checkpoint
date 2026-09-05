@@ -32,6 +32,7 @@ enum ScreenTimeAccessPrimaryAction: Equatable {
     case request
     case retry
     case openSettings
+    case continueAfterConnection
     case erase
     case none
 }
@@ -134,11 +135,79 @@ struct ScreenTimeAccessMotionPolicy {
     var permitsWorkingPulse: Bool {
         style == .animated
     }
+
+    var permitsSuccessEffect: Bool {
+        style == .animated
+    }
+}
+
+struct ScreenTimeAccessFeedbackCoordinator: Equatable {
+    private(set) var hasPresentedConnectedFeedback = false
+
+    mutating func consumeConnectedTransition(
+        state: ScreenTimeAccessState
+    ) -> Bool {
+        guard state == .connected else {
+            hasPresentedConnectedFeedback = false
+            return false
+        }
+        guard !hasPresentedConnectedFeedback else { return false }
+
+        hasPresentedConnectedFeedback = true
+        return true
+    }
 }
 
 private enum ScreenTimeAccessPrivacyCopy {
     static let title = "Private by design"
     static let detail = "Checkpoint never reads or stores Screen Time activity."
+}
+
+enum ScreenTimeAccessLayoutElement: Hashable {
+    case viewport
+    case hero
+    case statusMessage
+    case actionBar
+    case primaryAction
+    case eraseLink
+}
+
+private enum ScreenTimeAccessFocusDestination: Hashable {
+    case error
+}
+
+private let screenTimeAccessLayoutCoordinateSpaceName = "Checkpoint.ScreenTimeAccess.Layout"
+
+private struct ScreenTimeAccessLayoutFrameReporter: ViewModifier {
+    let element: ScreenTimeAccessLayoutElement
+    let report: (@MainActor (ScreenTimeAccessLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(in: .named(screenTimeAccessLayoutCoordinateSpaceName))
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportScreenTimeAccessLayoutFrame(
+        _ element: ScreenTimeAccessLayoutElement,
+        using report: (@MainActor (ScreenTimeAccessLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(ScreenTimeAccessLayoutFrameReporter(element: element, report: report))
+    }
 }
 
 struct ScreenTimeAccessPresentation: Equatable {
@@ -161,7 +230,8 @@ struct ScreenTimeAccessPresentation: Equatable {
     init(
         context: ScreenTimeAccessContext,
         authorizationState: ScreenTimeController.AuthorizationState,
-        requiresProtectedAppReselection: Bool
+        requiresProtectedAppReselection: Bool,
+        continuesOnboardingAfterDismissal: Bool = false
     ) {
         if context == .eraseRecovery {
             state = .eraseRecovery
@@ -187,7 +257,11 @@ struct ScreenTimeAccessPresentation: Equatable {
         case .initialSetup:
             stage = "Screen Time"
             step = 1
-            if authorizationState == .unavailable {
+            if state == .connected {
+                heading = "Screen Time connected"
+                detail = "Continue to create your goal, then choose the apps you want to protect."
+                showsSetupSequence = false
+            } else if authorizationState == .unavailable {
                 heading = "Screen Time access needs an iPhone"
                 detail = "Open Checkpoint on a supported iPhone to finish setup and choose the apps you want to protect."
                 showsSetupSequence = false
@@ -202,7 +276,11 @@ struct ScreenTimeAccessPresentation: Equatable {
         case .resumeSetup:
             stage = "Resume setup"
             step = nil
-            if authorizationState == .unavailable {
+            if state == .connected {
+                heading = "Screen Time connected"
+                detail = "Your goal is saved. Continue to choose the apps it will protect."
+                showsSetupSequence = false
+            } else if authorizationState == .unavailable {
                 heading = "Finish setup on a supported iPhone"
                 detail = "Your goal is saved. Open Checkpoint on an iPhone to reconnect Screen Time and choose protected apps."
                 showsSetupSequence = false
@@ -215,20 +293,39 @@ struct ScreenTimeAccessPresentation: Equatable {
             recoveryDetail = nil
             recoverySystemImage = nil
         case .restoreProtection:
-            stage = "Protection paused"
+            stage = requiresProtectedAppReselection ? "Protection paused" : "Screen Time"
             step = nil
-            if authorizationState == .unavailable {
+            if state == .connected, continuesOnboardingAfterDismissal {
+                heading = "Screen Time connected"
+                detail = requiresProtectedAppReselection
+                    ? "Continue setup. Choose apps again after you finish your goal."
+                    : "Continue your goal setup when you're ready."
+                recoveryDetail = "Your goals, answers, and progress stayed saved while Screen Time access was off."
+            } else if state == .connected, requiresProtectedAppReselection {
+                heading = "Screen Time reconnected"
+                detail = "Choose apps again to restore app protection."
+                recoveryDetail = "Your goals, answers, and progress stayed saved while Screen Time access was off."
+            } else if state == .connected {
+                heading = "Screen Time connected"
+                detail = "Return to Checkpoint when you're ready."
+                recoveryDetail = "Your goals, answers, and progress stayed saved while Screen Time access was off."
+            } else if authorizationState == .unavailable,
+                      requiresProtectedAppReselection {
                 heading = "App protection needs an iPhone"
                 detail = "Open Checkpoint on a supported iPhone to reconnect Screen Time and restore app protection."
                 recoveryDetail = "Your goals, answers, and progress stay saved until you can reconnect protection on an iPhone."
+            } else if authorizationState == .unavailable {
+                heading = "Screen Time access needs an iPhone"
+                detail = "Open Checkpoint on a supported iPhone to restore Screen Time access."
+                recoveryDetail = "Your goals, answers, and progress stay saved until you can reconnect on an iPhone."
             } else if requiresProtectedAppReselection {
                 heading = "Reconnect app protection"
                 detail = "Screen Time access changed, so protection is off and your previous app choices must be selected again."
                 recoveryDetail = "Your goals, answers, and progress stay saved. After access returns, Checkpoint opens your protection list so you can choose apps again."
             } else {
-                heading = "Reconnect app protection"
-                detail = "Restore Screen Time access to keep using app protection."
-                recoveryDetail = "Your goals, answers, and progress stay saved. Restoring access reconnects protection without changing your practice data."
+                heading = "Reconnect Screen Time"
+                detail = "Restore Screen Time access to continue using Checkpoint."
+                recoveryDetail = "Your goals, answers, and progress stay saved while Screen Time access is off."
             }
             showsSetupSequence = false
             recoveryTitle = "Your learning data is safe"
@@ -281,9 +378,24 @@ struct ScreenTimeAccessPresentation: Equatable {
             primarySystemImage = nil
             statusMessage = nil
         case .approved, .approvedWithDataAccess:
-            primaryAction = .none
-            primaryTitle = nil
-            primarySystemImage = nil
+            primaryAction = .continueAfterConnection
+            switch context {
+            case .initialSetup, .resumeSetup:
+                primaryTitle = "Continue setup"
+                primarySystemImage = "arrow.right"
+            case .restoreProtection where continuesOnboardingAfterDismissal:
+                primaryTitle = "Continue setup"
+                primarySystemImage = "arrow.right"
+            case .restoreProtection where requiresProtectedAppReselection:
+                primaryTitle = "Choose apps again"
+                primarySystemImage = "square.grid.2x2"
+            case .restoreProtection:
+                primaryTitle = "Return to Checkpoint"
+                primarySystemImage = "arrow.right"
+            case .eraseRecovery:
+                primaryTitle = nil
+                primarySystemImage = nil
+            }
             statusMessage = nil
         }
     }
@@ -306,10 +418,17 @@ struct RequiredScreenTimeAccessView: View {
     let screenTime: ScreenTimeController
     let context: ScreenTimeAccessContext
     private let reduceMotionOverride: Bool?
+    private let layoutReporter: (@MainActor (ScreenTimeAccessLayoutElement, CGRect) -> Void)?
+    private let onContinue: () -> Void
+    private let continuesOnboardingAfterDismissal: Bool
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var isVoiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var isSwitchControlEnabled
     @Environment(\.openURL) private var openURL
-    @AccessibilityFocusState private var isStatusFocused: Bool
+    @AccessibilityFocusState private var focusedDestination: ScreenTimeAccessFocusDestination?
     @State private var isEraseConfirmationPresented = false
+    @State private var connectedFeedbackSequence = 0
+    @State private var feedbackCoordinator = ScreenTimeAccessFeedbackCoordinator()
 
     private let legalLinks = LegalLinks.current
 
@@ -317,12 +436,18 @@ struct RequiredScreenTimeAccessView: View {
         store: CheckpointStore,
         screenTime: ScreenTimeController,
         context: ScreenTimeAccessContext = .initialSetup,
-        reduceMotionOverride: Bool? = nil
+        onContinue: @escaping () -> Void = {},
+        continuesOnboardingAfterDismissal: Bool = false,
+        reduceMotionOverride: Bool? = nil,
+        layoutReporter: (@MainActor (ScreenTimeAccessLayoutElement, CGRect) -> Void)? = nil
     ) {
         self.store = store
         self.screenTime = screenTime
         self.context = context
+        self.onContinue = onContinue
+        self.continuesOnboardingAfterDismissal = continuesOnboardingAfterDismissal
         self.reduceMotionOverride = reduceMotionOverride
+        self.layoutReporter = layoutReporter
     }
 
     private var reduceMotion: Bool {
@@ -334,8 +459,10 @@ struct RequiredScreenTimeAccessView: View {
             VStack(alignment: .leading, spacing: 16) {
                 ScreenTimeAccessHero(
                     presentation: accessPresentation,
-                    reduceMotion: reduceMotion
+                    reduceMotion: reduceMotion,
+                    connectedFeedbackSequence: connectedFeedbackSequence
                 )
+                .reportScreenTimeAccessLayoutFrame(.hero, using: layoutReporter)
 
                 if !accessPresentation.showsSetupSequence,
                    accessPresentation.recoveryTitle != nil {
@@ -356,7 +483,8 @@ struct RequiredScreenTimeAccessView: View {
                             )
                         )
                         .transition(accessMotionPolicy.transition)
-                        .accessibilityFocused($isStatusFocused)
+                        .accessibilityFocused($focusedDestination, equals: .error)
+                        .reportScreenTimeAccessLayoutFrame(.statusMessage, using: layoutReporter)
                         .id(message)
                 }
 
@@ -368,21 +496,29 @@ struct RequiredScreenTimeAccessView: View {
             .frame(maxWidth: 620, alignment: .leading)
             .frame(maxWidth: .infinity)
         }
+        .reportScreenTimeAccessLayoutFrame(.viewport, using: layoutReporter)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if accessPresentation.primaryAction != .none {
                 accessActionBar
+                    .reportScreenTimeAccessLayoutFrame(.actionBar, using: layoutReporter)
             }
         }
         .checkpointScreenBackground()
+        .coordinateSpace(name: screenTimeAccessLayoutCoordinateSpaceName)
+        .sensoryFeedback(.success, trigger: connectedFeedbackSequence)
         .animation(
             accessMotionPolicy.animation,
             value: accessPresentation
         )
         .onAppear {
             focusAccessErrorIfNeeded()
+            presentConnectedFeedbackIfNeeded()
         }
         .onChange(of: accessErrorMessage) { _, _ in
             focusAccessErrorIfNeeded()
+        }
+        .onChange(of: accessPresentation.state) { _, state in
+            presentConnectedFeedbackIfNeeded(for: state)
         }
         .alert("Erase all Checkpoint data?", isPresented: $isEraseConfirmationPresented) {
             Button("Cancel", role: .cancel) {}
@@ -416,6 +552,13 @@ struct RequiredScreenTimeAccessView: View {
                     ) {
                         openSystemSettings()
                     }
+                case .continueAfterConnection:
+                    PrimaryActionButton(
+                        title: accessPresentation.primaryTitle ?? "Continue setup",
+                        systemImage: accessPresentation.primarySystemImage ?? "arrow.right",
+                        action: onContinue
+                    )
+                    .accessibilityIdentifier("screen-time-access-continue")
                 case .request, .retry:
                     PrimaryActionButton(
                         title: accessPresentation.primaryTitle ?? "Allow Screen Time",
@@ -431,6 +574,7 @@ struct RequiredScreenTimeAccessView: View {
                     EmptyView()
                 }
             }
+            .reportScreenTimeAccessLayoutFrame(.primaryAction, using: layoutReporter)
             .padding(.horizontal, 20)
             .padding(.top, 12)
             .padding(.bottom, 10)
@@ -476,7 +620,8 @@ struct RequiredScreenTimeAccessView: View {
         ScreenTimeAccessPresentation(
             context: requiresDataEraseRecovery ? .eraseRecovery : context,
             authorizationState: screenTime.authorizationState,
-            requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection
+            requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection,
+            continuesOnboardingAfterDismissal: continuesOnboardingAfterDismissal
         )
     }
 
@@ -491,14 +636,37 @@ struct RequiredScreenTimeAccessView: View {
     }
 
     private func focusAccessErrorIfNeeded() {
-        isStatusFocused = false
-        guard accessErrorMessage != nil else { return }
+        if focusedDestination == .error {
+            focusedDestination = nil
+        }
+        guard accessErrorMessage != nil,
+              usesAssistiveNavigation else { return }
 
         Task { @MainActor in
             await Task.yield()
             guard accessErrorMessage != nil else { return }
-            isStatusFocused = true
+            focusedDestination = .error
         }
+    }
+
+    private func presentConnectedFeedbackIfNeeded(
+        for state: ScreenTimeAccessState? = nil
+    ) {
+        let state = state ?? accessPresentation.state
+        guard feedbackCoordinator.consumeConnectedTransition(state: state) else { return }
+
+        if accessMotionPolicy.permitsSuccessEffect {
+            connectedFeedbackSequence += 1
+        }
+
+        guard usesAssistiveNavigation else { return }
+        AccessibilityNotification.Announcement(
+            "\(accessPresentation.heading). \(accessPresentation.detail)"
+        ).post()
+    }
+
+    private var usesAssistiveNavigation: Bool {
+        isVoiceOverEnabled || isSwitchControlEnabled
     }
 
     private var privacyFooter: some View {
@@ -541,6 +709,7 @@ struct RequiredScreenTimeAccessView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .reportScreenTimeAccessLayoutFrame(.eraseLink, using: layoutReporter)
             }
         }
         .padding(.horizontal, 2)
@@ -598,6 +767,7 @@ struct RequiredScreenTimeAccessView: View {
 struct ScreenTimeAccessHero: View {
     let presentation: ScreenTimeAccessPresentation
     let reduceMotion: Bool
+    let connectedFeedbackSequence: Int
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -685,6 +855,11 @@ struct ScreenTimeAccessHero: View {
                 )
                 .contentTransition(.symbolEffect(.replace))
                 .symbolEffect(
+                    .bounce,
+                    options: .nonRepeating,
+                    value: connectedFeedbackSequence
+                )
+                .symbolEffect(
                     .pulse,
                     options: .repeating,
                     isActive: presentation.state == .requesting
@@ -722,6 +897,11 @@ struct ScreenTimeAccessHero: View {
                     in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                 )
                 .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(
+                    .bounce,
+                    options: .nonRepeating,
+                    value: connectedFeedbackSequence
+                )
                 .symbolEffect(
                     .pulse,
                     options: .repeating,

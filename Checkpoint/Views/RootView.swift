@@ -70,6 +70,128 @@ enum OnboardingScreenTimeAccessRouting {
     }
 }
 
+struct ScreenTimeAccessGateCoordinator: Equatable {
+    enum Phase: Equatable {
+        case hidden
+        case required(ScreenTimeAccessPresentationHost)
+        case connected(ScreenTimeAccessPresentationHost)
+    }
+
+    private(set) var phase: Phase = .hidden
+    private(set) var presentedHost: ScreenTimeAccessPresentationHost?
+    private(set) var visibleGateHost: ScreenTimeAccessPresentationHost?
+    private(set) var dismissalHost: ScreenTimeAccessPresentationHost?
+
+    var presentationHost: ScreenTimeAccessPresentationHost? {
+        switch phase {
+        case .hidden:
+            nil
+        case let .required(host), let .connected(host):
+            host
+        }
+    }
+
+    var isConnected: Bool {
+        if case .connected = phase { return true }
+        return false
+    }
+
+    var blocksUnderlyingPresentations: Bool {
+        phase != .hidden || presentedHost != nil || dismissalHost != nil
+    }
+
+    mutating func reconcile(
+        isAuthorized: Bool,
+        requiredHost: ScreenTimeAccessPresentationHost?
+    ) {
+        switch phase {
+        case .hidden:
+            guard !isAuthorized,
+                  let host = dismissalHost ?? presentedHost ?? requiredHost else { return }
+            phase = .required(host)
+            dismissalHost = nil
+        case let .required(host):
+            guard isAuthorized else {
+                rehomeRequiredGateIfPresented(at: requiredHost)
+                return
+            }
+            if visibleGateHost == host, presentedHost == host {
+                phase = .connected(host)
+            } else {
+                phase = .hidden
+                visibleGateHost = nil
+            }
+        case let .connected(host):
+            guard !isAuthorized else { return }
+            phase = .required(host)
+        }
+    }
+
+    mutating func presentationDidAppear(
+        host: ScreenTimeAccessPresentationHost,
+        isAuthorizationGateVisible: Bool
+    ) {
+        if presentedHost != host {
+            visibleGateHost = nil
+            if case .connected = phase {
+                phase = .hidden
+                dismissalHost = nil
+            }
+        }
+        presentedHost = host
+        updatePresentedContent(
+            host: host,
+            isAuthorizationGateVisible: isAuthorizationGateVisible
+        )
+    }
+
+    mutating func updatePresentedContent(
+        host: ScreenTimeAccessPresentationHost,
+        isAuthorizationGateVisible: Bool
+    ) {
+        guard presentedHost == host else { return }
+        if isAuthorizationGateVisible, presentationHost == host {
+            visibleGateHost = host
+        } else if visibleGateHost == host {
+            visibleGateHost = nil
+        }
+    }
+
+    @discardableResult
+    mutating func continueAfterConnection() -> Bool {
+        guard case let .connected(host) = phase else { return false }
+        phase = .hidden
+        dismissalHost = host
+        return true
+    }
+
+    @discardableResult
+    mutating func presentationDidDisappear(
+        host: ScreenTimeAccessPresentationHost,
+        requiredHost: ScreenTimeAccessPresentationHost? = nil
+    ) -> Bool {
+        guard presentedHost == host else { return false }
+        rehomeRequiredGateIfPresented(at: requiredHost)
+        presentedHost = nil
+        if visibleGateHost == host { visibleGateHost = nil }
+        guard dismissalHost == host else { return false }
+        dismissalHost = nil
+        return phase == .hidden
+    }
+
+    private mutating func rehomeRequiredGateIfPresented(
+        at requiredHost: ScreenTimeAccessPresentationHost?
+    ) {
+        guard let requiredHost,
+              presentedHost == requiredHost,
+              case let .required(host) = phase,
+              host != requiredHost else { return }
+
+        phase = .required(requiredHost)
+        visibleGateHost = nil
+    }
+}
+
 private struct ProtectionReconciliationKey: Equatable {
     let goalID: Goal.ID?
     let goalTitle: String?
@@ -284,6 +406,7 @@ struct RootView: View {
     @State private var isFirstRunAppSelectionQueued = false
     @State private var isAuthorizationRecoveryAppSelectionPresented = false
     @State private var authorizationRecoveryQueue = ScreenTimeAccessRecoveryQueue()
+    @State private var screenTimeAccessGate = ScreenTimeAccessGateCoordinator()
     @State private var pendingGoalSwitchConfirmation: GoalSwitchConfirmation?
     @State private var queuedGoalSwitchConfirmation: GoalSwitchConfirmation?
     @State private var goalSwitchFeedbackSequence = 0
@@ -383,9 +506,11 @@ struct RootView: View {
         }
         .fullScreenCover(
             isPresented: screenTimeAuthorizationRequiredBinding,
-            onDismiss: handleScreenTimeAccessDismissed
+            onDismiss: {
+                handleScreenTimeAccessDismissed(host: .root)
+            }
         ) {
-            screenTimeAccessContent
+            screenTimeAccessContent(host: .root)
         }
         .sheet(
             isPresented: $isAuthorizationRecoveryAppSelectionPresented,
@@ -439,12 +564,17 @@ struct RootView: View {
         .task {
             await bootstrap()
         }
+        .onAppear {
+            reconcileScreenTimeAccessGate()
+        }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             handleAppActivation()
         }
         .onChange(of: screenTime.hasRequiredScreenTimeAuthorization) { _, isAuthorized in
+            reconcileScreenTimeAccessGate()
             guard isAuthorized else { return }
+            guard !screenTimeAccessGate.blocksUnderlyingPresentations else { return }
             reconcileProtectionAndHandlePendingAttempt()
             resumeFirstRunSetupIfNeeded()
         }
@@ -486,19 +616,51 @@ struct RootView: View {
         }
         .fullScreenCover(
             isPresented: onboardingScreenTimeAuthorizationRequiredBinding,
-            onDismiss: handleScreenTimeAccessDismissed
+            onDismiss: {
+                handleScreenTimeAccessDismissed(host: .onboarding)
+            }
         ) {
-            screenTimeAccessContent
+            screenTimeAccessContent(host: .onboarding)
         }
     }
 
-    private var screenTimeAccessContent: some View {
+    private func screenTimeAccessContent(
+        host: ScreenTimeAccessPresentationHost
+    ) -> some View {
         RequiredScreenTimeAccessView(
             store: store,
             screenTime: screenTime,
-            context: screenTimeAccessContext
+            context: screenTimeAccessContext,
+            onContinue: continueAfterScreenTimeAccessConnection,
+            continuesOnboardingAfterDismissal: host == .onboarding
         )
         .interactiveDismissDisabled()
+        .onAppear {
+            updateScreenTimeAccessPresentationState(host: host, didAppear: true)
+        }
+        .onChange(of: dataEraseRecoveryHost) { _, _ in
+            updateScreenTimeAccessPresentationState(host: host, didAppear: false)
+        }
+    }
+
+    private func updateScreenTimeAccessPresentationState(
+        host: ScreenTimeAccessPresentationHost,
+        didAppear: Bool
+    ) {
+        reconcileScreenTimeAccessGate()
+        let isAuthorizationGateVisible = dataEraseRecoveryHost == nil
+            && screenTimeAccessGate.presentationHost == host
+        if didAppear {
+            screenTimeAccessGate.presentationDidAppear(
+                host: host,
+                isAuthorizationGateVisible: isAuthorizationGateVisible
+            )
+        } else {
+            screenTimeAccessGate.updatePresentedContent(
+                host: host,
+                isAuthorizationGateVisible: isAuthorizationGateVisible
+            )
+        }
     }
 
     private var goalSwitchConfirmationIsPresented: Binding<Bool> {
@@ -604,6 +766,7 @@ struct RootView: View {
         }
 
         await screenTime.bootstrapAuthorizationIfNeeded()
+        reconcileScreenTimeAccessGate()
         reconcileProtectionAndHandlePendingAttempt()
         queueAuthorizationRecoveryAppSelectionIfNeeded()
 
@@ -621,20 +784,22 @@ struct RootView: View {
 
     private func handleAppActivation() {
         screenTime.refreshAuthorizationStatus()
-        workflow.reconcileProtectionState()
+        reconcileScreenTimeAccessGate()
+        reconcileProtectionAndHandlePendingAttempt()
         Task {
             await refreshPlanAccessFromEntitlements()
         }
-        handlePendingShieldActivation()
         resumeFirstRunSetupIfNeeded()
     }
 
     private func reconcileProtectionAndHandlePendingAttempt() {
+        guard !screenTimeAccessGate.blocksUnderlyingPresentations else { return }
         workflow.reconcileProtectionState()
         handlePendingShieldActivation()
     }
 
     private func handlePendingShieldActivation() {
+        guard !screenTimeAccessGate.blocksUnderlyingPresentations else { return }
         guard activeCheckpointSession == nil else { return }
         guard workflow.operation == nil else { return }
         guard SharedAppGroup.currentPendingShieldAttempt != nil else {
@@ -658,6 +823,7 @@ struct RootView: View {
 
     private func presentSuggestedSkillMapReviewIfNeeded() {
         guard !firstRunSetup.isPending,
+              !screenTimeAccessGate.blocksUnderlyingPresentations,
               !store.isOnboardingPresented,
               !isOnboardingSheetActive,
               !isAuthorizationRecoveryAppSelectionPresented,
@@ -681,6 +847,7 @@ struct RootView: View {
 
     private func handleOnboardingDismissed() {
         isOnboardingSheetActive = false
+        reconcileScreenTimeAccessGate()
         resumeFirstRunSetupIfNeeded()
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
         presentSuggestedSkillMapReviewIfNeeded()
@@ -707,8 +874,30 @@ struct RootView: View {
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
     }
 
-    private func handleScreenTimeAccessDismissed() {
+    private func handleScreenTimeAccessDismissed(
+        host: ScreenTimeAccessPresentationHost
+    ) {
+        let completedConnectedHandoff = screenTimeAccessGate.presentationDidDisappear(
+            host: host,
+            requiredHost: requiredScreenTimeAuthorizationHost
+        )
         queueAuthorizationRecoveryAppSelectionIfNeeded()
+        guard completedConnectedHandoff else { return }
+
+        reconcileProtectionAndHandlePendingAttempt()
+        resumeFirstRunSetupIfNeeded()
+        presentSuggestedSkillMapReviewIfNeeded()
+    }
+
+    private func continueAfterScreenTimeAccessConnection() {
+        _ = screenTimeAccessGate.continueAfterConnection()
+    }
+
+    private func reconcileScreenTimeAccessGate() {
+        screenTimeAccessGate.reconcile(
+            isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
+            requiredHost: requiredScreenTimeAuthorizationHost
+        )
     }
 
     private func queueAuthorizationRecoveryAppSelectionIfNeeded() {
@@ -729,6 +918,7 @@ struct RootView: View {
             requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection
         )
         let canPresent = !isAuthorizationRecoveryAppSelectionPresented &&
+            !screenTimeAccessGate.blocksUnderlyingPresentations &&
             activeCheckpointSession == nil &&
             store.pendingMembershipPresentation == nil &&
             !store.isOnboardingPresented &&
@@ -751,6 +941,7 @@ struct RootView: View {
                 requiresProtectedAppReselection: screenTime.requiresProtectedAppReselection
             )
             let canPresent = !isAuthorizationRecoveryAppSelectionPresented &&
+                !screenTimeAccessGate.blocksUnderlyingPresentations &&
                 activeCheckpointSession == nil &&
                 store.pendingMembershipPresentation == nil &&
                 !store.isOnboardingPresented &&
@@ -776,6 +967,7 @@ struct RootView: View {
 
     private func resumeFirstRunSetupIfNeeded() {
         guard
+            !screenTimeAccessGate.blocksUnderlyingPresentations,
             FirstRunSetupProgress.shouldResumeAppSelection(
                 isPending: firstRunSetup.isPending,
                 hasGoal: store.goal != nil,
@@ -793,6 +985,7 @@ struct RootView: View {
         Task { @MainActor in
             await Task.yield()
             guard
+                !screenTimeAccessGate.blocksUnderlyingPresentations,
                 FirstRunSetupProgress.shouldResumeAppSelection(
                     isPending: firstRunSetup.isPending,
                     hasGoal: store.goal != nil,
@@ -881,10 +1074,14 @@ struct RootView: View {
     private var onboardingPresentationBinding: Binding<Bool> {
         Binding(
             get: {
-                OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+                let shouldPresent = OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
                     isRequested: store.isOnboardingPresented,
                     isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
                     isAlreadyActive: isOnboardingSheetActive
+                )
+                return shouldPresent && (
+                    isOnboardingSheetActive ||
+                        !screenTimeAccessGate.blocksUnderlyingPresentations
                 )
             },
             set: { isPresented in
@@ -915,9 +1112,19 @@ struct RootView: View {
     }
 
     private var screenTimeAccessRecoveryHost: ScreenTimeAccessPresentationHost? {
+        dataEraseRecoveryHost ?? screenTimeAccessGate.presentationHost
+    }
+
+    private var requiredScreenTimeAuthorizationHost: ScreenTimeAccessPresentationHost? {
         OnboardingScreenTimeAccessRouting.recoveryHost(
-            requiresRecovery: screenTime.requiresScreenTimeAuthorization
-                || screenTime.requiresSharedDataEraseRecovery
+            requiresRecovery: screenTime.requiresScreenTimeAuthorization,
+            isOnboardingActive: isOnboardingSheetActive
+        )
+    }
+
+    private var dataEraseRecoveryHost: ScreenTimeAccessPresentationHost? {
+        OnboardingScreenTimeAccessRouting.recoveryHost(
+            requiresRecovery: screenTime.requiresSharedDataEraseRecovery
                 || store.requiresPersistenceEraseRecovery,
             isOnboardingActive: isOnboardingSheetActive
         )
@@ -936,6 +1143,7 @@ struct RootView: View {
         screenTime.requiresScreenTimeAuthorization
             || screenTime.requiresSharedDataEraseRecovery
             || store.requiresPersistenceEraseRecovery
+            || screenTimeAccessGate.blocksUnderlyingPresentations
             || isAuthorizationRecoveryAppSelectionPresented
             || activeCheckpointSession != nil
             || store.pendingMembershipPresentation != nil
@@ -952,6 +1160,7 @@ struct RootView: View {
         screenTime.requiresScreenTimeAuthorization
             || screenTime.requiresSharedDataEraseRecovery
             || store.requiresPersistenceEraseRecovery
+            || screenTimeAccessGate.blocksUnderlyingPresentations
             || isAuthorizationRecoveryAppSelectionPresented
             || firstRunSetup.isAppSelectionPresented
     }

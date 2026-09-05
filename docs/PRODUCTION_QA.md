@@ -89,7 +89,11 @@ Findings:
 
 - [ ] On a fresh install, confirm the required Screen Time explanation appears before goal onboarding and the system authorization flow starts only after tapping Allow Screen Time.
 - [ ] Cancel or deny once and confirm Checkpoint remains on a calm retry screen rather than revealing the tabs.
-- [ ] Retry, approve, and confirm goal onboarding appears without relaunching.
+- [ ] Retry, approve, and confirm the visible access screen changes to a connected confirmation; goal onboarding must wait until Continue is tapped and that cover finishes dismissing.
+- [ ] Verify the connected action matches the interrupted journey: Continue setup for first-run/resume; Choose apps again for root-hosted selection loss; Continue setup with a truthful delayed-selection explanation when recovery is above an active goal editor; or Return to Checkpoint for neutral returning access recovery.
+- [ ] While the connected confirmation is visible, revoke Screen Time access again and confirm it returns to the required state instead of dismissing.
+- [ ] With VoiceOver or Switch Control active, confirm connected is announced once; without either enabled, confirm ordinary focus is not moved.
+- [ ] With Reduce Motion enabled, confirm connected remains static with no success haptic; with it disabled, confirm the native success symbol treatment and haptic happen once.
 - [ ] Force-quit and relaunch an approved install; confirm authorization resolves without another biometric sheet and the saved protected-app selection remains intact.
 - [ ] Revoke access in iPhone Screen Time settings, return to Checkpoint, and confirm the required access screen replaces the app until permission is restored.
 - [ ] Select protected apps/categories/websites.

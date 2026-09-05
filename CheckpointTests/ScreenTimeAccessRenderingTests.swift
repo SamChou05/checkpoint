@@ -133,7 +133,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(unavailable.state, .unavailable)
         XCTAssertEqual(unavailable.state.status, "iPhone required")
         XCTAssertEqual(unavailable.state.systemImage, "iphone.slash")
-        XCTAssertEqual(unavailable.heading, "App protection needs an iPhone")
+        XCTAssertEqual(unavailable.heading, "Screen Time access needs an iPhone")
         XCTAssertFalse(unavailable.showsSetupSequence)
         XCTAssertFalse(unavailable.showsPrivacyProofInHero)
         XCTAssertNil(unavailable.primaryTitle)
@@ -157,13 +157,117 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 authorizationState: approvedState,
                 requiresProtectedAppReselection: true
             )
-            XCTAssertEqual(approved.primaryAction, .none)
+            XCTAssertEqual(approved.primaryAction, .continueAfterConnection)
+            XCTAssertEqual(approved.primaryTitle, "Choose apps again")
+            XCTAssertEqual(approved.primarySystemImage, "square.grid.2x2")
             XCTAssertEqual(approved.state, .connected)
             XCTAssertEqual(approved.state.status, "Connected")
             XCTAssertEqual(approved.state.tone, .success)
             XCTAssertFalse(approved.isWorking)
+            XCTAssertFalse(approved.showsSetupSequence)
             XCTAssertNil(approved.statusMessage)
         }
+    }
+
+    func testConnectedPresentationUsesContextAwareHandoffCopyAndActions() {
+        let initial = ScreenTimeAccessPresentation(
+            context: .initialSetup,
+            authorizationState: .approved,
+            requiresProtectedAppReselection: false
+        )
+        XCTAssertEqual(initial.heading, "Screen Time connected")
+        XCTAssertEqual(
+            initial.detail,
+            "Continue to create your goal, then choose the apps you want to protect."
+        )
+        XCTAssertEqual(initial.primaryAction, .continueAfterConnection)
+        XCTAssertEqual(initial.primaryTitle, "Continue setup")
+        XCTAssertEqual(initial.primarySystemImage, "arrow.right")
+        XCTAssertFalse(initial.showsSetupSequence)
+
+        let resume = ScreenTimeAccessPresentation(
+            context: .resumeSetup,
+            authorizationState: .approvedWithDataAccess,
+            requiresProtectedAppReselection: false
+        )
+        XCTAssertEqual(resume.heading, "Screen Time connected")
+        XCTAssertEqual(
+            resume.detail,
+            "Your goal is saved. Continue to choose the apps it will protect."
+        )
+        XCTAssertEqual(resume.primaryAction, .continueAfterConnection)
+        XCTAssertEqual(resume.primaryTitle, "Continue setup")
+        XCTAssertEqual(resume.primarySystemImage, "arrow.right")
+        XCTAssertFalse(resume.showsSetupSequence)
+
+        let selectionRecovery = ScreenTimeAccessPresentation(
+            context: .restoreProtection,
+            authorizationState: .approved,
+            requiresProtectedAppReselection: true
+        )
+        XCTAssertEqual(selectionRecovery.heading, "Screen Time reconnected")
+        XCTAssertEqual(
+            selectionRecovery.detail,
+            "Choose apps again to restore app protection."
+        )
+        XCTAssertEqual(selectionRecovery.primaryAction, .continueAfterConnection)
+        XCTAssertEqual(selectionRecovery.primaryTitle, "Choose apps again")
+        XCTAssertEqual(selectionRecovery.primarySystemImage, "square.grid.2x2")
+        XCTAssertFalse(selectionRecovery.showsSetupSequence)
+
+        let returnToCheckpoint = ScreenTimeAccessPresentation(
+            context: .restoreProtection,
+            authorizationState: .approved,
+            requiresProtectedAppReselection: false
+        )
+        XCTAssertEqual(returnToCheckpoint.heading, "Screen Time connected")
+        XCTAssertEqual(
+            returnToCheckpoint.detail,
+            "Return to Checkpoint when you're ready."
+        )
+        XCTAssertEqual(returnToCheckpoint.primaryAction, .continueAfterConnection)
+        XCTAssertEqual(returnToCheckpoint.primaryTitle, "Return to Checkpoint")
+        XCTAssertEqual(returnToCheckpoint.primarySystemImage, "arrow.right")
+        XCTAssertFalse(returnToCheckpoint.showsSetupSequence)
+
+        let returnToOnboarding = ScreenTimeAccessPresentation(
+            context: .restoreProtection,
+            authorizationState: .approved,
+            requiresProtectedAppReselection: true,
+            continuesOnboardingAfterDismissal: true
+        )
+        XCTAssertEqual(returnToOnboarding.heading, "Screen Time connected")
+        XCTAssertEqual(
+            returnToOnboarding.detail,
+            "Continue setup. Choose apps again after you finish your goal."
+        )
+        XCTAssertEqual(returnToOnboarding.primaryAction, .continueAfterConnection)
+        XCTAssertEqual(returnToOnboarding.primaryTitle, "Continue setup")
+        XCTAssertEqual(returnToOnboarding.primarySystemImage, "arrow.right")
+    }
+
+    func testRestorePresentationStaysNeutralWithoutASelectionRecovery() {
+        let denied = ScreenTimeAccessPresentation(
+            context: .restoreProtection,
+            authorizationState: .denied,
+            requiresProtectedAppReselection: false
+        )
+        XCTAssertEqual(denied.stage, "Screen Time")
+        XCTAssertEqual(denied.heading, "Reconnect Screen Time")
+        XCTAssertFalse(denied.heading.localizedCaseInsensitiveContains("protection"))
+        XCTAssertFalse(denied.detail.localizedCaseInsensitiveContains("protection"))
+        XCTAssertFalse(denied.recoveryDetail?.localizedCaseInsensitiveContains("protection") == true)
+
+        let connected = ScreenTimeAccessPresentation(
+            context: .restoreProtection,
+            authorizationState: .approved,
+            requiresProtectedAppReselection: false
+        )
+        XCTAssertEqual(connected.stage, "Screen Time")
+        XCTAssertEqual(connected.heading, "Screen Time connected")
+        XCTAssertEqual(connected.detail, "Return to Checkpoint when you're ready.")
+        XCTAssertFalse(connected.detail.localizedCaseInsensitiveContains("protection"))
+        XCTAssertEqual(connected.primaryTitle, "Return to Checkpoint")
     }
 
     func testRecoveryPresentationExplainsSelectionLossWithoutLosingLearningData() {
@@ -178,9 +282,9 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertFalse(selectionRecovery.showsSetupSequence)
         XCTAssertEqual(selectionRecovery.recoveryTitle, "Your learning data is safe")
         XCTAssertEqual(selectionRecovery.recoverySystemImage, "lock.shield.fill")
-        XCTAssertTrue(selectionRecovery.detail.localizedCaseInsensitiveContains("selected again"))
+        XCTAssertTrue(selectionRecovery.detail.localizedCaseInsensitiveContains("choose apps again"))
         XCTAssertTrue(selectionRecovery.recoveryDetail?.localizedCaseInsensitiveContains("progress") == true)
-        XCTAssertTrue(selectionRecovery.recoveryDetail?.localizedCaseInsensitiveContains("choose apps again") == true)
+        XCTAssertTrue(selectionRecovery.recoveryDetail?.localizedCaseInsensitiveContains("stayed saved") == true)
 
         let reconnectOnly = ScreenTimeAccessPresentation(
             context: .restoreProtection,
@@ -188,7 +292,8 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             requiresProtectedAppReselection: false
         )
         XCTAssertFalse(reconnectOnly.detail.localizedCaseInsensitiveContains("selected again"))
-        XCTAssertTrue(reconnectOnly.recoveryDetail?.localizedCaseInsensitiveContains("practice data") == true)
+        XCTAssertTrue(reconnectOnly.detail.localizedCaseInsensitiveContains("Return to Checkpoint") == true)
+        XCTAssertTrue(reconnectOnly.recoveryDetail?.localizedCaseInsensitiveContains("stayed saved") == true)
 
         let eraseRecovery = ScreenTimeAccessPresentation(
             context: .eraseRecovery,
@@ -211,11 +316,24 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(standard.style, .animated)
         XCTAssertNotNil(standard.animation)
         XCTAssertTrue(standard.permitsWorkingPulse)
+        XCTAssertTrue(standard.permitsSuccessEffect)
 
         let reduced = ScreenTimeAccessMotionPolicy(reduceMotion: true)
         XCTAssertEqual(reduced.style, .identity)
         XCTAssertNil(reduced.animation)
         XCTAssertFalse(reduced.permitsWorkingPulse)
+        XCTAssertFalse(reduced.permitsSuccessEffect)
+    }
+
+    func testConnectedFeedbackIsOneShotAndRearmsAfterAuthorizationDrops() {
+        var feedback = ScreenTimeAccessFeedbackCoordinator()
+
+        XCTAssertFalse(feedback.consumeConnectedTransition(state: .permissionRequired))
+        XCTAssertTrue(feedback.consumeConnectedTransition(state: .connected))
+        XCTAssertFalse(feedback.consumeConnectedTransition(state: .connected))
+
+        XCTAssertFalse(feedback.consumeConnectedTransition(state: .accessOff))
+        XCTAssertTrue(feedback.consumeConnectedTransition(state: .connected))
     }
 
     func testRecoveryRoutingOnlyOpensProtectedAppsForCompletedReturningRecovery() {
@@ -317,6 +435,271 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         )
     }
 
+    func testAccessGateNeverShowsConnectedForAnAuthorizedColdLaunch() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertNil(gate.presentationHost)
+        XCTAssertFalse(gate.isConnected)
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+    }
+
+    func testAccessGateOnlyConnectsAfterItsRequiredCoverAppears() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        XCTAssertEqual(gate.phase, .required(.root))
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertNil(gate.presentationHost)
+        XCTAssertFalse(gate.isConnected)
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+    }
+
+    func testAccessGatePreservesItsHostUntilConnectedDismissalFinishes() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .onboarding)
+        gate.presentationDidAppear(
+            host: .onboarding,
+            isAuthorizationGateVisible: true
+        )
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        XCTAssertEqual(gate.phase, .required(.onboarding))
+
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertEqual(gate.phase, .connected(.onboarding))
+        XCTAssertEqual(gate.presentationHost, .onboarding)
+        XCTAssertTrue(gate.isConnected)
+
+        XCTAssertTrue(gate.continueAfterConnection())
+        XCTAssertFalse(gate.continueAfterConnection(), "Continue must be idempotent")
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertNil(gate.presentationHost)
+        XCTAssertEqual(gate.dismissalHost, .onboarding)
+        XCTAssertTrue(
+            gate.blocksUnderlyingPresentations,
+            "Underlying handoffs must wait for the connected cover to finish dismissing"
+        )
+
+        XCTAssertFalse(gate.presentationDidDisappear(host: .root))
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+        XCTAssertTrue(gate.presentationDidDisappear(host: .onboarding))
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+    }
+
+    func testAccessGateReturnsToRequiredOnAuthorizationLoss() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: true
+        )
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertEqual(gate.phase, .connected(.root))
+
+        gate.reconcile(isAuthorized: false, requiredHost: .onboarding)
+
+        XCTAssertEqual(gate.phase, .required(.root))
+        XCTAssertEqual(gate.presentationHost, .root)
+        XCTAssertFalse(gate.isConnected)
+        XCTAssertFalse(gate.continueAfterConnection())
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+    }
+
+    func testAnyAccessCoverBlocksUnderlyingRoutesWithoutEarningConnected() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: false
+        )
+        XCTAssertEqual(gate.presentedHost, .root)
+        XCTAssertNil(gate.visibleGateHost)
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertFalse(gate.isConnected, "An erase-only cover must not earn success")
+        XCTAssertFalse(gate.presentationDidDisappear(host: .onboarding))
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+        XCTAssertFalse(gate.presentationDidDisappear(host: .root))
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+    }
+
+    func testAccessGateCanBecomeVisibleAfterEraseRecoveryFinishes() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: false
+        )
+        gate.updatePresentedContent(
+            host: .root,
+            isAuthorizationGateVisible: true
+        )
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+
+        XCTAssertEqual(gate.phase, .connected(.root))
+        XCTAssertEqual(gate.visibleGateHost, .root)
+    }
+
+    func testAccessGateRehomesOnlyToThePresentedEraseRecoveryHost() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .onboarding)
+        gate.presentationDidAppear(
+            host: .onboarding,
+            isAuthorizationGateVisible: true
+        )
+
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        XCTAssertEqual(
+            gate.phase,
+            .required(.onboarding),
+            "A routing preference alone must not move a visible gate"
+        )
+
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: false
+        )
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+
+        XCTAssertEqual(gate.phase, .required(.root))
+        XCTAssertEqual(gate.presentedHost, .root)
+        XCTAssertNil(gate.visibleGateHost)
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+
+        gate.updatePresentedContent(
+            host: .root,
+            isAuthorizationGateVisible: true
+        )
+        XCTAssertEqual(gate.visibleGateHost, .root)
+
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertEqual(gate.phase, .connected(.root))
+    }
+
+    func testAccessGateRehomesIfEraseOverrideDismissesBeforeReconcile() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .onboarding)
+        gate.presentationDidAppear(
+            host: .onboarding,
+            isAuthorizationGateVisible: true
+        )
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: false
+        )
+
+        XCTAssertFalse(
+            gate.presentationDidDisappear(host: .root, requiredHost: .root)
+        )
+        XCTAssertEqual(gate.phase, .required(.root))
+        XCTAssertNil(gate.presentedHost)
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: true
+        )
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertEqual(gate.phase, .connected(.root))
+    }
+
+    func testAccessGateDoesNotConnectFromStaleCrossHostVisibility() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .onboarding)
+        gate.presentationDidAppear(
+            host: .onboarding,
+            isAuthorizationGateVisible: true
+        )
+        XCTAssertEqual(gate.visibleGateHost, .onboarding)
+
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: false
+        )
+        XCTAssertEqual(gate.presentedHost, .root)
+        XCTAssertNil(gate.visibleGateHost)
+
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertFalse(gate.isConnected)
+        XCTAssertTrue(
+            gate.blocksUnderlyingPresentations,
+            "The root erase cover still owns routing until its dismissal"
+        )
+        XCTAssertFalse(gate.presentationDidDisappear(host: .root))
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+    }
+
+    func testCrossHostEraseOverrideCancelsAnExistingConnectedHandoff() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .onboarding)
+        gate.presentationDidAppear(
+            host: .onboarding,
+            isAuthorizationGateVisible: true
+        )
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertEqual(gate.phase, .connected(.onboarding))
+
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: false
+        )
+
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertNil(gate.visibleGateHost)
+        XCTAssertEqual(gate.presentedHost, .root)
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+
+        XCTAssertFalse(gate.presentationDidDisappear(host: .root))
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+    }
+
+    func testAuthorizationLossDuringConnectedDismissalRestoresRequiredGate() {
+        var gate = ScreenTimeAccessGateCoordinator()
+
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: true
+        )
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertTrue(gate.continueAfterConnection())
+
+        gate.reconcile(isAuthorized: false, requiredHost: .onboarding)
+
+        XCTAssertEqual(gate.phase, .required(.root))
+        XCTAssertEqual(gate.presentationHost, .root)
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+        XCTAssertFalse(gate.presentationDidDisappear(host: .root))
+        XCTAssertEqual(gate.phase, .required(.root))
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+
+        gate.presentationDidAppear(
+            host: .root,
+            isAuthorizationGateVisible: true
+        )
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertEqual(gate.phase, .connected(.root))
+    }
+
     func testRecoveryQueueRetriesAfterACompetingModalDismisses() {
         var queue = ScreenTimeAccessRecoveryQueue()
 
@@ -361,6 +744,15 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
 
     @MainActor
     func testScreenTimeAccessStatesRenderAcrossRecoveryMatrix() async throws {
+        UserDefaults.standard.removeObject(
+            forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+        )
+        defer {
+            UserDefaults.standard.removeObject(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
+        }
+
         let fixtures = [
             ScreenTimeAccessRenderFixture(
                 name: "screen-time-access-initial-compact-light",
@@ -371,6 +763,17 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 reduceMotion: false,
                 context: .initialSetup,
                 controllerState: .status(.notDetermined),
+                hasGoal: false
+            ),
+            ScreenTimeAccessRenderFixture(
+                name: "screen-time-access-connected-initial-compact-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                context: .initialSetup,
+                controllerState: .status(.approved),
                 hasGoal: false
             ),
             ScreenTimeAccessRenderFixture(
@@ -394,6 +797,17 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 context: .initialSetup,
                 controllerState: .status(.notDetermined),
                 hasGoal: false
+            ),
+            ScreenTimeAccessRenderFixture(
+                name: "screen-time-access-connected-resume-accessibility5-dark-reduced",
+                width: 393,
+                height: 1_650,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                context: .resumeSetup,
+                controllerState: .status(.approvedWithDataAccess),
+                hasGoal: true
             ),
             ScreenTimeAccessRenderFixture(
                 name: "screen-time-access-resume-failed-light",
@@ -440,6 +854,17 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 hasGoal: true
             ),
             ScreenTimeAccessRenderFixture(
+                name: "screen-time-access-connected-selection-recovery-dark",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                reduceMotion: false,
+                context: .restoreProtection,
+                controllerState: .connectedSelectionRecovery,
+                hasGoal: true
+            ),
+            ScreenTimeAccessRenderFixture(
                 name: "screen-time-access-erase-recovery-compact-light",
                 width: 320,
                 height: 568,
@@ -447,7 +872,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 dynamicTypeSize: .large,
                 reduceMotion: false,
                 context: .eraseRecovery,
-                controllerState: .status(.approved),
+                controllerState: .eraseRecoveryFailure,
                 hasGoal: true
             )
         ]
@@ -455,12 +880,28 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         for fixture in fixtures {
             resetSharedAppGroupState()
             defaults.removePersistentDomain(forName: defaultsSuiteName)
+            UserDefaults.standard.removeObject(
+                forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+            )
 
             let store = CheckpointStore(defaults: defaults)
             if fixture.hasGoal {
                 let goal = makeGoal()
                 store.goal = goal
                 store.goalProfiles = [goal]
+            }
+            if fixture.controllerState == .connectedSelectionRecovery {
+                defaults.set(
+                    true,
+                    forKey: SharedAppGroup.screenTimeSelectionRecoveryRequiredKey
+                )
+            }
+            let simulatesEraseRecovery = fixture.controllerState == .eraseRecoveryFailure
+            if simulatesEraseRecovery {
+                UserDefaults.standard.set(
+                    true,
+                    forKey: ScreenTimeController.sharedDataEraseIncompleteKey
+                )
             }
 
             let initialStatus: ScreenTimeAuthorizationStatus
@@ -469,7 +910,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 initialStatus = status
             case .requesting, .failed:
                 initialStatus = .notDetermined
-            case .selectionLost:
+            case .selectionLost, .connectedSelectionRecovery, .eraseRecoveryFailure:
                 initialStatus = .approved
             }
 
@@ -480,7 +921,12 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             )
             let screenTime = ScreenTimeController(
                 defaults: defaults,
-                authorizer: authorizer
+                authorizer: authorizer,
+                sharedDataEraser: {
+                    if simulatesEraseRecovery {
+                        throw ScreenTimeAccessRenderError.sharedDataEraseFailed
+                    }
+                }
             )
 
             var requestTask: Task<Void, Never>?
@@ -504,16 +950,26 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 )
                 XCTAssertTrue(screenTime.requiresProtectedAppReselection, fixture.name)
                 XCTAssertFalse(screenTime.hasRequiredScreenTimeAuthorization, fixture.name)
+            case .connectedSelectionRecovery:
+                XCTAssertTrue(screenTime.requiresProtectedAppReselection, fixture.name)
+                XCTAssertTrue(screenTime.hasRequiredScreenTimeAuthorization, fixture.name)
+            case .eraseRecoveryFailure:
+                XCTAssertTrue(screenTime.requiresSharedDataEraseRecovery, fixture.name)
+                XCTAssertNotNil(screenTime.sharedDataEraseErrorMessage, fixture.name)
             case .status:
                 break
             }
 
+            let layoutCapture = ScreenTimeAccessLayoutCapture()
             let image = HostedViewRenderer.image(
                 for: RequiredScreenTimeAccessView(
                     store: store,
                     screenTime: screenTime,
                     context: fixture.context,
-                    reduceMotionOverride: fixture.reduceMotion
+                    reduceMotionOverride: fixture.reduceMotion,
+                    layoutReporter: { element, frame in
+                        layoutCapture.frames[element] = frame
+                    }
                 )
                 .environment(\.colorScheme, fixture.colorScheme)
                 .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
@@ -526,6 +982,80 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
 
             XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
             XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            if fixture.expectsConnectedHandoff {
+                let viewport = try XCTUnwrap(
+                    layoutCapture.frames[.viewport],
+                    fixture.name
+                )
+                let hero = try XCTUnwrap(layoutCapture.frames[.hero], fixture.name)
+                let actionBar = try XCTUnwrap(
+                    layoutCapture.frames[.actionBar],
+                    fixture.name
+                )
+                let primaryAction = try XCTUnwrap(
+                    layoutCapture.frames[.primaryAction],
+                    fixture.name
+                )
+                let canvas = CGRect(
+                    x: 0,
+                    y: 0,
+                    width: fixture.width,
+                    height: fixture.height
+                )
+
+                for frame in [viewport, hero, actionBar, primaryAction] {
+                    XCTAssertFalse(frame.isNull, fixture.name)
+                    XCTAssertFalse(frame.isInfinite, fixture.name)
+                    XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                    XCTAssertGreaterThan(frame.height, 0, fixture.name)
+                }
+                XCTAssertGreaterThanOrEqual(hero.minX, viewport.minX - 0.5, fixture.name)
+                XCTAssertLessThanOrEqual(hero.maxX, viewport.maxX + 0.5, fixture.name)
+                XCTAssertTrue(
+                    canvas.insetBy(dx: -0.5, dy: -0.5).contains(actionBar),
+                    "\(fixture.name) action bar escaped the rendered screen"
+                )
+                XCTAssertTrue(
+                    actionBar.insetBy(dx: -0.5, dy: -0.5).contains(primaryAction),
+                    "\(fixture.name) Continue action escaped its safe-area bar"
+                )
+                XCTAssertGreaterThanOrEqual(
+                    primaryAction.height,
+                    43.5,
+                    "\(fixture.name) Continue action is smaller than an accessible tap target"
+                )
+            }
+
+            if fixture.expectsEraseRecovery {
+                let error = try XCTUnwrap(
+                    layoutCapture.frames[.statusMessage],
+                    fixture.name
+                )
+                let actionBar = try XCTUnwrap(
+                    layoutCapture.frames[.actionBar],
+                    fixture.name
+                )
+                let primaryAction = try XCTUnwrap(
+                    layoutCapture.frames[.primaryAction],
+                    fixture.name
+                )
+                XCTAssertNil(
+                    layoutCapture.frames[.eraseLink],
+                    "\(fixture.name) exposed the ordinary erase link during recovery"
+                )
+                XCTAssertLessThanOrEqual(
+                    error.maxY,
+                    actionBar.minY + 0.5,
+                    "\(fixture.name) recovery error overlapped the retry action bar"
+                )
+                XCTAssertTrue(
+                    actionBar.insetBy(dx: -0.5, dy: -0.5).contains(primaryAction),
+                    "\(fixture.name) retry action escaped its safe-area bar"
+                )
+                XCTAssertGreaterThanOrEqual(primaryAction.height, 43.5, fixture.name)
+            }
+
             let attachment = XCTAttachment(image: image)
             attachment.name = fixture.name
             attachment.lifetime = XCTAttachment.Lifetime.keepAlways
@@ -572,6 +1102,21 @@ private struct ScreenTimeAccessRenderFixture {
     let context: ScreenTimeAccessContext
     let controllerState: ScreenTimeAccessRenderControllerState
     let hasGoal: Bool
+
+    var expectsConnectedHandoff: Bool {
+        guard context != .eraseRecovery else { return false }
+        switch controllerState {
+        case .status(.approved), .status(.approvedWithDataAccess),
+             .connectedSelectionRecovery:
+            return true
+        case .status, .requesting, .failed, .selectionLost, .eraseRecoveryFailure:
+            return false
+        }
+    }
+
+    var expectsEraseRecovery: Bool {
+        controllerState == .eraseRecoveryFailure
+    }
 }
 
 private enum ScreenTimeAccessRenderControllerState: Equatable {
@@ -579,6 +1124,13 @@ private enum ScreenTimeAccessRenderControllerState: Equatable {
     case requesting
     case failed
     case selectionLost
+    case connectedSelectionRecovery
+    case eraseRecoveryFailure
+}
+
+@MainActor
+private final class ScreenTimeAccessLayoutCapture {
+    var frames: [ScreenTimeAccessLayoutElement: CGRect] = [:]
 }
 
 @MainActor
@@ -622,4 +1174,5 @@ private final class ScreenTimeAccessRenderAuthorizer: ScreenTimeAuthorizing {
 
 private enum ScreenTimeAccessRenderError: Error {
     case authorizationFailed
+    case sharedDataEraseFailed
 }
