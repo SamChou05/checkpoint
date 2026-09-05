@@ -944,6 +944,61 @@ final class SettingsViewRenderingTests: XCTestCase {
         attachment.name = "settings-control-center-assembled-light"
         attachment.lifetime = .keepAlways
         add(attachment)
+
+        let layoutCapture = SettingsLayoutCapture()
+        let firstFoldImage = HostedViewRenderer.image(
+            for: SettingsView(
+                store: store,
+                screenTime: screenTime,
+                purchaseController: purchaseController,
+                workflow: workflow,
+                presentCheckpoint: { _ in false },
+                layoutReporter: { element, frame in
+                    layoutCapture.frames[element] = frame
+                }
+            )
+            .environment(\.colorScheme, ColorScheme.light)
+            .environment(\.dynamicTypeSize, DynamicTypeSize.large)
+            .environment(\.checkpointGoalSelection, GoalSelectionAction { _ in }),
+            width: 393,
+            height: 852,
+            colorScheme: .light,
+            settlingTime: 0.25,
+            renderScale: 1
+        )
+
+        let viewport = try XCTUnwrap(layoutCapture.frames[.viewport])
+        let protection = try XCTUnwrap(layoutCapture.frames[.protection])
+        let goals = try XCTUnwrap(layoutCapture.frames[.goals])
+        let practiceStandard = try XCTUnwrap(layoutCapture.frames[.practiceStandard])
+        let plan = try XCTUnwrap(layoutCapture.frames[.plan])
+        for frame in [protection, goals, practiceStandard, plan] {
+            XCTAssertGreaterThan(frame.width, 0)
+            XCTAssertGreaterThan(frame.height, 0)
+            XCTAssertGreaterThanOrEqual(frame.minX, viewport.minX - 0.5)
+            XCTAssertLessThanOrEqual(frame.maxX, viewport.maxX + 0.5)
+        }
+        XCTAssertLessThanOrEqual(protection.maxY, goals.minY + 0.5)
+        XCTAssertLessThanOrEqual(goals.maxY, practiceStandard.minY + 0.5)
+        XCTAssertLessThanOrEqual(practiceStandard.maxY, plan.minY + 0.5)
+        XCTAssertTrue(
+            viewport.insetBy(dx: -0.5, dy: -0.5).contains(goals),
+            "Goal management must remain fully visible in the normal Settings first fold."
+        )
+        let visiblePracticeStandard = practiceStandard.intersection(viewport)
+        XCTAssertFalse(visiblePracticeStandard.isNull)
+        XCTAssertGreaterThanOrEqual(
+            visiblePracticeStandard.height,
+            44,
+            "The checkpoint standard must begin with a meaningful affordance in the first fold."
+        )
+
+        XCTAssertEqual(firstFoldImage.size.width, 393, accuracy: 0.5)
+        XCTAssertEqual(firstFoldImage.size.height, 852, accuracy: 0.5)
+        let firstFoldAttachment = XCTAttachment(image: firstFoldImage)
+        firstFoldAttachment.name = "settings-core-controls-first-fold-light"
+        firstFoldAttachment.lifetime = XCTAttachment.Lifetime.keepAlways
+        add(firstFoldAttachment)
     }
 
     private func policy(
@@ -1149,6 +1204,11 @@ final class SettingsViewRenderingTests: XCTestCase {
             from: DateComponents(year: year, month: month, day: day, hour: 12)
         )!
     }
+}
+
+@MainActor
+private final class SettingsLayoutCapture {
+    var frames: [SettingsLayoutElement: CGRect] = [:]
 }
 
 private struct SettingsProtectionHeaderRenderFixture {

@@ -1,5 +1,47 @@
 import SwiftUI
 
+enum SettingsLayoutElement: Hashable {
+    case viewport
+    case protection
+    case goals
+    case practiceStandard
+    case plan
+}
+
+private let settingsLayoutCoordinateSpaceName = "Checkpoint.Settings.Layout"
+
+private struct SettingsLayoutFrameReporter: ViewModifier {
+    let element: SettingsLayoutElement
+    let report: (@MainActor (SettingsLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(in: .named(settingsLayoutCoordinateSpaceName))
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportSettingsLayoutFrame(
+        _ element: SettingsLayoutElement,
+        using report: (@MainActor (SettingsLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(SettingsLayoutFrameReporter(element: element, report: report))
+    }
+}
+
 struct PracticeHistorySettingsPresentation: Equatable {
     let answerCount: Int
     let goalCount: Int
@@ -115,6 +157,7 @@ struct SettingsView: View {
     private let isSceneActive: Bool
     private let isCoveredByParentModal: Bool
     private let parentModalOwnsProtectionErrors: Bool
+    private let layoutReporter: (@MainActor (SettingsLayoutElement, CGRect) -> Void)?
     private let legalLinks = LegalLinks.current
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -153,7 +196,8 @@ struct SettingsView: View {
         isVisible: Bool = true,
         isSceneActive: Bool = true,
         isCoveredByParentModal: Bool = false,
-        parentModalOwnsProtectionErrors: Bool = false
+        parentModalOwnsProtectionErrors: Bool = false,
+        layoutReporter: (@MainActor (SettingsLayoutElement, CGRect) -> Void)? = nil
     ) {
         self.store = store
         self.screenTime = screenTime
@@ -164,6 +208,7 @@ struct SettingsView: View {
         self.isSceneActive = isSceneActive
         self.isCoveredByParentModal = isCoveredByParentModal
         self.parentModalOwnsProtectionErrors = parentModalOwnsProtectionErrors
+        self.layoutReporter = layoutReporter
     }
 
     var body: some View {
@@ -171,8 +216,9 @@ struct SettingsView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     protectionPanel
-                    planPanel
+                        .reportSettingsLayoutFrame(.protection, using: layoutReporter)
                     goalsPanel
+                        .reportSettingsLayoutFrame(.goals, using: layoutReporter)
 
                     SettingsPracticeStandardCard(
                         presentation: practiceStandardPresentation,
@@ -180,6 +226,10 @@ struct SettingsView: View {
                     ) {
                         practiceStandardControls
                     }
+                    .reportSettingsLayoutFrame(.practiceStandard, using: layoutReporter)
+
+                    planPanel
+                        .reportSettingsLayoutFrame(.plan, using: layoutReporter)
 
                     activityPanel
                     privacyAndSupportPanel
@@ -192,6 +242,7 @@ struct SettingsView: View {
                 .padding(20)
                 .padding(.bottom, 56)
             }
+            .reportSettingsLayoutFrame(.viewport, using: layoutReporter)
             .padding(.bottom, 48)
             .checkpointScreenBackground()
             .navigationTitle("Settings")
@@ -346,6 +397,7 @@ struct SettingsView: View {
                 deliverPendingProtectionStartResultIfPossible()
             }
         }
+        .coordinateSpace(name: settingsLayoutCoordinateSpaceName)
     }
 
     private var protectionPanel: some View {
