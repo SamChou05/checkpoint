@@ -233,7 +233,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testWeeklyImpactPresentationSummarizesActivityAndExcludesFutureDays() throws {
+    func testMomentumPresentationLeadsWithEarnedBreakOutcomeAndExcludesFutureDays() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.firstWeekday = 2
         calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
@@ -294,7 +294,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             previousWeekQuestions: 4
         )
 
-        let presentation = ProgressWeeklyImpactPresentation(
+        let presentation = ProgressMomentumPresentation(
             metrics: metrics,
             details: details,
             referenceDate: referenceDate,
@@ -303,27 +303,50 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             timeZone: calendar.timeZone
         )
 
+        XCTAssertEqual(presentation.state, .earnedBreak)
         XCTAssertTrue(presentation.hasActivity)
+        XCTAssertEqual(presentation.primaryMetric?.kind, .earnedBreakTime)
+        XCTAssertEqual(presentation.primaryMetric?.valueText, "50m")
+        XCTAssertEqual(presentation.primaryMetric?.labelText, "BREAK TIME EARNED")
         XCTAssertEqual(
-            presentation.summaryText,
-            "9 questions · 66% correct · 2 breaks earned"
+            presentation.supportingMetrics.map(\.kind),
+            [.checkpointsCleared, .accuracy, .recoveredMisses]
+        )
+        XCTAssertEqual(
+            presentation.supportingMetrics.map(\.valueText),
+            ["2", "66%", "1"]
+        )
+        XCTAssertEqual(presentation.streakBadgeText, "2d streak")
+        XCTAssertEqual(
+            presentation.trendText,
+            "5 more questions than this point last week"
+        )
+        XCTAssertEqual(presentation.summaryText, "9 questions · 66% correct")
+        XCTAssertEqual(
+            presentation.footerText,
+            "9 questions · 5 more questions than this point last week"
         )
         XCTAssertEqual(
             presentation.accessibilityValue,
-            "9 questions, 66% correct, 2 breaks earned, across 2 active days. "
+            "50 minutes of break time earned this week. "
+                + "2 checkpoints cleared this week. "
+                + "66 percent accuracy, 6 of 9 correct. "
+                + "1 previously missed question currently correct. "
+                + "2-day checkpoint streak. "
+                + "5 more questions than this point last week. "
                 + "Activity by day: Monday, 4 questions; Wednesday, 5 questions."
         )
         XCTAssertEqual(
             presentation.days.map(\.state),
             [.active, .inactive, .active, .inactive, .future, .future, .future]
         )
-        XCTAssertEqual(presentation.days[0].activityLevel, 0.8, accuracy: 0.001)
+        XCTAssertEqual(presentation.days[0].activityLevel, 1, accuracy: 0.001)
         XCTAssertEqual(presentation.days[2].activityLevel, 1, accuracy: 0.001)
         XCTAssertEqual(presentation.days[4].activityLevel, 0, accuracy: 0.001)
     }
 
     @MainActor
-    func testWeeklyImpactEmptyRoutingAndMotionPoliciesStayTruthful() throws {
+    func testMomentumEmptyBreakOnlyRoutingAndMotionPoliciesStayTruthful() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.firstWeekday = 2
         calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
@@ -354,14 +377,14 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             reviewSkill: nil,
             isCurrentGoal: true
         )
-        let presentation = ProgressWeeklyImpactPresentation(
+        let presentation = ProgressMomentumPresentation(
             metrics: metrics,
             details: WeeklyImpactDetails(
                 practiceDays: days,
                 earnedBreakMinutes: 0,
                 recoveredQuestions: 0,
                 activePracticeDays: 0,
-                previousWeekQuestions: 0
+                previousWeekQuestions: 5
             ),
             referenceDate: referenceDate,
             calendar: calendar,
@@ -370,13 +393,18 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         )
 
         XCTAssertFalse(presentation.hasActivity)
+        XCTAssertEqual(presentation.state, .empty)
+        XCTAssertNil(presentation.primaryMetric)
+        XCTAssertTrue(presentation.supportingMetrics.isEmpty)
+        XCTAssertNil(presentation.streakBadgeText)
+        XCTAssertNil(presentation.trendText)
         XCTAssertEqual(
             presentation.summaryText,
-            "Your next checkpoint will start this week’s timeline."
+            "Your next checkpoint starts this week’s momentum."
         )
         XCTAssertEqual(
             presentation.accessibilityValue,
-            "No checkpoint activity this week."
+            "No checkpoint activity this week. Your next checkpoint starts this week’s momentum."
         )
 
         var breakOnlyDays = days
@@ -384,7 +412,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         breakOnlyDays[0].earnedBreakMinutes = 15
         var breakOnlyMetrics = metrics
         breakOnlyMetrics.checkpointsCleared = 1
-        let breakOnlyPresentation = ProgressWeeklyImpactPresentation(
+        let breakOnlyPresentation = ProgressMomentumPresentation(
             metrics: breakOnlyMetrics,
             details: WeeklyImpactDetails(
                 practiceDays: breakOnlyDays,
@@ -398,25 +426,39 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             locale: Locale(identifier: "en_US"),
             timeZone: calendar.timeZone
         )
+        XCTAssertEqual(breakOnlyPresentation.state, .earnedBreak)
         XCTAssertTrue(breakOnlyPresentation.hasActivity)
+        XCTAssertEqual(breakOnlyPresentation.primaryMetric?.kind, .earnedBreakTime)
+        XCTAssertEqual(breakOnlyPresentation.primaryMetric?.valueText, "15m")
+        XCTAssertEqual(
+            breakOnlyPresentation.supportingMetrics.map(\.kind),
+            [.checkpointsCleared]
+        )
         XCTAssertEqual(breakOnlyPresentation.summaryText, "1 break earned this week")
         XCTAssertEqual(
             breakOnlyPresentation.accessibilityValue,
-            "0 questions, no accuracy yet, 1 break earned, across 1 active day. "
-                + "Activity by day: Monday, 1 break earned."
+            "15 minutes of break time earned this week. "
+                + "1 checkpoint cleared this week. "
+                + "Activity by day: Monday, 1 checkpoint cleared."
         )
         XCTAssertEqual(
             breakOnlyPresentation.days[0].activityLevel,
-            0.45,
+            1,
             accuracy: 0.001
         )
 
-        let standard = ProgressWeeklyImpactMotionPolicy(reduceMotion: false)
+        let standard = ProgressMomentumMotionPolicy(reduceMotion: false)
         XCTAssertEqual(standard.style, .animated)
-        XCTAssertNotNil(standard.animation)
-        let reduced = ProgressWeeklyImpactMotionPolicy(reduceMotion: true)
+        XCTAssertNotNil(standard.updateAnimation)
+        XCTAssertNotNil(standard.revealAnimation(dayIndex: 0))
+        XCTAssertNotNil(standard.revealAnimation(dayIndex: 99))
+        XCTAssertEqual(standard.revealDelay(dayIndex: -1), 0, accuracy: 0.001)
+        XCTAssertEqual(standard.revealDelay(dayIndex: 2), 0.09, accuracy: 0.001)
+        XCTAssertEqual(standard.revealDelay(dayIndex: 99), 0.27, accuracy: 0.001)
+        let reduced = ProgressMomentumMotionPolicy(reduceMotion: true)
         XCTAssertEqual(reduced.style, .identity)
-        XCTAssertNil(reduced.animation)
+        XCTAssertNil(reduced.updateAnimation)
+        XCTAssertNil(reduced.revealAnimation(dayIndex: 0))
 
         XCTAssertEqual(
             ProgressWeeklyImpactRoutingPolicy.destinationGoalID(
@@ -437,6 +479,481 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 hasReviewedSkillMap: true
             )
         )
+    }
+
+    @MainActor
+    func testMomentumRailCancelsRevealWhenReduceMotionChangesWhileMounted() {
+        let startDate = Date(timeIntervalSince1970: 1_788_124_800)
+        let days = (0..<7).map { offset in
+            ProgressWeeklyImpactDayPresentation(
+                id: startDate.addingTimeInterval(Double(offset) * 86_400),
+                label: "D\(offset + 1)",
+                state: .active,
+                activityLevel: 1
+            )
+        }
+        let driver = ProgressMomentumRailMotionDriver(
+            revealID: ProgressMomentumRevealID(
+                goalID: "goal-one",
+                weekStart: startDate
+            )
+        )
+        var reportedStyles: [ProgressMomentumMotionStyle] = []
+        let hostingController = UIHostingController(
+            rootView: ProgressMomentumRailMotionHarness(
+                driver: driver,
+                days: days,
+                report: { reportedStyles.append($0) }
+            )
+            .preferredColorScheme(.dark)
+        )
+        let frame = CGRect(x: 0, y: 0, width: 320, height: 100)
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.overrideUserInterfaceStyle = .dark
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.06))
+
+        XCTAssertEqual(reportedStyles.last, .animated)
+        let initialAppearanceCount = reportedStyles.count
+        let inFlightImage = momentumRailImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        let reducedBaselineDriver = ProgressMomentumRailMotionDriver(
+            reduceMotion: true,
+            revealID: driver.revealID
+        )
+        let reducedBaselineImage = HostedViewRenderer.image(
+            for: ProgressMomentumRailMotionHarness(
+                driver: reducedBaselineDriver,
+                days: days,
+                report: { _ in }
+            ),
+            width: frame.width,
+            height: frame.height,
+            colorScheme: .dark,
+            settlingTime: 0.05,
+            renderScale: 1
+        )
+        XCTAssertGreaterThan(
+            meanPixelDifference(inFlightImage, reducedBaselineImage),
+            0.002,
+            "The test must intercept a visibly incomplete reveal."
+        )
+
+        driver.reduceMotion = true
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.04))
+
+        XCTAssertEqual(reportedStyles.last, .identity)
+        XCTAssertGreaterThan(reportedStyles.count, initialAppearanceCount)
+        let suppressedAppearanceCount = reportedStyles.count
+        let snappedImage = momentumRailImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        XCTAssertLessThan(
+            meanPixelDifference(snappedImage, reducedBaselineImage),
+            0.002,
+            "Enabling Reduce Motion must snap every bar to its final height."
+        )
+
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.7))
+        let settledImage = momentumRailImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        XCTAssertLessThan(
+            meanPixelDifference(settledImage, reducedBaselineImage),
+            0.002,
+            "No delayed reveal animator may survive motion suppression."
+        )
+
+        driver.reduceMotion = false
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.04))
+
+        XCTAssertEqual(
+            reportedStyles.count,
+            suppressedAppearanceCount,
+            "Disabling Reduce Motion must not replay the reveal in the same scope."
+        )
+        let restoredPreferenceImage = momentumRailImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        XCTAssertLessThan(
+            meanPixelDifference(restoredPreferenceImage, reducedBaselineImage),
+            0.002,
+            "Disabling Reduce Motion must leave the completed rail in place."
+        )
+
+        driver.revealID = ProgressMomentumRevealID(
+            goalID: "goal-two",
+            weekStart: startDate
+        )
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.04))
+
+        XCTAssertEqual(reportedStyles.last, .animated)
+        XCTAssertGreaterThan(reportedStyles.count, suppressedAppearanceCount)
+        let newScopeImage = momentumRailImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        XCTAssertGreaterThan(
+            meanPixelDifference(newScopeImage, reducedBaselineImage),
+            0.002,
+            "A new goal or week may reveal once when Reduce Motion is off."
+        )
+    }
+
+    @MainActor
+    private func momentumRailImage(of view: UIView, size: CGSize) -> UIImage {
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        let format = UIGraphicsImageRendererFormat.preferred()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            XCTAssertTrue(
+                view.drawHierarchy(in: view.bounds, afterScreenUpdates: true),
+                "Failed to render the mounted Momentum rail."
+            )
+        }
+    }
+
+    private func meanPixelDifference(_ first: UIImage, _ second: UIImage) -> Double {
+        guard let firstData = first.cgImage?.dataProvider?.data as Data?,
+              let secondData = second.cgImage?.dataProvider?.data as Data?,
+              firstData.count == secondData.count,
+              !firstData.isEmpty else {
+            XCTFail("Momentum rail snapshots must have matching pixel buffers.")
+            return 1
+        }
+
+        let totalDifference = zip(firstData, secondData).reduce(0.0) { result, pair in
+            result + abs(Double(pair.0) - Double(pair.1))
+        }
+        return totalDifference / Double(firstData.count) / 255
+    }
+
+    @MainActor
+    func testMomentumPresentationDistinguishesPracticeStreakAndLegacyClear() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let referenceDate = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+        let week = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: referenceDate))
+        var days = try (0..<7).map { offset in
+            WeeklyPracticeDay(
+                date: try XCTUnwrap(
+                    calendar.date(byAdding: .day, value: offset, to: week.start)
+                ),
+                questionsAnswered: 0
+            )
+        }
+        days[0].questionsAnswered = 2
+        days[0].correctAnswers = 1
+        days[1].questionsAnswered = 1
+
+        let goalID = Goal.ID()
+        let practiceMetrics = WeeklyMetricsSummary(
+            id: goalID.uuidString,
+            title: "Reach conversational Spanish",
+            questionsAnswered: 3,
+            correctAnswers: 1,
+            missedAnswers: 2,
+            checkpointStreakDays: 0,
+            checkpointsCleared: 0,
+            strongestSkill: nil,
+            reviewSkill: nil,
+            isCurrentGoal: true
+        )
+        let practiceDetails = WeeklyImpactDetails(
+            practiceDays: days,
+            earnedBreakMinutes: 0,
+            recoveredQuestions: 1,
+            activePracticeDays: 2,
+            previousWeekQuestions: 3
+        )
+        let practicePresentation = ProgressMomentumPresentation(
+            metrics: practiceMetrics,
+            details: practiceDetails,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(practicePresentation.state, .practiceOnly)
+        XCTAssertEqual(practicePresentation.primaryMetric?.kind, .questionsAnswered)
+        XCTAssertEqual(practicePresentation.primaryMetric?.valueText, "3")
+        XCTAssertEqual(
+            practicePresentation.supportingMetrics.map(\.kind),
+            [.accuracy, .recoveredMisses, .practiceDays]
+        )
+        XCTAssertEqual(
+            practicePresentation.supportingMetrics.map(\.valueText),
+            ["33%", "1", "2"]
+        )
+        XCTAssertEqual(
+            practicePresentation.trendText,
+            "Level with this point last week"
+        )
+        XCTAssertEqual(practicePresentation.footerText, "Level with this point last week")
+
+        var streakMetrics = practiceMetrics
+        streakMetrics.questionsAnswered = 0
+        streakMetrics.correctAnswers = 0
+        streakMetrics.missedAnswers = 0
+        streakMetrics.checkpointStreakDays = 4
+        let quietDays = days.map {
+            WeeklyPracticeDay(date: $0.date, questionsAnswered: 0)
+        }
+        let streakPresentation = ProgressMomentumPresentation(
+            metrics: streakMetrics,
+            details: WeeklyImpactDetails(
+                practiceDays: quietDays,
+                earnedBreakMinutes: 0,
+                recoveredQuestions: 0,
+                activePracticeDays: 0,
+                previousWeekQuestions: 5
+            ),
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(streakPresentation.state, .streakHolding)
+        XCTAssertEqual(streakPresentation.primaryMetric?.kind, .checkpointStreak)
+        XCTAssertEqual(streakPresentation.primaryMetric?.valueText, "4d")
+        XCTAssertTrue(streakPresentation.supportingMetrics.isEmpty)
+        XCTAssertNil(streakPresentation.streakBadgeText)
+        XCTAssertNil(streakPresentation.trendText)
+        XCTAssertEqual(
+            streakPresentation.summaryText,
+            "Clear a checkpoint today to keep it going."
+        )
+        XCTAssertEqual(
+            streakPresentation.accessibilityValue,
+            "4-day checkpoint streak. Clear a checkpoint today to keep it going."
+        )
+
+        var legacyClearMetrics = streakMetrics
+        legacyClearMetrics.checkpointStreakDays = 0
+        legacyClearMetrics.checkpointsCleared = 1
+        var legacyClearDays = quietDays
+        legacyClearDays[0].checkpointsCleared = 1
+        let legacyClearPresentation = ProgressMomentumPresentation(
+            metrics: legacyClearMetrics,
+            details: WeeklyImpactDetails(
+                practiceDays: legacyClearDays,
+                earnedBreakMinutes: 0,
+                recoveredQuestions: 0,
+                activePracticeDays: 0,
+                previousWeekQuestions: 0
+            ),
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+
+        XCTAssertEqual(legacyClearPresentation.state, .earnedBreak)
+        XCTAssertEqual(
+            legacyClearPresentation.primaryMetric?.kind,
+            .checkpointsCleared
+        )
+        XCTAssertEqual(legacyClearPresentation.primaryMetric?.valueText, "1")
+        XCTAssertTrue(legacyClearPresentation.supportingMetrics.isEmpty)
+        XCTAssertEqual(
+            legacyClearPresentation.footerText,
+            "1 checkpoint cleared this week"
+        )
+
+        var updatedMetrics = practiceMetrics
+        updatedMetrics.questionsAnswered = 4
+        let sameWeekUpdate = ProgressMomentumPresentation(
+            metrics: updatedMetrics,
+            details: practiceDetails,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        XCTAssertEqual(sameWeekUpdate.revealID, practicePresentation.revealID)
+
+        updatedMetrics.id = Goal.ID().uuidString
+        let otherGoal = ProgressMomentumPresentation(
+            metrics: updatedMetrics,
+            details: practiceDetails,
+            referenceDate: referenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        XCTAssertNotEqual(otherGoal.revealID, practicePresentation.revealID)
+
+        let nextWeekReferenceDate = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: 1, to: referenceDate)
+        )
+        var nextWeekDetails = practiceDetails
+        nextWeekDetails.practiceDays = try practiceDetails.practiceDays.map { day in
+            var shiftedDay = day
+            shiftedDay.date = try XCTUnwrap(
+                calendar.date(byAdding: .weekOfYear, value: 1, to: day.date)
+            )
+            return shiftedDay
+        }
+        let nextWeek = ProgressMomentumPresentation(
+            metrics: practiceMetrics,
+            details: nextWeekDetails,
+            referenceDate: nextWeekReferenceDate,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        XCTAssertNotEqual(nextWeek.revealID, practicePresentation.revealID)
+    }
+
+    @MainActor
+    func testReviewedDashboardKeepsMomentumInTheFirstFold() throws {
+        let fixtures = [
+            ProgressFirstFoldFixture(
+                name: "progress-first-fold-compact",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                requiresFullyVisibleMomentum: true
+            ),
+            ProgressFirstFoldFixture(
+                name: "progress-first-fold-accessibility5",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                requiresFullyVisibleMomentum: false
+            ),
+        ]
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
+        )
+
+        for fixture in fixtures {
+            let suiteName = "ProgressFirstFold.\(fixture.name).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let store = makeReviewedStore(
+                defaults: defaults,
+                referenceDate: referenceDate
+            )
+            let capture = ProgressLayoutCapture()
+            let image = HostedViewRenderer.image(
+                for: CompetencyView(
+                    store: store,
+                    reduceMotionOverride: true,
+                    referenceDateOverride: referenceDate,
+                    layoutReporter: { element, frame in
+                        capture.frames[element] = frame
+                    }
+                )
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.15,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            let viewport = try XCTUnwrap(capture.frames[.viewport], fixture.name)
+            let header = try XCTUnwrap(capture.frames[.header], fixture.name)
+            let switcher = try XCTUnwrap(capture.frames[.goalSwitcher], fixture.name)
+            let momentum = try XCTUnwrap(capture.frames[.momentum], fixture.name)
+            let primaryOutcome = try XCTUnwrap(
+                capture.frames[.momentumPrimaryOutcome],
+                fixture.name
+            )
+            let nextFocus = try XCTUnwrap(capture.frames[.nextFocus], fixture.name)
+            let semanticFrames = [
+                header,
+                switcher,
+                momentum,
+                primaryOutcome,
+                nextFocus,
+            ]
+
+            XCTAssertGreaterThan(viewport.width, 0, fixture.name)
+            XCTAssertGreaterThan(viewport.height, 0, fixture.name)
+            for frame in semanticFrames {
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+                XCTAssertGreaterThanOrEqual(
+                    frame.minX,
+                    viewport.minX - 0.5,
+                    fixture.name
+                )
+                XCTAssertLessThanOrEqual(
+                    frame.maxX,
+                    viewport.maxX + 0.5,
+                    fixture.name
+                )
+            }
+
+            XCTAssertGreaterThanOrEqual(switcher.height, 43.5, fixture.name)
+            XCTAssertTrue(
+                header.insetBy(dx: -0.5, dy: -0.5).contains(switcher),
+                "\(fixture.name) switcher escaped the goal header"
+            )
+            XCTAssertLessThanOrEqual(header.maxY, momentum.minY + 0.5, fixture.name)
+            XCTAssertLessThanOrEqual(momentum.maxY, nextFocus.minY + 0.5, fixture.name)
+            XCTAssertTrue(
+                momentum.insetBy(dx: -0.5, dy: -0.5).contains(primaryOutcome),
+                "\(fixture.name) primary outcome escaped the Momentum card"
+            )
+            XCTAssertTrue(
+                viewport.insetBy(dx: -0.5, dy: -0.5).contains(primaryOutcome),
+                "\(fixture.name) hid the weekly value or its meaning below the first fold"
+            )
+
+            if fixture.requiresFullyVisibleMomentum {
+                XCTAssertGreaterThanOrEqual(
+                    momentum.minY,
+                    viewport.minY - 0.5,
+                    fixture.name
+                )
+                XCTAssertLessThanOrEqual(
+                    momentum.maxY,
+                    viewport.maxY + 0.5,
+                    "\(fixture.name) pushed the weekly payoff below the first fold"
+                )
+            } else {
+                let visibleMomentum = momentum.intersection(viewport)
+                XCTAssertFalse(visibleMomentum.isNull, fixture.name)
+                XCTAssertGreaterThanOrEqual(
+                    visibleMomentum.height,
+                    44,
+                    "\(fixture.name) hid the primary weekly outcome at large text sizes"
+                )
+            }
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
     }
 
     @MainActor
@@ -518,6 +1035,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 height: 2_000,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
+                settlingTime: 0.8,
                 content: AnyView(
                     CompetencyView(
                         store: reviewedStore,
@@ -532,6 +1050,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 height: 2_000,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
+                settlingTime: 0.8,
                 content: AnyView(
                     CompetencyView(
                         store: reviewedStore,
@@ -546,6 +1065,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 height: 568,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
+                settlingTime: 0.8,
                 content: AnyView(
                     CompetencyView(
                         store: reviewedStore,
@@ -643,7 +1163,8 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                     .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
                 width: fixture.width,
                 height: fixture.height,
-                colorScheme: fixture.colorScheme
+                colorScheme: fixture.colorScheme,
+                settlingTime: fixture.settlingTime
             )
 
             XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
@@ -1117,13 +1638,60 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 }
 
+private struct ProgressFirstFoldFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let requiresFullyVisibleMomentum: Bool
+}
+
+@MainActor
+private final class ProgressLayoutCapture {
+    var frames: [ProgressLayoutElement: CGRect] = [:]
+}
+
 private struct ProgressDashboardRenderFixture {
     var name: String
     var width: CGFloat
     var height: CGFloat
     var colorScheme: ColorScheme
     var dynamicTypeSize: DynamicTypeSize
+    var settlingTime: TimeInterval = 0.05
     var content: AnyView
+}
+
+@MainActor
+private final class ProgressMomentumRailMotionDriver: ObservableObject {
+    @Published var reduceMotion: Bool
+    @Published var revealID: ProgressMomentumRevealID
+
+    init(
+        reduceMotion: Bool = false,
+        revealID: ProgressMomentumRevealID
+    ) {
+        self.reduceMotion = reduceMotion
+        self.revealID = revealID
+    }
+}
+
+private struct ProgressMomentumRailMotionHarness: View {
+    @ObservedObject var driver: ProgressMomentumRailMotionDriver
+    let days: [ProgressWeeklyImpactDayPresentation]
+    let report: @MainActor (ProgressMomentumMotionStyle) -> Void
+
+    var body: some View {
+        ProgressMomentumActivityRail(
+            days: days,
+            replayID: driver.revealID,
+            reduceMotion: driver.reduceMotion,
+            renderStyleReporter: report
+        )
+        .padding(10)
+        .frame(width: 320, height: 100)
+        .background(CheckpointTheme.ink)
+    }
 }
 
 private struct ProgressSkillRowsAuditView: View {

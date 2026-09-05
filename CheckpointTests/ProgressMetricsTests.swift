@@ -1541,17 +1541,37 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         strong.attempts = 10
         strong.correct = 10
 
+        var needsPractice = TopicCompetency.initial(topic: "Reliability")
+        needsPractice.attempts = 10
+        needsPractice.incorrect = 10
+
+        var building = TopicCompetency.initial(topic: "Performance")
+        building.attempts = 10
+        building.correct = 6
+        building.incorrect = 4
+
         let summary = ProgressDashboardSummary(
-            competencies: [notStarted, calibrating, strong],
+            competencies: [notStarted, calibrating, needsPractice, building, strong],
             attemptDates: [lastPracticedAt]
         )
 
-        XCTAssertEqual(summary.totalSkillCount, 3)
-        XCTAssertEqual(summary.practicedSkillCount, 2)
+        XCTAssertEqual(summary.totalSkillCount, 5)
+        XCTAssertEqual(summary.practicedSkillCount, 4)
         XCTAssertEqual(summary.strongSkillCount, 1)
         XCTAssertEqual(summary.calibratingSkillCount, 1)
+        XCTAssertEqual(summary.developingSkillCount, 3)
+        XCTAssertEqual(
+            summary.strongSkillCount
+                + summary.developingSkillCount
+                + summary.unpracticedSkillCount,
+            summary.totalSkillCount
+        )
+        XCTAssertEqual(
+            summary.skillSignalSummaryText,
+            "1 strong · 3 developing · 1 awaiting a first signal"
+        )
         XCTAssertEqual(summary.lastPracticedAt, lastPracticedAt)
-        XCTAssertEqual(summary.coverageProgress, 2.0 / 3.0, accuracy: 0.001)
+        XCTAssertEqual(summary.coverageProgress, 4.0 / 5.0, accuracy: 0.001)
         XCTAssertFalse(summary.allSkillsAreStrong)
     }
 
@@ -1697,6 +1717,8 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertTrue(summary.allSkillsAreStrong)
         XCTAssertEqual(summary.strongSkillCount, 2)
         XCTAssertEqual(summary.calibratingSkillCount, 0)
+        XCTAssertEqual(summary.developingSkillCount, 0)
+        XCTAssertEqual(summary.skillSignalSummaryText, "2 strong")
     }
 
     func testProgressDashboardSummaryMergesAttemptAndCompetencyRecency() {

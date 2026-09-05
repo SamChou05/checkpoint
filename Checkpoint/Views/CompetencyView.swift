@@ -1,5 +1,50 @@
 import SwiftUI
 
+enum ProgressLayoutElement: Hashable {
+    case viewport
+    case header
+    case goalSwitcher
+    case momentum
+    case momentumPrimaryOutcome
+    case nextFocus
+}
+
+private struct ProgressLayoutFrameReporter: ViewModifier {
+    let element: ProgressLayoutElement
+    let report: (@MainActor (ProgressLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(
+                        in: .named(progressLayoutCoordinateSpaceName)
+                    )
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportProgressLayoutFrame(
+        _ element: ProgressLayoutElement,
+        using report: (@MainActor (ProgressLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(ProgressLayoutFrameReporter(element: element, report: report))
+    }
+}
+
+let progressLayoutCoordinateSpaceName = "Checkpoint.Progress.Layout"
+
 struct ProgressDashboardSummary: Equatable {
     var totalSkillCount: Int
     var practicedSkillCount: Int
@@ -30,6 +75,30 @@ struct ProgressDashboardSummary: Equatable {
 
     var unpracticedSkillCount: Int {
         max(0, totalSkillCount - practicedSkillCount)
+    }
+
+    var developingSkillCount: Int {
+        max(0, practicedSkillCount - strongSkillCount)
+    }
+
+    var skillSignalSummaryText: String? {
+        guard totalSkillCount > 0 else { return nil }
+
+        var signals: [String] = []
+        if strongSkillCount > 0 {
+            signals.append("\(strongSkillCount) strong")
+        }
+        if developingSkillCount > 0 {
+            signals.append("\(developingSkillCount) developing")
+        }
+        if unpracticedSkillCount > 0 {
+            signals.append(
+                unpracticedSkillCount == 1
+                    ? "1 awaiting a first signal"
+                    : "\(unpracticedSkillCount) awaiting first signals"
+            )
+        }
+        return signals.joined(separator: " · ")
     }
 
     func lastPracticedValue(
@@ -286,6 +355,7 @@ struct CompetencyView: View {
     private let protectionErrorMessage: String?
     private let parentModalOwnsProtectionErrors: Bool
     private let skillEvidenceRequestBinding: Binding<ProgressSkillEvidenceRequest?>?
+    private let layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
@@ -326,7 +396,8 @@ struct CompetencyView: View {
         screenTime: ScreenTimeController? = nil,
         protectionErrorMessage: String? = nil,
         parentModalOwnsProtectionErrors: Bool = false,
-        skillEvidenceRequest: Binding<ProgressSkillEvidenceRequest?>? = nil
+        skillEvidenceRequest: Binding<ProgressSkillEvidenceRequest?>? = nil,
+        layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)? = nil
     ) {
         self.store = store
         self.reduceMotionOverride = reduceMotionOverride
@@ -339,6 +410,7 @@ struct CompetencyView: View {
         self.protectionErrorMessage = protectionErrorMessage
         self.parentModalOwnsProtectionErrors = parentModalOwnsProtectionErrors
         skillEvidenceRequestBinding = skillEvidenceRequest
+        self.layoutReporter = layoutReporter
     }
 
     private var reduceMotion: Bool {
@@ -401,6 +473,10 @@ struct CompetencyView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         progressHeader
+                            .reportProgressLayoutFrame(
+                                .header,
+                                using: layoutReporter
+                            )
                             .id(ProgressScrollAnchor.top)
                             .padding(.bottom, 20)
 
@@ -420,6 +496,7 @@ struct CompetencyView: View {
                     .padding(.top, 12)
                     .padding(.bottom, 56)
                 }
+                .reportProgressLayoutFrame(.viewport, using: layoutReporter)
                 .padding(.bottom, 48)
                 .checkpointScreenBackground()
                 .navigationTitle("Progress")
@@ -462,6 +539,7 @@ struct CompetencyView: View {
                 }
             }
         }
+        .coordinateSpace(name: progressLayoutCoordinateSpaceName)
         .onChange(of: isVisible) { _, currentIsVisible in
             if !currentIsVisible {
                 accessibilityFocus = nil
@@ -582,21 +660,28 @@ struct CompetencyView: View {
         } else if dashboardSummary.totalSkillCount == 0 {
             emptyState
             activeGoalFocusWinsEntry
-        } else {
-            if store.activeDerivedSkillMap?.status == .suggested {
-                suggestedSkillMapCallout
-            }
-
+        } else if store.activeDerivedSkillMap?.status == .suggested {
+            suggestedSkillMapCallout
             progressHero
-            nextFocusPanel
-            activeGoalWeeklyImpactEntry
             activeGoalFocusWinsEntry
             focusAreasPanel(title: "Focus areas")
-
-            if let skillMap = store.activeDerivedSkillMap,
-               skillMap.status == .reviewed {
-                skillMapManagementPanel(skillMap)
-            }
+        } else if let skillMap = store.activeDerivedSkillMap,
+                  skillMap.status == .reviewed {
+            activeGoalMomentumEntry
+            nextFocusPanel
+                .reportProgressLayoutFrame(.nextFocus, using: layoutReporter)
+            activeGoalFocusWinsEntry
+            focusAreasPanel(
+                title: "Learning map",
+                description: "Open any skill for its answer mix and latest signal.",
+                showsCoverageSummary: true
+            )
+            skillMapManagementPanel(skillMap)
+        } else {
+            progressHero
+            nextFocusPanel
+            activeGoalFocusWinsEntry
+            focusAreasPanel(title: "Focus areas")
         }
     }
 
@@ -608,14 +693,14 @@ struct CompetencyView: View {
     }
 
     @ViewBuilder
-    private var activeGoalWeeklyImpactEntry: some View {
+    private var activeGoalMomentumEntry: some View {
         if let goal = store.goal,
            store.activeDerivedSkillMap?.status == .reviewed {
-            weeklyImpactEntry(for: goal)
+            momentumEntry(for: goal)
         }
     }
 
-    private func weeklyImpactEntry(for goal: Goal) -> some View {
+    private func momentumEntry(for goal: Goal) -> some View {
         let asOf = referenceDate
         let calendar = Calendar.current
         let locale = Locale.current
@@ -648,7 +733,7 @@ struct CompetencyView: View {
             asOf: asOf,
             calendar: calendar
         ).impactDetails(goalID: goal.id)
-        let presentation = ProgressWeeklyImpactPresentation(
+        let presentation = ProgressMomentumPresentation(
             metrics: metrics,
             details: details,
             referenceDate: asOf,
@@ -657,12 +742,18 @@ struct CompetencyView: View {
             timeZone: timeZone
         )
 
-        return ProgressWeeklyImpactCard(
+        return ProgressMomentumCard(
             presentation: presentation,
-            reduceMotion: reduceMotion
+            reduceMotion: reduceMotion,
+            layoutReporter: layoutReporter
         ) {
             presentWeeklyImpact(for: goal, referenceDate: asOf)
         }
+        .accessibilityFocused(
+            $accessibilityFocus,
+            equals: .primaryState(screenSnapshot)
+        )
+        .reportProgressLayoutFrame(.momentum, using: layoutReporter)
     }
 
     private func presentWeeklyImpact(
@@ -876,29 +967,21 @@ struct CompetencyView: View {
     @ViewBuilder
     private var progressHeader: some View {
         if let goal = store.goal {
-            VStack(alignment: .leading, spacing: 10) {
-                ViewThatFits(in: .horizontal) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(alignment: .center, spacing: 12) {
-                            goalEyebrow
-                                .fixedSize(horizontal: true, vertical: false)
-                            Spacer(minLength: 8)
-                            goalSwitcherIfNeeded(currentGoal: goal)
-                        }
-
-                        goalTitle(goal)
-                    }
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        goalIdentity(goal)
+            VStack(alignment: .leading, spacing: 5) {
+                if dynamicTypeSize.isAccessibilitySize {
+                    goalEyebrow
+                    goalTitle(goal)
+                    goalSwitcherIfNeeded(currentGoal: goal)
+                } else {
+                    HStack(alignment: .center, spacing: 10) {
+                        goalEyebrow
+                            .fixedSize(horizontal: true, vertical: false)
+                        Spacer(minLength: 6)
                         goalSwitcherIfNeeded(currentGoal: goal)
                     }
-                }
 
-                Text("A live view of what is taking hold and where the next checkpoint can help most.")
-                    .font(.subheadline)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
+                    goalTitle(goal)
+                }
             }
         } else {
             VStack(alignment: .leading, spacing: 5) {
@@ -914,15 +997,8 @@ struct CompetencyView: View {
         }
     }
 
-    private func goalIdentity(_ goal: Goal) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            goalEyebrow
-            goalTitle(goal)
-        }
-    }
-
     private var goalEyebrow: some View {
-        Text("YOUR LEARNING MAP")
+        Text("CURRENT GOAL")
             .font(.caption2.weight(.bold))
             .tracking(1)
             .foregroundStyle(CheckpointTheme.muted)
@@ -932,7 +1008,7 @@ struct CompetencyView: View {
         Text(goal.title)
             .font(.title2.weight(.bold))
             .foregroundStyle(CheckpointTheme.text)
-            .lineLimit(usesStackedTypeLayout ? nil : 3)
+            .lineLimit(usesStackedTypeLayout ? nil : 2)
             .fixedSize(horizontal: false, vertical: true)
             .accessibilityFocused($accessibilityFocus, equals: .goalTitle(goal.id))
             .accessibilityAddTraits(.isHeader)
@@ -958,12 +1034,13 @@ struct CompetencyView: View {
                     .accessibilityValue(option.accessibilityValue)
                 }
             } label: {
-                GoalSwitcherCapsuleLabel()
+                GoalSwitcherCapsuleLabel(title: "Switch")
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Switch goal")
             .accessibilityValue(currentGoal.title)
             .accessibilityHint("Changes the active goal throughout Checkpoint.")
+            .reportProgressLayoutFrame(.goalSwitcher, using: layoutReporter)
         }
     }
 
@@ -1427,10 +1504,19 @@ struct CompetencyView: View {
 
     private func focusAreasPanel(
         title: String,
-        description: String = "Skills stay in your map order. Open any area for its answer mix and latest signal."
+        description: String = "Skills stay in your map order. Open any area for its answer mix and latest signal.",
+        showsCoverageSummary: Bool = false
     ) -> some View {
         SectionPanel(title) {
             VStack(alignment: .leading, spacing: 0) {
+                if showsCoverageSummary {
+                    learningMapSummary
+
+                    Divider()
+                        .overlay(CheckpointTheme.hairline)
+                        .padding(.vertical, 14)
+                }
+
                 Text(description)
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
@@ -1456,6 +1542,72 @@ struct CompetencyView: View {
                 }
             }
         }
+    }
+
+    private var learningMapSummary: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: 7) {
+                    learningMapCoverageValue
+                    learningMapCoverageLabel
+                    Spacer(minLength: 0)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    learningMapCoverageValue
+                    learningMapCoverageLabel
+                }
+            }
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(CheckpointTheme.hairline)
+
+                    Capsule()
+                        .fill(CheckpointTheme.teal)
+                        .frame(
+                            width: proxy.size.width * dashboardSummary.coverageProgress
+                        )
+                }
+            }
+            .frame(height: 6)
+            .accessibilityHidden(true)
+
+            Text(learningMapSignalSummary)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            "Learning map, \(dashboardSummary.practicedSkillCount) of "
+                + "\(dashboardSummary.totalSkillCount) skills practiced. "
+                + learningMapSignalSummary
+        )
+        .animation(
+            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            value: dashboardSummary
+        )
+    }
+
+    private var learningMapCoverageValue: some View {
+        Text("\(dashboardSummary.practicedSkillCount)/\(dashboardSummary.totalSkillCount)")
+            .font(.title2.weight(.bold))
+            .foregroundStyle(CheckpointTheme.text)
+            .monospacedDigit()
+            .contentTransition(.numericText())
+    }
+
+    private var learningMapCoverageLabel: some View {
+        Text("skills practiced")
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(CheckpointTheme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var learningMapSignalSummary: String {
+        dashboardSummary.skillSignalSummaryText ?? dashboardNarrative.title
     }
 
     private var competencyExpansionBinding: Binding<TopicCompetency.ID?> {

@@ -447,7 +447,7 @@ struct GoalSwitcherCapsuleLabel: View {
         }
         .font(.caption.weight(.bold))
         .foregroundStyle(CheckpointTheme.teal)
-        .fixedSize(horizontal: false, vertical: true)
+        .fixedSize(horizontal: true, vertical: true)
         .padding(.horizontal, 11)
         .frame(minHeight: 44)
         .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())

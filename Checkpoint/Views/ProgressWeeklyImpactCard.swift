@@ -14,12 +14,52 @@ struct ProgressWeeklyImpactDayPresentation: Identifiable, Equatable {
     let activityLevel: Double
 }
 
-struct ProgressWeeklyImpactPresentation: Equatable {
+enum ProgressMomentumState: Equatable {
+    case earnedBreak
+    case practiceOnly
+    case streakHolding
+    case empty
+}
+
+enum ProgressMomentumMetricKind: Hashable {
+    case earnedBreakTime
+    case checkpointsCleared
+    case questionsAnswered
+    case accuracy
+    case recoveredMisses
+    case practiceDays
+    case checkpointStreak
+}
+
+struct ProgressMomentumMetric: Identifiable, Equatable {
+    let kind: ProgressMomentumMetricKind
+    let valueText: String
+    let labelText: String
+    let detailText: String?
+    let accessibilityText: String
+
+    var id: ProgressMomentumMetricKind { kind }
+}
+
+struct ProgressMomentumRevealID: Hashable {
+    let goalID: String
+    let weekStart: Date?
+}
+
+struct ProgressMomentumPresentation: Equatable {
+    let state: ProgressMomentumState
     let goalTitle: String
-    let days: [ProgressWeeklyImpactDayPresentation]
+    let primaryMetric: ProgressMomentumMetric?
+    let supportingMetrics: [ProgressMomentumMetric]
+    let streakBadgeText: String?
+    let trendText: String?
     let summaryText: String
+    let footerText: String
+    let days: [ProgressWeeklyImpactDayPresentation]
     let accessibilityValue: String
-    let hasActivity: Bool
+    let revealID: ProgressMomentumRevealID
+
+    var hasActivity: Bool { state != .empty }
 
     init(
         metrics: WeeklyMetricsSummary,
@@ -31,115 +71,287 @@ struct ProgressWeeklyImpactPresentation: Equatable {
     ) {
         goalTitle = metrics.title
 
+        let questions = max(0, metrics.questionsAnswered)
+        let correct = min(max(0, metrics.correctAnswers), questions)
+        let accuracy = questions > 0
+            ? Int(Double(correct) / Double(questions) * 100)
+            : nil
+        let clears = max(0, metrics.checkpointsCleared)
+        let minutes = max(0, details.earnedBreakMinutes)
+        let recovered = min(max(0, details.recoveredQuestions), correct)
+        let practiceDays = min(max(0, details.activePracticeDays), 7)
+        let streak = max(0, metrics.checkpointStreakDays)
+
+        if minutes > 0 || clears > 0 {
+            state = .earnedBreak
+        } else if questions > 0 {
+            state = .practiceOnly
+        } else if streak > 0 {
+            state = .streakHolding
+        } else {
+            state = .empty
+        }
+
         let dateLabelFormatter = WeeklyReviewDateLabelFormatter(
             calendar: calendar,
             locale: locale,
             timeZone: timeZone
         )
         let referenceDay = calendar.startOfDay(for: referenceDate)
-        let peakQuestionCount = details.practiceDays.lazy
-            .filter { calendar.startOfDay(for: $0.date) <= referenceDay }
-            .map(\.questionsAnswered)
-            .max() ?? 0
-
         days = details.practiceDays.map { day in
             let normalizedDay = calendar.startOfDay(for: day.date)
-            let state: ProgressWeeklyImpactDayState
+            let dayState: ProgressWeeklyImpactDayState
             if normalizedDay > referenceDay {
-                state = .future
+                dayState = .future
             } else if day.hasActivity {
-                state = .active
+                dayState = .active
             } else {
-                state = .inactive
+                dayState = .inactive
             }
-            let activityLevel: Double
-            if state == .active, day.questionsAnswered > 0, peakQuestionCount > 0 {
-                activityLevel = min(
-                    1,
-                    Double(day.questionsAnswered) / Double(peakQuestionCount)
-                )
-            } else if state == .active {
-                activityLevel = 0.45
-            } else {
-                activityLevel = 0
-            }
+
             return ProgressWeeklyImpactDayPresentation(
                 id: day.id,
                 label: dateLabelFormatter.narrowWeekday(for: day.date)
                     .uppercased(with: locale),
-                state: state,
-                activityLevel: activityLevel
+                state: dayState,
+                activityLevel: dayState == .active ? 1 : 0
             )
         }
 
-        let activeDayCount = days.lazy.filter { $0.state == .active }.count
-        hasActivity = activeDayCount > 0
+        revealID = ProgressMomentumRevealID(
+            goalID: metrics.id,
+            weekStart: calendar.dateInterval(
+                of: .weekOfYear,
+                for: referenceDate
+            )?.start
+        )
 
-        guard hasActivity else {
-            summaryText = "Your next checkpoint will start this week’s timeline."
-            accessibilityValue = "No checkpoint activity this week."
-            return
+        switch state {
+        case .earnedBreak:
+            if minutes > 0 {
+                primaryMetric = ProgressMomentumMetric(
+                    kind: .earnedBreakTime,
+                    valueText: details.earnedBreakTimeText,
+                    labelText: "BREAK TIME EARNED",
+                    detailText: nil,
+                    accessibilityText: Self.accessibleDuration(minutes)
+                        + " of break time earned this week"
+                )
+            } else {
+                let noun = clears == 1 ? "CHECKPOINT CLEARED" : "CHECKPOINTS CLEARED"
+                primaryMetric = ProgressMomentumMetric(
+                    kind: .checkpointsCleared,
+                    valueText: "\(clears)",
+                    labelText: noun,
+                    detailText: nil,
+                    accessibilityText: Self.checkpointAccessibilityText(clears)
+                )
+            }
+        case .practiceOnly:
+            primaryMetric = ProgressMomentumMetric(
+                kind: .questionsAnswered,
+                valueText: "\(questions)",
+                labelText: questions == 1 ? "QUESTION ANSWERED" : "QUESTIONS ANSWERED",
+                detailText: nil,
+                accessibilityText: Self.questionAccessibilityText(questions)
+            )
+        case .streakHolding:
+            primaryMetric = ProgressMomentumMetric(
+                kind: .checkpointStreak,
+                valueText: "\(streak)d",
+                labelText: "CHECKPOINT STREAK",
+                detailText: nil,
+                accessibilityText: Self.streakAccessibilityText(streak)
+            )
+        case .empty:
+            primaryMetric = nil
         }
 
-        let questionNoun = metrics.questionsAnswered == 1 ? "question" : "questions"
-        let earnedBreakSummary = metrics.checkpointsCleared == 1
-            ? "1 break earned"
-            : "\(metrics.checkpointsCleared) breaks earned"
-        if metrics.questionsAnswered > 0 {
-            var summaryParts = ["\(metrics.questionsAnswered) \(questionNoun)"]
-            summaryParts.append("\(metrics.accuracyText) correct")
-            summaryParts.append(earnedBreakSummary)
-            summaryText = summaryParts.joined(separator: " · ")
+        var metricCandidates: [ProgressMomentumMetric] = []
+        if clears > 0, primaryMetric?.kind != .checkpointsCleared {
+            metricCandidates.append(
+                ProgressMomentumMetric(
+                    kind: .checkpointsCleared,
+                    valueText: "\(clears)",
+                    labelText: "CLEARED",
+                    detailText: nil,
+                    accessibilityText: Self.checkpointAccessibilityText(clears)
+                )
+            )
+        }
+        if let accuracy {
+            metricCandidates.append(
+                ProgressMomentumMetric(
+                    kind: .accuracy,
+                    valueText: "\(accuracy)%",
+                    labelText: "ACCURACY",
+                    detailText: "\(correct) of \(questions) correct",
+                    accessibilityText: "\(accuracy) percent accuracy, \(correct) of \(questions) correct"
+                )
+            )
+        }
+        if recovered > 0 {
+            let noun = recovered == 1 ? "question" : "questions"
+            metricCandidates.append(
+                ProgressMomentumMetric(
+                    kind: .recoveredMisses,
+                    valueText: "\(recovered)",
+                    labelText: "RECOVERED",
+                    detailText: nil,
+                    accessibilityText: "\(recovered) previously missed \(noun) currently correct"
+                )
+            )
+        }
+        if practiceDays > 0 {
+            let noun = practiceDays == 1 ? "day" : "days"
+            metricCandidates.append(
+                ProgressMomentumMetric(
+                    kind: .practiceDays,
+                    valueText: "\(practiceDays)",
+                    labelText: practiceDays == 1 ? "PRACTICE DAY" : "PRACTICE DAYS",
+                    detailText: nil,
+                    accessibilityText: "\(practiceDays) practice \(noun) this week"
+                )
+            )
+        }
+        supportingMetrics = Array(metricCandidates.prefix(3))
+
+        streakBadgeText = streak > 0 && state != .streakHolding
+            ? "\(streak)d streak"
+            : nil
+        trendText = questions > 0
+            ? details.questionTrendText(currentQuestions: questions)
+            : nil
+
+        switch state {
+        case .earnedBreak where questions > 0:
+            summaryText = "\(questions) \(Self.questionNoun(questions)) · \(accuracy ?? 0)% correct"
+        case .earnedBreak where minutes == 0:
+            summaryText = clears == 1
+                ? "1 checkpoint cleared this week"
+                : "\(clears) checkpoints cleared this week"
+        case .earnedBreak where clears > 0:
+            summaryText = clears == 1
+                ? "1 break earned this week"
+                : "\(clears) breaks earned this week"
+        case .earnedBreak:
+            summaryText = "Break time earned this week"
+        case .practiceOnly:
+            summaryText = "Your answers are shaping this week’s learning signal."
+        case .streakHolding:
+            summaryText = "Clear a checkpoint today to keep it going."
+        case .empty:
+            summaryText = "Your next checkpoint starts this week’s momentum."
+        }
+
+        if let trendText {
+            footerText = state == .earnedBreak
+                ? "\(questions) \(Self.questionNoun(questions)) · \(trendText)"
+                : trendText
         } else {
-            summaryText = "\(earnedBreakSummary) this week"
+            footerText = summaryText
         }
 
-        let dayNoun = activeDayCount == 1 ? "active day" : "active days"
-        let accuracySummary = metrics.questionsAnswered > 0
-            ? "\(metrics.accuracyText) correct"
-            : "no accuracy yet"
-        let aggregateAccessibilityValue = [
-            "\(metrics.questionsAnswered) \(questionNoun)",
-            accuracySummary,
-            earnedBreakSummary,
-            "across \(activeDayCount) \(dayNoun)."
-        ].joined(separator: ", ")
-        let activeDayDetails = zip(details.practiceDays, days).compactMap {
-            day, presentation -> String? in
-            guard presentation.state == .active else { return nil }
-            let weekday = dateLabelFormatter.wideWeekday(for: day.date)
-            if day.questionsAnswered > 0 {
-                let noun = day.questionsAnswered == 1 ? "question" : "questions"
-                return "\(weekday), \(day.questionsAnswered) \(noun)"
+        if state == .empty {
+            accessibilityValue = "No checkpoint activity this week. " + summaryText
+        } else {
+            var accessibilityParts: [String] = []
+            if let primaryMetric {
+                accessibilityParts.append(primaryMetric.accessibilityText)
             }
-            if day.checkpointsCleared > 0 {
-                let breakSummary = day.checkpointsCleared == 1
-                    ? "1 break earned"
-                    : "\(day.checkpointsCleared) breaks earned"
-                return "\(weekday), \(breakSummary)"
+            accessibilityParts.append(contentsOf: supportingMetrics.map(\.accessibilityText))
+            if streak > 0, state != .streakHolding {
+                accessibilityParts.append(Self.streakAccessibilityText(streak))
             }
-            return "\(weekday), \(day.earnedBreakTimeText) earned"
+            if let trendText {
+                accessibilityParts.append(trendText)
+            }
+            if state == .streakHolding {
+                accessibilityParts.append("Clear a checkpoint today to keep it going")
+            }
+
+            let activeDayDetails = zip(details.practiceDays, days).compactMap {
+                day, presentation -> String? in
+                guard presentation.state == .active else { return nil }
+                let weekday = dateLabelFormatter.wideWeekday(for: day.date)
+                if day.questionsAnswered > 0 {
+                    return "\(weekday), \(day.questionsAnswered) "
+                        + Self.questionNoun(day.questionsAnswered)
+                }
+                if day.checkpointsCleared > 0 {
+                    let noun = day.checkpointsCleared == 1 ? "checkpoint" : "checkpoints"
+                    return "\(weekday), \(day.checkpointsCleared) \(noun) cleared"
+                }
+                return "\(weekday), \(day.earnedBreakTimeText) of break time earned"
+            }
+            if !activeDayDetails.isEmpty {
+                accessibilityParts.append(
+                    "Activity by day: " + activeDayDetails.joined(separator: "; ")
+                )
+            }
+            accessibilityValue = accessibilityParts.joined(separator: ". ") + "."
         }
-        accessibilityValue = "\(aggregateAccessibilityValue) Activity by day: "
-            + activeDayDetails.joined(separator: "; ")
-            + "."
+    }
+
+    private static func questionNoun(_ count: Int) -> String {
+        count == 1 ? "question" : "questions"
+    }
+
+    private static func questionAccessibilityText(_ count: Int) -> String {
+        "\(count) \(questionNoun(count)) answered this week"
+    }
+
+    private static func checkpointAccessibilityText(_ count: Int) -> String {
+        let noun = count == 1 ? "checkpoint" : "checkpoints"
+        return "\(count) \(noun) cleared this week"
+    }
+
+    private static func streakAccessibilityText(_ count: Int) -> String {
+        "\(count)-day checkpoint streak"
+    }
+
+    private static func accessibleDuration(_ minutes: Int) -> String {
+        let normalizedMinutes = max(0, minutes)
+        let hours = normalizedMinutes / 60
+        let remainingMinutes = normalizedMinutes % 60
+        var parts: [String] = []
+        if hours > 0 {
+            parts.append("\(hours) \(hours == 1 ? "hour" : "hours")")
+        }
+        if remainingMinutes > 0 || parts.isEmpty {
+            parts.append(
+                "\(remainingMinutes) \(remainingMinutes == 1 ? "minute" : "minutes")"
+            )
+        }
+        return parts.joined(separator: " and ")
     }
 }
 
-enum ProgressWeeklyImpactMotionStyle: Equatable {
+enum ProgressMomentumMotionStyle: Hashable {
     case animated
     case identity
 }
 
-struct ProgressWeeklyImpactMotionPolicy {
-    let style: ProgressWeeklyImpactMotionStyle
+struct ProgressMomentumMotionPolicy {
+    static let dayStagger: TimeInterval = 0.045
+
+    let style: ProgressMomentumMotionStyle
 
     init(reduceMotion: Bool) {
         style = reduceMotion ? .identity : .animated
     }
 
-    var animation: Animation? {
+    var updateAnimation: Animation? {
         style == .identity ? nil : CheckpointMotion.change
+    }
+
+    func revealAnimation(dayIndex: Int) -> Animation? {
+        guard style == .animated else { return nil }
+        return CheckpointMotion.reveal.delay(revealDelay(dayIndex: dayIndex))
+    }
+
+    func revealDelay(dayIndex: Int) -> TimeInterval {
+        Double(min(max(0, dayIndex), 6)) * Self.dayStagger
     }
 }
 
@@ -153,107 +365,466 @@ struct ProgressWeeklyImpactRoutingPolicy {
     }
 }
 
-struct ProgressWeeklyImpactCard: View {
-    let presentation: ProgressWeeklyImpactPresentation
+struct ProgressMomentumCard: View {
+    let presentation: ProgressMomentumPresentation
     let reduceMotion: Bool
+    let layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)?
     let action: () -> Void
 
-    private var motionPolicy: ProgressWeeklyImpactMotionPolicy {
-        ProgressWeeklyImpactMotionPolicy(reduceMotion: reduceMotion)
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .largeTitle) private var primaryMetricSize: CGFloat = 46
+
+    private var motionPolicy: ProgressMomentumMotionPolicy {
+        ProgressMomentumMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    init(
+        presentation: ProgressMomentumPresentation,
+        reduceMotion: Bool,
+        layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.presentation = presentation
+        self.reduceMotion = reduceMotion
+        self.layoutReporter = layoutReporter
+        self.action = action
     }
 
     var body: some View {
         Button(action: action) {
-            SectionPanel {
+            CheckpointHeroSurface(
+                glowColor: CheckpointTheme.heroSuccess,
+                glowOpacity: 0.11,
+                glowDiameter: 170,
+                glowOffset: CGSize(width: 76, height: -92),
+                contentPadding: 17
+            ) {
                 VStack(alignment: .leading, spacing: 10) {
                     header
-                    activityRail
+                    primaryOutcome
+                    ProgressMomentumActivityRail(
+                        days: presentation.days,
+                        replayID: presentation.revealID,
+                        reduceMotion: reduceMotion
+                    )
 
-                    Text(presentation.summaryText)
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .contentTransition(.numericText())
+                    if !presentation.supportingMetrics.isEmpty {
+                        supportingMetrics
+                    }
+
+                    footer
                 }
-                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             }
         }
         .buttonStyle(CheckpointPressButtonStyle())
-        .animation(motionPolicy.animation, value: presentation)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Weekly impact for \(presentation.goalTitle)")
+        .accessibilityLabel("This week for \(presentation.goalTitle)")
         .accessibilityValue(presentation.accessibilityValue)
         .accessibilityHint("Opens this goal’s current week and weekly archive.")
     }
 
     private var header: some View {
-        HStack(alignment: .center, spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("THIS WEEK")
-                    .font(.caption2.weight(.bold))
-                    .tracking(0.85)
-                    .foregroundStyle(CheckpointTheme.teal)
+        HStack(alignment: .center, spacing: 8) {
+            Text("THIS WEEK")
+                .font(.caption2.weight(.bold))
+                .tracking(1)
+                .foregroundStyle(CheckpointTheme.heroSuccess)
+                .lineLimit(1)
+                .minimumScaleFactor(0.68)
 
-                Text("Weekly impact")
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
+            Spacer(minLength: 4)
+
+            if let streakBadgeText = presentation.streakBadgeText {
+                Group {
+                    if dynamicTypeSize.isAccessibilitySize {
+                        Label(
+                            compactStreakBadgeText(streakBadgeText),
+                            systemImage: "flame.fill"
+                        )
+                    } else {
+                        Text(streakBadgeText.uppercased())
+                    }
+                }
+                .font(.caption2.weight(.bold))
+                .tracking(0.45)
+                .foregroundStyle(CheckpointTheme.heroSuccess)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .background(
+                    CheckpointTheme.heroSuccess.opacity(0.12),
+                    in: Capsule()
+                )
+                .contentTransition(.numericText())
             }
-
-            Spacer(minLength: 8)
 
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.heroSuccess)
                 .accessibilityHidden(true)
+        }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private var primaryOutcome: some View {
+        Group {
+            if let metric = presentation.primaryMetric {
+                Group {
+                    if dynamicTypeSize.isAccessibilitySize {
+                        VStack(alignment: .leading, spacing: 3) {
+                            primaryValue(metric)
+                            primaryLabel(metric)
+                        }
+                    } else {
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            primaryValue(metric)
+                            primaryLabel(metric)
+                        }
+                    }
+                }
+                .animation(motionPolicy.updateAnimation, value: metric)
+            } else {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("No checkpoint activity yet")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(CheckpointTheme.heroText)
+
+                    Text("READY FOR THIS WEEK’S FIRST SIGNAL")
+                        .font(.caption2.weight(.bold))
+                        .tracking(0.8)
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .background {
+            if let layoutReporter {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(
+                        in: .named(progressLayoutCoordinateSpaceName)
+                    )
+
+                    Color.clear
+                        .onAppear {
+                            layoutReporter(.momentumPrimaryOutcome, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            layoutReporter(.momentumPrimaryOutcome, updatedFrame)
+                        }
+                }
+            }
         }
     }
 
-    private var activityRail: some View {
-        HStack(alignment: .bottom, spacing: 6) {
-            ForEach(presentation.days) { day in
+    private func primaryValue(_ metric: ProgressMomentumMetric) -> some View {
+        Text(metric.valueText)
+            .font(.system(size: primaryMetricSize, weight: .bold, design: .rounded))
+            .foregroundStyle(CheckpointTheme.heroText)
+            .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.74)
+            .contentTransition(.numericText())
+    }
+
+    private func primaryLabel(_ metric: ProgressMomentumMetric) -> some View {
+        Text(metric.labelText)
+            .font(.caption.weight(.bold))
+            .tracking(0.75)
+            .foregroundStyle(CheckpointTheme.heroMuted)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var supportingMetrics: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 9) {
+                    ForEach(
+                        Array(presentation.supportingMetrics.enumerated()),
+                        id: \.element.id
+                    ) { index, metric in
+                        if index > 0 {
+                            Divider()
+                                .overlay(CheckpointTheme.heroDivider)
+                        }
+
+                        accessibilityMetricRow(metric)
+                    }
+                }
+            } else {
+                HStack(alignment: .center, spacing: 8) {
+                    ForEach(
+                        Array(presentation.supportingMetrics.enumerated()),
+                        id: \.element.id
+                    ) { index, metric in
+                        if index > 0 {
+                            Rectangle()
+                                .fill(CheckpointTheme.heroDivider)
+                                .frame(width: 1, height: 40)
+                                .accessibilityHidden(true)
+                        }
+
+                        compactMetric(metric)
+                    }
+                }
+            }
+        }
+        .padding(.top, 1)
+        .animation(motionPolicy.updateAnimation, value: presentation.supportingMetrics)
+    }
+
+    private func compactMetric(_ metric: ProgressMomentumMetric) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(metric.valueText)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .contentTransition(.numericText())
+
+            Text(metric.labelText)
+                .font(.caption2.weight(.bold))
+                .tracking(0.4)
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .lineLimit(2)
+                .minimumScaleFactor(0.78)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+    }
+
+    private func accessibilityMetricRow(_ metric: ProgressMomentumMetric) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text(metric.valueText)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(CheckpointTheme.heroText)
+                .monospacedDigit()
+                .lineLimit(1)
+                .contentTransition(.numericText())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(metric.labelText)
+                    .font(.caption.weight(.bold))
+                    .tracking(0.45)
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let detailText = metric.detailText {
+                    Text(detailText)
+                        .font(.caption)
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var footer: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text(presentation.footerText)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.heroMuted)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.numericText())
+
+            Spacer(minLength: 0)
+        }
+        .padding(.top, 1)
+        .animation(motionPolicy.updateAnimation, value: presentation.footerText)
+    }
+
+    private func compactStreakBadgeText(_ text: String) -> String {
+        text.split(separator: " ").first.map(String.init)?.uppercased() ?? text
+    }
+}
+
+struct ProgressMomentumActivityRail: View {
+    let days: [ProgressWeeklyImpactDayPresentation]
+    let replayID: ProgressMomentumRevealID
+    let reduceMotion: Bool
+    let renderStyleReporter: (@MainActor (ProgressMomentumMotionStyle) -> Void)?
+
+    init(
+        days: [ProgressWeeklyImpactDayPresentation],
+        replayID: ProgressMomentumRevealID,
+        reduceMotion: Bool,
+        renderStyleReporter: (@MainActor (ProgressMomentumMotionStyle) -> Void)? = nil
+    ) {
+        self.days = days
+        self.replayID = replayID
+        self.reduceMotion = reduceMotion
+        self.renderStyleReporter = renderStyleReporter
+    }
+
+    var body: some View {
+        ProgressMomentumActivityRailScope(
+            days: days,
+            replayID: replayID,
+            reduceMotion: reduceMotion,
+            renderStyleReporter: renderStyleReporter
+        )
+        .id(replayID)
+    }
+}
+
+private struct ProgressMomentumActivityRailScope: View {
+    let days: [ProgressWeeklyImpactDayPresentation]
+    let replayID: ProgressMomentumRevealID
+    let reduceMotion: Bool
+    let renderStyleReporter: (@MainActor (ProgressMomentumMotionStyle) -> Void)?
+
+    @State private var suppressesRevealForScope: Bool
+
+    init(
+        days: [ProgressWeeklyImpactDayPresentation],
+        replayID: ProgressMomentumRevealID,
+        reduceMotion: Bool,
+        renderStyleReporter: (@MainActor (ProgressMomentumMotionStyle) -> Void)?
+    ) {
+        self.days = days
+        self.replayID = replayID
+        self.reduceMotion = reduceMotion
+        self.renderStyleReporter = renderStyleReporter
+        _suppressesRevealForScope = State(initialValue: reduceMotion)
+    }
+
+    private var renderStyle: ProgressMomentumMotionStyle {
+        suppressesRevealForScope ? .identity : .animated
+    }
+
+    var body: some View {
+        ProgressMomentumActivityRailBars(
+            days: days,
+            replayID: replayID,
+            reduceMotion: reduceMotion,
+            startsRevealed: suppressesRevealForScope
+        )
+        .onAppear {
+            renderStyleReporter?(renderStyle)
+        }
+        .id(renderStyle)
+        .onChange(of: reduceMotion) { _, shouldReduceMotion in
+            guard shouldReduceMotion, !suppressesRevealForScope else { return }
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                suppressesRevealForScope = true
+            }
+        }
+    }
+}
+
+private struct ProgressMomentumActivityRailBars: View {
+    let days: [ProgressWeeklyImpactDayPresentation]
+    let replayID: ProgressMomentumRevealID
+    let reduceMotion: Bool
+
+    @State private var isRevealed: Bool
+
+    init(
+        days: [ProgressWeeklyImpactDayPresentation],
+        replayID: ProgressMomentumRevealID,
+        reduceMotion: Bool,
+        startsRevealed: Bool
+    ) {
+        self.days = days
+        self.replayID = replayID
+        self.reduceMotion = reduceMotion
+        _isRevealed = State(initialValue: startsRevealed || reduceMotion)
+    }
+
+    private var motionPolicy: ProgressMomentumMotionPolicy {
+        ProgressMomentumMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 7) {
+            ForEach(Array(days.enumerated()), id: \.element.id) { index, day in
                 VStack(spacing: 4) {
+                    ZStack(alignment: .bottom) {
+                        Capsule()
+                            .fill(trackColor(for: day.state))
+                            .frame(height: 24)
+
+                        Capsule()
+                            .fill(fillColor(for: day.state))
+                            .frame(height: renderedMarkHeight(for: day))
+                            .animation(
+                                motionPolicy.updateAnimation,
+                                value: day.activityLevel
+                            )
+                            .animation(
+                                motionPolicy.revealAnimation(dayIndex: index),
+                                value: isRevealed
+                            )
+                    }
+                    .frame(maxWidth: 8)
+
                     Text(day.label)
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(dayLabelColor(for: day.state))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
-
-                    Capsule()
-                        .fill(dayMarkColor(for: day.state))
-                        .frame(height: activityMarkHeight(for: day))
                 }
                 .frame(maxWidth: .infinity)
             }
         }
         .accessibilityHidden(true)
+        .task(id: replayID) {
+            if reduceMotion {
+                isRevealed = true
+                return
+            }
+
+            isRevealed = false
+            await Task.yield()
+            guard !Task.isCancelled else { return }
+            isRevealed = true
+        }
     }
 
-    private func activityMarkHeight(
+    private func renderedMarkHeight(
         for day: ProgressWeeklyImpactDayPresentation
     ) -> CGFloat {
-        guard day.state == .active else { return 4 }
-        return 4 + (4 * CGFloat(day.activityLevel))
+        guard day.state == .active else { return 3 }
+        let revealFraction = reduceMotion || isRevealed ? 1.0 : 0.0
+        return 3 + (21 * CGFloat(day.activityLevel) * revealFraction)
     }
 
     private func dayLabelColor(for state: ProgressWeeklyImpactDayState) -> Color {
         switch state {
         case .active:
-            CheckpointTheme.text
+            CheckpointTheme.heroText
         case .inactive:
-            CheckpointTheme.muted
+            CheckpointTheme.heroMuted
         case .future:
-            CheckpointTheme.muted.opacity(0.52)
+            CheckpointTheme.heroMuted.opacity(0.7)
         }
     }
 
-    private func dayMarkColor(for state: ProgressWeeklyImpactDayState) -> Color {
+    private func trackColor(for state: ProgressWeeklyImpactDayState) -> Color {
+        switch state {
+        case .active, .inactive:
+            CheckpointTheme.heroTrack.opacity(0.52)
+        case .future:
+            CheckpointTheme.heroTrack.opacity(0.22)
+        }
+    }
+
+    private func fillColor(for state: ProgressWeeklyImpactDayState) -> Color {
         switch state {
         case .active:
-            CheckpointTheme.teal
+            CheckpointTheme.heroSuccess
         case .inactive:
-            CheckpointTheme.controlStroke
+            CheckpointTheme.heroTrack.opacity(0.72)
         case .future:
-            CheckpointTheme.controlStroke.opacity(0.45)
+            CheckpointTheme.heroTrack.opacity(0.28)
         }
     }
 }
