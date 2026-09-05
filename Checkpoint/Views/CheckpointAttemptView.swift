@@ -337,6 +337,76 @@ struct CheckpointChoiceSelectionPolicy {
     }
 }
 
+enum CheckpointChoiceLayoutStyle: Equatable {
+    case inline
+    case stacked
+}
+
+struct CheckpointChoiceLayoutPolicy: Equatable {
+    let usesAccessibilityTextSize: Bool
+
+    let contentSpacing: CGFloat = 12
+    let indicatorWidth: CGFloat = 22
+    let minimumControlHeight: CGFloat = 52
+
+    var style: CheckpointChoiceLayoutStyle {
+        usesAccessibilityTextSize ? .stacked : .inline
+    }
+
+    var contentPadding: CGFloat {
+        usesAccessibilityTextSize ? 8 : 12
+    }
+
+    var answerGroupHorizontalExpansion: CGFloat {
+        usesAccessibilityTextSize ? 12 : 0
+    }
+
+    var titleFont: Font {
+        usesAccessibilityTextSize
+            ? .footnote.weight(.semibold)
+            : .subheadline.weight(.semibold)
+    }
+
+    func availableTitleWidth(in controlWidth: CGFloat) -> CGFloat {
+        let reservedWidth = contentPadding * 2
+            + (style == .inline ? indicatorWidth + contentSpacing : 0)
+        return max(0, controlWidth - reservedWidth)
+    }
+}
+
+enum CheckpointChoiceLayoutElement: Hashable {
+    case questionPanel
+    case answerGroup
+    case control(String)
+    case indicator(String)
+    case title(String)
+}
+
+struct CheckpointChoiceLayoutPreferenceKey: PreferenceKey {
+    static var defaultValue: [CheckpointChoiceLayoutElement: Anchor<CGRect>] { [:] }
+
+    static func reduce(
+        value: inout [CheckpointChoiceLayoutElement: Anchor<CGRect>],
+        nextValue: () -> [CheckpointChoiceLayoutElement: Anchor<CGRect>]
+    ) {
+        value.merge(nextValue(), uniquingKeysWith: { _, latest in latest })
+    }
+}
+
+private extension View {
+    func checkpointChoiceLayoutAnchor(
+        _ element: CheckpointChoiceLayoutElement
+    ) -> some View {
+        transformAnchorPreference(
+            key: CheckpointChoiceLayoutPreferenceKey.self,
+            value: .bounds,
+            transform: { value, anchor in
+                value[element] = anchor
+            }
+        )
+    }
+}
+
 enum CheckpointRunwayNodeState: Equatable {
     case upcoming
     case current
@@ -1250,6 +1320,7 @@ struct CheckpointAttemptView: View {
                 inlineFeedback
             }
         }
+        .checkpointChoiceLayoutAnchor(.questionPanel)
     }
 
     @ViewBuilder
@@ -1262,12 +1333,15 @@ struct CheckpointAttemptView: View {
                         state: choiceState(for: choice),
                         selectionNamespace: choiceSelectionNamespace,
                         selectionID: "choice-selection-\(question.id.uuidString)",
-                        selectionPolicy: choiceSelectionPolicy
+                        selectionPolicy: choiceSelectionPolicy,
+                        layoutPolicy: choiceLayoutPolicy
                     ) {
                         selectChoice(choice)
                     }
                 }
             }
+            .checkpointChoiceLayoutAnchor(.answerGroup)
+            .padding(.horizontal, -choiceLayoutPolicy.answerGroupHorizontalExpansion)
         } else {
             TextField("Type your answer", text: $answer, axis: .vertical)
                 .focused($isAnswerFieldFocused)
@@ -1382,6 +1456,12 @@ struct CheckpointAttemptView: View {
 
     private var choiceSelectionPolicy: CheckpointChoiceSelectionPolicy {
         CheckpointChoiceSelectionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var choiceLayoutPolicy: CheckpointChoiceLayoutPolicy {
+        CheckpointChoiceLayoutPolicy(
+            usesAccessibilityTextSize: dynamicTypeSize.isAccessibilitySize
+        )
     }
 
     private var chromePresentation: CheckpointAttemptChromePresentation {
@@ -1894,32 +1974,24 @@ private struct ChoiceButton: View {
     var selectionNamespace: Namespace.ID
     var selectionID: String
     var selectionPolicy: CheckpointChoiceSelectionPolicy
+    var layoutPolicy: CheckpointChoiceLayoutPolicy
     var action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(iconTint)
-                    .frame(width: 22)
-                    .contentTransition(.symbolEffect(.replace))
-                    .symbolEffectsRemoved(selectionPolicy.reduceMotion)
-
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Spacer(minLength: 0)
-            }
-            .padding(12)
-            .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
-            .background { choiceBackground }
-            .overlay(
-                RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
-                    .stroke(borderColor, lineWidth: state == .idle || state == .locked ? 1 : 1.4)
-            )
+            choiceLabel
+                .padding(layoutPolicy.contentPadding)
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: layoutPolicy.minimumControlHeight,
+                    alignment: .leading
+                )
+                .background { choiceBackground }
+                .overlay(
+                    RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
+                        .stroke(borderColor, lineWidth: state == .idle || state == .locked ? 1 : 1.4)
+                )
+                .checkpointChoiceLayoutAnchor(.control(title))
         }
         .buttonStyle(CheckpointPressButtonStyle())
         .disabled(state.isLocked)
@@ -1932,6 +2004,42 @@ private struct ChoiceButton: View {
         .accessibilityLabel(title)
         .accessibilityValue(accessibilityValue)
         .accessibilityAddTraits(state == .selected ? .isSelected : [])
+    }
+
+    @ViewBuilder
+    private var choiceLabel: some View {
+        switch layoutPolicy.style {
+        case .inline:
+            HStack(spacing: layoutPolicy.contentSpacing) {
+                choiceIndicator
+                choiceTitle
+            }
+        case .stacked:
+            VStack(alignment: .leading, spacing: layoutPolicy.contentSpacing) {
+                choiceIndicator
+                choiceTitle
+            }
+        }
+    }
+
+    private var choiceIndicator: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 18, weight: .semibold))
+            .foregroundStyle(iconTint)
+            .frame(width: layoutPolicy.indicatorWidth)
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffectsRemoved(selectionPolicy.reduceMotion)
+            .checkpointChoiceLayoutAnchor(.indicator(title))
+    }
+
+    private var choiceTitle: some View {
+        Text(title)
+            .font(layoutPolicy.titleFont)
+            .foregroundStyle(CheckpointTheme.text)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .checkpointChoiceLayoutAnchor(.title(title))
     }
 
     @ViewBuilder

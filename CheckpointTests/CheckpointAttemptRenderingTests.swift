@@ -239,6 +239,24 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
                 isLocked: true
             )
         )
+
+        let standardLayout = CheckpointChoiceLayoutPolicy(
+            usesAccessibilityTextSize: false
+        )
+        XCTAssertEqual(standardLayout.style, .inline)
+        XCTAssertEqual(standardLayout.availableTitleWidth(in: 248), 190)
+
+        let accessibilityLayout = CheckpointChoiceLayoutPolicy(
+            usesAccessibilityTextSize: true
+        )
+        XCTAssertEqual(accessibilityLayout.style, .stacked)
+        XCTAssertGreaterThanOrEqual(accessibilityLayout.minimumControlHeight, 44)
+        XCTAssertEqual(accessibilityLayout.answerGroupHorizontalExpansion, 12)
+        XCTAssertEqual(accessibilityLayout.availableTitleWidth(in: 272), 256)
+        XCTAssertGreaterThan(
+            accessibilityLayout.availableTitleWidth(in: 272),
+            standardLayout.availableTitleWidth(in: 248)
+        )
     }
 
     @MainActor
@@ -760,10 +778,16 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         ]
 
         for fixture in fixtures {
+            let choiceLayoutCapture = CheckpointAttemptChoiceLayoutCapture()
             let image = HostedViewRenderer.image(
-                for: fixture.content
-                    .environment(\.colorScheme, fixture.colorScheme)
-                    .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                for: CheckpointAttemptChoiceLayoutScene(
+                    content: AnyView(
+                        fixture.content
+                            .environment(\.colorScheme, fixture.colorScheme)
+                            .environment(\.dynamicTypeSize, fixture.dynamicTypeSize)
+                    ),
+                    capture: choiceLayoutCapture
+                ),
                 width: fixture.width,
                 height: fixture.height,
                 colorScheme: fixture.colorScheme
@@ -771,10 +795,216 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
 
             XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
             XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            switch fixture.name {
+            case "attempt-selected-answer-full-light":
+                try assertChoiceLayout(
+                    choiceLayoutCapture,
+                    titles: questions[0].choices,
+                    style: .inline,
+                    viewportWidth: fixture.width,
+                    fixtureName: fixture.name
+                )
+            case "attempt-selected-answer-narrow-accessibility5-dark-reduced":
+                try assertChoiceLayout(
+                    choiceLayoutCapture,
+                    titles: questions[0].choices,
+                    style: .stacked,
+                    viewportWidth: fixture.width,
+                    fixtureName: fixture.name
+                )
+            default:
+                break
+            }
+
             let attachment = XCTAttachment(image: image)
             attachment.name = fixture.name
             attachment.lifetime = .keepAlways
             add(attachment)
+        }
+    }
+
+    @MainActor
+    private func assertChoiceLayout(
+        _ capture: CheckpointAttemptChoiceLayoutCapture,
+        titles: [String],
+        style: CheckpointChoiceLayoutStyle,
+        viewportWidth: CGFloat,
+        fixtureName: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let frames = capture.frames
+        let questionPanel = try XCTUnwrap(
+            frames[.questionPanel],
+            "\(fixtureName): missing question panel frame",
+            file: file,
+            line: line
+        )
+        let answerGroup = try XCTUnwrap(
+            frames[.answerGroup],
+            "\(fixtureName): missing answer group frame",
+            file: file,
+            line: line
+        )
+        let layout = CheckpointChoiceLayoutPolicy(
+            usesAccessibilityTextSize: style == .stacked
+        )
+        let expectedControlWidth = viewportWidth - 72
+            + layout.answerGroupHorizontalExpansion * 2
+        let containmentTolerance: CGFloat = 0.75
+        let expandedPanel = questionPanel.insetBy(
+            dx: -containmentTolerance,
+            dy: -containmentTolerance
+        )
+        let expandedGroup = answerGroup.insetBy(
+            dx: -containmentTolerance,
+            dy: -containmentTolerance
+        )
+
+        XCTAssertTrue(
+            expandedPanel.contains(answerGroup),
+            "\(fixtureName): answer group must remain inside its question panel",
+            file: file,
+            line: line
+        )
+
+        var controls: [CGRect] = []
+        for title in titles {
+            let control = try XCTUnwrap(
+                frames[.control(title)],
+                "\(fixtureName): missing control frame for \(title)",
+                file: file,
+                line: line
+            )
+            let indicator = try XCTUnwrap(
+                frames[.indicator(title)],
+                "\(fixtureName): missing indicator frame for \(title)",
+                file: file,
+                line: line
+            )
+            let titleFrame = try XCTUnwrap(
+                frames[.title(title)],
+                "\(fixtureName): missing title frame for \(title)",
+                file: file,
+                line: line
+            )
+            let expandedControl = control.insetBy(
+                dx: -containmentTolerance,
+                dy: -containmentTolerance
+            )
+
+            controls.append(control)
+            XCTAssertTrue(
+                expandedGroup.contains(control),
+                "\(fixtureName): choice must remain inside the answer group",
+                file: file,
+                line: line
+            )
+            XCTAssertTrue(
+                expandedControl.contains(indicator),
+                "\(fixtureName): indicator must remain inside its control",
+                file: file,
+                line: line
+            )
+            XCTAssertTrue(
+                expandedControl.contains(titleFrame),
+                "\(fixtureName): title must remain inside its control",
+                file: file,
+                line: line
+            )
+            XCTAssertEqual(
+                control.width,
+                expectedControlWidth,
+                accuracy: 1,
+                "\(fixtureName): choices must fill the available panel width",
+                file: file,
+                line: line
+            )
+            XCTAssertGreaterThanOrEqual(
+                control.height,
+                layout.minimumControlHeight,
+                "\(fixtureName): choices must preserve a 44-point-or-larger target",
+                file: file,
+                line: line
+            )
+            XCTAssertEqual(
+                titleFrame.width,
+                layout.availableTitleWidth(in: control.width),
+                accuracy: 1,
+                "\(fixtureName): title should receive its intended text column",
+                file: file,
+                line: line
+            )
+
+            switch style {
+            case .inline:
+                XCTAssertLessThanOrEqual(
+                    indicator.maxX + layout.contentSpacing,
+                    titleFrame.minX + containmentTolerance,
+                    "\(fixtureName): regular layout keeps the title beside the indicator",
+                    file: file,
+                    line: line
+                )
+            case .stacked:
+                XCTAssertLessThanOrEqual(
+                    indicator.maxY + layout.contentSpacing,
+                    titleFrame.minY + containmentTolerance,
+                    "\(fixtureName): accessibility layout keeps the title below the indicator",
+                    file: file,
+                    line: line
+                )
+                XCTAssertEqual(
+                    titleFrame.minX,
+                    control.minX + layout.contentPadding,
+                    accuracy: 1,
+                    "\(fixtureName): accessibility title should align to the full-width inset",
+                    file: file,
+                    line: line
+                )
+            }
+        }
+
+        for (upper, lower) in zip(controls, controls.dropFirst()) {
+            XCTAssertEqual(
+                lower.minY - upper.maxY,
+                10,
+                accuracy: 1,
+                "\(fixtureName): choices should keep consistent vertical separation",
+                file: file,
+                line: line
+            )
+        }
+
+        guard style == .stacked else { return }
+
+        let traits = UITraitCollection(
+            preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge
+        )
+        let pointSize = UIFont.preferredFont(
+            forTextStyle: .footnote,
+            compatibleWith: traits
+        ).pointSize
+        let titleFont = UIFont.systemFont(ofSize: pointSize, weight: .semibold)
+        for title in titles {
+            let titleFrame = try XCTUnwrap(frames[.title(title)], file: file, line: line)
+            let widestWord = title
+                .split(whereSeparator: \.isWhitespace)
+                .map {
+                    ceil(
+                        (String($0) as NSString).size(
+                            withAttributes: [.font: titleFont]
+                        ).width
+                    )
+                }
+                .max() ?? 0
+            XCTAssertLessThanOrEqual(
+                widestWord,
+                titleFrame.width,
+                "\(fixtureName): full words must fit without forced fragmentation",
+                file: file,
+                line: line
+            )
         }
     }
 
@@ -1000,6 +1230,39 @@ private struct CheckpointAttemptRenderFixture {
     let colorScheme: ColorScheme
     let dynamicTypeSize: DynamicTypeSize
     let content: AnyView
+}
+
+@MainActor
+private final class CheckpointAttemptChoiceLayoutCapture {
+    var frames: [CheckpointChoiceLayoutElement: CGRect] = [:]
+
+    func record(_ updatedFrames: [CheckpointChoiceLayoutElement: CGRect]) {
+        frames.merge(updatedFrames, uniquingKeysWith: { _, latest in latest })
+    }
+}
+
+private struct CheckpointAttemptChoiceLayoutScene: View {
+    let content: AnyView
+    let capture: CheckpointAttemptChoiceLayoutCapture
+
+    var body: some View {
+        content
+            .overlayPreferenceValue(CheckpointChoiceLayoutPreferenceKey.self) { anchors in
+                GeometryReader { proxy in
+                    let frames = anchors.mapValues { proxy[$0] }
+
+                    Color.clear
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                        .onAppear {
+                            capture.record(frames)
+                        }
+                        .onChange(of: frames) { _, updatedFrames in
+                            capture.record(updatedFrames)
+                        }
+                }
+            }
+    }
 }
 
 private func makeReflectionAttemptQuestion(
