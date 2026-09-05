@@ -39,6 +39,472 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         )
     }
 
+    func testFirstGoalSuccessHandoffIssuesAndConsumesAnExactGoalOnce() throws {
+        let goalID = UUID()
+        var queue = FirstGoalSuccessHandoffQueue()
+
+        XCTAssertFalse(
+            queue.issue(
+                goalID: goalID,
+                goalTitle: "Pass the bar exam",
+                isFirstRunSetupPending: false
+            ),
+            "An ephemeral cue must never precede durable first-run setup."
+        )
+        XCTAssertTrue(
+            queue.issue(
+                goalID: goalID,
+                goalTitle: "  Pass the bar exam  ",
+                isFirstRunSetupPending: true
+            )
+        )
+        let token = try XCTUnwrap(queue.pendingToken)
+        XCTAssertEqual(token.id, token.deliveryID)
+        XCTAssertEqual(token.goalID, goalID)
+        XCTAssertEqual(token.goalTitle, "Pass the bar exam")
+        XCTAssertTrue(token.accessibilityAnnouncement.contains("Step 3 of 3"))
+
+        XCTAssertFalse(
+            queue.issue(
+                goalID: goalID,
+                goalTitle: "Duplicate callback",
+                isFirstRunSetupPending: true
+            )
+        )
+
+        let abandonedGoalID = UUID()
+        var abandonedQueue = FirstGoalSuccessHandoffQueue()
+        XCTAssertTrue(
+            abandonedQueue.issue(
+                goalID: abandonedGoalID,
+                goalTitle: "Try meditation",
+                isFirstRunSetupPending: true
+            )
+        )
+        abandonedQueue.discardPending()
+        XCTAssertNil(abandonedQueue.pendingToken)
+        XCTAssertTrue(abandonedQueue.deliveredGoalIDs.isEmpty)
+        XCTAssertTrue(
+            abandonedQueue.issue(
+                goalID: abandonedGoalID,
+                goalTitle: "Try meditation",
+                isFirstRunSetupPending: true
+            ),
+            "Terminal cleanup discards an unseen cue without falsely marking it delivered."
+        )
+        XCTAssertEqual(queue.pendingToken, token)
+
+        let wrongToken = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "A different goal"
+        )
+        XCTAssertFalse(queue.consume(wrongToken))
+        XCTAssertEqual(queue.pendingToken, token)
+        let wrongRevision = FirstGoalSuccessHandoffToken(
+            goalID: goalID,
+            goalTitle: token.goalTitle
+        )
+        XCTAssertNotEqual(wrongRevision.deliveryID, token.deliveryID)
+        XCTAssertFalse(queue.consume(wrongRevision))
+        XCTAssertEqual(queue.pendingToken, token)
+
+        XCTAssertTrue(queue.consume(token))
+        XCTAssertNil(queue.pendingToken)
+        XCTAssertTrue(queue.deliveredGoalIDs.contains(goalID))
+        XCTAssertFalse(queue.consume(token))
+        XCTAssertFalse(
+            queue.issue(
+                goalID: goalID,
+                goalTitle: token.goalTitle,
+                isFirstRunSetupPending: true
+            )
+        )
+    }
+
+    func testFirstGoalSuccessHandoffInvalidatesWhenTheCurrentGoalChanges() throws {
+        let originalGoalID = UUID()
+        let replacementGoalID = UUID()
+        var queue = FirstGoalSuccessHandoffQueue()
+
+        XCTAssertTrue(
+            queue.issue(
+                goalID: originalGoalID,
+                goalTitle: "Learn Swift",
+                isFirstRunSetupPending: true
+            )
+        )
+        queue.invalidate(unless: originalGoalID)
+        XCTAssertEqual(queue.pendingToken?.goalID, originalGoalID)
+
+        queue.invalidate(unless: replacementGoalID)
+        XCTAssertNil(queue.pendingToken)
+
+        XCTAssertTrue(
+            queue.issue(
+                goalID: replacementGoalID,
+                goalTitle: "Learn Rust",
+                isFirstRunSetupPending: true
+            )
+        )
+        queue.invalidate(unless: nil)
+        XCTAssertNil(queue.pendingToken)
+    }
+
+    func testFirstGoalSuccessHandoffDeliverySurvivesParentConsumptionWithoutReplaying() throws {
+        let firstToken = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Prepare for the MCAT"
+        )
+        var delivery = FirstGoalSuccessHandoffDeliveryState(token: firstToken)
+        let firstContext = FirstGoalSuccessHandoffDeliveryContext(
+            activeGoalID: firstToken.goalID,
+            phase: .selecting,
+            isAuthorized: true,
+            errorMessage: nil,
+            isExposed: true
+        )
+
+        XCTAssertEqual(delivery.candidateForDelivery, firstToken)
+        XCTAssertNil(delivery.presentedToken)
+        let firstEffect = try XCTUnwrap(
+            delivery.attemptDelivery(in: firstContext) { $0 == firstToken }
+        )
+        XCTAssertEqual(firstEffect.token, firstToken)
+        XCTAssertEqual(firstEffect.revealSequenceIncrement, 1)
+        XCTAssertEqual(firstEffect.successFeedbackSequenceIncrement, 1)
+        XCTAssertEqual(
+            firstEffect.accessibilityAnnouncement,
+            firstToken.accessibilityAnnouncement
+        )
+        XCTAssertNil(delivery.pendingToken)
+        XCTAssertEqual(delivery.presentedToken, firstToken)
+        XCTAssertNil(delivery.candidateForDelivery)
+
+        delivery.receive(nil)
+        XCTAssertEqual(
+            delivery.presentedToken,
+            firstToken,
+            "Clearing the parent queue must not erase the destination's visible success copy."
+        )
+        delivery.receive(firstToken)
+        XCTAssertNil(delivery.candidateForDelivery)
+
+        let nextToken = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Build a morning routine"
+        )
+        delivery.receive(nextToken)
+        XCTAssertEqual(delivery.candidateForDelivery, nextToken)
+        XCTAssertEqual(
+            delivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: nextToken.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsume: { $0 == nextToken }
+            )?.token,
+            nextToken
+        )
+        XCTAssertEqual(delivery.presentedToken, nextToken)
+        XCTAssertNil(delivery.candidateForDelivery)
+
+        let staleToken = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "A stale goal"
+        )
+        var rejectedDelivery = FirstGoalSuccessHandoffDeliveryState(token: staleToken)
+        XCTAssertNil(
+            rejectedDelivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: staleToken.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsume: { _ in false }
+            )
+        )
+        XCTAssertNil(rejectedDelivery.pendingToken)
+        XCTAssertNil(rejectedDelivery.presentedToken)
+        XCTAssertNil(rejectedDelivery.candidateForDelivery)
+        rejectedDelivery.receive(staleToken)
+        XCTAssertNil(
+            rejectedDelivery.candidateForDelivery,
+            "An authoritative rejection resolves the stale token without retrying it."
+        )
+        let correctedToken = FirstGoalSuccessHandoffToken(
+            goalID: staleToken.goalID,
+            goalTitle: "A corrected handoff"
+        )
+        rejectedDelivery.receive(correctedToken)
+        XCTAssertEqual(
+            rejectedDelivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: correctedToken.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsume: { $0 == correctedToken }
+            )?.token,
+            correctedToken,
+            "A rejected delivery identity must not poison a corrected cue for the same goal."
+        )
+
+        var mismatchedDelivery = FirstGoalSuccessHandoffDeliveryState(token: staleToken)
+        var mismatchedConsumptionAttempts = 0
+        XCTAssertNil(
+            mismatchedDelivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: UUID(),
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsume: { _ in
+                    mismatchedConsumptionAttempts += 1
+                    return true
+                }
+            )
+        )
+        XCTAssertNil(mismatchedDelivery.pendingToken)
+        XCTAssertNil(mismatchedDelivery.presentedToken)
+        XCTAssertNil(mismatchedDelivery.candidateForDelivery)
+        XCTAssertEqual(mismatchedConsumptionAttempts, 0)
+        mismatchedDelivery.receive(staleToken)
+        XCTAssertNil(
+            mismatchedDelivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: staleToken.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsume: { _ in
+                    mismatchedConsumptionAttempts += 1
+                    return true
+                }
+            ),
+            "A token first seen against another goal must not become deliverable later."
+        )
+        XCTAssertEqual(mismatchedConsumptionAttempts, 0)
+    }
+
+    func testFirstGoalSuccessHandoffEmitsOneCompleteEffectAfterEligibilityRekeys() throws {
+        let token = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Ship the portfolio"
+        )
+
+        for reduceMotion in [false, true] {
+            var delivery = FirstGoalSuccessHandoffDeliveryState(token: token)
+            var effects: [FirstGoalSuccessHandoffDeliveryEffect] = []
+            var consumptionAttempts = 0
+
+            XCTAssertNil(
+                delivery.attemptDelivery(
+                    in: FirstGoalSuccessHandoffDeliveryContext(
+                        activeGoalID: nil,
+                        phase: .selecting,
+                        isAuthorized: true,
+                        errorMessage: nil,
+                        isExposed: true
+                    ),
+                    authoritativeConsume: { _ in
+                        consumptionAttempts += 1
+                        return true
+                    }
+                ),
+                "A temporarily unavailable goal identity should defer delivery."
+            )
+            XCTAssertNil(
+                delivery.attemptDelivery(
+                    in: FirstGoalSuccessHandoffDeliveryContext(
+                        activeGoalID: token.goalID,
+                        phase: .selecting,
+                        isAuthorized: false,
+                        errorMessage: nil,
+                        isExposed: true
+                    ),
+                    authoritativeConsume: { _ in
+                        consumptionAttempts += 1
+                        return true
+                    }
+                )
+            )
+            XCTAssertNil(
+                delivery.attemptDelivery(
+                    in: FirstGoalSuccessHandoffDeliveryContext(
+                        activeGoalID: token.goalID,
+                        phase: .selecting,
+                        isAuthorized: true,
+                        errorMessage: "Screen Time access changed.",
+                        isExposed: true
+                    ),
+                    authoritativeConsume: { _ in
+                        consumptionAttempts += 1
+                        return true
+                    }
+                )
+            )
+            XCTAssertNil(
+                delivery.attemptDelivery(
+                    in: FirstGoalSuccessHandoffDeliveryContext(
+                        activeGoalID: token.goalID,
+                        phase: .preparing(selectionSummary: "1 app selected"),
+                        isAuthorized: true,
+                        errorMessage: nil,
+                        isExposed: true
+                    ),
+                    authoritativeConsume: { _ in
+                        consumptionAttempts += 1
+                        return true
+                    }
+                )
+            )
+            XCTAssertNil(
+                delivery.attemptDelivery(
+                    in: FirstGoalSuccessHandoffDeliveryContext(
+                        activeGoalID: token.goalID,
+                        phase: .selecting,
+                        isAuthorized: true,
+                        errorMessage: nil,
+                        isExposed: false
+                    ),
+                    authoritativeConsume: { _ in
+                        consumptionAttempts += 1
+                        return true
+                    }
+                ),
+                "A covered destination should preserve its one visible effect until exposure."
+            )
+
+            if let effect = delivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: token.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsume: { candidate in
+                    consumptionAttempts += 1
+                    return candidate == token
+                }
+            ) {
+                effects.append(effect)
+            }
+
+            delivery.receive(nil)
+            delivery.receive(token)
+            if let repeatedEffect = delivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: token.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsume: { _ in
+                    consumptionAttempts += 1
+                    return true
+                }
+            ) {
+                effects.append(repeatedEffect)
+            }
+
+            XCTAssertEqual(consumptionAttempts, 1)
+            XCTAssertEqual(effects.count, 1)
+            XCTAssertEqual(effects.first?.token, token)
+            XCTAssertEqual(effects.first?.revealSequenceIncrement, 1)
+            XCTAssertEqual(effects.first?.successFeedbackSequenceIncrement, 1)
+            XCTAssertEqual(
+                effects.first?.accessibilityAnnouncement,
+                token.accessibilityAnnouncement
+            )
+            XCTAssertEqual(
+                FirstGoalSuccessHandoffMotionPolicy(reduceMotion: reduceMotion).style,
+                reduceMotion ? .identity : .reveal,
+                "Reduce Motion changes animation style, not delivery-effect cardinality."
+            )
+        }
+    }
+
+    func testFirstGoalSuccessHandoffWaitsForActiveUncoveredSceneAndNeverReplays() throws {
+        let token = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Finish the portfolio"
+        )
+        var delivery = FirstGoalSuccessHandoffDeliveryState(token: token)
+        var consumptionAttempts = 0
+        var effects: [FirstGoalSuccessHandoffDeliveryEffect] = []
+
+        func context(isSceneActive: Bool) -> FirstGoalSuccessHandoffDeliveryContext {
+            FirstGoalSuccessHandoffDeliveryContext(
+                activeGoalID: token.goalID,
+                phase: .selecting,
+                isAuthorized: true,
+                errorMessage: nil,
+                isExposed: FirstGoalSuccessHandoffExposure.allowsDelivery(
+                    isSceneActive: isSceneActive,
+                    blocksUnderlyingPresentations: false
+                )
+            )
+        }
+
+        XCTAssertFalse(
+            FirstGoalSuccessHandoffExposure.allowsDelivery(
+                isSceneActive: true,
+                blocksUnderlyingPresentations: true
+            )
+        )
+        XCTAssertNil(
+            delivery.attemptDelivery(in: context(isSceneActive: false)) { _ in
+                consumptionAttempts += 1
+                return true
+            },
+            "An inactive but otherwise uncovered scene must preserve the one-shot effect."
+        )
+
+        if let effect = delivery.attemptDelivery(in: context(isSceneActive: true)) { candidate in
+            consumptionAttempts += 1
+            return candidate == token
+        } {
+            effects.append(effect)
+        }
+
+        XCTAssertNil(
+            delivery.attemptDelivery(in: context(isSceneActive: false)) { _ in
+                consumptionAttempts += 1
+                return true
+            }
+        )
+        XCTAssertNil(
+            delivery.attemptDelivery(in: context(isSceneActive: true)) { _ in
+                consumptionAttempts += 1
+                return true
+            },
+            "A second background/foreground cycle must not replay the delivered effect."
+        )
+        XCTAssertEqual(consumptionAttempts, 1)
+        XCTAssertEqual(effects, [FirstGoalSuccessHandoffDeliveryEffect(token: token)])
+    }
+
+    func testDurableResumeDoesNotInventAnEphemeralSuccessHandoff() {
+        FirstRunSetupProgress.begin(defaults: defaults)
+        let relaunchedQueue = FirstGoalSuccessHandoffQueue()
+
+        XCTAssertTrue(FirstRunSetupProgress.isPending(defaults: defaults))
+        XCTAssertNil(relaunchedQueue.pendingToken)
+    }
+
     @MainActor
     func testFailedFirstRunProtectionStartKeepsSetupPending() async {
         FirstRunSetupProgress.begin(defaults: defaults)

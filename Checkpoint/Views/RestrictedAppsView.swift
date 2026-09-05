@@ -427,6 +427,98 @@ struct FirstRunProtectionMotionPolicy {
     }
 }
 
+enum FirstGoalSuccessHandoffMotionStyle: Equatable {
+    case reveal
+    case identity
+}
+
+struct FirstGoalSuccessHandoffMotionPolicy {
+    let reduceMotion: Bool
+
+    var style: FirstGoalSuccessHandoffMotionStyle {
+        reduceMotion ? .identity : .reveal
+    }
+
+    var animation: Animation? {
+        CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+    }
+}
+
+struct FirstGoalSuccessHandoffDeliveryTaskID: Hashable {
+    let deliveryID: UUID?
+    let goalID: UUID?
+    let context: FirstGoalSuccessHandoffDeliveryContext
+}
+
+struct FirstRunAppSelectionHeaderPresentation: Equatable {
+    let isSuccessHandoff: Bool
+    let stage: String
+    let title: String
+    let systemImage: String
+    let detail: String
+
+    init(handoff: FirstGoalSuccessHandoffToken?) {
+        isSuccessHandoff = handoff != nil
+        if !isSuccessHandoff {
+            stage = "Choose apps"
+            title = "Choose your pause points."
+            systemImage = "checkmark.shield.fill"
+            detail = "Now choose the apps and websites that should pause for a goal-based checkpoint before a timed break."
+        } else {
+            stage = "Goal saved"
+            title = "Choose your pause points."
+            systemImage = "checkmark.circle.fill"
+            detail = "Now choose the apps and websites that should pause for a goal-based checkpoint before a timed break."
+        }
+    }
+
+    func pickerHeaderText(
+        selectionSummary: String,
+        errorMessage: String?,
+        isCondensed: Bool = false,
+        condensedSelectionSummary: String? = nil
+    ) -> String {
+        if isCondensed {
+            var lines = [
+                isSuccessHandoff ? "Goal saved · Final" : "Step 3 of 3",
+                "Choose apps",
+                condensedSelectionSummary ?? selectionSummary,
+            ]
+            if let errorMessage {
+                lines.append("Needs attention: \(errorMessage)")
+            }
+            return lines.joined(separator: "\n")
+        }
+
+        var sections = [
+            "\(stage) · Step 3 of 3",
+            "\(title)\n\(selectionSummary)",
+            detail,
+        ]
+        if let errorMessage {
+            sections.append("Needs attention: \(errorMessage)")
+        }
+        return sections.joined(separator: "\n\n")
+    }
+
+    func pickerFooterText(categorySelectionDetail: String?) -> String {
+        [detail, categorySelectionDetail]
+            .compactMap { $0 }
+            .joined(separator: "\n\n")
+    }
+}
+
+enum FirstRunAppSelectionChrome: Equatable {
+    case brandedHeader
+    case systemPickerCopy
+
+    init(dynamicTypeSize: DynamicTypeSize) {
+        self = dynamicTypeSize >= .accessibility3
+            ? .systemPickerCopy
+            : .brandedHeader
+    }
+}
+
 struct FirstRunProtectionLiveState: Equatable {
     let isAuthorized: Bool
     let hasSelection: Bool
@@ -460,10 +552,17 @@ struct RestrictedAppsView: View {
     let screenTime: ScreenTimeController
     let presentationMode: RestrictedAppsPresentationMode
     private let reduceMotionOverride: Bool?
+    private let activeGoalID: UUID?
+    private let allowsFirstGoalHandoffDelivery: Bool
+    private let firstGoalHandoff: FirstGoalSuccessHandoffToken?
+    private let onFirstGoalHandoffConsumed: @MainActor (FirstGoalSuccessHandoffToken) -> Bool
+    private let onFirstGoalHandoffDelivered: @MainActor (FirstGoalSuccessHandoffDeliveryEffect) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @State private var firstRunFlow: FirstRunProtectionFlow
+    @State private var firstGoalHandoffDelivery: FirstGoalSuccessHandoffDeliveryState
+    @State private var firstGoalHandoffRevealSequence = 0
     @State private var successFeedbackSequence = 0
     @State private var errorFeedbackSequence = 0
 
@@ -471,6 +570,11 @@ struct RestrictedAppsView: View {
         self.screenTime = screenTime
         presentationMode = .management
         reduceMotionOverride = nil
+        activeGoalID = nil
+        allowsFirstGoalHandoffDelivery = false
+        firstGoalHandoff = nil
+        onFirstGoalHandoffConsumed = { _ in false }
+        onFirstGoalHandoffDelivered = { _ in }
         _firstRunFlow = State(
             initialValue: FirstRunProtectionFlow(
                 startProtection: {
@@ -479,6 +583,9 @@ struct RestrictedAppsView: View {
                 finishProtectedSetup: {},
                 continueWithoutProtection: {}
             )
+        )
+        _firstGoalHandoffDelivery = State(
+            initialValue: FirstGoalSuccessHandoffDeliveryState()
         )
     }
 
@@ -489,11 +596,21 @@ struct RestrictedAppsView: View {
         onContinueWithoutProtection: @escaping @MainActor () -> Void,
         onProtectionUnavailable: @escaping @MainActor () -> Void = {},
         initialPhase: FirstRunProtectionPhase = .selecting,
-        reduceMotionOverride: Bool? = nil
+        reduceMotionOverride: Bool? = nil,
+        activeGoalID: UUID?,
+        allowsFirstGoalHandoffDelivery: Bool = true,
+        firstGoalHandoff: FirstGoalSuccessHandoffToken? = nil,
+        onFirstGoalHandoffConsumed: @escaping @MainActor (FirstGoalSuccessHandoffToken) -> Bool = { _ in false },
+        onFirstGoalHandoffDelivered: @escaping @MainActor (FirstGoalSuccessHandoffDeliveryEffect) -> Void = { _ in }
     ) {
         self.screenTime = screenTime
         presentationMode = .firstRun
         self.reduceMotionOverride = reduceMotionOverride
+        self.activeGoalID = activeGoalID
+        self.allowsFirstGoalHandoffDelivery = allowsFirstGoalHandoffDelivery
+        self.firstGoalHandoff = firstGoalHandoff
+        self.onFirstGoalHandoffConsumed = onFirstGoalHandoffConsumed
+        self.onFirstGoalHandoffDelivered = onFirstGoalHandoffDelivered
         _firstRunFlow = State(
             initialValue: FirstRunProtectionFlow(
                 initialPhase: initialPhase,
@@ -502,6 +619,9 @@ struct RestrictedAppsView: View {
                 continueWithoutProtection: onContinueWithoutProtection,
                 protectionUnavailable: onProtectionUnavailable
             )
+        )
+        _firstGoalHandoffDelivery = State(
+            initialValue: FirstGoalSuccessHandoffDeliveryState(token: firstGoalHandoff)
         )
     }
 
@@ -540,6 +660,12 @@ struct RestrictedAppsView: View {
         }
         .sensoryFeedback(.success, trigger: successFeedbackSequence)
         .sensoryFeedback(.error, trigger: errorFeedbackSequence)
+        .onChange(of: firstGoalHandoff) { _, token in
+            firstGoalHandoffDelivery.receive(token)
+        }
+        .onChange(of: activeGoalID) { _, goalID in
+            firstGoalHandoffDelivery.invalidate(unless: goalID)
+        }
         .onChange(of: firstRunFlow.phase) { _, phase in
             switch phase {
             case .failed:
@@ -569,6 +695,11 @@ struct RestrictedAppsView: View {
             }
             reconcileLiveProtectionState()
         }
+        .task(id: firstGoalHandoffDeliveryTaskID) {
+            await Task.yield()
+            guard !Task.isCancelled else { return }
+            deliverFirstGoalHandoffIfNeeded()
+        }
         .onChange(of: liveProtectionState) { _, state in
             guard !state.isValid else { return }
             reconcileLiveProtectionState()
@@ -592,7 +723,10 @@ struct RestrictedAppsView: View {
         #if os(iOS) && canImport(FamilyControls)
             FamilyPickerContent(
                 screenTime: screenTime,
-                presentationMode: presentationMode
+                presentationMode: presentationMode,
+                firstGoalHandoff: firstGoalHandoffDelivery.presentedToken,
+                firstGoalHandoffRevealSequence: firstGoalHandoffRevealSequence,
+                reduceMotion: reduceMotion
             )
         #else
             ScrollView {
@@ -688,6 +822,24 @@ struct RestrictedAppsView: View {
         )
     }
 
+    private var firstGoalHandoffDeliveryTaskID: FirstGoalSuccessHandoffDeliveryTaskID {
+        FirstGoalSuccessHandoffDeliveryTaskID(
+            deliveryID: firstGoalHandoffDelivery.candidateForDelivery?.deliveryID,
+            goalID: firstGoalHandoffDelivery.candidateForDelivery?.goalID,
+            context: firstGoalHandoffDeliveryContext
+        )
+    }
+
+    private var firstGoalHandoffDeliveryContext: FirstGoalSuccessHandoffDeliveryContext {
+        FirstGoalSuccessHandoffDeliveryContext(
+            activeGoalID: activeGoalID,
+            phase: firstRunFlow.phase,
+            isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
+            errorMessage: screenTime.userFacingErrorMessage,
+            isExposed: allowsFirstGoalHandoffDelivery
+        )
+    }
+
     private func reconcileLiveProtectionState() {
         guard presentationMode == .firstRun,
               !liveProtectionState.isValid else {
@@ -696,6 +848,19 @@ struct RestrictedAppsView: View {
         _ = firstRunFlow.protectionDidBecomeUnavailable(
             message: "Protection turned off before setup finished. Try turning it on again."
         )
+    }
+
+    private func deliverFirstGoalHandoffIfNeeded() {
+        guard presentationMode == .firstRun else { return }
+        guard let effect = firstGoalHandoffDelivery.attemptDelivery(
+            in: firstGoalHandoffDeliveryContext,
+            authoritativeConsume: onFirstGoalHandoffConsumed
+        ) else { return }
+
+        firstGoalHandoffRevealSequence += effect.revealSequenceIncrement
+        successFeedbackSequence += effect.successFeedbackSequenceIncrement
+        AccessibilityNotification.Announcement(effect.accessibilityAnnouncement).post()
+        onFirstGoalHandoffDelivered(effect)
     }
 }
 
@@ -1279,24 +1444,45 @@ struct FirstRunAppSelectionHeader: View {
     let selectionSummary: String
     let categorySelectionDetail: String?
     let errorMessage: String?
+    var firstGoalHandoff: FirstGoalSuccessHandoffToken? = nil
+    var firstGoalHandoffRevealSequence = 0
+    var reduceMotionOverride: Bool?
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
+
+    private var presentation: FirstRunAppSelectionHeaderPresentation {
+        FirstRunAppSelectionHeaderPresentation(handoff: firstGoalHandoff)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            CheckpointSetupMark(
-                stage: "Choose apps",
-                step: 3,
-                compact: dynamicTypeSize.isAccessibilitySize
-            )
+            VStack(alignment: .leading, spacing: 10) {
+                CheckpointSetupMark(
+                    stage: presentation.stage,
+                    step: 3,
+                    systemImage: presentation.systemImage,
+                    compact: dynamicTypeSize.isAccessibilitySize,
+                    symbolEffectSequence: firstGoalHandoffRevealSequence,
+                    reduceMotionOverride: reduceMotion
+                )
+                .animation(
+                    FirstGoalSuccessHandoffMotionPolicy(reduceMotion: reduceMotion).animation,
+                    value: presentation.stage
+                )
 
-            Text("Choose your pause points.")
-                .font(dynamicTypeSize.isAccessibilitySize ? .title3.bold() : .title2.bold())
-                .foregroundStyle(CheckpointTheme.text)
-                .fixedSize(horizontal: false, vertical: true)
-                .accessibilityAddTraits(.isHeader)
+                Text(presentation.title)
+                    .font(dynamicTypeSize.isAccessibilitySize ? .title3.bold() : .title2.bold())
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+            }
 
-            Text("Opening one of these apps will start a short, goal-based checkpoint before a timed break.")
+            Text(presentation.detail)
                 .font(.subheadline)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
@@ -1335,6 +1521,9 @@ struct FirstRunAppSelectionHeader: View {
 private struct FamilyPickerContent: View {
     let screenTime: ScreenTimeController
     let presentationMode: RestrictedAppsPresentationMode
+    let firstGoalHandoff: FirstGoalSuccessHandoffToken?
+    let firstGoalHandoffRevealSequence: Int
+    let reduceMotion: Bool
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selectionFeedbackSequence = 0
@@ -1344,18 +1533,39 @@ private struct FamilyPickerContent: View {
     var body: some View {
         Group {
             if presentationMode == .firstRun {
-                VStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        FirstRunAppSelectionHeader(
-                            selectionSummary: selectionSummary,
-                            categorySelectionDetail: categorySelectionDetail,
-                            errorMessage: screenTime.userFacingErrorMessage
-                        )
-                    }
-                    .padding(16)
-                    .background(CheckpointTheme.panel)
+                switch FirstRunAppSelectionChrome(dynamicTypeSize: dynamicTypeSize) {
+                case .brandedHeader:
+                    VStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            FirstRunAppSelectionHeader(
+                                selectionSummary: selectionSummary,
+                                categorySelectionDetail: categorySelectionDetail,
+                                errorMessage: screenTime.userFacingErrorMessage,
+                                firstGoalHandoff: firstGoalHandoff,
+                                firstGoalHandoffRevealSequence: firstGoalHandoffRevealSequence,
+                                reduceMotionOverride: reduceMotion
+                            )
+                        }
+                        .padding(16)
+                        .background(CheckpointTheme.panel)
 
-                    FamilyActivityPicker(selection: selectionBinding)
+                        FamilyActivityPicker(selection: selectionBinding)
+                    }
+                case .systemPickerCopy:
+                    FamilyActivityPicker(
+                        headerText: firstRunHeaderPresentation.pickerHeaderText(
+                            selectionSummary: selectionSummary,
+                            errorMessage: screenTime.userFacingErrorMessage,
+                            isCondensed: true,
+                            condensedSelectionSummary: screenTime.hasSelection
+                                ? selectionSummary
+                                : "0 selected"
+                        ),
+                        footerText: firstRunHeaderPresentation.pickerFooterText(
+                            categorySelectionDetail: categorySelectionDetail
+                        ),
+                        selection: selectionBinding
+                    )
                 }
             } else {
                 GeometryReader { proxy in
@@ -1421,6 +1631,10 @@ private struct FamilyPickerContent: View {
 
     private var selectionSummary: String {
         screenTime.restrictedAppsSummary
+    }
+
+    private var firstRunHeaderPresentation: FirstRunAppSelectionHeaderPresentation {
+        FirstRunAppSelectionHeaderPresentation(handoff: firstGoalHandoff)
     }
 
     private var managementPresentation: ProtectedAppsManagementPresentation {

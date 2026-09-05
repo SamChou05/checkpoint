@@ -37,6 +37,169 @@ enum FirstRunSetupProgress {
     }
 }
 
+struct FirstGoalSuccessHandoffToken: Equatable, Hashable, Identifiable {
+    let deliveryID: UUID
+    let goalID: UUID
+    let goalTitle: String
+
+    var id: UUID { deliveryID }
+
+    init(
+        deliveryID: UUID = UUID(),
+        goalID: UUID,
+        goalTitle: String
+    ) {
+        self.deliveryID = deliveryID
+        self.goalID = goalID
+        let normalizedTitle = goalTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.goalTitle = normalizedTitle.isEmpty ? "Your goal" : normalizedTitle
+    }
+
+    var accessibilityAnnouncement: String {
+        "Goal saved: \(goalTitle). Step 3 of 3. Now choose the apps and websites that should pause for a checkpoint."
+    }
+}
+
+struct FirstGoalSuccessHandoffQueue: Equatable {
+    private(set) var pendingToken: FirstGoalSuccessHandoffToken?
+    private(set) var deliveredGoalIDs: Set<UUID> = []
+
+    @discardableResult
+    mutating func issue(
+        goalID: UUID,
+        goalTitle: String,
+        isFirstRunSetupPending: Bool
+    ) -> Bool {
+        guard isFirstRunSetupPending,
+              pendingToken?.goalID != goalID,
+              !deliveredGoalIDs.contains(goalID) else {
+            return false
+        }
+
+        pendingToken = FirstGoalSuccessHandoffToken(
+            goalID: goalID,
+            goalTitle: goalTitle
+        )
+        return true
+    }
+
+    @discardableResult
+    mutating func consume(_ token: FirstGoalSuccessHandoffToken) -> Bool {
+        guard pendingToken == token,
+              !deliveredGoalIDs.contains(token.goalID) else {
+            return false
+        }
+
+        pendingToken = nil
+        deliveredGoalIDs.insert(token.goalID)
+        return true
+    }
+
+    mutating func invalidate(unless currentGoalID: UUID?) {
+        guard pendingToken?.goalID != currentGoalID else { return }
+        pendingToken = nil
+    }
+
+    mutating func discardPending() {
+        pendingToken = nil
+    }
+}
+
+struct FirstGoalSuccessHandoffDeliveryEffect: Equatable {
+    let token: FirstGoalSuccessHandoffToken
+
+    var revealSequenceIncrement: Int { 1 }
+    var successFeedbackSequenceIncrement: Int { 1 }
+    var accessibilityAnnouncement: String { token.accessibilityAnnouncement }
+}
+
+struct FirstGoalSuccessHandoffDeliveryContext: Equatable, Hashable {
+    let activeGoalID: UUID?
+    let phase: FirstRunProtectionPhase
+    let isAuthorized: Bool
+    let errorMessage: String?
+    let isExposed: Bool
+}
+
+enum FirstGoalSuccessHandoffExposure {
+    static func allowsDelivery(
+        isSceneActive: Bool,
+        blocksUnderlyingPresentations: Bool
+    ) -> Bool {
+        isSceneActive && !blocksUnderlyingPresentations
+    }
+}
+
+struct FirstGoalSuccessHandoffDeliveryState: Equatable {
+    private(set) var pendingToken: FirstGoalSuccessHandoffToken?
+    private(set) var presentedToken: FirstGoalSuccessHandoffToken?
+    private(set) var resolvedDeliveryIDs: Set<UUID> = []
+
+    init(token: FirstGoalSuccessHandoffToken? = nil) {
+        pendingToken = token
+    }
+
+    mutating func receive(_ token: FirstGoalSuccessHandoffToken?) {
+        guard let token else {
+            pendingToken = nil
+            return
+        }
+        guard !resolvedDeliveryIDs.contains(token.deliveryID) else {
+            return
+        }
+        pendingToken = token
+    }
+
+    mutating func invalidate(unless currentGoalID: UUID?) {
+        if let pendingToken,
+           pendingToken.goalID != currentGoalID {
+            resolvedDeliveryIDs.insert(pendingToken.deliveryID)
+            self.pendingToken = nil
+        }
+        if presentedToken?.goalID != currentGoalID {
+            presentedToken = nil
+        }
+    }
+
+    var candidateForDelivery: FirstGoalSuccessHandoffToken? {
+        guard let pendingToken,
+              !resolvedDeliveryIDs.contains(pendingToken.deliveryID) else {
+            return nil
+        }
+        return pendingToken
+    }
+
+    mutating func attemptDelivery(
+        in context: FirstGoalSuccessHandoffDeliveryContext,
+        authoritativeConsume: (FirstGoalSuccessHandoffToken) -> Bool
+    ) -> FirstGoalSuccessHandoffDeliveryEffect? {
+        guard let candidate = candidateForDelivery else { return nil }
+
+        if let activeGoalID = context.activeGoalID,
+           candidate.goalID != activeGoalID {
+            pendingToken = nil
+            resolvedDeliveryIDs.insert(candidate.deliveryID)
+            return nil
+        }
+
+        guard context.isExposed,
+              case .selecting = context.phase,
+              context.isAuthorized,
+              context.errorMessage == nil,
+              context.activeGoalID != nil else {
+            return nil
+        }
+
+        pendingToken = nil
+        resolvedDeliveryIDs.insert(candidate.deliveryID)
+        guard authoritativeConsume(candidate) else {
+            return nil
+        }
+        presentedToken = candidate
+        return FirstGoalSuccessHandoffDeliveryEffect(token: candidate)
+    }
+}
+
 enum FirstRunProtectionStartResult: Equatable {
     case failed(message: String)
     case protected(selectionSummary: String)

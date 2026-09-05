@@ -553,6 +553,130 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         XCTAssertEqual(reduced.style, .identity)
         XCTAssertNil(reduced.animation)
 
+        let standardHandoff = FirstGoalSuccessHandoffMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(standardHandoff.style, .reveal)
+        XCTAssertNotNil(standardHandoff.animation)
+
+        let reducedHandoff = FirstGoalSuccessHandoffMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reducedHandoff.style, .identity)
+        XCTAssertNil(reducedHandoff.animation)
+
+        let handoff = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Prepare for the MCAT"
+        )
+        let ordinaryHeader = FirstRunAppSelectionHeaderPresentation(handoff: nil)
+        XCTAssertFalse(ordinaryHeader.isSuccessHandoff)
+        XCTAssertEqual(ordinaryHeader.stage, "Choose apps")
+        XCTAssertEqual(ordinaryHeader.title, "Choose your pause points.")
+        XCTAssertEqual(ordinaryHeader.systemImage, "checkmark.shield.fill")
+        XCTAssertEqual(
+            ordinaryHeader.pickerHeaderText(
+                selectionSummary: "Nothing selected yet",
+                errorMessage: nil,
+                isCondensed: true,
+                condensedSelectionSummary: "0 selected"
+            ),
+            "Step 3 of 3\nChoose apps\n0 selected"
+        )
+        XCTAssertEqual(
+            ordinaryHeader.pickerHeaderText(
+                selectionSummary: "Nothing selected yet",
+                errorMessage: "Choose at least one app.",
+                isCondensed: true,
+                condensedSelectionSummary: "0 selected"
+            ),
+            "Step 3 of 3\nChoose apps\n0 selected\nNeeds attention: Choose at least one app."
+        )
+        XCTAssertEqual(
+            ordinaryHeader.pickerFooterText(categorySelectionDetail: nil),
+            ordinaryHeader.detail
+        )
+
+        let successHeader = FirstRunAppSelectionHeaderPresentation(handoff: handoff)
+        XCTAssertTrue(successHeader.isSuccessHandoff)
+        XCTAssertEqual(successHeader.stage, "Goal saved")
+        XCTAssertEqual(successHeader.title, ordinaryHeader.title)
+        XCTAssertEqual(successHeader.systemImage, "checkmark.circle.fill")
+        XCTAssertTrue(successHeader.detail.hasPrefix("Now choose"))
+        XCTAssertEqual(
+            successHeader.pickerHeaderText(
+                selectionSummary: "Nothing selected yet",
+                errorMessage: nil,
+                isCondensed: true,
+                condensedSelectionSummary: "0 selected"
+            ),
+            "Goal saved · Final\nChoose apps\n0 selected"
+        )
+        XCTAssertEqual(
+            successHeader.pickerFooterText(
+                categorySelectionDetail: "Category shortcuts expand into apps and websites."
+            ),
+            "\(successHeader.detail)\n\nCategory shortcuts expand into apps and websites."
+        )
+        XCTAssertEqual(
+            FirstRunAppSelectionChrome(dynamicTypeSize: .accessibility2),
+            .brandedHeader
+        )
+        XCTAssertEqual(
+            FirstRunAppSelectionChrome(dynamicTypeSize: .accessibility3),
+            .systemPickerCopy
+        )
+        let deliveryTaskID = FirstGoalSuccessHandoffDeliveryTaskID(
+            deliveryID: handoff.deliveryID,
+            goalID: handoff.goalID,
+            context: FirstGoalSuccessHandoffDeliveryContext(
+                activeGoalID: handoff.goalID,
+                phase: .selecting,
+                isAuthorized: true,
+                errorMessage: nil,
+                isExposed: true
+            )
+        )
+        XCTAssertNotEqual(
+            deliveryTaskID,
+            FirstGoalSuccessHandoffDeliveryTaskID(
+                deliveryID: handoff.deliveryID,
+                goalID: handoff.goalID,
+                context: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: handoff.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: "Screen Time access changed.",
+                    isExposed: true
+                )
+            ),
+            "Clearing an error must re-key the deferred handoff delivery."
+        )
+        XCTAssertNotEqual(
+            deliveryTaskID,
+            FirstGoalSuccessHandoffDeliveryTaskID(
+                deliveryID: handoff.deliveryID,
+                goalID: handoff.goalID,
+                context: FirstGoalSuccessHandoffDeliveryContext(
+                    activeGoalID: handoff.goalID,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: false
+                )
+            ),
+            "Uncovering the destination must re-key deferred delivery."
+        )
+        XCTAssertNotEqual(
+            deliveryTaskID,
+            FirstGoalSuccessHandoffDeliveryTaskID(
+                deliveryID: UUID(),
+                goalID: handoff.goalID,
+                context: deliveryTaskID.context
+            ),
+            "A corrected delivery for the same goal must receive a fresh task identity."
+        )
+        XCTAssertEqual(
+            handoff.accessibilityAnnouncement,
+            "Goal saved: Prepare for the MCAT. Step 3 of 3. Now choose the apps and websites that should pause for a checkpoint."
+        )
+
         XCTAssertNil(FirstRunProtectionFocus.destination(for: .selecting))
         XCTAssertEqual(
             FirstRunProtectionFocus.destination(
@@ -932,6 +1056,190 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testFirstGoalSuccessHandoffPreservesPickerSpaceAcrossKeyLayouts() {
+        let handoff = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Lead a systems design interview"
+        )
+        let layouts = [
+            FirstGoalHandoffLayoutFixture(
+                name: "standard-light",
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false
+            ),
+            FirstGoalHandoffLayoutFixture(
+                name: "compact-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                reduceMotion: false
+            ),
+            FirstGoalHandoffLayoutFixture(
+                name: "accessibility2-dark",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility2,
+                reduceMotion: false
+            ),
+            FirstGoalHandoffLayoutFixture(
+                name: "accessibility5-dark-reduced",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
+            )
+        ]
+
+        for layout in layouts {
+            let ordinaryCapture = ProtectedAppsPickerViewportCapture()
+            _ = HostedViewRenderer.image(
+                for: FirstRunProtectionRenderScene(
+                    fixture: layout.renderFixture,
+                    viewportCapture: ordinaryCapture
+                )
+                .environment(\.colorScheme, layout.colorScheme)
+                .environment(\.dynamicTypeSize, layout.dynamicTypeSize),
+                width: layout.width,
+                height: layout.height,
+                colorScheme: layout.colorScheme,
+                settlingTime: 0.1,
+                renderScale: 1
+            )
+
+            let successCapture = ProtectedAppsPickerViewportCapture()
+            let image = HostedViewRenderer.image(
+                for: FirstRunProtectionRenderScene(
+                    fixture: layout.renderFixture,
+                    firstGoalHandoff: handoff,
+                    firstGoalHandoffRevealSequence: layout.reduceMotion ? 0 : 1,
+                    viewportCapture: successCapture
+                )
+                .environment(\.colorScheme, layout.colorScheme)
+                .environment(\.dynamicTypeSize, layout.dynamicTypeSize),
+                width: layout.width,
+                height: layout.height,
+                colorScheme: layout.colorScheme,
+                settlingTime: layout.reduceMotion ? 0.05 : 0.45,
+                renderScale: 1
+            )
+
+            XCTAssertGreaterThan(ordinaryCapture.size.height, 0, layout.name)
+            XCTAssertGreaterThanOrEqual(
+                successCapture.initialChoiceViewportHeight,
+                140,
+                "\(layout.name) left too little initial space for app choices"
+            )
+            XCTAssertEqual(
+                successCapture.initialChoiceViewportHeight,
+                ordinaryCapture.initialChoiceViewportHeight,
+                accuracy: 0.5,
+                "\(layout.name) success copy changed the picker viewport"
+            )
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = "first-goal-handoff-\(layout.name)"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
+    func testMountedFirstGoalSuccessHandoffDeliversOneEffectAfterRecovery() throws {
+        let token = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Prepare for the MCAT"
+        )
+
+        for reduceMotion in [false, true] {
+            let suiteName = "FirstRunProtectionRenderingTests.Handoff.\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let screenTime = ScreenTimeController(
+                defaults: defaults,
+                authorizer: FirstRunRenderScreenTimeAuthorizer()
+            )
+            screenTime.setupState = .failed
+            screenTime.lastErrorMessage = "Screen Time access changed."
+            let capture = FirstGoalHandoffConsumptionCapture()
+
+            _ = HostedViewRenderer.image(
+                for: FirstGoalHandoffMountedScene(
+                    screenTime: screenTime,
+                    token: token,
+                    capture: capture,
+                    reduceMotion: reduceMotion,
+                    initiallyExposed: false
+                )
+                .environment(\.colorScheme, ColorScheme.light)
+                .environment(\.dynamicTypeSize, DynamicTypeSize.large),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                settlingTime: 0.55,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(capture.consumptionAttempts, [token])
+            XCTAssertEqual(capture.exposureAtConsumption, [true])
+            XCTAssertEqual(capture.deliveryEffects.count, 1)
+            XCTAssertEqual(capture.deliveryEffects.first?.token, token)
+            XCTAssertEqual(capture.deliveryEffects.first?.revealSequenceIncrement, 1)
+            XCTAssertEqual(capture.deliveryEffects.first?.successFeedbackSequenceIncrement, 1)
+            XCTAssertEqual(
+                capture.deliveryEffects.first?.accessibilityAnnouncement,
+                token.accessibilityAnnouncement
+            )
+        }
+    }
+
+    @MainActor
+    func testMountedRejectedFirstGoalHandoffEmitsNoEffectOrRetry() throws {
+        let suiteName = "FirstRunProtectionRenderingTests.RejectedHandoff.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let screenTime = ScreenTimeController(
+            defaults: defaults,
+            authorizer: FirstRunRenderScreenTimeAuthorizer()
+        )
+        let token = FirstGoalSuccessHandoffToken(
+            goalID: UUID(),
+            goalTitle: "Prepare for the MCAT"
+        )
+        let capture = FirstGoalHandoffConsumptionCapture()
+
+        let image = HostedViewRenderer.image(
+            for: FirstGoalHandoffMountedScene(
+                screenTime: screenTime,
+                token: token,
+                capture: capture,
+                reduceMotion: false,
+                acceptsToken: false
+            )
+            .environment(\.colorScheme, ColorScheme.light)
+            .environment(\.dynamicTypeSize, DynamicTypeSize.large),
+            width: 393,
+            height: 852,
+            colorScheme: .light,
+            settlingTime: 0.55,
+            renderScale: 1
+        )
+
+        XCTAssertEqual(capture.consumptionAttempts, [token])
+        XCTAssertEqual(capture.exposureAtConsumption, [true])
+        XCTAssertTrue(capture.deliveryEffects.isEmpty)
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "first-goal-handoff-authoritatively-rejected"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    @MainActor
     func testProductionFirstRunScreenRendersLiveControllerRecoveryStates() throws {
         let suiteName = "FirstRunProtectionRenderingTests.Production.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
@@ -976,7 +1284,8 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
                     onFinishProtectedSetup: {},
                     onContinueWithoutProtection: {},
                     initialPhase: fixture.1,
-                    reduceMotionOverride: true
+                    reduceMotionOverride: true,
+                    activeGoalID: nil
                 )
                 .environment(\.colorScheme, fixture.2)
                 .environment(\.dynamicTypeSize, fixture.3),
@@ -1019,6 +1328,12 @@ private struct ProtectedAppsManagementRenderFixture {
 @MainActor
 private final class ProtectedAppsPickerViewportCapture {
     var size = CGSize.zero
+    var systemHeaderSize = CGSize.zero
+
+    var initialChoiceViewportHeight: CGFloat {
+        guard systemHeaderSize.height > 0 else { return size.height }
+        return max(0, size.height - systemHeaderSize.height - 26)
+    }
 }
 
 private struct ProtectedAppsManagementRenderScene: View {
@@ -1070,7 +1385,7 @@ private struct ProtectedAppsManagementRenderScene: View {
 private struct ProtectedAppsSystemPickerSkeleton: View {
     let headerText: String
     let footerText: String?
-    let viewportCapture: ProtectedAppsPickerViewportCapture
+    let viewportCapture: ProtectedAppsPickerViewportCapture?
 
     var body: some View {
         ScrollView {
@@ -1080,6 +1395,7 @@ private struct ProtectedAppsSystemPickerSkeleton: View {
                     .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 18)
+                    .reportProtectedAppsSystemHeader(to: viewportCapture)
 
                 ProtectedAppsPickerRows()
 
@@ -1169,11 +1485,35 @@ private struct ProtectedAppsViewportReporter: ViewModifier {
     }
 }
 
+private struct ProtectedAppsSystemHeaderReporter: ViewModifier {
+    let capture: ProtectedAppsPickerViewportCapture?
+
+    func body(content: Content) -> some View {
+        content.background {
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        capture?.systemHeaderSize = proxy.size
+                    }
+                    .onChange(of: proxy.size) { _, size in
+                        capture?.systemHeaderSize = size
+                    }
+            }
+        }
+    }
+}
+
 private extension View {
     func reportProtectedAppsViewport(
         to capture: ProtectedAppsPickerViewportCapture?
     ) -> some View {
         modifier(ProtectedAppsViewportReporter(capture: capture))
+    }
+
+    func reportProtectedAppsSystemHeader(
+        to capture: ProtectedAppsPickerViewportCapture?
+    ) -> some View {
+        modifier(ProtectedAppsSystemHeaderReporter(capture: capture))
     }
 }
 
@@ -1189,8 +1529,101 @@ private struct FirstRunProtectionRenderFixture {
     let categoryOnlySelection: Bool
 }
 
+private struct FirstGoalHandoffLayoutFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let reduceMotion: Bool
+
+    var renderFixture: FirstRunProtectionRenderFixture {
+        FirstRunProtectionRenderFixture(
+            name: name,
+            width: width,
+            height: height,
+            colorScheme: colorScheme,
+            dynamicTypeSize: dynamicTypeSize,
+            reduceMotion: reduceMotion,
+            phase: .selecting,
+            hasSelection: false,
+            categoryOnlySelection: false
+        )
+    }
+}
+
+@MainActor
+private final class FirstGoalHandoffConsumptionCapture {
+    var consumptionAttempts: [FirstGoalSuccessHandoffToken] = []
+    var exposureAtConsumption: [Bool] = []
+    var deliveryEffects: [FirstGoalSuccessHandoffDeliveryEffect] = []
+}
+
+private struct FirstGoalHandoffMountedScene: View {
+    let screenTime: ScreenTimeController
+    let capture: FirstGoalHandoffConsumptionCapture
+    let activeGoalID: UUID
+    let reduceMotion: Bool
+    let acceptsToken: Bool
+    let initiallyExposed: Bool
+    @State private var handoff: FirstGoalSuccessHandoffToken?
+    @State private var allowsDelivery: Bool
+
+    init(
+        screenTime: ScreenTimeController,
+        token: FirstGoalSuccessHandoffToken,
+        capture: FirstGoalHandoffConsumptionCapture,
+        reduceMotion: Bool,
+        acceptsToken: Bool = true,
+        initiallyExposed: Bool = true
+    ) {
+        self.screenTime = screenTime
+        self.capture = capture
+        activeGoalID = token.goalID
+        self.reduceMotion = reduceMotion
+        self.acceptsToken = acceptsToken
+        self.initiallyExposed = initiallyExposed
+        _handoff = State(initialValue: token)
+        _allowsDelivery = State(initialValue: initiallyExposed)
+    }
+
+    var body: some View {
+        RestrictedAppsView(
+            screenTime: screenTime,
+            onStartProtection: {
+                .failed(message: "This fixture does not start protection.")
+            },
+            onFinishProtectedSetup: {},
+            onContinueWithoutProtection: {},
+            reduceMotionOverride: reduceMotion,
+            activeGoalID: activeGoalID,
+            allowsFirstGoalHandoffDelivery: allowsDelivery,
+            firstGoalHandoff: handoff,
+            onFirstGoalHandoffConsumed: { token in
+                guard handoff == token else { return false }
+                capture.consumptionAttempts.append(token)
+                capture.exposureAtConsumption.append(allowsDelivery)
+                guard acceptsToken else { return false }
+                handoff = nil
+                return true
+            },
+            onFirstGoalHandoffDelivered: { effect in
+                capture.deliveryEffects.append(effect)
+            }
+        )
+        .task {
+            guard !initiallyExposed else { return }
+            await Task.yield()
+            allowsDelivery = true
+        }
+    }
+}
+
 private struct FirstRunProtectionRenderScene: View {
     let fixture: FirstRunProtectionRenderFixture
+    var firstGoalHandoff: FirstGoalSuccessHandoffToken? = nil
+    var firstGoalHandoffRevealSequence = 0
+    var viewportCapture: ProtectedAppsPickerViewportCapture? = nil
 
     var body: some View {
         NavigationStack {
@@ -1223,26 +1656,59 @@ private struct FirstRunProtectionRenderScene: View {
         }
     }
 
+    @ViewBuilder
     private var selectionSurface: some View {
-        VStack(spacing: 0) {
-            FirstRunAppSelectionHeader(
-                selectionSummary: fixture.hasSelection
-                    ? "3 apps and 2 websites selected"
-                    : "Nothing selected yet",
-                categorySelectionDetail: fixture.categoryOnlySelection
-                    ? "Keep at least one app selected from the category, or choose a website, so Checkpoint has something to protect."
-                    : nil,
-                errorMessage: nil
-            )
-            .padding(16)
-            .background(CheckpointTheme.panel)
+        switch FirstRunAppSelectionChrome(dynamicTypeSize: fixture.dynamicTypeSize) {
+        case .brandedHeader:
+            VStack(spacing: 0) {
+                FirstRunAppSelectionHeader(
+                    selectionSummary: selectionSummary,
+                    categorySelectionDetail: categorySelectionDetail,
+                    errorMessage: nil,
+                    firstGoalHandoff: firstGoalHandoff,
+                    firstGoalHandoffRevealSequence: firstGoalHandoffRevealSequence,
+                    reduceMotionOverride: fixture.reduceMotion
+                )
+                .padding(16)
+                .background(CheckpointTheme.panel)
 
-            pickerSkeleton
+                pickerSkeleton
+            }
+        case .systemPickerCopy:
+            let presentation = FirstRunAppSelectionHeaderPresentation(
+                handoff: firstGoalHandoff
+            )
+            ProtectedAppsSystemPickerSkeleton(
+                headerText: presentation.pickerHeaderText(
+                    selectionSummary: selectionSummary,
+                    errorMessage: nil,
+                    isCondensed: true,
+                    condensedSelectionSummary: fixture.hasSelection
+                        ? selectionSummary
+                        : "0 selected"
+                ),
+                footerText: presentation.pickerFooterText(
+                    categorySelectionDetail: categorySelectionDetail
+                ),
+                viewportCapture: viewportCapture
+            )
         }
     }
 
+    private var selectionSummary: String {
+        fixture.hasSelection
+            ? "3 apps and 2 websites selected"
+            : "Nothing selected yet"
+    }
+
+    private var categorySelectionDetail: String? {
+        fixture.categoryOnlySelection
+            ? "Keep at least one app selected from the category, or choose a website, so Checkpoint has something to protect."
+            : nil
+    }
+
     private var pickerSkeleton: some View {
-        ProtectedAppsPickerSkeleton()
+        ProtectedAppsPickerSkeleton(viewportCapture: viewportCapture)
     }
 }
 

@@ -494,8 +494,14 @@ struct CheckpointSetupMark: View {
     var systemImage = "checkmark.shield.fill"
     var isWorking = false
     var compact = false
+    var symbolEffectSequence = 0
+    var reduceMotionOverride: Bool?
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+
+    private var reduceMotion: Bool {
+        reduceMotionOverride ?? systemReduceMotion
+    }
 
     @ViewBuilder
     var body: some View {
@@ -541,6 +547,13 @@ struct CheckpointSetupMark: View {
                 options: .repeating,
                 isActive: isWorking && !reduceMotion
             )
+            .contentTransition(.symbolEffect(.replace))
+            .symbolEffect(
+                .bounce,
+                options: .nonRepeating,
+                value: symbolEffectSequence
+            )
+            .symbolEffectsRemoved(reduceMotion)
             .fixedSize()
             .accessibilityHidden(true)
     }
@@ -556,10 +569,12 @@ struct CheckpointSetupMark: View {
                 Text("STEP \(step) OF \(stepCount) · \(stage.uppercased())")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.muted)
+                    .contentTransition(.opacity)
             } else {
                 Text(stage.uppercased())
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.muted)
+                    .contentTransition(.opacity)
 
                 if let step {
                     Text("STEP \(step) OF \(stepCount)")

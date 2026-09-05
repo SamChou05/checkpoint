@@ -401,6 +401,7 @@ struct RootView: View {
     @State private var suggestedSkillMapReviewPresentation = SkillMapReviewPresentationState()
     @State private var lastPresentedSkillMapReviewRevision: SkillMapReviewContext.Revision?
     @State private var firstRunSetup = FirstRunSetupCoordinator()
+    @State private var firstGoalSuccessHandoff = FirstGoalSuccessHandoffQueue()
     @State private var isOnboardingSheetActive = false
     @State private var isFirstRunAppSelectionQueued = false
     @State private var isAuthorizationRecoveryAppSelectionPresented = false
@@ -546,9 +547,11 @@ struct RootView: View {
                 screenTime: screenTime,
                 onStartProtection: startFirstRunProtection,
                 onFinishProtectedSetup: {
+                    firstGoalSuccessHandoff.discardPending()
                     firstRunSetup.finishProtectedSetup()
                 },
                 onContinueWithoutProtection: {
+                    firstGoalSuccessHandoff.discardPending()
                     firstRunSetup.continueWithoutProtection(
                         currentGoalID: store.goal?.id,
                         stopProtection: workflow.stopProtectionWithoutReview
@@ -556,6 +559,15 @@ struct RootView: View {
                 },
                 onProtectionUnavailable: {
                     firstRunSetup.protectionDidBecomeUnavailable()
+                },
+                activeGoalID: store.goal?.id,
+                allowsFirstGoalHandoffDelivery: FirstGoalSuccessHandoffExposure.allowsDelivery(
+                    isSceneActive: scenePhase == .active,
+                    blocksUnderlyingPresentations: screenTimeAccessGate.blocksUnderlyingPresentations
+                ),
+                firstGoalHandoff: firstGoalSuccessHandoff.pendingToken,
+                onFirstGoalHandoffConsumed: { token in
+                    firstGoalSuccessHandoff.consume(token)
                 }
             )
             .interactiveDismissDisabled()
@@ -587,6 +599,7 @@ struct RootView: View {
             resumeFirstRunSetupIfNeeded()
         }
         .onChange(of: store.goal) { _, goal in
+            firstGoalSuccessHandoff.invalidate(unless: goal?.id)
             if goal == nil {
                 beginFirstRunSetup()
             }
@@ -620,6 +633,13 @@ struct RootView: View {
     private var onboardingSheetContent: some View {
         OnboardingView(store: store, workflow: workflow, onFirstGoalCreated: {
             beginFirstRunSetup()
+            if let goal = store.goal {
+                firstGoalSuccessHandoff.issue(
+                    goalID: goal.id,
+                    goalTitle: goal.title,
+                    isFirstRunSetupPending: firstRunSetup.isPending
+                )
+            }
         })
         .onAppear {
             isOnboardingSheetActive = true
@@ -873,6 +893,7 @@ struct RootView: View {
 
     private func handleFirstRunAppSelectionDismissed() {
         guard !firstRunSetup.isPending else { return }
+        firstGoalSuccessHandoff.discardPending()
         selectedTab = .home
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
     }
