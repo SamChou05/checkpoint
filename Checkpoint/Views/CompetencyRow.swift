@@ -98,6 +98,8 @@ struct CompetencyRow: View {
     let accessibilityFocusRequestID: UUID?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AccessibilityFocusState(for: [.voiceOver, .switchControl])
     private var isAccessibilityFocused: Bool
@@ -195,7 +197,10 @@ struct CompetencyRow: View {
             )
         }
         .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            CheckpointMotion.animation(
+                CheckpointMotion.change,
+                reduceMotion: reduceMotion || voiceOverEnabled || switchControlEnabled
+            ),
             value: isHighlighted
         )
         .sensoryFeedback(.selection, trigger: expansionFeedbackSequence)

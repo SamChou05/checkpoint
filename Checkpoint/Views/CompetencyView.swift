@@ -286,15 +286,30 @@ struct ProgressSkillEvidenceRoutingPolicy {
 }
 
 struct ProgressSkillEvidenceInteractionPolicy: Equatable {
-    let animatesScroll: Bool
-    let highlightsTarget: Bool
+    let suppressesTransientHighlight: Bool
 
     init(
         reduceMotion: Bool,
-        assistiveNavigationEnabled: Bool
+        voiceOverEnabled: Bool,
+        switchControlEnabled: Bool
     ) {
-        animatesScroll = !reduceMotion && !assistiveNavigationEnabled
-        highlightsTarget = !reduceMotion && !assistiveNavigationEnabled
+        suppressesTransientHighlight = reduceMotion
+            || voiceOverEnabled
+            || switchControlEnabled
+    }
+
+    var highlightsTarget: Bool {
+        !suppressesTransientHighlight
+    }
+
+    static func shouldSnapActiveHighlight(
+        from previous: Self,
+        to current: Self,
+        hasActiveHighlight: Bool
+    ) -> Bool {
+        hasActiveHighlight
+            && !previous.suppressesTransientHighlight
+            && current.suppressesTransientHighlight
     }
 }
 
@@ -523,6 +538,15 @@ struct CompetencyView: View {
                     } else {
                         cancelSkillEvidenceReveal()
                     }
+                }
+                .onChange(of: skillEvidenceInteractionPolicy) { previous, current in
+                    guard ProgressSkillEvidenceInteractionPolicy.shouldSnapActiveHighlight(
+                            from: previous,
+                            to: current,
+                            hasActiveHighlight: highlightedCompetencyID != nil
+                          ) else { return }
+
+                    snapSkillEvidenceHighlight()
                 }
                 .onChange(of: screenSnapshot) { previous, current in
                     if ProgressScreenChangePolicy.resetsGoalScopedPresentation(
@@ -845,13 +869,10 @@ struct CompetencyView: View {
                 return
             }
 
-            let interactionPolicy = ProgressSkillEvidenceInteractionPolicy(
-                reduceMotion: reduceMotion,
-                assistiveNavigationEnabled: voiceOverEnabled || switchControlEnabled
-            )
-            withAnimation(
-                interactionPolicy.animatesScroll ? CheckpointMotion.reveal : nil
-            ) {
+            let interactionPolicy = skillEvidenceInteractionPolicy
+            var navigationTransaction = Transaction(animation: nil)
+            navigationTransaction.disablesAnimations = true
+            withTransaction(navigationTransaction) {
                 expandedCompetencyID = competencyID
             }
 
@@ -876,9 +897,9 @@ struct CompetencyView: View {
                 return
             }
 
-            withAnimation(
-                interactionPolicy.animatesScroll ? CheckpointMotion.reveal : nil
-            ) {
+            var scrollTransaction = Transaction(animation: nil)
+            scrollTransaction.disablesAnimations = true
+            withTransaction(scrollTransaction) {
                 proxy.scrollTo(
                     ProgressScrollAnchor.competency(competencyID),
                     anchor: .center
@@ -954,6 +975,25 @@ struct CompetencyView: View {
         highlightDismissTask?.cancel()
         highlightDismissTask = nil
         highlightedCompetencyID = nil
+    }
+
+    private func snapSkillEvidenceHighlight() {
+        highlightDismissTask?.cancel()
+        highlightDismissTask = nil
+
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            highlightedCompetencyID = nil
+        }
+    }
+
+    private var skillEvidenceInteractionPolicy: ProgressSkillEvidenceInteractionPolicy {
+        ProgressSkillEvidenceInteractionPolicy(
+            reduceMotion: reduceMotion,
+            voiceOverEnabled: voiceOverEnabled,
+            switchControlEnabled: switchControlEnabled
+        )
     }
 
     private var progressStateMotionPolicy: ProgressStateMotionPolicy {

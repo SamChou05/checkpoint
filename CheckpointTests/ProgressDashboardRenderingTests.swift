@@ -205,31 +205,225 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     func testSkillEvidenceInteractionPolicyHonorsMotionAndAssistiveNavigation() {
         let standard = ProgressSkillEvidenceInteractionPolicy(
             reduceMotion: false,
-            assistiveNavigationEnabled: false
+            voiceOverEnabled: false,
+            switchControlEnabled: false
         )
-        XCTAssertTrue(standard.animatesScroll)
+        XCTAssertFalse(standard.suppressesTransientHighlight)
         XCTAssertTrue(standard.highlightsTarget)
 
-        let reduced = ProgressSkillEvidenceInteractionPolicy(
-            reduceMotion: true,
-            assistiveNavigationEnabled: false
-        )
-        XCTAssertFalse(reduced.animatesScroll)
-        XCTAssertFalse(reduced.highlightsTarget)
+        for scenario in suppressiveSkillEvidencePolicies() {
+            XCTAssertTrue(
+                scenario.policy.suppressesTransientHighlight,
+                scenario.name
+            )
+            XCTAssertFalse(scenario.policy.highlightsTarget, scenario.name)
+        }
+    }
 
-        let assistive = ProgressSkillEvidenceInteractionPolicy(
+    @MainActor
+    func testSkillEvidenceInteractionPolicySnapsOnlyOnNewSuppression() {
+        let standard = ProgressSkillEvidenceInteractionPolicy(
             reduceMotion: false,
-            assistiveNavigationEnabled: true
+            voiceOverEnabled: false,
+            switchControlEnabled: false
         )
-        XCTAssertFalse(assistive.animatesScroll)
-        XCTAssertFalse(assistive.highlightsTarget)
+        for scenario in suppressiveSkillEvidencePolicies() {
+            XCTAssertTrue(
+                ProgressSkillEvidenceInteractionPolicy.shouldSnapActiveHighlight(
+                    from: standard,
+                    to: scenario.policy,
+                    hasActiveHighlight: true
+                ),
+                scenario.name
+            )
+            XCTAssertFalse(
+                ProgressSkillEvidenceInteractionPolicy.shouldSnapActiveHighlight(
+                    from: standard,
+                    to: scenario.policy,
+                    hasActiveHighlight: false
+                ),
+                scenario.name
+            )
+            XCTAssertFalse(
+                ProgressSkillEvidenceInteractionPolicy.shouldSnapActiveHighlight(
+                    from: scenario.policy,
+                    to: standard,
+                    hasActiveHighlight: true
+                ),
+                scenario.name
+            )
+            XCTAssertFalse(
+                ProgressSkillEvidenceInteractionPolicy.shouldSnapActiveHighlight(
+                    from: scenario.policy,
+                    to: scenario.policy,
+                    hasActiveHighlight: true
+                ),
+                scenario.name
+            )
+        }
+    }
 
-        let reducedAssistive = ProgressSkillEvidenceInteractionPolicy(
-            reduceMotion: true,
-            assistiveNavigationEnabled: true
+    private func suppressiveSkillEvidencePolicies() -> [(
+        name: String,
+        policy: ProgressSkillEvidenceInteractionPolicy
+    )] {
+        [
+            (
+                "Reduce Motion",
+                ProgressSkillEvidenceInteractionPolicy(
+                    reduceMotion: true,
+                    voiceOverEnabled: false,
+                    switchControlEnabled: false
+                )
+            ),
+            (
+                "VoiceOver",
+                ProgressSkillEvidenceInteractionPolicy(
+                    reduceMotion: false,
+                    voiceOverEnabled: true,
+                    switchControlEnabled: false
+                )
+            ),
+            (
+                "Switch Control",
+                ProgressSkillEvidenceInteractionPolicy(
+                    reduceMotion: false,
+                    voiceOverEnabled: false,
+                    switchControlEnabled: true
+                )
+            ),
+            (
+                "combined assistive settings",
+                ProgressSkillEvidenceInteractionPolicy(
+                    reduceMotion: true,
+                    voiceOverEnabled: true,
+                    switchControlEnabled: true
+                )
+            )
+        ]
+    }
+
+    @MainActor
+    func testSkillEvidenceHighlightSnapsWhenMotionBecomesSuppressedWhileMounted() throws {
+        let suiteName = "ProgressDashboardRenderingTests.DynamicEvidenceMotion.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let referenceDate = try XCTUnwrap(
+            Calendar.current.date(
+                from: DateComponents(year: 2026, month: 9, day: 3, hour: 12)
+            )
         )
-        XCTAssertFalse(reducedAssistive.animatesScroll)
-        XCTAssertFalse(reducedAssistive.highlightsTarget)
+        let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+        let target = try XCTUnwrap(
+            ProgressSkillEvidenceRoutingPolicy.target(
+                for: try XCTUnwrap(store.studyFocusState),
+                goalID: try XCTUnwrap(store.goal?.id)
+            )
+        )
+        let frame = CGRect(x: 0, y: 0, width: 393, height: 1_000)
+
+        let driver = ProgressSkillEvidenceMotionDriver(reduceMotion: false)
+        let hostingController = UIHostingController(
+            rootView: ProgressSkillEvidenceMotionHarness(
+                driver: driver,
+                store: store,
+                referenceDate: referenceDate,
+                request: ProgressSkillEvidenceRequest(target: target)
+            )
+            .preferredColorScheme(.dark)
+        )
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.overrideUserInterfaceStyle = .dark
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
+
+        let highlightedImage = mountedViewImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        driver.reduceMotion = true
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.04))
+
+        let snappedImage = mountedViewImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.1))
+        let settledImage = mountedViewImage(
+            of: hostingController.view,
+            size: frame.size
+        )
+        let highlightBorderRegion = CGRect(x: 353, y: 0, width: 7, height: frame.height)
+        let activeBorderDifference = meanPixelDifference(
+            highlightedImage,
+            settledImage,
+            region: highlightBorderRegion
+        )
+        let snappedBorderDifference = meanPixelDifference(
+            snappedImage,
+            settledImage,
+            region: highlightBorderRegion
+        )
+        XCTAssertGreaterThan(
+            activeBorderDifference,
+            0.04,
+            "The mounted test must intercept the active evidence highlight."
+        )
+        XCTAssertLessThan(
+            snappedBorderDifference,
+            activeBorderDifference * 0.55,
+            "Enabling suppression must snap to the stable no-highlight rendering."
+        )
+    }
+
+    @MainActor
+    func testMeanPixelDifferenceReadsOnlyRequestedRegion() {
+        let size = CGSize(width: 20, height: 20)
+        let bounds = CGRect(origin: .zero, size: size)
+        let targetRegion = CGRect(x: 15, y: 0, width: 5, height: 20)
+        let rendererFormat = UIGraphicsImageRendererFormat.preferred()
+        rendererFormat.scale = 1
+        rendererFormat.opaque = true
+        let renderer = UIGraphicsImageRenderer(size: size, format: rendererFormat)
+
+        func image(changedRegion: CGRect? = nil) -> UIImage {
+            renderer.image { context in
+                context.cgContext.setFillColor(UIColor.black.cgColor)
+                context.cgContext.fill(bounds)
+                if let changedRegion {
+                    context.cgContext.setFillColor(UIColor.red.cgColor)
+                    context.cgContext.fill(changedRegion)
+                }
+            }
+        }
+
+        let baseline = image()
+        let changedOutsideTarget = image(
+            changedRegion: CGRect(x: 0, y: 0, width: 5, height: 20)
+        )
+        let changedInsideTarget = image(changedRegion: targetRegion)
+
+        XCTAssertGreaterThan(
+            meanPixelDifference(baseline, changedOutsideTarget),
+            0.05,
+            "The fixture must contain a material full-frame difference."
+        )
+        XCTAssertEqual(
+            meanPixelDifference(baseline, changedOutsideTarget, region: targetRegion),
+            0,
+            accuracy: 0.000_001,
+            "Changes outside the requested region must not affect its comparison."
+        )
+        XCTAssertGreaterThan(
+            meanPixelDifference(baseline, changedInsideTarget, region: targetRegion),
+            0.2,
+            "Changes inside the requested region must remain visible."
+        )
     }
 
     @MainActor
@@ -668,7 +862,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
 
         XCTAssertEqual(reportedStyles.last, .animated)
         let initialAppearanceCount = reportedStyles.count
-        let inFlightImage = momentumRailImage(
+        let inFlightImage = mountedViewImage(
             of: hostingController.view,
             size: frame.size
         )
@@ -700,7 +894,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         XCTAssertEqual(reportedStyles.last, .identity)
         XCTAssertGreaterThan(reportedStyles.count, initialAppearanceCount)
         let suppressedAppearanceCount = reportedStyles.count
-        let snappedImage = momentumRailImage(
+        let snappedImage = mountedViewImage(
             of: hostingController.view,
             size: frame.size
         )
@@ -711,7 +905,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         )
 
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.7))
-        let settledImage = momentumRailImage(
+        let settledImage = mountedViewImage(
             of: hostingController.view,
             size: frame.size
         )
@@ -729,7 +923,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             suppressedAppearanceCount,
             "Disabling Reduce Motion must not replay the reveal in the same scope."
         )
-        let restoredPreferenceImage = momentumRailImage(
+        let restoredPreferenceImage = mountedViewImage(
             of: hostingController.view,
             size: frame.size
         )
@@ -747,7 +941,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
 
         XCTAssertEqual(reportedStyles.last, .animated)
         XCTAssertGreaterThan(reportedStyles.count, suppressedAppearanceCount)
-        let newScopeImage = momentumRailImage(
+        let newScopeImage = mountedViewImage(
             of: hostingController.view,
             size: frame.size
         )
@@ -759,7 +953,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
-    private func momentumRailImage(of view: UIView, size: CGSize) -> UIImage {
+    private func mountedViewImage(of view: UIView, size: CGSize) -> UIImage {
         view.setNeedsLayout()
         view.layoutIfNeeded()
         let format = UIGraphicsImageRendererFormat.preferred()
@@ -767,17 +961,27 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         return UIGraphicsImageRenderer(size: size, format: format).image { _ in
             XCTAssertTrue(
                 view.drawHierarchy(in: view.bounds, afterScreenUpdates: true),
-                "Failed to render the mounted Momentum rail."
+                "Failed to render the mounted view."
             )
         }
     }
 
-    private func meanPixelDifference(_ first: UIImage, _ second: UIImage) -> Double {
-        guard let firstData = first.cgImage?.dataProvider?.data as Data?,
-              let secondData = second.cgImage?.dataProvider?.data as Data?,
+    private func meanPixelDifference(
+        _ first: UIImage,
+        _ second: UIImage,
+        region: CGRect? = nil
+    ) -> Double {
+        guard let firstImage = first.cgImage,
+              let secondImage = second.cgImage else {
+            XCTFail("Mounted snapshots must expose CGImages.")
+            return 1
+        }
+
+        guard let firstData = packedPixelData(from: firstImage, region: region),
+              let secondData = packedPixelData(from: secondImage, region: region),
               firstData.count == secondData.count,
               !firstData.isEmpty else {
-            XCTFail("Momentum rail snapshots must have matching pixel buffers.")
+            XCTFail("Mounted snapshots must have matching pixel buffers.")
             return 1
         }
 
@@ -785,6 +989,49 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             result + abs(Double(pair.0) - Double(pair.1))
         }
         return totalDifference / Double(firstData.count) / 255
+    }
+
+    private func packedPixelData(from image: CGImage, region: CGRect?) -> Data? {
+        let requestedBounds = (region ?? CGRect(x: 0, y: 0, width: image.width, height: image.height))
+            .standardized
+        let minX = max(0, Int(floor(requestedBounds.minX)))
+        let minY = max(0, Int(floor(requestedBounds.minY)))
+        let maxX = min(image.width, Int(ceil(requestedBounds.maxX)))
+        let maxY = min(image.height, Int(ceil(requestedBounds.maxY)))
+        let width = maxX - minX
+        let height = maxY - minY
+        guard width > 0,
+              height > 0,
+              let croppedImage = image.cropping(
+                  to: CGRect(x: minX, y: minY, width: width, height: height)
+              ) else {
+            return nil
+        }
+
+        let bytesPerPixel = 4
+        let bytesPerRow = width * bytesPerPixel
+        var comparisonData = Data(count: bytesPerRow * height)
+        let rendered = comparisonData.withUnsafeMutableBytes { buffer in
+            guard let baseAddress = buffer.baseAddress,
+                  let context = CGContext(
+                      data: baseAddress,
+                      width: width,
+                      height: height,
+                      bitsPerComponent: 8,
+                      bytesPerRow: bytesPerRow,
+                      space: CGColorSpaceCreateDeviceRGB(),
+                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+                          | CGBitmapInfo.byteOrder32Big.rawValue
+                  ) else {
+                return false
+            }
+
+            context.interpolationQuality = .none
+            context.setBlendMode(.copy)
+            context.draw(croppedImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        return rendered ? comparisonData : nil
     }
 
     @MainActor
@@ -1840,6 +2087,43 @@ private struct ProgressMomentumRailMotionHarness: View {
         .padding(10)
         .frame(width: 320, height: 100)
         .background(CheckpointTheme.ink)
+    }
+}
+
+@MainActor
+private final class ProgressSkillEvidenceMotionDriver: ObservableObject {
+    @Published var reduceMotion: Bool
+
+    init(reduceMotion: Bool) {
+        self.reduceMotion = reduceMotion
+    }
+}
+
+private struct ProgressSkillEvidenceMotionHarness: View {
+    @ObservedObject var driver: ProgressSkillEvidenceMotionDriver
+    let store: CheckpointStore
+    let referenceDate: Date
+    @State private var request: ProgressSkillEvidenceRequest?
+
+    init(
+        driver: ProgressSkillEvidenceMotionDriver,
+        store: CheckpointStore,
+        referenceDate: Date,
+        request: ProgressSkillEvidenceRequest
+    ) {
+        self.driver = driver
+        self.store = store
+        self.referenceDate = referenceDate
+        _request = State(initialValue: request)
+    }
+
+    var body: some View {
+        CompetencyView(
+            store: store,
+            reduceMotionOverride: driver.reduceMotion,
+            referenceDateOverride: referenceDate,
+            skillEvidenceRequest: $request
+        )
     }
 }
 
