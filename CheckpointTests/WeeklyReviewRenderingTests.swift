@@ -4,6 +4,88 @@ import XCTest
 @testable import Checkpoint
 
 final class WeeklyReviewRenderingTests: XCTestCase {
+    func testCompactLayoutSignalsOverflowWithoutAWidthCliff() {
+        let compact = WeeklyReviewResponsiveLayoutPolicy(
+            viewportWidth: 320,
+            dynamicTypeSize: .accessibility5
+        )
+        let justAboveCompact = WeeklyReviewResponsiveLayoutPolicy(
+            viewportWidth: 321,
+            dynamicTypeSize: .accessibility5
+        )
+        let transitionEnd = WeeklyReviewResponsiveLayoutPolicy(
+            viewportWidth: 360,
+            dynamicTypeSize: .accessibility5
+        )
+        let regular = WeeklyReviewResponsiveLayoutPolicy(
+            viewportWidth: 393,
+            dynamicTypeSize: .accessibility5
+        )
+
+        XCTAssertEqual(compact.screenHorizontalPadding, 12, accuracy: 0.01)
+        XCTAssertEqual(compact.heroHorizontalPadding, 12, accuracy: 0.01)
+        XCTAssertEqual(compact.dayDetailHorizontalPadding, 10, accuracy: 0.01)
+        XCTAssertLessThan(
+            abs(justAboveCompact.screenHorizontalPadding - compact.screenHorizontalPadding),
+            0.25
+        )
+        XCTAssertLessThan(
+            abs(justAboveCompact.dayDetailHorizontalPadding - compact.dayDetailHorizontalPadding),
+            0.25
+        )
+        XCTAssertEqual(compact.dayDetailCopyAvailableWidth, 252, accuracy: 0.01)
+        XCTAssertEqual(justAboveCompact.dayDetailCopyAvailableWidth, 252, accuracy: 0.01)
+        XCTAssertEqual(transitionEnd.dayDetailCopyAvailableWidth, 252, accuracy: 0.01)
+
+        XCTAssertEqual(WeeklyPracticeChartLayoutPolicy.minimumDayWidth, 44)
+        XCTAssertEqual(
+            WeeklyPracticeChartLayoutPolicy.overflowTreatment(
+                availableWidth: compact.practiceChartAvailableWidth,
+                dayCount: 7
+            ),
+            .horizontalScrollWithCue
+        )
+        XCTAssertEqual(
+            WeeklyPracticeChartLayoutPolicy.overflowTreatment(
+                availableWidth: regular.practiceChartAvailableWidth,
+                dayCount: 7
+            ),
+            .fitted
+        )
+        XCTAssertGreaterThanOrEqual(
+            regular.practiceChartAvailableWidth,
+            WeeklyPracticeChartLayoutPolicy.minimumDayWidth * 7
+        )
+    }
+
+    func testCompactAX5DetailMeasureCanKeepVisibleWordsWhole() {
+        let policy = WeeklyReviewResponsiveLayoutPolicy(
+            viewportWidth: 320,
+            dynamicTypeSize: .accessibility5
+        )
+        let traits = UITraitCollection(
+            preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge
+        )
+        let preferredFont = UIFont.preferredFont(
+            forTextStyle: .subheadline,
+            compatibleWith: traits
+        )
+        let activityFont = UIFont.systemFont(
+            ofSize: preferredFont.pointSize,
+            weight: .semibold
+        )
+        let widestVisibleWord = ["questions", "answered"]
+            .map {
+                ($0 as NSString).size(withAttributes: [.font: activityFont]).width
+            }
+            .max() ?? 0
+
+        XCTAssertGreaterThan(
+            policy.dayDetailCopyAvailableWidth,
+            ceil(widestVisibleWord) + 1
+        )
+    }
+
     @MainActor
     func testWeeklyReviewRendersDailyImpactAcrossKeyLayouts() throws {
         let suiteName = "WeeklyReviewRenderingTests.\(UUID().uuidString)"

@@ -354,12 +354,71 @@ struct WeeklyPracticeSelectionMotionPolicy {
 struct WeeklyPracticeChartLayoutPolicy {
     static let minimumDayWidth: CGFloat = 44
 
+    enum OverflowTreatment: Equatable {
+        case fitted
+        case horizontalScrollWithCue
+    }
+
+    static func overflowTreatment(
+        availableWidth: CGFloat,
+        dayCount: Int
+    ) -> OverflowTreatment {
+        requiresHorizontalScrolling(availableWidth: availableWidth, dayCount: dayCount)
+            ? .horizontalScrollWithCue
+            : .fitted
+    }
+
     static func requiresHorizontalScrolling(
         availableWidth: CGFloat,
         dayCount: Int
     ) -> Bool {
         guard dayCount > 0 else { return false }
         return availableWidth < minimumDayWidth * CGFloat(dayCount)
+    }
+}
+
+struct WeeklyReviewResponsiveLayoutPolicy: Equatable {
+    static let compactWidth: CGFloat = 320
+    static let regularInsetWidth: CGFloat = 360
+
+    let viewportWidth: CGFloat
+    let dynamicTypeSize: DynamicTypeSize
+
+    var usesCompactWidth: Bool {
+        viewportWidth < Self.regularInsetWidth
+    }
+
+    private var compactFraction: CGFloat {
+        let range = Self.regularInsetWidth - Self.compactWidth
+        guard range > 0 else { return 0 }
+        return min(max((Self.regularInsetWidth - viewportWidth) / range, 0), 1)
+    }
+
+    var screenHorizontalPadding: CGFloat {
+        20 - (8 * compactFraction)
+    }
+
+    var heroHorizontalPadding: CGFloat {
+        20 - (8 * compactFraction)
+    }
+
+    var dayDetailHorizontalPadding: CGFloat {
+        dynamicTypeSize.isAccessibilitySize
+            ? 14 - (4 * compactFraction)
+            : 14
+    }
+
+    var practiceChartAvailableWidth: CGFloat {
+        max(
+            0,
+            viewportWidth
+                - (screenHorizontalPadding * 2)
+                - (heroHorizontalPadding * 2)
+        )
+    }
+
+    var dayDetailCopyAvailableWidth: CGFloat {
+        max(0, practiceChartAvailableWidth - (dayDetailHorizontalPadding * 2))
     }
 }
 
@@ -724,6 +783,19 @@ struct WeeklyReviewView: View {
     }
 
     var body: some View {
+        GeometryReader { proxy in
+            weeklyReviewContent(
+                layoutPolicy: WeeklyReviewResponsiveLayoutPolicy(
+                    viewportWidth: proxy.size.width,
+                    dynamicTypeSize: dynamicTypeSize
+                )
+            )
+        }
+    }
+
+    private func weeklyReviewContent(
+        layoutPolicy: WeeklyReviewResponsiveLayoutPolicy
+    ) -> some View {
         let pulsePresentation: WeeklyGoalPulsePresentation? =
             selectedMetrics.id == WeeklyMetricsSummary.allGoalsID
             ? goalPulsePresentation
@@ -735,7 +807,7 @@ struct WeeklyReviewView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     reviewHeader
                     VStack(alignment: .leading, spacing: 20) {
-                        impactHero
+                        impactHero(layoutPolicy: layoutPolicy)
                             .id("impact-\(selectedMetrics.id)")
                             .transition(scopeChangeTransition)
 
@@ -758,7 +830,7 @@ struct WeeklyReviewView: View {
                     .transition(periodChangeTransition)
                 }
                 .animation(periodChangeAnimation, value: periodPolicy.selectedWeekStart)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, layoutPolicy.screenHorizontalPadding)
                 .padding(.top, 12)
                 .padding(.bottom, 36)
             }
@@ -997,7 +1069,9 @@ struct WeeklyReviewView: View {
         .accessibilityHint("Choose which goal's weekly impact to view.")
     }
 
-    private var impactHero: some View {
+    private func impactHero(
+        layoutPolicy: WeeklyReviewResponsiveLayoutPolicy
+    ) -> some View {
         VStack(alignment: .leading, spacing: 22) {
             if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 16) {
@@ -1027,6 +1101,7 @@ struct WeeklyReviewView: View {
                 reduceMotion: reduceMotion,
                 dateLabelFormatter: dateLabelFormatter,
                 selectedDayID: resolvedPracticeDayID,
+                availableWidth: layoutPolicy.practiceChartAvailableWidth,
                 selectDay: selectPracticeDay
             )
 
@@ -1035,13 +1110,15 @@ struct WeeklyReviewView: View {
                     .overlay(CheckpointTheme.heroDivider)
 
                 WeeklyPracticeDayDetail(
-                    presentation: selectedPracticeDayPresentation
+                    presentation: selectedPracticeDayPresentation,
+                    horizontalPadding: layoutPolicy.dayDetailHorizontalPadding
                 )
                 .id("\(selectedMetrics.id)-\(selectedPracticeDayPresentation.id.timeIntervalSinceReferenceDate)")
                 .transition(practiceDayDetailTransition)
             }
         }
-        .padding(20)
+        .padding(.horizontal, layoutPolicy.heroHorizontalPadding)
+        .padding(.vertical, 20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
@@ -1604,6 +1681,7 @@ private struct WeeklyPracticeBars: View {
     var reduceMotion: Bool
     var dateLabelFormatter: WeeklyReviewDateLabelFormatter
     var selectedDayID: WeeklyPracticeDay.ID?
+    var availableWidth: CGFloat
     var selectDay: (WeeklyPracticeDay) -> Void
 
     @Namespace private var selectionNamespace
@@ -1612,32 +1690,94 @@ private struct WeeklyPracticeBars: View {
         max(1, days.map(\.questionsAnswered).max() ?? 1)
     }
 
+    private var overflowTreatment: WeeklyPracticeChartLayoutPolicy.OverflowTreatment {
+        WeeklyPracticeChartLayoutPolicy.overflowTreatment(
+            availableWidth: availableWidth,
+            dayCount: days.count
+        )
+    }
+
     var body: some View {
-        GeometryReader { proxy in
-            if WeeklyPracticeChartLayoutPolicy.requiresHorizontalScrolling(
-                availableWidth: proxy.size.width,
-                dayCount: days.count
-            ) {
-                ScrollViewReader { scrollProxy in
-                    ScrollView(.horizontal) {
-                        dayStrip(fillsAvailableWidth: false)
-                    }
-                    .scrollIndicators(.hidden)
-                    .contentMargins(.horizontal, 0, for: .scrollContent)
-                    .onAppear {
-                        scrollToSelectedDay(using: scrollProxy, animated: false)
-                    }
-                    .onChange(of: selectedDayID) { _, _ in
-                        scrollToSelectedDay(using: scrollProxy, animated: !reduceMotion)
-                    }
+        Group {
+            switch overflowTreatment {
+            case .horizontalScrollWithCue:
+                VStack(alignment: .leading, spacing: 6) {
+                    overflowAffordance
+                    scrollableDayStrip
                 }
-            } else {
+            case .fitted:
                 dayStrip(fillsAvailableWidth: true)
             }
         }
-        .frame(height: 86)
+        .frame(height: overflowTreatment == .horizontalScrollWithCue ? 108 : 86)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Daily practice")
+        .accessibilityHint(
+            overflowTreatment == .horizontalScrollWithCue
+                ? "Seven-day view. Swipe horizontally to explore every day."
+                : "Choose a day to show its details."
+        )
+    }
+
+    private var scrollableDayStrip: some View {
+        ScrollViewReader { scrollProxy in
+            ScrollView(.horizontal) {
+                dayStrip(fillsAvailableWidth: false)
+            }
+            .scrollIndicators(.hidden)
+            .contentMargins(.horizontal, 0, for: .scrollContent)
+            .onAppear {
+                scrollToSelectedDay(using: scrollProxy, animated: false)
+            }
+            .onChange(of: selectedDayID) { _, _ in
+                scrollToSelectedDay(using: scrollProxy, animated: !reduceMotion)
+            }
+            .overlay {
+                HStack(spacing: 0) {
+                    LinearGradient(
+                        colors: [CheckpointTheme.ink, CheckpointTheme.ink.opacity(0)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .frame(width: 10)
+
+                    Spacer(minLength: 0)
+
+                    LinearGradient(
+                        colors: [CheckpointTheme.ink.opacity(0), CheckpointTheme.ink],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .frame(width: 10)
+                }
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+            }
+        }
+    }
+
+    private var overflowAffordance: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "arrow.left.and.right")
+                .accessibilityHidden(true)
+
+            Text("ALL 7 DAYS")
+                .tracking(0.65)
+
+            Spacer(minLength: 8)
+
+            if let firstDay = days.first,
+               let lastDay = days.last {
+                Text(
+                    "\(dateLabelFormatter.narrowWeekday(for: firstDay.date))"
+                        + "–\(dateLabelFormatter.narrowWeekday(for: lastDay.date))"
+                )
+            }
+        }
+        .font(.caption2.weight(.bold))
+        .foregroundStyle(CheckpointTheme.heroMuted)
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        .accessibilityHidden(true)
     }
 
     private func dayStrip(fillsAvailableWidth: Bool) -> some View {
@@ -1768,6 +1908,7 @@ private struct WeeklyPracticeBars: View {
 
 private struct WeeklyPracticeDayDetail: View {
     let presentation: WeeklyPracticeDayDetailPresentation
+    let horizontalPadding: CGFloat
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -1785,7 +1926,8 @@ private struct WeeklyPracticeDayDetail: View {
                 }
             }
         }
-        .padding(14)
+        .padding(.horizontal, horizontalPadding)
+        .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -1828,6 +1970,7 @@ private struct WeeklyPracticeDayDetail: View {
                 .foregroundStyle(CheckpointTheme.heroMuted)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
