@@ -393,6 +393,27 @@ struct ProtectionStartReadinessAnnouncementPolicy {
     }
 }
 
+enum GoalSwitchDismissalDrainStep: Equatable {
+    case none
+    case promoteQueuedConfirmation
+    case drainDeferredPresentations
+}
+
+struct GoalSwitchDismissalRouting {
+    static func nextStep(
+        hasPresentedConfirmation: Bool,
+        hasQueuedConfirmation: Bool
+    ) -> GoalSwitchDismissalDrainStep {
+        if hasPresentedConfirmation {
+            return .none
+        }
+        if hasQueuedConfirmation {
+            return .promoteQueuedConfirmation
+        }
+        return .drainDeferredPresentations
+    }
+}
+
 struct RootView: View {
     @State private var appModel = CheckpointAppModel()
     @State private var selectedTab: AppTab = .home
@@ -509,6 +530,7 @@ struct RootView: View {
             Button(presentation.cancelButtonTitle, role: .cancel) {
                 queuedGoalSwitchConfirmation = nil
                 pendingGoalSwitchConfirmation = nil
+                schedulePostGoalSwitchPresentationDrain()
             }
         } message: { confirmation in
             Text(goalSwitchConfirmationPresentation(for: confirmation).message)
@@ -699,7 +721,7 @@ struct RootView: View {
             set: { isPresented in
                 if !isPresented {
                     pendingGoalSwitchConfirmation = nil
-                    promoteQueuedGoalSwitchConfirmationAfterDismissal()
+                    schedulePostGoalSwitchPresentationDrain()
                 }
             }
         )
@@ -755,24 +777,46 @@ struct RootView: View {
             AccessibilityNotification.Announcement(
                 "Switched to \(targetTitle)."
             ).post()
+            schedulePostGoalSwitchPresentationDrain()
         case let .confirmationRequired(confirmation):
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = confirmation
         case .alreadyActive, .membershipRequired:
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = nil
+            schedulePostGoalSwitchPresentationDrain()
         case .targetNotFound, .staleRequest:
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = nil
             AccessibilityNotification.Announcement(
                 "That goal changed. Choose it again."
             ).post()
+            schedulePostGoalSwitchPresentationDrain()
         case .persistenceFailed:
             queuedGoalSwitchConfirmation = nil
             pendingGoalSwitchConfirmation = nil
             AccessibilityNotification.Announcement(
                 "Checkpoint couldn't save the goal change. Your current goal is unchanged."
             ).post()
+            schedulePostGoalSwitchPresentationDrain()
+        }
+    }
+
+    private func schedulePostGoalSwitchPresentationDrain() {
+        Task { @MainActor in
+            await Task.yield()
+            switch GoalSwitchDismissalRouting.nextStep(
+                hasPresentedConfirmation: pendingGoalSwitchConfirmation != nil,
+                hasQueuedConfirmation: queuedGoalSwitchConfirmation != nil
+            ) {
+            case .none:
+                return
+            case .promoteQueuedConfirmation:
+                promoteQueuedGoalSwitchConfirmationAfterDismissal()
+            case .drainDeferredPresentations:
+                presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
+                presentSuggestedSkillMapReviewIfNeeded()
+            }
         }
     }
 
@@ -863,6 +907,7 @@ struct RootView: View {
               !firstRunSetup.isAppSelectionPresented,
               activeCheckpointSession == nil,
               store.pendingMembershipPresentation == nil,
+              pendingGoalSwitchConfirmation == nil,
               let goal = store.goal,
               goal.id != firstRunSetup.suppressedSuggestedSkillMapGoalID,
               let reviewContext = SkillMapReviewContext(goal: goal),
@@ -904,8 +949,22 @@ struct RootView: View {
     }
 
     private func handleMembershipDismissed() {
+        if let continuation = store.takeCompletedMembershipActivationContinuation() {
+            resumeMembershipActivation(continuation)
+        }
         presentQueuedAuthorizationRecoveryAppSelectionIfPossible()
         presentSuggestedSkillMapReviewIfNeeded()
+    }
+
+    private func resumeMembershipActivation(
+        _ continuation: MembershipActivationContinuation
+    ) {
+        switch continuation {
+        case .createGoalProfile:
+            store.presentGoalProfileCreator()
+        case let .activateGoal(_, targetGoalID, _):
+            requestGoalSwitch(to: targetGoalID)
+        }
     }
 
     private func handleSuggestedSkillMapReviewDismissed() {
@@ -964,6 +1023,7 @@ struct RootView: View {
             !store.isOnboardingPresented &&
             !isOnboardingSheetActive &&
             !firstRunSetup.isAppSelectionPresented &&
+            pendingGoalSwitchConfirmation == nil &&
             !suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations
         guard authorizationRecoveryQueue.beginScheduling(
             shouldRecover: shouldRecover,
@@ -986,6 +1046,7 @@ struct RootView: View {
                 !store.isOnboardingPresented &&
                 !isOnboardingSheetActive &&
                 !firstRunSetup.isAppSelectionPresented &&
+                pendingGoalSwitchConfirmation == nil &&
                 !suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations
             guard authorizationRecoveryQueue.finishScheduling(
                 shouldRecover: shouldRecover,

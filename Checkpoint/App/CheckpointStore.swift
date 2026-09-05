@@ -56,6 +56,8 @@ private struct GoalProfileMutationRollbackState {
     let isOnboardingPresented: Bool
     let isCreatingGoalProfile: Bool
     let pendingMembershipPresentation: MembershipPresentationContext?
+    let pendingMembershipActivationContinuation: MembershipActivationContinuation?
+    let completedMembershipActivationContinuation: MembershipActivationContinuation?
     let questionRefreshesUsed: Int
     let questionBankSyncIntents: [QuestionBankSyncIntent]
     let skillMapEvolutionIntents: [SkillMapEvolutionIntent]
@@ -122,9 +124,15 @@ final class CheckpointStore {
     var isCreatingGoalProfile = false
     var membershipTier: MembershipTier = .starter
     var pendingMembershipPresentation: MembershipPresentationContext?
+    private(set) var pendingMembershipActivationContinuation: MembershipActivationContinuation?
+    private(set) var completedMembershipActivationContinuation: MembershipActivationContinuation?
     var pendingMembershipFeature: MembershipFeature? {
         get { pendingMembershipPresentation?.feature }
-        set { pendingMembershipPresentation = newValue.map(MembershipPresentationContext.feature) }
+        set {
+            pendingMembershipPresentation = newValue.map(MembershipPresentationContext.feature)
+            pendingMembershipActivationContinuation = nil
+            completedMembershipActivationContinuation = nil
+        }
     }
     var questionRefreshesUsed = 0
     var lastAutomaticQuestionRefreshAt: Date?
@@ -1382,6 +1390,8 @@ final class CheckpointStore {
         isOnboardingPresented = false
         isCreatingGoalProfile = false
         pendingMembershipPresentation = nil
+        pendingMembershipActivationContinuation = nil
+        completedMembershipActivationContinuation = nil
     }
 
     private func commitGoalEdit(
@@ -1406,6 +1416,8 @@ final class CheckpointStore {
         isOnboardingPresented = false
         isCreatingGoalProfile = false
         pendingMembershipPresentation = nil
+        pendingMembershipActivationContinuation = nil
+        completedMembershipActivationContinuation = nil
 
         guard generationContextChanged else { return nil }
 
@@ -1470,6 +1482,8 @@ final class CheckpointStore {
         guard wasActiveGoal else {
             checkpointNotice = "\(deletedGoal.title) was deleted."
             pendingMembershipPresentation = nil
+            pendingMembershipActivationContinuation = nil
+            completedMembershipActivationContinuation = nil
             isCreatingGoalProfile = false
             return (nil, false)
         }
@@ -1539,12 +1553,18 @@ final class CheckpointStore {
         if replacementNeedsMembership {
             checkpointNotice = "\(deletedGoal.title) was deleted. \(starterQuestionLimitMessage)"
             pendingMembershipPresentation = .feature(.freshQuestionGeneration)
+            pendingMembershipActivationContinuation = nil
+            completedMembershipActivationContinuation = nil
         } else if replacementPreparationIsBlocked {
             checkpointNotice = "\(deletedGoal.title) was deleted. Practice for \(plan.resultingActiveGoal?.title ?? "the replacement goal") still needs attention before protection can restart."
             pendingMembershipPresentation = nil
+            pendingMembershipActivationContinuation = nil
+            completedMembershipActivationContinuation = nil
         } else {
             checkpointNotice = "\(deletedGoal.title) was deleted."
             pendingMembershipPresentation = nil
+            pendingMembershipActivationContinuation = nil
+            completedMembershipActivationContinuation = nil
         }
         isCreatingGoalProfile = false
         return (questionPreparation, clearsUnlockExpiration)
@@ -1575,6 +1595,8 @@ final class CheckpointStore {
             isOnboardingPresented: isOnboardingPresented,
             isCreatingGoalProfile: isCreatingGoalProfile,
             pendingMembershipPresentation: pendingMembershipPresentation,
+            pendingMembershipActivationContinuation: pendingMembershipActivationContinuation,
+            completedMembershipActivationContinuation: completedMembershipActivationContinuation,
             questionRefreshesUsed: questionRefreshesUsed,
             questionBankSyncIntents: questionBankSyncIntents,
             skillMapEvolutionIntents: skillMapEvolutionIntents,
@@ -1617,6 +1639,8 @@ final class CheckpointStore {
         isOnboardingPresented = state.isOnboardingPresented
         isCreatingGoalProfile = state.isCreatingGoalProfile
         pendingMembershipPresentation = state.pendingMembershipPresentation
+        pendingMembershipActivationContinuation = state.pendingMembershipActivationContinuation
+        completedMembershipActivationContinuation = state.completedMembershipActivationContinuation
         questionRefreshesUsed = state.questionRefreshesUsed
         questionBankSyncIntents = state.questionBankSyncIntents
         skillMapEvolutionIntents = state.skillMapEvolutionIntents
@@ -1677,7 +1701,10 @@ final class CheckpointStore {
 
     func presentGoalProfileCreator() {
         guard goal == nil || canUse(.goalProfiles) else {
-            requestMembership(for: .goalProfiles)
+            requestMembership(
+                for: .goalProfiles,
+                continuation: .createGoalProfile(sourceGoalID: goal?.id)
+            )
             return
         }
 
@@ -1783,28 +1810,99 @@ final class CheckpointStore {
         isMember
     }
 
-    func requestMembership(for feature: MembershipFeature) {
+    func requestMembership(
+        for feature: MembershipFeature,
+        continuation: MembershipActivationContinuation? = nil
+    ) {
+        if continuation == nil,
+           pendingMembershipPresentation != nil,
+           ownsMembershipActivationContinuation {
+            return
+        }
         pendingMembershipPresentation = .feature(feature)
+        pendingMembershipActivationContinuation = continuation
+        completedMembershipActivationContinuation = nil
     }
 
     func requestMembershipOverview() {
+        guard pendingMembershipPresentation == nil
+                || !ownsMembershipActivationContinuation else {
+            return
+        }
         pendingMembershipPresentation = .overview
+        pendingMembershipActivationContinuation = nil
+        completedMembershipActivationContinuation = nil
+    }
+
+    private var ownsMembershipActivationContinuation: Bool {
+        pendingMembershipActivationContinuation != nil
+            || completedMembershipActivationContinuation != nil
     }
 
     func dismissMembershipPrompt() {
         pendingMembershipPresentation = nil
+        pendingMembershipActivationContinuation = nil
     }
 
     func reconcileMembershipEntitlement(isUnlocked: Bool) {
         let resolvedTier: MembershipTier = isUnlocked ? .member : .starter
+        if isUnlocked, pendingMembershipPresentation != nil {
+            promotePendingMembershipActivationContinuation()
+        }
         guard resolvedTier != membershipTier else { return }
-        updateMembershipTier(resolvedTier)
+        applyMembershipTier(
+            resolvedTier,
+            dismissesMembershipPrompt: !isUnlocked || pendingMembershipPresentation == nil
+        )
     }
 
     func updateMembershipTier(_ tier: MembershipTier) {
+        applyMembershipTier(tier, dismissesMembershipPrompt: true)
+    }
+
+    @discardableResult
+    func completeMembershipCheckout() -> MembershipActivationContinuation? {
+        applyMembershipTier(.member, dismissesMembershipPrompt: false)
+        promotePendingMembershipActivationContinuation()
+        return completedMembershipActivationContinuation
+    }
+
+    private func promotePendingMembershipActivationContinuation() {
+        if let pendingMembershipActivationContinuation {
+            completedMembershipActivationContinuation = pendingMembershipActivationContinuation
+        }
+        pendingMembershipActivationContinuation = nil
+    }
+
+    func takeCompletedMembershipActivationContinuation() -> MembershipActivationContinuation? {
+        guard let continuation = completedMembershipActivationContinuation else { return nil }
+        completedMembershipActivationContinuation = nil
+
+        guard isMember else { return nil }
+        switch continuation {
+        case let .createGoalProfile(sourceGoalID):
+            guard goal?.id == sourceGoalID,
+                  canCreateAdditionalGoalProfile else {
+                return nil
+            }
+        case let .activateGoal(sourceGoalID, targetGoalID, _):
+            guard goal?.id == sourceGoalID,
+                  targetGoalID != sourceGoalID,
+                  availableGoalProfiles.contains(where: { $0.id == targetGoalID }) else {
+                return nil
+            }
+        }
+        return continuation
+    }
+
+    private func applyMembershipTier(
+        _ tier: MembershipTier,
+        dismissesMembershipPrompt: Bool
+    ) {
         guard membershipTier != tier else {
-            if pendingMembershipPresentation != nil {
+            if dismissesMembershipPrompt, pendingMembershipPresentation != nil {
                 pendingMembershipPresentation = nil
+                pendingMembershipActivationContinuation = nil
                 save()
                 publishShieldContext()
             }
@@ -1812,7 +1910,13 @@ final class CheckpointStore {
         }
 
         membershipTier = tier
-        pendingMembershipPresentation = nil
+        if dismissesMembershipPrompt {
+            pendingMembershipPresentation = nil
+            pendingMembershipActivationContinuation = nil
+        }
+        if tier == .starter {
+            completedMembershipActivationContinuation = nil
+        }
         save()
         publishShieldContext()
 
@@ -1982,6 +2086,8 @@ final class CheckpointStore {
         isOnboardingPresented = false
         isCreatingGoalProfile = false
         pendingMembershipPresentation = nil
+        pendingMembershipActivationContinuation = nil
+        completedMembershipActivationContinuation = nil
 
         guard generationContextChanged else {
             save()
@@ -2911,6 +3017,8 @@ final class CheckpointStore {
         lastAutomaticQuestionRefreshAt = nil
         isCreatingGoalProfile = false
         pendingMembershipPresentation = nil
+        pendingMembershipActivationContinuation = nil
+        completedMembershipActivationContinuation = nil
         backgroundGenerationGoalIDs = []
         questionBankTopOffGoalIDs = []
         questionBankPollingGoalIDs = []
@@ -4790,6 +4898,8 @@ final class CheckpointStore {
         checkpointRetryCooldownUntil = snapshot.checkpointRetryCooldownUntil
         membershipTier = snapshot.membershipTier ?? .starter
         pendingMembershipPresentation = nil
+        pendingMembershipActivationContinuation = nil
+        completedMembershipActivationContinuation = nil
         questionRefreshesUsed = snapshot.questionRefreshesUsed ?? 0
         lastAutomaticQuestionRefreshAt = snapshot.lastAutomaticQuestionRefreshAt
         questionBankSyncIntents = snapshot.questionBankSyncIntents ?? []

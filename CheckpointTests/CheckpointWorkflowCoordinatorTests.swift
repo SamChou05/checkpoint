@@ -1020,6 +1020,132 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
 
     // MARK: - Goal switching
 
+    func testGoalSwitchDismissalRoutingPromotesBeforeDrainingDeferredPresentations() {
+        XCTAssertEqual(
+            GoalSwitchDismissalRouting.nextStep(
+                hasPresentedConfirmation: true,
+                hasQueuedConfirmation: true
+            ),
+            .none
+        )
+        XCTAssertEqual(
+            GoalSwitchDismissalRouting.nextStep(
+                hasPresentedConfirmation: false,
+                hasQueuedConfirmation: true
+            ),
+            .promoteQueuedConfirmation
+        )
+        XCTAssertEqual(
+            GoalSwitchDismissalRouting.nextStep(
+                hasPresentedConfirmation: false,
+                hasQueuedConfirmation: false
+            ),
+            .drainDeferredPresentations
+        )
+    }
+
+    @MainActor
+    func testLapsedGoalSwitchContinuesOnceAfterVerifiedMembershipActivation() throws {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = try XCTUnwrap(store.goal?.id)
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 5)
+        store.membershipTier = .starter
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: FakeAppProtectionController()
+        )
+
+        XCTAssertEqual(workflow.requestGoalSwitch(to: targetGoal.id), .membershipRequired)
+        let expectedContinuation = MembershipActivationContinuation.activateGoal(
+            sourceGoalID: sourceGoalID,
+            targetGoalID: targetGoal.id,
+            targetTitle: targetGoal.title
+        )
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertEqual(store.pendingMembershipActivationContinuation, expectedContinuation)
+
+        store.requestMembership(for: .freshQuestionGeneration)
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertEqual(store.pendingMembershipActivationContinuation, expectedContinuation)
+
+        XCTAssertEqual(store.completeMembershipCheckout(), expectedContinuation)
+        store.dismissMembershipPrompt()
+        let continuation = try XCTUnwrap(
+            store.takeCompletedMembershipActivationContinuation()
+        )
+        guard case let .activateGoal(_, targetGoalID, _) = continuation else {
+            return XCTFail("Expected the exact goal switch continuation")
+        }
+
+        XCTAssertEqual(
+            workflow.requestGoalSwitch(to: targetGoalID),
+            .switched(from: sourceGoalID, to: targetGoal.id)
+        )
+        XCTAssertEqual(store.goal?.id, targetGoal.id)
+        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+    }
+
+    @MainActor
+    func testMembershipGoalSwitchContinuationRejectsARemovedTarget() {
+        let store = makeStore(questionCount: 5)
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 5)
+        store.membershipTier = .starter
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: FakeAppProtectionController()
+        )
+
+        XCTAssertEqual(workflow.requestGoalSwitch(to: targetGoal.id), .membershipRequired)
+        _ = store.completeMembershipCheckout()
+        store.goalProfiles.removeAll { $0.id == targetGoal.id }
+
+        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        XCTAssertNil(store.completedMembershipActivationContinuation)
+    }
+
+    @MainActor
+    func testPostUpgradeProtectedGoalSwitchStillRequiresFreshConfirmation() throws {
+        let store = makeStore(questionCount: 5)
+        let sourceGoalID = try XCTUnwrap(store.goal?.id)
+        let targetGoal = addGoalSwitchTarget(to: store, questionCount: 4)
+        store.membershipTier = .starter
+        let protection = FakeAppProtectionController()
+        protection.isShieldingEnabled = true
+        SharedAppGroup.publishProtectionState(isActive: true, unlockExpiration: nil)
+        let workflow = CheckpointWorkflowCoordinator(store: store, protection: protection)
+
+        XCTAssertEqual(workflow.requestGoalSwitch(to: targetGoal.id), .membershipRequired)
+        _ = store.completeMembershipCheckout()
+        let continuation = try XCTUnwrap(
+            store.takeCompletedMembershipActivationContinuation()
+        )
+        guard case let .activateGoal(_, targetGoalID, _) = continuation else {
+            return XCTFail("Expected the goal-switch continuation")
+        }
+
+        let resumedOutcome = workflow.requestGoalSwitch(to: targetGoalID)
+        guard case let .confirmationRequired(confirmation) = resumedOutcome else {
+            return XCTFail("Expected a fresh protection-impact confirmation")
+        }
+        XCTAssertEqual(store.goal?.id, sourceGoalID)
+        XCTAssertEqual(confirmation.sourceGoalID, sourceGoalID)
+        XCTAssertEqual(confirmation.targetGoalID, targetGoal.id)
+        XCTAssertEqual(
+            confirmation.readiness,
+            .incomplete(selectableCount: 4, requiredCount: 5)
+        )
+
+        XCTAssertEqual(
+            workflow.requestGoalSwitch(
+                to: targetGoal.id,
+                authorization: .confirmed(confirmation)
+            ),
+            .switched(from: sourceGoalID, to: targetGoal.id)
+        )
+        XCTAssertEqual(store.goal?.id, targetGoal.id)
+        XCTAssertEqual(protection.clearShieldCount, 0)
+    }
+
     @MainActor
     func testProtectedUnreadyGoalRequiresConfirmationWithoutMutatingState() {
         let store = makeStore(questionCount: 5)

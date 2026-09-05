@@ -138,6 +138,110 @@ enum MembershipPresentationContext: Equatable, Identifiable, Sendable {
     }
 }
 
+enum MembershipActivationContinuation: Equatable, Sendable {
+    case createGoalProfile(sourceGoalID: Goal.ID?)
+    case activateGoal(
+        sourceGoalID: Goal.ID?,
+        targetGoalID: Goal.ID,
+        targetTitle: String
+    )
+}
+
+enum MembershipActivationSource: Equatable, Sendable {
+    case purchase
+    case restore
+    case entitlementRefresh
+}
+
+struct MembershipActivationPresentation: Equatable, Identifiable, Sendable {
+    let id: UUID
+    let context: MembershipPresentationContext
+    let source: MembershipActivationSource
+    let continuation: MembershipActivationContinuation?
+
+    init(
+        id: UUID = UUID(),
+        context: MembershipPresentationContext,
+        source: MembershipActivationSource,
+        continuation: MembershipActivationContinuation?
+    ) {
+        self.id = id
+        self.context = context
+        self.source = source
+        self.continuation = continuation
+    }
+
+    var eyebrow: String {
+        switch source {
+        case .purchase:
+            "PURCHASE COMPLETE"
+        case .restore:
+            "ACCESS RESTORED"
+        case .entitlementRefresh:
+            "ACCESS CONFIRMED"
+        }
+    }
+
+    var title: String {
+        switch source {
+        case .purchase:
+            "Checkpoint Pro is yours."
+        case .restore:
+            "Pro access restored."
+        case .entitlementRefresh:
+            "Checkpoint Pro is active."
+        }
+    }
+
+    var detail: String {
+        switch continuation {
+        case .createGoalProfile:
+            "Your next goal can now keep its own checkpoints, progress, and Next Focus."
+        case let .activateGoal(_, _, targetTitle):
+            "\(targetTitle) is ready to become your active goal."
+        case nil:
+            switch context {
+            case .overview:
+                "Multiple goals, fresh checkpoints, and adaptive Next Focus are now unlocked."
+            case .feature(.goalProfiles):
+                "Each goal can now keep its own checkpoints, progress, and Next Focus."
+            case .feature(.freshQuestionGeneration):
+                "Fresh goal-aligned checkpoints can keep arriving as your ready set runs low."
+            case .feature(.largerQuestionBank):
+                "Your practice can now grow into a broader, more varied question bank."
+            case .feature(.adaptiveStudyAssist):
+                "Your answer history can now guide one clear Next Focus."
+            }
+        }
+    }
+
+    var actionTitle: String {
+        switch continuation {
+        case .createGoalProfile:
+            "Create your next goal"
+        case let .activateGoal(_, _, targetTitle):
+            "Continue to \(targetTitle)"
+        case nil:
+            "Continue"
+        }
+    }
+
+    var actionSystemImage: String {
+        switch continuation {
+        case .createGoalProfile:
+            "plus"
+        case .activateGoal:
+            "arrow.right"
+        case nil:
+            "checkmark"
+        }
+    }
+
+    var accessibilityAnnouncement: String {
+        "\(title) \(detail)"
+    }
+}
+
 enum MembershipPaywallSection: Equatable, Hashable, Sendable {
     case hero
     case offer

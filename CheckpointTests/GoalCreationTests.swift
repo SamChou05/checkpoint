@@ -295,14 +295,122 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
-    func testChangedEntitlementReconciliationUnlocksAndDismissesPaywall() {
+    func testChangedEntitlementReconciliationUnlocksAndKeepsPaywallForConfirmation() {
         let store = CheckpointStore(defaults: defaults)
         store.pendingMembershipFeature = .adaptiveStudyAssist
 
         store.reconcileMembershipEntitlement(isUnlocked: true)
 
         XCTAssertEqual(store.membershipTier, .member)
-        XCTAssertNil(store.pendingMembershipFeature)
+        XCTAssertEqual(store.pendingMembershipFeature, .adaptiveStudyAssist)
+        XCTAssertNil(store.completedMembershipActivationContinuation)
+    }
+
+    @MainActor
+    func testGoalCreationMembershipContinuationCompletesAndReleasesExactlyOnce() {
+        let store = CheckpointStore(defaults: defaults)
+        let sourceGoal = makeGoal()
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal]
+        store.isOnboardingPresented = false
+
+        store.presentGoalProfileCreator()
+
+        let expectedContinuation = MembershipActivationContinuation.createGoalProfile(
+            sourceGoalID: sourceGoal.id
+        )
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertEqual(store.pendingMembershipActivationContinuation, expectedContinuation)
+        XCTAssertFalse(store.isOnboardingPresented)
+
+        store.requestMembership(for: .freshQuestionGeneration)
+        store.requestMembershipOverview()
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertEqual(store.pendingMembershipActivationContinuation, expectedContinuation)
+
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertNil(store.pendingMembershipActivationContinuation)
+        XCTAssertEqual(store.completedMembershipActivationContinuation, expectedContinuation)
+
+        XCTAssertEqual(store.completeMembershipCheckout(), expectedContinuation)
+        XCTAssertNil(store.pendingMembershipActivationContinuation)
+        XCTAssertEqual(store.completedMembershipActivationContinuation, expectedContinuation)
+
+        store.dismissMembershipPrompt()
+        XCTAssertEqual(
+            store.takeCompletedMembershipActivationContinuation(),
+            expectedContinuation
+        )
+        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+
+        store.presentGoalProfileCreator()
+        XCTAssertTrue(store.isCreatingGoalProfile)
+        XCTAssertTrue(store.isOnboardingPresented)
+        XCTAssertNil(store.pendingMembershipPresentation)
+    }
+
+    @MainActor
+    func testEntitlementConfirmationAtomicallyOwnsContinuationBeforeDismissal() {
+        let store = CheckpointStore(defaults: defaults)
+        let sourceGoal = makeGoal()
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal]
+        store.isOnboardingPresented = false
+        store.presentGoalProfileCreator()
+        let expectedContinuation = MembershipActivationContinuation.createGoalProfile(
+            sourceGoalID: sourceGoal.id
+        )
+
+        store.reconcileMembershipEntitlement(isUnlocked: true)
+        store.requestMembership(for: .freshQuestionGeneration)
+        XCTAssertEqual(store.pendingMembershipPresentation, .feature(.goalProfiles))
+        XCTAssertEqual(store.completedMembershipActivationContinuation, expectedContinuation)
+        store.dismissMembershipPrompt()
+
+        XCTAssertEqual(
+            store.takeCompletedMembershipActivationContinuation(),
+            expectedContinuation
+        )
+        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+    }
+
+    @MainActor
+    func testDismissingMembershipBeforeActivationDiscardsTheContinuation() {
+        let store = CheckpointStore(defaults: defaults)
+        let sourceGoal = makeGoal()
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal]
+
+        store.presentGoalProfileCreator()
+        store.dismissMembershipPrompt()
+
+        XCTAssertNil(store.pendingMembershipActivationContinuation)
+        XCTAssertNil(store.completeMembershipCheckout())
+        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+    }
+
+    @MainActor
+    func testCompletedMembershipContinuationIsDiscardedWhenItsSourceGoalChanges() {
+        let store = CheckpointStore(defaults: defaults)
+        let sourceGoal = makeGoal()
+        let replacementGoal = Goal(
+            title: "Prepare a design portfolio",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 45),
+            category: .custom,
+            currentLevel: "Intermediate",
+            focusAreas: "case studies, visual systems",
+            preferredQuestionStyle: .shortAnswer
+        )
+        store.goal = sourceGoal
+        store.goalProfiles = [sourceGoal, replacementGoal]
+
+        store.presentGoalProfileCreator()
+        _ = store.completeMembershipCheckout()
+        store.goal = replacementGoal
+
+        XCTAssertNil(store.takeCompletedMembershipActivationContinuation())
+        XCTAssertNil(store.completedMembershipActivationContinuation)
     }
 
     @MainActor

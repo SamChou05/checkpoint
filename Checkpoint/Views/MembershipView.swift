@@ -7,6 +7,7 @@ struct MembershipViewRenderConfiguration {
     let selectedPlanID: String?
     let legalLinks: LegalLinks
     let reduceMotion: Bool
+    let activationPresentation: MembershipActivationPresentation?
     let purchaseAction: (String?) -> Void
     let reloadAction: () -> Void
     let restoreAction: () -> Void
@@ -16,6 +17,7 @@ struct MembershipViewRenderConfiguration {
         selectedPlanID: String?,
         legalLinks: LegalLinks,
         reduceMotion: Bool = false,
+        activationPresentation: MembershipActivationPresentation? = nil,
         purchaseAction: @escaping (String?) -> Void = { _ in },
         reloadAction: @escaping () -> Void = {},
         restoreAction: @escaping () -> Void = {}
@@ -24,9 +26,54 @@ struct MembershipViewRenderConfiguration {
         self.selectedPlanID = selectedPlanID
         self.legalLinks = legalLinks
         self.reduceMotion = reduceMotion
+        self.activationPresentation = activationPresentation
         self.purchaseAction = purchaseAction
         self.reloadAction = reloadAction
         self.restoreAction = restoreAction
+    }
+}
+
+enum MembershipActivationMotionStyle: Equatable {
+    case reveal
+    case identity
+}
+
+struct MembershipActivationMotionPolicy {
+    let reduceMotion: Bool
+
+    var style: MembershipActivationMotionStyle {
+        reduceMotion ? .identity : .reveal
+    }
+
+    var animation: Animation? {
+        CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+    }
+
+    var hiddenOpacity: Double { reduceMotion ? 1 : 0 }
+    var hiddenScale: CGFloat { reduceMotion ? 1 : 0.84 }
+    var hiddenRotation: Angle { reduceMotion ? .zero : .degrees(-34) }
+    var animatesSymbol: Bool { !reduceMotion }
+}
+
+struct MembershipActivationFeedbackTaskID: Hashable {
+    let presentationID: UUID?
+    let isSceneActive: Bool
+}
+
+struct MembershipActivationFeedbackState: Equatable {
+    private(set) var deliveredPresentationID: UUID?
+
+    mutating func take(
+        _ presentation: MembershipActivationPresentation?,
+        isSceneActive: Bool
+    ) -> String? {
+        guard isSceneActive,
+              let presentation,
+              deliveredPresentationID != presentation.id else {
+            return nil
+        }
+        deliveredPresentationID = presentation.id
+        return presentation.accessibilityAnnouncement
     }
 }
 
@@ -46,8 +93,13 @@ struct MembershipView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedProductID: String?
     @State private var selectionFeedbackSequence = 0
+    @State private var activationPresentation: MembershipActivationPresentation?
+    @State private var activationFeedback = MembershipActivationFeedbackState()
+    @State private var activationFeedbackSequence = 0
+    @State private var isActivationRevealed = false
 
     init(
         context: MembershipPresentationContext,
@@ -66,28 +118,35 @@ struct MembershipView: View {
         renderReloadAction = renderConfiguration?.reloadAction
         renderRestoreAction = renderConfiguration?.restoreAction
         _selectedProductID = State(initialValue: renderConfiguration?.selectedPlanID)
+        _activationPresentation = State(initialValue: renderConfiguration?.activationPresentation)
     }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(paywallPresentation.sectionOrder, id: \.self) { section in
-                        paywallSection(section)
+            Group {
+                if let activationPresentation {
+                    membershipActivationContent(activationPresentation)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            ForEach(paywallPresentation.sectionOrder, id: \.self) { section in
+                                paywallSection(section)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
+                        .padding(.bottom, 24)
+                    }
+                    .scrollDismissesKeyboard(.interactively)
+                    .checkpointScreenBackground()
+                    .safeAreaInset(edge: .bottom, spacing: 0) {
+                        if paywallPresentation.checkoutPlacement == .sticky {
+                            purchaseBar
+                        }
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
             }
-            .scrollDismissesKeyboard(.interactively)
-            .checkpointScreenBackground()
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                if paywallPresentation.checkoutPlacement == .sticky {
-                    purchaseBar
-                }
-            }
-            .navigationTitle(store.isMember ? "Your Plan" : "Checkpoint Pro")
+            .navigationTitle(navigationTitle)
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -98,6 +157,11 @@ struct MembershipView: View {
                 }
             }
             .task {
+                if activationPresentation == nil,
+                   store.isMember,
+                   store.completedMembershipActivationContinuation != nil {
+                    presentActivation(source: .entitlementRefresh)
+                }
                 guard performsStoreKitLoading else {
                     selectDefaultPlanIfNeeded()
                     return
@@ -113,8 +177,273 @@ struct MembershipView: View {
                 guard let notice else { return }
                 AccessibilityNotification.Announcement(notice.message).post()
             }
+            .onChange(of: store.isMember) { wasMember, isMember in
+                guard !wasMember, isMember else { return }
+                presentActivation(source: activationSourceForEntitlementChange)
+            }
+            .task(id: activationFeedbackTaskID) {
+                deliverActivationFeedbackIfPossible()
+            }
             .sensoryFeedback(.selection, trigger: selectionFeedbackSequence)
+            .sensoryFeedback(.success, trigger: activationFeedbackSequence)
         }
+    }
+
+    private var navigationTitle: String {
+        if activationPresentation != nil {
+            return "Pro unlocked"
+        }
+        return store.isMember ? "Your Plan" : "Checkpoint Pro"
+    }
+
+    private func membershipActivationContent(
+        _ presentation: MembershipActivationPresentation
+    ) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                activationHero(presentation)
+                activationBenefits
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+            .padding(.bottom, 24)
+        }
+        .checkpointScreenBackground()
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            activationActionBar(presentation)
+        }
+        .onAppear {
+            revealActivation()
+        }
+    }
+
+    private func activationHero(
+        _ presentation: MembershipActivationPresentation
+    ) -> some View {
+        CheckpointHeroSurface(
+            glowColor: CheckpointTheme.mint,
+            glowOpacity: 0.15,
+            glowDiameter: 230,
+            glowBlurRadius: 18,
+            glowOffset: CGSize(width: 92, height: -98),
+            contentPadding: dynamicTypeSize.isAccessibilitySize ? 18 : 22
+        ) {
+            VStack(spacing: dynamicTypeSize.isAccessibilitySize ? 18 : 20) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) {
+                        activationEyebrow(presentation)
+                        Spacer(minLength: 8)
+                        activationStatusBadge
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        activationEyebrow(presentation)
+                        activationStatusBadge
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                MembershipActivationMark(
+                    isRevealed: isActivationRevealed,
+                    motionPolicy: activationMotionPolicy
+                )
+                .frame(maxWidth: .infinity)
+
+                VStack(spacing: 9) {
+                    Text(presentation.title)
+                        .font(.system(.title, design: .rounded, weight: .bold))
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(presentation.detail)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .opacity(isActivationRevealed ? 1 : activationMotionPolicy.hiddenOpacity)
+                .scaleEffect(isActivationRevealed ? 1 : 0.97)
+                .animation(activationMotionPolicy.animation, value: isActivationRevealed)
+
+                Label("Verified through the App Store", systemImage: "checkmark.shield.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.mint)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(CheckpointTheme.mint.opacity(0.10), in: Capsule())
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityElement(children: .combine)
+            }
+        }
+    }
+
+    private func activationEyebrow(
+        _ presentation: MembershipActivationPresentation
+    ) -> some View {
+        Label(presentation.eyebrow, systemImage: "sparkles")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.mint)
+            .fixedSize(horizontal: false, vertical: true)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private var activationStatusBadge: some View {
+        Label("PRO ACTIVE", systemImage: "checkmark")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(CheckpointTheme.mint)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+            .background(CheckpointTheme.mint.opacity(0.10), in: Capsule())
+            .fixedSize(horizontal: false, vertical: true)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private var activationBenefits: some View {
+        SectionPanel("Ready with Pro") {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 10) {
+                    activationBenefitItems
+                }
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    activationBenefitItems
+                }
+            }
+        }
+        .opacity(isActivationRevealed ? 1 : activationMotionPolicy.hiddenOpacity)
+        .offset(y: isActivationRevealed || reduceMotion ? 0 : 10)
+        .animation(activationMotionPolicy.animation, value: isActivationRevealed)
+    }
+
+    @ViewBuilder
+    private var activationBenefitItems: some View {
+        activationBenefit(title: "Focused goals", systemImage: "square.stack.3d.up.fill")
+        activationBenefit(title: "Fresh practice", systemImage: "sparkles")
+        activationBenefit(title: "Next Focus", systemImage: "scope")
+    }
+
+    private func activationBenefit(title: String, systemImage: String) -> some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                HStack(spacing: 11) {
+                    activationBenefitIcon(systemImage)
+                    Text(title)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            } else {
+                VStack(spacing: 8) {
+                    activationBenefitIcon(systemImage)
+                    Text(title)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(CheckpointTheme.text)
+        .padding(11)
+        .frame(maxWidth: .infinity, minHeight: 66)
+        .background(
+            CheckpointTheme.panelRaised.opacity(0.72),
+            in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+        )
+        .accessibilityElement(children: .combine)
+    }
+
+    private func activationBenefitIcon(_ systemImage: String) -> some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 14, weight: .bold))
+            .foregroundStyle(CheckpointTheme.teal)
+            .frame(width: 30, height: 30)
+            .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
+            .accessibilityHidden(true)
+    }
+
+    private func activationActionBar(
+        _ presentation: MembershipActivationPresentation
+    ) -> some View {
+        VStack(spacing: 8) {
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            PrimaryActionButton(
+                title: presentation.actionTitle,
+                systemImage: presentation.actionSystemImage
+            ) {
+                close()
+            }
+            .padding(.horizontal, 20)
+
+            Text(activationSupportText(for: presentation))
+                .font(.caption2.weight(.medium))
+                .foregroundStyle(CheckpointTheme.muted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 20)
+        }
+        .padding(.bottom, 9)
+        .background(CheckpointTheme.panel)
+        .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: -4)
+    }
+
+    private func activationSupportText(
+        for presentation: MembershipActivationPresentation
+    ) -> String {
+        presentation.continuation == nil
+            ? "Your Pro benefits are ready now."
+            : "Checkpoint will pick up exactly where you left off."
+    }
+
+    private var activationMotionPolicy: MembershipActivationMotionPolicy {
+        MembershipActivationMotionPolicy(reduceMotion: reduceMotion)
+    }
+
+    private var activationFeedbackTaskID: MembershipActivationFeedbackTaskID {
+        MembershipActivationFeedbackTaskID(
+            presentationID: activationPresentation?.id,
+            isSceneActive: scenePhase == .active
+        )
+    }
+
+    private var activationSourceForEntitlementChange: MembershipActivationSource {
+        if purchaseController.purchasingProductID != nil {
+            return .purchase
+        }
+        if purchaseController.isRestoringPurchases {
+            return .restore
+        }
+        return .entitlementRefresh
+    }
+
+    private func presentActivation(source: MembershipActivationSource) {
+        guard activationPresentation == nil else { return }
+        let continuation = store.completeMembershipCheckout()
+        activationPresentation = MembershipActivationPresentation(
+            context: context,
+            source: source,
+            continuation: continuation
+        )
+    }
+
+    private func revealActivation() {
+        guard !isActivationRevealed else { return }
+        if reduceMotion {
+            isActivationRevealed = true
+        } else {
+            withAnimation(activationMotionPolicy.animation) {
+                isActivationRevealed = true
+            }
+        }
+    }
+
+    private func deliverActivationFeedbackIfPossible() {
+        guard let announcement = activationFeedback.take(
+            activationPresentation,
+            isSceneActive: scenePhase == .active
+        ) else { return }
+        activationFeedbackSequence += 1
+        AccessibilityNotification.Announcement(announcement).post()
     }
 
     @ViewBuilder
@@ -724,8 +1053,7 @@ struct MembershipView: View {
             let unlocked = await purchaseController.purchase(product)
 
             if unlocked {
-                store.updateMembershipTier(.member)
-                close()
+                presentActivation(source: .purchase)
             }
         }
     }
@@ -739,8 +1067,7 @@ struct MembershipView: View {
         Task {
             let unlocked = await purchaseController.restorePurchases()
             if unlocked {
-                store.updateMembershipTier(.member)
-                close()
+                presentActivation(source: .restore)
             }
         }
     }
@@ -1292,6 +1619,52 @@ private struct ProMomentumMark: View {
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(CheckpointTheme.mint)
         }
+        .accessibilityHidden(true)
+    }
+}
+
+private struct MembershipActivationMark: View {
+    let isRevealed: Bool
+    let motionPolicy: MembershipActivationMotionPolicy
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(CheckpointTheme.mint.opacity(0.08))
+                .frame(width: 104, height: 104)
+
+            Circle()
+                .stroke(CheckpointTheme.mint.opacity(0.22), lineWidth: 1)
+                .frame(width: 88, height: 88)
+
+            Circle()
+                .trim(from: 0.08, to: 0.82)
+                .stroke(
+                    CheckpointTheme.mint,
+                    style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                )
+                .frame(width: 78, height: 78)
+                .rotationEffect(isRevealed ? .degrees(-24) : motionPolicy.hiddenRotation)
+
+            Circle()
+                .fill(CheckpointTheme.mint.opacity(0.15))
+                .frame(width: 64, height: 64)
+
+            Image(systemName: "checkmark")
+                .font(.system(size: 29, weight: .bold, design: .rounded))
+                .foregroundStyle(CheckpointTheme.mint)
+                .symbolEffect(.bounce, options: .nonRepeating, value: isRevealed)
+                .symbolEffectsRemoved(!motionPolicy.animatesSymbol)
+
+            Circle()
+                .fill(CheckpointTheme.mint)
+                .frame(width: 9, height: 9)
+                .offset(y: -39)
+                .rotationEffect(isRevealed ? .degrees(76) : .degrees(18))
+        }
+        .opacity(isRevealed ? 1 : motionPolicy.hiddenOpacity)
+        .scaleEffect(isRevealed ? 1 : motionPolicy.hiddenScale)
+        .animation(motionPolicy.animation, value: isRevealed)
         .accessibilityHidden(true)
     }
 }

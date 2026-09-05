@@ -169,13 +169,16 @@ final class CheckpointWorkflowCoordinator {
                 }
             }
 
-            return activationOutcome(for: store.activateGoal(using: plan))
+            return activationOutcome(
+                for: store.activateGoal(using: plan),
+                targetGoalID: targetGoalID
+            )
         case .alreadyActive:
             return .alreadyActive
         case .targetNotFound:
             return .targetNotFound
         case .membershipRequired:
-            store.requestMembership(for: .goalProfiles)
+            requestGoalSwitchMembership(for: targetGoalID)
             return .membershipRequired
         }
     }
@@ -362,7 +365,8 @@ final class CheckpointWorkflowCoordinator {
     }
 
     private func activationOutcome(
-        for result: GoalActivationResult
+        for result: GoalActivationResult,
+        targetGoalID: Goal.ID
     ) -> GoalSwitchOutcome {
         switch result {
         case let .activated(from, to):
@@ -372,13 +376,27 @@ final class CheckpointWorkflowCoordinator {
         case .targetNotFound:
             return .targetNotFound
         case .membershipRequired:
-            store.requestMembership(for: .goalProfiles)
+            requestGoalSwitchMembership(for: targetGoalID)
             return .membershipRequired
         case .stalePlan:
             return .staleRequest
         case .persistenceFailed:
             return .persistenceFailed
         }
+    }
+
+    private func requestGoalSwitchMembership(for targetGoalID: Goal.ID) {
+        let targetTitle = store.availableGoalProfiles.first {
+            $0.id == targetGoalID
+        }?.title ?? "Selected goal"
+        store.requestMembership(
+            for: .goalProfiles,
+            continuation: .activateGoal(
+                sourceGoalID: store.goal?.id,
+                targetGoalID: targetGoalID,
+                targetTitle: targetTitle
+            )
+        )
     }
 
     @discardableResult

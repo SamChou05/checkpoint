@@ -202,6 +202,156 @@ final class MembershipViewRenderingTests: XCTestCase {
         )
     }
 
+    func testMembershipActivationPresentationCarriesThePaidActionForward() {
+        let sourceGoalID = UUID()
+        let targetGoalID = UUID()
+        let create = MembershipActivationPresentation(
+            id: UUID(uuidString: "A8A95063-A36F-4776-9485-6F8E0242896D")!,
+            context: .feature(.goalProfiles),
+            source: .purchase,
+            continuation: .createGoalProfile(sourceGoalID: sourceGoalID)
+        )
+        let goalSwitch = MembershipActivationPresentation(
+            id: UUID(uuidString: "EF0444D9-0F65-4D00-B9CB-D99C3F2BC4EF")!,
+            context: .feature(.goalProfiles),
+            source: .restore,
+            continuation: .activateGoal(
+                sourceGoalID: sourceGoalID,
+                targetGoalID: targetGoalID,
+                targetTitle: "Design portfolio"
+            )
+        )
+        let overview = MembershipActivationPresentation(
+            id: UUID(uuidString: "A941302A-7E60-47F4-A688-D24F721C4C21")!,
+            context: .overview,
+            source: .entitlementRefresh,
+            continuation: nil
+        )
+
+        XCTAssertEqual(create.eyebrow, "PURCHASE COMPLETE")
+        XCTAssertEqual(create.title, "Checkpoint Pro is yours.")
+        XCTAssertEqual(create.actionTitle, "Create your next goal")
+        XCTAssertEqual(create.actionSystemImage, "plus")
+        XCTAssertTrue(create.detail.contains("next goal"))
+
+        XCTAssertEqual(goalSwitch.eyebrow, "ACCESS RESTORED")
+        XCTAssertEqual(goalSwitch.title, "Pro access restored.")
+        XCTAssertEqual(goalSwitch.actionTitle, "Continue to Design portfolio")
+        XCTAssertTrue(goalSwitch.detail.contains("Design portfolio"))
+
+        XCTAssertEqual(overview.eyebrow, "ACCESS CONFIRMED")
+        XCTAssertEqual(overview.actionTitle, "Continue")
+        XCTAssertEqual(overview.actionSystemImage, "checkmark")
+        XCTAssertTrue(overview.accessibilityAnnouncement.contains(overview.detail))
+    }
+
+    func testMembershipActivationFeedbackWaitsForAnActiveSceneAndDeliversEachReceiptOnce() {
+        let first = MembershipActivationPresentation(
+            id: UUID(uuidString: "D66F9C72-E354-4C8A-84D6-FF83726A38D7")!,
+            context: .feature(.goalProfiles),
+            source: .purchase,
+            continuation: .createGoalProfile(sourceGoalID: UUID())
+        )
+        let second = MembershipActivationPresentation(
+            id: UUID(uuidString: "54E4D1B1-06F2-4A7D-B68D-B7C5499EA590")!,
+            context: .overview,
+            source: .restore,
+            continuation: nil
+        )
+        var feedback = MembershipActivationFeedbackState()
+
+        XCTAssertNil(feedback.take(first, isSceneActive: false))
+        XCTAssertEqual(
+            feedback.take(first, isSceneActive: true),
+            first.accessibilityAnnouncement
+        )
+        XCTAssertNil(feedback.take(first, isSceneActive: true))
+        XCTAssertEqual(
+            feedback.take(second, isSceneActive: true),
+            second.accessibilityAnnouncement
+        )
+        XCTAssertNil(feedback.take(second, isSceneActive: true))
+    }
+
+    func testMembershipActivationMotionHonorsReduceMotion() {
+        let animated = MembershipActivationMotionPolicy(reduceMotion: false)
+        let reduced = MembershipActivationMotionPolicy(reduceMotion: true)
+
+        XCTAssertEqual(animated.style, .reveal)
+        XCTAssertNotNil(animated.animation)
+        XCTAssertEqual(animated.hiddenOpacity, 0)
+        XCTAssertLessThan(animated.hiddenScale, 1)
+        XCTAssertNotEqual(animated.hiddenRotation, .zero)
+        XCTAssertTrue(animated.animatesSymbol)
+
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.animation)
+        XCTAssertEqual(reduced.hiddenOpacity, 1)
+        XCTAssertEqual(reduced.hiddenScale, 1)
+        XCTAssertEqual(reduced.hiddenRotation, .zero)
+        XCTAssertFalse(reduced.animatesSymbol)
+    }
+
+    @MainActor
+    func testMembershipActivationRendersAcrossDestinationAndAccessibilityStates() throws {
+        let legalLinks = try makeLegalLinks()
+        let sourceGoalID = UUID(uuidString: "A732D6DF-867D-40C7-B858-0E5C90033BD6")!
+        let fixtures = [
+            MembershipRenderFixture(
+                name: "membership-activated-create-light",
+                context: .feature(.goalProfiles),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                isMember: true,
+                activationPresentation: MembershipActivationPresentation(
+                    id: UUID(uuidString: "D4EAF994-7E37-4507-966E-C7326E4BD6A0")!,
+                    context: .feature(.goalProfiles),
+                    source: .purchase,
+                    continuation: .createGoalProfile(sourceGoalID: sourceGoalID)
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-activated-switch-compact-dark",
+                context: .feature(.goalProfiles),
+                width: 320,
+                height: 568,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                isMember: true,
+                activationPresentation: MembershipActivationPresentation(
+                    id: UUID(uuidString: "0786C716-C72C-4C81-A74D-4936B05DECB9")!,
+                    context: .feature(.goalProfiles),
+                    source: .restore,
+                    continuation: .activateGoal(
+                        sourceGoalID: sourceGoalID,
+                        targetGoalID: UUID(uuidString: "B738CD41-D9CD-4E85-9B74-5FB9017C0ED2")!,
+                        targetTitle: "Design portfolio"
+                    )
+                )
+            ),
+            MembershipRenderFixture(
+                name: "membership-activated-accessibility5-reduced-motion",
+                context: .overview,
+                width: 393,
+                height: 1_600,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true,
+                isMember: true,
+                activationPresentation: MembershipActivationPresentation(
+                    id: UUID(uuidString: "5A7CE487-FE62-4034-A1F7-4CB34A94B5CA")!,
+                    context: .overview,
+                    source: .entitlementRefresh,
+                    continuation: nil
+                )
+            )
+        ]
+
+        try renderMembershipFixtures(fixtures, legalLinks: legalLinks)
+    }
+
     func testMembershipPaywallPresentationKeepsCheckoutAheadOfExtendedProof() {
         let regularOrder: [MembershipPaywallSection] = [
             .hero,
@@ -681,7 +831,8 @@ final class MembershipViewRenderingTests: XCTestCase {
                         planOptions: fixture.planOptions,
                         selectedPlanID: fixture.selectedPlanID,
                         legalLinks: legalLinks,
-                        reduceMotion: fixture.reduceMotion
+                        reduceMotion: fixture.reduceMotion,
+                        activationPresentation: fixture.activationPresentation
                     )
                 )
                 .environment(\.colorScheme, fixture.colorScheme)
@@ -721,6 +872,7 @@ private struct MembershipRenderFixture {
     var isLoading = false
     var purchaseNotice: MembershipPurchaseNotice?
     var isMember = false
+    var activationPresentation: MembershipActivationPresentation?
 }
 
 private struct MembershipValuePreviewRenderFixture {
