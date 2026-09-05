@@ -71,6 +71,82 @@ enum WeeklyReviewPeriodMotionStyle: Equatable {
     case identity
 }
 
+struct WeeklyReviewActivityPolicy {
+    static func hasPeriodActivity(_ metrics: WeeklyMetricsSummary) -> Bool {
+        metrics.questionsAnswered > 0 || metrics.checkpointsCleared > 0
+    }
+
+    static func showsStreakBadge(_ metrics: WeeklyMetricsSummary) -> Bool {
+        hasPeriodActivity(metrics) && metrics.checkpointStreakDays > 0
+    }
+}
+
+struct WeeklyReviewReferenceDateState: Equatable {
+    let referenceDate: Date
+    let selectedWeekStart: Date
+    let navigationDirection: WeeklyReviewNavigationDirection?
+}
+
+struct WeeklyReviewStateSnapshot: Equatable {
+    let referenceDate: Date
+    let selectedWeekStart: Date
+    let isCurrentWeek: Bool
+    let canGoNext: Bool
+    let rangeText: String
+    let emptyTitle: String
+    let hasActivity: Bool
+    let showsStreakBadge: Bool
+    let navigationDirection: WeeklyReviewNavigationDirection
+}
+
+struct WeeklyReviewReferenceDateRefreshPolicy {
+    static func refreshedState(
+        referenceDate: Date,
+        selectedWeekReferenceDate: Date,
+        refreshedReferenceDate: Date,
+        calendar: Calendar
+    ) -> WeeklyReviewReferenceDateState {
+        let previousCurrentWeekStart = weekStart(
+            containing: referenceDate,
+            calendar: calendar
+        )
+        let refreshedCurrentWeekStart = weekStart(
+            containing: refreshedReferenceDate,
+            calendar: calendar
+        )
+        let normalizedSelectedWeekStart = weekStart(
+            containing: selectedWeekReferenceDate,
+            calendar: calendar
+        )
+        let wasShowingCurrentWeek = normalizedSelectedWeekStart == previousCurrentWeekStart
+        let refreshedSelectedWeekStart = wasShowingCurrentWeek
+            ? refreshedCurrentWeekStart
+            : min(normalizedSelectedWeekStart, refreshedCurrentWeekStart)
+        let navigationDirection: WeeklyReviewNavigationDirection?
+        if refreshedSelectedWeekStart > normalizedSelectedWeekStart {
+            navigationDirection = .next
+        } else if refreshedSelectedWeekStart < normalizedSelectedWeekStart {
+            navigationDirection = .previous
+        } else {
+            navigationDirection = nil
+        }
+
+        return WeeklyReviewReferenceDateState(
+            referenceDate: refreshedReferenceDate,
+            selectedWeekStart: refreshedSelectedWeekStart,
+            navigationDirection: navigationDirection
+        )
+    }
+
+    private static func weekStart(
+        containing date: Date,
+        calendar: Calendar
+    ) -> Date {
+        calendar.dateInterval(of: .weekOfYear, for: date)?.start
+            ?? calendar.startOfDay(for: date)
+    }
+}
+
 struct WeeklyReviewPeriodPolicy {
     let referenceDate: Date
     let selectedWeekStart: Date
@@ -484,22 +560,20 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
     let isCurrentWeek: Bool
 
     var activityText: String {
+        guard hasActivity else {
+            return isCurrentWeek
+                ? "No checkpoint activity this week"
+                : "No checkpoint activity that week"
+        }
+
         if questionsAnswered > 0 {
             let noun = questionsAnswered == 1 ? "question" : "questions"
             return "\(questionsAnswered) \(noun) · \(accuracyText ?? "—") correct"
         }
-        if checkpointsCleared > 0 {
-            let noun = checkpointsCleared == 1 ? "break" : "breaks"
-            let period = isCurrentWeek ? "this week" : "that week"
-            return "\(checkpointsCleared) \(noun) earned \(period)"
-        }
-        if checkpointStreakDays > 0 {
-            let day = checkpointStreakDays == 1 ? "day" : "days"
-            return "\(checkpointStreakDays) \(day) in your checkpoint streak"
-        }
-        return isCurrentWeek
-            ? "No checkpoint activity this week"
-            : "No checkpoint activity that week"
+
+        let noun = checkpointsCleared == 1 ? "break" : "breaks"
+        let period = isCurrentWeek ? "this week" : "that week"
+        return "\(checkpointsCleared) \(noun) earned \(period)"
     }
 
     var supportingText: String {
@@ -515,8 +589,8 @@ struct WeeklyGoalPulseItem: Identifiable, Equatable {
         if checkpointsCleared > 0 {
             details.append("\(earnedBreakTimeText) unlocked")
         }
-        if details.isEmpty, checkpointStreakDays > 0 {
-            details.append(isCurrentWeek ? "Streak still active" : "Streak at week's end")
+        if checkpointStreakDays > 0 {
+            details.append("\(checkpointStreakDays)-day checkpoint streak")
         }
         return details.joined(separator: " · ")
     }
@@ -586,7 +660,7 @@ struct WeeklyGoalPulsePresentation: Equatable {
                 activePracticeDays: details.activePracticeDays,
                 earnedBreakTimeText: details.earnedBreakTimeText,
                 questionShare: share,
-                hasActivity: metric.hasWeeklyReviewActivity,
+                hasActivity: WeeklyReviewActivityPolicy.hasPeriodActivity(metric),
                 isCurrentWeek: isCurrentWeek
             )
             return (index: index, item: item)
@@ -608,14 +682,17 @@ struct WeeklyGoalPulsePresentation: Equatable {
 
 struct WeeklyReviewView: View {
     let store: CheckpointStore
-    private let referenceDate: Date
+    private let currentDate: @MainActor () -> Date
     private let displayCalendar: Calendar
     private let displayLocale: Locale
     private let displayTimeZone: TimeZone
     private let reduceMotionOverride: Bool?
+    private let stateReporter: (@MainActor (WeeklyReviewStateSnapshot) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var referenceDate: Date
     @State private var selectedMetricsID = WeeklyMetricsSummary.allGoalsID
     @State private var selectedWeekStart: Date
     @State private var selectedPracticeDayID: WeeklyPracticeDay.ID?
@@ -634,16 +711,20 @@ struct WeeklyReviewView: View {
         displayTimeZone: TimeZone = .current,
         reduceMotionOverride: Bool? = nil,
         initialSelectedPracticeDate: Date? = nil,
-        initialWeekReferenceDate: Date? = nil
+        initialWeekReferenceDate: Date? = nil,
+        currentDate: @escaping @MainActor () -> Date = { Date() },
+        stateReporter: (@MainActor (WeeklyReviewStateSnapshot) -> Void)? = nil
     ) {
         var normalizedDisplayCalendar = displayCalendar
         normalizedDisplayCalendar.timeZone = displayTimeZone
         self.store = store
-        self.referenceDate = referenceDate
+        self.currentDate = currentDate
         self.displayCalendar = normalizedDisplayCalendar
         self.displayLocale = displayLocale
         self.displayTimeZone = displayTimeZone
         self.reduceMotionOverride = reduceMotionOverride
+        self.stateReporter = stateReporter
+        _referenceDate = State(initialValue: referenceDate)
         _selectedMetricsID = State(initialValue: initialMetricsID)
         let initialPeriod = WeeklyReviewPeriodPolicy(
             referenceDate: referenceDate,
@@ -782,6 +863,20 @@ struct WeeklyReviewView: View {
         )
     }
 
+    private var stateSnapshot: WeeklyReviewStateSnapshot {
+        WeeklyReviewStateSnapshot(
+            referenceDate: referenceDate,
+            selectedWeekStart: periodPolicy.selectedWeekStart,
+            isCurrentWeek: periodPolicy.isCurrentWeek,
+            canGoNext: periodPolicy.canGoNext,
+            rangeText: periodPresentation.rangeText,
+            emptyTitle: periodPresentation.emptyTitle,
+            hasActivity: WeeklyReviewActivityPolicy.hasPeriodActivity(selectedMetrics),
+            showsStreakBadge: WeeklyReviewActivityPolicy.showsStreakBadge(selectedMetrics),
+            navigationDirection: weekNavigationDirection
+        )
+    }
+
     var body: some View {
         GeometryReader { proxy in
             weeklyReviewContent(
@@ -811,7 +906,7 @@ struct WeeklyReviewView: View {
                             .id("impact-\(selectedMetrics.id)")
                             .transition(scopeChangeTransition)
 
-                        if selectedMetrics.hasWeeklyReviewActivity {
+                        if WeeklyReviewActivityPolicy.hasPeriodActivity(selectedMetrics) {
                             if let pulsePresentation, displaysGoalPulse {
                                 goalPulse(pulsePresentation)
                                     .transition(scopeChangeTransition)
@@ -852,6 +947,22 @@ struct WeeklyReviewView: View {
                 guard selectedWeekStart != reconciledWeekStart else { return }
                 selectedWeekStart = reconciledWeekStart
                 selectedPracticeDayID = nil
+            }
+            .onAppear {
+                refreshReferenceDate()
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    refreshReferenceDate()
+                }
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .NSCalendarDayChanged)
+            ) { _ in
+                refreshReferenceDate()
+            }
+            .onChange(of: stateSnapshot, initial: true) { _, snapshot in
+                stateReporter?(snapshot)
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -1178,7 +1289,7 @@ struct WeeklyReviewView: View {
 
     @ViewBuilder
     private var streakBadge: some View {
-        if selectedMetrics.checkpointStreakDays > 0 {
+        if WeeklyReviewActivityPolicy.showsStreakBadge(selectedMetrics) {
             Label("\(selectedMetrics.checkpointStreakDays)d", systemImage: "bolt.fill")
                 .font(.caption.weight(.bold))
                 .foregroundStyle(heroAccent)
@@ -1432,6 +1543,25 @@ struct WeeklyReviewView: View {
         AccessibilityNotification.Announcement(
             "Showing \(destinationPresentation.accessibilityLabel)."
         ).post()
+    }
+
+    private func refreshReferenceDate() {
+        let refreshedState = WeeklyReviewReferenceDateRefreshPolicy.refreshedState(
+            referenceDate: referenceDate,
+            selectedWeekReferenceDate: selectedWeekStart,
+            refreshedReferenceDate: currentDate(),
+            calendar: displayCalendar
+        )
+        let didChangeSelectedWeek = selectedWeekStart != refreshedState.selectedWeekStart
+
+        if let navigationDirection = refreshedState.navigationDirection {
+            weekNavigationDirection = navigationDirection
+        }
+        referenceDate = refreshedState.referenceDate
+        selectedWeekStart = refreshedState.selectedWeekStart
+        if didChangeSelectedWeek {
+            selectedPracticeDayID = nil
+        }
     }
 
     private func goalPulseTint(at index: Int) -> Color {

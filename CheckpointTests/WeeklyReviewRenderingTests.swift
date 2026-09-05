@@ -201,7 +201,8 @@ final class WeeklyReviewRenderingTests: XCTestCase {
                     displayTimeZone: calendar.timeZone,
                     reduceMotionOverride: renderFixture.reduceMotion,
                     initialSelectedPracticeDate: renderFixture.initialSelectedPracticeDate,
-                    initialWeekReferenceDate: renderFixture.initialWeekReferenceDate
+                    initialWeekReferenceDate: renderFixture.initialWeekReferenceDate,
+                    currentDate: { referenceDate }
                 )
                 .environment(\.colorScheme, renderFixture.colorScheme)
                 .environment(\.dynamicTypeSize, renderFixture.dynamicTypeSize),
@@ -219,6 +220,138 @@ final class WeeklyReviewRenderingTests: XCTestCase {
             attachment.lifetime = .keepAlways
             add(attachment)
         }
+    }
+
+    @MainActor
+    func testMountedWeeklyReviewAdvancesFromSundayIntoTheNewCurrentWeek() throws {
+        let suiteName = "WeeklyReviewRenderingTests.Rollover.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+        }
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.minimumDaysInFirstWeek = 4
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let sunday = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(
+                    year: 2027,
+                    month: 1,
+                    day: 3,
+                    hour: 23,
+                    minute: 59
+                )
+            )
+        )
+        let monday = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(
+                    year: 2027,
+                    month: 1,
+                    day: 4,
+                    hour: 0,
+                    minute: 1
+                )
+            )
+        )
+        let sundayClear = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(
+                    year: 2027,
+                    month: 1,
+                    day: 3,
+                    hour: 12
+                )
+            )
+        )
+        let initialWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: sunday)?.start
+        )
+        let refreshedWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: monday)?.start
+        )
+        let goal = Goal(
+            title: "Review systems design",
+            deadline: monday.addingTimeInterval(86_400 * 30),
+            category: .codingInterview,
+            currentLevel: "Intermediate",
+            focusAreas: "reliability",
+            preferredQuestionStyle: .shortAnswer,
+            createdAt: sunday.addingTimeInterval(-86_400)
+        )
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.unlockEvents = [
+            UnlockEvent(goalID: goal.id, minutes: 20, createdAt: sundayClear)
+        ]
+
+        let clock = WeeklyReviewTestClock(date: sunday)
+        let capture = WeeklyReviewStateCapture()
+        let hostingController = UIHostingController(
+            rootView: WeeklyReviewView(
+                store: store,
+                initialMetricsID: goal.id.uuidString,
+                referenceDate: sunday,
+                displayCalendar: calendar,
+                displayLocale: Locale(identifier: "en_US"),
+                displayTimeZone: calendar.timeZone,
+                reduceMotionOverride: false,
+                initialWeekReferenceDate: sunday,
+                currentDate: { clock.date },
+                stateReporter: { capture.snapshots.append($0) }
+            )
+        )
+        let frame = CGRect(x: 0, y: 0, width: 393, height: 1_000)
+        let window = UIWindow(frame: frame)
+        defer { window.isHidden = true }
+        window.rootViewController = hostingController
+        window.isHidden = false
+        hostingController.view.frame = frame
+        hostingController.view.layoutIfNeeded()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.1))
+
+        let initial = try XCTUnwrap(capture.snapshots.last)
+        XCTAssertEqual(initial.referenceDate, sunday)
+        XCTAssertEqual(initial.selectedWeekStart, initialWeekStart)
+        XCTAssertTrue(initial.isCurrentWeek)
+        XCTAssertFalse(initial.canGoNext)
+        XCTAssertTrue(initial.hasActivity)
+        XCTAssertTrue(initial.showsStreakBadge)
+        XCTAssertEqual(initial.navigationDirection, .previous)
+
+        clock.date = monday
+        NotificationCenter.default.post(name: .NSCalendarDayChanged, object: nil)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.65))
+        hostingController.view.layoutIfNeeded()
+
+        let refreshed = try XCTUnwrap(capture.snapshots.last)
+        XCTAssertEqual(refreshed.referenceDate, monday)
+        XCTAssertEqual(refreshed.selectedWeekStart, refreshedWeekStart)
+        XCTAssertTrue(refreshed.isCurrentWeek)
+        XCTAssertFalse(refreshed.canGoNext)
+        XCTAssertEqual(refreshed.rangeText, "Jan 4–10")
+        XCTAssertEqual(refreshed.emptyTitle, "Your signal starts with one checkpoint")
+        XCTAssertFalse(refreshed.hasActivity)
+        XCTAssertFalse(refreshed.showsStreakBadge)
+        XCTAssertEqual(refreshed.navigationDirection, .next)
+
+        let format = UIGraphicsImageRendererFormat.preferred()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(size: frame.size, format: format).image { _ in
+            XCTAssertTrue(
+                hostingController.view.drawHierarchy(
+                    in: hostingController.view.bounds,
+                    afterScreenUpdates: true
+                )
+            )
+        }
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "weekly-review-mounted-monday-empty-after-rollover"
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     @MainActor
@@ -339,4 +472,18 @@ private struct WeeklyReviewRenderFixture {
     let initialWeekReferenceDate: Date
     let initialSelectedPracticeDate: Date?
     let reduceMotion: Bool
+}
+
+@MainActor
+private final class WeeklyReviewTestClock {
+    var date: Date
+
+    init(date: Date) {
+        self.date = date
+    }
+}
+
+@MainActor
+private final class WeeklyReviewStateCapture {
+    var snapshots: [WeeklyReviewStateSnapshot] = []
 }

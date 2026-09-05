@@ -807,6 +807,103 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         )
     }
 
+    @MainActor
+    func testWeeklyReviewTreatsAPriorWeekStreakAsSecondaryContextOnly() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let monday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 7, hour: 12))
+        )
+        let currentWeek = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: monday)
+        )
+        let priorSunday = currentWeek.start.addingTimeInterval(-3_600)
+        let goal = makeGoal()
+        let priorWeekClear = UnlockEvent(
+            goalID: goal.id,
+            minutes: 20,
+            createdAt: priorSunday
+        )
+        let carriedCalculator = WeeklyMetricsCalculator(
+            attempts: [],
+            unlockEvents: [priorWeekClear],
+            asOf: monday,
+            calendar: calendar
+        )
+        let carriedMetrics = carriedCalculator.summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: []
+        )
+
+        XCTAssertEqual(carriedMetrics.questionsAnswered, 0)
+        XCTAssertEqual(carriedMetrics.checkpointsCleared, 0)
+        XCTAssertEqual(carriedMetrics.checkpointStreakDays, 1)
+        XCTAssertTrue(
+            carriedMetrics.hasWeeklyReviewActivity,
+            "The shared summary keeps its existing cross-period streak semantics."
+        )
+        XCTAssertFalse(WeeklyReviewActivityPolicy.hasPeriodActivity(carriedMetrics))
+        XCTAssertFalse(WeeklyReviewActivityPolicy.showsStreakBadge(carriedMetrics))
+
+        let carriedPulse = WeeklyGoalPulsePresentation(
+            goals: [goal],
+            metrics: [carriedMetrics],
+            attempts: [],
+            unlockEvents: [priorWeekClear],
+            activeGoalID: goal.id,
+            asOf: monday,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        let carriedItem = try XCTUnwrap(carriedPulse.items.first)
+        XCTAssertFalse(carriedItem.hasActivity)
+        XCTAssertEqual(carriedItem.activityText, "No checkpoint activity this week")
+        XCTAssertEqual(carriedItem.supportingText, "Ready for your next checkpoint")
+
+        let mondayAttempt = makeAttempt(
+            goal: goal,
+            result: .correct,
+            createdAt: currentWeek.start.addingTimeInterval(3_600)
+        )
+        let activeCalculator = WeeklyMetricsCalculator(
+            attempts: [mondayAttempt],
+            unlockEvents: [priorWeekClear],
+            asOf: monday,
+            calendar: calendar
+        )
+        let activeMetrics = activeCalculator.summary(
+            id: goal.id.uuidString,
+            title: goal.title,
+            goalID: goal.id,
+            isCurrentGoal: true,
+            skillCompetencies: []
+        )
+
+        XCTAssertTrue(WeeklyReviewActivityPolicy.hasPeriodActivity(activeMetrics))
+        XCTAssertTrue(WeeklyReviewActivityPolicy.showsStreakBadge(activeMetrics))
+
+        let activePulse = WeeklyGoalPulsePresentation(
+            goals: [goal],
+            metrics: [activeMetrics],
+            attempts: [mondayAttempt],
+            unlockEvents: [priorWeekClear],
+            activeGoalID: goal.id,
+            asOf: monday,
+            calendar: calendar,
+            locale: Locale(identifier: "en_US"),
+            timeZone: calendar.timeZone
+        )
+        let activeItem = try XCTUnwrap(activePulse.items.first)
+        XCTAssertTrue(activeItem.hasActivity)
+        XCTAssertEqual(activeItem.activityText, "1 question · 100% correct")
+        XCTAssertTrue(activeItem.supportingText.contains("1-day checkpoint streak"))
+    }
+
     func testWeeklyReviewSelectionFeedbackOnlyReportsAnActualScopeChange() {
         XCTAssertFalse(
             WeeklyReviewScopeInteractionPolicy.reportsSelectionFeedback(
@@ -921,6 +1018,110 @@ final class ProgressMetricsTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(futureOnly.selectedWeekStart, currentWeek.start)
         XCTAssertFalse(futureOnly.canGoPrevious)
         XCTAssertFalse(futureOnly.canGoNext)
+    }
+
+    func testWeeklyReviewReferenceDateRefreshFollowsCurrentWeekAcrossRollover() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let sunday = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(
+                    year: 2026,
+                    month: 9,
+                    day: 6,
+                    hour: 23,
+                    minute: 59
+                )
+            )
+        )
+        let monday = try XCTUnwrap(
+            calendar.date(
+                from: DateComponents(
+                    year: 2026,
+                    month: 9,
+                    day: 7,
+                    hour: 0,
+                    minute: 1
+                )
+            )
+        )
+        let sundayWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: sunday)?.start
+        )
+        let mondayWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: monday)?.start
+        )
+
+        let refreshed = WeeklyReviewReferenceDateRefreshPolicy.refreshedState(
+            referenceDate: sunday,
+            selectedWeekReferenceDate: sundayWeekStart,
+            refreshedReferenceDate: monday,
+            calendar: calendar
+        )
+
+        XCTAssertEqual(refreshed.referenceDate, monday)
+        XCTAssertEqual(refreshed.selectedWeekStart, mondayWeekStart)
+        XCTAssertEqual(refreshed.navigationDirection, .next)
+
+        let policy = WeeklyReviewPeriodPolicy(
+            referenceDate: refreshed.referenceDate,
+            selectedWeekReferenceDate: refreshed.selectedWeekStart,
+            attempts: [],
+            unlockEvents: [UnlockEvent(goalID: UUID(), minutes: 15, createdAt: sunday)],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        XCTAssertTrue(policy.isCurrentWeek)
+        XCTAssertTrue(policy.canGoPrevious)
+        XCTAssertFalse(policy.canGoNext)
+    }
+
+    func testWeeklyReviewReferenceDateRefreshPreservesArchiveBrowsing() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let sunday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 6, hour: 23))
+        )
+        let monday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 7, hour: 8))
+        )
+        let sundayWeekStart = try XCTUnwrap(
+            calendar.dateInterval(of: .weekOfYear, for: sunday)?.start
+        )
+        let archivedWeekStart = try XCTUnwrap(
+            calendar.date(byAdding: .weekOfYear, value: -2, to: sundayWeekStart)
+        )
+
+        let refreshed = WeeklyReviewReferenceDateRefreshPolicy.refreshedState(
+            referenceDate: sunday,
+            selectedWeekReferenceDate: archivedWeekStart,
+            refreshedReferenceDate: monday,
+            calendar: calendar
+        )
+
+        XCTAssertEqual(refreshed.referenceDate, monday)
+        XCTAssertEqual(refreshed.selectedWeekStart, archivedWeekStart)
+        XCTAssertNil(refreshed.navigationDirection)
+
+        let policy = WeeklyReviewPeriodPolicy(
+            referenceDate: refreshed.referenceDate,
+            selectedWeekReferenceDate: refreshed.selectedWeekStart,
+            attempts: [
+                makeAttempt(
+                    goal: makeGoal(),
+                    result: .correct,
+                    createdAt: archivedWeekStart.addingTimeInterval(3_600)
+                )
+            ],
+            unlockEvents: [],
+            calendar: calendar,
+            reduceMotion: false
+        )
+        XCTAssertFalse(policy.isCurrentWeek)
+        XCTAssertEqual(policy.selectedWeekStart, archivedWeekStart)
+        XCTAssertTrue(policy.canGoNext)
     }
 
     @MainActor
