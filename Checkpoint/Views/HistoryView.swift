@@ -1,10 +1,58 @@
 import SwiftUI
 
+enum PracticeHistoryLayoutElement: Hashable {
+    case viewport
+    case header
+    case summary
+    case filter
+    case resultStatus
+    case timeline
+    case firstAttempt
+}
+
+private struct PracticeHistoryLayoutFrameReporter: ViewModifier {
+    let element: PracticeHistoryLayoutElement?
+    let report: (@MainActor (PracticeHistoryLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let element, let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(
+                        in: .named(practiceHistoryLayoutCoordinateSpaceName)
+                    )
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportPracticeHistoryLayoutFrame(
+        _ element: PracticeHistoryLayoutElement?,
+        using report: (@MainActor (PracticeHistoryLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(PracticeHistoryLayoutFrameReporter(element: element, report: report))
+    }
+}
+
+let practiceHistoryLayoutCoordinateSpaceName = "Checkpoint.PracticeHistory.Layout"
+
 struct HistoryView: View {
     let store: CheckpointStore
     let renderConfiguration: HistoryViewRenderConfiguration?
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.calendar) private var calendar
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -14,7 +62,11 @@ struct HistoryView: View {
     @State private var selectedFilter: PracticeHistoryFilter
     @State private var requestedScope: PracticeHistoryScope?
     @State private var scopeSelectionFeedbackSequence = 0
+    @State private var resultChange: PracticeHistoryResultChange = .initial
+    @State private var resultUpdateRequest: PracticeHistoryResultUpdateRequest?
     @State private var questionQualityFeedbackContext: QuestionQualityFeedbackContext?
+    @AccessibilityFocusState(for: [.voiceOver, .switchControl])
+    private var isResultStatusAccessibilityFocused: Bool
 
     init(
         store: CheckpointStore,
@@ -44,7 +96,19 @@ struct HistoryView: View {
     }
 
     private var motionPolicy: PracticeHistoryMotionPolicy {
-        PracticeHistoryMotionPolicy(reduceMotion: reduceMotion)
+        PracticeHistoryMotionPolicy(
+            reduceMotion: reduceMotion,
+            assistiveNavigationEnabled: assistiveNavigationEnabled
+        )
+    }
+
+    private var assistiveNavigationEnabled: Bool {
+        renderConfiguration?.assistiveNavigationEnabled
+            ?? (voiceOverEnabled || switchControlEnabled)
+    }
+
+    private var layoutReporter: (@MainActor (PracticeHistoryLayoutElement, CGRect) -> Void)? {
+        renderConfiguration?.layoutReporter
     }
 
     private func dayGroups(
@@ -65,34 +129,104 @@ struct HistoryView: View {
     }
 
     var body: some View {
-        let archive = presentation
-
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    historyHeader(archive)
+            GeometryReader { viewportProxy in
+                let archive = presentation
+                let layoutPolicy = PracticeHistoryLayoutPolicy(
+                    viewportHeight: viewportProxy.size.height,
+                    usesExpandedTypeLayout: usesExpandedTypeLayout
+                )
+                let usesMenuFilter = PracticeHistoryFilterLayoutPolicy.usesMenu(
+                    viewportWidth: viewportProxy.size.width,
+                    prefersExpandedTypeLayout: layoutPolicy.usesMenuFilter,
+                    counts: PracticeHistoryFilter.allCases.map {
+                        count(for: $0, in: archive)
+                    }
+                )
 
-                    if archive.isGloballyEmpty {
-                        emptyState(
-                            title: "Your answer log starts here",
-                            detail: "Complete a checkpoint and each answer will appear here, ready to revisit.",
-                            systemImage: "clock.arrow.circlepath"
-                        )
-                    } else if archive.isScopeEmpty {
-                        emptyState(
-                            title: archive.scopeEmptyTitle,
-                            detail: archive.scopeEmptyDetail,
-                            systemImage: "scope"
-                        )
-                    } else {
-                        summaryHero(archive)
-                        filterBar(archive)
-                        answerTimeline(archive)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        LazyVStack(
+                            alignment: .leading,
+                            spacing: 0,
+                            pinnedViews: layoutPolicy.pinsFilter
+                                ? [.sectionHeaders]
+                                : []
+                        ) {
+                            historyHeader(archive, layoutPolicy: layoutPolicy)
+                                .padding(.bottom, layoutPolicy.sectionSpacing)
+                                .reportPracticeHistoryLayoutFrame(
+                                    .header,
+                                    using: layoutReporter
+                                )
+
+                            if !archive.isGloballyEmpty && !archive.isScopeEmpty {
+                                summaryHero(archive, density: layoutPolicy.summaryDensity)
+                                    .transition(
+                                        resultTransition(
+                                            for: motionPolicy.style(for: .scope)
+                                        )
+                                    )
+                                    .padding(.bottom, layoutPolicy.sectionSpacing - 2)
+                                    .reportPracticeHistoryLayoutFrame(
+                                        .summary,
+                                        using: layoutReporter
+                                    )
+                            }
+
+                            Color.clear
+                                .frame(height: 0)
+                                .id(PracticeHistoryScrollAnchor.results)
+
+                            if archive.isGloballyEmpty {
+                                emptyArchiveSection(
+                                    archive,
+                                    title: "Your answer log starts here",
+                                    detail: "Complete a checkpoint and each answer will appear here, ready to revisit.",
+                                    systemImage: "clock.arrow.circlepath"
+                                )
+                            } else if archive.isScopeEmpty {
+                                emptyArchiveSection(
+                                    archive,
+                                    title: archive.scopeEmptyTitle,
+                                    detail: archive.scopeEmptyDetail,
+                                    systemImage: "scope"
+                                )
+                            } else {
+                                Section {
+                                    resultRegion(archive)
+                                        .padding(.top, 8)
+                                } header: {
+                                    filterBar(
+                                        archive,
+                                        usesMenu: usesMenuFilter,
+                                        stacksHeading: layoutPolicy.usesMenuFilter
+                                    )
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 6)
+                                    .background(CheckpointTheme.background)
+                                    .padding(.horizontal, -20)
+                                    .reportPracticeHistoryLayoutFrame(
+                                        .filter,
+                                        using: layoutReporter
+                                    )
+                                }
+                                .transition(
+                                    resultTransition(
+                                        for: motionPolicy.style(for: .scope)
+                                    )
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
+                        .padding(.bottom, 36)
+                    }
+                    .reportPracticeHistoryLayoutFrame(.viewport, using: layoutReporter)
+                    .onChange(of: resultUpdateRequest) { _, request in
+                        resetResultsPosition(for: request, using: scrollProxy)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 36)
             }
             .checkpointScreenBackground()
             .navigationTitle("Practice history")
@@ -122,17 +256,25 @@ struct HistoryView: View {
             .onChange(of: store.availableGoalProfiles.map(\.id)) { _, _ in
                 normalizeRequestedScopeIfNeeded()
             }
+            .onDisappear {
+                resultUpdateRequest = nil
+                isResultStatusAccessibilityFocused = false
+            }
         }
+        .coordinateSpace(name: practiceHistoryLayoutCoordinateSpaceName)
     }
 
     private func historyHeader(
-        _ archive: PracticeHistoryArchivePresentation
+        _ archive: PracticeHistoryArchivePresentation,
+        layoutPolicy: PracticeHistoryLayoutPolicy
     ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("YOUR PRACTICE")
-                .font(.caption2.weight(.bold))
-                .tracking(1)
-                .foregroundStyle(CheckpointTheme.muted)
+            if !usesExpandedTypeLayout {
+                Text("YOUR PRACTICE")
+                    .font(.caption2.weight(.bold))
+                    .tracking(1)
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
 
             Group {
                 if usesExpandedTypeLayout {
@@ -150,16 +292,22 @@ struct HistoryView: View {
                 }
             }
 
-            Text(archive.supportingCopy)
-                .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+            if layoutPolicy.showsSupportingCopy {
+                Text(archive.supportingCopy)
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 
     private var historyTitle: some View {
-        Text("Answer archive")
-            .font(.title2.weight(.bold))
+        Text(usesExpandedTypeLayout ? "Answer log" : "Answer archive")
+            .font(
+                usesExpandedTypeLayout
+                    ? .headline.weight(.bold)
+                    : .title2.weight(.bold)
+            )
             .foregroundStyle(CheckpointTheme.text)
             .lineLimit(usesExpandedTypeLayout ? nil : 1)
             .fixedSize(horizontal: false, vertical: true)
@@ -276,23 +424,33 @@ struct HistoryView: View {
     }
 
     private func summaryHero(
-        _ archive: PracticeHistoryArchivePresentation
+        _ archive: PracticeHistoryArchivePresentation,
+        density: PracticeHistorySummaryDensity
     ) -> some View {
         Group {
-            if usesExpandedTypeLayout {
-                VStack(alignment: .leading, spacing: 18) {
-                    summaryIdentity(archive)
-                    accuracyRing(archive)
-                    summaryMetrics(archive)
-                }
-            } else {
-                ViewThatFits(in: .horizontal) {
-                    summaryHeroLayout(archive, stacksIdentity: false)
-                    summaryHeroLayout(archive, stacksIdentity: true)
+            switch density {
+            case .compact:
+                compactSummaryHero(archive)
+            case .expanded:
+                if usesExpandedTypeLayout {
+                    VStack(alignment: .leading, spacing: 18) {
+                        summaryIdentity(archive)
+                        accuracyRing(archive)
+                        summaryMetrics(archive)
+                    }
+                } else {
+                    ViewThatFits(in: .horizontal) {
+                        summaryHeroLayout(archive, stacksIdentity: false)
+                        summaryHeroLayout(archive, stacksIdentity: true)
+                    }
                 }
             }
         }
-        .padding(20)
+        .padding(
+            density == .compact
+                ? (usesExpandedTypeLayout ? 6 : 11)
+                : 20
+        )
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
@@ -307,16 +465,157 @@ struct HistoryView: View {
                         .allowsHitTesting(false)
                 }
         )
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 10)
+        .shadow(
+            color: CheckpointTheme.shadowElevated,
+            radius: density == .compact ? 12 : 18,
+            y: density == .compact ? 6 : 10
+        )
         .accessibilityElement(children: .contain)
         .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            motionPolicy.metricAnimation,
             value: archive.scopedAttempts.count
         )
         .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            motionPolicy.metricAnimation,
             value: archive.correctCount
         )
+    }
+
+    private func compactSummaryHero(
+        _ archive: PracticeHistoryArchivePresentation
+    ) -> some View {
+        Group {
+            if usesExpandedTypeLayout {
+                expandedTypeCompactSummaryHero(archive)
+            } else {
+                VStack(alignment: .leading, spacing: 9) {
+                    ViewThatFits(in: .horizontal) {
+                        HStack(alignment: .center, spacing: 12) {
+                            compactSummaryIdentity(archive, staysOnOneLine: true)
+                            Spacer(minLength: 8)
+                            compactAccuracy(archive)
+                        }
+
+                        VStack(alignment: .leading, spacing: 5) {
+                            compactSummaryIdentity(archive, staysOnOneLine: false)
+                            compactAccuracy(archive)
+                        }
+                    }
+
+                    Divider()
+                        .overlay(CheckpointTheme.heroDivider)
+
+                    Text("\(archive.correctCount) correct · \(archive.reviewCount) to revisit")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(summarySecondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.numericText())
+                }
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Practice record")
+        .accessibilityValue(
+            "\(archive.scopedAttempts.count) "
+                + "\(archive.scopedAttempts.count == 1 ? "saved answer" : "saved answers"), "
+                + "\(archive.accuracyPercent) percent accuracy, "
+                + "\(archive.correctCount) correct, "
+                + "\(archive.reviewCount) to revisit. "
+                + archive.summaryContext
+        )
+    }
+
+    private func expandedTypeCompactSummaryHero(
+        _ archive: PracticeHistoryArchivePresentation
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    expandedTypeAnswerCount(archive, staysOnOneLine: true)
+                    Spacer(minLength: 6)
+                    expandedTypeAccuracy(archive)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    expandedTypeAnswerCount(archive, staysOnOneLine: false)
+                    expandedTypeAccuracy(archive)
+                }
+            }
+
+            Divider()
+                .overlay(CheckpointTheme.heroDivider)
+
+            Text("\(archive.correctCount) correct · \(archive.reviewCount) revisit")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(summarySecondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.numericText())
+        }
+    }
+
+    private func expandedTypeAnswerCount(
+        _ archive: PracticeHistoryArchivePresentation,
+        staysOnOneLine: Bool
+    ) -> some View {
+        Text(
+            "\(archive.scopedAttempts.count) "
+                + (archive.scopedAttempts.count == 1 ? "answer" : "answers")
+        )
+        .font(.headline.weight(.bold))
+        .monospacedDigit()
+        .foregroundStyle(summaryText)
+        .lineLimit(staysOnOneLine ? 1 : nil)
+        .fixedSize(horizontal: staysOnOneLine, vertical: true)
+        .contentTransition(.numericText(value: Double(archive.scopedAttempts.count)))
+    }
+
+    private func expandedTypeAccuracy(
+        _ archive: PracticeHistoryArchivePresentation
+    ) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text("\(archive.accuracyPercent)%")
+                .font(.headline.weight(.bold))
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(archive.accuracyPercent)))
+
+            Text("accuracy")
+                .font(.caption.weight(.semibold))
+        }
+        .foregroundStyle(CheckpointTheme.mint)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func compactSummaryIdentity(
+        _ archive: PracticeHistoryArchivePresentation,
+        staysOnOneLine: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(
+                "\(archive.scopedAttempts.count) "
+                    + (archive.scopedAttempts.count == 1 ? "saved answer" : "saved answers")
+            )
+            .font(.title3.weight(.bold))
+            .monospacedDigit()
+            .foregroundStyle(summaryText)
+            .lineLimit(staysOnOneLine ? 1 : nil)
+            .fixedSize(horizontal: staysOnOneLine, vertical: true)
+            .contentTransition(.numericText(value: Double(archive.scopedAttempts.count)))
+
+            Text(archive.summaryContext)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(summarySecondaryText)
+        }
+    }
+
+    private func compactAccuracy(
+        _ archive: PracticeHistoryArchivePresentation
+    ) -> some View {
+        Text("\(archive.accuracyPercent)% accuracy")
+            .font(.subheadline.weight(.bold))
+            .monospacedDigit()
+            .foregroundStyle(CheckpointTheme.mint)
+            .fixedSize(horizontal: true, vertical: true)
+            .contentTransition(.numericText(value: Double(archive.accuracyPercent)))
     }
 
     private func summaryHeroLayout(
@@ -405,7 +704,7 @@ struct HistoryView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(archive.accuracyPercent) percent accuracy")
         .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            motionPolicy.metricAnimation,
             value: accuracyProgress(for: archive)
         )
     }
@@ -482,32 +781,177 @@ struct HistoryView: View {
     }
 
     private func filterBar(
-        _ archive: PracticeHistoryArchivePresentation
+        _ archive: PracticeHistoryArchivePresentation,
+        usesMenu: Bool,
+        stacksHeading: Bool
     ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            sectionLabel("ANSWER LOG")
+        VStack(alignment: .leading, spacing: 8) {
+            if stacksHeading {
+                resultStatus(
+                    archive,
+                    alignment: .leading,
+                    showsOrdering: false
+                )
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        sectionLabel("ANSWER LOG")
+                        Spacer(minLength: 8)
+                        resultStatus(archive, alignment: .trailing)
+                    }
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        sectionLabel("ANSWER LOG")
+                        resultStatus(archive, alignment: .leading)
+                    }
+                }
+            }
 
             Group {
-                if usesExpandedTypeLayout {
-                    VStack(spacing: 4) {
-                        filterButtons(archive)
-                    }
+                if usesMenu {
+                    filterMenu(
+                        archive,
+                        usesCondensedLabel: stacksHeading
+                    )
                 } else {
                     HStack(spacing: 4) {
                         filterButtons(archive)
                     }
                 }
             }
-            .padding(4)
+            .padding(usesMenu ? 2 : 4)
             .background(
                 CheckpointTheme.panelRaised.opacity(0.78),
                 in: RoundedRectangle(cornerRadius: 14, style: .continuous)
             )
             .animation(
-                CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+                motionPolicy.metricAnimation,
                 value: selectedFilter
             )
         }
+    }
+
+    private func resultRegion(
+        _ archive: PracticeHistoryArchivePresentation
+    ) -> some View {
+        let identity = PracticeHistoryResultIdentity(
+            scope: archive.scope,
+            filter: selectedFilter
+        )
+
+        return answerTimeline(archive)
+            .id(identity)
+            .transition(resultTransition(for: motionPolicy.style(for: resultChange)))
+            .animation(motionPolicy.resultAnimation, value: identity)
+            .reportPracticeHistoryLayoutFrame(.timeline, using: layoutReporter)
+    }
+
+    private func resultTransition(
+        for style: PracticeHistoryResultTransitionStyle
+    ) -> AnyTransition {
+        switch style {
+        case .identity:
+            .identity
+        case .opacity:
+            .opacity
+        case .forward:
+            .asymmetric(
+                insertion: .move(edge: .trailing).combined(with: .opacity),
+                removal: .move(edge: .leading).combined(with: .opacity)
+            )
+        case .backward:
+            .asymmetric(
+                insertion: .move(edge: .leading).combined(with: .opacity),
+                removal: .move(edge: .trailing).combined(with: .opacity)
+            )
+        }
+    }
+
+    private func resultStatus(
+        _ archive: PracticeHistoryArchivePresentation,
+        alignment: HorizontalAlignment,
+        showsOrdering: Bool = true
+    ) -> some View {
+        let status = PracticeHistoryResultStatusPresentation(
+            filter: selectedFilter,
+            resultCount: archive.filteredAttempts.count,
+            scopeTitle: archive.scopeTitle
+        )
+
+        return VStack(alignment: alignment, spacing: 1) {
+            Text(status.title)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(status.resultCount)))
+
+            if showsOrdering, let orderingText = status.orderingText {
+                Text(orderingText)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.muted)
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(status.accessibilityLabel)
+        .accessibilityFocused($isResultStatusAccessibilityFocused)
+        .animation(motionPolicy.metricAnimation, value: status.resultCount)
+        .reportPracticeHistoryLayoutFrame(.resultStatus, using: layoutReporter)
+    }
+
+    private func filterMenu(
+        _ archive: PracticeHistoryArchivePresentation,
+        usesCondensedLabel: Bool
+    ) -> some View {
+        Menu {
+            ForEach(PracticeHistoryFilter.allCases) { filter in
+                Button {
+                    selectFilter(filter)
+                } label: {
+                    Label(
+                        "\(filter.accessibilityTitle), \(count(for: filter, in: archive))",
+                        systemImage: filter == selectedFilter
+                            ? "checkmark.circle.fill"
+                            : "circle"
+                    )
+                }
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "line.3.horizontal.decrease")
+                    .font(.system(size: 14, weight: .bold))
+                    .accessibilityHidden(true)
+
+                Text(
+                    usesCondensedLabel
+                        ? selectedFilter.title
+                        : "Filter: \(selectedFilter.title)"
+                )
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 6)
+
+                Image(systemName: "chevron.down")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .accessibilityHidden(true)
+            }
+            .foregroundStyle(CheckpointTheme.teal)
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Answer filter")
+        .accessibilityValue(
+            "\(selectedFilter.accessibilityTitle), "
+                + "\(archive.filteredAttempts.count) "
+                + (archive.filteredAttempts.count == 1 ? "result" : "results")
+        )
+        .accessibilityHint("Choose which answers to review.")
     }
 
     @ViewBuilder
@@ -518,8 +962,7 @@ struct HistoryView: View {
             let isSelected = filter == selectedFilter
 
             Button {
-                guard selectedFilter != filter else { return }
-                selectedFilter = filter
+                selectFilter(filter)
             } label: {
                 HStack(spacing: 6) {
                     Text(filter.title)
@@ -645,6 +1088,12 @@ struct HistoryView: View {
                                             existingReason: questionReport?.reason
                                         )
                                     }
+                                    .reportPracticeHistoryLayoutFrame(
+                                        attempt.id == archive.filteredAttempts.first?.id
+                                            ? .firstAttempt
+                                            : nil,
+                                        using: layoutReporter
+                                    )
 
                                     if index < group.attempts.count - 1 {
                                         Divider()
@@ -665,11 +1114,10 @@ struct HistoryView: View {
                         }
                     }
                 }
-                .transition(motionPolicy.usesRevealTransition ? .opacity : .identity)
             }
         }
         .animation(
-            CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
+            motionPolicy.metricAnimation,
             value: isEmpty
         )
     }
@@ -754,6 +1202,28 @@ struct HistoryView: View {
         .padding(.top, 8)
     }
 
+    private func emptyArchiveSection(
+        _ archive: PracticeHistoryArchivePresentation,
+        title: String,
+        detail: String,
+        systemImage: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 5) {
+                sectionLabel("ANSWER LOG")
+                resultStatus(archive, alignment: .leading)
+            }
+            .reportPracticeHistoryLayoutFrame(.filter, using: layoutReporter)
+
+            emptyState(
+                title: title,
+                detail: detail,
+                systemImage: systemImage
+            )
+        }
+        .transition(resultTransition(for: motionPolicy.style(for: .scope)))
+    }
+
     private func count(
         for filter: PracticeHistoryFilter,
         in archive: PracticeHistoryArchivePresentation
@@ -790,8 +1260,119 @@ struct HistoryView: View {
         from archive: PracticeHistoryArchivePresentation
     ) {
         guard archive.scope != scope else { return }
-        requestedScope = scope
+        resultChange = .scope
+        withAnimation(motionPolicy.resultAnimation) {
+            requestedScope = scope
+        }
         scopeSelectionFeedbackSequence += 1
+        deliverUpdatedResultStatusAfterSelection(
+            targetIdentity: PracticeHistoryResultIdentity(
+                scope: scope,
+                filter: selectedFilter
+            ),
+            change: .scope
+        )
+    }
+
+    private func selectFilter(_ filter: PracticeHistoryFilter) {
+        guard selectedFilter != filter else { return }
+        let change = PracticeHistoryResultChange.filter(
+            from: selectedFilter,
+            to: filter
+        )
+        resultChange = change
+        withAnimation(motionPolicy.resultAnimation) {
+            selectedFilter = filter
+        }
+        deliverUpdatedResultStatusAfterSelection(
+            targetIdentity: PracticeHistoryResultIdentity(
+                scope: presentation.scope,
+                filter: filter
+            ),
+            change: change
+        )
+    }
+
+    private func deliverUpdatedResultStatusAfterSelection(
+        targetIdentity: PracticeHistoryResultIdentity,
+        change: PracticeHistoryResultChange
+    ) {
+        let request = PracticeHistoryResultUpdateRequest(
+            target: targetIdentity,
+            change: change
+        )
+        resultUpdateRequest = request
+
+        let delivery = PracticeHistoryResultUpdateDeliveryPolicy.delivery(
+            voiceOverEnabled: voiceOverEnabled,
+            switchControlEnabled: switchControlEnabled
+        )
+        guard delivery != .none else { return }
+
+        if delivery == .focusStatus {
+            isResultStatusAccessibilityFocused = false
+        }
+
+        Task { @MainActor in
+            await Task.yield()
+            await Task.yield()
+            if !reduceMotion {
+                try? await Task.sleep(for: .milliseconds(320))
+            }
+            guard resultUpdateRequest == request,
+                  currentResultIdentity == request.target else { return }
+
+            switch delivery {
+            case .none:
+                break
+            case .focusStatus:
+                isResultStatusAccessibilityFocused = true
+            case .announceStatus:
+                let archive = presentation
+                let status = PracticeHistoryResultStatusPresentation(
+                    filter: selectedFilter,
+                    resultCount: archive.filteredAttempts.count,
+                    scopeTitle: archive.scopeTitle
+                )
+                AccessibilityNotification.Announcement(
+                    status.accessibilityLabel
+                ).post()
+            }
+        }
+    }
+
+    private var currentResultIdentity: PracticeHistoryResultIdentity {
+        PracticeHistoryResultIdentity(
+            scope: presentation.scope,
+            filter: selectedFilter
+        )
+    }
+
+    private func resetResultsPosition(
+        for request: PracticeHistoryResultUpdateRequest?,
+        using proxy: ScrollViewProxy
+    ) {
+        guard let request else { return }
+
+        Task { @MainActor in
+            await Task.yield()
+            await Task.yield()
+            guard resultUpdateRequest == request,
+                  currentResultIdentity == request.target,
+                  PracticeHistoryResultScrollPolicy.shouldReset(
+                    after: request.change,
+                    voiceOverEnabled: voiceOverEnabled,
+                    switchControlEnabled: switchControlEnabled
+                  ) else { return }
+
+            withAnimation(
+                motionPolicy.animatesResultReset
+                    ? CheckpointMotion.change
+                    : nil
+            ) {
+                proxy.scrollTo(PracticeHistoryScrollAnchor.results, anchor: .top)
+            }
+        }
     }
 
     private func normalizeRequestedScopeIfNeeded() {
@@ -842,7 +1423,9 @@ struct HistoryViewRenderConfiguration {
     var initialFilter: PracticeHistoryFilter = .all
     var initiallyExpandedAttemptIDs: Set<CheckpointAttempt.ID> = []
     var reduceMotion: Bool?
+    var assistiveNavigationEnabled: Bool?
     var referenceDate: Date?
+    var layoutReporter: (@MainActor (PracticeHistoryLayoutElement, CGRect) -> Void)?
 }
 
 enum PracticeHistoryScope: Hashable, Identifiable {
@@ -870,13 +1453,201 @@ struct PracticeHistoryQuestionKey: Hashable {
     let questionID: CheckpointQuestion.ID
 }
 
+enum PracticeHistorySummaryDensity: Equatable {
+    case compact
+    case expanded
+}
+
+struct PracticeHistoryLayoutPolicy: Equatable {
+    let summaryDensity: PracticeHistorySummaryDensity
+    let usesMenuFilter: Bool
+    let pinsFilter: Bool
+    let showsSupportingCopy: Bool
+    let sectionSpacing: CGFloat
+
+    init(viewportHeight: CGFloat, usesExpandedTypeLayout: Bool) {
+        let usesCompactSummary = viewportHeight <= 700 || usesExpandedTypeLayout
+        summaryDensity = usesCompactSummary ? .compact : .expanded
+        usesMenuFilter = usesExpandedTypeLayout
+        pinsFilter = !usesExpandedTypeLayout
+        showsSupportingCopy = !usesCompactSummary
+        sectionSpacing = usesCompactSummary ? 12 : 20
+    }
+}
+
+enum PracticeHistoryFilterLayoutPolicy {
+    static func usesMenu(
+        viewportWidth: CGFloat,
+        prefersExpandedTypeLayout: Bool,
+        counts: [Int]
+    ) -> Bool {
+        if prefersExpandedTypeLayout {
+            return true
+        }
+
+        let largestCountDigits = counts
+            .map { String(max(0, $0)).count }
+            .max() ?? 1
+        return viewportWidth <= 340 || largestCountDigits >= 5
+    }
+}
+
+enum PracticeHistoryResultChange: Equatable {
+    case initial
+    case filterForward
+    case filterBackward
+    case scope
+
+    static func filter(
+        from previous: PracticeHistoryFilter,
+        to current: PracticeHistoryFilter
+    ) -> Self {
+        guard previous != current else { return .initial }
+        return current.sortOrder > previous.sortOrder
+            ? .filterForward
+            : .filterBackward
+    }
+}
+
+enum PracticeHistoryResultTransitionStyle: Equatable {
+    case identity
+    case opacity
+    case forward
+    case backward
+}
+
+struct PracticeHistoryResultIdentity: Hashable {
+    let scope: PracticeHistoryScope
+    let filter: PracticeHistoryFilter
+}
+
+struct PracticeHistoryResultUpdateRequest: Identifiable, Equatable {
+    let id = UUID()
+    let target: PracticeHistoryResultIdentity
+    let change: PracticeHistoryResultChange
+}
+
+enum PracticeHistoryScrollAnchor: Hashable {
+    case results
+}
+
+enum PracticeHistoryResultUpdateDelivery: Equatable {
+    case none
+    case focusStatus
+    case announceStatus
+}
+
+enum PracticeHistoryResultUpdateDeliveryPolicy {
+    static func delivery(
+        voiceOverEnabled: Bool,
+        switchControlEnabled: Bool
+    ) -> PracticeHistoryResultUpdateDelivery {
+        if voiceOverEnabled {
+            return .focusStatus
+        }
+        if switchControlEnabled {
+            return .announceStatus
+        }
+        return .none
+    }
+}
+
+enum PracticeHistoryResultScrollPolicy {
+    static func shouldReset(
+        after change: PracticeHistoryResultChange,
+        voiceOverEnabled: Bool,
+        switchControlEnabled: Bool
+    ) -> Bool {
+        guard change != .initial else { return false }
+        if change == .scope,
+           switchControlEnabled,
+           !voiceOverEnabled {
+            return false
+        }
+        return true
+    }
+}
+
+struct PracticeHistoryResultStatusPresentation: Equatable {
+    let resultCount: Int
+    let title: String
+    let orderingText: String?
+    let accessibilityLabel: String
+
+    init(
+        filter: PracticeHistoryFilter,
+        resultCount: Int,
+        scopeTitle: String
+    ) {
+        self.resultCount = max(0, resultCount)
+        orderingText = self.resultCount == 0 ? nil : "Newest first"
+
+        switch filter {
+        case .all:
+            title = "\(self.resultCount) "
+                + (self.resultCount == 1 ? "answer" : "answers")
+        case .correct:
+            title = "\(self.resultCount) correct "
+                + (self.resultCount == 1 ? "answer" : "answers")
+        case .review:
+            title = "\(self.resultCount) to revisit"
+        }
+
+        if let orderingText {
+            accessibilityLabel = "Showing \(title) for \(scopeTitle). \(orderingText)."
+        } else {
+            accessibilityLabel = "Showing \(title) for \(scopeTitle)."
+        }
+    }
+}
+
 struct PracticeHistoryMotionPolicy: Equatable {
     let usesMatchedGeometry: Bool
     let usesRevealTransition: Bool
+    let usesAssistiveNavigation: Bool
+    let reducesMotion: Bool
 
-    init(reduceMotion: Bool) {
-        usesMatchedGeometry = !reduceMotion
-        usesRevealTransition = !reduceMotion
+    init(
+        reduceMotion: Bool,
+        assistiveNavigationEnabled: Bool = false
+    ) {
+        reducesMotion = reduceMotion
+        usesAssistiveNavigation = assistiveNavigationEnabled
+        usesMatchedGeometry = !reduceMotion && !assistiveNavigationEnabled
+        usesRevealTransition = !reduceMotion && !assistiveNavigationEnabled
+    }
+
+    var resultAnimation: Animation? {
+        reducesMotion ? nil : CheckpointMotion.change
+    }
+
+    var metricAnimation: Animation? {
+        reducesMotion || usesAssistiveNavigation
+            ? nil
+            : CheckpointMotion.change
+    }
+
+    var animatesResultReset: Bool {
+        !reducesMotion && !usesAssistiveNavigation
+    }
+
+    func style(
+        for change: PracticeHistoryResultChange
+    ) -> PracticeHistoryResultTransitionStyle {
+        guard change != .initial else { return .identity }
+        guard !reducesMotion else { return .identity }
+        guard !usesAssistiveNavigation else { return .opacity }
+
+        switch change {
+        case .initial:
+            return .identity
+        case .filterForward:
+            return .forward
+        case .filterBackward:
+            return .backward
+        case .scope:
+            return .opacity
+        }
     }
 }
 
@@ -1048,6 +1819,14 @@ enum PracticeHistoryFilter: String, CaseIterable, Identifiable {
     case review
 
     var id: Self { self }
+
+    var sortOrder: Int {
+        switch self {
+        case .all: 0
+        case .correct: 1
+        case .review: 2
+        }
+    }
 
     var title: String {
         switch self {

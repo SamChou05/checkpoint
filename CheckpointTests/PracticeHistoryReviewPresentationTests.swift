@@ -341,14 +341,414 @@ final class PracticeHistoryReviewPresentationTests: XCTestCase {
         )
     }
 
-    func testHistoryMotionPolicyRemovesSpatialMotionWhenReduceMotionIsEnabled() {
-        let standard = PracticeHistoryMotionPolicy(reduceMotion: false)
+    func testHistoryLayoutPolicyCondensesShortAndExpandedTypeViewports() {
+        let short = PracticeHistoryLayoutPolicy(
+            viewportHeight: 568,
+            usesExpandedTypeLayout: false
+        )
+        XCTAssertEqual(short.summaryDensity, .compact)
+        XCTAssertFalse(short.showsSupportingCopy)
+        XCTAssertFalse(short.usesMenuFilter)
+        XCTAssertTrue(short.pinsFilter)
+
+        let expandedType = PracticeHistoryLayoutPolicy(
+            viewportHeight: 852,
+            usesExpandedTypeLayout: true
+        )
+        XCTAssertEqual(expandedType.summaryDensity, .compact)
+        XCTAssertTrue(expandedType.usesMenuFilter)
+        XCTAssertFalse(expandedType.pinsFilter)
+        XCTAssertFalse(expandedType.showsSupportingCopy)
+
+        let roomy = PracticeHistoryLayoutPolicy(
+            viewportHeight: 852,
+            usesExpandedTypeLayout: false
+        )
+        XCTAssertEqual(roomy.summaryDensity, .expanded)
+        XCTAssertTrue(roomy.showsSupportingCopy)
+        XCTAssertFalse(roomy.usesMenuFilter)
+        XCTAssertTrue(roomy.pinsFilter)
+    }
+
+    func testHistoryFilterLayoutUsesMenuForNarrowAndVeryHighCountArchives() {
+        XCTAssertTrue(
+            PracticeHistoryFilterLayoutPolicy.usesMenu(
+                viewportWidth: 320,
+                prefersExpandedTypeLayout: false,
+                counts: [4, 2, 2]
+            )
+        )
+        XCTAssertTrue(
+            PracticeHistoryFilterLayoutPolicy.usesMenu(
+                viewportWidth: 393,
+                prefersExpandedTypeLayout: false,
+                counts: [12_000, 9_999, 2_001]
+            )
+        )
+        XCTAssertTrue(
+            PracticeHistoryFilterLayoutPolicy.usesMenu(
+                viewportWidth: 393,
+                prefersExpandedTypeLayout: true,
+                counts: [4, 2, 2]
+            )
+        )
+        XCTAssertFalse(
+            PracticeHistoryFilterLayoutPolicy.usesMenu(
+                viewportWidth: 393,
+                prefersExpandedTypeLayout: false,
+                counts: [2_000, 1_200, 800]
+            )
+        )
+    }
+
+    func testHistoryResultStatusNamesFilterScopeCountAndMeaningfulOrdering() {
+        let review = PracticeHistoryResultStatusPresentation(
+            filter: .review,
+            resultCount: 2,
+            scopeTitle: "All goals"
+        )
+        XCTAssertEqual(review.title, "2 to revisit")
+        XCTAssertEqual(review.orderingText, "Newest first")
+        XCTAssertEqual(
+            review.accessibilityLabel,
+            "Showing 2 to revisit for All goals. Newest first."
+        )
+
+        let singular = PracticeHistoryResultStatusPresentation(
+            filter: .correct,
+            resultCount: 1,
+            scopeTitle: "Launch reliability"
+        )
+        XCTAssertEqual(singular.title, "1 correct answer")
+
+        let empty = PracticeHistoryResultStatusPresentation(
+            filter: .all,
+            resultCount: 0,
+            scopeTitle: "Launch reliability"
+        )
+        XCTAssertEqual(empty.title, "0 answers")
+        XCTAssertNil(empty.orderingText)
+        XCTAssertEqual(
+            empty.accessibilityLabel,
+            "Showing 0 answers for Launch reliability."
+        )
+    }
+
+    func testHistoryResultChangeDirectionFollowsTheOrderedFilters() {
+        XCTAssertEqual(
+            PracticeHistoryResultChange.filter(from: .all, to: .correct),
+            .filterForward
+        )
+        XCTAssertEqual(
+            PracticeHistoryResultChange.filter(from: .correct, to: .review),
+            .filterForward
+        )
+        XCTAssertEqual(
+            PracticeHistoryResultChange.filter(from: .review, to: .all),
+            .filterBackward
+        )
+        XCTAssertEqual(
+            PracticeHistoryResultChange.filter(from: .correct, to: .correct),
+            .initial
+        )
+    }
+
+    func testHistoryMotionPolicyUsesDirectionCrossfadeAndAccessibleFallbacks() {
+        let standard = PracticeHistoryMotionPolicy(
+            reduceMotion: false,
+            assistiveNavigationEnabled: false
+        )
         XCTAssertTrue(standard.usesMatchedGeometry)
         XCTAssertTrue(standard.usesRevealTransition)
+        XCTAssertTrue(standard.animatesResultReset)
+        XCTAssertNotNil(standard.resultAnimation)
+        XCTAssertNotNil(standard.metricAnimation)
+        XCTAssertEqual(standard.style(for: .initial), .identity)
+        XCTAssertEqual(standard.style(for: .filterForward), .forward)
+        XCTAssertEqual(standard.style(for: .filterBackward), .backward)
+        XCTAssertEqual(standard.style(for: .scope), .opacity)
 
-        let reduced = PracticeHistoryMotionPolicy(reduceMotion: true)
+        let reduced = PracticeHistoryMotionPolicy(
+            reduceMotion: true,
+            assistiveNavigationEnabled: false
+        )
         XCTAssertFalse(reduced.usesMatchedGeometry)
         XCTAssertFalse(reduced.usesRevealTransition)
+        XCTAssertFalse(reduced.animatesResultReset)
+        XCTAssertNil(reduced.resultAnimation)
+        XCTAssertNil(reduced.metricAnimation)
+        XCTAssertEqual(reduced.style(for: .filterForward), .identity)
+        XCTAssertEqual(reduced.style(for: .scope), .identity)
+
+        let assistive = PracticeHistoryMotionPolicy(
+            reduceMotion: false,
+            assistiveNavigationEnabled: true
+        )
+        XCTAssertFalse(assistive.usesMatchedGeometry)
+        XCTAssertFalse(assistive.usesRevealTransition)
+        XCTAssertFalse(assistive.animatesResultReset)
+        XCTAssertNotNil(assistive.resultAnimation)
+        XCTAssertNil(assistive.metricAnimation)
+        XCTAssertEqual(assistive.style(for: .filterForward), .opacity)
+        XCTAssertEqual(assistive.style(for: .scope), .opacity)
+    }
+
+    func testHistoryResultUpdateDeliveryDoesNotStealOrdinaryTouchFocus() {
+        XCTAssertEqual(
+            PracticeHistoryResultUpdateDeliveryPolicy.delivery(
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            ),
+            .none
+        )
+        XCTAssertEqual(
+            PracticeHistoryResultUpdateDeliveryPolicy.delivery(
+                voiceOverEnabled: true,
+                switchControlEnabled: false
+            ),
+            .focusStatus
+        )
+        XCTAssertEqual(
+            PracticeHistoryResultUpdateDeliveryPolicy.delivery(
+                voiceOverEnabled: false,
+                switchControlEnabled: true
+            ),
+            .announceStatus
+        )
+        XCTAssertEqual(
+            PracticeHistoryResultUpdateDeliveryPolicy.delivery(
+                voiceOverEnabled: true,
+                switchControlEnabled: true
+            ),
+            .focusStatus
+        )
+
+        XCTAssertTrue(
+            PracticeHistoryResultScrollPolicy.shouldReset(
+                after: .scope,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            )
+        )
+        XCTAssertFalse(
+            PracticeHistoryResultScrollPolicy.shouldReset(
+                after: .scope,
+                voiceOverEnabled: false,
+                switchControlEnabled: true
+            )
+        )
+        XCTAssertTrue(
+            PracticeHistoryResultScrollPolicy.shouldReset(
+                after: .filterForward,
+                voiceOverEnabled: false,
+                switchControlEnabled: true
+            )
+        )
+        XCTAssertFalse(
+            PracticeHistoryResultScrollPolicy.shouldReset(
+                after: .initial,
+                voiceOverEnabled: false,
+                switchControlEnabled: false
+            )
+        )
+    }
+
+    @MainActor
+    func testHistoryKeepsResultContextAndAnswerLogInTheFirstFold() throws {
+        let fixtures = [
+            PracticeHistoryFirstFoldFixture(
+                name: "practice-history-first-fold-compact",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                dynamicTypeSize: .large,
+                maximumSummaryHeight: 145,
+                minimumVisibleFirstAttemptHeight: 44
+            ),
+            PracticeHistoryFirstFoldFixture(
+                name: "practice-history-first-fold-accessibility5",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility5,
+                maximumSummaryHeight: 270,
+                minimumVisibleFirstAttemptHeight: 44
+            ),
+        ]
+
+        for fixture in fixtures {
+            let archiveFixture = makeArchiveFixture()
+            let suiteName = "PracticeHistoryFirstFold.\(fixture.name).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let store = makeArchiveStore(
+                defaults: defaults,
+                fixture: archiveFixture
+            )
+            let capture = PracticeHistoryLayoutCapture()
+            let configuration = HistoryViewRenderConfiguration(
+                initialScope: .all,
+                initialFilter: .review,
+                reduceMotion: true,
+                referenceDate: fixedReferenceDate,
+                layoutReporter: { element, frame in
+                    capture.frames[element] = frame
+                }
+            )
+            let image = HostedViewRenderer.image(
+                for: HistoryView(
+                    store: store,
+                    renderConfiguration: configuration
+                )
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, fixture.dynamicTypeSize),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: 0.2,
+                renderScale: 1
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+
+            let viewport = try XCTUnwrap(capture.frames[.viewport], fixture.name)
+            let header = try XCTUnwrap(capture.frames[.header], fixture.name)
+            let summary = try XCTUnwrap(capture.frames[.summary], fixture.name)
+            let filter = try XCTUnwrap(capture.frames[.filter], fixture.name)
+            let resultStatus = try XCTUnwrap(
+                capture.frames[.resultStatus],
+                fixture.name
+            )
+            let timeline = try XCTUnwrap(capture.frames[.timeline], fixture.name)
+            let firstAttempt = try XCTUnwrap(
+                capture.frames[.firstAttempt],
+                fixture.name
+            )
+            let semanticFrames = [
+                header,
+                summary,
+                filter,
+                resultStatus,
+                timeline,
+                firstAttempt,
+            ]
+
+            XCTAssertGreaterThan(viewport.width, 0, fixture.name)
+            XCTAssertGreaterThan(viewport.height, 0, fixture.name)
+            for frame in semanticFrames {
+                XCTAssertFalse(frame.isNull, fixture.name)
+                XCTAssertFalse(frame.isInfinite, fixture.name)
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+                XCTAssertGreaterThanOrEqual(
+                    frame.minX,
+                    viewport.minX - 0.5,
+                    fixture.name
+                )
+                XCTAssertLessThanOrEqual(
+                    frame.maxX,
+                    viewport.maxX + 0.5,
+                    fixture.name
+                )
+            }
+
+            XCTAssertLessThanOrEqual(
+                summary.height,
+                fixture.maximumSummaryHeight,
+                "\(fixture.name) allowed the practice summary to dominate the review"
+            )
+            XCTAssertLessThanOrEqual(header.maxY, summary.minY + 0.5, fixture.name)
+            XCTAssertLessThanOrEqual(summary.maxY, filter.minY + 0.5, fixture.name)
+            XCTAssertLessThanOrEqual(filter.maxY, timeline.minY + 0.5, fixture.name)
+            XCTAssertTrue(
+                filter.insetBy(dx: -0.5, dy: -0.5).contains(resultStatus),
+                "\(fixture.name) separated the result count from its filter context"
+            )
+            XCTAssertTrue(
+                viewport.insetBy(dx: -0.5, dy: -0.5).contains(resultStatus),
+                "\(fixture.name) pushed the visible result count below the first fold"
+            )
+            XCTAssertTrue(
+                timeline.insetBy(dx: -0.5, dy: -0.5).contains(firstAttempt),
+                "\(fixture.name) placed the first answer outside the answer log"
+            )
+
+            let visibleFirstAttempt = firstAttempt.intersection(viewport)
+            XCTAssertFalse(visibleFirstAttempt.isNull, fixture.name)
+            XCTAssertGreaterThanOrEqual(
+                visibleFirstAttempt.height,
+                fixture.minimumVisibleFirstAttemptHeight,
+                "\(fixture.name) left less than one meaningful answer row in the first fold"
+            )
+
+        }
+    }
+
+    @MainActor
+    func testEmptyHistoryBranchesKeepAVisibleResultStatusTarget() throws {
+        let cases: [(name: String, isGloballyEmpty: Bool)] = [
+            ("practice-history-empty-scope-status", false),
+            ("practice-history-global-empty-status", true),
+        ]
+
+        for testCase in cases {
+            let archiveFixture = makeArchiveFixture()
+            let suiteName = "PracticeHistoryEmptyStatus.\(testCase.name).\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let store = makeArchiveStore(
+                defaults: defaults,
+                fixture: archiveFixture
+            )
+            if testCase.isGloballyEmpty {
+                store.attempts = []
+            }
+            let capture = PracticeHistoryLayoutCapture()
+            let configuration = HistoryViewRenderConfiguration(
+                initialScope: testCase.isGloballyEmpty
+                    ? .all
+                    : .goal(archiveFixture.emptyGoal.id),
+                reduceMotion: true,
+                referenceDate: fixedReferenceDate,
+                layoutReporter: { element, frame in
+                    capture.frames[element] = frame
+                }
+            )
+            let image = HostedViewRenderer.image(
+                for: HistoryView(
+                    store: store,
+                    renderConfiguration: configuration
+                ),
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                settlingTime: 0.15,
+                renderScale: 1
+            )
+
+            let attachment = XCTAttachment(image: image)
+            attachment.name = testCase.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+
+            let viewport = try XCTUnwrap(capture.frames[.viewport], testCase.name)
+            let filter = try XCTUnwrap(capture.frames[.filter], testCase.name)
+            let status = try XCTUnwrap(capture.frames[.resultStatus], testCase.name)
+            XCTAssertTrue(
+                filter.insetBy(dx: -0.5, dy: -0.5).contains(status),
+                "\(testCase.name) detached the empty result target from its log heading"
+            )
+            XCTAssertTrue(
+                viewport.insetBy(dx: -0.5, dy: -0.5).contains(status),
+                "\(testCase.name) left no visible result target for assistive focus"
+            )
+        }
     }
 
     @MainActor
@@ -996,6 +1396,21 @@ private struct PracticeHistoryArchiveFixture {
     let emptyGoal: Goal
     let questions: [CheckpointQuestion]
     let attempts: [CheckpointAttempt]
+}
+
+private struct PracticeHistoryFirstFoldFixture {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    let colorScheme: ColorScheme
+    let dynamicTypeSize: DynamicTypeSize
+    let maximumSummaryHeight: CGFloat
+    let minimumVisibleFirstAttemptHeight: CGFloat
+}
+
+@MainActor
+private final class PracticeHistoryLayoutCapture {
+    var frames: [PracticeHistoryLayoutElement: CGRect] = [:]
 }
 
 @MainActor
