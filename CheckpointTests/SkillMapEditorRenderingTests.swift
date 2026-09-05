@@ -92,10 +92,264 @@ final class SkillMapEditorRenderingTests: XCTestCase {
         let standard = SkillMapMutationMotionPolicy(reduceMotion: false)
         XCTAssertEqual(standard.style, .structural)
         XCTAssertNotNil(standard.animation)
+        XCTAssertTrue(standard.permitsNodeMotion)
 
         let reduced = SkillMapMutationMotionPolicy(reduceMotion: true)
         XCTAssertEqual(reduced.style, .identity)
         XCTAssertNil(reduced.animation)
+        XCTAssertFalse(reduced.permitsNodeMotion)
+    }
+
+    func testEditorPresentationKeepsStatusAndActionsTruthful() {
+        let suggested = SkillMapEditorPresentation(
+            mode: .review(status: .suggested),
+            goalTitle: "Pass the architecture interview",
+            skillCount: 3,
+            namedCount: 3,
+            isValid: true,
+            hasChanges: false
+        )
+        XCTAssertEqual(suggested.state, .draftReady)
+        XCTAssertEqual(suggested.status, "Suggested")
+        XCTAssertEqual(suggested.actionTitle, "Use this skill map")
+        XCTAssertTrue(suggested.actionEnabled)
+
+        let current = SkillMapEditorPresentation(
+            mode: .review(status: .reviewed),
+            goalTitle: "Pass the architecture interview",
+            skillCount: 4,
+            namedCount: 4,
+            isValid: true,
+            hasChanges: false
+        )
+        XCTAssertEqual(current.state, .current)
+        XCTAssertEqual(current.status, "Current")
+        XCTAssertEqual(current.actionTitle, "Done")
+
+        let changed = SkillMapEditorPresentation(
+            mode: .review(status: .reviewed),
+            goalTitle: "Pass the architecture interview",
+            skillCount: 4,
+            namedCount: 4,
+            isValid: true,
+            hasChanges: true
+        )
+        XCTAssertEqual(changed.state, .changesReady)
+        XCTAssertEqual(changed.status, "Changes ready")
+        XCTAssertEqual(changed.actionTitle, "Save changes")
+
+        let repair = SkillMapEditorPresentation(
+            mode: .repair,
+            goalTitle: "Pass the architecture interview",
+            skillCount: 3,
+            namedCount: 3,
+            isValid: true,
+            hasChanges: true
+        )
+        XCTAssertEqual(repair.state, .ready)
+        XCTAssertEqual(repair.status, "Ready")
+        XCTAssertEqual(repair.actionTitle, "Use these skills")
+
+        for mode in [
+            SkillMapEditorMode.review(status: .suggested),
+            .review(status: .reviewed),
+            .repair
+        ] {
+            let invalid = SkillMapEditorPresentation(
+                mode: mode,
+                goalTitle: "Pass the architecture interview",
+                skillCount: 4,
+                namedCount: 2,
+                isValid: false,
+                hasChanges: true
+            )
+            XCTAssertEqual(invalid.state, .needsAttention)
+            XCTAssertEqual(invalid.status, "Needs attention")
+            XCTAssertFalse(invalid.actionEnabled)
+            XCTAssertTrue(invalid.accessibilitySummary.contains("names entered"))
+            XCTAssertTrue(invalid.accessibilitySummary.contains(invalid.title))
+            XCTAssertTrue(invalid.accessibilitySummary.contains(invalid.detail))
+            XCTAssertFalse(invalid.accessibilitySummary.contains("names complete"))
+        }
+    }
+
+    func testValidationPinsEachIssueToTheResponsibleSkill() {
+        let firstID = UUID(uuidString: "00000000-0000-0000-0000-000000000321")!
+        let secondID = UUID(uuidString: "00000000-0000-0000-0000-000000000322")!
+        let thirdID = UUID(uuidString: "00000000-0000-0000-0000-000000000323")!
+
+        func validation(_ firstName: String) -> SkillMapEditorValidation {
+            SkillMapEditorValidation(
+                rows: [
+                    SkillMapEditorName(id: firstID, name: firstName),
+                    SkillMapEditorName(id: secondID, name: "State modeling"),
+                    SkillMapEditorName(id: thirdID, name: "Testing strategy")
+                ]
+            )
+        }
+
+        XCTAssertEqual(validation("   ").issueByTopicID[firstID], .required)
+        XCTAssertEqual(
+            validation(String(repeating: "a", count: 49)).issueByTopicID[firstID],
+            .tooLong(characterCount: 49)
+        )
+        XCTAssertEqual(
+            validation("Requirements, constraints").issueByTopicID[firstID],
+            .unsupportedSeparator
+        )
+        XCTAssertEqual(
+            validation("Requirements; constraints").issueByTopicID[firstID],
+            .unsupportedSeparator
+        )
+
+        let duplicate = SkillMapEditorValidation(
+            rows: [
+                SkillMapEditorName(id: firstID, name: "Data Flow"),
+                SkillMapEditorName(id: secondID, name: "Data-Flow"),
+                SkillMapEditorName(id: thirdID, name: "Testing strategy")
+            ]
+        )
+        XCTAssertEqual(duplicate.issueByTopicID[firstID], .duplicate)
+        XCTAssertEqual(duplicate.issueByTopicID[secondID], .duplicate)
+        XCTAssertFalse(duplicate.isValid)
+    }
+
+    func testValidationKeepsArchivedAndRemovedSkillHistoriesDistinct() {
+        let firstID = UUID(uuidString: "00000000-0000-0000-0000-000000000331")!
+        let secondID = UUID(uuidString: "00000000-0000-0000-0000-000000000332")!
+        let thirdID = UUID(uuidString: "00000000-0000-0000-0000-000000000333")!
+        let replacementID = UUID(uuidString: "00000000-0000-0000-0000-000000000334")!
+        let archivedID = UUID(uuidString: "00000000-0000-0000-0000-000000000335")!
+        let original = [
+            SkillMapTopic(id: firstID, name: "Requirements discovery"),
+            SkillMapTopic(id: secondID, name: "State modeling"),
+            SkillMapTopic(id: thirdID, name: "Testing strategy")
+        ]
+        let archived = ArchivedSkillMapTopic(
+            topic: SkillMapTopic(id: archivedID, name: "Retired systems thinking"),
+            reason: .userRemoved,
+            archivedAt: Date(timeIntervalSince1970: 1_735_689_600),
+            successorSkillIDs: [],
+            mastery: nil
+        )
+
+        let archivedReuse = SkillMapEditorValidation(
+            topics: [
+                SkillMapTopic(id: firstID, name: "Retired systems thinking"),
+                original[1],
+                original[2]
+            ],
+            originalTopics: original,
+            archivedTopics: [archived]
+        )
+        XCTAssertEqual(archivedReuse.issueByTopicID[firstID], .retiredName)
+
+        let archivedIdentityReuse = SkillMapEditorValidation(
+            topics: [
+                SkillMapTopic(id: archivedID, name: "New systems thinking"),
+                original[1],
+                original[2]
+            ],
+            originalTopics: original,
+            archivedTopics: [archived]
+        )
+        XCTAssertEqual(archivedIdentityReuse.issueByTopicID[archivedID], .archivedSkill)
+        XCTAssertFalse(archivedIdentityReuse.isValid)
+
+        let removedReuse = SkillMapEditorValidation(
+            topics: [
+                SkillMapTopic(id: replacementID, name: "Requirements discovery"),
+                original[1],
+                original[2]
+            ],
+            originalTopics: original,
+            archivedTopics: []
+        )
+        XCTAssertEqual(removedReuse.issueByTopicID[replacementID], .retiredName)
+
+        let retainedRename = SkillMapEditorValidation(
+            topics: [
+                SkillMapTopic(id: firstID, name: "Constraint discovery"),
+                original[1],
+                original[2]
+            ],
+            originalTopics: original,
+            archivedTopics: []
+        )
+        XCTAssertNil(retainedRename.issueByTopicID[firstID])
+        XCTAssertTrue(retainedRename.isValid)
+
+        let duplicateIdentity = SkillMapEditorValidation(
+            rows: [
+                SkillMapEditorName(id: firstID, name: "Constraint discovery"),
+                SkillMapEditorName(id: firstID, name: "State modeling"),
+                SkillMapEditorName(id: thirdID, name: "Testing strategy")
+            ]
+        )
+        XCTAssertEqual(duplicateIdentity.issueByTopicID[firstID], .duplicateSkill)
+        XCTAssertFalse(duplicateIdentity.isValid)
+    }
+
+    @MainActor
+    func testRowContinuityCopyMatchesSkillIdentity() {
+        XCTAssertEqual(
+            SkillNameContinuity.reviewing(status: .reviewed, isExistingSkill: true),
+            .preservesProgress
+        )
+        XCTAssertEqual(
+            SkillNameContinuity.reviewing(status: .suggested, isExistingSkill: true),
+            .suggested
+        )
+        XCTAssertEqual(
+            SkillNameContinuity.reviewing(status: .reviewed, isExistingSkill: false),
+            .startsFresh
+        )
+
+        let historyKey = SkillMapReconciler.competencyTopicKey("Evidence synthesis")
+        XCTAssertEqual(
+            SkillNameContinuity.repairing(
+                name: "  EVIDENCE   SYNTHESIS ",
+                historyNameKeys: [historyKey]
+            ),
+            .keepsHistory
+        )
+        XCTAssertEqual(
+            SkillNameContinuity.repairing(
+                name: "New skill",
+                historyNameKeys: [historyKey]
+            ),
+            .newSkill
+        )
+
+        let retained = SkillNameRowPresentation(
+            index: 0,
+            name: "Constraint discovery",
+            canRemove: true,
+            canReplace: true,
+            continuity: .preservesProgress
+        )
+        XCTAssertEqual(retained.statusText, "Progress kept")
+        XCTAssertEqual(retained.fieldAccessibilityHint, "Progress kept")
+
+        let replacement = SkillNameRowPresentation(
+            index: 1,
+            name: "Communication",
+            canRemove: true,
+            canReplace: false,
+            continuity: .startsFresh
+        )
+        XCTAssertEqual(replacement.statusText, "Starts fresh")
+
+        let invalid = SkillNameRowPresentation(
+            index: 2,
+            name: "Communication",
+            canRemove: true,
+            canReplace: false,
+            continuity: .startsFresh,
+            issue: .duplicate
+        )
+        XCTAssertEqual(invalid.statusText, "Give this skill a unique name.")
+        XCTAssertEqual(invalid.statusSystemImage, "exclamationmark.circle.fill")
     }
 
     func testFocusPlansRouteOnlyToRowsThatStillExist() {
@@ -184,69 +438,85 @@ final class SkillMapEditorRenderingTests: XCTestCase {
 
     @MainActor
     func testSkillMapEditorsRenderAcrossBoundariesAndAccessibilityLayouts() throws {
-        let threeSuiteName = "SkillMapEditorRenderingTests.Three.\(UUID().uuidString)"
-        let sixSuiteName = "SkillMapEditorRenderingTests.Six.\(UUID().uuidString)"
-        let repairSuiteName = "SkillMapEditorRenderingTests.Repair.\(UUID().uuidString)"
-        let threeDefaults = try XCTUnwrap(UserDefaults(suiteName: threeSuiteName))
-        let sixDefaults = try XCTUnwrap(UserDefaults(suiteName: sixSuiteName))
+        let suggestedSuiteName = "SkillMapEditorRenderingTests.Suggested.\(UUID().uuidString)"
+        let reviewedSuiteName = "SkillMapEditorRenderingTests.Reviewed.\(UUID().uuidString)"
+        let invalidSuiteName = "SkillMapEditorRenderingTests.Invalid.\(UUID().uuidString)"
+        let repairSuiteName = "SkillMapEditorRenderingTests.RepairEmpty.\(UUID().uuidString)"
+        let suggestedDefaults = try XCTUnwrap(UserDefaults(suiteName: suggestedSuiteName))
+        let reviewedDefaults = try XCTUnwrap(UserDefaults(suiteName: reviewedSuiteName))
+        let invalidDefaults = try XCTUnwrap(UserDefaults(suiteName: invalidSuiteName))
         let repairDefaults = try XCTUnwrap(UserDefaults(suiteName: repairSuiteName))
         defer {
-            threeDefaults.removePersistentDomain(forName: threeSuiteName)
-            sixDefaults.removePersistentDomain(forName: sixSuiteName)
+            suggestedDefaults.removePersistentDomain(forName: suggestedSuiteName)
+            reviewedDefaults.removePersistentDomain(forName: reviewedSuiteName)
+            invalidDefaults.removePersistentDomain(forName: invalidSuiteName)
             repairDefaults.removePersistentDomain(forName: repairSuiteName)
         }
 
         let threeTopics = Array(Self.reviewTopics.prefix(3))
         let sixTopics = Self.reviewTopics
-        let threeStore = makeReviewStore(defaults: threeDefaults, topics: threeTopics)
-        let sixStore = makeReviewStore(defaults: sixDefaults, topics: sixTopics)
-        let repairStore = makeRepairStore(defaults: repairDefaults, names: sixTopics.map(\.name))
+        let suggestedStore = makeReviewStore(
+            defaults: suggestedDefaults,
+            topics: threeTopics,
+            status: .suggested
+        )
+        let reviewedStore = makeReviewStore(
+            defaults: reviewedDefaults,
+            topics: sixTopics,
+            status: .reviewed
+        )
+        let invalidStore = makeReviewStore(
+            defaults: invalidDefaults,
+            topics: threeTopics,
+            status: .reviewed
+        )
+        let repairStore = makeRepairStore(defaults: repairDefaults, names: [])
+        var invalidTopics = threeTopics
+        invalidTopics[0].name = "Data Flow"
+        invalidTopics[1] = SkillMapTopic(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000341")!,
+            name: "Data-Flow"
+        )
 
         let fixtures = [
             SkillMapEditorRenderFixture(
-                name: "skill-map-review-three-light",
-                width: 393,
-                height: 1_100,
+                name: "skill-map-suggested-compact-light",
+                width: 320,
+                height: 568,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    SkillMapReviewView(store: threeStore, reduceMotionOverride: false)
+                    SkillMapReviewView(store: suggestedStore, reduceMotionOverride: false)
                 )
             ),
             SkillMapEditorRenderFixture(
-                name: "skill-map-review-six-dark",
+                name: "skill-map-review-six-current-dark",
                 width: 393,
-                height: 1_900,
+                height: 1_500,
                 colorScheme: .dark,
                 dynamicTypeSize: .large,
                 content: AnyView(
-                    SkillMapReviewView(store: sixStore, reduceMotionOverride: false)
+                    SkillMapReviewView(store: reviewedStore, reduceMotionOverride: false)
                 )
             ),
             SkillMapEditorRenderFixture(
-                name: "skill-map-review-six-compact-accessibility-reduced",
-                width: 320,
-                height: 2_500,
-                colorScheme: .dark,
-                dynamicTypeSize: .accessibility2,
-                content: AnyView(
-                    SkillMapReviewView(store: sixStore, reduceMotionOverride: true)
-                )
-            ),
-            SkillMapEditorRenderFixture(
-                name: "skill-map-review-three-compact-accessibility",
-                width: 320,
-                height: 2_200,
-                colorScheme: .light,
-                dynamicTypeSize: .accessibility2,
-                content: AnyView(
-                    SkillMapReviewView(store: threeStore, reduceMotionOverride: false)
-                )
-            ),
-            SkillMapEditorRenderFixture(
-                name: "skill-map-repair-six-light",
+                name: "skill-map-reviewed-invalid-dark",
                 width: 393,
-                height: 1_300,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large,
+                content: AnyView(
+                    SkillMapReviewView(
+                        store: invalidStore,
+                        reduceMotionOverride: false,
+                        initialTopics: invalidTopics
+                    )
+                )
+            ),
+            SkillMapEditorRenderFixture(
+                name: "skill-map-repair-empty-compact-light",
+                width: 320,
+                height: 568,
                 colorScheme: .light,
                 dynamicTypeSize: .large,
                 content: AnyView(
@@ -254,13 +524,13 @@ final class SkillMapEditorRenderingTests: XCTestCase {
                 )
             ),
             SkillMapEditorRenderFixture(
-                name: "skill-map-review-compact-viewport",
+                name: "skill-map-review-six-ax2-dark-reduced",
                 width: 320,
-                height: 568,
-                colorScheme: .light,
-                dynamicTypeSize: .large,
+                height: 2_500,
+                colorScheme: .dark,
+                dynamicTypeSize: .accessibility2,
                 content: AnyView(
-                    SkillMapReviewView(store: threeStore, reduceMotionOverride: false)
+                    SkillMapReviewView(store: reviewedStore, reduceMotionOverride: true)
                 )
             )
         ]
@@ -287,11 +557,14 @@ final class SkillMapEditorRenderingTests: XCTestCase {
     @MainActor
     private func makeReviewStore(
         defaults: UserDefaults,
-        topics: [SkillMapTopic]
+        topics: [SkillMapTopic],
+        status: SkillMapStatus,
+        archivedTopics: [ArchivedSkillMapTopic] = []
     ) -> CheckpointStore {
         let map = GoalSkillMap(
             topics: topics,
-            status: .reviewed,
+            archivedTopics: archivedTopics,
+            status: status,
             provenance: .userEdited
         )
         let goal = makeGoal(skillMap: map)
