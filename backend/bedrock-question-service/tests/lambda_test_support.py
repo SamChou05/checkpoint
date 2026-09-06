@@ -27,6 +27,7 @@ class FakeBedrockClient:
                     "index": item["index"],
                     "answer": "Independent fixture solution of the stated problem.",
                     "limitations": "",
+                    "outcome": "resolved",
                     "assumptionsRequired": [],
                 }
                 for item in data["items"]

@@ -385,12 +385,19 @@ def run_experiment(
                         solve=lambda system, user: generate("solver", system, user),
                     )
                 reasons = metrics.get("QuestionQuality", {}).get("review", {})
-                semantic_rejection = any(
+                abstained = bool(reasons.get("solver_uncertain"))
+                semantic_rejection = not abstained and any(
                     reasons.get(key)
-                    for key in ("unsupported_solution", "rejected_by_model")
+                    for key in (
+                        "unsupported_solution",
+                        "rejected_by_model",
+                        "solver_outcome_mismatch",
+                    )
                 )
                 malformed = set(reasons) - {
                     "unsupported_solution",
+                    "solver_uncertain",
+                    "solver_outcome_mismatch",
                     "rejected_by_model",
                     "answer_disagreement",
                     "difficulty_floor",
@@ -409,6 +416,10 @@ def run_experiment(
                     status="completed",
                     accepted=bool(returned),
                     semantic_rejection=semantic_rejection,
+                    abstained=abstained,
+                    solver_outcome=result["stage_outputs"]["solver"]["solutions"][0][
+                        "outcome"
+                    ],
                     returned_questions=returned,
                     model_valid=model_valid,
                     reviewed_key_matches_original=(
@@ -419,7 +430,9 @@ def run_experiment(
                     inventory_acceptance_matches_expected=bool(returned)
                     == case["expected_accept"],
                     semantic_verdict_matches_expected=(
-                        model_valid == case["expected_model_valid"]
+                        None
+                        if abstained
+                        else model_valid == case["expected_model_valid"]
                         if review is not None
                         else not case["expected_model_valid"]
                         if semantic_rejection

@@ -120,7 +120,9 @@ class QuestionVerificationTests(unittest.TestCase):
         ]
         self.question["expectedAnswer"] = self.question["choices"][0]
         reviewer = mock.Mock(return_value=json.dumps({"reviews": [self.verdict()]}))
-        self.assertEqual(len(verify_questions([self.question], self.request, reviewer)), 1)
+        self.assertEqual(
+            len(verify_questions([self.question], self.request, reviewer)), 1
+        )
         reviewer.assert_called_once()
 
     def test_identical_reasoning_uses_same_review_contract_for_any_goal(self):
@@ -232,6 +234,7 @@ class QuestionVerificationTests(unittest.TestCase):
                                 "index": 0,
                                 "answer": "The stated conclusion is not supported.",
                                 "limitations": "",
+                                "outcome": "resolved",
                                 "assumptionsRequired": [],
                             }
                         ]
@@ -246,6 +249,7 @@ class QuestionVerificationTests(unittest.TestCase):
                                 "index": 0,
                                 "answer": "The stated conclusion follows from the assumptions.",
                                 "limitations": "",
+                                "outcome": "resolved",
                                 "assumptionsRequired": [],
                             }
                         ]

@@ -33,8 +33,11 @@ from request_contract import (  # noqa: E402
     _normalize_skill_map_inference_request,
 )
 from skill_maps import _infer_skill_map  # noqa: E402
-from question_quality import _remaining_requested_skill_allocation  # noqa: E402
-from service_errors import ProviderCallBudgetExceededError  # noqa: E402
+from question_quality import (  # noqa: E402
+    _extract_json_object,
+    _remaining_requested_skill_allocation,
+)
+from service_errors import ProviderCallBudgetExceededError, ProviderError  # noqa: E402
 
 
 def evaluate_review(case, client=None):
@@ -46,10 +49,11 @@ def evaluate_review(case, client=None):
         }
     )
     reviews = []
+    stage_outputs = {}
     budget = ProviderCallBudget(2)
     metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
 
-    def review(system, prompt):
+    def generate(stage, system, prompt):
         raw = _generate_with_bedrock(
             request,
             client,
@@ -60,11 +64,19 @@ def evaluate_review(case, client=None):
             request_metrics=metrics,
         )
         reviews.append(raw)
+        try:
+            stage_outputs[stage] = _extract_json_object(raw)
+        except ProviderError:
+            stage_outputs[stage] = {"invalid_json": True}
         return raw
 
     try:
         accepted = verify_questions(
-            [case["question"]], request, review, metrics, solve=review
+            [case["question"]],
+            request,
+            lambda system, prompt: generate("reviewer", system, prompt),
+            metrics,
+            solve=lambda system, prompt: generate("solver", system, prompt),
         )
     except Exception as error:
         # A provider failure must not look like a content rejection or erase
@@ -77,16 +89,20 @@ def evaluate_review(case, client=None):
             "rationale": case["rationale"],
             "error_type": type(error).__name__,
             "reviews": reviews,
+            "stage_outputs": stage_outputs,
+            "abstained": False,
             "provider_calls": budget.calls,
             "metrics": metrics,
         }
     decisions = metrics.get("QuestionQuality", {}).get("review", {})
-    semantic_rejection = any(
+    abstained = bool(decisions.get("solver_uncertain"))
+    semantic_rejection = not abstained and any(
         decisions.get(reason, 0)
         for reason in (
             "rejected_by_model",
             "answer_disagreement",
             "unsupported_solution",
+            "solver_outcome_mismatch",
         )
     )
     return {
@@ -96,6 +112,9 @@ def evaluate_review(case, client=None):
         "accepted": bool(accepted),
         "rationale": case["rationale"],
         "reviews": reviews,
+        "stage_outputs": stage_outputs,
+        "abstained": abstained,
+        "semantic_rejection": semantic_rejection,
         "provider_calls": budget.calls,
         "metrics": metrics,
     }

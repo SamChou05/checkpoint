@@ -95,6 +95,7 @@ class EvidenceComparisonTests(unittest.TestCase):
                         "index": 0,
                         "answer": "The sum is 5.",
                         "limitations": "",
+                        "outcome": "resolved",
                         "assumptionsRequired": [],
                     }
                 ]
@@ -117,6 +118,61 @@ class EvidenceComparisonTests(unittest.TestCase):
         self.assertEqual(result["provider_calls"], 2)
         self.assertEqual(result["metrics"]["ProviderCalls"], 2)
         self.assertEqual(result["reviews"], [solver])
+
+    def test_solver_outcome_mismatch_and_uncertainty_have_distinct_scores(self):
+        case = {
+            "case_id": "typed_outcome",
+            "goal": {"title": "Learn addition"},
+            "question": {
+                "prompt": "What is two plus three?",
+                "topic": "Addition",
+                "choices": ["5", "6", "7", "8"],
+                "expectedAnswer": "6",
+            },
+            "expected_accept": False,
+            "rationale": "The authored key is wrong.",
+        }
+        for outcome, reason, passed in (
+            ("no_solution", "solver_outcome_mismatch", True),
+            ("uncertain", "solver_uncertain", False),
+        ):
+            with self.subTest(outcome=outcome):
+                raw = json.dumps(
+                    {
+                        "solutions": [
+                            {
+                                "index": 0,
+                                "outcome": outcome,
+                                "answer": "A synthetic result.",
+                                "limitations": "",
+                                "assumptionsRequired": [],
+                            }
+                        ]
+                    }
+                )
+
+                def invoke(*args, call_budget, request_metrics, **kwargs):
+                    call_budget.consume()
+                    request_metrics["ProviderCalls"] += 1
+                    return raw
+
+                with patch(
+                    "evals.checkpoint_learning_eval._generate_with_bedrock",
+                    side_effect=invoke,
+                ):
+                    result = evaluate_review(case)
+                self.assertEqual(result["passed"], passed)
+                self.assertEqual(result["abstained"], outcome == "uncertain")
+                self.assertEqual(result["provider_calls"], 1)
+                self.assertEqual(result["reviews"], [raw])
+                self.assertEqual(
+                    result["stage_outputs"]["solver"]["solutions"][0]["outcome"],
+                    outcome,
+                )
+                self.assertEqual(
+                    result["metrics"]["QuestionQuality"]["review"], {reason: 1}
+                )
+                self.assertNotIn("error_type", result)
 
     def test_paired_context_changes_only_supplied_documents(self):
         packet = json.loads(

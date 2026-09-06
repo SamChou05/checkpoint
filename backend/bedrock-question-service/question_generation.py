@@ -33,7 +33,7 @@ from service_errors import (
     SafetyInterventionError,
     ServiceConfigurationError,
 )
-from question_verification import verify_questions
+from question_verification import NEGATIVE_ANSWER_GUIDANCE, verify_questions
 
 
 DEFAULT_MODEL_ID = "amazon.nova-lite-v1:0"
@@ -719,10 +719,19 @@ by validation stage. Respond to the cause: difficulty_floor means the actual
 reasoning was too easy, so construct a more demanding task rather than changing
 its numeric label. difficulty_target means match the stated per-skill cognitive
 level. unsupported_solution means necessary facts were missing; write a new,
-complete problem. answer_disagreement or rejected_by_model means rebuild the
+complete problem. solver_outcome_mismatch means an exceptional solver conclusion
+could not be matched to the required exact negative-answer choice. Use that
+representation only when the negative conclusion is justified, or construct a
+new complete problem. solver_uncertain means the independent solution could
+not be established; use clear, supported facts. answer_disagreement or
+rejected_by_model means rebuild the
 facts and choices from a fresh solution. Length or feedback failures require
 concise complete wording. Never relax the requested target or repeat a rejected
 stem just to fill the batch.
+
+"""
+        + NEGATIVE_ANSWER_GUIDANCE
+        + """
 
 Recent performance overrides stale self-description. Focus on requested missed
 objectives using new situations; one wrong choice is only possible evidence of

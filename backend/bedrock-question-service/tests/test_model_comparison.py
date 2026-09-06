@@ -44,13 +44,14 @@ def packet():
     }
 
 
-def solution(assumptions=None):
+def solution(assumptions=None, *, outcome="resolved"):
     return {
         "solutions": [
             {
                 "index": 0,
                 "answer": "The sum is four.",
                 "limitations": "",
+                "outcome": outcome,
                 "assumptionsRequired": assumptions or [],
             }
         ]
@@ -220,6 +221,49 @@ class ModelComparisonTests(unittest.TestCase):
         self.assertTrue(report["results"][0]["semantic_verdict_matches_expected"])
         self.assertFalse(report["stopped_early"])
         self.assertIsNone(report["results"][0]["model_valid"])
+
+    def test_exceptional_outcome_mismatch_is_control_rejection_not_failure(self):
+        self.packet["cases"][0].update(
+            expected_accept=False, expected_model_valid=False
+        )
+        client = Client(lambda request: response(solution(outcome="no_solution")))
+        report = self.run_eval(client)
+        self.assertEqual(len(client.requests), 8)
+        result = report["results"][0]
+        self.assertEqual(result["status"], "completed")
+        self.assertFalse(report["stopped_early"])
+        self.assertFalse(result["abstained"])
+        self.assertEqual(result["solver_outcome"], "no_solution")
+        self.assertEqual(
+            result["metrics"]["QuestionQuality"]["review"],
+            {"solver_outcome_mismatch": 1},
+        )
+        self.assertTrue(result["semantic_rejection"])
+        self.assertTrue(result["semantic_verdict_matches_expected"])
+        self.assertNotIn("reviewer", result["stage_outputs"])
+
+    def test_solver_uncertainty_is_an_abstention_without_correctness_credit(self):
+        self.packet["cases"][0].update(
+            expected_accept=False, expected_model_valid=False
+        )
+        client = Client(
+            lambda request: response(
+                solution(["A premise cannot be established."], outcome="uncertain")
+            )
+        )
+        report = self.run_eval(client)
+        self.assertEqual(len(client.requests), 8)
+        result = report["results"][0]
+        self.assertEqual(result["status"], "completed")
+        self.assertFalse(report["stopped_early"])
+        self.assertTrue(result["abstained"])
+        self.assertFalse(result["semantic_rejection"])
+        self.assertIsNone(result["semantic_verdict_matches_expected"])
+        self.assertTrue(result["inventory_acceptance_matches_expected"])
+        self.assertEqual(
+            result["stage_outputs"]["solver"]["solutions"][0]["outcome"], "uncertain"
+        )
+        self.assertNotIn("reviewer", result["stage_outputs"])
 
     def test_valid_false_is_a_semantic_verdict(self):
         self.packet["cases"][0]["expected_model_valid"] = False

@@ -25,6 +25,7 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
         self.request["existingQuestionCoverage"] = [self.question]
         solution = {
             "index": 0,
+            "outcome": "resolved",
             "answer": "A bounded result under the stated assumptions.",
             "limitations": "An unstated condition would change the result.",
             "assumptionsRequired": [],
@@ -78,6 +79,7 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
                     "solutions": [
                         {
                             "index": 0,
+                            "outcome": "resolved",
                             "answer": "Only under an added condition.",
                             "limitations": "The result is conditional.",
                             "assumptionsRequired": [
@@ -111,12 +113,14 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
                     "solutions": [
                         {
                             "index": 1,
+                            "outcome": "resolved",
                             "answer": "A supported result.",
                             "limitations": "",
                             "assumptionsRequired": [],
                         },
                         {
                             "index": 0,
+                            "outcome": "resolved",
                             "answer": "A conditional result.",
                             "limitations": "",
                             "assumptionsRequired": ["Missing premise."],
