@@ -12,6 +12,8 @@ missing=()
 [[ -n "$BEDROCK_INVOKE_RESOURCE_ARNS" ]] || missing+=(BEDROCK_INVOKE_RESOURCE_ARNS)
 [[ -n "$QUESTION_BANK_WORKER_MODEL_ARN" ]] || missing+=(QUESTION_BANK_WORKER_MODEL_ARN)
 [[ -n "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS" ]] || missing+=(QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS)
+[[ -n "$BEDROCK_VERIFICATION_MODEL_ARN" ]] || missing+=(BEDROCK_VERIFICATION_MODEL_ARN)
+[[ -n "$BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS" ]] || missing+=(BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS)
 if (( ${#missing[@]} > 0 )); then
   printf 'Missing required environment secrets or variables: %s\n' "${missing[*]}" >&2
   exit 1
@@ -28,6 +30,7 @@ fi
 validate_invoke_resources() {
   local resource_list="$1"
   local primary_model="$2"
+  local check_fallback="${5:-true}"
   local resource_list_name="$3"
   local primary_model_name="$4"
   local primary_is_allowed=false
@@ -50,7 +53,7 @@ validate_invoke_resources() {
     echo "$resource_list_name must include $primary_model_name." >&2
     exit 1
   fi
-  if [[ -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$fallback_is_allowed" != true ]]; then
+  if [[ "$check_fallback" == true && -n "$BEDROCK_FALLBACK_MODEL_ARN" && "$fallback_is_allowed" != true ]]; then
     echo "$resource_list_name must include BEDROCK_FALLBACK_MODEL_ARN." >&2
     exit 1
   fi
@@ -66,6 +69,11 @@ validate_invoke_resources \
   "$QUESTION_BANK_WORKER_MODEL_ARN" \
   QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS \
   QUESTION_BANK_WORKER_MODEL_ARN
+validate_invoke_resources \
+  "$BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS" \
+  "$BEDROCK_VERIFICATION_MODEL_ARN" \
+  BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS \
+  BEDROCK_VERIFICATION_MODEL_ARN false
 case "$BEDROCK_REASONING_EFFORT" in
   none|low|medium|high|xhigh|max) ;;
   *)
@@ -94,7 +102,9 @@ if [[ "$DEPLOYMENT_ENVIRONMENT" == production ]]; then
   fi
   [[ -n "$ALERT_EMAIL" ]] || missing+=(ALERT_EMAIL)
   [[ -n "$BUDGET_ALERT_EMAIL" ]] || missing+=(BUDGET_ALERT_EMAIL)
-  if (( ${#missing[@]} > 0 )); then
+  [[ -n "$BEDROCK_VERIFICATION_MODEL_ARN" ]] || missing+=(BEDROCK_VERIFICATION_MODEL_ARN)
+[[ -n "$BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS" ]] || missing+=(BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS)
+if (( ${#missing[@]} > 0 )); then
     printf 'Production is missing required alert variables: %s\n' "${missing[*]}" >&2
     exit 1
   fi

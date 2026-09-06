@@ -19,6 +19,8 @@ Important guided values:
 - `BedrockInvokeResourceArns`: comma-delimited least-privilege IAM resource list; include `BedrockModelArn`, the fallback ARN when configured, and every destination foundation-model ARN required by a cross-region inference profile
 - `QuestionBankWorkerModelArn`: asynchronous worker model ARN; this can be stronger/slower than the synchronous compatibility model
 - `QuestionBankWorkerInvokeResourceArns`: worker-only least-privilege resource list containing its model/profile and any cross-region destinations
+- `BedrockVerificationModelArn`: separately evaluated reviewer ARN (the current candidate is `us.anthropic.claude-sonnet-4-6`); configure `BEDROCK_VERIFICATION_MODEL_ARN` in the deployment environment
+- `BedrockVerificationInvokeResourceArns`: reviewer profile ARN and every destination foundation-model ARN; configure `BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS`. Use `aws bedrock get-inference-profile` to resolve the profile in the deployment account and region; do not add wildcard access.
 - `BedrockFallbackModelArn`: leave empty until evaluated
 - `BedrockReasoningEffort`: the deployment workflow defaults to `low`; non-GPT-5.6 models ignore it, and GPT-5.6 deployments should select an effort justified by the eval suite
 - Guardrail ID, version, and ARN: provide all three or leave all three empty
@@ -28,7 +30,7 @@ Important guided values:
 - `DeploymentEnvironment`: use `testflight` for internal distribution; selecting `production` does not make bearer auth App Store-safe
 - `QuestionBankTTLSeconds`: defaults to 30 days; choose and publish the production retention period before launch
 - `QuestionBankWorkerReservedConcurrency`: defaults to 2 and independently caps asynchronous Bedrock work
-- `QuestionBankWorkerReadTimeoutSeconds`: defaults to 75 seconds for asynchronous generation; keep it below the worker's 120-second Lambda timeout. It does not change the synchronous API's 20-second default
+- `QuestionBankWorkerReadTimeoutSeconds`: defaults to 75 seconds for asynchronous generation; keep it below the worker's 240-second Lambda timeout. It does not change the synchronous API's 20-second default
 - `QuestionBankGenerationChunkSize`: defaults to 5 questions; the worker durably chains chunks until the caller's finite fill-cycle target is full (an empty client cache normally requests 40 Free or 80 Pro, while later cycles can be smaller)
 - `QuestionBankMaxReceiveCount`: defaults to 5 and drives SQS redrive and the per-job generation-attempt ceiling
 - `QuestionBankMaxFailedGenerationJobs`: defaults to 3; after that many exhausted jobs, the exact bank context is durably blocked until the app begins a new fill-cycle context
@@ -78,3 +80,7 @@ The runtime model ARN and the IAM invoke resources are intentionally separate pa
 The API and worker functions can optionally apply the supplied Guardrail ARN. The API function has only the question-bank table operations and `sqs:SendMessage` needed to ensure and claim banks; the worker has table operations, queue poll/requeue operations, and model invocation. The outbox function has read access to this table's stream, `GetItem`/`UpdateItem` on the bank table, and `SendMessage` on the source and outbox failure queues. AWS does not support resource-level authorization for `dynamodb:ListStreams`, so that one discovery action requires `Resource: "*"`; stream record reads remain scoped to this table's stream ARN. Streaming model-invoke permission is not granted because this service uses non-streaming Converse.
 
 Cross-region inference profiles require permissions for the inference profile and can require every destination foundation-model ARN. Put all of them in `BedrockInvokeResourceArns`, keep the list free of wildcards, and review the chosen profile's documented destinations whenever AWS changes the profile.
+
+### Reviewed-question rollout
+
+The reviewer parameters are required for both the API and worker. Configure them before invoking the deployment workflow; validation fails when either is absent or the invocation allowlist excludes the reviewer. The worker timeout is 240 seconds and queue visibility is 1440 seconds. The additional review calls share the existing durable quota and deadline. Run the live learning evaluator and inspect its content before release; unit tests and a filled bank alone cannot establish educational quality. Deploy and smoke-test the backend before distributing the client that requires verified inventory.

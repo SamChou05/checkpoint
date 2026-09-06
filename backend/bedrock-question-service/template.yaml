@@ -15,6 +15,12 @@ Parameters:
   QuestionBankWorkerInvokeResourceArns:
     Type: CommaDelimitedList
     Description: Comma-delimited least-privilege invoke resources for the asynchronous worker model and its cross-region destinations.
+  BedrockVerificationModelArn:
+    Type: String
+    Description: Exact Bedrock ARN for the separately evaluated answer-blind reviewer.
+  BedrockVerificationInvokeResourceArns:
+    Type: CommaDelimitedList
+    Description: Reviewer profile and all destination model ARNs; no wildcards.
   BedrockFallbackModelArn:
     Type: String
     Default: ""
@@ -308,6 +314,7 @@ Resources:
         Variables:
           BEDROCK_MODEL_ID: !Ref BedrockModelArn
           SKILL_MAP_MODEL_ID: !Ref QuestionBankWorkerModelArn
+          BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
@@ -373,6 +380,10 @@ Resources:
               Action:
                 - bedrock:InvokeModel
               Resource: !Ref QuestionBankWorkerInvokeResourceArns
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Ref BedrockVerificationInvokeResourceArns
             - !If
               - HasGuardrailArn
               - Effect: Allow
@@ -421,6 +432,7 @@ Resources:
       Environment:
         Variables:
           BEDROCK_MODEL_ID: !Ref QuestionBankWorkerModelArn
+          BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
@@ -461,6 +473,10 @@ Resources:
               Action:
                 - bedrock:InvokeModel
               Resource: !Ref QuestionBankWorkerInvokeResourceArns
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Ref BedrockVerificationInvokeResourceArns
             - !If
               - HasGuardrailArn
               - Effect: Allow

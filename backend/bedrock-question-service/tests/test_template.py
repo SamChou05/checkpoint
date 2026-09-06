@@ -4,7 +4,9 @@ from pathlib import Path
 
 
 TEMPLATE = Path(__file__).resolve().parents[1] / "template.yaml"
-DEPLOY_WORKFLOW = Path(__file__).resolve().parents[3] / ".github" / "workflows" / "deploy-backend.yml"
+DEPLOY_WORKFLOW = (
+    Path(__file__).resolve().parents[3] / ".github" / "workflows" / "deploy-backend.yml"
+)
 CI_WORKFLOW = Path(__file__).resolve().parents[3] / ".github" / "workflows" / "ci.yml"
 DEPLOY_SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "deploy-sam.sh"
 
@@ -53,10 +55,14 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.template,
         )
         self.assertIn("bedrock:InvokeModel", self.template)
-        self.assertNotIn('bedrock:InvokeModel\n              Resource: "*"', self.template)
+        self.assertNotIn(
+            'bedrock:InvokeModel\n              Resource: "*"', self.template
+        )
         self.assertNotIn("bedrock:InvokeModelWithResponseStream", self.template)
 
-    def test_api_uses_synchronous_model_for_questions_and_worker_model_for_skill_maps(self):
+    def test_api_uses_synchronous_model_for_questions_and_worker_model_for_skill_maps(
+        self,
+    ):
         api = _indented_block(self.template, "CheckpointQuestionFunction")
         worker = _indented_block(self.template, "QuestionBankWorkerFunction")
         self.assertIn("BEDROCK_MODEL_ID: !Ref BedrockModelArn", api)
@@ -71,13 +77,23 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             "Resource: !Ref QuestionBankWorkerInvokeResourceArns",
             worker,
         )
+        for function in [api, worker]:
+            self.assertIn(
+                "BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn",
+                function,
+            )
+            self.assertIn(
+                "Resource: !Ref BedrockVerificationInvokeResourceArns", function
+            )
 
     def test_skill_map_inference_route_and_output_are_deployed(self):
         self.assertIn("Path: /v1/skill-maps/infer", self.template)
         self.assertIn("SkillMapEndpoint:", self.template)
 
     def test_gpt_56_reasoning_effort_is_wired_to_api_worker_and_deploy(self):
-        parameter = self.template.split("  BedrockReasoningEffort:", maxsplit=1)[1].split(
+        parameter = self.template.split("  BedrockReasoningEffort:", maxsplit=1)[
+            1
+        ].split(
             "\n  BedrockGuardrailIdentifier:",
             maxsplit=1,
         )[0]
@@ -177,7 +193,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
     def test_quota_storage_requires_hmac_and_atomic_writes(self):
         self.assertIn("QuotaHashSecret", self.template)
         self.assertIn("QUOTA_HASH_SECRET", self.template)
-        self.assertIn("REQUIRE_RATE_LIMITING: \"true\"", self.template)
+        self.assertIn('REQUIRE_RATE_LIMITING: "true"', self.template)
         self.assertIn("dynamodb:ConditionCheckItem", self.template)
         self.assertIn("dynamodb:TransactWriteItems", self.template)
 
@@ -211,7 +227,9 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             worker,
         )
 
-    def test_guardrail_rules_fail_closed_for_partial_and_unsafe_production_configuration(self):
+    def test_guardrail_rules_fail_closed_for_partial_and_unsafe_production_configuration(
+        self,
+    ):
         self.assertIn("GuardrailConfigurationAllOrNone:", self.template)
         self.assertIn("ProductionRequiresSafetyAndNotifications:", self.template)
         production_rule = self.template.split(
@@ -233,7 +251,9 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             maxsplit=1,
         )[0]
         template_parameters = set(
-            re.findall(r"^  ([A-Z][A-Za-z0-9]+):$", parameter_section, flags=re.MULTILINE)
+            re.findall(
+                r"^  ([A-Z][A-Za-z0-9]+):$", parameter_section, flags=re.MULTILINE
+            )
         )
         deploy_overrides = set(
             re.findall(

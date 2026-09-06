@@ -29,6 +29,8 @@ deployment_environment=(
   "BEDROCK_INVOKE_RESOURCE_ARNS=$api_model"
   "QUESTION_BANK_WORKER_MODEL_ARN=$worker_model"
   "QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS=$worker_model"
+  "BEDROCK_VERIFICATION_MODEL_ARN=$worker_model"
+  "BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS=$worker_model"
   "BEDROCK_FALLBACK_MODEL_ARN="
   "BEDROCK_REASONING_EFFORT=low"
   "BEDROCK_GUARDRAIL_IDENTIFIER="
@@ -94,8 +96,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 48 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 48"
+[[ "${#sam_arguments[@]}" -eq 50 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 50"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
