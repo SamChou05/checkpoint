@@ -98,7 +98,7 @@ struct AppSnapshotPersistence {
         }
 
         if let legacyData = defaults.data(forKey: Self.legacySnapshotKey),
-           let legacySnapshot = try? JSONDecoder().decode(AppSnapshot.self, from: legacyData) {
+           let legacySnapshot = try? QuestionContentJSONDecoder.decode(AppSnapshot.self, from: legacyData) {
             do {
                 try save(legacySnapshot)
                 return .loaded(legacySnapshot)
@@ -291,7 +291,7 @@ struct AppSnapshotPersistence {
     }
 
     private func decodeEnvelope(_ data: Data) throws -> AppSnapshot {
-        let envelope = try JSONDecoder().decode(AppSnapshotEnvelope.self, from: data)
+        let envelope = try QuestionContentJSONDecoder.decode(AppSnapshotEnvelope.self, from: data)
         guard envelope.schemaVersion == AppSnapshotEnvelope.currentSchemaVersion else {
             throw PersistenceError.verificationFailed
         }

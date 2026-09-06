@@ -9,7 +9,7 @@ from generation_diagnostics import record_quality
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _extract_json_object
 from service_errors import ProviderError
-from request_contract import _choice_uniqueness_key
+from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 
 VERIFICATION_VERSION = 1
 REVIEW_SYSTEM_PROMPT = (
@@ -325,7 +325,7 @@ def _has_reviewable_choices(question: dict[str, Any]) -> bool:
     keys = [_choice_uniqueness_key(choice) for choice in choices]
     # Similar wording and short final qualifiers require semantic review. They
     # are not duplicates merely because one text is a long prefix of another.
-    return all(keys) and len(set(keys)) == 4
+    return _has_unambiguous_choices(keys)
 
 
 def _bounded_explanation(value: Any, limit: int) -> bool:

@@ -1,9 +1,9 @@
 {
-  "contract": "NFC plus surrounding whitespace only; no case, accent, symbol, label, inflection or internal whitespace folding.",
+  "contract": "Exact Unicode code points and UTF-8 identity after ASCII boundary whitespace trimming only. Canonically equivalent alternatives in one set are rejected as unrepresentable, never rewritten.",
   "equivalent": [
     [
       " café ",
-      "café"
+      "café"
     ],
     [
       "\nTrue\t",
@@ -54,6 +54,14 @@
     [
       "Answer: yes",
       "yes"
+    ],
+    [
+      "café",
+      "café"
+    ],
+    [
+      " True",
+      "True"
     ]
   ],
   "questions": [
@@ -144,6 +152,17 @@
       ],
       "expectedAnswer": "\"a  b\"",
       "explanation": "The first string has exactly two spaces between the letters a and b."
+    },
+    {
+      "prompt": "Which quoted Python string has a length of two Unicode code points?",
+      "choices": [
+        "\"é\"",
+        "\"a\"",
+        "\"b\"",
+        "\"c\""
+      ],
+      "expectedAnswer": "\"é\"",
+      "explanation": "The string contains an e followed by a combining acute accent."
     }
   ],
   "subject_prompts": [
@@ -160,5 +179,43 @@
     "What should your study schedule contain tomorrow?",
     "After missing a quiz question, what should you review next?",
     "Which practice plan would help you prepare for the exam?"
+  ],
+  "unrepresentable_choices": [
+    [
+      "\"é\"",
+      "\"é\"",
+      "\"a\"",
+      "\"b\""
+    ],
+    [
+      "salt",
+      " salt ",
+      "sugar",
+      "water"
+    ]
+  ],
+  "unicode_history_questions": [
+    {
+      "prompt": "Which quoted Python string ends in U+0065 followed by U+0301?",
+      "choices": [
+        "\"checkpoint code é\"",
+        "\"wrong\"",
+        "\"different\"",
+        "\"absent\""
+      ],
+      "expectedAnswer": "\"checkpoint code é\"",
+      "explanation": "The final Unicode sequence in this literal is exactly the stated sequence."
+    },
+    {
+      "prompt": "Which quoted Python string ends in U+00E9?",
+      "choices": [
+        "\"checkpoint code é\"",
+        "\"wrong\"",
+        "\"different\"",
+        "\"absent\""
+      ],
+      "expectedAnswer": "\"checkpoint code é\"",
+      "explanation": "The final Unicode sequence in this literal is exactly the stated sequence."
+    }
   ]
 }

@@ -185,7 +185,7 @@ struct BackendQuestionBankClient: QuestionBankSyncing, @unchecked Sendable {
 
         let payload: BackendQuestionBankClaimResponse
         do {
-            payload = try JSONDecoder().decode(BackendQuestionBankClaimResponse.self, from: data)
+            payload = try QuestionContentJSONDecoder.decode(BackendQuestionBankClaimResponse.self, from: data)
         } catch {
             throw QuestionBankAPIError.badResponse
         }

@@ -35,7 +35,7 @@ struct BackendQuestionEngine: QuestionGenerating, SkillMapInferring, SkillMapEvo
 
         let payload: BackendQuestionResponse
         do {
-            payload = try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+            payload = try QuestionContentJSONDecoder.decode(BackendQuestionResponse.self, from: data)
         } catch {
             throw QuestionGenerationError.badResponse
         }

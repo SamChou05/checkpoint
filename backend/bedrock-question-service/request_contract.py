@@ -1367,12 +1367,22 @@ def _duplicate_prompt_key(prompt: str) -> str:
 def _choice_uniqueness_key(value: str) -> str:
     """Content identity, shared with MultipleChoiceAnswerNormalizer.key(for:).
 
-    Only canonical Unicode composition and surrounding whitespace are ignored.
-    Case, accents, symbols, labels, inflection and internal whitespace can all
-    distinguish correct from incorrect answers in an arbitrary subject. Semantic
-    duplicates are a review decision, never inferred by deleting those features.
+    Only ASCII boundary whitespace is ignored. Even canonically equivalent code
+    literals can have different values, so retain the original Unicode sequence.
     """
-    return unicodedata.normalize("NFC", value).strip()
+    return value.strip(" \t\n\r\v\f")
+
+
+def _has_unambiguous_choices(choices: list[str]) -> bool:
+    """Reject sets that Swift String-keyed UI/feedback cannot represent safely.
+
+    Canonical composition detects ambiguity only; it must never rewrite content
+    or establish expected-answer membership.
+    """
+    keys = [_choice_uniqueness_key(choice) for choice in choices]
+    return bool(keys) and all(keys) and len(
+        {unicodedata.normalize("NFC", key) for key in keys}
+    ) == len(keys)
 
 
 def _semantic_signal_key(value: str) -> str:

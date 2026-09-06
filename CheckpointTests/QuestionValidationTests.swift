@@ -14,6 +14,8 @@ final class QuestionValidationTests: XCTestCase {
         var equivalent: [[String]]
         var distinct: [[String]]
         var questions: [Question]
+        var unicode_history_questions: [Question]
+        var unrepresentable_choices: [[String]]
         var subject_prompts: [String]
         var coaching_prompts: [String]
     }
@@ -44,11 +46,11 @@ final class QuestionValidationTests: XCTestCase {
                     explanation: item.explanation, verificationVersion: version, difficulty: 3
                 )
                 let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first, item.prompt)
-                XCTAssertEqual(Set(accepted.choices), Set(item.choices), item.prompt)
-                XCTAssertEqual(accepted.expectedAnswer, item.expectedAnswer, item.prompt)
+                XCTAssertEqual(Set(accepted.choices.map { Data($0.utf8) }), Set(item.choices.map { Data($0.utf8) }), item.prompt)
+                XCTAssertEqual(Data(accepted.expectedAnswer.utf8), Data(item.expectedAnswer.utf8), item.prompt)
                 for choice in accepted.choices {
                     XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: accepted).result,
-                                   choice == item.expectedAnswer ? .correct : .incorrect, item.prompt)
+                                   Data(choice.utf8) == Data(item.expectedAnswer.utf8) ? .correct : .incorrect, item.prompt)
                 }
             }
         }
@@ -78,6 +80,119 @@ final class QuestionValidationTests: XCTestCase {
             let question = makeQuestion(goal: goal, index: 1, expectedAnswer: choices[0], choices: choices)
             XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
         }
+    }
+
+    func testUnicodeLiteralSurvivesGradingFeedbackWireAndPersistence() throws {
+        let item = try XCTUnwrap(identityFixtures().questions.last)
+        let goal = makeGoal()
+        for version in [0, 1] {
+            var question = makeQuestion(goal: goal, index: 1, topic: "Python strings", prompt: item.prompt,
+                                        expectedAnswer: item.expectedAnswer, choices: item.choices,
+                                        explanation: item.explanation, verificationVersion: version, difficulty: 3)
+            question.choiceExplanations = [item.expectedAnswer: "This literal contains two Unicode code points."]
+            let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(question))
+            let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "service")
+            let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: makeRequest(goal: goal)).first)
+            let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(accepted))
+            // Count the literal's Unicode scalars independently of identity keys.
+            XCTAssertEqual(restored.expectedAnswer.dropFirst().dropLast().unicodeScalars.count, 2)
+            XCTAssertEqual(Data(restored.expectedAnswer.utf8), Data(item.expectedAnswer.utf8))
+            XCTAssertEqual(AnswerGrader.evaluate(answer: item.expectedAnswer, question: restored).result, .correct)
+            XCTAssertEqual(AnswerGrader.evaluate(answer: "\"é\"", question: restored).result, .incorrect)
+            XCTAssertTrue(restored.feedbackExplanation(for: item.expectedAnswer).hasPrefix("This literal contains two Unicode code points."))
+            XCTAssertEqual(restored.feedbackExplanation(for: "\"é\""), restored.explanation)
+            XCTAssertEqual(Set(restored.choiceExplanations.keys.map { Data($0.utf8) }), [Data(item.expectedAnswer.utf8)])
+        }
+    }
+
+    func testUnofferedCanonicalVariantCannotBecomeTheExpectedAnswerOrFeedbackKey() throws {
+        let item = try XCTUnwrap(identityFixtures().questions.last)
+        let goal = makeGoal()
+        for version in [0, 1] {
+            var question = makeQuestion(goal: goal, index: 1, topic: "Python strings", prompt: item.prompt,
+                                        expectedAnswer: "\"é\"", choices: item.choices,
+                                        explanation: item.explanation, verificationVersion: version, difficulty: 3)
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+            XCTAssertEqual(AnswerGrader.evaluate(answer: item.expectedAnswer, question: question).result, .incorrect)
+            question.expectedAnswer = item.expectedAnswer
+            question.choiceExplanations = ["\"é\"": "This feedback belongs to a different literal."]
+            XCTAssertEqual(question.feedbackExplanation(for: item.expectedAnswer), question.explanation)
+            let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first)
+            XCTAssertTrue(accepted.choiceExplanations.isEmpty)
+        }
+        let longItem = try XCTUnwrap(identityFixtures().unicode_history_questions.first)
+        let unoffered = longItem.expectedAnswer.precomposedStringWithCanonicalMapping
+        let legacy = makeQuestion(goal: goal, index: 2, prompt: longItem.prompt,
+                                  expectedAnswer: unoffered, choices: longItem.choices,
+                                  explanation: "The correct answer is " + longItem.expectedAnswer,
+                                  verificationVersion: 0)
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([legacy], for: makeRequest(goal: goal)).isEmpty)
+        XCTAssertEqual(AnswerGrader.evaluate(answer: longItem.expectedAnswer, question: legacy).result, .incorrect)
+    }
+
+    func testUnrepresentableChoicesAndCollidingFeedbackPropertiesFailClosed() throws {
+        let goal = makeGoal()
+        for choices in try identityFixtures().unrepresentable_choices {
+            for version in [0, 1] {
+                let question = makeQuestion(goal: goal, index: 1, expectedAnswer: choices[0], choices: choices, verificationVersion: version)
+                XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+                XCTAssertEqual(AnswerGrader.evaluate(answer: choices[0], question: question).result, .unclear)
+            }
+        }
+        let question = makeQuestion(goal: goal, index: 1)
+        let encoded = try XCTUnwrap(String(data: JSONEncoder().encode(question), encoding: .utf8))
+        let malformed = encoded.replacingOccurrences(
+            of: "\"choiceExplanations\":{}",
+            with: #""choiceExplanations":{"\u00e9":"First feedback for a composed literal.","e\u0301":"Second feedback for a decomposed literal."}"#
+        )
+        XCTAssertNotEqual(encoded, malformed)
+        XCTAssertThrowsError(try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: Data(malformed.utf8)))
+        XCTAssertThrowsError(try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: Data(malformed.utf8)))
+    }
+
+    func testUnicodeChoiceAndAnswerHistoryKeepDistinctSavedQuestions() throws {
+        let goal = makeGoal()
+        let questions = try identityFixtures().unicode_history_questions.enumerated().map { index, item in
+            makeQuestion(goal: goal, index: index, topic: "Python strings", prompt: item.prompt,
+                         expectedAnswer: item.expectedAnswer, choices: item.choices,
+                         explanation: item.explanation, difficulty: 3)
+        }
+        XCTAssertEqual(QuestionBatchSanitizer.sanitize(questions, for: makeRequest(goal: goal)).count, 2)
+        let restored = try JSONDecoder().decode(CheckpointQuestion.self, from: JSONEncoder().encode(questions[0]))
+        let request = makeRequest(goal: goal, existingQuestions: [restored])
+        let accepted = QuestionBatchSanitizer.sanitize(questions, for: request)
+        XCTAssertEqual(accepted.count, 1)
+        XCTAssertEqual(Data(try XCTUnwrap(accepted.first).expectedAnswer.utf8), Data(questions[1].expectedAnswer.utf8))
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(BackendQuestionRequest(request: request))) as? [String: Any])
+        let coverage = try XCTUnwrap(payload["existingQuestionCoverage"] as? [[String: Any]])
+        let answer = try XCTUnwrap(coverage[0]["expectedAnswer"] as? String)
+        XCTAssertEqual(Data(answer.utf8), Data(restored.expectedAnswer.utf8))
+    }
+
+    func testSnapshotPreflightRecoversBeforeUnicodeFeedbackKeysCanMerge() throws {
+        let goal = makeGoal()
+        let item = try XCTUnwrap(identityFixtures().questions.last)
+        let question = makeQuestion(goal: goal, index: 1, prompt: item.prompt,
+                                    expectedAnswer: item.expectedAnswer, choices: item.choices)
+        let suite = "UnicodeSnapshotTests-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let persistence = AppSnapshotPersistence(defaults: defaults)
+        try persistence.save(AppSnapshot(goal: goal, questions: [question], attempts: [], competencies: []))
+        let primary = try XCTUnwrap(defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey))
+        let original = try XCTUnwrap(String(data: primary, encoding: .utf8))
+        let malformed = original.replacingOccurrences(
+            of: "\"choiceExplanations\":{}",
+            with: #""choiceExplanations":{"\u00e9":"First feedback for a composed literal.","e\u0301":"Second feedback for a decomposed literal."}"#
+        )
+        XCTAssertNotEqual(original, malformed)
+        defaults.set(Data(malformed.utf8), forKey: AppSnapshotPersistence.primaryDefaultsKey)
+        guard case let .recovered(snapshot, _) = persistence.load() else {
+            return XCTFail("Expected recovery from the intact backup before keys merge")
+        }
+        let restored = try XCTUnwrap(snapshot.questions.first)
+        XCTAssertEqual(Data(restored.expectedAnswer.utf8), Data(item.expectedAnswer.utf8))
+        XCTAssertTrue(restored.choiceExplanations.isEmpty)
     }
 
     func testChoiceSetIdentityCannotCollideOnLiteralSeparators() {

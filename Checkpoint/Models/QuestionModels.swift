@@ -173,10 +173,45 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     }
 
     func feedbackExplanation(for answer: String) -> String {
-        guard let choiceExplanation = choiceExplanations[answer],
+        let answerKey = MultipleChoiceAnswerNormalizer.key(for: answer)
+        guard MultipleChoiceAnswerNormalizer.hasUnambiguousChoices(choices),
+              let offeredChoice = choices.first(where: { MultipleChoiceAnswerNormalizer.key(for: $0) == answerKey }),
+              let choiceExplanation = choiceExplanations.first(where: {
+                  Data($0.key.utf8) == Data(offeredChoice.utf8)
+              })?.value,
               !choiceExplanation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               choiceExplanation != explanation else { return explanation }
         return choiceExplanation + "\n\n" + explanation
+    }
+}
+
+enum QuestionContentJSONDecoder {
+    static func decode<Value: Decodable>(_ type: Value.Type, from data: Data) throws -> Value {
+        // JSONDecoder merges canonically equivalent properties before exposing
+        // allKeys. Inspect NSDictionary first; it retains their distinct bytes.
+        try validateFeedbackKeys(in: JSONSerialization.jsonObject(with: data))
+        return try JSONDecoder().decode(type, from: data)
+    }
+
+    private static func validateFeedbackKeys(in object: Any) throws {
+        if let dictionary = object as? NSDictionary {
+            for key in dictionary.allKeys {
+                guard let value = dictionary.object(forKey: key) else { continue }
+                if let name = key as? String, name == "choiceExplanations",
+                   let feedback = value as? NSDictionary {
+                    let keys = feedback.allKeys.compactMap { $0 as? String }
+                    guard Set(keys).count == keys.count else {
+                        throw DecodingError.dataCorrupted(.init(
+                            codingPath: [],
+                            debugDescription: "Choice feedback has indistinguishable Unicode keys."
+                        ))
+                    }
+                }
+                try validateFeedbackKeys(in: value)
+            }
+        } else if let array = object as? NSArray {
+            for value in array { try validateFeedbackKeys(in: value) }
+        }
     }
 }
 

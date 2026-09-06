@@ -47,17 +47,15 @@ enum QuestionBatchSanitizer {
             let prompt = promptWithoutTrailingChoiceEcho(question.prompt, choices: question.choices)
             guard prompt.count <= 360 else { continue }
             sanitizedQuestion.prompt = prompt
-            let expectedAnswer = QuestionText.clipped(
-                question.expectedAnswer.trimmingCharacters(in: .whitespacesAndNewlines),
-                maxLength: 280
-            )
+            let expectedAnswer = MultipleChoiceAnswerNormalizer.text(for: question.expectedAnswer)
+            guard expectedAnswer.count <= 280 else { continue }
             let choiceResolution: (expectedAnswer: String, choices: [String])?
             if question.verificationVersion == 1 {
                 // A reviewed answer is the exact choice text. Legacy label/cue
                 // heuristics must never reinterpret numbers inside that text.
                 choiceResolution = question.choices.count == 4
                     && hasUniqueChoices(question.choices)
-                    && question.choices.contains(question.expectedAnswer)
+                    && question.choices.contains { answerKey($0) == answerKey(question.expectedAnswer) }
                     && question.choices.allSatisfy { !$0.isEmpty && $0.count <= 140 }
                     ? (question.expectedAnswer, question.choices.shuffled()) : nil
             } else {
@@ -72,10 +70,12 @@ enum QuestionBatchSanitizer {
             }
             sanitizedQuestion.expectedAnswer = choiceResolution.expectedAnswer
             if question.verificationVersion == 1,
-               choiceResolution.expectedAnswer != question.expectedAnswer { continue }
+               answerKey(choiceResolution.expectedAnswer) != answerKey(question.expectedAnswer) { continue }
             sanitizedQuestion.choices = choiceResolution.choices
             sanitizedQuestion.choiceExplanations = question.choiceExplanations.filter {
-                sanitizedQuestion.choices.contains($0.key) && (12...280).contains($0.value.count)
+                let entry = $0
+                return sanitizedQuestion.choices.contains { Data($0.utf8) == Data(entry.key.utf8) }
+                    && (12...280).contains(entry.value.count)
             }
             sanitizedQuestion.explanation = QuestionText.clipped(
                 question.explanation.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -115,7 +115,7 @@ enum QuestionBatchSanitizer {
         return sanitizedQuestions
     }
 
-    private static func questionCoverageKeys(_ question: CheckpointQuestion) -> Set<String> {
+    private static func questionCoverageKeys(_ question: CheckpointQuestion) -> Set<Data> {
         var keys = questionCoverageKeys(
             prompt: question.prompt,
             expectedAnswer: question.expectedAnswer,
@@ -125,11 +125,13 @@ enum QuestionBatchSanitizer {
         let choiceSetKey = question.choices
             .map(choiceUniquenessKey)
             .filter { !$0.isEmpty }
-            .sorted()
-            .map { "\($0.utf8.count):\($0)" }
-            .joined()
+            .sorted { $0.lexicographicallyPrecedes($1) }
+            .reduce(into: Data()) { result, key in
+                result.append(Data("\(key.count):".utf8))
+                result.append(key)
+            }
         if question.choices.count == 4, !choiceSetKey.isEmpty {
-            keys.insert("choice-set:\(choiceSetKey)")
+            keys.insert(Data("choice-set:".utf8) + choiceSetKey)
         }
 
         return keys
@@ -139,14 +141,14 @@ enum QuestionBatchSanitizer {
         prompt: String,
         expectedAnswer: String,
         topic: String
-    ) -> Set<String> {
-        var keys: Set<String> = []
+    ) -> Set<Data> {
+        var keys: Set<Data> = []
         let topicKey = choiceUniquenessKey(topic)
         let answerKey = choiceUniquenessKey(expectedAnswer)
 
-        if topicKey.count >= 3,
-           answerKey.count >= 16 {
-            keys.insert("topic-answer:\(topicKey.utf8.count):\(topicKey)\(answerKey)")
+        if MultipleChoiceAnswerNormalizer.text(for: topic).count >= 3,
+           MultipleChoiceAnswerNormalizer.text(for: expectedAnswer).count >= 16 {
+            keys.insert(Data("topic-answer:\(topicKey.count):".utf8) + topicKey + answerKey)
         }
 
         return keys
@@ -320,10 +322,11 @@ enum QuestionBatchSanitizer {
         explanation: String
     ) -> (expectedAnswer: String, choices: [String])? {
         let normalizedChoices = choices
-            .map { MultipleChoiceAnswerNormalizer.key(for: $0) }
+            .map { MultipleChoiceAnswerNormalizer.text(for: $0) }
             .filter { !$0.isEmpty }
 
-        var seen: Set<String> = []
+        guard choices.count == 4, hasUniqueChoices(normalizedChoices) else { return nil }
+        var seen: Set<Data> = []
         var uniqueChoices: [String] = []
 
         for choice in normalizedChoices {
@@ -340,9 +343,12 @@ enum QuestionBatchSanitizer {
         }
         let expectedKey = answerKey(expectedAnswer)
         let exactChoice = uniqueChoices.first { answerKey($0) == expectedKey }
+        if exactChoice == nil, uniqueChoices.contains(MultipleChoiceAnswerNormalizer.text(for: expectedAnswer)) {
+            return nil
+        }
         let matchedChoice = exactChoice ?? indexedChoice ?? uniqueChoices.first { choice in
             let choiceKey = answerKey(choice)
-            return choiceKey == expectedKey || (choiceKey.count >= 12 && expectedKey.contains(choiceKey))
+            return choiceKey == expectedKey || (choice.count >= 12 && expectedKey.range(of: choiceKey) != nil)
         }
 
         guard let matchedChoice else { return nil }
@@ -364,22 +370,14 @@ enum QuestionBatchSanitizer {
     }
 
     private static func hasUniqueChoices(_ choices: [String]) -> Bool {
-        var seen: Set<String> = []
-
-        for choice in choices {
-            let key = choiceUniquenessKey(choice)
-            guard !key.isEmpty, !seen.contains(key) else { return false }
-            seen.insert(key)
-        }
-
-        return true
+        MultipleChoiceAnswerNormalizer.hasUnambiguousChoices(choices)
     }
 
-    private static func answerKey(_ text: String) -> String {
+    private static func answerKey(_ text: String) -> Data {
         MultipleChoiceAnswerNormalizer.key(for: text)
     }
 
-    private static func choiceUniquenessKey(_ text: String) -> String {
+    private static func choiceUniquenessKey(_ text: String) -> Data {
         MultipleChoiceAnswerNormalizer.key(for: text)
     }
 

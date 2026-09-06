@@ -11,6 +11,7 @@ from request_contract import (
     MAX_OBJECTIVE_NAME_CHARS,
     _canonical,
     _choice_uniqueness_key,
+    _has_unambiguous_choices,
     _clamped_int,
     _clean_text,
     _clean_subject_text,
@@ -584,7 +585,7 @@ def _normalized_choices(raw_choices: Any, expected_answer: str) -> list[str]:
     if not expected_answer or len(expected_answer) > 140:
         return []
 
-    if len(choices) != 4 or len(set(choices)) != 4:
+    if len(choices) != 4 or not _has_unambiguous_choices(choices):
         return []
     if expected_answer not in choices:
         return []

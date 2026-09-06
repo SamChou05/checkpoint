@@ -85,7 +85,7 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if let data = trimmed.data(using: .utf8),
-           let payload = try? JSONDecoder().decode(BackendQuestionResponse.self, from: data) {
+           let payload = try? QuestionContentJSONDecoder.decode(BackendQuestionResponse.self, from: data) {
             return payload
         }
 
@@ -102,7 +102,7 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         }
 
         do {
-            return try JSONDecoder().decode(BackendQuestionResponse.self, from: data)
+            return try QuestionContentJSONDecoder.decode(BackendQuestionResponse.self, from: data)
         } catch {
             throw QuestionGenerationError.badResponse
         }

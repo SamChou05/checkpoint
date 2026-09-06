@@ -6,11 +6,22 @@ struct AnswerEvaluation: Equatable, Sendable {
 }
 
 enum MultipleChoiceAnswerNormalizer {
-    static func key(for text: String) -> String {
-        // Shared with request_contract._choice_uniqueness_key. Never erase
-        // case, accents, symbols, labels, inflection or internal whitespace.
-        text.precomposedStringWithCanonicalMapping
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+    static func text(for text: String) -> String {
+        // Shared with request_contract._choice_uniqueness_key. Code-point
+        // composition can change a code literal's value; never rewrite it.
+        text.trimmingCharacters(in: CharacterSet(charactersIn: " \t\n\r\u{000B}\u{000C}"))
+    }
+
+    static func key(for text: String) -> Data {
+        Data(Self.text(for: text).utf8)
+    }
+
+    static func hasUnambiguousChoices(_ choices: [String]) -> Bool {
+        let texts = choices.map { text(for: $0) }
+        // String equality deliberately detects canonical equivalence here:
+        // our String-keyed feedback and UI cannot distinguish both alternatives.
+        return !texts.isEmpty && texts.allSatisfy { !$0.isEmpty }
+            && Set(texts).count == texts.count
     }
 
     static func choiceIndex(from text: String) -> Int? {
@@ -51,7 +62,7 @@ enum MultipleChoiceAnswerNormalizer {
         let normalizedExplanation = key(for: phraseMatchingText)
         let mentionedChoices = choices.filter { choice in
             let choiceKey = key(for: choice)
-            return choiceKey.count >= 12 && normalizedExplanation.contains(choiceKey)
+            return choice.count >= 12 && normalizedExplanation.range(of: choiceKey) != nil
         }
 
         guard mentionedChoices.count == 1 else { return nil }
@@ -139,7 +150,9 @@ enum AnswerGrader {
     }
 
     static func evaluate(answer: String, question: CheckpointQuestion) -> AnswerEvaluation {
-        let trimmedAnswer = answer.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedAnswer = question.format == .multipleChoice
+            ? MultipleChoiceAnswerNormalizer.text(for: answer)
+            : answer.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmedAnswer.isEmpty else {
             return AnswerEvaluation(result: .unclear, feedback: "No answer entered yet.")
@@ -170,8 +183,14 @@ enum AnswerGrader {
     }
 
     private static func evaluateMultipleChoice(answer: String, question: CheckpointQuestion) -> AnswerEvaluation {
+        guard MultipleChoiceAnswerNormalizer.hasUnambiguousChoices(question.choices) else {
+            return AnswerEvaluation(result: .unclear, feedback: "This question needs to be replaced.")
+        }
         if question.verificationVersion == 1 {
-            let correct = question.choices.contains(question.expectedAnswer)
+            let correct = question.choices.contains {
+                MultipleChoiceAnswerNormalizer.key(for: $0)
+                    == MultipleChoiceAnswerNormalizer.key(for: question.expectedAnswer)
+            }
                 && MultipleChoiceAnswerNormalizer.key(for: answer)
                     == MultipleChoiceAnswerNormalizer.key(for: question.expectedAnswer)
             return AnswerEvaluation(
@@ -189,9 +208,17 @@ enum AnswerGrader {
         let exactExpectedChoice = question.choices.first { key in
             MultipleChoiceAnswerNormalizer.key(for: key) == expectedKey
         }
+        if exactExpectedChoice == nil, question.choices.contains(where: {
+            MultipleChoiceAnswerNormalizer.text(for: $0)
+                == MultipleChoiceAnswerNormalizer.text(for: question.expectedAnswer)
+        }) {
+            // A byte-distinct canonical alias is not an offered answer. Legacy
+            // explanation/label adapters must not silently repair its meaning.
+            return AnswerEvaluation(result: .incorrect, feedback: "That choice is not correct yet.")
+        }
         let matchingExpectedChoice = exactExpectedChoice ?? indexedExpectedChoice ?? question.choices.first {
             let choiceKey = MultipleChoiceAnswerNormalizer.key(for: $0)
-            return choiceKey == expectedKey || (choiceKey.count >= 12 && expectedKey.contains(choiceKey))
+            return choiceKey == expectedKey || ($0.count >= 12 && expectedKey.range(of: choiceKey) != nil)
         }
         let explanationChoice = MultipleChoiceAnswerNormalizer.choiceMentionedAsCorrect(
             in: question.explanation,
