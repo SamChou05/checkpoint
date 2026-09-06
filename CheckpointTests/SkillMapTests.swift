@@ -1335,6 +1335,14 @@ final class SkillMapTests: CheckpointWorkflowTestCase {
                 grantsUnlock: false
             )
         }
+        XCTAssertEqual(engine.evolutionRequests.count, 1, "Memorizing the same answer cannot restore mastery evidence.")
+        for index in 0..<4 {
+            var transferQuestion = question
+            transferQuestion.id = UUID()
+            transferQuestion.objectiveID = fixture.skills[0].objectives[index % 2].id
+            transferQuestion.difficulty = 4
+            _ = fixture.store.submitAnswer(question: transferQuestion, answer: transferQuestion.expectedAnswer, result: .correct, grantsUnlock: false)
+        }
         let didRecordSecondFailure = await waitUntil {
             engine.evolutionRequests.count == 2 &&
                 fixture.store.skillMapEvolutionIntents.first?.invalidResponseAttemptCount == 2

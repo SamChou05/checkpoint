@@ -200,9 +200,7 @@ def _normalize_skill_map_evolution_request(payload: dict[str, Any]) -> dict[str,
         )
     expected_fingerprint = _skill_map_fingerprint(current_skill_map)
     if not hmac.compare_digest(base_fingerprint, expected_fingerprint):
-        raise BadRequestError(
-            "baseMapFingerprint does not match currentSkillMap."
-        )
+        raise BadRequestError("baseMapFingerprint does not match currentSkillMap.")
 
     mastered_value = payload.get("masteredSkillIDs")
     if not isinstance(mastered_value, list):
@@ -236,16 +234,14 @@ def _normalize_skill_map_evolution_request(payload: dict[str, Any]) -> dict[str,
     for competency_index, competency in enumerate(competencies):
         raw_skill_id = competency.get("skillID")
         if not raw_skill_id:
-            raise BadRequestError(
-                "Every evolution competency row requires a skillID."
-            )
+            raise BadRequestError("Every evolution competency row requires a skillID.")
         skill_key = _uuid_key(raw_skill_id)
         if skill_key in competency_by_skill_id:
-            raise BadRequestError("competencies must contain at most one row per skillID.")
-        if skill_key not in seen_mastered_ids:
             raise BadRequestError(
-                "competencies may reference only masteredSkillIDs."
+                "competencies must contain at most one row per skillID."
             )
+        if skill_key not in seen_mastered_ids:
+            raise BadRequestError("competencies may reference only masteredSkillIDs.")
         for field_name, maximum in (
             ("attempts", 1_000_000),
             ("masteryPercent", 100),
@@ -267,9 +263,7 @@ def _normalize_skill_map_evolution_request(payload: dict[str, Any]) -> dict[str,
         _uuid_key(attempt["skillID"]) not in seen_mastered_ids
         for attempt in recent_attempts
     ):
-        raise BadRequestError(
-            "recentAttempts may reference only masteredSkillIDs."
-        )
+        raise BadRequestError("recentAttempts may reference only masteredSkillIDs.")
     for mastered_skill_id in mastered_skill_ids:
         skill_key = _uuid_key(mastered_skill_id)
         competency = competency_by_skill_id.get(skill_key)
@@ -279,10 +273,8 @@ def _normalize_skill_map_evolution_request(payload: dict[str, Any]) -> dict[str,
             )
         if (
             int(competency.get("attempts", 0)) < MIN_EVOLUTION_ATTEMPTS
-            or int(competency.get("masteryPercent", 0))
-            < MIN_EVOLUTION_MASTERY_PERCENT
-            or int(competency.get("currentStreak", 0))
-            < MIN_EVOLUTION_CORRECT_STREAK
+            or int(competency.get("masteryPercent", 0)) < MIN_EVOLUTION_MASTERY_PERCENT
+            or int(competency.get("currentStreak", 0)) < MIN_EVOLUTION_CORRECT_STREAK
         ):
             raise BadRequestError(
                 "Every mastered skill requires at least 10 attempts, 85% mastery, "
@@ -499,7 +491,85 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
             desired_skill_allocation,
             target_count,
         )
+    normalized_request["adaptiveSkillPlans"] = _normalized_adaptive_skill_plans(
+        payload.get("adaptiveSkillPlans"), skill_map, minimum_difficulty
+    )
     return normalized_request
+
+
+def _normalized_adaptive_skill_plans(
+    value: Any, skill_map: dict[str, Any] | None, minimum_difficulty: int
+) -> list[dict[str, Any]]:
+    if value is None or value == []:
+        return []
+    if not isinstance(value, list) or len(value) > 6 or not skill_map:
+        raise BadRequestError(
+            "adaptiveSkillPlans requires a skill map and at most 6 plans."
+        )
+    skills = {_uuid_key(skill["id"]): skill for skill in skill_map["skills"]}
+    seen: set[str] = set()
+    plans = []
+    for raw in value:
+        if not isinstance(raw, dict):
+            raise BadRequestError("Each adaptive skill plan must be an object.")
+        skill_id = _validated_uuid(raw.get("skillID"), "adaptiveSkillPlans.skillID")
+        key = _uuid_key(skill_id)
+        if key not in skills or key in seen:
+            raise BadRequestError(
+                "Adaptive plans must reference distinct active skills."
+            )
+        seen.add(key)
+        skill = skills[key]
+        objectives = {_uuid_key(o["id"]): o["id"] for o in skill["objectives"]}
+
+        def objective_id(raw_id: Any) -> str:
+            parsed = _validated_uuid(raw_id, "adaptiveSkillPlans.objectiveID")
+            if _uuid_key(parsed) not in objectives:
+                raise BadRequestError("Adaptive evidence must belong to its skill.")
+            return objectives[_uuid_key(parsed)]
+
+        focus = raw.get("focusObjectiveIDs", [])
+        mistakes = raw.get("recentMistakes", [])
+        if not isinstance(focus, list) or len(focus) > 5:
+            raise BadRequestError("Adaptive focus is limited to 5 objectives.")
+        if not isinstance(mistakes, list) or len(mistakes) > 3:
+            raise BadRequestError("Adaptive mistake evidence is limited to 3 items.")
+        normalized_mistakes = []
+        for mistake in mistakes:
+            if not isinstance(mistake, dict):
+                raise BadRequestError("Adaptive mistake evidence must be an object.")
+            normalized_mistakes.append(
+                {
+                    "objectiveID": objective_id(mistake.get("objectiveID")),
+                    **{
+                        name: _validated_text(mistake.get(name), name, limit)
+                        for name, limit in [
+                            ("prompt", 360),
+                            ("selectedAnswer", 280),
+                            ("expectedAnswer", 280),
+                        ]
+                    },
+                }
+            )
+        plan = {
+            "skillID": skill["id"],
+            "targetDifficulty": _strict_int(
+                raw.get("targetDifficulty"), "targetDifficulty", minimum_difficulty, 5
+            ),
+            "evidenceCount": _strict_int(
+                raw.get("evidenceCount", 0), "evidenceCount", 0, 12
+            ),
+            "focusObjectiveIDs": list(
+                dict.fromkeys(objective_id(item) for item in focus)
+            ),
+            "recentMistakes": normalized_mistakes,
+        }
+        if raw.get("recentAccuracyPercent") is not None:
+            plan["recentAccuracyPercent"] = _strict_int(
+                raw["recentAccuracyPercent"], "recentAccuracyPercent", 0, 100
+            )
+        plans.append(plan)
+    return plans
 
 
 def _normalized_supplied_skill_map(value: Any) -> dict[str, Any] | None:
@@ -809,8 +879,7 @@ def _normalized_evolution_attempts(
         raise BadRequestError("recentAttempts must be an array.")
     if len(value) > MAX_RECENT_EVOLUTION_ATTEMPTS:
         raise BadRequestError(
-            "recentAttempts exceeds the "
-            f"{MAX_RECENT_EVOLUTION_ATTEMPTS}-attempt limit."
+            f"recentAttempts exceeds the {MAX_RECENT_EVOLUTION_ATTEMPTS}-attempt limit."
         )
 
     active_skills = {
@@ -869,9 +938,7 @@ def _normalized_evolution_attempts(
             16,
         ).lower()
         if result not in {"correct", "partial", "incorrect", "unclear"}:
-            raise BadRequestError(
-                f"recentAttempts[{index}].result is invalid."
-            )
+            raise BadRequestError(f"recentAttempts[{index}].result is invalid.")
         occurred_at_text = _validated_text(
             item.get("occurredAt"),
             f"recentAttempts[{index}].occurredAt",
@@ -920,9 +987,9 @@ def _validate_recent_mastery_evidence(
         )
 
     result_scores = {"correct": 1.0, "partial": 0.5, "incorrect": 0.0, "unclear": 0.0}
-    weighted_score = sum(result_scores[attempt["result"]] for attempt in matching) / len(
-        matching
-    )
+    weighted_score = sum(
+        result_scores[attempt["result"]] for attempt in matching
+    ) / len(matching)
     miss_count = sum(
         1 for attempt in matching if attempt["result"] in {"incorrect", "unclear"}
     )
@@ -1312,9 +1379,7 @@ def _fold_choice_text(value: str) -> str:
     """Mirror Foundation's case- and diacritic-insensitive choice folding."""
     decomposed = unicodedata.normalize("NFD", value.casefold())
     without_diacritics = "".join(
-        character
-        for character in decomposed
-        if unicodedata.category(character) != "Mn"
+        character for character in decomposed if unicodedata.category(character) != "Mn"
     )
     return unicodedata.normalize("NFC", without_diacritics).strip()
 
@@ -1361,9 +1426,7 @@ def _strict_int(value: Any, field_name: str, minimum: int, maximum: int) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
         raise BadRequestError(f"{field_name} must be an integer.")
     if not minimum <= value <= maximum:
-        raise BadRequestError(
-            f"{field_name} must be between {minimum} and {maximum}."
-        )
+        raise BadRequestError(f"{field_name} must be between {minimum} and {maximum}.")
     return value
 
 

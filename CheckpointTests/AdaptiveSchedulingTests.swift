@@ -238,3 +238,93 @@ final class AdaptiveSchedulingTests: CheckpointWorkflowTestCase {
     }
 
 }
+
+extension AdaptiveSchedulingTests {
+    @MainActor
+    func testAutomaticSkillDifficultyProgressesIndependentlyThroughFourStages() throws {
+        let skills = ["arrays", "graphs", "recursion"].map {
+            SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: "Apply \($0)"), SkillMapObjective(name: "Explain \($0)")])
+        }
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: skills)
+        var attempts: [CheckpointAttempt] = []
+        let start = Date().addingTimeInterval(-3600)
+        for level in 1...4 {
+            for index in 0..<5 {
+                attempts.append(adaptiveAttempt(goal: goal, skill: skills[0], index: attempts.count, difficulty: level, correct: true, at: start.addingTimeInterval(Double(attempts.count))))
+                if index < 4 {
+                    XCTAssertEqual(AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)[0].targetDifficulty, level)
+                }
+            }
+            let plans = AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)
+            XCTAssertEqual(plans[0].targetDifficulty, level + 1)
+            XCTAssertEqual(plans[1].targetDifficulty, 1)
+            XCTAssertEqual(plans[2].targetDifficulty, 1)
+        }
+        let request = QuestionGenerationRequest(goal: goal, existingQuestions: [], competencies: [], reportedQuestions: [], targetCount: 5, minimumDifficulty: 1, adaptiveSkillPlans: AdaptiveLearningPolicy.plans(for: goal, attempts: attempts), backendEndpoint: nil)
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(BackendQuestionRequest(request: request))) as? [String: Any])
+        let wirePlans = try XCTUnwrap(payload["adaptiveSkillPlans"] as? [[String: Any]])
+        XCTAssertEqual(wirePlans.first?["targetDifficulty"] as? Int, 5)
+    }
+
+    @MainActor
+    func testRepeatedAnswersAndForeignOrOldEvidenceCannotAdvanceASkill() {
+        let skill = SkillMapTopic(name: "Logic", objectives: [SkillMapObjective(name: "Apply logic")])
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill])
+        let now = Date()
+        let first = adaptiveAttempt(goal: goal, skill: skill, index: 0, difficulty: 1, correct: false, at: now.addingTimeInterval(-60))
+        var attempts = (0..<20).map { index -> CheckpointAttempt in
+            var attempt = first
+            attempt.id = UUID()
+            attempt.createdAt = now.addingTimeInterval(-Double(20 - index))
+            attempt.result = .correct
+            return attempt
+        }
+        attempts.append(first)
+        var foreign = adaptiveAttempt(goal: goal, skill: skill, index: 1, difficulty: 5, correct: true, at: now)
+        foreign.goalID = UUID()
+        attempts.append(foreign)
+        attempts.append(adaptiveAttempt(goal: goal, skill: skill, index: 2, difficulty: 5, correct: true, at: now.addingTimeInterval(-31 * 86400)))
+        let plan = AdaptiveLearningPolicy.plans(for: goal, attempts: attempts, now: now)[0]
+        XCTAssertEqual(plan.targetDifficulty, 1)
+        XCTAssertEqual(plan.evidenceCount, 1)
+        XCTAssertEqual(plan.recentAccuracyPercent, 0)
+        XCTAssertEqual(plan.recentMistakes.first?.selectedAnswer, "Tempting wrong answer")
+    }
+
+    @MainActor
+    func testRecentRecoveryOverridesEarlierMistakesAndStruggleStepsBack() {
+        let skill = SkillMapTopic(name: "Logic", objectives: [SkillMapObjective(name: "Apply logic"), SkillMapObjective(name: "Find assumption")])
+        var goal = makeGoal()
+        goal.minimumQuestionDifficulty = 2
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill])
+        let start = Date().addingTimeInterval(-3600)
+        var attempts = (0..<20).map { adaptiveAttempt(goal: goal, skill: skill, index: $0, difficulty: 2, correct: false, at: start.addingTimeInterval(Double($0))) }
+        for index in 20..<25 {
+            attempts.append(adaptiveAttempt(goal: goal, skill: skill, index: index, difficulty: 2, correct: true, at: start.addingTimeInterval(Double(index))))
+        }
+        XCTAssertEqual(AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)[0].targetDifficulty, 3)
+        for index in 25..<29 {
+            attempts.append(adaptiveAttempt(goal: goal, skill: skill, index: index, difficulty: 3, correct: false, at: start.addingTimeInterval(Double(index))))
+        }
+        let plan = AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)[0]
+        XCTAssertEqual(plan.targetDifficulty, 2)
+        XCTAssertEqual(Set(plan.focusObjectiveIDs), Set(skill.objectives.map(\.id)))
+    }
+
+    @MainActor
+    func testAdaptiveSelectionDoesNotLetOldEasyInventoryHideReadyChallenge() throws {
+        let skill = SkillMapTopic(name: "arrays", objectives: [SkillMapObjective(name: "Find pairs"), SkillMapObjective(name: "Analyze bounds")])
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill])
+        let easy = makeQuestion(goal: goal, index: 1, topic: skill.name, skillID: skill.id, objectiveID: skill.objectives[0].id, difficulty: 1)
+        let challenge = makeQuestion(goal: goal, index: 2, topic: skill.name, skillID: skill.id, objectiveID: skill.objectives[1].id, difficulty: 4)
+        let selector = CheckpointQuestionSelector(questions: [easy, challenge], goalProfiles: [goal], currentGoal: goal, competencies: [.initial(topic: skill.name, goalID: goal.id, skillID: skill.id)], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2, adaptiveDifficultyBySkillID: [skill.id: 4])
+        XCTAssertEqual(selector.nextQuestion()?.id, challenge.id)
+    }
+
+    private func adaptiveAttempt(goal: Goal, skill: SkillMapTopic, index: Int, difficulty: Int, correct: Bool, at date: Date) -> CheckpointAttempt {
+        CheckpointAttempt(questionID: UUID(), goalID: goal.id, skillID: skill.id, objectiveID: skill.objectives[index % skill.objectives.count].id, questionDifficulty: difficulty, prompt: "Apply this concept to scenario \(index)", answer: correct ? "Supported answer" : "Tempting wrong answer", result: correct ? .correct : .incorrect, unlockMinutes: 0, reviewSnapshot: CheckpointAttemptReviewSnapshot(topic: skill.name, format: .multipleChoice, referenceAnswer: "Supported answer", explanation: "Reasoning"), createdAt: date)
+    }
+}

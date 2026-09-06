@@ -189,9 +189,7 @@ def _worker_objective_allocation(
         desired_allocation if isinstance(desired_allocation, dict) else {},
         desired_count,
     )
-    relevant_states = (
-        {"", "ready", "claimed"} if low_watermark == 0 else {"", "ready"}
-    )
+    relevant_states = {"", "ready", "claimed"} if low_watermark == 0 else {"", "ready"}
 
     objective_owners: dict[str, tuple[str, str]] = {}
     for skill in skills:
@@ -241,9 +239,21 @@ def _worker_objective_allocation(
             continue
 
         whole_skill_target = max(0, whole_bank_skill_targets.get(skill_id, 0))
+        plan = next(
+            (
+                plan
+                for plan in generation_request.get("adaptiveSkillPlans", [])
+                if plan["skillID"] == skill_id
+            ),
+            {},
+        )
+        focus_ids = set(plan.get("focusObjectiveIDs", []))
         whole_objective_targets = _apportion_skill_counts(
             objective_ids,
-            {},
+            {
+                objective_id: 3 if objective_id in focus_ids else 1
+                for objective_id in objective_ids
+            },
             whole_skill_target,
         )
         deficits = {
@@ -837,9 +847,7 @@ def _finish_stale_job(
         LOGGER.exception("Failed to mark stale question-bank job")
 
 
-def _mark_rate_limited(
-    client: Any, table_name: str, job_key: dict[str, Any]
-) -> bool:
+def _mark_rate_limited(client: Any, table_name: str, job_key: dict[str, Any]) -> bool:
     bank_key = {"pk": job_key["pk"], "sk": _s("META")}
     now = datetime.now(timezone.utc)
     retry_at = int(

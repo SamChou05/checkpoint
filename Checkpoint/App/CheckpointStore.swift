@@ -918,6 +918,10 @@ final class CheckpointStore {
     ) -> [SkillMapTopic.ID: Int] {
         guard let skillMap = profile.derivedSkillMap else { return [:] }
 
+        let targetDifficulties = Dictionary(uniqueKeysWithValues:
+            adaptiveSkillPlans(for: profile).map { ($0.skillID, $0.targetDifficulty) }
+        )
+
         let selector = questionSelector
         let now = Date()
         var readyCountBySkillID: [SkillMapTopic.ID: Int] = [:]
@@ -930,6 +934,9 @@ final class CheckpointStore {
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse
             ) {
             guard let skill = SkillMapReconciler.skillMapTopic(matching: question, in: skillMap) else {
+                continue
+            }
+            guard question.difficulty >= (targetDifficulties[skill.id] ?? profile.minimumQuestionDifficulty) else {
                 continue
             }
             readyCountBySkillID[skill.id, default: 0] += 1
@@ -3281,7 +3288,10 @@ final class CheckpointStore {
             competencies: competencies,
             activeQuestionDifficulty: targetGoal?.minimumQuestionDifficulty
                 ?? unlockPolicy.minimumQuestionDifficulty,
-            maximumExactQuestionAskCount: Self.maximumExactQuestionAskCount
+            maximumExactQuestionAskCount: Self.maximumExactQuestionAskCount,
+            adaptiveDifficultyBySkillID: Dictionary(uniqueKeysWithValues:
+                targetGoal.map { adaptiveSkillPlans(for: $0).map { ($0.skillID, $0.targetDifficulty) } } ?? []
+            )
         )
     }
 
@@ -4199,21 +4209,10 @@ final class CheckpointStore {
 
     private func evolutionEligibleSkills(for targetGoal: Goal) -> [SkillMapTopic] {
         guard let skillMap = targetGoal.derivedSkillMap else { return [] }
-        var competencyBySkillID: [SkillMapTopic.ID: TopicCompetency] = [:]
-        for competency in competencies {
-            guard (competency.goalID ?? targetGoal.id) == targetGoal.id,
-                  let skillID = competency.skillID else {
-                continue
-            }
-            if let existing = competencyBySkillID[skillID] {
-                competencyBySkillID[skillID] = SkillMapReconciler.mergedCompetency(
-                    existing,
-                    with: competency
-                )
-            } else {
-                competencyBySkillID[skillID] = competency
-            }
-        }
+        let competencyBySkillID = Dictionary(uniqueKeysWithValues:
+            mergedEvolutionCompetencies(for: Set(skillMap.topics.map(\.id)), goalID: targetGoal.id)
+                .compactMap { competency in competency.skillID.map { ($0, competency) } }
+        )
 
         return skillMap.topics.compactMap { skill -> (SkillMapTopic, TopicCompetency)? in
             guard let competency = competencyBySkillID[skill.id],
@@ -4289,33 +4288,8 @@ final class CheckpointStore {
         for skill: SkillMapTopic,
         goalID: Goal.ID
     ) -> [CheckpointAttempt] {
-        let cutoff = Date().addingTimeInterval(-Self.evolutionEvidenceMaximumAge)
-        let objectiveIDs = Set(skill.objectives.map(\.id))
-        let singleObjectiveID = skill.objectives.count == 1 ? skill.objectives.first?.id : nil
-        return Array(
-            attempts
-                .compactMap { attempt -> CheckpointAttempt? in
-                    guard attempt.goalID == goalID,
-                          attempt.skillID == skill.id,
-                          attempt.createdAt >= cutoff else {
-                        return nil
-                    }
-                    if let objectiveID = attempt.objectiveID {
-                        return objectiveIDs.contains(objectiveID) ? attempt : nil
-                    }
-                    guard let singleObjectiveID else { return nil }
-                    var normalizedAttempt = attempt
-                    normalizedAttempt.objectiveID = singleObjectiveID
-                    return normalizedAttempt
-                }
-                .sorted { lhs, rhs in
-                    if lhs.createdAt != rhs.createdAt {
-                        return lhs.createdAt > rhs.createdAt
-                    }
-                    return lhs.id.uuidString < rhs.id.uuidString
-                }
-                .prefix(Self.evolutionRecentAttemptLimitPerSkill)
-        )
+        Array(AdaptiveLearningPolicy.distinctAttempts(for: skill, goalID: goalID, attempts: attempts)
+            .suffix(Self.evolutionRecentAttemptLimitPerSkill).reversed())
     }
 
     private func canAttemptSkillMapEvolution(
@@ -4525,7 +4499,23 @@ final class CheckpointStore {
                 mergedBySkillID[skillID] = competency
             }
         }
-        return skillIDs.compactMap { mergedBySkillID[$0] }
+        guard let targetGoal = storedGoalProfile(withID: goalID) else { return [] }
+        return skillIDs.compactMap { skillID in
+            guard var competency = mergedBySkillID[skillID],
+                  let skill = targetGoal.derivedSkillMap?.topics.first(where: { $0.id == skillID }) else { return nil }
+            let recent = recentEvolutionAttempts(for: skill, goalID: goalID)
+            guard recent.count >= Self.evolutionMinimumAttempts else { return nil }
+            // Curriculum advancement reflects recent transfer evidence. Lifetime
+            // mistakes remain in history without permanently holding a skill back.
+            competency.attempts = recent.count
+            competency.correct = recent.filter { $0.result == .correct }.count
+            competency.partial = recent.filter { $0.result == .partial }.count
+            competency.incorrect = recent.count - competency.correct - competency.partial
+            competency.currentStreak = min(competency.currentStreak, recent.prefix { $0.result == .correct }.count)
+            let averageDifficulty = Double(recent.reduce(0) { $0 + ($1.questionDifficulty ?? 1) }) / Double(recent.count)
+            competency.estimatedLevel = min(5, averageDifficulty + 0.5)
+            return competency
+        }
     }
 
     @discardableResult
@@ -6534,7 +6524,8 @@ final class CheckpointStore {
                 SkillMapReconciler.skillMapContentSignature(topics: $0.topics)
             } ?? "",
             skillAllocationSignature
-        ] + goal.sourceDocuments.flatMap { document in
+        ] + adaptiveSkillPlans(for: goal).map(\.revisionKey).sorted()
+            + goal.sourceDocuments.flatMap { document in
             [document.id.uuidString, document.name, document.text]
         }
 
@@ -6580,6 +6571,7 @@ final class CheckpointStore {
                 for: goal,
                 competencies: generationCompetencies
             ),
+            adaptiveSkillPlans: adaptiveSkillPlans(for: goal),
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken
         )
@@ -6594,6 +6586,7 @@ final class CheckpointStore {
             return [:]
         }
 
+        let recentPlans = Dictionary(uniqueKeysWithValues: adaptiveSkillPlans(for: targetGoal).map { ($0.skillID, $0) })
         var competencyBySkillID: [SkillMapTopic.ID: TopicCompetency] = [:]
         for competency in competencies {
             guard let skillID = competency.skillID else { continue }
@@ -6613,9 +6606,11 @@ final class CheckpointStore {
                 continue
             }
 
-            let weaknessBonus = Int(
-                ceil(Double(max(0, 100 - competency.masteryPercent)) / 10.0)
-            )
+            let recent = recentPlans[skill.id]
+            let mastery = (recent?.evidenceCount ?? 0) >= 4
+                ? (recent?.recentAccuracyPercent ?? competency.masteryPercent)
+                : competency.masteryPercent
+            let weaknessBonus = Int(ceil(Double(max(0, 100 - mastery)) / 10.0))
             let uncertaintyBonus = max(0, 4 - min(4, competency.attempts))
             let weight = min(
                 16,
@@ -6628,6 +6623,11 @@ final class CheckpointStore {
             allocation[skill.id] = weight
         }
         return allocation
+    }
+
+    private func adaptiveSkillPlans(for targetGoal: Goal) -> [AdaptiveSkillPlan] {
+        guard isMember else { return [] }
+        return AdaptiveLearningPolicy.plans(for: targetGoal, attempts: attempts)
     }
 
     private var resolvedBackendEndpoint: URL? {

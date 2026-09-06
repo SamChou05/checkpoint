@@ -8,6 +8,7 @@ struct CheckpointQuestionSelector {
     private let competencies: [TopicCompetency]
     private let activeQuestionDifficulty: Int
     private let maximumExactQuestionAskCount: Int
+    private let adaptiveDifficultyBySkillID: [SkillMapTopic.ID: Int]
 
     init(
         questions: [CheckpointQuestion],
@@ -15,7 +16,8 @@ struct CheckpointQuestionSelector {
         currentGoal: Goal?,
         competencies: [TopicCompetency],
         activeQuestionDifficulty: Int,
-        maximumExactQuestionAskCount: Int
+        maximumExactQuestionAskCount: Int,
+        adaptiveDifficultyBySkillID: [SkillMapTopic.ID: Int] = [:]
     ) {
         self.questions = questions
         self.goalProfiles = goalProfiles
@@ -23,6 +25,7 @@ struct CheckpointQuestionSelector {
         self.competencies = competencies
         self.activeQuestionDifficulty = activeQuestionDifficulty
         self.maximumExactQuestionAskCount = maximumExactQuestionAskCount
+        self.adaptiveDifficultyBySkillID = adaptiveDifficultyBySkillID
     }
 
     private var activeQuestions: [CheckpointQuestion] {
@@ -242,8 +245,14 @@ struct CheckpointQuestionSelector {
             return distinctQuestions.first
         }
         let baselineSkillKey = questionSkillKey(baselineQuestion)
-        let sameSkillCandidates = distinctQuestions.filter {
+        var sameSkillCandidates = distinctQuestions.filter {
             questionSkillKey($0) == baselineSkillKey
+        }
+        if preferringNewTopic,
+           let skillID = baselineQuestion.skillID,
+           let target = adaptiveDifficultyBySkillID[skillID],
+           let distance = sameSkillCandidates.map({ abs($0.difficulty - target) }).min() {
+            sameSkillCandidates = sameSkillCandidates.filter { abs($0.difficulty - target) == distance }
         }
         let attemptedObjectiveKeys = Set(
             activeQuestions
@@ -485,6 +494,9 @@ struct CheckpointQuestionSelector {
     }
 
     private func targetDifficulty(for competency: TopicCompetency) -> Double {
-        min(5.0, max(1.0, competency.estimatedLevel + 0.5))
+        if let skillID = competency.skillID, let target = adaptiveDifficultyBySkillID[skillID] {
+            return Double(target)
+        }
+        return min(5.0, max(1.0, competency.estimatedLevel + 0.5))
     }
 }

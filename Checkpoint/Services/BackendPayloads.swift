@@ -3,6 +3,7 @@ import Foundation
 struct BackendQuestionRequest: Encodable {
     private var goal: GoalPayload
     private var competencies: [CompetencyPayload]
+    private var adaptiveSkillPlans: [AdaptiveSkillPlan]
     private var existingPrompts: [String]
     private var existingQuestionCoverage: [QuestionCoveragePayload]
     private var reportedPrompts: [String]
@@ -27,6 +28,7 @@ struct BackendQuestionRequest: Encodable {
     ) {
         goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
         competencies = request.competencies.prefix(20).map(CompetencyPayload.init)
+        adaptiveSkillPlans = request.adaptiveSkillPlans
         let recentQuestions = request.existingQuestions.suffix(30)
         existingPrompts = recentQuestions.map(\.prompt)
         existingQuestionCoverage = recentQuestions.map(QuestionCoveragePayload.init)

@@ -38,7 +38,9 @@ class LambdaQualityTests(BackendTestCase):
             ["0" * 16] * 751,
         ]
         for invalid in invalid_values:
-            with self.subTest(invalid=invalid if isinstance(invalid, str) else len(invalid)):
+            with self.subTest(
+                invalid=invalid if isinstance(invalid, str) else len(invalid)
+            ):
                 invalid_payload = _request_payload(target_count=1)
                 invalid_payload["blockedStemFingerprints"] = invalid
                 with self.assertRaises(ValueError):
@@ -187,7 +189,8 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(questions), 3)
         self.assertEqual(len(client.calls), 2)
         second_prompt = client.calls[1]["messages"][0]["content"][0]["text"]
-        self.assertIn("Generate exactly 1 level 3 of 5", second_prompt)
+        self.assertIn("Generate exactly 1 multiple-choice questions", second_prompt)
+        self.assertIn("Use level 3 of 5 difficulty", second_prompt)
 
     def test_top_off_attempt_cannot_repeat_an_accepted_stem(self):
         first = _raw_question(

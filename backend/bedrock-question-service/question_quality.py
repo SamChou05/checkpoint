@@ -211,6 +211,16 @@ def _sanitize_questions(
         difficulty = _clamped_int(raw_question.get("difficulty"), minimum=1, maximum=5)
         if difficulty < minimum_difficulty:
             continue
+        skill_plan = next(
+            (
+                plan
+                for plan in request.get("adaptiveSkillPlans", [])
+                if skill_tag and plan["skillID"] == skill_tag["skillID"]
+            ),
+            None,
+        )
+        if skill_plan and difficulty != skill_plan["targetDifficulty"]:
+            continue
 
         seen_prompts.update(prompt_keys)
         seen_stem_fingerprints.add(stem_fingerprint)
@@ -409,9 +419,7 @@ def _requested_objective_allocation_limits(
         if pair in limits:
             return None
         limits[pair] = count
-        totals_by_skill_id[skill["id"]] = (
-            totals_by_skill_id.get(skill["id"], 0) + count
-        )
+        totals_by_skill_id[skill["id"]] = totals_by_skill_id.get(skill["id"], 0) + count
 
     requested_skills = request.get("requestedSkillAllocation", {})
     if not isinstance(requested_skills, dict):
@@ -543,8 +551,7 @@ def _normalized_choices(raw_choices: Any, expected_answer: str) -> list[str]:
 
 def _looks_like_study_strategy(prompt: str, goal: dict[str, Any]) -> bool:
     target = " ".join(
-        str(goal.get(field, ""))
-        for field in ("title", "learningTarget", "focusAreas")
+        str(goal.get(field, "")) for field in ("title", "learningTarget", "focusAreas")
     ).lower()
     if (
         "study skill" in target
@@ -628,8 +635,7 @@ def _prompt_without_trailing_choice_echo(prompt: Any, raw_choices: Any) -> str:
         _clean_text(_strip_choice_label(choice)).casefold() for choice in choices
     ]
     trailing_keys = [
-        _clean_text(_strip_choice_label(line)).casefold()
-        for _, line in trailing_lines
+        _clean_text(_strip_choice_label(line)).casefold() for _, line in trailing_lines
     ]
     if trailing_keys != choice_keys:
         return cleaned_prompt

@@ -44,6 +44,7 @@
 		AB0000000000000000000009 /* BackendQuestionBankClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000009 /* BackendQuestionBankClient.swift */; };
 		AB000000000000000000000A /* QuestionBatchSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000A /* QuestionBatchSanitizer.swift */; };
 		AB000000000000000000000B /* QuestionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000B /* QuestionContext.swift */; };
+		AD1100000000000000000001 /* AdaptiveLearningPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1100000000000000000002 /* AdaptiveLearningPolicy.swift */; };
 		AB000000000000000000000C /* CompetencyRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000C /* CompetencyRow.swift */; };
 		AB000000000000000000000D /* HomeProtectionControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000D /* HomeProtectionControls.swift */; };
 		AB000000000000000000000E /* HomeStudyBeaconViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000E /* HomeStudyBeaconViews.swift */; };
@@ -208,6 +209,7 @@
 		AA0000000000000000000009 /* BackendQuestionBankClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendQuestionBankClient.swift; sourceTree = "<group>"; };
 		AA000000000000000000000A /* QuestionBatchSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionBatchSanitizer.swift; sourceTree = "<group>"; };
 		AA000000000000000000000B /* QuestionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionContext.swift; sourceTree = "<group>"; };
+		AD1100000000000000000002 /* AdaptiveLearningPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLearningPolicy.swift; sourceTree = "<group>"; };
 		AA000000000000000000000C /* CompetencyRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetencyRow.swift; sourceTree = "<group>"; };
 		AA000000000000000000000D /* HomeProtectionControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeProtectionControls.swift; sourceTree = "<group>"; };
 		AA000000000000000000000E /* HomeStudyBeaconViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeStudyBeaconViews.swift; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 				A20000000000000000000002 /* CheckpointStore.swift */,
 				AA0000000000000000000014 /* WeeklyMetricsCalculator.swift */,
 				AA0000000000000000000015 /* CheckpointQuestionSelector.swift */,
+				AD1100000000000000000002 /* AdaptiveLearningPolicy.swift */,
 				AA0000000000000000000016 /* SkillMapReconciler.swift */,
 				A2000000000000000000001B /* AppSnapshotPersistence.swift */,
 				A2000000000000000000001E /* CheckpointWorkflowCoordinator.swift */,
@@ -785,6 +788,7 @@
 				AB0000000000000000000001 /* AnswerGrader.swift in Sources */,
 				A10000000000000000000004 /* QuestionEngine.swift in Sources */,
 				AB000000000000000000000B /* QuestionContext.swift in Sources */,
+				AD1100000000000000000001 /* AdaptiveLearningPolicy.swift in Sources */,
 				AB000000000000000000000A /* QuestionBatchSanitizer.swift in Sources */,
 				A10000000000000000000011 /* BackendQuestionEngine.swift in Sources */,
 				AB0000000000000000000009 /* BackendQuestionBankClient.swift in Sources */,
