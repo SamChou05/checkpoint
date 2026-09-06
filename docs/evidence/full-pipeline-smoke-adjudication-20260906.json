@@ -1,0 +1,539 @@
+{
+  "method": "Assistant blind adjudication frozen before author keys and model verdicts were inspected; exact Python execution and primary music references supplement assistant judgments. Not a human expert panel or learner study.",
+  "capture": "full-pipeline-smoke-20260906.json",
+  "summary": {
+    "planned_goals": 6,
+    "attempted_goals": 2,
+    "unattempted_goals": 4,
+    "parsed_candidates": 10,
+    "author_keys_matching_blind": 10,
+    "raw_author_explanations_with_clear_error": 1,
+    "raw_author_explanations_needing_qualification": 1,
+    "parsed_candidates_below_requested_difficulty": 7,
+    "raw_choice_representation_failures": 1,
+    "returned_questions": 4,
+    "returned_keys_matching_blind": 4,
+    "returned_feedback_with_identified_factual_errors": 0,
+    "returned_questions_meeting_blind_difficulty_floor": 2,
+    "discarded_music_items_with_reviewer_feedback_errors": 3,
+    "false_claims_in_discarded_music_reviewer_feedback": 5
+  },
+  "original_review_records": {
+    "root_blind_ratings.json": {
+      "sha256": "03c25d9698095c1186fca352725d66f5e58ebf14c18f0ce1e5b1d66194621245",
+      "data": [
+        {
+          "id": "python_control_flow_strings-call02-item01",
+          "reviewer": "root",
+          "reviewStage": "blind-before-author-key-and-model-verdict",
+          "contentSha256": "7831bbac53e46d0428f56ee2f723f0761e306882bdaee5206f8526088554d9e7",
+          "selectedChoice": "['hi|there', 'ok']",
+          "correctAnswerUniqueInRawChoices": true,
+          "estimatedDifficulty": 3,
+          "servableRepresentation": true,
+          "reason": "Trace the empty-value branch, first replacement, and strip in a small list; all steps are familiar but interact.",
+          "verification": "Executed supplied Python source and exactly specified inputs using Python 3.12; every result equals the selected choice. String output compared with repr to preserve whitespace.",
+          "explanationReviewed": false
+        },
+        {
+          "id": "python_control_flow_strings-call02-item02",
+          "reviewer": "root",
+          "reviewStage": "blind-before-author-key-and-model-verdict",
+          "contentSha256": "fb56d7c7b3129b7d30cb2d2071861741a4f08daa7cd461a3e47522787cb5358e",
+          "selectedChoice": "|a  b",
+          "correctAnswerUniqueInRawChoices": true,
+          "estimatedDifficulty": 3,
+          "servableRepresentation": false,
+          "reason": "Trace first-only replacement and subsequent strip; correct output is unique in raw data, but unquoted trailing whitespace in choice 3 will collapse with choice 1 under the published boundary-trim contract. Do not serve this representation.",
+          "verification": "Executed supplied Python source and exactly specified inputs using Python 3.12; every result equals the selected choice. String output compared with repr to preserve whitespace.",
+          "explanationReviewed": false
+        },
+        {
+          "id": "python_control_flow_strings-call02-item03",
+          "reviewer": "root",
+          "reviewStage": "blind-before-author-key-and-model-verdict",
+          "contentSha256": "13d28efa96665d44967b1b2ec77f164c9ac1114a813a75fca6ecd1e24a11c4ee",
+          "selectedChoice": "['a', '', 'b', 'c']",
+          "correctAnswerUniqueInRawChoices": true,
+          "estimatedDifficulty": 2,
+          "servableRepresentation": true,
+          "reason": "Direct application of explicit-separator split to a doubled separator; low challenge despite code packaging.",
+          "verification": "Executed supplied Python source and exactly specified inputs using Python 3.12; every result equals the selected choice. String output compared with repr to preserve whitespace.",
+          "explanationReviewed": false
+        },
+        {
+          "id": "python_control_flow_strings-call02-item04",
+          "reviewer": "root",
+          "reviewStage": "blind-before-author-key-and-model-verdict",
+          "contentSha256": "c0c476bc9504e55816a9c59a4659f8cefad8e1a393de00bb8a183578e0b05569",
+          "selectedChoice": "['', '|']",
+          "correctAnswerUniqueInRawChoices": true,
+          "estimatedDifficulty": 3,
+          "servableRepresentation": true,
+          "reason": "Distinguish empty, one-space, and two-space inputs across skip, replacement, and strip; meaningful interacting cases.",
+          "verification": "Executed supplied Python source and exactly specified inputs using Python 3.12; every result equals the selected choice. String output compared with repr to preserve whitespace.",
+          "explanationReviewed": false
+        },
+        {
+          "id": "python_control_flow_strings-call02-item05",
+          "reviewer": "root",
+          "reviewStage": "blind-before-author-key-and-model-verdict",
+          "contentSha256": "5cf2ec3ca489978ea808e6f4cb418fa2e9ba42232db3fded8fca067e6e35c3c2",
+          "selectedChoice": "['', '', 'hi', '', '']",
+          "correctAnswerUniqueInRawChoices": true,
+          "estimatedDifficulty": 2,
+          "servableRepresentation": true,
+          "reason": "Direct application of explicit-separator split at repeated leading and trailing separators; low challenge.",
+          "verification": "Executed supplied Python source and exactly specified inputs using Python 3.12; every result equals the selected choice. String output compared with repr to preserve whitespace.",
+          "explanationReviewed": false
+        }
+      ]
+    },
+    "music_spanish_blind_reviews.jsonl": {
+      "sha256": "ab404d0d23cd6b4d1c060fb80e93071e131460c0695edca5ac7ee9eb1a387dab",
+      "data": [
+        {
+          "id": "music_harmony_transposition-call01-item01",
+          "frozen_at_utc": "2026-09-06T08:31:42.220077+00:00",
+          "reviewer": "evidence_choice_audit assistant; references consulted; author keys, explanations, difficulty labels and verifier outcomes not inspected",
+          "blind_item_sha256": "bb6fa32d6b03d58655ddcc03cd11f88fef573ae38426d62764d1151f12fffc9f",
+          "selected_indices": [
+            1
+          ],
+          "selected_texts": [
+            "Diminished seventh"
+          ],
+          "question_status": "valid",
+          "ambiguity": "No material ambiguity identified among the offered choices.",
+          "difficulty": 1,
+          "reason": "The notes A-C-E-flat-G-flat form successive three-semitone thirds and a diminished seventh above A, giving a fully diminished seventh chord. The half-diminished alternative would use G-natural; the other qualities require different third/fifth/seventh pitches.",
+          "difficulty_reason": "The stem already identifies the defining stack of minor thirds. Naming its chord quality is recognition; the scenario adds no inference beyond that.",
+          "references": [
+            "https://musictheory.pugetsound.edu/mt21c/SeventhChordsIntroduction.html"
+          ]
+        },
+        {
+          "id": "music_harmony_transposition-call01-item02",
+          "frozen_at_utc": "2026-09-06T08:31:42.220296+00:00",
+          "reviewer": "evidence_choice_audit assistant; references consulted; author keys, explanations, difficulty labels and verifier outcomes not inspected",
+          "blind_item_sha256": "fb3e96964193d49769e7aa7acc2c245475fb23aca02b543c9db52c1dd33c3592",
+          "selected_indices": [
+            2
+          ],
+          "selected_texts": [
+            "G"
+          ],
+          "question_status": "valid",
+          "ambiguity": "No material ambiguity identified among the offered choices.",
+          "difficulty": 2,
+          "reason": "G is IV in D major and appears immediately before the final A-D (V-I). IV has predominant function here. A is dominant, D tonic, and Bm (vi) precedes the predominant.",
+          "difficulty_reason": "Directly applies the familiar IV-predominant function to an explicitly supplied chord progression. No conflicting evidence or interacting constraints need resolving.",
+          "references": [
+            "https://musictheory.pugetsound.edu/mt21c/HarmonicFunction.html"
+          ]
+        },
+        {
+          "id": "music_harmony_transposition-call01-item03",
+          "frozen_at_utc": "2026-09-06T08:31:42.220316+00:00",
+          "reviewer": "evidence_choice_audit assistant; references consulted; author keys, explanations, difficulty labels and verifier outcomes not inspected",
+          "blind_item_sha256": "7a6b88afd2fa2041c59bcd5c8128a15122d7a19163edcb9deabec27120a76555",
+          "selected_indices": [
+            0
+          ],
+          "selected_texts": [
+            "B♭ major"
+          ],
+          "question_status": "valid",
+          "ambiguity": "No material ambiguity identified among the offered choices.",
+          "difficulty": 2,
+          "reason": "An E-flat alto sounds a major sixth below written pitch, equivalently three semitones higher as pitch classes. G-B-D therefore sounds B-flat-D-F, a B-flat major triad. The absence of octave numbers does not matter to the requested triad name.",
+          "difficulty_reason": "Applies one transposition interval to a familiar major triad. Either root transposition plus preserved quality or three same-interval translations gives the answer.",
+          "references": [
+            "https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play003.html"
+          ]
+        },
+        {
+          "id": "music_harmony_transposition-call01-item04",
+          "frozen_at_utc": "2026-09-06T08:31:42.220328+00:00",
+          "reviewer": "evidence_choice_audit assistant; references consulted; author keys, explanations, difficulty labels and verifier outcomes not inspected",
+          "blind_item_sha256": "2ecc2ab43e2085d94bbda38495b4fe0b23dfb243e6426aa803549ac83e478ef7",
+          "selected_indices": [
+            3
+          ],
+          "selected_texts": [
+            "Deceptive cadence"
+          ],
+          "question_status": "valid",
+          "ambiguity": "No material ambiguity identified among the offered choices.",
+          "difficulty": 1,
+          "reason": "A phrase-ending V-vi instead of V-I is the standard deceptive cadence. Half ends on V; plagal is IV-I; authentic is V-I.",
+          "difficulty_reason": "The stem supplies the Roman numerals and identifies the departure from expected V-I. It asks for the conventional name of this familiar pattern.",
+          "references": [
+            "https://musictheory.pugetsound.edu/mt21c/cadences.html"
+          ]
+        },
+        {
+          "id": "music_harmony_transposition-call01-item05",
+          "frozen_at_utc": "2026-09-06T08:31:42.220337+00:00",
+          "reviewer": "evidence_choice_audit assistant; references consulted; author keys, explanations, difficulty labels and verifier outcomes not inspected",
+          "blind_item_sha256": "c1d45dd14ae451206e8445f9ae5bd090ddc390bd7635039ebbeed6cd32c35437",
+          "selected_indices": [
+            0
+          ],
+          "selected_texts": [
+            "E♭, G, B♭"
+          ],
+          "question_status": "valid",
+          "ambiguity": "No material ambiguity identified among the offered choices.",
+          "difficulty": 2,
+          "reason": "Transposing each pitch up a perfect fourth yields B-flat to E-flat, D to G, and F to B-flat, preserving major-scale degrees 1-3-5. E-flat-G-flat-B-flat changes the third to minor; the remaining sets do not preserve the requested interval.",
+          "difficulty_reason": "Applies one supplied transposition interval. The destination key and scale degrees are also provided, making this direct major-triad construction rather than evidence interpretation.",
+          "references": [
+            "https://musictheory.pugetsound.edu/mt21c/HowToWriteIntervals.html"
+          ]
+        }
+      ]
+    },
+    "root_unblinded_reviews.json": {
+      "sha256": "69544d88ca5f8625009bdb46c87c93753213a773da4b4c88eb321c7132e92a67",
+      "data": [
+        {
+          "id": "python_control_flow_strings-call02-item01",
+          "authoredKeyMatchesFrozenBlindSelection": true,
+          "authoredExplanationStatus": "supported",
+          "authoredExplanationNotes": "Consistent with exact Python execution and described replacement/split/strip semantics.",
+          "retained": true,
+          "returnedKeyMatchesFrozenBlindSelection": true,
+          "returnedExplanationStatus": "supported",
+          "returnedChoiceFeedbackStatus": "supported",
+          "feedbackNotes": "No material factual error found in returned main explanation or distractor feedback."
+        },
+        {
+          "id": "python_control_flow_strings-call02-item02",
+          "authoredKeyMatchesFrozenBlindSelection": true,
+          "authoredExplanationStatus": "supported",
+          "authoredExplanationNotes": "Consistent with exact Python execution and described replacement/split/strip semantics.",
+          "retained": false,
+          "returnedKeyMatchesFrozenBlindSelection": null,
+          "returnedExplanationStatus": null,
+          "returnedChoiceFeedbackStatus": null,
+          "feedbackNotes": "No returned feedback for this candidate; do not count as served."
+        },
+        {
+          "id": "python_control_flow_strings-call02-item03",
+          "authoredKeyMatchesFrozenBlindSelection": true,
+          "authoredExplanationStatus": "supported",
+          "authoredExplanationNotes": "Consistent with exact Python execution and described replacement/split/strip semantics.",
+          "retained": false,
+          "returnedKeyMatchesFrozenBlindSelection": null,
+          "returnedExplanationStatus": null,
+          "returnedChoiceFeedbackStatus": null,
+          "feedbackNotes": "No returned feedback for this candidate; do not count as served."
+        },
+        {
+          "id": "python_control_flow_strings-call02-item04",
+          "authoredKeyMatchesFrozenBlindSelection": true,
+          "authoredExplanationStatus": "supported",
+          "authoredExplanationNotes": "Consistent with exact Python execution and described replacement/split/strip semantics.",
+          "retained": true,
+          "returnedKeyMatchesFrozenBlindSelection": true,
+          "returnedExplanationStatus": "supported",
+          "returnedChoiceFeedbackStatus": "supported",
+          "feedbackNotes": "No material factual error found in returned main explanation or distractor feedback."
+        },
+        {
+          "id": "python_control_flow_strings-call02-item05",
+          "authoredKeyMatchesFrozenBlindSelection": true,
+          "authoredExplanationStatus": "supported",
+          "authoredExplanationNotes": "Consistent with exact Python execution and described replacement/split/strip semantics.",
+          "retained": true,
+          "returnedKeyMatchesFrozenBlindSelection": true,
+          "returnedExplanationStatus": "supported",
+          "returnedChoiceFeedbackStatus": "supported",
+          "feedbackNotes": "No material factual error found in returned main explanation or distractor feedback."
+        }
+      ]
+    },
+    "music_unblinded_feedback_review.json": {
+      "sha256": "f5ae0bd96c97d4b7fd7b863cfbc66632030e4c5123bdbd13705650fb461797b7",
+      "data": {
+        "created_at_utc": "2026-09-06T08:36:26.928529+00:00",
+        "scope": "Unblinded comparison after five immutable music selections and difficulty ratings were frozen; Spanish was not attempted. No changes to the blind ratings. Inspected music call records and music final result only.",
+        "frozen_blind_file": "/tmp/checkpoint-full-pipeline-smoke-20260906/music_spanish_blind_reviews.jsonl",
+        "frozen_blind_sha256": "ab404d0d23cd6b4d1c060fb80e93071e131460c0695edca5ac7ee9eb1a387dab",
+        "music_calls_sha256": "5ec534a8a206838dd0cdeeec00bf03e5d674a62b6cbe0135be20c8b2448f50b4",
+        "arithmetic_checks": {
+          "G_major_down_major_second": [
+            5,
+            9,
+            0
+          ],
+          "G_major_unchanged": [
+            7,
+            11,
+            2
+          ],
+          "G_major_to_alto_concert_pitch_classes": [
+            10,
+            2,
+            5
+          ],
+          "B_flat_major_down_minor_third": [
+            7,
+            11,
+            2
+          ],
+          "B_flat_D_F_to_D_F_A_intervals": [
+            4,
+            3,
+            4
+          ],
+          "dominant_7_flat_5_root_offsets": [
+            0,
+            4,
+            6,
+            10
+          ],
+          "dominant_7_flat_5_successive_semitones": [
+            4,
+            2,
+            4
+          ],
+          "reviewer_M3_m3_m3_root_offsets": [
+            0,
+            4,
+            7,
+            10
+          ]
+        },
+        "findings": [
+          {
+            "id": "music_harmony_transposition-call01-item01",
+            "frozen_selected_texts": [
+              "Diminished seventh"
+            ],
+            "author_key": "Diminished seventh",
+            "author_key_matches_blind": true,
+            "reviewer_answer": "Diminished seventh",
+            "reviewer_answer_matches_blind": true,
+            "blind_difficulty": 1,
+            "reviewer_difficulty": 2,
+            "retained_in_final_result": false,
+            "retained_key_matches_blind": null,
+            "author_status": "no_issue_found",
+            "author_findings": [],
+            "review_feedback_status": "clear_error",
+            "review_feedback_findings": [
+              {
+                "field": "choiceExplanations.Dominant seventh with a flat fifth",
+                "quoted_claim": "Wrong: that chord has M3–m3–m3, starting with a major third from the root.",
+                "issue": "M3-m3-m3 gives ordinary dominant7 offsets0,4,7,10. Flattening the fifth gives0,4,6,10, with successive gaps4,2,4 semitones.",
+                "correction": "A dominant seventh with a flat fifth has a major third above the root, unlike the minor third A-C here.",
+                "references": [
+                  "https://musictheory.pugetsound.edu/mt21c/SeventhChordsIntroduction.html",
+                  "https://musictheory.education/music-theory-level-8/ch-8-13-chord-symbols"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "music_harmony_transposition-call01-item02",
+            "frozen_selected_texts": [
+              "G"
+            ],
+            "author_key": "G",
+            "author_key_matches_blind": true,
+            "reviewer_answer": "G",
+            "reviewer_answer_matches_blind": true,
+            "blind_difficulty": 2,
+            "reviewer_difficulty": 3,
+            "retained_in_final_result": true,
+            "retained_key_matches_blind": true,
+            "author_status": "no_issue_found",
+            "author_findings": [],
+            "review_feedback_status": "no_issue_found",
+            "review_feedback_findings": []
+          },
+          {
+            "id": "music_harmony_transposition-call01-item03",
+            "frozen_selected_texts": [
+              "B♭ major"
+            ],
+            "author_key": "B♭ major",
+            "author_key_matches_blind": true,
+            "reviewer_answer": "B♭ major",
+            "reviewer_answer_matches_blind": true,
+            "blind_difficulty": 2,
+            "reviewer_difficulty": 2,
+            "retained_in_final_result": false,
+            "retained_key_matches_blind": null,
+            "author_status": "needs_qualification",
+            "author_findings": [
+              {
+                "field": "explanation",
+                "quoted_claim": "For an E♭ alto sax, concert pitch is a minor third above the written note (equivalently, a major sixth below).",
+                "issue": "These intervals give the same pitch class but differ by an octave. Alto sax actually sounds a major sixth lower. The question only requests a triad name, so its selected answer remains correct.",
+                "correction": "An alto sax sounds a major sixth below written pitch; at the pitch-class level this is equivalent to adding three semitones.",
+                "references": [
+                  "https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play003.html",
+                  "https://odp.library.tamu.edu/stepstomusictheory/chapter/transposing-instruments/"
+                ]
+              }
+            ],
+            "review_feedback_status": "clear_error",
+            "review_feedback_findings": [
+              {
+                "field": "choiceExplanations.E♭ major",
+                "quoted_claim": "Wrong: this would result from transposing only the root correctly and misapplying the interval to other notes.",
+                "issue": "The correct concert root for written G is B-flat, not E-flat. This does not describe correctly transposing the root.",
+                "correction": "E-flat is the concert pitch class for written C; written G maps to B-flat.",
+                "references": [
+                  "https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play003.html"
+                ]
+              },
+              {
+                "field": "choiceExplanations.F major",
+                "quoted_claim": "Wrong: no consistent transposition interval from G major produces F major.",
+                "issue": "A consistent major-second downward transposition maps G-B-D to F-A-C. It is a valid transposition, just not the E-flat-alto interval.",
+                "correction": "F major results from moving G major down a major second, not the major sixth required for alto sax.",
+                "references": [
+                  "https://odp.library.tamu.edu/stepstomusictheory/chapter/more-intervals/"
+                ]
+              },
+              {
+                "field": "choiceExplanations.C major",
+                "quoted_claim": "Wrong: this ignores the transposition entirely, as if concert pitch equaled written pitch.",
+                "issue": "Ignoring transposition would preserve G major, not produce C major.",
+                "correction": "Leaving the written pitches unchanged would give G major; the required alto transposition instead gives B-flat major.",
+                "references": [
+                  "https://odp.library.tamu.edu/stepstomusictheory/chapter/more-intervals/"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "music_harmony_transposition-call01-item04",
+            "frozen_selected_texts": [
+              "Deceptive cadence"
+            ],
+            "author_key": "Deceptive cadence",
+            "author_key_matches_blind": true,
+            "reviewer_answer": "Deceptive cadence",
+            "reviewer_answer_matches_blind": true,
+            "blind_difficulty": 1,
+            "reviewer_difficulty": 2,
+            "retained_in_final_result": false,
+            "retained_key_matches_blind": null,
+            "author_status": "no_issue_found",
+            "author_findings": [],
+            "review_feedback_status": "no_issue_found",
+            "review_feedback_findings": []
+          },
+          {
+            "id": "music_harmony_transposition-call01-item05",
+            "frozen_selected_texts": [
+              "E♭, G, B♭"
+            ],
+            "author_key": "E♭, G, B♭",
+            "author_key_matches_blind": true,
+            "reviewer_answer": "E♭, G, B♭",
+            "reviewer_answer_matches_blind": true,
+            "blind_difficulty": 2,
+            "reviewer_difficulty": 2,
+            "retained_in_final_result": false,
+            "retained_key_matches_blind": null,
+            "author_status": "clear_error",
+            "author_findings": [
+              {
+                "field": "explanation",
+                "quoted_claim": "D, F, A transposes in the wrong direction.",
+                "issue": "D-F-A is not a uniform interval transposition of B-flat-D-F. Pitch-class displacements are4,3,4 semitones, so direction alone does not explain the error; it also changes a major triad to minor.",
+                "correction": "D-F-A changes the interval pattern to a minor triad instead of preserving the major triad under one transposition.",
+                "references": [
+                  "https://odp.library.tamu.edu/stepstomusictheory/chapter/more-intervals/"
+                ]
+              }
+            ],
+            "review_feedback_status": "clear_error",
+            "review_feedback_findings": [
+              {
+                "field": "choiceExplanations.D, F, A",
+                "quoted_claim": "Wrong: this transposes the melody down a minor third rather than up a perfect fourth.",
+                "issue": "Down a minor third from B-flat-D-F gives G-B-D, not D-F-A. No uniform pitch-class shift maps the supplied ordered triad to D-F-A.",
+                "correction": "D-F-A does not apply a single interval to all three notes and changes the major triad to minor.",
+                "references": [
+                  "https://odp.library.tamu.edu/stepstomusictheory/chapter/more-intervals/"
+                ]
+              }
+            ]
+          }
+        ],
+        "summary": {
+          "raw_keys_matching_blind": 5,
+          "reviewer_answers_matching_blind": 5,
+          "retained_questions": 1,
+          "retained_key_matches_blind": true,
+          "retained_feedback_errors_identified": 0,
+          "raw_author_explanations_with_clear_error": 1,
+          "raw_author_explanations_needing_qualification": 1,
+          "reviewer_feedback_items_with_clear_error": 3,
+          "reviewer_feedback_claims_with_clear_error": 5,
+          "note": "All identified reviewer-feedback errors were in questions discarded for difficulty, so they did not reach the returned inventory in this run. The only retained music question has reviewer difficulty3 but frozen assistant estimate2; this is a calibration disagreement, not a wrong answer."
+        }
+      }
+    }
+  },
+  "independent_python_execution": {
+    "python_version": "3.12",
+    "supplied_source": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()",
+    "checks": [
+      {
+        "id": "python_control_flow_strings-call02-item01",
+        "output": [
+          "hi|there",
+          "ok"
+        ],
+        "output_repr": "['hi|there', 'ok']",
+        "matches_frozen_selection": true
+      },
+      {
+        "id": "python_control_flow_strings-call02-item02",
+        "output": "|a  b",
+        "output_repr": "'|a  b'",
+        "matches_frozen_selection": true
+      },
+      {
+        "id": "python_control_flow_strings-call02-item03",
+        "output": [
+          "a",
+          "",
+          "b",
+          "c"
+        ],
+        "output_repr": "['a', '', 'b', 'c']",
+        "matches_frozen_selection": true
+      },
+      {
+        "id": "python_control_flow_strings-call02-item04",
+        "output": [
+          "",
+          "|"
+        ],
+        "output_repr": "['', '|']",
+        "matches_frozen_selection": true
+      },
+      {
+        "id": "python_control_flow_strings-call02-item05",
+        "output": [
+          "",
+          "",
+          "hi",
+          "",
+          ""
+        ],
+        "output_repr": "['', '', 'hi', '', '']",
+        "matches_frozen_selection": true
+      }
+    ]
+  }
+}
