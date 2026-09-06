@@ -58,7 +58,7 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
         return ShieldConfiguration(
             backgroundBlurStyle: .systemUltraThinMaterial,
             backgroundColor: Theme.background,
-            icon: checkpointIcon,
+            icon: mascotIcon,
             title: ShieldConfiguration.Label(
                 text: "Clear a checkpoint",
                 color: Theme.title
@@ -77,6 +77,11 @@ final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
                 color: Theme.title
             )
         )
+    }
+
+    private var mascotIcon: UIImage? {
+        UIImage(named: "ShieldMascot", in: Bundle(for: Self.self), compatibleWith: nil) ??
+            checkpointIcon
     }
 
     private var checkpointIcon: UIImage? {

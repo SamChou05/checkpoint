@@ -113,6 +113,7 @@
 		E10000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000005 /* PrivacyInfo.xcprivacy */; };
 		E10000000000000000000004 /* DeviceActivityMonitorExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E20000000000000000000004 /* DeviceActivityMonitorExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* Assets.xcassets */; };
+		G10000000000000000000001 /* ShieldMascot.png in Resources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* ShieldMascot.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -278,6 +279,7 @@
 		E20000000000000000000004 /* DeviceActivityMonitorExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DeviceActivityMonitorExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20000000000000000000005 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		G20000000000000000000001 /* ShieldMascot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ShieldMascot.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -471,6 +473,7 @@
 				B20000000000000000000003 /* Info.plist */,
 				B20000000000000000000004 /* ShieldConfigurationExtension.entitlements */,
 				D20000000000000000000002 /* PrivacyInfo.xcprivacy */,
+				G20000000000000000000001 /* ShieldMascot.png */,
 			);
 			path = ShieldConfigurationExtension;
 			sourceTree = "<group>";
@@ -705,6 +708,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D10000000000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
+				G10000000000000000000001 /* ShieldMascot.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
