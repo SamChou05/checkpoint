@@ -1,0 +1,330 @@
+{
+  "models": [
+    "us.anthropic.claude-opus-4-6-v1",
+    "us.anthropic.claude-opus-5"
+  ],
+  "cases": [
+    {
+      "case_id": "spanish_negated_doubt_false_premise",
+      "request": {
+        "goal": {
+          "title": "Improve Spanish grammar and pronouns",
+          "category": "",
+          "focusAreas": "subjunctive and indicative meaning, direct and indirect object pronouns",
+          "currentLevel": "",
+          "learningTarget": "Improve Spanish grammar and pronouns",
+          "contentTopics": [
+            "subjunctive and indicative meaning",
+            "direct and indirect object pronouns"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A student writes: \"No dudo que Juan sepa la respuesta.\" A teacher marks a mood error. Which correction is appropriate and why?",
+        "expectedAnswer": "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+        "choices": [
+          "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+          "Keep \"sepa\"; any form of \"dudar\" always triggers the subjunctive",
+          "Change \"sepa\" to \"sabría\"; negated doubt requires the conditional",
+          "Change \"no dudo\" to \"no duda\"; the error is subject–verb agreement, not mood"
+        ],
+        "explanation": "Negating a verb of doubt ('no dudar que') cancels the uncertainty and expresses affirmation, which in standard grammar triggers the indicative in the subordinate clause.",
+        "topic": "subjunctive and indicative meaning",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Change \"no dudo\" to \"no duda\"; the error is subject–verb agreement, not mood": "'No dudo' correctly agrees with a first-person subject; there is no agreement error here.",
+          "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative": "Correctly applies the rule that negated doubt restores certainty, requiring indicative 'sabe.'",
+          "Keep \"sepa\"; any form of \"dudar\" always triggers the subjunctive": "The claim that 'dudar' always triggers subjunctive is false; negated doubt typically requires indicative.",
+          "Change \"sepa\" to \"sabría\"; negated doubt requires the conditional": "No standard rule converts negated doubt into a conditional requirement; the conditional is unwarranted here."
+        },
+        "verificationVersion": 1
+      },
+      "expected_accept": false,
+      "expected_model_valid": false,
+      "rationale": "The unchanged question wrongly treats No dudo que Juan sepa la respuesta as a grammatical mood error. Standard Spanish permits subjunctive as well as indicative after negated doubt. None of the offered complete choice-plus-rationale statements is justified. Factual success requires recognizing this defect; a difficulty-only rejection or operational failure is not correct defect detection.",
+      "feedback_requirements": [
+        "Reject the false-premise question on grammatical/content grounds; do not accept a mandatory indicative rule after no dudo.",
+        "Recognize that preserving sepa is grammatical but the offered always-subjunctive rationale is also false, so it does not rescue that complete choice.",
+        "Keep content detection separate from difficulty filtering, malformed output, provider failure and absence of a final reviewer call."
+      ],
+      "source_content_sha256": "9e2995f0f650daddc28917f0cfa7d9a3a3836525c9c7453fda4a11c53188af37",
+      "source_goal_id": "spanish_grammar_pronouns"
+    },
+    {
+      "case_id": "photography_depth_of_field_feedback",
+      "request": {
+        "goal": {
+          "title": "Learn photography",
+          "category": "",
+          "focusAreas": "exposure, metering, depth of field and motion",
+          "currentLevel": "",
+          "learningTarget": "Learn photography",
+          "contentTopics": [
+            "exposure",
+            "metering",
+            "depth of field and motion"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A photographer takes a group photo with a 50mm lens at f/4. The front row at 3 m is sharp, but the back row at 5 m is noticeably soft. Without moving, which single change most effectively sharpens both rows?",
+        "expectedAnswer": "Stop down the aperture to f/11",
+        "choices": [
+          "Stop down the aperture to f/11",
+          "Switch to an 85mm lens at f/4",
+          "Raise ISO by 3 stops",
+          "Increase shutter speed to 1/1000s"
+        ],
+        "explanation": "A smaller aperture increases depth of field, extending the zone of sharpness to cover both 3 m and 5 m. No other listed change affects depth of field.",
+        "topic": "depth of field",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Increase shutter speed to 1/1000s": "Shutter speed does not affect depth of field; this only changes exposure.",
+          "Stop down the aperture to f/11": "Correct: narrowing the aperture from f/4 to f/11 substantially increases depth of field.",
+          "Switch to an 85mm lens at f/4": "A longer focal length at the same aperture and distance produces shallower depth of field, worsening the problem.",
+          "Raise ISO by 3 stops": "ISO affects sensor sensitivity and noise, not depth of field."
+        },
+        "verificationVersion": 1
+      },
+      "expected_accept": true,
+      "expected_model_valid": true,
+      "rationale": "Stopping down to f/11 is the best listed change to increase depth of field. The returned main explanation incorrectly says no other listed change affects depth of field, although the 85 mm option changes focal length. A choice explanation wrongly says shutter speed only changes exposure. The frozen independent difficulty is 2 while the authentic request minimumDifficulty is 3. expected_model_valid=true is the factual expectation. expected_accept=true records the desired inventory observation, not a correctness pass criterion: valid:true plus a correct key and correct feedback at difficulty 2 is a factual-check success and a legitimate difficulty-floor non-retention. Do not lower the floor or inflate difficulty to force acceptance.",
+      "feedback_requirements": [
+        "Preserve Stop down the aperture to f/11 as the best listed answer when the item is judged factually valid.",
+        "Do not claim aperture is the only listed change affecting depth of field: switching to 85 mm at the stated position also changes it, in the unhelpful direction.",
+        "Do not claim shutter speed affects only exposure; it also affects motion rendering, while not changing depth of field.",
+        "Do not guarantee that f/11 makes both 3 m and 5 m acceptably sharp without specifying focus distance, format and output criterion; describe the best listed increase in depth of field.",
+        "Report factual validity, key/feedback correctness, reviewer difficulty and actual retention separately. A correct valid:true review rated difficulty 2 may be correctly filtered by the unchanged floor 3. A valid:false factual rejection is a false rejection unless independently justified."
+      ],
+      "source_content_sha256": "591ba4316f9396aceba7ee39b206808ff9352572192ececc8961ec438865e9eb",
+      "source_goal_id": "photography_exposure"
+    },
+    {
+      "case_id": "spanish_gift_recipient_pronouns",
+      "request": {
+        "goal": {
+          "title": "Improve Spanish grammar and pronouns",
+          "category": "",
+          "focusAreas": "subjunctive and indicative meaning, direct and indirect object pronouns",
+          "currentLevel": "",
+          "learningTarget": "Improve Spanish grammar and pronouns",
+          "contentTopics": [
+            "subjunctive and indicative meaning",
+            "direct and indirect object pronouns"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [
+          "Ana wanted to give the book to Carlos and Luis. She says: \"Se lo di ayer.\" What does \"se\" replace in this sentence?",
+          "\"Le compré un regalo a mi hermana y se lo envié por correo.\" In \"se lo envié,\" what does each pronoun replace?",
+          "María says: \"Busco un profesor que hable japonés.\" Pedro says: \"Busco al profesor que habla japonés.\" Which statement accurately distinguishes their meanings?",
+          "A student writes: \"No dudo que Juan sepa la respuesta.\" A teacher marks a mood error. Which correction is appropriate and why?",
+          "Compare: (A) \"Cuando llego a casa, mi perro me recibe.\" (B) \"Cuando llegue a casa, voy a descansar.\" Why does B use subjunctive while A uses indicative?"
+        ],
+        "existingQuestionCoverage": [
+          {
+            "topic": "subjunctive and indicative meaning",
+            "prompt": "María says: \"Busco un profesor que hable japonés.\" Pedro says: \"Busco al profesor que habla japonés.\" Which statement accurately distinguishes their meanings?",
+            "expectedAnswer": "María hasn't found such a professor yet; Pedro is looking for a specific one he already knows about",
+            "choices": [
+              "María hasn't found such a professor yet; Pedro is looking for a specific one he already knows about",
+              "Both seek someone they already know; the mood difference is purely stylistic",
+              "María doubts the professor's Japanese ability; Pedro is confident in it",
+              "María uses formal register; Pedro uses informal register"
+            ],
+            "difficulty": 3
+          },
+          {
+            "topic": "subjunctive and indicative meaning",
+            "prompt": "A student writes: \"No dudo que Juan sepa la respuesta.\" A teacher marks a mood error. Which correction is appropriate and why?",
+            "expectedAnswer": "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+            "choices": [
+              "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+              "Keep \"sepa\"; any form of \"dudar\" always triggers the subjunctive",
+              "Change \"sepa\" to \"sabría\"; negated doubt requires the conditional",
+              "Change \"no dudo\" to \"no duda\"; the error is subject–verb agreement, not mood"
+            ],
+            "difficulty": 3
+          },
+          {
+            "topic": "subjunctive and indicative meaning",
+            "prompt": "Compare: (A) \"Cuando llego a casa, mi perro me recibe.\" (B) \"Cuando llegue a casa, voy a descansar.\" Why does B use subjunctive while A uses indicative?",
+            "expectedAnswer": "B refers to a specific future event not yet realized; A describes a habitual, established action",
+            "choices": [
+              "B refers to a specific future event not yet realized; A describes a habitual, established action",
+              "B is more formal than A; subjunctive is simply the formal register of Spanish",
+              "First-person singular requires subjunctive after \"cuando\"; third-person does not",
+              "\"Llegar\" is irregular and always takes subjunctive in temporal clauses"
+            ],
+            "difficulty": 3
+          }
+        ],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": [],
+        "previousAttemptFeedback": {
+          "review": {
+            "difficulty_floor": 2
+          }
+        }
+      },
+      "question": {
+        "prompt": "Pedro bought a gift for Ana. He says: \"Quería dárselo en persona, pero le pedí a Jorge que se lo entregara.\" In \"se lo entregara,\" what does each pronoun replace?",
+        "expectedAnswer": "\"se\" replaces \"a Ana\" (indirect object); \"lo\" replaces \"el regalo\" (direct object)",
+        "choices": [
+          "\"se\" replaces \"a Ana\" (indirect object); \"lo\" replaces \"el regalo\" (direct object)",
+          "\"se\" replaces \"a Jorge\" (indirect object); \"lo\" replaces \"el regalo\" (direct object)",
+          "\"se\" is reflexive referring to Jorge himself; \"lo\" replaces \"el regalo\" (direct object)",
+          "\"se\" replaces \"a Pedro\" (indirect object); \"lo\" replaces the entire request (direct object)"
+        ],
+        "explanation": "Pedro asked Jorge to deliver the gift to Ana. In 'se lo entregara,' 'lo' is the direct object (el regalo) and 'se' is the indirect object (a Ana), changed from 'le' by the mandatory le → se dissimilation before a third-person DO pronoun.",
+        "topic": "direct and indirect object pronouns",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "\"se\" is reflexive referring to Jorge himself; \"lo\" replaces \"el regalo\" (direct object)": "Jorge is delivering the gift to Ana, not to himself; 'se' is not reflexive here.",
+          "\"se\" replaces \"a Pedro\" (indirect object); \"lo\" replaces the entire request (direct object)": "Pedro is the requester, not the recipient of the delivery; 'lo' replaces the concrete gift, not the abstract request.",
+          "\"se\" replaces \"a Ana\" (indirect object); \"lo\" replaces \"el regalo\" (direct object)": "Correct: 'le' (a Ana) becomes 'se' before 'lo' (el regalo) via the le→se rule; Ana is the recipient and the gift is the direct object.",
+          "\"se\" replaces \"a Jorge\" (indirect object); \"lo\" replaces \"el regalo\" (direct object)": "Jorge is the subject performing the action, not the indirect object receiving the gift."
+        },
+        "verificationVersion": 1
+      },
+      "expected_accept": true,
+      "expected_model_valid": true,
+      "rationale": "The supplied discourse identifies Ana as the intended recipient, the gift as the direct object, and Jorge as the person asked to deliver it. Preserve the exact second-generation request, including the prior question coverage and authentic floor 3; historical coverage is context, not an evaluator answer label. Existing runtime excludes coverage from the option-blind solver but includes it in final reviewer context.",
+      "feedback_requirements": [
+        "Preserve se replacing a Ana as the indirect object and lo replacing el regalo as the direct object in the supplied discourse.",
+        "Explain the obligatory le-to-se form before lo without calling se reflexive here or assigning Jorge the delivery-recipient role.",
+        "Keep Jorge as the delivery agent and Pedro as the requester; do not change the literal actors, recipient or object.",
+        "Assess factual validity and feedback separately from difficulty-based retention; do not infer a misconception merely from an invented distractor-selection history."
+      ],
+      "source_content_sha256": "4f5c700016a37c872ad9ddfb3a0f051fc3b16463852ba1bbb6ca9ce69e09d35f",
+      "source_goal_id": "spanish_grammar_pronouns"
+    },
+    {
+      "case_id": "photography_iso_exposure_constraints",
+      "request": {
+        "goal": {
+          "title": "Learn photography",
+          "category": "",
+          "focusAreas": "exposure, metering, depth of field and motion",
+          "currentLevel": "",
+          "learningTarget": "Learn photography",
+          "contentTopics": [
+            "exposure",
+            "metering",
+            "depth of field and motion"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A photographer shoots at ISO 200, f/8, 1/250 s in bright sun. Clouds cut the light by 3 stops. They need the same depth of field and no motion blur from a walking subject. Which single adjustment compensates?",
+        "expectedAnswer": "Raise ISO to 1600",
+        "choices": [
+          "Raise ISO to 1600",
+          "Open the aperture to f/2.8",
+          "Slow the shutter to 1/30 s",
+          "Open to f/4 and slow to 1/125 s"
+        ],
+        "explanation": "Same depth of field requires keeping f/8, and avoiding motion blur from a walking subject requires keeping the shutter fast. The only remaining variable is ISO; raising it 3 stops (200→1600) compensates exactly.",
+        "topic": "exposure",
+        "difficulty": 4,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Raise ISO to 1600": "Correct: 200→400→800→1600 is exactly 3 stops, preserving both f/8 and 1/250 s.",
+          "Open the aperture to f/2.8": "Gains 3 stops of light but changes depth of field, violating the stated constraint.",
+          "Slow the shutter to 1/30 s": "Gains 3 stops but 1/30 s will cause visible motion blur from a walking subject.",
+          "Open to f/4 and slow to 1/125 s": "Totals 3 stops but changing aperture alters depth of field, violating the constraint."
+        },
+        "verificationVersion": 1
+      },
+      "expected_accept": true,
+      "expected_model_valid": true,
+      "rationale": "A three-stop brightness loss requires an eightfold ISO increase when aperture and shutter are held fixed: ISO 200 to 1600. This preserves the given depth-of-field and motion-control settings. The frozen independent difficulty is 3. Keep the original returned question and authentic request without adding a new numerical exposure or sensor assumption.",
+      "feedback_requirements": [
+        "Preserve Raise ISO to 1600 as the answer; 200 to 400 to 800 to 1600 is three stops.",
+        "Explain that keeping f/8 preserves the specified depth-of-field setup and keeping 1/250 s preserves the stated motion-control setup.",
+        "Reject aperture changes because they alter depth of field; slower shutter risks walking-subject motion blur. Do not claim a universal guarantee of visible blur at 1/30 s regardless of movement, distance or tracking.",
+        "Do not claim raising ISO increases photons captured or fully restores lost signal-to-noise; it compensates rendered brightness with aperture and shutter fixed.",
+        "Keep factual validity, key/feedback correctness and actual difficulty-filtered retention distinct."
+      ],
+      "source_content_sha256": "003fd2a07727a8de36e936d94339fbde65c29552f38e175f584ce03c16dff8c3",
+      "source_goal_id": "photography_exposure"
+    }
+  ],
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "BEDROCK_MAX_TOKENS": "16000",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "100",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "GENERATION_ATTEMPTS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "QUESTION_BANK_MAX_RECEIVE_COUNT": "6"
+  }
+}
