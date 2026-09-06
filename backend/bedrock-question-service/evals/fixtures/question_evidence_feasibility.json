@@ -1,0 +1,141 @@
+{
+  "description": "Manually selected evidence feasibility test; does not evaluate automated acquisition. Same packets assigned to invalid controls and valid nearby controls. No answer key or verdict appears in evidence documents.",
+  "cases": [
+    {
+      "case_id": "all_pairs_output_bound",
+      "goal": {
+        "title": "Prepare for LeetCode interviews",
+        "category": "Custom",
+        "focusAreas": "hash maps"
+      },
+      "question": {
+        "choices": [
+          "Hash map storing complements seen so far",
+          "Sort then two-pointer scan",
+          "Nested loop checking all pairs",
+          "Binary search for each element's complement"
+        ],
+        "difficulty": 3,
+        "expectedAnswer": "Hash map storing complements seen so far",
+        "explanation": "A hash map lets you check in O(1) if (k - current) was already seen, achieving single-pass O(n) time with O(n) space for the map. Sorting takes O(n log n), nested loops are O(n²), and binary search per element is O(n log n).",
+        "format": "Multiple Choice",
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "topic": "hash maps"
+      },
+      "expected_accept": false,
+      "rationale": "Enumerating all matching pairs can require quadratic output."
+    },
+    {
+      "case_id": "valid_pair_existence",
+      "goal": {
+        "title": "Prepare for LeetCode interviews",
+        "category": "Custom",
+        "focusAreas": "Hash sets"
+      },
+      "question": {
+        "prompt": "For an unsorted integer array of length n, return only whether two distinct indices sum to k. With expected O(1) hash-set operations, which method takes expected O(n) time?",
+        "choices": [
+          "Scan once, checking for k - x in a set of earlier values before inserting x.",
+          "Enumerate every pair of distinct indices.",
+          "Sort the array using comparison sort, then use two pointers.",
+          "Run a fresh linear scan for the complement at every index."
+        ],
+        "expectedAnswer": "Scan once, checking for k - x in a set of earlier values before inserting x.",
+        "explanation": "Each element performs one expected constant-time membership check and insertion, so the scan takes expected O(n) time.",
+        "topic": "Hash sets",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "expected_accept": true,
+      "rationale": "Each element performs one expected constant-time membership check and insertion, so the scan takes expected O(n) time."
+    },
+    {
+      "case_id": "raw_highlight_recovery_unsupported_sequence",
+      "goal": {
+        "title": "Learn photography",
+        "focusAreas": "Color and image processing"
+      },
+      "question": {
+        "prompt": "A photographer edits a RAW image with severely clipped highlights in a sunset sky and crushed shadows in the foreground rocks. The histogram shows data touching both edges. Which processing sequence maximizes recoverable detail while minimizing artifacts?",
+        "expectedAnswer": "First reduce exposure to recover highlight data, then lift shadows with a tone curve that avoids excessive local contrast",
+        "choices": [
+          "First reduce exposure to recover highlight data, then lift shadows with a tone curve that avoids excessive local contrast",
+          "Apply aggressive shadow recovery first to reveal detail, then pull back highlights with recovery slider",
+          "Convert to JPEG first for smaller file size, then apply shadow and highlight adjustments",
+          "Increase overall contrast to stretch the midtones and hide the clipping"
+        ],
+        "explanation": "In RAW processing, highlights that are clipped are permanently lost; recovering them requires pulling the exposure or highlights slider first. Shadows retain more recoverable data and can be lifted afterward with a tone curve. Avoiding excessive local contrast in the shadow lift prevents halo artifacts. This sequence preserves the most detail with fewest artifacts.",
+        "topic": "Color and image processing",
+        "difficulty": 4,
+        "format": "Multiple Choice",
+        "objective": "Apply basic tonal corrections to recover shadow and highlight detail"
+      },
+      "expected_accept": false,
+      "rationale": "The stem does not establish whether clipping is in raw sensor data or only a rendered preview. Permanently clipped data cannot be recovered by an exposure slider, and the uniquely optimal editing order is not established. The accepted explanation contradicts itself by calling clipped highlights permanently lost and then claiming they can be recovered."
+    },
+    {
+      "case_id": "raw_nondestructive_valid",
+      "goal": {
+        "title": "Learn photography"
+      },
+      "question": {
+        "prompt": "In Adobe Camera Raw, you adjust Exposure on a RAW file without exporting or overwriting it. Which statement correctly describes the original image data?",
+        "choices": [
+          "Original image data is preserved; adjustments are stored separately.",
+          "Original sensor samples are rewritten after every slider movement.",
+          "The original RAW is automatically replaced with a JPEG.",
+          "Every clipped sensor detail is reconstructed from the exposure setting."
+        ],
+        "expectedAnswer": "Original image data is preserved; adjustments are stored separately.",
+        "explanation": "Camera Raw preserves original image data and stores adjustment settings as metadata.",
+        "topic": "Non-destructive RAW editing",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "expected_accept": true,
+      "rationale": "Adobe documents that Camera Raw preserves original image data and stores adjustments as metadata; the alternatives make false destructive or reconstruction claims."
+    }
+  ],
+  "evidence_by_case_id": {
+    "all_pairs_output_bound": [
+      {
+        "name": "Executed pair enumeration examples",
+        "text": "Calculation context, not an added premise about the question: arrays of n zeroes, target 0, count each index pair i < j once. A Python itertools.combinations enumeration produced [{\"length\": 2, \"matching_distinct_index_pairs\": 1, \"pair_exists\": true}, {\"length\": 4, \"matching_distinct_index_pairs\": 6, \"pair_exists\": true}, {\"length\": 8, \"matching_distinct_index_pairs\": 28, \"pair_exists\": true}, {\"length\": 16, \"matching_distinct_index_pairs\": 120, \"pair_exists\": true}, {\"length\": 32, \"matching_distinct_index_pairs\": 496, \"pair_exists\": true}]. For each size the count also equals n*(n-1)/2. The Boolean existence result and enumeration output are different quantities. These are finite examples, not a timing benchmark or a proof of an arbitrary implementation."
+      }
+    ],
+    "valid_pair_existence": [
+      {
+        "name": "Executed pair enumeration examples",
+        "text": "Calculation context, not an added premise about the question: arrays of n zeroes, target 0, count each index pair i < j once. A Python itertools.combinations enumeration produced [{\"length\": 2, \"matching_distinct_index_pairs\": 1, \"pair_exists\": true}, {\"length\": 4, \"matching_distinct_index_pairs\": 6, \"pair_exists\": true}, {\"length\": 8, \"matching_distinct_index_pairs\": 28, \"pair_exists\": true}, {\"length\": 16, \"matching_distinct_index_pairs\": 120, \"pair_exists\": true}, {\"length\": 32, \"matching_distinct_index_pairs\": 496, \"pair_exists\": true}]. For each size the count also equals n*(n-1)/2. The Boolean existence result and enumeration output are different quantities. These are finite examples, not a timing benchmark or a proof of an arbitrary implementation."
+      }
+    ],
+    "raw_highlight_recovery_unsupported_sequence": [
+      {
+        "name": "Adobe: Introduction to Camera Raw",
+        "text": "Source: https://helpx.adobe.com/camera-raw/desktop/get-started/overview-and-setup/introduction-camera-raw.html (accessed 2026-09-06). Paraphrase: Camera Raw retains the original raw image data. It records adjustment settings as metadata in a database, sidecar file, or DNG. A Bridge preview is a JPEG rendered using current settings, rather than the raw samples themselves."
+      },
+      {
+        "name": "Adobe: Develop module adjustments",
+        "text": "Source: https://helpx.adobe.com/lightroom-classic/desktop/help/applying-adjustments-develop-module-basic.html (accessed 2026-09-06). Paraphrase: Lightroom Classic Develop edits are nondestructive. The user may make panel adjustments in any order; working from top to bottom is a common approach."
+      },
+      {
+        "name": "Adobe: Camera Raw color and tone",
+        "text": "Source: https://helpx.adobe.com/camera-raw/desktop/using/make-color-tonal-adjustments-camera.html (accessed 2026-09-06). Paraphrase: Clipping in an output representation loses detail beyond its representable range. Exposure adjusts overall brightness; Highlights adjusts bright regions and Shadows adjusts dark regions. The older Recovery control attempts reconstruction where one or two color channels are clipped. The documentation does not guarantee recovery of all captured highlight detail."
+      }
+    ],
+    "raw_nondestructive_valid": [
+      {
+        "name": "Adobe: Introduction to Camera Raw",
+        "text": "Source: https://helpx.adobe.com/camera-raw/desktop/get-started/overview-and-setup/introduction-camera-raw.html (accessed 2026-09-06). Paraphrase: Camera Raw retains the original raw image data. It records adjustment settings as metadata in a database, sidecar file, or DNG. A Bridge preview is a JPEG rendered using current settings, rather than the raw samples themselves."
+      },
+      {
+        "name": "Adobe: Develop module adjustments",
+        "text": "Source: https://helpx.adobe.com/lightroom-classic/desktop/help/applying-adjustments-develop-module-basic.html (accessed 2026-09-06). Paraphrase: Lightroom Classic Develop edits are nondestructive. The user may make panel adjustments in any order; working from top to bottom is a common approach."
+      },
+      {
+        "name": "Adobe: Camera Raw color and tone",
+        "text": "Source: https://helpx.adobe.com/camera-raw/desktop/using/make-color-tonal-adjustments-camera.html (accessed 2026-09-06). Paraphrase: Clipping in an output representation loses detail beyond its representable range. Exposure adjusts overall brightness; Highlights adjusts bright regions and Shadows adjusts dark regions. The older Recovery control attempts reconstruction where one or two color channels are clipped. The documentation does not guarantee recovery of all captured highlight detail."
+      }
+    ]
+  }
+}

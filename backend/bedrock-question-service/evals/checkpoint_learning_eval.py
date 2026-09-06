@@ -62,9 +62,24 @@ def evaluate_review(case, client=None):
         reviews.append(raw)
         return raw
 
-    accepted = verify_questions(
-        [case["question"]], request, review, metrics, solve=review
-    )
+    try:
+        accepted = verify_questions(
+            [case["question"]], request, review, metrics, solve=review
+        )
+    except Exception as error:
+        # A provider failure must not look like a content rejection or erase
+        # the earlier solver response and already consumed call allowance.
+        return {
+            "case_id": case["case_id"],
+            "passed": False,
+            "expected_accept": case["expected_accept"],
+            "accepted": False,
+            "rationale": case["rationale"],
+            "error_type": type(error).__name__,
+            "reviews": reviews,
+            "provider_calls": budget.calls,
+            "metrics": metrics,
+        }
     decisions = metrics.get("QuestionQuality", {}).get("review", {})
     semantic_rejection = any(
         decisions.get(reason, 0)
