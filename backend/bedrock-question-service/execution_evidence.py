@@ -557,16 +557,31 @@ HARNESS_PREFIX += (
 def parse_execution_observation(
     job: dict[str, Any], result_json: dict[str, Any]
 ) -> dict[str, Any]:
-    """Validate service success and correlation; hashes are not signatures."""
+    """Validate evidence and distinguish bounded observations from failed checks.
+
+    Correlation hashes are not signatures. Trust flags are computed here; fields
+    with these names in a service response never authorize their own acceptance.
+    """
 
     def failed(reason: str) -> dict[str, Any]:
-        return {"status": "inconclusive", "reason": reason, "job_id": job["job_id"]}
+        return {
+            "status": "inconclusive",
+            "reason": reason,
+            "job_id": job["job_id"],
+            "envelope_valid": False,
+            "operational_failure": True,
+        }
+
+    def finish(record: dict[str, Any], operational: bool) -> dict[str, Any]:
+        return {**record, "envelope_valid": True, "operational_failure": operational}
 
     if not job["eligible"]:
         return {
             "status": "unsupported",
             "reason": job["unsupported_reason"],
             "job_id": job["job_id"],
+            "envelope_valid": False,
+            "operational_failure": False,
         }
     if not isinstance(job.get("harness_code"), str) or _sha(
         job["harness_code"]
@@ -582,9 +597,9 @@ def parse_execution_observation(
     ):
         return failed("service_result_failure")
     raw = result_json["stdOut"]
-    if len(raw.encode("utf-8")) > job["limits"]["transport_bytes"]:
-        return failed("service_output_limit")
     try:
+        if len(raw.encode("utf-8")) > job["limits"]["transport_bytes"]:
+            return failed("service_output_limit")
         record = json.loads(
             raw, object_pairs_hook=_unique_object, parse_constant=_reject_constant
         )
@@ -603,83 +618,201 @@ def parse_execution_observation(
         for key in ("version", "implementation")
     ):
         return failed("missing_runtime")
-    if record.get("status") not in ("observed", "unsupported", "inconclusive"):
+    status, reason, child = (
+        record.get("status"),
+        record.get("reason"),
+        record.get("child"),
+    )
+    if status not in ("observed", "unsupported", "inconclusive"):
         return failed("invalid_status")
-    if record["status"] == "observed" and (
-        record.get("reason") is not None
-        or record.get("timed_out") is not False
-        or record.get("transport_truncated") is not False
-        or record.get("child_reaped") is not True
+    if reason is not None and (
+        type(reason) is not str or not reason or len(reason) > 1024
     ):
-        return failed("inconsistent_observation")
+        return failed("invalid_reason")
+    if any(
+        type(record.get(key)) is not bool
+        for key in ("timed_out", "transport_truncated", "child_reaped")
+    ):
+        return failed("invalid_limit_flags")
+    exit_code = record.get("child_exit_code")
+    if exit_code is not None and type(exit_code) is not int:
+        return failed("invalid_child_exit_code")
+    normal_flags = (
+        not record["timed_out"]
+        and not record["transport_truncated"]
+        and record["child_reaped"]
+    )
     compile_result = record.get("compile")
+    if compile_result is None:
+        if (
+            status == "inconclusive"
+            and child is None
+            and exit_code is None
+            and normal_flags
+            and reason
+            in (
+                "compile_unavailable:ValueError",
+                "compile_unavailable:MemoryError",
+                "compile_unavailable:RecursionError",
+            )
+        ):
+            return finish(record, True)
+        return failed("invalid_compile_observation")
     if (
         not isinstance(compile_result, dict)
         or type(compile_result.get("valid")) is not bool
     ):
         return failed("invalid_compile_observation")
-    if record["status"] == "observed":
-        if compile_result["valid"]:
-            child = record.get("child")
-            if (
-                type(record.get("child_exit_code")) is not int
-                or record["child_exit_code"] != 0
-                or not isinstance(child, dict)
-                or child.get("status") != "observed"
-                or child.get("truncated") is not False
-                or child.get("reason") is not None
-                or not isinstance(child.get("stdout"), str)
-            ):
-                return failed("invalid_runtime_observation")
-            child_runtime = child.get("runtime")
-            if (
-                not isinstance(child_runtime, dict)
-                or not isinstance(child_runtime.get("version"), str)
-                or not child_runtime["version"]
-                or not isinstance(child_runtime.get("implementation"), str)
-                or not child_runtime["implementation"]
-                or type(child_runtime.get("isolated")) is not int
-                or child_runtime["isolated"] != 1
-                or type(child_runtime.get("optimize")) is not int
-                or child_runtime["optimize"] != 0
-            ):
-                return failed("invalid_child_runtime")
-            try:
-                if len(child["stdout"].encode("utf-8")) > job["limits"]["output_bytes"]:
-                    return failed("runtime_output_limit")
-                if type(child.get("stdout_base64")) is not str:
-                    return failed("missing_runtime_bytes")
-                captured = base64.b64decode(child["stdout_base64"], validate=True)
-                if captured != child["stdout"].encode("utf-8"):
-                    return failed("runtime_bytes_mismatch")
-                exception = child.get("exception")
-                if exception is None:
-                    if not _valid_typed_result(child.get("return_value")):
-                        return failed("invalid_return_value")
-                    if (
-                        len(_json(child["return_value"]).encode("utf-8"))
-                        > job["limits"]["result_bytes"]
-                    ):
-                        return failed("runtime_result_limit")
-                elif (
-                    type(exception) is not dict
-                    or set(exception) != {"type", "message"}
-                    or not isinstance(exception["type"], str)
-                    or not exception["type"]
-                    or not isinstance(exception["message"], str)
-                    or len(exception["message"]) > 1024
-                    or child.get("return_value") is not None
-                ):
-                    return failed("invalid_exception_observation")
-            except (ValueError, RecursionError):
-                return failed("invalid_runtime_data")
-        elif (
-            compile_result.get("exception")
+    if not compile_result["valid"]:
+        if (
+            status != "observed"
+            or reason is not None
+            or not normal_flags
+            or exit_code is not None
+            or child is not None
+            or compile_result.get("exception")
             not in ("SyntaxError", "IndentationError", "TabError")
-            or record.get("child") is not None
         ):
             return failed("invalid_syntax_observation")
-    return record
+        return finish(record, False)
+    stderr = record.get("child_stderr")
+    if not (status == "unsupported" and child is None and exit_code is None):
+        if type(stderr) is not str:
+            return failed("invalid_parent_stderr")
+        try:
+            if len(stderr.encode("utf-8")) > job["limits"]["transport_bytes"]:
+                return failed("parent_stderr_limit")
+        except UnicodeError:
+            return failed("invalid_parent_stderr")
+    if reason is None:
+        if not normal_flags or exit_code != 0 or child is None or stderr != "":
+            return failed("invalid_runtime_observation")
+        error = _child_observation_error(child, job)
+        if error is not None or status != child.get("status"):
+            return failed(error or "inconsistent_child_status")
+        return finish(record, False)
+    if status == "unsupported":
+        if (
+            child is None
+            and exit_code is None
+            and normal_flags
+            and (
+                reason.startswith("unsupported_") or reason == "entrypoint_not_defined"
+            )
+        ):
+            return finish(record, False)
+        return failed("invalid_unsupported_observation")
+    if status != "inconclusive" or child is not None:
+        return failed("inconsistent_observation")
+    if reason in ("child_deadline", "child_transport_limit"):
+        if (
+            not record["child_reaped"]
+            or type(exit_code) is not int
+            or record["timed_out"] != (reason == "child_deadline")
+            or record["transport_truncated"] != (reason == "child_transport_limit")
+        ):
+            return failed("inconsistent_limit_observation")
+        return finish(record, stderr != "")
+    # Structured wrapper, setup, or cleanup failures remain operational even
+    # when their JSON and source correlation are intact. Unknown reasons do too.
+    return finish(record, True)
+
+
+def _child_observation_error(child: Any, job: dict[str, Any]) -> str | None:
+    if not isinstance(child, dict) or child.get("status") not in (
+        "observed",
+        "inconclusive",
+        "unsupported",
+    ):
+        return "invalid_runtime_observation"
+    if type(child.get("truncated")) is not bool or not isinstance(
+        child.get("stdout"), str
+    ):
+        return "invalid_runtime_observation"
+    runtime = child.get("runtime")
+    if (
+        not isinstance(runtime, dict)
+        or any(
+            not isinstance(runtime.get(key), str) or not runtime[key]
+            for key in ("version", "implementation")
+        )
+        or type(runtime.get("isolated")) is not int
+        or runtime["isolated"] != 1
+        or type(runtime.get("optimize")) is not int
+        or runtime["optimize"] != 0
+    ):
+        return "invalid_child_runtime"
+    try:
+        if type(child.get("stdout_base64")) is not str:
+            return "missing_runtime_bytes"
+        captured = base64.b64decode(child["stdout_base64"], validate=True)
+        if len(captured) > job["limits"]["output_bytes"]:
+            return "runtime_output_limit"
+        reason = child.get("reason")
+        try:
+            decoded = captured.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            if not (
+                child["truncated"]
+                and reason == "output_limit"
+                and exc.reason == "unexpected end of data"
+                and exc.end == len(captured)
+            ):
+                return "runtime_bytes_mismatch"
+            decoded = captured.decode("utf-8", errors="replace")
+        if child["stdout"] != decoded:
+            return "runtime_bytes_mismatch"
+        exception, value = child.get("exception"), child.get("return_value")
+        if child["status"] != "observed":
+            if (
+                exception is not None
+                or value is not None
+                or type(reason) is not str
+                or len(reason) > 1024
+            ):
+                return "invalid_limited_result"
+            if child["status"] == "unsupported":
+                return (
+                    None
+                    if reason == "entrypoint_unavailable" and not child["truncated"]
+                    else "invalid_limited_result"
+                )
+            if reason == "output_limit":
+                return (
+                    None
+                    if child["truncated"]
+                    and len(captured) == job["limits"]["output_bytes"]
+                    else "invalid_limited_result"
+                )
+            if not child["truncated"] and (
+                reason == "memory_limit" or reason.startswith("serialization:")
+            ):
+                return None
+            return "invalid_limited_result"
+        if (
+            reason is not None
+            or child["truncated"]
+            or captured != child["stdout"].encode("utf-8")
+        ):
+            return "invalid_runtime_observation"
+        if exception is None:
+            if not _valid_typed_result(value):
+                return "invalid_return_value"
+            if len(_json(value).encode("utf-8")) > job["limits"]["result_bytes"]:
+                return "runtime_result_limit"
+        elif (
+            type(exception) is not dict
+            or set(exception) != {"type", "message"}
+            or not isinstance(exception["type"], str)
+            or not exception["type"]
+            or not isinstance(exception["message"], str)
+            or len(exception["message"]) > 1024
+            or value is not None
+        ):
+            return "invalid_exception_observation"
+    except (ValueError, RecursionError, OverflowError):
+        return "invalid_runtime_data"
+    return None
 
 
 def _valid_typed_result(item: Any, depth: int = 0) -> bool:

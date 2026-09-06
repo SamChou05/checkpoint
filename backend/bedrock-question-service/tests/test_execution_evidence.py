@@ -278,6 +278,8 @@ class ExecutionEvidenceSyntheticRuntimeTests(unittest.TestCase):
             with self.subTest(source=source):
                 _, _, result, _ = run_synthetic(source, mode="eval")
                 self.assertEqual(result["status"], "inconclusive")
+                self.assertIs(result["envelope_valid"], True)
+                self.assertIs(result["operational_failure"], False)
                 self.assertTrue(result["child"]["reason"].startswith("serialization:"))
                 self.assertIsNone(result["child"]["exception"])
 
@@ -351,6 +353,7 @@ class ExecutionEvidenceSyntheticRuntimeTests(unittest.TestCase):
     def test_unmodified_darwin_memory_setup_failure_is_inconclusive(self):
         _, _, result, _ = run_synthetic("print(1)", child_code=evidence.CHILD_CODE)
         self.assertEqual(result["status"], "inconclusive")
+        self.assertIs(result["operational_failure"], True)
         self.assertEqual(result["reason"], "child_nonzero_exit")
         self.assertIn("current limit exceeds maximum limit", result["child_stderr"])
 
@@ -364,10 +367,176 @@ class ExecutionEvidenceEnvelopeTests(unittest.TestCase):
         record = copy.deepcopy(self.observed)
         change(record)
         service = {**self.service, "stdOut": json.dumps(record)}
-        self.assertEqual(
-            evidence.parse_execution_observation(self.job, service)["status"],
-            "inconclusive",
+        result = evidence.parse_execution_observation(self.job, service)
+        self.assertEqual(result["status"], "inconclusive")
+        self.assertIs(result["envelope_valid"], False)
+        self.assertIs(result["operational_failure"], True)
+
+    def test_valid_observation_signal_is_added_by_parser(self):
+        self.assertIs(self.observed["envelope_valid"], True)
+        self.assertIs(self.observed["operational_failure"], False)
+        # A response cannot supply its own trust marker to bypass validation.
+        self.check_record_failure(
+            lambda row: row.update(
+                envelope_valid=True, operational_failure=False, artifact_sha256="forged"
+            )
         )
+
+    def test_inconclusive_status_cannot_launder_malformed_or_operational_failure(self):
+        changes = (
+            lambda row: row.update(reason=None),
+            lambda row: row.update(reason="unknown_limit"),
+            lambda row: row.update(reason="harness_failure:ValueError"),
+            lambda row: row.update(reason="child_cleanup_timeout", child_reaped=False),
+            lambda row: row.update(reason="child_deadline", timed_out=True),
+            lambda row: row.update(
+                reason="child_transport_limit", transport_truncated=True
+            ),
+        )
+        for index, change in enumerate(changes):
+            with self.subTest(index=index):
+
+                def malformed(row):
+                    row.update(
+                        status="inconclusive",
+                        envelope_valid=True,
+                        operational_failure=False,
+                    )
+                    change(row)
+
+                self.check_record_failure(malformed)
+
+    def test_limit_record_requires_exact_flags_reaped_child_and_consistent_phase(self):
+        # This record belongs to its timeout job, so mutations below preserve
+        # that job's source/input/limit correlation until the targeted mutation.
+        timeout_job, _, timeout_record, _ = run_synthetic(
+            "while True:\n    pass", limits={"wall_seconds": 1}
+        )
+        self.assertIs(timeout_record["envelope_valid"], True)
+        self.assertIs(timeout_record["operational_failure"], False)
+        changes = (
+            lambda row: row.update(child_reaped=False),
+            lambda row: row.update(child_reaped=1),
+            lambda row: row.update(timed_out=1),
+            lambda row: row.update(timed_out=False),
+            lambda row: row.update(transport_truncated=True),
+            lambda row: row.update(child_exit_code=False),
+            lambda row: row.update(child_exit_code=None),
+            lambda row: row.update(
+                compile={"valid": False, "exception": "SyntaxError"}
+            ),
+            lambda row: row.update(child=copy.deepcopy(self.observed["child"])),
+            lambda row: row.update(runtime={}),
+        )
+        for index, change in enumerate(changes):
+            with self.subTest(index=index):
+                record = copy.deepcopy(timeout_record)
+                record["envelope_valid"] = True
+                record["operational_failure"] = False
+                change(record)
+                service = {**self.service, "stdOut": json.dumps(record)}
+                parsed = evidence.parse_execution_observation(timeout_job, service)
+                self.assertEqual(parsed["status"], "inconclusive")
+                self.assertIs(parsed["envelope_valid"], False)
+                self.assertIs(parsed["operational_failure"], True)
+
+    def test_child_output_limit_still_requires_runtime_bytes_and_result_consistency(
+        self,
+    ):
+        job, service, record, _ = run_synthetic('print("€" * 1366, end="")')
+        self.assertIs(record["envelope_valid"], True)
+        self.assertIs(record["operational_failure"], False)
+        self.assertEqual(record["status"], "inconclusive")
+        changes = (
+            lambda row: row["child"].update(truncated=False),
+            lambda row: row["child"].update(truncated=1),
+            lambda row: row["child"].update(stdout_base64="eA=="),
+            lambda row: row["child"].update(stdout="forged display"),
+            lambda row: row["child"].update(runtime={}),
+            lambda row: row["child"].update(status="observed"),
+            lambda row: row["child"].update(return_value={"type": "int", "value": "1"}),
+            lambda row: row["child"].update(
+                exception={"type": "RuntimeError", "message": "x"}
+            ),
+        )
+        for index, change in enumerate(changes):
+            with self.subTest(index=index):
+                malformed = copy.deepcopy(record)
+                malformed["envelope_valid"] = True
+                malformed["operational_failure"] = False
+                change(malformed)
+                parsed = evidence.parse_execution_observation(
+                    job, {**service, "stdOut": json.dumps(malformed)}
+                )
+                self.assertIs(parsed["envelope_valid"], False)
+                self.assertIs(parsed["operational_failure"], True)
+
+    def test_well_formed_operational_failure_is_not_silenced_by_response_flags(self):
+        for reason in (
+            "harness_failure:ValueError",
+            "child_nonzero_exit",
+            "unexpected_child_stderr",
+            "invalid_child_envelope",
+        ):
+            with self.subTest(reason=reason):
+                row = copy.deepcopy(self.observed)
+                row.update(
+                    status="inconclusive",
+                    child=None,
+                    child_exit_code=1,
+                    reason=reason,
+                    envelope_valid=True,
+                    operational_failure=False,
+                )
+                parsed = evidence.parse_execution_observation(
+                    self.job, {**self.service, "stdOut": json.dumps(row)}
+                )
+                self.assertEqual(parsed["status"], "inconclusive")
+                self.assertIs(parsed["operational_failure"], True)
+
+    def test_invalid_utf8_cannot_hide_behind_a_child_limit_reason(self):
+        for reason, truncated, raw_bytes in (
+            ("memory_limit", False, b"\xff"),
+            ("serialization:result_type", False, b"\xff"),
+            ("output_limit", True, b"\xff" + b"x" * 4095),
+        ):
+            with self.subTest(reason=reason):
+                row = copy.deepcopy(self.observed)
+                row.update(status="inconclusive", operational_failure=False)
+                row["child"].update(
+                    status="inconclusive",
+                    reason=reason,
+                    truncated=truncated,
+                    return_value=None,
+                    exception=None,
+                    stdout=raw_bytes.decode("utf-8", errors="replace"),
+                    stdout_base64=base64.b64encode(raw_bytes).decode("ascii"),
+                )
+                parsed = evidence.parse_execution_observation(
+                    self.job, {**self.service, "stdOut": json.dumps(row)}
+                )
+                self.assertIs(parsed["envelope_valid"], False)
+                self.assertIs(parsed["operational_failure"], True)
+
+    def test_parent_stderr_cannot_hide_in_normal_or_limit_observations(self):
+        for stderr in (None, 123, "unexpected wrapper diagnostic"):
+            with self.subTest(stderr=stderr):
+                self.check_record_failure(lambda row: row.update(child_stderr=stderr))
+        row = copy.deepcopy(self.observed)
+        row.update(
+            status="inconclusive",
+            reason="child_deadline",
+            timed_out=True,
+            child=None,
+            child_exit_code=-9,
+            child_stderr="setup diagnostic",
+            envelope_valid=True,
+            operational_failure=False,
+        )
+        parsed = evidence.parse_execution_observation(
+            self.job, {**self.service, "stdOut": json.dumps(row)}
+        )
+        self.assertIs(parsed["operational_failure"], True)
 
     def test_mismatched_artifact_input_mode_and_limits_cannot_inherit_observation(self):
         for field, value in (
