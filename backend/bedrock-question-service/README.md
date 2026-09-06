@@ -71,7 +71,11 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `QUESTION_BANK_FAILURE_COOLDOWN_SECONDS` | `300` | Earliest retry time recorded after a question-bank job reaches terminal failure. |
 | `EMIT_STRUCTURED_METRICS` | on in Lambda | Emits privacy-safe request and provider metrics in CloudWatch EMF. |
 
-For `deepseek.v3.2` and `moonshotai.kimi-k2.5`, the runtime sends `thinking.type=disabled` as a model-specific additional request field. This simple structured-generation workload retains the configured temperature while avoiding unnecessary reasoning latency and tokens. GPT-5.6 continues to use only its separate `reasoning_effort` field, and other models receive neither override.
+Reasoning is configurable independently of ordinary response length. `BEDROCK_KIMI_THINKING=enabled` enables Kimi K2.5 thinking with temperature 1.0 and top-p 0.95; `disabled` preserves ordinary sampling. For Claude Sonnet/Opus 4.6, `BEDROCK_CLAUDE_THINKING=adaptive` sends adaptive thinking and `BEDROCK_CLAUDE_EFFORT` (`low`, `medium`, or `high`, default `high`) while omitting customized sampling. Both switches initially default to `disabled` for controlled comparisons. Unknown values fail before invoking a model. DeepSeek retains its disabled-thinking setting, and GPT-5.6 retains its separate reasoning-effort configuration.
+
+Enabled Kimi/Claude thinking uses `BEDROCK_THINKING_MAX_TOKENS` (default 16000, capped at 16384) for reasoning plus final output. Ordinary responses retain `BEDROCK_MAX_TOKENS` (default 6000, capped at 16384). These settings are wired through SAM and deployment variables. The runtime rejects token-truncated output even when a fragment parses, and emits bounded `QuestionQuality` counters for sanitization, answer review, and provider failures without learner text. Increasing a budget does not establish correctness: selected live baseline reviews ended normally below 6000 tokens and still accepted invalid answers.
+
+Provider references: [Moonshot model usage](https://github.com/MoonshotAI/Kimi-K2.5), [Bedrock adaptive thinking](https://docs.aws.amazon.com/bedrock/latest/userguide/claude-messages-adaptive-thinking.html), and [Bedrock Kimi model limits](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-moonshot-ai-kimi-k2-5.html). Confirm exact model access and measured latency before selecting a deployment configuration.
 
 ## Request hardening
 

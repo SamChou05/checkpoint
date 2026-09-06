@@ -58,7 +58,25 @@ Parameters:
     Type: Number
     Default: 6000
     MinValue: 256
-    MaxValue: 10000
+    MaxValue: 16384
+  BedrockThinkingMaxTokens:
+    Type: Number
+    Default: 16000
+    MinValue: 1024
+    MaxValue: 16384
+    Description: Combined reasoning and response budget for enabled thinking modes.
+  BedrockKimiThinking:
+    Type: String
+    Default: disabled
+    AllowedValues: [enabled, disabled]
+  BedrockClaudeThinking:
+    Type: String
+    Default: disabled
+    AllowedValues: [adaptive, disabled]
+  BedrockClaudeEffort:
+    Type: String
+    Default: high
+    AllowedValues: [low, medium, high]
   GenerationAttempts:
     Type: Number
     Default: 3
@@ -318,6 +336,10 @@ Resources:
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
+          BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens
+          BEDROCK_KIMI_THINKING: !Ref BedrockKimiThinking
+          BEDROCK_CLAUDE_THINKING: !Ref BedrockClaudeThinking
+          BEDROCK_CLAUDE_EFFORT: !Ref BedrockClaudeEffort
           BEDROCK_GUARDRAIL_IDENTIFIER: !Ref BedrockGuardrailIdentifier
           BEDROCK_GUARDRAIL_VERSION: !Ref BedrockGuardrailVersion
           MAX_QUESTIONS_PER_BATCH: !Ref MaxQuestionsPerBatch
@@ -436,6 +458,10 @@ Resources:
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
+          BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens
+          BEDROCK_KIMI_THINKING: !Ref BedrockKimiThinking
+          BEDROCK_CLAUDE_THINKING: !Ref BedrockClaudeThinking
+          BEDROCK_CLAUDE_EFFORT: !Ref BedrockClaudeEffort
           BEDROCK_READ_TIMEOUT_SECONDS: !Ref QuestionBankWorkerReadTimeoutSeconds
           QUESTION_BANK_GENERATION_CHUNK_SIZE: !Ref QuestionBankGenerationChunkSize
           BEDROCK_GUARDRAIL_IDENTIFIER: !Ref BedrockGuardrailIdentifier

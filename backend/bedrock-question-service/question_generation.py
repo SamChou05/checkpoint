@@ -37,6 +37,7 @@ from question_verification import verify_questions
 DEFAULT_MODEL_ID = "amazon.nova-lite-v1:0"
 DEFAULT_FALLBACK_MODEL_ID = ""
 DEFAULT_MAX_TOKENS = 6000
+DEFAULT_THINKING_MAX_TOKENS = 16000
 DEFAULT_TEMPERATURE = 0.2
 SUPPORTED_OPENAI_REASONING_EFFORTS = {
     "none",
@@ -257,7 +258,7 @@ def _generate_with_bedrock(
     prompt = user_prompt or _user_prompt(normalized_request)
     resolved_system_prompt = system_prompt or _system_prompt()
     inference_config = {
-        "maxTokens": _int_env("BEDROCK_MAX_TOKENS", DEFAULT_MAX_TOKENS, maximum=10_000),
+        "maxTokens": _int_env("BEDROCK_MAX_TOKENS", DEFAULT_MAX_TOKENS, maximum=16_384),
     }
     reasoning_effort = _openai_reasoning_effort(model_id)
     # GPT-5.6 accepts sampling controls only when reasoning is disabled. At
@@ -295,6 +296,22 @@ def _generate_with_bedrock(
     )
     if additional_model_request_fields is not None:
         request["additionalModelRequestFields"] = additional_model_request_fields
+        thinking = additional_model_request_fields.get("thinking", {}).get("type")
+        if thinking in {"enabled", "adaptive"}:
+            # Reasoning and final JSON share the output budget. Keep the ordinary
+            # response cap independent so increasing reasoning does not expand all
+            # legacy/fast model responses, and never exceed Kimi's 16K endpoint cap.
+            inference_config["maxTokens"] = _int_env(
+                "BEDROCK_THINKING_MAX_TOKENS",
+                DEFAULT_THINKING_MAX_TOKENS,
+                maximum=16_384,
+            )
+            if "moonshotai.kimi-k2.5" in model_id.lower():
+                inference_config["temperature"] = 1.0
+                inference_config["topP"] = 0.95
+            else:
+                # Claude thinking is incompatible with customized sampling.
+                inference_config.pop("temperature", None)
     if not _uses_inline_instructions(model_id):
         request["system"] = [{"text": resolved_system_prompt}]
     if guardrail_config is not None:
@@ -362,18 +379,40 @@ def _additional_model_request_fields(
     reasoning_effort: str | None,
 ) -> dict[str, Any] | None:
     normalized_model_id = model_id.strip().lower()
+    if "moonshotai.kimi-k2.5" in normalized_model_id:
+        mode = _model_setting(
+            "BEDROCK_KIMI_THINKING", "disabled", {"enabled", "disabled"}
+        )
+        return {"thinking": {"type": mode}}
     if any(
-        model_name in normalized_model_id
-        for model_name in ("deepseek.v3.2", "moonshotai.kimi-k2.5")
+        model in normalized_model_id
+        for model in ("anthropic.claude-sonnet-4-6", "anthropic.claude-opus-4-6")
     ):
-        # Question generation does not need the model's long-form thinking
-        # mode. Disabling it keeps latency and token cost predictable while
-        # retaining normal sampling controls such as temperature.
+        mode = _model_setting(
+            "BEDROCK_CLAUDE_THINKING", "disabled", {"adaptive", "disabled"}
+        )
+        if mode == "adaptive":
+            effort = _model_setting(
+                "BEDROCK_CLAUDE_EFFORT", "high", {"low", "medium", "high"}
+            )
+            return {
+                "thinking": {"type": "adaptive"},
+                "output_config": {"effort": effort},
+            }
+        return {"thinking": {"type": "disabled"}}
+    if "deepseek.v3.2" in normalized_model_id:
         return {"thinking": {"type": "disabled"}}
     if reasoning_effort is not None:
         # This maps to OpenAI Chat Completions' reasoning_effort field.
         return {"reasoning_effort": reasoning_effort}
     return None
+
+
+def _model_setting(key: str, default: str, allowed: set[str]) -> str:
+    value = os.getenv(key, default).strip().lower() or default
+    if value not in allowed:
+        raise ServiceConfigurationError(f"{key} is invalid for the selected model.")
+    return value
 
 
 def _conversation_prompt(user_prompt: str, system_prompt: str | None = None) -> str:

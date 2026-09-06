@@ -96,8 +96,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 50 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 50"
+[[ "${#sam_arguments[@]}" -eq 54 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 54"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -120,6 +120,9 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled BedrockClaudeEffort=high; do
+  [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
+done
 for argument in "${sam_arguments[@]:11}"; do
   [[ "$argument" == *=* && "$argument" != *'$'* ]] || \
     fail "unexpanded or malformed parameter override: $argument"

@@ -23,6 +23,17 @@ def _indented_block(document: str, heading: str) -> str:
 
 
 class BackendInfrastructureTemplateTests(unittest.TestCase):
+    def test_reasoning_settings_reach_both_functions(self):
+        for parameter, env in [
+            ("BedrockThinkingMaxTokens", "BEDROCK_THINKING_MAX_TOKENS"),
+            ("BedrockKimiThinking", "BEDROCK_KIMI_THINKING"),
+            ("BedrockClaudeThinking", "BEDROCK_CLAUDE_THINKING"),
+            ("BedrockClaudeEffort", "BEDROCK_CLAUDE_EFFORT"),
+        ]:
+            self.assertEqual(self.template.count(f"{env}: !Ref {parameter}"), 2)
+            self.assertIn(f"{env}: ${{{{ vars.{env}", self.deploy_workflow)
+            self.assertIn(f'"{parameter}=${{{env}:-', self.deploy_script)
+
     @classmethod
     def setUpClass(cls):
         cls.template = TEMPLATE.read_text(encoding="utf-8")
