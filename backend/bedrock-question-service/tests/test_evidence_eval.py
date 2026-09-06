@@ -1,14 +1,78 @@
 import copy
 import json
+import io
+import os
+from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
 from evals.checkpoint_evidence_eval import SERVICE_DIR, make_plan
+from evals import checkpoint_evidence_eval as evidence_eval
 from evals.checkpoint_learning_eval import evaluate_review
+import question_verification
 from service_errors import ProviderError
 
 
 class EvidenceComparisonTests(unittest.TestCase):
+    def test_selected_arm_reuses_actual_prompt_snapshot_at_requested_effort(self):
+        snapshot = {
+            "solution_prompt": "Frozen solution instructions.",
+            "review_prompt": "Frozen review instructions.",
+        }
+        seen = []
+
+        def check(case):
+            self.assertEqual(
+                question_verification.SOLUTION_SYSTEM_PROMPT,
+                snapshot["solution_prompt"],
+            )
+            self.assertEqual(
+                question_verification.REVIEW_SYSTEM_PROMPT, snapshot["review_prompt"]
+            )
+            self.assertEqual(os.environ["BEDROCK_CLAUDE_EFFORT"], "max")
+            self.assertNotIn("sourceDocuments", case)
+            seen.append(case["case_id"])
+            return {"case_id": case["case_id"], "passed": True, "accepted": True}
+
+        with tempfile.TemporaryDirectory() as directory:
+            snapshot_path = Path(directory) / "snapshot.json"
+            snapshot_path.write_text(json.dumps(snapshot))
+            output = Path(directory) / "output.json"
+            args = [
+                "evidence-eval",
+                "--output",
+                str(output),
+                "--arm",
+                "unaided",
+                "--effort",
+                "max",
+                "--prompt-snapshot",
+                str(snapshot_path),
+            ]
+            with (
+                patch("sys.argv", args),
+                patch("sys.stdout", new_callable=io.StringIO),
+                patch.dict(os.environ),
+                patch.object(evidence_eval, "evaluate_review", side_effect=check),
+                patch.object(
+                    question_verification,
+                    "SOLUTION_SYSTEM_PROMPT",
+                    question_verification.SOLUTION_SYSTEM_PROMPT,
+                ),
+                patch.object(
+                    question_verification,
+                    "REVIEW_SYSTEM_PROMPT",
+                    question_verification.REVIEW_SYSTEM_PROMPT,
+                ),
+            ):
+                self.assertEqual(evidence_eval.main(), 0)
+            result = json.loads(output.read_text())
+        self.assertEqual(len(seen), 4)
+        self.assertEqual(result["maximum_calls"], 8)
+        self.assertEqual(result["settings"]["effort"], "max")
+        self.assertEqual(result["review_prompt"], snapshot["review_prompt"])
+
     def test_provider_failure_preserves_earlier_solver_and_never_earns_rejection_credit(
         self,
     ):

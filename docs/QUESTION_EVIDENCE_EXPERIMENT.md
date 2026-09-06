@@ -34,3 +34,21 @@ An explicit solver “impossible” or “underdetermined” flag alone is not a
 A separate offline experiment audits the necessary claims in every unchanged choice against the provided premises and evidence. Its parser requires complete coverage and exactly one supported choice, with the other three refuted; unsupported is not treated as false merely because a source omits it. This changes the decision structure rather than simply adding another unaided critic. It must retain valid controls as well as reject invalid ones, and it remains a feasibility experiment until fresh questions and automatic evidence acquisition are tested.
 
 This direction is informed by research on [external tool feedback](https://arxiv.org/abs/2305.11738), [independent verification questions](https://aclanthology.org/2024.findings-acl.212/), and [checking individual factual claims against sources](https://aclanthology.org/2023.emnlp-main.741/). Those studies motivate experiments; their benchmarks do not qualify Checkpoint's current implementation.
+
+## Follow-up results
+
+The [separate claim-by-claim audit](QUESTION_CHOICE_AUDIT_EXPERIMENT.md) also remains unqualified. Its four primary calls all failed a stricter JSON-format rule than the production parser uses. Separately labeled diagnostics after removing outer Markdown fences found support-with-limitations contradictions, citation gaps, and inconsistent claim labels. These failures are not credited as successful detection. They show that evidence coverage and overall answer judgments still need independent scrutiny.
+
+An additional bounded probe used the **same original solver and reviewer prompts** with Opus 4.6 adaptive/**max** and the same 16,000-token cap on the four unaided controls. It again accepted both invalid and both valid questions. All eight returned responses contained a reasoning block, all ended normally, and the largest used 3,179 output tokens. Total: 6,977 input tokens, 10,542 output tokens, 181.953 seconds. The [probe capture](evidence/max-reasoning-probe-20260906.json) preserves raw decisions and metadata. This is evidence against a missing thinking setting or exhausted output cap explaining these particular failures; it is not a comprehensive model benchmark.
+
+The opt-in maximum effort setting is supported for the known Opus 4.6 identifiers per [AWS's adaptive-thinking documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/claude-messages-adaptive-thinking.html). Defaults remain unchanged. Diagnostics record only whether reasoning blocks were returned, not their contents.
+
+The comparison CLI now supports selecting an arm, effort, and earlier prompt snapshot. For example, from the backend service directory:
+
+```bash
+python evals/checkpoint_evidence_eval.py --arm unaided --effort max \
+  --prompt-snapshot ../../docs/evidence/evidence-review-feasibility-20260906.json \
+  --output /tmp/new-max-probe.json --aws-cli-credentials
+```
+
+This creates a new bounded run; it does not overwrite or reinterpret the original observations.

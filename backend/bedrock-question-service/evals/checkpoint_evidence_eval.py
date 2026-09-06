@@ -26,6 +26,7 @@ from question_verification import (  # noqa: E402
     REVIEW_SYSTEM_PROMPT,
     SOLUTION_SYSTEM_PROMPT,
 )
+import question_verification  # noqa: E402
 
 
 def make_plan(packet, repeats, seed):
@@ -54,11 +55,20 @@ def main():
     parser.add_argument("--repeats", type=int, choices=(1, 2, 3), default=1)
     parser.add_argument("--seed", type=int, default=9062026)
     parser.add_argument("--model", default="us.anthropic.claude-opus-4-6-v1")
+    parser.add_argument("--effort", choices=("high", "max"), default="high")
+    parser.add_argument("--arm", action="append", choices=("unaided", "evidence"))
+    parser.add_argument(
+        "--prompt-snapshot",
+        type=Path,
+        help="Reuse exact solution_prompt and review_prompt from an earlier capture.",
+    )
     parser.add_argument("--aws-cli-credentials", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     packet = json.loads(args.fixtures.read_text())
     jobs = make_plan(packet, args.repeats, args.seed)
+    if args.arm:
+        jobs = [job for job in jobs if job["arm"] in args.arm]
     if args.dry_run:
         print(json.dumps({"reviews": len(jobs), "maximum_calls": 2 * len(jobs)}))
         return 0
@@ -66,12 +76,26 @@ def main():
         parser.error("Use a new output file; previous attempts must remain intact.")
     if args.aws_cli_credentials:
         use_aws_cli_credentials()
+    solution_prompt, review_prompt = SOLUTION_SYSTEM_PROMPT, REVIEW_SYSTEM_PROMPT
+    if args.prompt_snapshot:
+        snapshot = json.loads(args.prompt_snapshot.read_text())
+        solution_prompt, review_prompt = (
+            snapshot["solution_prompt"],
+            snapshot["review_prompt"],
+        )
+        if not all(
+            isinstance(prompt, str) and prompt.strip()
+            for prompt in (solution_prompt, review_prompt)
+        ):
+            parser.error("Prompt snapshot must contain nonempty prompt strings.")
+        question_verification.SOLUTION_SYSTEM_PROMPT = solution_prompt
+        question_verification.REVIEW_SYSTEM_PROMPT = review_prompt
     os.environ.update(
         AWS_REGION="us-east-1",
         BEDROCK_MODEL_ID=args.model,
         BEDROCK_VERIFICATION_MODEL_ID=args.model,
         BEDROCK_CLAUDE_THINKING="adaptive",
-        BEDROCK_CLAUDE_EFFORT="high",
+        BEDROCK_CLAUDE_EFFORT=args.effort,
         BEDROCK_THINKING_MAX_TOKENS="16000",
         BEDROCK_MAX_TOKENS="16000",
         BEDROCK_READ_TIMEOUT_SECONDS="100",
@@ -82,9 +106,13 @@ def main():
         "repeats": args.repeats,
         "maximum_calls": len(jobs) * 2,
         "fixture": packet,
-        "solution_prompt": SOLUTION_SYSTEM_PROMPT,
-        "review_prompt": REVIEW_SYSTEM_PROMPT,
-        "settings": {"thinking": "adaptive", "effort": "high", "max_tokens": 16000},
+        "solution_prompt": solution_prompt,
+        "review_prompt": review_prompt,
+        "settings": {
+            "thinking": "adaptive",
+            "effort": args.effort,
+            "max_tokens": 16000,
+        },
         "results": [],
     }
     for job in jobs:
