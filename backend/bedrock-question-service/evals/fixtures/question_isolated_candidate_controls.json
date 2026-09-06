@@ -1,0 +1,11 @@
+{
+  "description": "One independent stem-plus-candidate judgment per choice, using the unchanged manually curated evidence feasibility controls. This is a bounded feasibility experiment, not a general correctness benchmark.",
+  "source_fixture": "question_evidence_feasibility.json",
+  "case_ids": [
+    "all_pairs_output_bound",
+    "valid_pair_existence",
+    "raw_highlight_recovery_unsupported_sequence",
+    "raw_nondestructive_valid"
+  ],
+  "maximum_calls": 16
+}
