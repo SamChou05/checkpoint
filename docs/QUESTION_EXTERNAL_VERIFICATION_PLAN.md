@@ -1,6 +1,6 @@
 # External verification: proposed experiment boundary
 
-Status, September 6, 2026: research and experiment design only. No web-grounding integration, paid tool session, permission change, deployment, or new production model is established by this note.
+Status, September 6, 2026: this note preserves the original research and proposed experiment boundary. A subsequent [single-call web-grounding probe](QUESTION_WEB_GROUNDING_PROBE.md) established account access and actual server searches, but returned hidden observations and citations without source passages. Its generated explanation still conflated requirements. That probe did not integrate or qualify web grounding for production, change permissions, deploy, or promote a model. The untested-access statements below describe the earlier research state.
 
 The next experiment should test whether external observations remain faithful to the question and survive into the acceptance decision and teaching feedback. Prior added-verdict runs did not resolve the measured failures. In the [evidence experiment](QUESTION_EVIDENCE_EXPERIMENT.md), the reviewer received relevant facts yet still accepted both defective controls. In the [isolated-candidate experiment](QUESTION_ISOLATED_CANDIDATE_EXPERIMENT.md), completed judgments invented claims despite hiding sibling choices. Retrieval quality and use of retrieved evidence must therefore be measured separately.
 
