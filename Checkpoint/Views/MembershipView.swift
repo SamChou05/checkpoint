@@ -6,6 +6,7 @@ enum MembershipPaywallLayoutElement: Hashable {
     case viewport
     case section(MembershipPaywallSection)
     case plan(String)
+    case compactValueProof
     case selectedPlanSupport
     case subscriptionDisclosure
     case checkoutBar
@@ -870,8 +871,8 @@ struct MembershipView: View {
     private func planSelection(presentation: MembershipPaywallPresentation) -> some View {
         let usesCompactDensity = presentation.contentDensity == .compact
 
-        return VStack(alignment: .leading, spacing: usesCompactDensity ? 9 : 12) {
-            if presentation.offerIntroduction == .compact {
+        return VStack(alignment: .leading, spacing: usesCompactDensity ? 7 : 12) {
+            if presentation.offerIntroduction == .compactWithValueProof {
                 compactOfferIntro
             } else if presentation.offerIntroduction == .expanded {
                 expandedOfferIntro
@@ -931,12 +932,12 @@ struct MembershipView: View {
                 )
 
                 if let selectedOption {
-                    selectedOfferSupport(selectedOption)
+                    selectedOfferSupport(selectedOption, compact: usesCompactDensity)
                         .reportMembershipPaywallLayoutFrame(
                             .selectedPlanSupport,
                             using: layoutReporter
                         )
-                    subscriptionDisclosure
+                    subscriptionDisclosure(compact: usesCompactDensity)
                         .reportMembershipPaywallLayoutFrame(
                             .subscriptionDisclosure,
                             using: layoutReporter
@@ -975,7 +976,7 @@ struct MembershipView: View {
                     )
 
                     if selectedOption != nil {
-                        subscriptionDisclosure
+                        subscriptionDisclosure(compact: usesCompactDensity)
                             .reportMembershipPaywallLayoutFrame(
                                 .subscriptionDisclosure,
                                 using: layoutReporter
@@ -998,21 +999,27 @@ struct MembershipView: View {
             glowDiameter: 92,
             glowBlurRadius: 8,
             glowOffset: CGSize(width: 52, height: -48),
-            contentPadding: 11
+            contentPadding: 9
         ) {
-            VStack(alignment: .leading, spacing: 5) {
-                Label(context.offerLabel, systemImage: "sparkles")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.mint)
-                    .fixedSize(horizontal: false, vertical: true)
-
+            VStack(alignment: .leading, spacing: 7) {
                 Text(context.membershipHeadline)
-                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .font(.system(.headline, design: .rounded, weight: .bold))
                     .foregroundStyle(proText)
                     .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel("\(context.offerLabel). \(context.membershipHeadline)")
+                    .accessibilityAddTraits(.isHeader)
+
+                MembershipValuePreview(
+                    presentation: MembershipValuePreviewPresentation(context: context),
+                    reduceMotion: reduceMotion,
+                    style: .embeddedCompact
+                )
+                .reportMembershipPaywallLayoutFrame(
+                    .compactValueProof,
+                    using: layoutReporter
+                )
             }
         }
-        .accessibilityElement(children: .combine)
     }
 
     private var expandedOfferIntro: some View {
@@ -1038,7 +1045,10 @@ struct MembershipView: View {
         }
     }
 
-    private func selectedOfferSupport(_ option: MembershipPlanOption) -> some View {
+    private func selectedOfferSupport(
+        _ option: MembershipPlanOption,
+        compact: Bool
+    ) -> some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "checkmark.seal.fill")
                 .font(.caption.weight(.semibold))
@@ -1048,16 +1058,21 @@ struct MembershipView: View {
             Text(option.detail)
                 .font(.footnote.weight(.medium))
                 .foregroundStyle(CheckpointTheme.muted)
+                .lineLimit(compact ? 1 : nil)
+                .minimumScaleFactor(compact ? 0.76 : 1)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .combine)
     }
 
-    private var subscriptionDisclosure: some View {
+    private func subscriptionDisclosure(compact: Bool) -> some View {
         Text(MembershipPaywallPresentation.subscriptionDisclosureText)
-            .font(.caption)
+            .font(compact ? .caption2 : .caption)
             .foregroundStyle(CheckpointTheme.muted)
+            .lineLimit(compact ? 2 : nil)
+            .minimumScaleFactor(compact ? 0.84 : 1)
             .fixedSize(horizontal: false, vertical: true)
+            .accessibilityLabel(MembershipPaywallPresentation.subscriptionDisclosureText)
     }
 
     private var unavailablePlans: some View {
@@ -1291,7 +1306,7 @@ struct MembershipView: View {
     }
 
     private func purchaseBar(presentation: MembershipPaywallPresentation) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: presentation.contentDensity == .compact ? 5 : 8) {
             Divider()
                 .overlay(CheckpointTheme.hairline)
 
@@ -1316,7 +1331,7 @@ struct MembershipView: View {
                     .padding(.horizontal, 20)
             }
         }
-        .padding(.bottom, 9)
+        .padding(.bottom, presentation.contentDensity == .compact ? 5 : 9)
         .background(CheckpointTheme.panel)
         .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: -4)
     }
@@ -1709,19 +1724,54 @@ struct MembershipValuePreviewMotionPolicy: Equatable {
     }
 }
 
+enum MembershipValuePreviewStyle: Equatable {
+    case standardCard
+    case embeddedCompact
+}
+
 struct MembershipValuePreview: View {
     let presentation: MembershipValuePreviewPresentation
     let reduceMotion: Bool
+    let style: MembershipValuePreviewStyle
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isRevealed = false
     @State private var symbolRevealSequence = 0
+
+    init(
+        presentation: MembershipValuePreviewPresentation,
+        reduceMotion: Bool,
+        style: MembershipValuePreviewStyle = .standardCard
+    ) {
+        self.presentation = presentation
+        self.reduceMotion = reduceMotion
+        self.style = style
+    }
 
     private var motionPolicy: MembershipValuePreviewMotionPolicy {
         MembershipValuePreviewMotionPolicy(reduceMotion: reduceMotion)
     }
 
     var body: some View {
+        previewContent
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(presentation.accessibilityLabel)
+            .onAppear {
+                reveal()
+            }
+    }
+
+    @ViewBuilder
+    private var previewContent: some View {
+        switch style {
+        case .standardCard:
+            standardCard
+        case .embeddedCompact:
+            embeddedCompactWorkflow
+        }
+    }
+
+    private var standardCard: some View {
         VStack(alignment: .leading, spacing: 11) {
             Text("How Pro works")
                 .font(.caption.weight(.semibold))
@@ -1755,11 +1805,6 @@ struct MembershipValuePreview: View {
         .overlay {
             RoundedRectangle(cornerRadius: 15, style: .continuous)
                 .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(presentation.accessibilityLabel)
-        .onAppear {
-            reveal()
         }
     }
 
@@ -1816,6 +1861,34 @@ struct MembershipValuePreview: View {
         .frame(maxWidth: .infinity)
     }
 
+    private var embeddedCompactWorkflow: some View {
+        ZStack(alignment: .top) {
+            compactConnector
+                .padding(.horizontal, 26)
+                .padding(.top, 11)
+
+            HStack(alignment: .top, spacing: 3) {
+                ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
+                    VStack(spacing: 3) {
+                        nodeMark(node, size: 24)
+
+                        Text(node.compactTitle)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(nodeTextColor(node))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.72)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .opacity(isRevealed ? 1 : motionPolicy.hiddenOpacity)
+                    .scaleEffect(isRevealed ? 1 : motionPolicy.hiddenScale)
+                    .animation(motionPolicy.nodeAnimation(at: index), value: isRevealed)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     private var compactConnector: some View {
         ZStack(alignment: .leading) {
             Capsule()
@@ -1855,14 +1928,17 @@ struct MembershipValuePreview: View {
         }
     }
 
-    private func nodeMark(_ node: MembershipValuePreviewNode) -> some View {
+    private func nodeMark(
+        _ node: MembershipValuePreviewNode,
+        size: CGFloat = 32
+    ) -> some View {
         let highlighted = isHighlighted(node)
         let animated = isAnimatedDestination(node)
 
         return Image(systemName: node.systemImage)
             .font(.system(size: 13, weight: .bold))
             .foregroundStyle(highlighted ? CheckpointTheme.mint : CheckpointTheme.heroMuted)
-            .frame(width: 32, height: 32)
+            .frame(width: size, height: size)
             .background(
                 highlighted
                     ? CheckpointTheme.mint.opacity(0.14)

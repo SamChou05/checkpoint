@@ -442,7 +442,7 @@ struct MembershipPaywallPresentation: Equatable, Sendable {
 
     enum OfferIntroduction: Equatable, Sendable {
         case none
-        case compact
+        case compactWithValueProof
         case expanded
     }
 
@@ -475,14 +475,18 @@ struct MembershipPaywallPresentation: Equatable, Sendable {
             contentDensity = .regular
             offerIntroduction = .none
         } else {
-            sectionOrder = needsFlowingCheckout || usesCompactOffer
-                ? [.offer, .valueProof, .benefits, .notice, .restore, .legal]
-                : [.hero, .offer, .valueProof, .benefits, .notice, .restore, .legal]
+            if usesCompactOffer {
+                sectionOrder = [.offer, .benefits, .notice, .restore, .legal]
+            } else if needsFlowingCheckout {
+                sectionOrder = [.offer, .valueProof, .benefits, .notice, .restore, .legal]
+            } else {
+                sectionOrder = [.hero, .offer, .valueProof, .benefits, .notice, .restore, .legal]
+            }
             checkoutPlacement = needsFlowingCheckout ? .afterPlanChoices : .sticky
             laysOutPlansSideBySide = !accessibilitySize && !usesLargeText
             contentDensity = usesCompactOffer ? .compact : .regular
             offerIntroduction = usesCompactOffer
-                ? .compact
+                ? .compactWithValueProof
                 : (needsFlowingCheckout ? .expanded : .none)
         }
     }

@@ -327,9 +327,14 @@ final class MembershipViewRenderingTests: XCTestCase {
             XCTAssertEqual(image.size.width, 320, accuracy: 0.5, fixture.name)
             XCTAssertEqual(image.size.height, 568, accuracy: 0.5, fixture.name)
             XCTAssertNil(capture.frames[.section(.hero)], fixture.name)
+            XCTAssertNil(capture.frames[.section(.valueProof)], fixture.name)
 
             let viewport = try XCTUnwrap(capture.frames[.viewport], fixture.name)
             let offer = try XCTUnwrap(capture.frames[.section(.offer)], fixture.name)
+            let compactValueProof = try XCTUnwrap(
+                capture.frames[.compactValueProof],
+                fixture.name
+            )
             let yearly = try XCTUnwrap(
                 capture.frames[.plan(MembershipProductID.yearly)],
                 fixture.name
@@ -348,7 +353,14 @@ final class MembershipViewRenderingTests: XCTestCase {
             )
             let checkoutBar = try XCTUnwrap(capture.frames[.checkoutBar], fixture.name)
             let primaryAction = try XCTUnwrap(capture.frames[.primaryAction], fixture.name)
-            let visibleOfferFrames = [offer, yearly, monthly, selectedSupport, disclosure]
+            let visibleOfferFrames = [
+                offer,
+                compactValueProof,
+                yearly,
+                monthly,
+                selectedSupport,
+                disclosure,
+            ]
 
             for frame in visibleOfferFrames + [viewport, checkoutBar, primaryAction] {
                 XCTAssertFalse(frame.isNull, fixture.name)
@@ -359,6 +371,15 @@ final class MembershipViewRenderingTests: XCTestCase {
 
             XCTAssertEqual(yearly.width, monthly.width, accuracy: 0.5, fixture.name)
             XCTAssertEqual(yearly.width, 136, accuracy: 1, fixture.name)
+            XCTAssertTrue(
+                offer.insetBy(dx: -0.5, dy: -0.5).contains(compactValueProof),
+                "\(fixture.name) detached compact value proof from the offer"
+            )
+            XCTAssertLessThanOrEqual(
+                compactValueProof.maxY,
+                yearly.minY,
+                "\(fixture.name) placed plan choices before the Pro workflow"
+            )
             for planFrame in [yearly, monthly] {
                 XCTAssertGreaterThanOrEqual(planFrame.height, 104, fixture.name)
                 XCTAssertLessThanOrEqual(planFrame.height, 122, fixture.name)
@@ -533,10 +554,8 @@ final class MembershipViewRenderingTests: XCTestCase {
                 fixture.name
             )
             let primaryAction = try XCTUnwrap(capture.frames[.primaryAction], fixture.name)
-            let valueProof = try XCTUnwrap(
-                capture.frames[.section(.valueProof)],
-                fixture.name
-            )
+            let compactValueProof = capture.frames[.compactValueProof]
+            let expandedValueProof = capture.frames[.section(.valueProof)]
 
             for planFrame in [yearly, monthly] {
                 XCTAssertGreaterThanOrEqual(planFrame.height, 44, fixture.name)
@@ -548,11 +567,30 @@ final class MembershipViewRenderingTests: XCTestCase {
             XCTAssertTrue(yearly.intersection(monthly).isNull, fixture.name)
             XCTAssertGreaterThanOrEqual(primaryAction.height, 50, fixture.name)
             XCTAssertGreaterThanOrEqual(primaryAction.minY, disclosure.maxY - 0.5, fixture.name)
-            XCTAssertGreaterThanOrEqual(valueProof.minY, primaryAction.maxY - 0.5, fixture.name)
             XCTAssertTrue(
                 offer.insetBy(dx: -0.5, dy: -0.5).contains(primaryAction),
                 fixture.name
             )
+
+            if let compactValueProof {
+                XCTAssertNil(expandedValueProof, fixture.name)
+                XCTAssertTrue(
+                    offer.insetBy(dx: -0.5, dy: -0.5).contains(compactValueProof),
+                    "\(fixture.name) detached compact value proof from the offer"
+                )
+                XCTAssertLessThanOrEqual(
+                    compactValueProof.maxY,
+                    yearly.minY,
+                    "\(fixture.name) placed plan choices before the Pro workflow"
+                )
+            } else {
+                let expandedValueProof = try XCTUnwrap(expandedValueProof, fixture.name)
+                XCTAssertGreaterThanOrEqual(
+                    expandedValueProof.minY,
+                    primaryAction.maxY - 0.5,
+                    fixture.name
+                )
+            }
 
             if fixture.pendingPurchaseRecord != nil {
                 let secondaryAction = try XCTUnwrap(
@@ -1247,6 +1285,13 @@ final class MembershipViewRenderingTests: XCTestCase {
             .restore,
             .legal
         ]
+        let compactOrder: [MembershipPaywallSection] = [
+            .offer,
+            .benefits,
+            .notice,
+            .restore,
+            .legal
+        ]
         let regular = MembershipPaywallPresentation(isMember: false, accessibilitySize: false)
         let accessible = MembershipPaywallPresentation(isMember: false, accessibilitySize: true)
         let largeText = MembershipPaywallPresentation(
@@ -1295,11 +1340,11 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(largeText.contentDensity, .regular)
         XCTAssertEqual(largeText.offerIntroduction, .expanded)
 
-        XCTAssertEqual(compact.sectionOrder, accessibleOrder)
+        XCTAssertEqual(compact.sectionOrder, compactOrder)
         XCTAssertEqual(compact.checkoutPlacement, .sticky)
         XCTAssertTrue(compact.laysOutPlansSideBySide)
         XCTAssertEqual(compact.contentDensity, .compact)
-        XCTAssertEqual(compact.offerIntroduction, .compact)
+        XCTAssertEqual(compact.offerIntroduction, .compactWithValueProof)
 
         XCTAssertEqual(compactLargeText.sectionOrder, accessibleOrder)
         XCTAssertEqual(compactLargeText.checkoutPlacement, .afterPlanChoices)
@@ -1307,17 +1352,17 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertEqual(compactLargeText.contentDensity, .regular)
         XCTAssertEqual(compactLargeText.offerIntroduction, .expanded)
 
-        XCTAssertEqual(compactNotice.sectionOrder, accessibleOrder)
+        XCTAssertEqual(compactNotice.sectionOrder, compactOrder)
         XCTAssertEqual(compactNotice.checkoutPlacement, .afterPlanChoices)
         XCTAssertTrue(compactNotice.laysOutPlansSideBySide)
         XCTAssertEqual(compactNotice.contentDensity, .compact)
-        XCTAssertEqual(compactNotice.offerIntroduction, .compact)
+        XCTAssertEqual(compactNotice.offerIntroduction, .compactWithValueProof)
 
-        XCTAssertEqual(constrained.sectionOrder, accessibleOrder)
+        XCTAssertEqual(constrained.sectionOrder, compactOrder)
         XCTAssertEqual(constrained.checkoutPlacement, .afterPlanChoices)
         XCTAssertTrue(constrained.laysOutPlansSideBySide)
         XCTAssertEqual(constrained.contentDensity, .compact)
-        XCTAssertEqual(constrained.offerIntroduction, .compact)
+        XCTAssertEqual(constrained.offerIntroduction, .compactWithValueProof)
 
         XCTAssertLessThan(
             regularOrder.firstIndex(of: .offer) ?? .max,
