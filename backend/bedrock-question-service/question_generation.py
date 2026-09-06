@@ -642,7 +642,14 @@ Exactly four distinct choices; expectedAnswer exactly equals one of them.
 Make choices parallel, mutually exclusive, and similar in specificity. No answer
 letters, all/none-of-the-above options, duplicate JSON keys, or options in the stem.
 Each stem must be self-contained and understandable without opening another file.
-Use plain text, including plain-text equations/code when relevant. Stem at most
+Use plain text, including plain-text equations/code when relevant. When syntax
+or layout carries meaning, preserve literal content and necessary line breaks
+and indentation. Do not flatten compound statements in ways that change syntax
+or behavior. Alternatively, describe the algorithm consistently in prose without
+presenting broken code as executable. The answer and explanation must match the
+exact representation shown. If code is intentionally invalid, the question must
+test that error and the correct answer and explanation must acknowledge it.
+Stem at most
 320 characters, each choice at most 140, explanation at most 320. If a problem
 cannot fit completely, use a narrower problem with all necessary facts. Never
 remove a necessary condition just to meet a length limit.
