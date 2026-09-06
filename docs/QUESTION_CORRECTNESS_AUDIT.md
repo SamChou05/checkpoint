@@ -8,6 +8,8 @@ September 6 follow-up: [the independent solver's declared outcome is now enforce
 
 A subsequent [source-first authoring comparison](QUESTION_SOURCE_AUTHORING_EXPERIMENT.md) generated twelve candidates across plant propagation and accessible forms. Giving sources to the author had mixed content results and still allowed unsupported explanations and missing conditions. Neither arm produced a candidate with both complete supported reviewed content and independently assessed difficulty at least 3. This small feasibility experiment does not qualify a release or establish production accuracy.
 
+Further work added an unintegrated [Boolean rule-question constructor](QUESTION_RULE_CONSTRUCTION.md): it renders the complete premises and feedback from one formal object and exhaustively checks the key and counterexamples. This is one additional, bounded inference mechanism. It does not establish real-subject rule accuracy, useful difficulty, general question coverage or a production fix. A separate [web-grounding probe](QUESTION_WEB_GROUNDING_PROBE.md) demonstrated search access while leaving raw passages hidden and still producing an inaccurate explanation.
+
 ## What is holding the system back
 
 1. **Confident substitution of a familiar problem.** Reviewers sometimes answer a standard textbook problem instead of the actual wording. One failing fixture asks to enumerate all matching pairs in linear time; the reviewer approves a method for finding whether a pair exists. Another assumes an image-editing order can recover detail without establishing whether the source data still contains that detail.
