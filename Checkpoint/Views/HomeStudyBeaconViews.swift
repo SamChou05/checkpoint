@@ -1060,11 +1060,49 @@ enum HomeFirstWinJourneyNodeState: Equatable {
     case blocked
 }
 
+enum HomeFirstWinJourneyConnectorAxis: Equatable {
+    case horizontal
+    case vertical
+}
+
+enum HomeFirstWinJourneyMotionStyle: Equatable {
+    case animated
+    case identity
+}
+
+struct HomeFirstWinJourneyMotionPolicy: Equatable {
+    let style: HomeFirstWinJourneyMotionStyle
+
+    init(reduceMotion: Bool) {
+        style = reduceMotion ? .identity : .animated
+    }
+
+    var connectorAnimation: Animation? {
+        style == .animated ? CheckpointMotion.reveal : nil
+    }
+}
+
 struct HomeFirstWinJourneyNode: Identifiable, Equatable {
     let id: HomeFirstWinJourneyNodeID
     let state: HomeFirstWinJourneyNodeState
     let status: String
     let isCurrent: Bool
+}
+
+struct HomeFirstWinJourneyConnectorProgress: Equatable {
+    private(set) var filledConnectorIDs: Set<HomeFirstWinJourneyNodeID>
+
+    init(nodes: [HomeFirstWinJourneyNode]) {
+        filledConnectorIDs = Set(
+            nodes.dropLast().compactMap { node in
+                node.state == .complete ? node.id : nil
+            }
+        )
+    }
+
+    func isFilled(after node: HomeFirstWinJourneyNode) -> Bool {
+        filledConnectorIDs.contains(node.id)
+    }
 }
 
 enum HomeFirstWinJourneyAction: Equatable {
@@ -1376,6 +1414,22 @@ struct HomeFirstWinJourneyCard: View {
     let startProtection: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var connectorProgress: HomeFirstWinJourneyConnectorProgress
+
+    init(
+        presentation: HomeFirstWinJourneyPresentation,
+        reduceMotion: Bool,
+        manageApps: @escaping () -> Void,
+        startProtection: @escaping () -> Void
+    ) {
+        self.presentation = presentation
+        self.reduceMotion = reduceMotion
+        self.manageApps = manageApps
+        self.startProtection = startProtection
+        _connectorProgress = State(
+            initialValue: HomeFirstWinJourneyConnectorProgress(nodes: presentation.nodes)
+        )
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: usesCompactJourneyLayout ? 6 : 12) {
@@ -1393,6 +1447,9 @@ struct HomeFirstWinJourneyCard: View {
             }
         }
         .padding(.horizontal, 4)
+        .onChange(of: presentation.nodes) { _, nodes in
+            updateConnectorProgress(for: nodes)
+        }
     }
 
     @ViewBuilder
@@ -1521,7 +1578,10 @@ struct HomeFirstWinJourneyCard: View {
         HStack(alignment: .top, spacing: 0) {
             ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
                 if index > 0 {
-                    connector(after: presentation.nodes[index - 1])
+                    connector(
+                        after: presentation.nodes[index - 1],
+                        axis: .horizontal
+                    )
                         .frame(width: 16, height: 2)
                         .padding(.top, 15)
                 }
@@ -1536,7 +1596,10 @@ struct HomeFirstWinJourneyCard: View {
         HStack(alignment: .top, spacing: 0) {
             ForEach(Array(presentation.nodes.enumerated()), id: \.element.id) { index, node in
                 if index > 0 {
-                    connector(after: presentation.nodes[index - 1])
+                    connector(
+                        after: presentation.nodes[index - 1],
+                        axis: .horizontal
+                    )
                         .frame(width: 12, height: 2)
                         .padding(.top, 11)
                 }
@@ -1567,7 +1630,7 @@ struct HomeFirstWinJourneyCard: View {
                 verticalNode(node, index: index)
 
                 if index < presentation.nodes.count - 1 {
-                    connector(after: node)
+                    connector(after: node, axis: .vertical)
                         .frame(width: 2, height: 16)
                         .padding(.leading, 15)
                         .padding(.vertical, 4)
@@ -1657,10 +1720,34 @@ struct HomeFirstWinJourneyCard: View {
         .accessibilityHidden(true)
     }
 
-    private func connector(after node: HomeFirstWinJourneyNode) -> some View {
-        Rectangle()
-            .fill(node.state == .complete ? CheckpointTheme.heroSuccess.opacity(0.58) : CheckpointTheme.heroDivider)
-            .accessibilityHidden(true)
+    @ViewBuilder
+    private func connector(
+        after node: HomeFirstWinJourneyNode,
+        axis: HomeFirstWinJourneyConnectorAxis
+    ) -> some View {
+        let isFilled = connectorProgress.isFilled(after: node)
+
+        ZStack {
+            Rectangle()
+                .fill(CheckpointTheme.heroDivider)
+
+            switch axis {
+            case .horizontal:
+                Rectangle()
+                    .fill(CheckpointTheme.heroSuccess.opacity(0.68))
+                    .scaleEffect(x: isFilled ? 1 : 0, y: 1, anchor: .leading)
+            case .vertical:
+                Rectangle()
+                    .fill(CheckpointTheme.heroSuccess.opacity(0.68))
+                    .scaleEffect(x: 1, y: isFilled ? 1 : 0, anchor: .top)
+            }
+        }
+        .animation(motionPolicy.connectorAnimation, value: isFilled)
+        .accessibilityHidden(true)
+    }
+
+    private func updateConnectorProgress(for nodes: [HomeFirstWinJourneyNode]) {
+        connectorProgress = HomeFirstWinJourneyConnectorProgress(nodes: nodes)
     }
 
     private var currentStep: some View {
@@ -1836,6 +1923,10 @@ struct HomeFirstWinJourneyCard: View {
         reduceMotion
             ? .identity
             : .opacity.combined(with: .scale(scale: 0.985, anchor: .top))
+    }
+
+    private var motionPolicy: HomeFirstWinJourneyMotionPolicy {
+        HomeFirstWinJourneyMotionPolicy(reduceMotion: reduceMotion)
     }
 
     private var usesVerticalJourneyRail: Bool {

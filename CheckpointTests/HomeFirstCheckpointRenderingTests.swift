@@ -508,6 +508,48 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         XCTAssertFalse(reduced.permitsSignalEffect)
     }
 
+    func testFirstWinJourneyConnectorProgressFollowsCompletedSteps() {
+        let nodes = [
+            HomeFirstWinJourneyNode(
+                id: .checkpoint,
+                state: .complete,
+                status: "5 questions ready",
+                isCurrent: false
+            ),
+            HomeFirstWinJourneyNode(
+                id: .protectedApps,
+                state: .complete,
+                status: "3 apps selected",
+                isCurrent: false
+            ),
+            HomeFirstWinJourneyNode(
+                id: .protection,
+                state: .complete,
+                status: "On",
+                isCurrent: false
+            )
+        ]
+        let progress = HomeFirstWinJourneyConnectorProgress(nodes: nodes)
+
+        XCTAssertTrue(progress.isFilled(after: nodes[0]))
+        XCTAssertTrue(progress.isFilled(after: nodes[1]))
+        XCTAssertFalse(
+            progress.isFilled(after: nodes[2]),
+            "The final node has no outgoing connector to fill"
+        )
+    }
+
+    @MainActor
+    func testFirstWinJourneyMotionPolicyHonorsReduceMotion() {
+        let standard = HomeFirstWinJourneyMotionPolicy(reduceMotion: false)
+        XCTAssertEqual(standard.style, .animated)
+        XCTAssertEqual(standard.connectorAnimation, CheckpointMotion.reveal)
+
+        let reduced = HomeFirstWinJourneyMotionPolicy(reduceMotion: true)
+        XCTAssertEqual(reduced.style, .identity)
+        XCTAssertNil(reduced.connectorAnimation)
+    }
+
     func testWeeklySignalPresentationDrivesVisibleMetricsAndAccessibilityValue() {
         let longSkill = "Multi-stage causal inference with counterfactual model calibration"
         let metrics = WeeklyMetricsSummary(
