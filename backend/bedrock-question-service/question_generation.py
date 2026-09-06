@@ -324,7 +324,9 @@ def _generate_with_bedrock(
     # GPT-5.6 accepts sampling controls only when reasoning is disabled. At
     # low and higher effort, sending temperature makes the provider reject an
     # otherwise valid request.
-    if reasoning_effort in {None, "none"}:
+    # Opus 5 rejects customized sampling even with thinking disabled.
+    # https://platform.claude.com/docs/en/build-with-claude/thinking#sampling-parameters
+    if reasoning_effort in {None, "none"} and not _is_claude_opus_5(model_id):
         inference_config["temperature"] = _bounded_float_env(
             "BEDROCK_TEMPERATURE",
             DEFAULT_TEMPERATURE,
@@ -458,12 +460,46 @@ def _openai_reasoning_effort(model_id: str) -> str | None:
     return effort
 
 
+def _is_claude_opus_5(model_id: str) -> bool:
+    normalized_model_id = model_id.strip().lower()
+    if normalized_model_id.startswith("arn:"):
+        arn = normalized_model_id.split(":", 5)
+        if len(arn) != 6 or arn[2] != "bedrock":
+            return False
+        resource = arn[5].split("/")
+        if len(resource) != 2 or resource[0] not in {
+            "foundation-model",
+            "inference-profile",
+        }:
+            return False
+        normalized_model_id = resource[1]
+    return normalized_model_id in {
+        prefix + "anthropic.claude-opus-5"
+        for prefix in ("", "us.", "eu.", "au.", "global.")
+    }
+
+
 def _additional_model_request_fields(
     model_id: str,
     *,
     reasoning_effort: str | None,
 ) -> dict[str, Any] | None:
     normalized_model_id = model_id.strip().lower()
+    if _is_claude_opus_5(model_id):
+        # AWS enables adaptive thinking by default on Opus 5. Send an explicit
+        # mode to preserve this service's opt-in behavior and independent budgets.
+        # https://docs.aws.amazon.com/bedrock/latest/userguide/claude-messages-adaptive-thinking.html
+        mode = _model_setting(
+            "BEDROCK_CLAUDE_THINKING", "disabled", {"adaptive", "disabled"}
+        )
+        allowed_efforts = {"low", "medium", "high"}
+        if mode == "adaptive":
+            allowed_efforts.update({"xhigh", "max"})
+        effort = _model_setting("BEDROCK_CLAUDE_EFFORT", "high", allowed_efforts)
+        return {
+            "thinking": {"type": mode},
+            "output_config": {"effort": effort},
+        }
     if "moonshotai.kimi-k2.5" in normalized_model_id:
         mode = _model_setting(
             "BEDROCK_KIMI_THINKING", "disabled", {"enabled", "disabled"}
