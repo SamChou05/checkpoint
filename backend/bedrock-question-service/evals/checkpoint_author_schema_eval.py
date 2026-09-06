@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Four-call author-only comparison of provider-enforced JSON and ordinary text.
+"""Bounded author-only evaluation with explicit arms, repetitions and call cap.
 
-Two repetitions per arm on the exact same Python request. The only Converse
-request difference is outputConfig. Both arms use a 300-second read deadline
-to observe possible schema compilation; this is not a worker timeout change.
-Stop on any provider failure. No repair calls, hidden retries or deployment.
+Defaults to two repetitions per arm on the exact same Python request, varying
+only outputConfig. Selected arms can also run against an earlier plan's exact
+user request while recording both old and current system prompts. All arms use
+a 300-second read deadline; this is not a worker timeout change. At most four
+calls, optionally fewer. No repairs, hidden retries or deployment.
 """
 
 from __future__ import annotations
@@ -135,14 +136,27 @@ def matches_schema(payload):
     return True
 
 
-def make_plan(seed):
+def make_plan(seed, arms=("ordinary", "structured"), repetitions=2, max_calls=4):
+    if (
+        not arms
+        or len(set(arms)) != len(arms)
+        or set(arms) - {"ordinary", "structured"}
+        or type(repetitions) is not int
+        or repetitions not in (1, 2)
+        or type(max_calls) is not int
+        or max_calls not in range(1, 5)
+        or len(arms) * repetitions > max_calls
+    ):
+        raise ValueError(
+            "Choose unique supported arms and repetitions within the call cap."
+        )
     case = load_cases()[0]
     request = _normalize_request(case["payload"])
     jobs = []
-    for repetition in (1, 2):
-        arms = ["ordinary", "structured"]
-        random.Random(seed + repetition).shuffle(arms)
-        for arm in arms:
+    for repetition in range(1, repetitions + 1):
+        ordered_arms = list(arms)
+        random.Random(seed + repetition).shuffle(ordered_arms)
+        for arm in ordered_arms:
             jobs.append(
                 {
                     "case_id": case["case_id"],
@@ -155,13 +169,48 @@ def make_plan(seed):
     return jobs
 
 
-def run_experiment(directory, client, seed=9062026):
-    directory.mkdir(parents=True, exist_ok=False)
+def baseline_comparison(path, user):
+    if path is None:
+        return None
+    original = path.read_text()
+    baseline = json.loads(original)
+    if baseline.get("user") != user:
+        raise ValueError("The user request differs from the reference plan.")
+    if (
+        baseline.get("model") != MODEL
+        or baseline.get("read_timeout_seconds") != 300
+        or baseline.get("settings") != SETTINGS
+        or not isinstance(baseline.get("system"), str)
+        or not baseline["system"].strip()
+    ):
+        raise ValueError("The reference plan must have the same model and settings.")
+    return {
+        "planSHA256": digest(original),
+        "git_revision": baseline.get("git_revision"),
+        "system": baseline["system"],
+        "user": baseline["user"],
+        "user_request_identical": True,
+        "model_and_settings_identical": True,
+    }
+
+
+def run_experiment(
+    directory,
+    client,
+    seed=9062026,
+    *,
+    arms=("ordinary", "structured"),
+    repetitions=2,
+    max_calls=4,
+    reference_plan=None,
+):
     results = []
-    jobs = make_plan(seed)
+    jobs = make_plan(seed, arms, repetitions, max_calls)
     with patch.dict(os.environ, SETTINGS):
         system = _system_prompt()
         user = _user_prompt(jobs[0]["request"])
+        comparison = baseline_comparison(reference_plan, user)
+        directory.mkdir(parents=True, exist_ok=False)
         write_json(
             directory / "plan.json",
             {
@@ -169,15 +218,19 @@ def run_experiment(directory, client, seed=9062026):
                     ["git", "rev-parse", "HEAD"], cwd=SERVICE_DIR, text=True
                 ).strip(),
                 "model": MODEL,
-                "maximum_calls": 4,
+                "maximum_calls": max_calls,
+                "planned_calls": len(jobs),
+                "selected_arms": list(arms),
+                "repetitions": repetitions,
                 "seed": seed,
                 "read_timeout_seconds": 300,
                 "hidden_sdk_retries": 0,
                 "settings": SETTINGS,
                 "runtime_read_timeout_note": "Client explicitly uses 300 seconds in both arms; deployed deadlines unchanged.",
-                "schema": AUTHOR_SCHEMA,
+                "schema": AUTHOR_SCHEMA if "structured" in arms else None,
                 "system": system,
                 "user": user,
+                "baseline_comparison": comparison,
                 "jobs": jobs,
             },
         )
@@ -248,7 +301,7 @@ def run_experiment(directory, client, seed=9062026):
                 json.dumps(
                     {
                         "completed": len(results),
-                        "planned": 4,
+                        "planned": len(jobs),
                         "provider_failed": capture.failed,
                         "stopped_early": result["stopped_early"],
                         "elapsed_seconds": result["elapsed_seconds"],
@@ -264,17 +317,38 @@ def run_experiment(directory, client, seed=9062026):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument("--arm", action="append", choices=("ordinary", "structured"))
+    parser.add_argument("--repetitions", type=int, choices=(1, 2), default=2)
+    parser.add_argument("--max-calls", type=int, choices=range(1, 5), default=4)
+    parser.add_argument("--reference-plan", type=Path)
     parser.add_argument("--aws-cli-credentials", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    arms = args.arm or ("ordinary", "structured")
+    try:
+        jobs = make_plan(9062026, arms, args.repetitions, args.max_calls)
+        with patch.dict(os.environ, SETTINGS):
+            comparison = baseline_comparison(
+                args.reference_plan, _user_prompt(jobs[0]["request"])
+            )
+    except ValueError as error:
+        parser.error(str(error))
     if args.dry_run:
         print(
             json.dumps(
                 {
-                    "calls": 4,
+                    "calls": len(jobs),
+                    "maximum_calls": args.max_calls,
+                    "selected_arms": list(arms),
+                    "repetitions": args.repetitions,
                     "model": MODEL,
-                    "schema": AUTHOR_SCHEMA,
+                    "schema": AUTHOR_SCHEMA if "structured" in arms else None,
                     "read_timeout_seconds": 300,
+                    "baseline_user_request_identical": comparison[
+                        "user_request_identical"
+                    ]
+                    if comparison
+                    else None,
                 },
                 indent=2,
             )
@@ -296,10 +370,18 @@ def main():
         ),
     )
     shape = client.meta.service_model.operation_model("Converse").input_shape
-    validate_parameters(
-        {"modelId": MODEL, "messages": [], "outputConfig": OUTPUT_CONFIG}, shape
+    validation_request = {"modelId": MODEL, "messages": []}
+    if "structured" in arms:
+        validation_request["outputConfig"] = OUTPUT_CONFIG
+    validate_parameters(validation_request, shape)
+    results = run_experiment(
+        args.output_dir,
+        client,
+        arms=arms,
+        repetitions=args.repetitions,
+        max_calls=args.max_calls,
+        reference_plan=args.reference_plan,
     )
-    results = run_experiment(args.output_dir, client)
     return 1 if results[-1]["stopped_early"] else 0
 
 

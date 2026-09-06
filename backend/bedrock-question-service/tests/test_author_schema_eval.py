@@ -40,6 +40,19 @@ def question():
 
 
 class AuthorSchemaEvalTests(unittest.TestCase):
+    def reference_plan(self):
+        with patch.dict("os.environ", experiment.SETTINGS):
+            request = experiment.make_plan(9062026)[0]["request"]
+            user = experiment._user_prompt(request)
+        return {
+            "git_revision": "earlier-frozen-revision",
+            "system": "Earlier exact system prompt.",
+            "user": user,
+            "model": experiment.MODEL,
+            "read_timeout_seconds": 300,
+            "settings": copy.deepcopy(experiment.SETTINGS),
+        }
+
     def test_four_calls_vary_only_output_config_and_keep_raw_blind_items(self):
         payload = {"questions": [question()]}
         client = FakeBedrockClient(response(json.dumps(payload)))
@@ -135,6 +148,94 @@ class AuthorSchemaEvalTests(unittest.TestCase):
                 capture.converse(**request)
             self.assertNotIn("outputConfig", request)
             self.assertEqual(len(client.calls), 1)
+
+    def test_two_selected_ordinary_calls_preserve_exact_reference_request_and_both_prompts(
+        self,
+    ):
+        client = FakeBedrockClient(response(json.dumps({"questions": [question()]})))
+        baseline = self.reference_plan()
+        with tempfile.TemporaryDirectory() as temp, patch("builtins.print"):
+            reference = Path(temp) / "reference.json"
+            reference.write_text(json.dumps(baseline))
+            directory = Path(temp) / "run"
+            results = experiment.run_experiment(
+                directory,
+                client,
+                arms=("ordinary",),
+                repetitions=2,
+                max_calls=2,
+                reference_plan=reference,
+            )
+            plan = json.loads((directory / "plan.json").read_text())
+            blinded = json.loads((directory / "blinded.json").read_text())
+        self.assertEqual(len(client.calls), 2)
+        self.assertEqual([item["arm"] for item in results], ["ordinary", "ordinary"])
+        self.assertEqual([item["repetition"] for item in results], [1, 2])
+        self.assertEqual(plan["maximum_calls"], 2)
+        self.assertEqual(plan["planned_calls"], 2)
+        self.assertEqual(plan["selected_arms"], ["ordinary"])
+        self.assertIsNone(plan["schema"])
+        self.assertEqual(plan["user"], baseline["user"])
+        self.assertEqual(plan["baseline_comparison"]["system"], baseline["system"])
+        self.assertEqual(plan["baseline_comparison"]["user"], baseline["user"])
+        self.assertTrue(plan["baseline_comparison"]["user_request_identical"])
+        self.assertNotEqual(plan["system"], baseline["system"])
+        self.assertEqual(len(blinded), 2)
+        self.assertEqual(client.calls[0], client.calls[1])
+        for call in client.calls:
+            self.assertNotIn("outputConfig", call)
+            self.assertEqual(call["system"], [{"text": plan["system"]}])
+            self.assertEqual(
+                call["messages"][0]["content"], [{"text": baseline["user"]}]
+            )
+
+    def test_invalid_selection_or_insufficient_cap_fails_before_calls(self):
+        selections = [
+            {"arms": ()},
+            {"arms": ("ordinary", "ordinary")},
+            {"arms": ("unknown",)},
+            {"repetitions": 0},
+            {"repetitions": 3},
+            {"max_calls": 2},
+            {"max_calls": 5},
+        ]
+        for selection in selections:
+            client = FakeBedrockClient(response('{"questions":[]}'))
+            with (
+                tempfile.TemporaryDirectory() as temp,
+                self.subTest(selection=selection),
+            ):
+                directory = Path(temp) / "run"
+                with self.assertRaises(ValueError):
+                    experiment.run_experiment(directory, client, **selection)
+                self.assertFalse(directory.exists())
+                self.assertEqual(client.calls, [])
+
+    def test_reference_request_or_settings_drift_fails_before_calls(self):
+        baseline = self.reference_plan()
+        variants = [
+            {"user": baseline["user"] + " "},
+            {"model": "changed"},
+            {"read_timeout_seconds": 100},
+            {"settings": {}},
+            {"system": ""},
+        ]
+        for variant in variants:
+            client = FakeBedrockClient(response('{"questions":[]}'))
+            with tempfile.TemporaryDirectory() as temp, self.subTest(variant=variant):
+                reference = Path(temp) / "reference.json"
+                reference.write_text(json.dumps({**baseline, **variant}))
+                directory = Path(temp) / "run"
+                with self.assertRaises(ValueError):
+                    experiment.run_experiment(
+                        directory,
+                        client,
+                        arms=("ordinary",),
+                        max_calls=2,
+                        reference_plan=reference,
+                    )
+                self.assertFalse(directory.exists())
+                self.assertEqual(client.calls, [])
 
 
 if __name__ == "__main__":
