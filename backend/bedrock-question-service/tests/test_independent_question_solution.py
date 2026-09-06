@@ -11,7 +11,7 @@ from question_generation import (
 from question_quality import _extract_json_object
 from question_verification import verify_questions
 from request_contract import _normalize_request
-from service_errors import ProviderError
+from service_errors import ProviderCallBudgetExceededError, ProviderError
 
 
 class IndependentQuestionSolutionTests(unittest.TestCase):
@@ -192,3 +192,101 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
             _extract_json_object(
                 '{"questions":[{"expectedAnswer":"first","expectedAnswer":"second"}]}'
             )
+
+    def test_retry_uses_current_rejection_reason_without_lowering_challenge(self):
+        class DifficultyClient(FakeBedrockClient):
+            def converse(self, **kwargs):
+                response = super().converse(**kwargs)
+                prompt = kwargs["messages"][0]["content"][0]["text"]
+                if "<question_review_json>" in prompt and len(self.review_calls) == 1:
+                    content = response["output"]["message"]["content"][0]
+                    data = json.loads(content["text"])
+                    data["reviews"][0]["difficulty"] = 2
+                    content["text"] = json.dumps(data)
+                return response
+
+        harder = _raw_question(
+            "Which conclusion requires interpreting this new evidence?"
+        )
+        client = DifficultyClient(
+            [
+                FakeBedrockClient.question_response(self.question),
+                FakeBedrockClient.question_response(harder),
+            ]
+        )
+        metrics = {
+            "ProviderCalls": 0,
+            "BedrockInputTokens": 0,
+            "BedrockOutputTokens": 0,
+            "QuestionQuality": {"review": {"difficulty_floor": 7}},
+        }
+        budget = ProviderCallBudget(6)
+        accepted = _generate_sanitized_questions(self.request, client, budget, metrics)
+        prompt = client.calls[1]["messages"][0]["content"][0]["text"]
+        data = json.loads(
+            prompt.split("<generation_request_json>\n", 1)[1].split(
+                "\n</generation_request_json>", 1
+            )[0]
+        )
+        self.assertEqual(
+            data["previousAttemptFeedback"], {"review": {"difficulty_floor": 1}}
+        )
+        self.assertEqual(data["minimumDifficulty"], 3)
+        self.assertIn(self.question["prompt"], data["existingPrompts"])
+        self.assertEqual([q["prompt"] for q in accepted], [harder["prompt"]])
+        self.assertEqual(budget.calls, 6)
+        self.assertNotIn("previousAttemptFeedback", self.request)
+
+    def test_failed_pass_does_not_spend_remaining_calls_on_unreviewable_output(self):
+        class RejectingClient(FakeBedrockClient):
+            def converse(self, **kwargs):
+                response = super().converse(**kwargs)
+                if (
+                    "<question_review_json>"
+                    in kwargs["messages"][0]["content"][0]["text"]
+                ):
+                    response["output"]["message"]["content"][0]["text"] = json.dumps(
+                        {"reviews": [{"index": 0, "valid": False, "answer": ""}]}
+                    )
+                return response
+
+        client = RejectingClient.returning_questions(self.question)
+        budget = ProviderCallBudget(5)
+        with self.assertRaises(ProviderCallBudgetExceededError):
+            _generate_sanitized_questions(self.request, client, budget)
+        self.assertEqual(budget.calls, 3)
+        self.assertEqual(len(client.calls), 1)
+
+    def test_failed_top_up_preserves_previously_verified_inventory(self):
+        from unittest.mock import patch
+
+        self.request["targetCount"] = 2
+        client = FakeBedrockClient(
+            [
+                FakeBedrockClient.question_response(self.question),
+                TimeoutError("Synthetic top-up timeout"),
+            ]
+        )
+        metrics = {
+            "ProviderCalls": 0,
+            "BedrockInputTokens": 0,
+            "BedrockOutputTokens": 0,
+        }
+        with patch.dict("os.environ", {"BEDROCK_FALLBACK_MODEL_ID": ""}):
+            accepted = _generate_sanitized_questions(
+                self.request, client, ProviderCallBudget(6), metrics
+            )
+        self.assertEqual([q["prompt"] for q in accepted], [self.question["prompt"]])
+        self.assertEqual(accepted[0]["verificationVersion"], 1)
+        self.assertEqual(metrics["QuestionQuality"]["provider"]["request_failed"], 1)
+
+    def test_provider_failure_before_any_verified_inventory_still_fails(self):
+        from unittest.mock import patch
+
+        with patch.dict("os.environ", {"BEDROCK_FALLBACK_MODEL_ID": ""}):
+            with self.assertRaises(ProviderError):
+                _generate_sanitized_questions(
+                    self.request,
+                    FakeBedrockClient(TimeoutError("Synthetic timeout")),
+                    ProviderCallBudget(6),
+                )

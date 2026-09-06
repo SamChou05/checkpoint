@@ -12,6 +12,28 @@ from service_errors import ProviderCallBudgetExceededError
 
 
 class LearningEvalTests(unittest.TestCase):
+    def test_generation_failure_preserves_prior_inventory_and_call_counts(self):
+        case = {"case_id": "partial", "payload": {"goal": {"title": "Learn music"}}}
+        question = _raw_question("Which musical interpretation fits this score?")
+        calls = []
+
+        def generate(request, client, *, call_budget, request_metrics):
+            calls.append(request)
+            call_budget.consume()
+            if len(calls) == 1:
+                return [question]
+            raise TimeoutError("Synthetic provider timeout")
+
+        with mock.patch.object(
+            learning_eval, "_generate_sanitized_questions", side_effect=generate
+        ):
+            result = learning_eval.generate_sample(case)
+        self.assertFalse(result["passed"])
+        self.assertEqual(result["questions"], [question])
+        self.assertEqual(result["provider_calls"], 2)
+        self.assertEqual(result["jobs"], 2)
+        self.assertEqual(result["errors"], [{"job": 2, "error_type": "TimeoutError"}])
+
     def test_title_only_goal_infers_skills_and_preserves_remaining_allocation(self):
         case = {
             "case_id": "new_subject",

@@ -23,6 +23,7 @@ from question_generation import (  # noqa: E402
     _generate_sanitized_questions,
     _generate_with_bedrock,
     _model_attempts,
+    _new_provider_call_budget,
     _question_coverage_payload,
     _verification_model_id,
 )
@@ -85,8 +86,10 @@ def evaluate_review(case, client=None):
     }
 
 
-def generate_sample(case, client=None, *, infer_skills=False):
+def generate_sample(case, client=None, *, infer_skills=False, max_jobs=3):
     """Mirror finite inventory top-offs locally, with at most three bounded jobs."""
+    if type(max_jobs) is not int or not 1 <= max_jobs <= 3:
+        raise ValueError("max_jobs must be between 1 and 3")
     payload = copy.deepcopy(case["payload"])
     target_count = 5
     calls = 0
@@ -122,7 +125,8 @@ def generate_sample(case, client=None, *, infer_skills=False):
     base = _normalize_request({**payload, "targetCount": target_count})
     questions = []
     jobs = 0
-    for _ in range(3):
+    errors = []
+    for _ in range(max_jobs):
         request = copy.deepcopy(base)
         request["targetCount"] = target_count - len(questions)
         if base.get("skillMap"):
@@ -133,7 +137,8 @@ def generate_sample(case, client=None, *, infer_skills=False):
         request["existingQuestionCoverage"] += [
             _question_coverage_payload(question) for question in questions
         ]
-        budget = ProviderCallBudget(5)
+        # Mirror runtime limits without consuming the deployed DynamoDB quota.
+        budget = _new_provider_call_budget(None, reserve_call=lambda: None)
         try:
             questions += _generate_sanitized_questions(
                 request, client, call_budget=budget, request_metrics=metrics
@@ -142,9 +147,12 @@ def generate_sample(case, client=None, *, infer_skills=False):
             # Keep prior inventory visible in the report even if a bounded job
             # exhausts its calls without producing any reviewed questions.
             pass
+        except Exception as error:
+            # Preserve observations and prior inventory when a provider fails.
+            errors.append({"job": jobs + 1, "error_type": type(error).__name__})
         calls += budget.calls
         jobs += 1
-        if len(questions) == target_count:
+        if len(questions) == target_count or errors:
             break
     return {
         "case_id": case["case_id"],
@@ -155,6 +163,7 @@ def generate_sample(case, client=None, *, infer_skills=False):
         "adaptive_skill_plans": base["adaptiveSkillPlans"],
         "provider_calls": calls,
         "jobs": jobs,
+        "errors": errors,
         "metrics": metrics,
     }
 
@@ -162,6 +171,7 @@ def generate_sample(case, client=None, *, infer_skills=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--max-generation-jobs", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument(
         "--review-fixtures",
         type=Path,
@@ -204,7 +214,9 @@ def main():
                 (
                     case["case_id"],
                     lambda case=case: generate_sample(
-                        case, infer_skills=args.infer_skills
+                        case,
+                        infer_skills=args.infer_skills,
+                        max_jobs=args.max_generation_jobs,
                     ),
                 )
             )

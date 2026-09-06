@@ -8,7 +8,7 @@ import os
 import time
 from typing import Any, Callable
 
-from generation_diagnostics import record_quality
+from generation_diagnostics import quality_summary, record_quality
 
 from question_quality import (
     _extract_json_object,
@@ -95,7 +95,7 @@ def _new_provider_call_budget(
     )
     if reserve_call is not None:
         maximum_calls = min(
-            maximum_calls, _int_env("QUESTION_BANK_MAX_RECEIVE_COUNT", 5, maximum=10)
+            maximum_calls, _int_env("QUESTION_BANK_MAX_RECEIVE_COUNT", 6, maximum=10)
         )
     return ProviderCallBudget(
         maximum_calls,
@@ -181,16 +181,27 @@ def _generate_sanitized_questions(
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
     current_request = copy.deepcopy(request)
     rejected_prompts: list[str] = []
+    # Feedback is needed even for callers that do not collect telemetry.
+    if request_metrics is None:
+        request_metrics = {
+            "ProviderCalls": 0,
+            "BedrockInputTokens": 0,
+            "BedrockOutputTokens": 0,
+        }
 
     for _ in range(attempts):
         # A question needs an author, an option-blind solution, and a final
-        # audit. Stop after useful output rather than start an unaffordable pass.
+        # audit. Do not start a pass whose full verification cannot be afforded.
         if (
-            questions
-            and call_budget is not None
+            call_budget is not None
             and call_budget.maximum_calls - call_budget.calls < 3
         ):
-            break
+            if questions:
+                break
+            raise ProviderCallBudgetExceededError(
+                "Insufficient call budget for a fully verified generation pass."
+            )
+        previous_quality = quality_summary(request_metrics)
         try:
             provider_payload = _generate_provider_payload(
                 current_request,
@@ -233,6 +244,12 @@ def _generate_sanitized_questions(
             if questions:
                 break
             raise
+        except ProviderError:
+            # A failed top-up must not discard an already verified batch.
+            # Durable quota failures above still propagate to terminal handling.
+            if questions:
+                break
+            raise
         questions.extend(generated_questions)
         approved_prompts = {question["prompt"] for question in generated_questions}
         rejected_prompts.extend(
@@ -245,6 +262,9 @@ def _generate_sanitized_questions(
             break
 
         current_request = copy.deepcopy(request)
+        current_request["previousAttemptFeedback"] = _rejection_feedback(
+            previous_quality, quality_summary(request_metrics)
+        )
         current_request["targetCount"] = target_count - len(questions)
         current_request["existingPrompts"] = (
             request["existingPrompts"]
@@ -264,6 +284,24 @@ def _generate_sanitized_questions(
                 )
 
     return questions[:target_count]
+
+
+def _rejection_feedback(
+    before: dict[str, dict[str, int]], after: dict[str, dict[str, int]]
+) -> dict[str, dict[str, int]]:
+    """Feed only this attempt's finite rejection counters back to the author."""
+    return {
+        stage: rejected
+        for stage, counts in after.items()
+        if (
+            rejected := {
+                reason: delta
+                for reason, count in counts.items()
+                if reason not in {"accepted", "surplus"}
+                and (delta := count - before.get(stage, {}).get(reason, 0)) > 0
+            }
+        )
+    }
 
 
 def _generate_with_bedrock(
@@ -346,7 +384,11 @@ def _generate_with_bedrock(
     if request_metrics is not None:
         request_metrics["ProviderCalls"] += 1
     call_started = time.monotonic()
-    response = client.converse(**request)
+    try:
+        response = client.converse(**request)
+    except Exception as error:
+        record_quality(request_metrics, "provider", "request_failed")
+        raise ProviderError("Bedrock invocation failed.") from error
     if request_metrics is not None:
         request_metrics.setdefault("ProviderObservations", []).append(
             {
@@ -605,8 +647,21 @@ Use each adaptiveSkillPlan.targetDifficulty in preference to the goal-wide
 minimumDifficulty. Match the cognitive work, not just the label: 1 recognition;
 2 one-concept application; 3 interpretation of a short scenario; 4 multiple
 reasoning steps or a consequential constraint; 5 synthesis across concepts.
-Level 3 should require application or interpretation of concrete information.
+At level 3, make the learner interpret supplied evidence or a representation to
+reach a conclusion; naming a familiar technique inside a scenario remains level
+1 or 2. At levels 4 and 5, require additional reasoning or interaction between
+constraints, while keeping all necessary information in the stem.
 Keep tasks answerable in 30 seconds to three minutes.
+
+On retries, previousAttemptFeedback contains counts of rejected items, grouped
+by validation stage. Respond to the cause: difficulty_floor means the actual
+reasoning was too easy, so construct a more demanding task rather than changing
+its numeric label. difficulty_target means match the stated per-skill cognitive
+level. unsupported_solution means necessary facts were missing; write a new,
+complete problem. answer_disagreement or rejected_by_model means rebuild the
+facts and choices from a fresh solution. Length or feedback failures require
+concise complete wording. Never relax the requested target or repeat a rejected
+stem just to fill the batch.
 
 Recent performance overrides stale self-description. Focus on requested missed
 objectives using new situations; one wrong choice is only possible evidence of

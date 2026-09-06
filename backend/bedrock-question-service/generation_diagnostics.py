@@ -39,7 +39,7 @@ QUALITY_REASONS = {
         "answer_labels",
         "accepted",
     },
-    "provider": {"output_truncated", "empty_output", "invalid_json"},
+    "provider": {"output_truncated", "empty_output", "invalid_json", "request_failed"},
 }
 
 

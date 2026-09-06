@@ -202,7 +202,7 @@ class QuestionVerificationTests(unittest.TestCase):
         budget = ProviderCallBudget(1)
         with self.assertRaises(ProviderCallBudgetExceededError):
             _generate_sanitized_questions(self.request, client, call_budget=budget)
-        self.assertEqual(budget.calls, 1)
+        self.assertEqual(budget.calls, 0)
         self.assertEqual(client.review_calls, [])
 
     def test_rejected_candidate_is_replaced_and_every_provider_call_is_counted(self):

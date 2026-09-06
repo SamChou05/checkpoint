@@ -183,7 +183,7 @@ Parameters:
     Description: Maximum questions requested by each asynchronous worker job; smaller chunks improve latency and item quality while the durable chain fills the full bank.
   QuestionBankMaxReceiveCount:
     Type: Number
-    Default: 5
+    Default: 6
     MinValue: 2
     MaxValue: 10
     Description: Shared SQS redrive and actual per-job Bedrock Converse-call threshold.

@@ -273,7 +273,7 @@ class LambdaHttpRuntimeTests(BackendTestCase):
         self.assertEqual(response["statusCode"], 503)
         self.assertEqual(len(bedrock_client.calls), 0)
 
-    def test_provider_call_budget_stops_json_retry_and_fallback(self):
+    def test_unaffordable_verification_stops_before_author_retry_or_fallback(self):
         os.environ["MAX_PROVIDER_CALLS_PER_REQUEST"] = "1"
         os.environ["BEDROCK_FALLBACK_MODEL_ID"] = "fallback-model"
         bedrock_client = FakeBedrockClient("not json")
@@ -285,7 +285,7 @@ class LambdaHttpRuntimeTests(BackendTestCase):
 
         self.assertEqual(response["statusCode"], 502)
         self.assertEqual(response["headers"]["Retry-After"], "30")
-        self.assertEqual(len(bedrock_client.calls), 1)
+        self.assertEqual(len(bedrock_client.calls), 0)
 
     def test_provider_deadline_floor_exceeds_connect_read_and_safety_allowance(self):
         os.environ["MIN_PROVIDER_REMAINING_MILLISECONDS"] = "1"
