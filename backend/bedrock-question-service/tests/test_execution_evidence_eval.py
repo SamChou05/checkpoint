@@ -52,7 +52,12 @@ def successful_response(operation, request):
 
 def parse_observation(prepared, result):
     assert set(result) == {"stdOut", "stdErr", "exitCode", "isError"}
-    return {"status": "observed", "observation": json.loads(result["stdOut"])}
+    return {
+        "status": "observed",
+        "envelope_valid": True,
+        "operational_failure": False,
+        "observation": json.loads(result["stdOut"]),
+    }
 
 
 class FakeClock:
@@ -813,6 +818,157 @@ class ExecutionEvidenceEvalTests(unittest.TestCase):
         self.assertEqual(messages[-1]["provider_error_code"], "AccessDeniedException")
         self.assertNotIn("private", json.dumps(messages))
         self.assertNotIn("hidden", json.dumps(messages))
+
+    def test_actual_parser_valid_bound_continues_but_invalid_or_failed_work_stops(self):
+        from execution_evidence import (
+            PROTOCOL,
+            prepare_execution_job,
+            parse_execution_observation,
+        )
+
+        first = prepare_execution_job("first", "while True:\n    pass")
+        second = prepare_execution_job("second", "return 1")
+        for variant in (
+            "safe_bound",
+            "malformed_bound",
+            "setup_failure",
+            "cleanup_failure",
+        ):
+            self.output = Path(self.directory.name) / f"classifier-{variant}.json"
+            records = []
+            for index, prepared in enumerate((first, second)):
+                record = {
+                    key: copy.deepcopy(prepared[key])
+                    for key in (
+                        "job_id",
+                        "artifact_sha256",
+                        "input_sha256",
+                        "mode",
+                        "limits",
+                    )
+                }
+                record.update(
+                    protocol=PROTOCOL,
+                    runtime={"version": "3.12.13", "implementation": "cpython"},
+                    status="inconclusive" if index == 0 else "observed",
+                    reason="child_deadline" if index == 0 else None,
+                    compile={"valid": True}
+                    if index == 0
+                    else {"valid": False, "exception": "SyntaxError"},
+                    child=None,
+                    child_exit_code=-9 if index == 0 else None,
+                    child_stderr="",
+                    timed_out=index == 0,
+                    transport_truncated=False,
+                    child_reaped=True,
+                )
+                records.append(record)
+            if variant == "malformed_bound":
+                records[0]["child_reaped"] = False
+            if variant == "setup_failure":
+                records[0].update(
+                    reason="harness_failure:FileNotFoundError",
+                    timed_out=False,
+                    child_exit_code=None,
+                )
+            invoke_count = 0
+
+            def callback(operation, request, budget, progress):
+                nonlocal invoke_count
+                result = successful_response(operation, request)
+                if operation == "InvokeCodeInterpreter":
+                    result["response"]["events"][0]["result"]["structuredContent"][
+                        "stdout"
+                    ] = json.dumps(records[invoke_count])
+                    invoke_count += 1
+                if (
+                    operation == "StopCodeInterpreterSession"
+                    and variant == "cleanup_failure"
+                ):
+                    return {
+                        "outcome": "inconclusive",
+                        "reason": "deadline",
+                        "response": None,
+                    }
+                return result
+
+            report = self.run_jobs(
+                [first, second], callback, parser=parse_execution_observation
+            )
+            self.assertTrue(
+                all("expected" not in prepared for prepared in self.plan["jobs"])
+            )
+            if variant == "safe_bound":
+                self.assertEqual(report["outcome"], "completed")
+                self.assertEqual(
+                    [result["status"] for result in report["results"]],
+                    ["inconclusive", "observed"],
+                )
+                self.assertEqual(report["results"][0]["reason"], "child_deadline")
+                self.assertFalse(
+                    report["results"][0]["evidence"]["operational_failure"]
+                )
+                self.assertEqual(report["invoke_attempts"], 2)
+                self.assertTrue(
+                    all(result["cleanup"] == "stopped" for result in report["results"])
+                )
+            else:
+                self.assertEqual(report["outcome"], "failed")
+                self.assertEqual(report["invoke_attempts"], 1)
+                self.assertEqual(report["unattempted_cases"], 1)
+                if variant == "setup_failure":
+                    self.assertTrue(report["results"][0]["evidence"]["envelope_valid"])
+                    self.assertTrue(
+                        report["results"][0]["evidence"]["operational_failure"]
+                    )
+                self.assertEqual(
+                    report["results"][0]["cleanup"],
+                    "failed" if variant == "cleanup_failure" else "stopped",
+                )
+
+    def test_only_explicit_boolean_parser_attestation_allows_continuation(self):
+        for envelope, operational in (
+            (None, False),
+            (1, False),
+            (False, False),
+            (True, None),
+            (True, 0),
+            (True, True),
+        ):
+            self.output = (
+                Path(self.directory.name)
+                / f"flags-{len(list(Path(self.directory.name).iterdir()))}.json"
+            )
+
+            def parser(*args):
+                return {
+                    "status": "observed",
+                    "envelope_valid": envelope,
+                    "operational_failure": operational,
+                }
+
+            report = self.run_jobs([job("one"), job("two")], parser=parser)
+            self.assertEqual(report["outcome"], "failed")
+            self.assertEqual(report["results"][0]["status"], "inconclusive")
+            self.assertEqual(report["unattempted_cases"], 1)
+            self.assertEqual(report["results"][0]["cleanup"], "stopped")
+
+    def test_child_limit_reason_is_preserved_without_promoting_observation(self):
+        report = self.run_jobs(
+            parser=lambda *args: {
+                "status": "inconclusive",
+                "envelope_valid": True,
+                "operational_failure": False,
+                "reason": None,
+                "child": {"reason": "output_limit"},
+            }
+        )
+        self.assertEqual(report["outcome"], "completed")
+        self.assertEqual(report["results"][0]["status"], "inconclusive")
+        self.assertEqual(report["results"][0]["reason"], "output_limit")
+        self.assertEqual(
+            report["results"][0]["evidence"]["child"]["reason"], "output_limit"
+        )
 
     def test_sdk_disables_hidden_retries(self):
         try:

@@ -410,8 +410,9 @@ def run_plan(plan, output, parse_evidence, *, executor=None, clock=time.monotoni
     """Execute a reviewed plan; any provider/cleanup failure stops the run.
 
     parse_evidence(job, service_result) must validate the harness's artifact-bound record
-    and return status observed/unsupported/inconclusive. It must not infer MCQ
-    rejection from transport, timeout, or parsing failures.
+    and return status observed/unsupported/inconclusive with explicit boolean
+    envelope_valid and operational_failure flags. A valid resource-bound result
+    can be inconclusive without being an operational failure or MCQ rejection.
     """
     limits = Limits(**plan["limits"])
     if prepare_plan(plan["jobs"], limits, plan["region"]) != plan:
@@ -611,8 +612,23 @@ def run_plan(plan, output, parse_evidence, *, executor=None, clock=time.monotoni
                 "inconclusive",
             }:
                 raise ValueError("invalid_evidence_status")
-            result.update(status=evidence["status"], evidence=evidence)
-            if evidence["status"] == "inconclusive":
+            child = evidence.get("child")
+            result.update(
+                status=evidence["status"],
+                evidence=evidence,
+                reason=evidence.get("reason")
+                or (child.get("reason") if isinstance(child, dict) else None),
+            )
+            # Epistemic uncertainty is not a provider failure. Only the trusted
+            # parser can attest that the complete envelope is coherent and the
+            # outcome is operationally safe; absent/non-boolean flags fail closed.
+            # No fixture name, expected answer, or expected status participates.
+            if (
+                evidence.get("envelope_valid") is not True
+                or evidence.get("operational_failure") is not False
+            ):
+                result["status"] = "inconclusive"
+                result["reason"] = result["reason"] or "invalid_or_failed_observation"
                 report["operational_failure"] = True
         except Exception as error:
             result.update(status="inconclusive", error_type=type(error).__name__)
