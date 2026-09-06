@@ -1,0 +1,120 @@
+{
+  "pairs": [
+    {
+      "stems": [
+        "What does this Python code print?\ncount = 0\nfor n in [1, 2]:\n    count += n\n    print(count)",
+        "What does this Python code print?\ncount = 0\nfor n in [1, 2]:\n    count += n\nprint(count)"
+      ],
+      "outputs": [
+        "1\n3\n",
+        "3\n"
+      ],
+      "legacyFingerprints": [
+        "f7685afefed388ea",
+        "f7685afefed388ea"
+      ],
+      "fingerprints": [
+        "3408202ebd6090b4",
+        "4ca52e372500a624"
+      ]
+    },
+    {
+      "stems": [
+        "What does this Python code print?\nprint(len(\"a  b\"))",
+        "What does this Python code print?\nprint(len(\"a b\"))"
+      ],
+      "outputs": [
+        "4\n",
+        "3\n"
+      ],
+      "legacyFingerprints": [
+        "d9cabb23acce3dbc",
+        "d9cabb23acce3dbc"
+      ],
+      "fingerprints": [
+        "acdf23d150b2b8d6",
+        "a8e760844d42e1fe"
+      ]
+    },
+    {
+      "stems": [
+        "What does this Python code print?\nprint(len(\"é\"))",
+        "What does this Python code print?\nprint(len(\"é\"))"
+      ],
+      "outputs": [
+        "1\n",
+        "2\n"
+      ],
+      "legacyFingerprints": [
+        "186f95af9c0c5a6d",
+        "186f95af9c0c5a6d"
+      ],
+      "fingerprints": [
+        "46ce60d055ee39c3",
+        "a115e037a11aa851"
+      ]
+    }
+  ],
+  "equivalent": [
+    [
+      " \nWhat is café?\n",
+      "What is café?"
+    ],
+    [
+      "What follows?\n  print(1)",
+      "What follows?\r\n  print(1)"
+    ]
+  ],
+  "distinct": [
+    [
+      "print(\"A\")",
+      "print(\"a\")"
+    ],
+    [
+      "What is x + 1?",
+      "What is x+1?"
+    ],
+    [
+      "Question 1: What follows?",
+      "What follows?"
+    ],
+    [
+      "What follows?",
+      "What follows!"
+    ],
+    [
+      "What is é?",
+      "What is é?"
+    ]
+  ],
+  "questions": [
+    {
+      "prompt": "What does this Python code print?\ncount = 0\nfor n in [1, 2]:\n    count += n\n    print(count)",
+      "expectedAnswer": "1 then 3 on separate lines",
+      "choices": [
+        "1 then 3 on separate lines",
+        "3 then 1 on separate lines",
+        "1 then 2 on separate lines",
+        "Only 1 is printed"
+      ],
+      "explanation": "The print is inside the loop, so it prints the running sum after each addition.",
+      "topic": "Python output",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    },
+    {
+      "prompt": "What does this Python code print?\ncount = 0\nfor n in [1, 2]:\n    count += n\nprint(count)",
+      "expectedAnswer": "Only 3 is printed",
+      "choices": [
+        "Only 3 is printed",
+        "Both 1 and 3 are printed",
+        "Only 0 is printed",
+        "Only 2 is printed"
+      ],
+      "explanation": "The print is outside the loop, so it runs once after the sum reaches three.",
+      "topic": "Python output",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  ]
+}

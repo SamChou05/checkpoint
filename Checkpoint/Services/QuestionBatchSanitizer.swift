@@ -1,11 +1,11 @@
 import Foundation
 
 enum QuestionBatchSanitizer {
-    /// Exact stem identities used to keep one question from appearing twice even
-    /// when a provider changes casing, terminal punctuation, or adds a wrapper.
-    /// This intentionally does not use fuzzy similarity: closely related questions
-    /// that test a different angle remain valid.
-    static func questionStemKeys(_ prompt: String) -> Set<String> {
+    static let stemFingerprintVersion = 2
+
+    /// Preserve subject case, indentation, quoted spaces and punctuation.
+    /// Cosmetic prose equivalence is a semantic-review decision.
+    static func questionStemKeys(_ prompt: String) -> Set<Data> {
         let key = exactQuestionStemKey(prompt)
         return key.isEmpty ? [] : [key]
     }
@@ -19,7 +19,7 @@ enum QuestionBatchSanitizer {
     static func questionStemFingerprint(_ prompt: String) -> String? {
         guard let key = questionStemKeys(prompt).first else { return nil }
         var hash: UInt64 = 14_695_981_039_346_656_037
-        for byte in key.utf8 {
+        for byte in key {
             hash ^= UInt64(byte)
             hash &*= 1_099_511_628_211
         }
@@ -240,7 +240,7 @@ enum QuestionBatchSanitizer {
         return prefix.isEmpty ? cleaned : prefix
     }
 
-    private static func promptKeys(_ prompt: String) -> Set<String> {
+    private static func promptKeys(_ prompt: String) -> Set<Data> {
         questionStemKeys(prompt)
     }
 
@@ -387,39 +387,10 @@ enum QuestionBatchSanitizer {
         String(text.lowercased().filter { $0.isLetter || $0.isNumber })
     }
 
-    private static func exactQuestionStemKey(_ prompt: String) -> String {
-        var normalized = QuestionText.collapsedWhitespace(
-            prompt.precomposedStringWithCanonicalMapping
-        )
-        .folding(options: [.caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
-        .lowercased()
-        normalized = normalized.precomposedStringWithCanonicalMapping
-
-        let presentationPrefixes = [
-            #"^(?:question|item)\s+\d+\s*[:.)-]\s*"#,
-            #"^(?:choose|select|identify|pick)\s+(?:the\s+)?(?:correct|best)\s+(?:answer|choice|option)(?:\s+(?:to|for)\s+(?:this\s+)?(?:question|item|example))?\s*[:-]\s*"#
-        ]
-        for pattern in presentationPrefixes {
-            normalized = normalized.replacingOccurrences(
-                of: pattern,
-                with: "",
-                options: [.regularExpression, .caseInsensitive]
-            )
-        }
-        normalized = normalized.replacingOccurrences(
-            of: #"\s+([,.;:?!])"#,
-            with: "$1",
-            options: .regularExpression
-        )
-        normalized = normalized.replacingOccurrences(
-            of: #"\s*(<=|>=|!=|==|[+\-−×÷=*/^%±∓<>=≤≥≠⋅·])\s*"#,
-            with: "$1",
-            options: .regularExpression
-        )
-        while let finalCharacter = normalized.last,
-              " .?!".contains(finalCharacter) {
-            normalized.removeLast()
-        }
-        return normalized
+    private static func exactQuestionStemKey(_ prompt: String) -> Data {
+        let text = prompt.replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+            .trimmingCharacters(in: CharacterSet(charactersIn: " \t\n\r\u{000B}\u{000C}"))
+        return Data(text.utf8)
     }
 }

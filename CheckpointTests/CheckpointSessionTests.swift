@@ -240,7 +240,7 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
             goal: goal,
             index: 2,
             topic: "array operations",
-            prompt: "  WHICH operation removes the final element from an array!  "
+            prompt: "  Which operation removes the final element from an array?  "
         )
         let fillers = (3...6).map { index in
             makeQuestion(

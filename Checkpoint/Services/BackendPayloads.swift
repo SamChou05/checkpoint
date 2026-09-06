@@ -8,6 +8,7 @@ struct BackendQuestionRequest: Encodable {
     private var existingQuestionCoverage: [QuestionCoveragePayload]
     private var reportedPrompts: [String]
     private var blockedStemFingerprints: [String]
+    private var stemFingerprintVersion: Int
     private var sourceDocuments: [SourceDocumentPayload]
     private var targetCount: Int
     private var minimumDifficulty: Int
@@ -34,6 +35,7 @@ struct BackendQuestionRequest: Encodable {
         existingQuestionCoverage = recentQuestions.map(QuestionCoveragePayload.init)
         reportedPrompts = request.reportedQuestions.prefix(30).map(\.prompt)
         blockedStemFingerprints = BackendQuestionHistory.blockedStemFingerprints(for: request)
+        stemFingerprintVersion = QuestionBatchSanitizer.stemFingerprintVersion
         sourceDocuments = request.goal.sourceDocuments.map(SourceDocumentPayload.init)
         targetCount = targetCountOverride ?? request.targetCount
         minimumDifficulty = request.minimumDifficulty

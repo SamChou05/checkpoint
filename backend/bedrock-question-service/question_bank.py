@@ -30,6 +30,7 @@ from question_bank_common import (
     _normalized_stem_identity,
     _stem_fingerprint,
     _validated_blocked_stem_fingerprints,
+    _validated_stem_fingerprint_version,
 )
 from question_bank_inventory import (
     _activate_goal_version,
@@ -246,6 +247,9 @@ def claim_questions(
         return response
 
     try:
+        stem_fingerprint_version = _validated_stem_fingerprint_version(
+            payload.get("stemFingerprintVersion")
+        )
         blocked_stem_fingerprints = set(
             _validated_blocked_stem_fingerprints(payload.get("blockedStemFingerprints"))
         )
@@ -299,7 +303,10 @@ def claim_questions(
                 continue
             stem_identity = _normalized_stem_identity(question.get("prompt"))
             stem_is_blocked = (
-                _stem_fingerprint(question.get("prompt")) in blocked_stem_fingerprints
+                _stem_fingerprint(
+                    question.get("prompt"), version=stem_fingerprint_version
+                )
+                in blocked_stem_fingerprints
             )
             if (
                 not stem_identity

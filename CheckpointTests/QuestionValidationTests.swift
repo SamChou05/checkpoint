@@ -165,17 +165,17 @@ final class QuestionValidationTests: XCTestCase {
         )
     }
 
-    func testExactStemNormalizationIgnoresWhitespaceAroundMathOperators() {
+    func testExactStemNormalizationPreservesWhitespaceAroundMathOperators() {
         for mathOperator in [
             "<=", ">=", "!=", "==", "+", "-", "−", "×", "÷", "=", "<", ">",
             "≤", "≥", "≠", "±", "∓", "⋅", "·", "*", "/", "^", "%"
         ] {
-            XCTAssertTrue(
+            XCTAssertFalse(
                 QuestionBatchSanitizer.hasSameQuestionStem(
                     "What is x \(mathOperator) 1?",
                     "What is x\(mathOperator)1?"
                 ),
-                "Expected operator-spacing parity for \(mathOperator)"
+                "Expected operator-spacing distinction for \(mathOperator)"
             )
         }
         XCTAssertFalse(
@@ -200,8 +200,8 @@ final class QuestionValidationTests: XCTestCase {
             QuestionBatchSanitizer.questionStemFingerprint("What is x2?")
         )
 
-        XCTAssertEqual(spaced, compact)
-        XCTAssertEqual(spaced, "66a0e917835b1b99")
+        XCTAssertNotEqual(spaced, compact)
+        XCTAssertEqual(spaced, "b18207b8cd2f3258")
         XCTAssertNotEqual(superscript, plainDigit)
         XCTAssertTrue(spaced.range(of: #"^[0-9a-f]{16}$"#, options: .regularExpression) != nil)
     }
@@ -1109,5 +1109,108 @@ final class QuestionContentPreservationTests: XCTestCase {
             GoalSourceDocument(name: "Example.py", text: preface + $0)
         }
         XCTAssertEqual(GoalSourceDocument.normalizedDocuments(sources).count, 4)
+    }
+}
+
+final class StemIdentityContractTests: XCTestCase {
+    private struct Fixtures: Decodable {
+        struct Pair: Decodable {
+            var stems: [String]
+            var outputs: [String]
+            var fingerprints: [String]
+            var legacyFingerprints: [String]
+        }
+        struct Question: Decodable {
+            var prompt: String
+            var choices: [String]
+            var expectedAnswer: String
+            var explanation: String
+        }
+        var pairs: [Pair]
+        var equivalent: [[String]]
+        var distinct: [[String]]
+        var questions: [Question]
+    }
+
+    private func fixtures() throws -> Fixtures {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        return try JSONDecoder().decode(Fixtures.self, from: Data(contentsOf: root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/stem_identity_contract.json")))
+    }
+
+    func testSharedV2FingerprintContractPreservesCodeMeaning() throws {
+        let fixture = try fixtures()
+        XCTAssertEqual(QuestionBatchSanitizer.stemFingerprintVersion, 2)
+        for pair in fixture.pairs {
+            XCTAssertNotEqual(pair.outputs[0], pair.outputs[1])
+            XCTAssertEqual(pair.legacyFingerprints[0], pair.legacyFingerprints[1])
+            XCTAssertEqual(pair.stems.compactMap(QuestionBatchSanitizer.questionStemFingerprint), pair.fingerprints)
+            XCTAssertNotEqual(pair.fingerprints[0], pair.fingerprints[1])
+        }
+        for pair in fixture.equivalent {
+            XCTAssertTrue(QuestionBatchSanitizer.hasSameQuestionStem(pair[0], pair[1]))
+        }
+        for pair in fixture.distinct {
+            XCTAssertFalse(QuestionBatchSanitizer.hasSameQuestionStem(pair[0], pair[1]))
+        }
+    }
+
+    func testInventoryAndRestoredHistoryKeepDifferentIndentationStems() throws {
+        let fixture = try fixtures()
+        let goal = makeGoal()
+        let questions = fixture.questions.enumerated().map { index, item in
+            makeQuestion(goal: goal, index: index, topic: "Python output", prompt: item.prompt,
+                         expectedAnswer: item.expectedAnswer, choices: item.choices, explanation: item.explanation, difficulty: 3)
+        }
+        let generated = QuestionBatchSanitizer.sanitize(questions + [questions[0]], for: makeRequest(goal: goal))
+        XCTAssertEqual(generated.map(\.prompt), questions.map(\.prompt))
+        var oldJSON = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(questions[0])) as? [String: Any])
+        oldJSON["stemFingerprint"] = fixture.pairs[0].legacyFingerprints[0]
+        oldJSON["stemFingerprintVersion"] = 1
+        let restored = try JSONDecoder().decode(CheckpointQuestion.self, from: JSONSerialization.data(withJSONObject: oldJSON))
+        let request = makeRequest(goal: goal, existingQuestions: [restored])
+        let accepted = QuestionBatchSanitizer.sanitize(questions, for: request)
+        XCTAssertEqual(accepted.map(\.prompt), [questions[1].prompt])
+        XCTAssertEqual(BackendQuestionHistory.blockedStemFingerprints(for: request), [fixture.pairs[0].fingerprints[0]])
+        XCTAssertFalse(BackendQuestionHistory.blockedStemFingerprints(for: request).contains(fixture.pairs[0].fingerprints[1]))
+        let repeated = QuestionBatchSanitizer.sanitize([restored], for: request)
+        XCTAssertTrue(repeated.isEmpty)
+    }
+
+    func testGenerationEnsureAndClaimPacketsDeclareTheSameV2HistoryContract() throws {
+        let fixture = try fixtures()
+        let goal = makeGoal()
+        let history = fixture.questions.enumerated().map { index, item in
+            makeQuestion(goal: goal, index: index, prompt: item.prompt)
+        }
+        let request = makeRequest(goal: goal, existingQuestions: history)
+        let generation = BackendQuestionRequest(request: request)
+        let ensure = BackendQuestionRequest(request: request, contextRevision: "revision", desiredCount: 40, lowWatermark: 0)
+        let claim = BackendQuestionBankClaimRequest(bankID: "bank", claimID: "claim", limit: 5, request: request)
+        for data in [try JSONEncoder().encode(generation), try JSONEncoder().encode(ensure), try JSONEncoder().encode(claim)] {
+            let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            XCTAssertEqual(payload["stemFingerprintVersion"] as? Int, 2)
+            XCTAssertEqual(Set(try XCTUnwrap(payload["blockedStemFingerprints"] as? [String])), Set(fixture.pairs[0].fingerprints))
+        }
+    }
+
+    @MainActor
+    func testSessionKeepsBothCodeStemsWithDifferentMeanings() throws {
+        let fixture = try fixtures()
+        let goal = makeGoal()
+        let suite = "StemIdentityContractTests-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.updateQuestionsPerSession(5)
+        let codeQuestions = fixture.questions.enumerated().map { index, item in
+            makeQuestion(goal: goal, index: index, topic: "Python output", prompt: item.prompt,
+                         expectedAnswer: item.expectedAnswer, choices: item.choices,
+                         explanation: item.explanation, difficulty: 3)
+        }
+        store.questions = codeQuestions + (2...4).map { makeQuestion(goal: goal, index: $0) }
+        let session = try XCTUnwrap(store.nextCheckpointSession())
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertTrue(Set(codeQuestions.map(\.id)).isSubset(of: Set(session.questions.map(\.id))))
     }
 }

@@ -13,7 +13,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import question_bank
-from question_bank_common import _validated_blocked_stem_fingerprints
+from question_bank_common import (
+    _validated_blocked_stem_fingerprints,
+    _validated_stem_fingerprint_version,
+)
 from question_difficulty import _difficulty_guidance
 from service_errors import BadRequestError
 
@@ -430,6 +433,9 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         raise BadRequestError("requiresFullObjectiveCoverage must be a boolean.")
 
     try:
+        stem_fingerprint_version = _validated_stem_fingerprint_version(
+            payload.get("stemFingerprintVersion")
+        )
         blocked_stem_fingerprints = _validated_blocked_stem_fingerprints(
             payload.get("blockedStemFingerprints")
         )
@@ -479,6 +485,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
             preserve_subject_content=True,
         ),
         "blockedStemFingerprints": blocked_stem_fingerprints,
+        "stemFingerprintVersion": stem_fingerprint_version,
         "sourceDocuments": _normalized_source_documents(payload.get("sourceDocuments")),
         "targetCount": target_count,
         "minimumDifficulty": minimum_difficulty,

@@ -428,7 +428,7 @@ def _prepare_questions(
         remote_id = str(
             uuid.uuid5(
                 uuid.NAMESPACE_URL,
-                f"checkpoint:{bank_id}:stem:{stem_identity}",
+                f"checkpoint:{bank_id}:stem:v2:{stem_identity}",
             )
         )
         if remote_id in seen or legacy_remote_id in seen:

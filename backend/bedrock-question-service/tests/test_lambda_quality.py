@@ -53,6 +53,7 @@ class LambdaQualityTests(BackendTestCase):
         fingerprint = _stem_fingerprint(question["prompt"])
         payload = _request_payload(target_count=1)
         payload["blockedStemFingerprints"] = [fingerprint]
+        payload["stemFingerprintVersion"] = 2
         request = lambda_function._normalize_request(payload)  # noqa: SLF001
 
         sanitized = lambda_function._sanitize_questions(  # noqa: SLF001

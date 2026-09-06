@@ -24,6 +24,7 @@ DEFAULT_MAX_RECEIVE_COUNT = 6
 DEFAULT_FAILURE_COOLDOWN_SECONDS = 5 * 60
 DEFAULT_MAX_FAILED_GENERATION_JOBS = 3
 MAX_BLOCKED_STEM_FINGERPRINTS = 750
+CURRENT_STEM_FINGERPRINT_VERSION = 2
 _PRESENTATION_PREFIXES = (
     re.compile(r"^(?:question|item)\s+\d+\s*[:.)-]\s*", re.IGNORECASE),
     re.compile(
@@ -41,8 +42,8 @@ _MATH_OPERATOR_SPACING = re.compile(
 )
 
 
-def _normalized_stem_identity(value: Any) -> str:
-    """Return an exact-question identity without erasing meaningful operators."""
+def _legacy_normalized_stem_identity(value: Any) -> str:
+    """Version 1 only: retain historical wire behavior for older clients."""
     if value is None:
         return ""
     normalized = unicodedata.normalize("NFC", " ".join(str(value).split()))
@@ -54,9 +55,32 @@ def _normalized_stem_identity(value: Any) -> str:
     return normalized.rstrip(" .?!")
 
 
-def _stem_fingerprint(value: Any) -> str:
+def _normalized_stem_identity(value: Any) -> str:
+    """Version 2 identity: preserve code points, case, spacing and punctuation."""
+    if value is None:
+        return ""
+    text = str(value).replace("\r\n", "\n").replace("\r", "\n")
+    return text.strip(" \t\n\r\v\f")
+
+
+def _validated_stem_fingerprint_version(value: Any) -> int:
+    if value is None:
+        return 1
+    if type(value) is not int or value not in (1, CURRENT_STEM_FINGERPRINT_VERSION):
+        raise ValueError("stemFingerprintVersion must be 1 or 2.")
+    return value
+
+
+def _stem_fingerprint(
+    value: Any, *, version: int = CURRENT_STEM_FINGERPRINT_VERSION
+) -> str:
     """Return the lowercase 64-bit FNV-1a fingerprint used by clients."""
-    identity = _normalized_stem_identity(value)
+    version = _validated_stem_fingerprint_version(version)
+    identity = (
+        _legacy_normalized_stem_identity(value)
+        if version == 1
+        else _normalized_stem_identity(value)
+    )
     if not identity:
         return ""
     fingerprint = 14_695_981_039_346_656_037

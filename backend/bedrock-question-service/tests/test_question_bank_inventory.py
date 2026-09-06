@@ -729,6 +729,7 @@ class QuestionBankInventoryTests(QuestionBankTestCase):
             "claimID": "cross-context-blocked-stem",
             "limit": 1,
             "blockedStemFingerprints": [fingerprint],
+            "stemFingerprintVersion": 2,
         }
 
         with mock.patch.object(question_bank, "_ensure_refill") as refill:

@@ -917,7 +917,9 @@ No prose, headings, Markdown, comments, or numbering outside the JSON object.
 def _provider_visible_request(request: dict[str, Any]) -> dict[str, Any]:
     """Remove server-side-only controls before serializing a provider prompt."""
     visible = {
-        key: value for key, value in request.items() if key != "blockedStemFingerprints"
+        key: value
+        for key, value in request.items()
+        if key not in {"blockedStemFingerprints", "stemFingerprintVersion"}
     }
     visible["difficultyGuidance"] = _generation_difficulty_guidance(request)
     return visible

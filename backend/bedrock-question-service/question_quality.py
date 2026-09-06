@@ -133,7 +133,7 @@ def _sanitize_questions(
         if prompt:
             blocked_prompts.add(_normalized_stem_identity(prompt))
     seen_prompts = set(blocked_prompts)
-    seen_stem_fingerprints = set(request.get("blockedStemFingerprints", []))
+    blocked_stem_fingerprints = set(request.get("blockedStemFingerprints", []))
     seen_coverage = set()
     seen_choice_sets = set()
     accepted_skill_counts: dict[str, int] = {}
@@ -200,7 +200,9 @@ def _sanitize_questions(
             topic = request["goal"]["contentTopics"][0]
 
         prompt_keys = {_normalized_stem_identity(prompt)}
-        stem_fingerprint = _stem_fingerprint(prompt)
+        stem_fingerprint = _stem_fingerprint(
+            prompt, version=request.get("stemFingerprintVersion", 1)
+        )
         coverage_keys = _question_coverage_keys(expected_answer, topic)
         if (
             len(prompt) < 12
@@ -215,7 +217,7 @@ def _sanitize_questions(
             continue
         if (
             any(key in seen_prompts for key in prompt_keys)
-            or stem_fingerprint in seen_stem_fingerprints
+            or stem_fingerprint in blocked_stem_fingerprints
         ):
             record_quality(request_metrics, "sanitize", "duplicate_stem")
             continue
@@ -259,7 +261,6 @@ def _sanitize_questions(
             continue
 
         seen_prompts.update(prompt_keys)
-        seen_stem_fingerprints.add(stem_fingerprint)
         seen_coverage.update(coverage_keys)
         seen_choice_sets.add(choice_set_key)
         question = {

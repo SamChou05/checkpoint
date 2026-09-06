@@ -49,7 +49,7 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
                     uuid.NAMESPACE_URL,
                     "checkpoint:"
                     + ("a" * 64)
-                    + ":stem:"
+                    + ":stem:v2:"
                     + question_bank._normalized_stem_identity(raw["prompt"]),  # noqa: SLF001
                 )
             ),
@@ -88,9 +88,7 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
         ]
         changed = {
             **original,
-            "prompt": (
-                "Choose the correct answer to this question: " + original["prompt"]
-            ),
+            "prompt": original["prompt"],
             "expectedAnswer": "A differently phrased supported conclusion.",
             "choices": [
                 "A differently phrased supported conclusion.",
@@ -197,17 +195,17 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
             "  WHAT   is x + 1 !  "
         )
 
-        self.assertEqual(plus, compact_plus)
+        self.assertNotEqual(plus, compact_plus)
         self.assertNotEqual(plus, minus)
         self.assertNotEqual(superscript, plain_digit)
-        self.assertEqual(plus, cosmetic_variant)
+        self.assertNotEqual(plus, cosmetic_variant)
         self.assertEqual(
             question_bank._stem_fingerprint("What is x + 1?"),  # noqa: SLF001
-            "66a0e917835b1b99",
+            "b18207b8cd2f3258",
         )
-        self.assertEqual(  # Same normalized identity has the same wire fingerprint.
-            question_bank._stem_fingerprint("What is x+1?"),  # noqa: SLF001
-            "66a0e917835b1b99",
+        self.assertEqual(  # Boundary whitespace shares the same v2 identity.
+            question_bank._stem_fingerprint("  What is x + 1?\n"),  # noqa: SLF001
+            "b18207b8cd2f3258",
         )
         self.assertNotEqual(
             question_bank._stem_fingerprint("What is x²?"),  # noqa: SLF001
@@ -246,7 +244,7 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
                 compact = question_bank._normalized_stem_identity(  # noqa: SLF001
                     f"What is x{operator}1?"
                 )
-                self.assertEqual(spaced, compact)
+                self.assertNotEqual(spaced, compact)
 
     def test_stem_identity_does_not_erase_leading_meaningful_punctuation(self):
         leading_punctuation = question_bank._normalized_stem_identity(  # noqa: SLF001
@@ -258,7 +256,7 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
 
         self.assertNotEqual(leading_punctuation, ordinary)
 
-    def test_stem_identity_removes_only_exact_presentation_wrappers(self):
+    def test_stem_identity_preserves_presentation_text_for_semantic_review(self):
         bare = question_bank._normalized_stem_identity(  # noqa: SLF001
             "What does the evidence establish?"
         )
@@ -272,7 +270,7 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
             "A passage says 'Demand increased.' What evidence supports the claim?"
         )
 
-        self.assertEqual(bare, wrapped)
+        self.assertNotEqual(bare, wrapped)
         self.assertNotEqual(
             first_shared_passage_question,
             second_shared_passage_question,
