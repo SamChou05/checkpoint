@@ -13,6 +13,7 @@ from request_contract import (
     _choice_uniqueness_key,
     _clamped_int,
     _clean_text,
+    _clean_subject_text,
     _clip,
     _deterministic_objective_id,
     _strip_choice_label,
@@ -182,7 +183,7 @@ def _sanitize_questions(
             record_quality(request_metrics, "sanitize", "prompt_length")
             continue
 
-        prompt = _clip(raw_prompt, 360)
+        prompt = raw_prompt
         expected_answer = _choice_uniqueness_key(
             str(raw_question.get("expectedAnswer") or "")
         )
@@ -486,7 +487,7 @@ def _requested_objective_allocation_limits(
 def _question_coverage_payload(question: dict[str, Any]) -> dict[str, Any]:
     coverage = {
         "topic": _clean_text(question.get("topic")),
-        "prompt": _clean_text(question.get("prompt")),
+        "prompt": _clean_subject_text(str(question.get("prompt") or "")),
         "expectedAnswer": _choice_uniqueness_key(
             str(question.get("expectedAnswer") or "")
         ),
@@ -650,36 +651,40 @@ def _looks_like_answer_label(value: str) -> bool:
 
 
 def _prompt_without_trailing_choice_echo(prompt: Any, raw_choices: Any) -> str:
-    """Remove a provider's redundant, line-delimited copy of its choice array."""
-    cleaned_prompt = _clean_text(prompt)
-    if not isinstance(prompt, str) or not isinstance(raw_choices, list):
+    """Remove only a redundant final copy of choices; retain the stem's layout."""
+    if not isinstance(prompt, str):
+        return ""
+    cleaned_prompt = _clean_subject_text(prompt)
+    if not isinstance(raw_choices, list) or not all(
+        isinstance(choice, str) for choice in raw_choices
+    ):
         return cleaned_prompt
-
-    choices = [_clean_text(choice) for choice in raw_choices]
+    choices = [_choice_uniqueness_key(choice) for choice in raw_choices]
     if len(choices) != 4 or any(not choice for choice in choices):
         return cleaned_prompt
 
-    lines = prompt.splitlines()
+    lines = cleaned_prompt.split("\n")
     nonempty_lines = [
-        (index, _clean_text(line))
-        for index, line in enumerate(lines)
-        if _clean_text(line)
+        (index, line.strip()) for index, line in enumerate(lines) if line.strip()
     ]
     if len(nonempty_lines) <= len(choices):
         return cleaned_prompt
-
     trailing_lines = nonempty_lines[-len(choices) :]
-    choice_keys = [
-        _clean_text(_strip_choice_label(choice)).casefold() for choice in choices
-    ]
-    trailing_keys = [
-        _clean_text(_strip_choice_label(line)).casefold() for _, line in trailing_lines
-    ]
-    if trailing_keys != choice_keys:
-        return cleaned_prompt
-
-    prefix = _clean_text("\n".join(lines[: trailing_lines[0][0]]))
-    return prefix or cleaned_prompt
+    for index, ((_, line), choice) in enumerate(
+        zip(trailing_lines, choices, strict=True)
+    ):
+        # A label must be the matching ordinal followed by whitespace. Decimal
+        # literals and subject text such as C. elegans are not arbitrary labels.
+        label = rf"(?:[{chr(65 + index)}{index + 1}][).:]|\([{chr(65 + index)}{index + 1}]\)|\[[{chr(65 + index)}{index + 1}]\])\s+"
+        without_label = re.sub("^" + label, "", line, count=1)
+        if (
+            _choice_uniqueness_key(line) != choice
+            and _choice_uniqueness_key(without_label) != choice
+        ):
+            return cleaned_prompt
+    return (
+        _clean_subject_text("\n".join(lines[: trailing_lines[0][0]])) or cleaned_prompt
+    )
 
 
 def _prompt_contains_embedded_options(prompt: str) -> bool:

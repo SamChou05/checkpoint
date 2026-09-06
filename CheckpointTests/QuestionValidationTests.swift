@@ -1011,3 +1011,103 @@ final class QuestionValidationTests: XCTestCase {
     }
 
 }
+
+final class QuestionContentPreservationTests: XCTestCase {
+    private struct Fixtures: Decodable {
+        struct Case: Decodable { var raw: String; var expected: String }
+        struct Question: Decodable {
+            var prompt: String
+            var choices: [String]
+            var expectedAnswer: String
+            var explanation: String
+            var topic: String
+            var difficulty: Int
+        }
+        var question: Question
+        var source: String
+        var cases: [Case]
+    }
+
+    private func fixtures() throws -> Fixtures {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let url = root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/subject_content_contract.json")
+        return try JSONDecoder().decode(Fixtures.self, from: Data(contentsOf: url))
+    }
+
+    func testSharedLayoutControlAndUnicodeContract() throws {
+        for item in try fixtures().cases {
+            // Compare bytes so canonical Unicode equivalence cannot conceal a
+            // change to code strings whose code-point count is being tested.
+            XCTAssertEqual(Data(QuestionText.subjectContent(item.raw).utf8), Data(item.expected.utf8))
+            let document = GoalSourceDocument(name: "sample.txt", text: item.raw)
+            XCTAssertEqual(Data(document.text.utf8), Data(item.expected.utf8))
+        }
+    }
+
+    func testImportedCodeSurvivesPersistenceAndBackendRequest() throws {
+        let source = try fixtures().source
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let path = directory.appendingPathComponent("sample.py")
+        try source.write(to: path, atomically: true, encoding: .utf8)
+        let imported = try GoalSourceDocumentImporter.loadDocument(from: path)
+        XCTAssertEqual(imported.text, source)
+        var goal = makeGoal()
+        goal.sourceDocuments = [imported]
+        let restored = try JSONDecoder().decode(Goal.self, from: JSONEncoder().encode(goal))
+        let request = makeRequest(goal: restored)
+        let data = try JSONEncoder().encode(BackendQuestionRequest(request: request))
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let sources = try XCTUnwrap(payload["sourceDocuments"] as? [[String: Any]])
+        XCTAssertEqual(sources[0]["text"] as? String, source)
+    }
+
+    func testGeneratedCodeAndHistoryKeepTheirLayout() throws {
+        let item = try fixtures().question
+        let goal = makeGoal()
+        let question = makeQuestion(goal: goal, index: 1, topic: item.topic, prompt: item.prompt,
+                                    expectedAnswer: item.expectedAnswer, choices: item.choices,
+                                    explanation: item.explanation, difficulty: item.difficulty)
+        let decoded = try JSONDecoder().decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(question))
+        let received = decoded.makeQuestion(goalID: goal.id, sourcePrompt: "service")
+        let sanitized = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(sanitized.prompt, item.prompt)
+        for choice in sanitized.choices {
+            XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: sanitized).result,
+                           choice == item.expectedAnswer ? .correct : .incorrect)
+        }
+        let request = makeRequest(goal: goal, existingQuestions: [sanitized])
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(BackendQuestionRequest(request: request))) as? [String: Any])
+        XCTAssertEqual(payload["existingPrompts"] as? [String], [item.prompt])
+        let history = try XCTUnwrap(payload["existingQuestionCoverage"] as? [[String: Any]])
+        XCTAssertEqual(history[0]["prompt"] as? String, item.prompt)
+    }
+
+    func testChoiceEchoRemovalPreservesTheStemAndLiteralDifferences() throws {
+        let item = try fixtures().question
+        for labeled in [false, true] {
+            let echo = item.choices.enumerated().map { index, choice in
+                (labeled ? ["A", "B", "C", "D"][index] + ". " : "") + choice
+            }.joined(separator: "\n")
+            XCTAssertEqual(QuestionBatchSanitizer.promptWithoutTrailingChoiceEcho(item.prompt + "\n\n" + echo, choices: item.choices), item.prompt)
+        }
+        let choices = ["\"a  b\"", "\"one\"", "\"two\"", "\"three\""]
+        let nonEcho = "Preserve the exact quoted lines below:\n\"a b\"\n\"one\"\n\"two\"\n\"three\""
+        XCTAssertEqual(QuestionBatchSanitizer.promptWithoutTrailingChoiceEcho(nonEcho, choices: choices), nonEcho)
+    }
+
+    func testOverlongStemIsRejectedInsteadOfCuttingSubjectContent() {
+        let goal = makeGoal()
+        let question = makeQuestion(goal: goal, index: 1, prompt: String(repeating: "print(1)\n", count: 50))
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+    }
+
+    func testSourceDeduplicationPreservesDifferentCaseAndQuotedSpacing() {
+        let preface = "These examples distinguish literal case and spacing.\n"
+        let sources = ["print(True)", "print(true)", "print(\"a b\")", "print(\"a  b\")", "print(True)"].map {
+            GoalSourceDocument(name: "Example.py", text: preface + $0)
+        }
+        XCTAssertEqual(GoalSourceDocument.normalizedDocuments(sources).count, 4)
+    }
+}

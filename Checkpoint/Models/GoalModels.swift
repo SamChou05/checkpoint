@@ -329,7 +329,7 @@ struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
     }
 
     static func normalizedDocuments(_ documents: [GoalSourceDocument]) -> [GoalSourceDocument] {
-        var seenText: Set<String> = []
+        var seenText: Set<Data> = []
         var candidates: [GoalSourceDocument] = []
 
         for document in documents {
@@ -341,7 +341,7 @@ struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
             )
             guard normalized.text.count >= GoalContextLimits.minimumUsefulDocumentCharacters else { continue }
 
-            let duplicateKey = normalized.text.lowercased()
+            let duplicateKey = Data(normalized.text.utf8)
             guard seenText.insert(duplicateKey).inserted else { continue }
             candidates.append(normalized)
             if candidates.count >= GoalContextLimits.maximumDocumentCount { break }
@@ -378,28 +378,7 @@ struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
     private static func normalizedText(_ rawText: String, limit: Int) -> String {
         guard limit > 0 else { return "" }
 
-        let normalizedLineEndings = rawText
-            .replacingOccurrences(of: "\r\n", with: "\n")
-            .replacingOccurrences(of: "\r", with: "\n")
-        var lines: [String] = []
-        var previousLineWasEmpty = false
-
-        for rawLine in normalizedLineEndings.components(separatedBy: "\n") {
-            let line = rawLine
-                .split(whereSeparator: { $0.isWhitespace })
-                .joined(separator: " ")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let isEmpty = line.isEmpty
-            if isEmpty && previousLineWasEmpty {
-                continue
-            }
-            lines.append(line)
-            previousLineWasEmpty = isEmpty
-        }
-
-        let normalized = lines
-            .joined(separator: "\n")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalized = QuestionText.subjectContent(rawText)
         guard normalized.count > limit else { return normalized }
 
         let marker = "\n[…truncated…]\n"

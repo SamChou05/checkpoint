@@ -1,0 +1,34 @@
+{
+  "question": {
+    "prompt": "What does this Python code print?\nvalues = []\nfor n in [1, 2]:\n    values.append(n)\nprint(values)",
+    "choices": [
+      "[1, 2]",
+      "[1]",
+      "[2]",
+      "[]"
+    ],
+    "expectedAnswer": "[1, 2]",
+    "explanation": "Both integers are appended before the list is printed.",
+    "topic": "Python execution",
+    "difficulty": 3
+  },
+  "source": "for n in [1, 2]:\n    print(n)\n\nprint(\"a  b\")\n# The final string contains two spaces.",
+  "cases": [
+    {
+      "raw": "\r\n\r\nfor n in [1, 2]:\r\n    print(n)\r\n\r\nprint(\"a  b\")\r\n\r\n",
+      "expected": "for n in [1, 2]:\n    print(n)\n\nprint(\"a  b\")"
+    },
+    {
+      "raw": "\n  first\n\n\n\tsecond  line\n\t\n",
+      "expected": "  first\n\n\n\tsecond  line"
+    },
+    {
+      "raw": "print(\"é\")\n# Keep decomposed code points and emoji 👩‍💻.",
+      "expected": "print(\"é\")\n# Keep decomposed code points and emoji 👩‍💻."
+    },
+    {
+      "raw": "\u0000\n\tprint(\"a\u0007b\")\n",
+      "expected": "\tprint(\"a b\")"
+    }
+  ]
+}

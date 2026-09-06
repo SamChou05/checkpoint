@@ -8,6 +8,21 @@ enum QuestionText {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// Shared with request_contract._clean_subject_text. Layout belongs to the
+    /// subject: preserve indentation, tabs, repeated spaces and internal lines.
+    static func subjectContent(_ text: String) -> String {
+        let lineEndings = text.replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+        let cleaned = String(String.UnicodeScalarView(lineEndings.unicodeScalars.map { scalar in
+            scalar.properties.generalCategory == .control && scalar != "\n" && scalar != "\t"
+                ? UnicodeScalar(" ") : scalar
+        }))
+        let lines = cleaned.components(separatedBy: "\n")
+        guard let first = lines.firstIndex(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }),
+              let last = lines.lastIndex(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else { return "" }
+        return lines[first...last].joined(separator: "\n")
+    }
+
     static func clipped(_ string: String, maxLength: Int) -> String {
         guard string.count > maxLength else {
             return string

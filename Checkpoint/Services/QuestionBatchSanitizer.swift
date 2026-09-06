@@ -44,10 +44,9 @@ enum QuestionBatchSanitizer {
         for question in questions {
             guard !request.requiresVerifiedQuestions || question.verificationVersion == 1 else { continue }
             var sanitizedQuestion = question
-            sanitizedQuestion.prompt = QuestionText.clipped(
-                question.prompt.trimmingCharacters(in: .whitespacesAndNewlines),
-                maxLength: 360
-            )
+            let prompt = promptWithoutTrailingChoiceEcho(question.prompt, choices: question.choices)
+            guard prompt.count <= 360 else { continue }
+            sanitizedQuestion.prompt = prompt
             let expectedAnswer = QuestionText.clipped(
                 question.expectedAnswer.trimmingCharacters(in: .whitespacesAndNewlines),
                 maxLength: 280
@@ -218,6 +217,27 @@ enum QuestionBatchSanitizer {
             #"\bafter (?:missing|failing)\b.{0,80}\b(?:question|quiz|item|test)\b.{0,80}\b(?:study|practice|review|next)\b"#
         ]
         return patterns.contains { prompt.range(of: $0, options: [.regularExpression, .caseInsensitive]) != nil }
+    }
+
+    static func promptWithoutTrailingChoiceEcho(_ prompt: String, choices: [String]) -> String {
+        let cleaned = QuestionText.subjectContent(prompt)
+        guard choices.count == 4 else { return cleaned }
+        let keys = choices.map(MultipleChoiceAnswerNormalizer.key(for:))
+        guard keys.allSatisfy({ !$0.isEmpty }) else { return cleaned }
+        let lines = cleaned.components(separatedBy: "\n")
+        let nonempty = lines.enumerated().filter { !$0.element.trimmingCharacters(in: .whitespaces).isEmpty }
+        guard nonempty.count > 4 else { return cleaned }
+        let trailing = Array(nonempty.suffix(4))
+        for (index, line) in trailing.enumerated() {
+            let text = line.element.trimmingCharacters(in: .whitespaces)
+            let label = ["A", "B", "C", "D"][index] + String(index + 1)
+            let pattern = #"^(?:[\#(label)][).:]|\([\#(label)]\)|\[[\#(label)]\])\s+"#
+            let withoutLabel = text.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+            guard MultipleChoiceAnswerNormalizer.key(for: text) == keys[index]
+                    || MultipleChoiceAnswerNormalizer.key(for: withoutLabel) == keys[index] else { return cleaned }
+        }
+        let prefix = QuestionText.subjectContent(lines.prefix(trailing[0].offset).joined(separator: "\n"))
+        return prefix.isEmpty ? cleaned : prefix
     }
 
     private static func promptKeys(_ prompt: String) -> Set<String> {

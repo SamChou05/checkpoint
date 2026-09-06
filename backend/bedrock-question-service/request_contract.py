@@ -466,6 +466,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
             "existingPrompts",
             maximum_items=30,
             maximum_characters=360,
+            preserve_subject_content=True,
         ),
         "existingQuestionCoverage": _list_of_question_coverage(
             payload.get("existingQuestionCoverage")
@@ -475,6 +476,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
             "reportedPrompts",
             maximum_items=30,
             maximum_characters=360,
+            preserve_subject_content=True,
         ),
         "blockedStemFingerprints": blocked_stem_fingerprints,
         "sourceDocuments": _normalized_source_documents(payload.get("sourceDocuments")),
@@ -1087,22 +1089,32 @@ def _source_context_character_limits(documents: list[dict[str, str]]) -> list[in
     return allocations
 
 
-def _clean_source_text(value: str) -> str:
-    normalized_newlines = value.replace("\r\n", "\n").replace("\r", "\n")
-    printable_text = "".join(
-        character if character == "\n" or character.isprintable() else " "
-        for character in normalized_newlines
+def _clean_subject_text(value: str) -> str:
+    """Preserve subject syntax; clean transport/control noise, not layout.
+
+    Shared with QuestionText.subjectContent on iOS. Empty boundary lines are
+    removable, but indentation, tabs, repeated spaces and internal blank lines
+    can be part of code, quoted output, verse or a table. Do not Unicode-fold
+    content: even canonically equivalent code strings may have different lengths.
+    """
+    normalized = value.replace("\r\n", "\n").replace("\r", "\n")
+    printable = "".join(
+        " "
+        if unicodedata.category(character) == "Cc" and character not in "\n\t"
+        else character
+        for character in normalized
     )
+    lines = printable.split("\n")
+    start, end = 0, len(lines)
+    while start < end and not lines[start].strip():
+        start += 1
+    while end > start and not lines[end - 1].strip():
+        end -= 1
+    return "\n".join(lines[start:end])
 
-    lines: list[str] = []
-    for raw_line in printable_text.split("\n"):
-        line = " ".join(raw_line.split()).strip()
-        if line:
-            lines.append(line)
-        elif lines and lines[-1] != "":
-            lines.append("")
 
-    return "\n".join(lines).strip()
+def _clean_source_text(value: str) -> str:
+    return _clean_subject_text(value)
 
 
 def _truncate_source_text(value: str, maximum_characters: int) -> str:
@@ -1209,6 +1221,7 @@ def _list_of_question_coverage(value: Any) -> list[dict[str, Any]]:
             item.get("prompt"),
             f"existingQuestionCoverage[{index}].prompt",
             360,
+            preserve_subject_content=True,
         )
         expected_answer = _validated_text(
             item.get("expectedAnswer"),
@@ -1263,13 +1276,18 @@ def _validated_text(
     maximum_characters: int,
     *,
     preserve_whitespace: bool = False,
+    preserve_subject_content: bool = False,
 ) -> str:
     if value is None:
         return ""
     if not isinstance(value, str):
         raise BadRequestError(f"{field_name} must be text.")
     cleaned = (
-        _choice_uniqueness_key(value) if preserve_whitespace else _clean_text(value)
+        _clean_subject_text(value)
+        if preserve_subject_content
+        else _choice_uniqueness_key(value)
+        if preserve_whitespace
+        else _clean_text(value)
     )
     if len(cleaned) > maximum_characters:
         raise BadRequestError(
@@ -1284,6 +1302,7 @@ def _validated_string_list(
     maximum_items: int,
     maximum_characters: int,
     preserve_whitespace: bool = False,
+    preserve_subject_content: bool = False,
 ) -> list[str]:
     if value is None:
         return []
@@ -1297,6 +1316,7 @@ def _validated_string_list(
             f"{field_name}[{index}]",
             maximum_characters,
             preserve_whitespace=preserve_whitespace,
+            preserve_subject_content=preserve_subject_content,
         )
         if cleaned:
             strings.append(cleaned)
