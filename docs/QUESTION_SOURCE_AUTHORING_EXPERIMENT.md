@@ -1,6 +1,45 @@
-# Evidence before authorship: prospective comparison
+# Evidence before authorship: matched feasibility comparison
 
-Status: prepared experiment, no results yet. The previous goal turn was progress: it committed the solver outcome gate and completed a live run that showed both remaining defects originated in incorrect `resolved` conclusions. The [gate report](QUESTION_SOLVER_OUTCOME_GATE.md) preserves that result. This experiment changes evidence access before a question is written; it does not add another critic to the same bad items.
+Status: completed on September 6, 2026; **the prospective success criteria were not met**. Giving the author inspected primary-source summaries produced mixed content results across two fresh goals and still allowed unsupported feedback and missing conditions. None of the twelve candidates combined complete supported reviewed content with independently assessed difficulty at least 3. These small samples do not establish a causal improvement or a production error rate. No production configuration was promoted or deployed.
+
+The preceding [solver outcome gate](QUESTION_SOLVER_OUTCOME_GATE.md) closed an enforcement gap, but live controls still failed when the solver incorrectly declared `resolved`. This experiment changed evidence access before authorship. Its method and success criteria below were committed before execution in `6662f6b`; the bounded runner and tests were committed in `b6fdae1`.
+
+## Results and independent assessment
+
+Each cell below counts actual authored candidates, including those later excluded. Twelve candidates produced sixteen distinct exact displays because some choices were normalized or reordered; those additional displays are not new samples. Two assistant reviewers assessed the domain whose source packet the other reviewer had prepared. They froze literal answer, distractor and difficulty judgments before seeing arm labels, model keys, explanations, difficulty ratings or acceptance decisions. They then separately assessed authored explanations and all reviewer feedback. These are independent assistant assessments, not human educator review or calibrated measures of learning.
+
+“Complete supported content” requires an unqualified supported question and key, the reviewer’s main explanation, and all four choice explanations without a material unresolved defect. It does not, by itself, certify challenging distractors. An unsupported claim is stronger than the inspected evidence establishes; that is not automatically proof that it is false.
+
+| Goal and author arm | Authored | Returned | Complete supported content, all candidates | Independently rated ≥3 | Complete content and ≥3 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Plant propagation, goal-only | 3 | 3 | 0 | 2 | 0 |
+| Plant propagation, source-first | 3 | 3 | 2 | 0 | 0 |
+| Accessible forms, goal-only | 3 | 0 | 2 | 0 | 0 |
+| Accessible forms, source-first | 3 | 2 | 1 | 0 | 0 |
+
+Source-first had 3/6 complete supported candidates, compared with 2/6 for goal-only. The direction differed by goal: plant content improved descriptively, while forms content declined. Among returned items the counts were 3/5 and 0/3, respectively, but that comparison excludes two supported goal-only forms items rejected for difficulty. It must not be used alone to claim an improvement. Supported individual choice explanations were 20/24 versus 19/24. Plant best-listed-key agreement permits wording caveats; forms literal-warranted-key agreement does not. Those differently defined counts are preserved separately rather than combined as “correct answers.”
+
+Concrete failures identify what the next intervention must preserve:
+
+- **Evidence was extended into an unsupported mechanism.** A returned source-first plant question attributed injury to sunlight “amplified by the sealed cover”; its reviewer said the cover “intensifies light.” The extension sources support excessive heat/light injury and ventilation guidance, not this optical-amplification claim. The useful advice to avoid excessive exposure does not validate the added mechanism. Another choice explanation called rooting hormone “unrelated” to water absorption, overlooking its potential indirect effect through root growth.
+- **A condition stated by the solver disappeared in acceptance.** A returned source-first forms item described an `aria-label`, a date-format placeholder and no nearby visible label. Its solver conditioned failure on there being no other adequate visible label or instruction, yet emitted `resolved` with empty required assumptions. The final review accepted the unconditional failure answer. The literal stem did not rule out adequate instructions elsewhere; the reference does not mandate an adjacent text label in every case.
+- **Correctly rejecting one assertion did not establish the replacement explanation.** A goal-only speech-control item falsely claimed the accessible name `Email address` did not contain the visible text `Email`. The reviewer caught that substring error. Its alternative blamed an unassociated label for the speech-command failure without establishing the speech system’s matching or activation behavior. Runtime answer disagreement excluded the question, but this was not a validated repair of the causal question.
+- **Difficulty remained overstated.** Every source-first item was independently rated level 2. Many distractors used obvious absolute claims or repeated the same weak misconception. The two goal-only items rated level 3 still had material content/feedback qualifications. A scenario or a model-assigned level 3 did not establish the requested cognitive work.
+
+Both plant batches returned all three candidates. The source-first forms batch returned two and excluded one for difficulty. The goal-only forms batch excluded one for answer disagreement and two for difficulty. A difficulty exclusion is not credited as detection of a factual defect.
+
+## Execution and archived evidence
+
+The single execution used a clean worktree at `b6fdae1` and the frozen plan SHA256 `eacd50347f10905cf62c1ac4a0e37d28dc695d52c83d20089f8e76c1b60bcd27`. All twelve provider calls completed normally with `end_turn`, known usage, no retries and no replacement cases. Total usage was 26,451 input and 28,666 output tokens; the largest output used 5,255 of the 16,000-token allowance. Output truncation did not explain these failures. All responses contained a reasoning block; its private text was not retained.
+
+The four jobs took 145.302, 81.465, 104.404 and 124.046 seconds, respectively, summing to 455.217 seconds. One author call took 84.204 seconds, exceeding the deployed worker’s 75-second read setting while fitting the experiment’s 100-second limit. This is not a production latency qualification. Input text totaled 116,750 UTF-8 bytes; this is not a token or dollar measurement.
+
+- [Exact live capture](evidence/source-authoring-feasibility-20260906.json), SHA256 `cb3b3442eb6159e55c703edd14e0dcdb61b50835f83fd7e1f2e96a5da5de8a91`, preserves the plan, source/prompt hashes, actual requests and final responses, all candidates, feedback, usage and exclusions.
+- [Independent adjudication archive](evidence/source-authoring-adjudication-20260906.json), SHA256 `8c7646b57400ada8244090da607f7bf18bbaf31390de61aa72ce1e6b5b343d5b`, preserves all eight original input/review documents verbatim with hashes and explicit joins to the twelve captured candidates. Blind input coverage, frozen review IDs, raw/display question content, solver/reviewer records and returned status were checked against the capture. The live capture’s historical `feedback_assessment: unassessed` state is intentionally unchanged; the separate archive records the later assessment.
+
+The runner milestone passed 462 backend tests with one skip, Ruff and `git diff --check`; the evidence milestone adds integrity checks without changing runtime behavior. Source summaries were manually selected and inspected before authorship. This run did not implement automatic retrieval, validate arbitrary goal coverage, resolve the old invalid controls, recheck existing inventory, or measure adaptive learning outcomes.
+
+The result supports retaining evidence fidelity, necessary conditions and teaching-feedback correctness as separate requirements. Adding a source packet alone is insufficient. A next construction or verification mechanism must demonstrate those properties on fresh items as well as the unresolved controls; another matching model verdict or a higher returned count does not supply that evidence.
 
 ## Question and matched conditions
 
@@ -25,7 +64,7 @@ The executable plan binds the fixtures, normalized author and checker requests, 
 
 The source-selection provenance and prospective teaching checklist remain assessment metadata; they never enter provider requests. Blinded exports contain exact stems, ordered choices, goal, and the common reference packet. Content identities bind those values so arm labels, keys, explanations, difficulty labels, and runtime decisions can be joined only after the independent record is frozen.
 
-## Assessment declared before execution
+## Assessment declared before execution (preserved)
 
 Assess every raw candidate, not only retained inventory. Select all warranted answers to the literal displayed question, including the possibility of zero or several. Check whether facts or qualifications are missing, whether choices are distinct and plausible, and whether the question asks substantive subject knowledge. A question requiring an unpublished passage or merely asking which source said something does not establish the intended general learning experience. Unknown outside-source claims stay unverified until independently checked; absence from a packet is not proof of falsehood.
 

@@ -6,6 +6,8 @@ The repository has stronger validation and better diagnostics, but the correctne
 
 September 6 follow-up: [the independent solver's declared outcome is now enforced in code](QUESTION_SOLVER_OUTCOME_GATE.md). A live four-case diagnostic retained both valid keys but still accepted both known invalid questions because the solver incorrectly declared them `resolved`. This closes a control-flow gap without qualifying the system for release. The historical measurements below remain unchanged.
 
+A subsequent [source-first authoring comparison](QUESTION_SOURCE_AUTHORING_EXPERIMENT.md) generated twelve candidates across plant propagation and accessible forms. Giving sources to the author had mixed content results and still allowed unsupported explanations and missing conditions. Neither arm produced a candidate with both complete supported reviewed content and independently assessed difficulty at least 3. This small feasibility experiment does not qualify a release or establish production accuracy.
+
 ## What is holding the system back
 
 1. **Confident substitution of a familiar problem.** Reviewers sometimes answer a standard textbook problem instead of the actual wording. One failing fixture asks to enumerate all matching pairs in linear time; the reviewer approves a method for finding whether a pair exists. Another assumes an image-editing order can recover detail without establishing whether the source data still contains that detail.
