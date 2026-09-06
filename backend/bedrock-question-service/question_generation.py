@@ -28,6 +28,7 @@ from service_errors import (
     SafetyInterventionError,
     ServiceConfigurationError,
 )
+from question_verification import verify_questions
 
 
 DEFAULT_MODEL_ID = "amazon.nova-lite-v1:0"
@@ -168,6 +169,7 @@ def _generate_sanitized_questions(
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
     current_request = copy.deepcopy(request)
+    rejected_prompts: list[str] = []
 
     for _ in range(attempts):
         try:
@@ -176,6 +178,22 @@ def _generate_sanitized_questions(
                 bedrock_client,
                 call_budget=call_budget,
                 request_metrics=request_metrics,
+            )
+            candidates = _sanitize_questions(
+                provider_payload.get("questions", []), current_request
+            )
+            generated_questions = verify_questions(
+                candidates,
+                current_request,
+                lambda system, prompt: _generate_with_bedrock(
+                    normalized_request=current_request,
+                    bedrock_client=bedrock_client,
+                    model_id=_model_attempts()[0],
+                    system_prompt=system,
+                    user_prompt=prompt,
+                    call_budget=call_budget,
+                    request_metrics=request_metrics,
+                ),
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -186,19 +204,24 @@ def _generate_sanitized_questions(
             if questions:
                 break
             raise
-        generated_questions = _sanitize_questions(
-            provider_payload.get("questions", []), current_request
-        )
         questions.extend(generated_questions)
+        approved_prompts = {question["prompt"] for question in generated_questions}
+        rejected_prompts.extend(
+            question["prompt"]
+            for question in candidates
+            if question["prompt"] not in approved_prompts
+        )
 
         if len(questions) >= target_count:
             break
 
         current_request = copy.deepcopy(request)
         current_request["targetCount"] = target_count - len(questions)
-        current_request["existingPrompts"] = request["existingPrompts"] + [
-            question["prompt"] for question in questions
-        ]
+        current_request["existingPrompts"] = (
+            request["existingPrompts"]
+            + rejected_prompts
+            + [question["prompt"] for question in questions]
+        )
         current_request["existingQuestionCoverage"] = request[
             "existingQuestionCoverage"
         ] + [_question_coverage_payload(question) for question in questions]

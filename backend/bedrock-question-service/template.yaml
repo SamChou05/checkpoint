@@ -277,7 +277,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       MessageRetentionPeriod: 345600
-      VisibilityTimeout: 720
+      VisibilityTimeout: 1440
       SqsManagedSseEnabled: true
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt QuestionBankDeadLetterQueue.Arn
@@ -411,7 +411,7 @@ Resources:
       Runtime: python3.12
       Handler: lambda_function.question_bank_worker_handler
       CodeUri: .
-      Timeout: 120
+      Timeout: 240
       MemorySize: 256
       ReservedConcurrentExecutions: !Ref QuestionBankWorkerReservedConcurrency
       Tracing: Active

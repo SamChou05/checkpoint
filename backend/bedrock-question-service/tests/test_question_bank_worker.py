@@ -113,9 +113,7 @@ class FailureLedgerDynamo:
 class QuestionBankWorkerTests(QuestionBankTestCase):
     def test_worker_feedback_uses_the_thirty_most_recent_questions(self):
         client = mock.Mock()
-        client.update_item.return_value = {
-            "Attributes": {"generationPass": {"N": "0"}}
-        }
+        client.update_item.return_value = {"Attributes": {"generationPass": {"N": "0"}}}
         bank_pk = "BANK#owner#bank"
         revision = "revision-1"
         meta = {
@@ -241,9 +239,7 @@ class QuestionBankWorkerTests(QuestionBankTestCase):
             {"S": "queued"},
         )
         bank_update = dynamo.transaction[1]["Update"]
-        self.assertNotIn(
-            "failedGenerationJobCount", bank_update["UpdateExpression"]
-        )
+        self.assertNotIn("failedGenerationJobCount", bank_update["UpdateExpression"])
 
     def test_ensure_does_not_redeliver_a_processing_job_after_lease_expiry(self):
         client = mock.Mock()
@@ -555,6 +551,9 @@ class QuestionBankWorkerTests(QuestionBankTestCase):
                 "_sanitize_questions",
                 return_value=[accepted],
             ),
+            mock.patch.object(
+                question_generation, "verify_questions", return_value=[accepted]
+            ),
         ):
             with self.assertRaises(question_bank.ProviderAttemptLimitError):
                 lambda_function._generate_sanitized_questions(  # noqa: SLF001
@@ -650,7 +649,9 @@ class QuestionBankWorkerTests(QuestionBankTestCase):
         terminal.assert_called_once_with(mock.ANY, message, 1)
         terminal_notice.assert_called_once_with("provider_attempt_limit")
 
-    def test_three_exhausted_jobs_block_one_bank_context_without_resetting_on_refill(self):
+    def test_three_exhausted_jobs_block_one_bank_context_without_resetting_on_refill(
+        self,
+    ):
         os.environ["QUESTION_BANK_MAX_FAILED_GENERATION_JOBS"] = "3"
         os.environ["QUESTION_BANK_FAILURE_COOLDOWN_SECONDS"] = "600"
         dynamo = FailureLedgerDynamo()

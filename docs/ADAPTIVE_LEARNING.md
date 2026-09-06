@@ -20,4 +20,8 @@ Generated questions must match their skill's target difficulty. The worker weigh
 
 ## Validation boundary
 
+Every newly generated question now requires a separate answer-blind AI review before it enters the bank. The reviewer receives the stem, rotated choices, goal, skill/objective, source scope, and recent question coverage. It does not receive the author's answer key, explanation, or difficulty label. The review must independently agree on the single best answer and actual difficulty and supply bounded explanations for all four choices. Missing, ambiguous, malformed, or disagreeing reviews reject the question; rejected stems are excluded from subsequent top-off attempts.
+
+The reviewer uses the configured pinned model in a separate call, not a separate independently trained model. This reduces anchoring but cannot eliminate correlated model mistakes. Generation and review both count against the same provider-call budget, asynchronous quota, and deadline. No unverified output is returned when verification runs out of budget. The worker timeout is four minutes and the queue visibility is 24 minutes to accommodate the additional bounded calls. Public HTTP requests retain their existing timeout and may direct users toward asynchronous preparation when insufficient review time remains.
+
 Automated tests exercise longitudinal improvement, independent skill levels, recovery, repeat-answer exclusion, history isolation, request validation, question allocation, and scheduler selection. They establish implementation behavior; they do not establish educational efficacy. Release evaluation must also examine real questions and repeated learner sessions for correctness, conceptual novelty, appropriate challenge, and retention.

@@ -5,14 +5,60 @@ import uuid
 
 
 class FakeBedrockClient:
-    def __init__(self, text):
+    def __init__(self, text, *, auto_review=True):
         self.texts = text if isinstance(text, list) else [text]
         self.calls = []
+        self.review_calls = []
+        self.auto_review = auto_review
+        self.last_questions = []
 
     def converse(self, **kwargs):
+        prompt = kwargs["messages"][0]["content"][0]["text"]
+        if self.auto_review and "<question_review_json>" in prompt:
+            # Existing provider tests use a trusted synthetic reviewer. Dedicated
+            # verification tests disable this and script independent verdicts.
+            self.review_calls.append(kwargs)
+            data = json.loads(
+                prompt.split("<question_review_json>\n", 1)[1].split(
+                    "\n</question_review_json>", 1
+                )[0]
+            )
+            reviews = []
+            for item in data["items"]:
+                question = next(
+                    q
+                    for q in self.last_questions
+                    if q["prompt"].strip() == item["prompt"]
+                )
+                reviews.append(
+                    {
+                        "index": item["index"],
+                        "valid": True,
+                        "answer": question["expectedAnswer"],
+                        "difficulty": question.get("difficulty", 3),
+                        "explanation": question.get("explanation")
+                        or "Independent fixture reasoning supports this answer.",
+                        "choiceExplanations": {
+                            choice: "Fixture reasoning explains this choice in the stated scenario."
+                            for choice in item["choices"]
+                        },
+                    }
+                )
+            return {
+                "output": {
+                    "message": {"content": [{"text": json.dumps({"reviews": reviews})}]}
+                }
+            }
         text_index = min(len(self.calls), len(self.texts) - 1)
         self.calls.append(kwargs)
         value = self.texts[text_index]
+        if isinstance(value, str):
+            from question_quality import _extract_json_object
+
+            try:
+                self.last_questions = _extract_json_object(value).get("questions", [])
+            except Exception:
+                self.last_questions = []
         if isinstance(value, Exception):
             raise value
         if isinstance(value, dict):
