@@ -108,6 +108,7 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
     let displayPrice: String
     let cadence: String
     let detail: String
+    let compactDetail: String
     let valueBadge: String?
     let isRecommended: Bool
 
@@ -117,6 +118,7 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
         displayPrice: String,
         cadence: String,
         detail: String,
+        compactDetail: String? = nil,
         valueBadge: String? = nil,
         isRecommended: Bool = false
     ) {
@@ -125,6 +127,7 @@ struct MembershipPlanOption: Identifiable, Equatable, Sendable {
         self.displayPrice = displayPrice
         self.cadence = cadence
         self.detail = detail
+        self.compactDetail = compactDetail ?? detail
         self.valueBadge = valueBadge
         self.isRecommended = isRecommended
     }
@@ -615,7 +618,8 @@ struct MembershipCatalogPresentation: Equatable, Sendable {
                 title: $0.billingPeriod.title,
                 displayPrice: $0.displayPrice,
                 cadence: $0.billingPeriod.cadence,
-                detail: "Flexible access, billed monthly through Apple."
+                detail: "Flexible access, billed monthly through Apple.",
+                compactDetail: "Billed monthly through Apple"
             )
         }
         let annualOption = annualProduct.map {
@@ -627,6 +631,9 @@ struct MembershipCatalogPresentation: Equatable, Sendable {
                 detail: annualValue.map {
                     "\($0.monthlyEquivalentDisplayPrice) per month when billed annually."
                 } ?? "Billed annually through Apple for uninterrupted practice.",
+                compactDetail: annualValue.map {
+                    "\($0.monthlyEquivalentDisplayPrice)/mo · billed annually"
+                } ?? "Billed annually through Apple",
                 valueBadge: annualValue.map { "Save \($0.savingsPercentage)%" },
                 isRecommended: annualValue != nil
             )

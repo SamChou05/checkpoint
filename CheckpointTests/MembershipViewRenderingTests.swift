@@ -1432,6 +1432,10 @@ final class MembershipViewRenderingTests: XCTestCase {
             MembershipPaywallPresentation.subscriptionDisclosureText,
             "Payment is charged by Apple. Subscriptions renew automatically until canceled in App Store account settings."
         )
+        XCTAssertEqual(
+            MembershipPaywallPresentation.compactSubscriptionDisclosureText,
+            "Charged by Apple · Auto-renews until canceled in App Store settings."
+        )
     }
 
     func testActivePlanPresentationUsesVerifiedRenewalAndEndCopy() throws {

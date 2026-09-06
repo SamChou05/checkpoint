@@ -1055,22 +1055,24 @@ struct MembershipView: View {
                 .foregroundStyle(CheckpointTheme.teal)
                 .accessibilityHidden(true)
 
-            Text(option.detail)
-                .font(.footnote.weight(.medium))
+            Text(compact ? option.compactDetail : option.detail)
+                .font((compact ? Font.caption : .footnote).weight(.medium))
                 .foregroundStyle(CheckpointTheme.muted)
                 .lineLimit(compact ? 1 : nil)
-                .minimumScaleFactor(compact ? 0.76 : 1)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .combine)
     }
 
     private func subscriptionDisclosure(compact: Bool) -> some View {
-        Text(MembershipPaywallPresentation.subscriptionDisclosureText)
-            .font(compact ? .caption2 : .caption)
+        Text(
+            compact
+                ? MembershipPaywallPresentation.compactSubscriptionDisclosureText
+                : MembershipPaywallPresentation.subscriptionDisclosureText
+        )
+            .font(.caption)
             .foregroundStyle(CheckpointTheme.muted)
             .lineLimit(compact ? 2 : nil)
-            .minimumScaleFactor(compact ? 0.84 : 1)
             .fixedSize(horizontal: false, vertical: true)
             .accessibilityLabel(MembershipPaywallPresentation.subscriptionDisclosureText)
     }

@@ -496,6 +496,8 @@ struct MembershipPaywallPresentation: Equatable, Sendable {
         "Billing is handled by Apple. Subscription renews automatically until canceled."
     static let subscriptionDisclosureText =
         "Payment is charged by Apple. Subscriptions renew automatically until canceled in App Store account settings."
+    static let compactSubscriptionDisclosureText =
+        "Charged by Apple · Auto-renews until canceled in App Store settings."
 }
 
 struct MembershipValuePreviewNode: Equatable, Identifiable, Sendable {

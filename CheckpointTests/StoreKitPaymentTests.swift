@@ -116,8 +116,14 @@ final class StoreKitPaymentTests: XCTestCase {
         XCTAssertEqual(presentation.defaultPlanOption, annual)
         XCTAssertEqual(annual.chargeSummary, "Annual · $29.99 per year")
         XCTAssertEqual(annual.detail, "$2.50 per month when billed annually.")
+        XCTAssertEqual(annual.compactDetail, "$2.50/mo · billed annually")
         XCTAssertEqual(annual.valueBadge, "Save 49%")
         XCTAssertTrue(annual.isRecommended)
+
+        let monthly = try XCTUnwrap(
+            presentation.planOptions.first { $0.id == MembershipProductID.monthly }
+        )
+        XCTAssertEqual(monthly.compactDetail, "Billed monthly through Apple")
     }
 
     func testCatalogOmitsSavingsWhenComparisonWouldMislead() throws {
@@ -170,6 +176,7 @@ final class StoreKitPaymentTests: XCTestCase {
                 annual.detail,
                 "Billed annually through Apple for uninterrupted practice."
             )
+            XCTAssertEqual(annual.compactDetail, "Billed annually through Apple")
         }
     }
 
