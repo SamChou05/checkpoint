@@ -1226,6 +1226,7 @@ def _list_of_question_coverage(value: Any) -> list[dict[str, Any]]:
             item.get("expectedAnswer"),
             f"existingQuestionCoverage[{index}].expectedAnswer",
             280,
+            preserve_whitespace=True,
         )
         topic = _validated_text(
             item.get("topic"),
@@ -1237,6 +1238,7 @@ def _list_of_question_coverage(value: Any) -> list[dict[str, Any]]:
             f"existingQuestionCoverage[{index}].choices",
             maximum_items=4,
             maximum_characters=140,
+            preserve_whitespace=True,
         )
         difficulty = _clamped_int(item.get("difficulty"), minimum=1, maximum=5)
 
@@ -1267,12 +1269,20 @@ def _list_of_question_coverage(value: Any) -> list[dict[str, Any]]:
     return coverage
 
 
-def _validated_text(value: Any, field_name: str, maximum_characters: int) -> str:
+def _validated_text(
+    value: Any,
+    field_name: str,
+    maximum_characters: int,
+    *,
+    preserve_whitespace: bool = False,
+) -> str:
     if value is None:
         return ""
     if not isinstance(value, str):
         raise BadRequestError(f"{field_name} must be text.")
-    cleaned = _clean_text(value)
+    cleaned = (
+        _choice_uniqueness_key(value) if preserve_whitespace else _clean_text(value)
+    )
     if len(cleaned) > maximum_characters:
         raise BadRequestError(
             f"{field_name} exceeds the {maximum_characters}-character limit."
@@ -1285,6 +1295,7 @@ def _validated_string_list(
     field_name: str,
     maximum_items: int,
     maximum_characters: int,
+    preserve_whitespace: bool = False,
 ) -> list[str]:
     if value is None:
         return []
@@ -1297,6 +1308,7 @@ def _validated_string_list(
             item,
             f"{field_name}[{index}]",
             maximum_characters,
+            preserve_whitespace=preserve_whitespace,
         )
         if cleaned:
             strings.append(cleaned)
@@ -1338,6 +1350,18 @@ def _duplicate_prompt_key(prompt: str) -> str:
 
 
 def _choice_uniqueness_key(value: str) -> str:
+    """Content identity, shared with MultipleChoiceAnswerNormalizer.key(for:).
+
+    Only canonical Unicode composition and surrounding whitespace are ignored.
+    Case, accents, symbols, labels, inflection and internal whitespace can all
+    distinguish correct from incorrect answers in an arbitrary subject. Semantic
+    duplicates are a review decision, never inferred by deleting those features.
+    """
+    return unicodedata.normalize("NFC", value).strip()
+
+
+def _semantic_signal_key(value: str) -> str:
+    """Lossy prose matching for explicit generic-filler signals, not identity."""
     normalized = _fold_choice_text(_clean_text(value))
     normalized = _strip_answer_prefix(normalized)
     normalized = _strip_choice_label(normalized)
@@ -1376,7 +1400,7 @@ _SEMANTIC_CHOICE_STOP_WORDS = frozenset(
 
 
 def _fold_choice_text(value: str) -> str:
-    """Mirror Foundation's case- and diacritic-insensitive choice folding."""
+    """Fold prose only for generic-filler detection, never choice identity."""
     decomposed = unicodedata.normalize("NFD", value.casefold())
     without_diacritics = "".join(
         character for character in decomposed if unicodedata.category(character) != "Mn"
@@ -1385,8 +1409,8 @@ def _fold_choice_text(value: str) -> str:
 
 
 def _singularized_semantic_choice_token(token: str) -> str:
-    # Keep this deliberately conservative and byte-for-byte aligned with the
-    # client sanitizer. Short plurals such as "cats" remain distinct.
+    # Used only for generic-filler phrase matching, not choice equivalence.
+    # Short plurals such as "cats" remain distinct.
     if len(token) <= 4:
         return token
     if token.endswith("ies"):

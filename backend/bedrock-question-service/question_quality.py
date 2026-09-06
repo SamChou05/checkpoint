@@ -16,6 +16,7 @@ from request_contract import (
     _clip,
     _deterministic_objective_id,
     _strip_choice_label,
+    _semantic_signal_key,
     _uuid_key,
 )
 from service_errors import ProviderError
@@ -182,7 +183,9 @@ def _sanitize_questions(
             continue
 
         prompt = _clip(raw_prompt, 360)
-        expected_answer = _clip(_clean_text(raw_question.get("expectedAnswer")), 280)
+        expected_answer = _choice_uniqueness_key(
+            str(raw_question.get("expectedAnswer") or "")
+        )
         explanation = _clip(_clean_text(raw_question.get("explanation")), 420)
         topic = (
             skill_tag["topic"]
@@ -201,7 +204,6 @@ def _sanitize_questions(
         if (
             len(prompt) < 12
             or not expected_answer
-            or _looks_like_answer_label(expected_answer)
             or not explanation
             or _explanation_admits_bad_answer(explanation)
             or _looks_like_study_strategy(prompt, request["goal"])
@@ -227,9 +229,6 @@ def _sanitize_questions(
         choice_set_key = _choice_set_key(choices)
         if not choice_set_key or choice_set_key in seen_choice_sets:
             record_quality(request_metrics, "sanitize", "duplicate_choices")
-            continue
-        if any(_looks_like_answer_label(choice) for choice in choices):
-            record_quality(request_metrics, "sanitize", "invalid_choices")
             continue
         if _looks_like_generic_meta_question(
             prompt, expected_answer, choices, explanation
@@ -488,8 +487,12 @@ def _question_coverage_payload(question: dict[str, Any]) -> dict[str, Any]:
     coverage = {
         "topic": _clean_text(question.get("topic")),
         "prompt": _clean_text(question.get("prompt")),
-        "expectedAnswer": _clean_text(question.get("expectedAnswer")),
-        "choices": [_clean_text(choice) for choice in question.get("choices", [])],
+        "expectedAnswer": _choice_uniqueness_key(
+            str(question.get("expectedAnswer") or "")
+        ),
+        "choices": [
+            _choice_uniqueness_key(choice) for choice in question.get("choices", [])
+        ],
         "difficulty": _clamped_int(question.get("difficulty"), minimum=1, maximum=5),
     }
     for key in ("skillID", "objectiveID", "objective"):
@@ -502,12 +505,12 @@ def _question_coverage_payload(question: dict[str, Any]) -> dict[str, Any]:
 def _choice_set_key(choices: Any) -> str:
     if not isinstance(choices, list) or len(choices) != 4:
         return ""
-    choice_keys = sorted(
-        _choice_uniqueness_key(_clean_text(choice)) for choice in choices
-    )
+    if not all(isinstance(choice, str) for choice in choices):
+        return ""
+    choice_keys = sorted(_choice_uniqueness_key(choice) for choice in choices)
     if any(not key for key in choice_keys):
         return ""
-    return "|".join(choice_keys)
+    return "".join(f"{len(key.encode('utf-8'))}:{key}" for key in choice_keys)
 
 
 def _question_coverage_keys(expected_answer: str, topic: str) -> set[str]:
@@ -516,7 +519,9 @@ def _question_coverage_keys(expected_answer: str, topic: str) -> set[str]:
     answer_key = _choice_uniqueness_key(expected_answer)
 
     if len(topic_key) >= 3 and len(answer_key) >= 16:
-        keys.add(f"topic-answer:{topic_key}:{answer_key}")
+        keys.add(
+            f"topic-answer:{len(topic_key.encode('utf-8'))}:{topic_key}{answer_key}"
+        )
 
     return keys
 
@@ -559,72 +564,62 @@ def _looks_like_generic_meta_question(
 
 
 def _matches_semantic_signal(value: str, signals: tuple[str, ...]) -> bool:
-    value_key = _choice_uniqueness_key(value)
+    value_key = _semantic_signal_key(value)
     if not value_key:
         return False
-    return any(_choice_uniqueness_key(signal) in value_key for signal in signals)
+    return any(_semantic_signal_key(signal) in value_key for signal in signals)
 
 
 def _normalized_choices(raw_choices: Any, expected_answer: str) -> list[str]:
     if not isinstance(raw_choices, list):
         raw_choices = []
 
-    choices = [_clip(_clean_text(choice), 140) for choice in raw_choices]
-    choices = [choice for choice in choices if choice]
-
-    unique_choices: list[str] = []
-    seen = set()
-    for choice in [expected_answer] + choices:
-        key = _choice_uniqueness_key(choice)
-        if key and key not in seen:
-            seen.add(key)
-            unique_choices.append(choice)
-
-    if len(unique_choices) < 4:
+    if not all(isinstance(choice, str) for choice in raw_choices):
+        return []
+    choices = [_choice_uniqueness_key(choice) for choice in raw_choices]
+    if any(not choice or len(choice) > 140 for choice in choices):
+        return []
+    if not expected_answer or len(expected_answer) > 140:
         return []
 
-    expected_key = _choice_uniqueness_key(expected_answer)
-    distractors = [
-        choice
-        for choice in unique_choices
-        if _choice_uniqueness_key(choice) != expected_key
+    if len(choices) != 4 or len(set(choices)) != 4:
+        return []
+    if expected_answer not in choices:
+        return []
+    return [expected_answer] + [
+        choice for choice in choices if choice != expected_answer
     ]
-    return [expected_answer] + distractors[:3]
 
 
 def _looks_like_study_strategy(prompt: str, goal: dict[str, Any]) -> bool:
     target = " ".join(
         str(goal.get(field, "")) for field in ("title", "learningTarget", "focusAreas")
     ).lower()
-    if (
-        "study skill" in target
-        or "productivity" in target
-        or "time management" in target
+    if any(
+        signal in target
+        for signal in (
+            "study skill",
+            "productivity",
+            "time management",
+            "focus habit",
+            "habit building",
+            "learning how to learn",
+        )
     ):
         return False
 
-    normalized = _canonical(prompt)
-    blocked_phrases = [
-        "how should you study",
-        "study plan",
-        "study rep",
-        "study schedule",
-        "study strategy",
-        "practice rep",
-        "practice schedule",
-        "clearest progress",
-        "next step",
-        "visible progress",
-        "finish line",
-        "try harder",
-        "motivation",
-        "blocked app",
-        "screen time",
-        "open another app",
-        "distraction",
-        "what should you do next",
-    ]
-    return any(phrase.replace(" ", "") in normalized for phrase in blocked_phrases)
+    # Recognize explicit coaching requests, not subject-independent words such
+    # as "next step", "motivation", "distraction" or "finish line". The model
+    # reviewer handles less explicit relevance judgments in the goal context.
+    return any(
+        re.search(pattern, prompt, re.IGNORECASE)
+        for pattern in (
+            r"\bhow (?:should|can|could) (?:you|i|we) study\b",
+            r"\b(?:your|my|our) (?:study|practice) (?:plan|schedule|strategy|routine)\b",
+            r"\b(?:study|practice) (?:rep|reps|plan|schedule|strategy)\b.{0,100}\b(?:your|you|my|me|progress|prepare)\b",
+            r"\bafter (?:missing|failing)\b.{0,80}\b(?:question|quiz|item|test)\b.{0,80}\b(?:study|practice|review|next)\b",
+        )
+    )
 
 
 def _explanation_admits_bad_answer(explanation: str) -> bool:

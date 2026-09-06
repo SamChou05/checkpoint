@@ -4,6 +4,104 @@ import XCTest
 // MARK: - Question validation
 
 final class QuestionValidationTests: XCTestCase {
+    private struct IdentityFixtures: Decodable {
+        struct Question: Decodable {
+            var prompt: String
+            var choices: [String]
+            var expectedAnswer: String
+            var explanation: String
+        }
+        var equivalent: [[String]]
+        var distinct: [[String]]
+        var questions: [Question]
+        var subject_prompts: [String]
+        var coaching_prompts: [String]
+    }
+
+    private func identityFixtures() throws -> IdentityFixtures {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let url = root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/choice_identity_contract.json")
+        return try JSONDecoder().decode(IdentityFixtures.self, from: Data(contentsOf: url))
+    }
+
+    func testSharedUnicodeContentIdentityContract() throws {
+        let fixtures = try identityFixtures()
+        for pair in fixtures.equivalent {
+            XCTAssertEqual(MultipleChoiceAnswerNormalizer.key(for: pair[0]), MultipleChoiceAnswerNormalizer.key(for: pair[1]))
+        }
+        for pair in fixtures.distinct {
+            XCTAssertNotEqual(MultipleChoiceAnswerNormalizer.key(for: pair[0]), MultipleChoiceAnswerNormalizer.key(for: pair[1]))
+        }
+    }
+
+    func testSharedQuestionsKeepEveryChoiceAndGradeOnlyTheExactKey() throws {
+        let goal = makeGoal()
+        for item in try identityFixtures().questions {
+            for version in [0, 1] {
+                let question = makeQuestion(
+                    goal: goal, index: 1, topic: "Subject content", prompt: item.prompt,
+                    expectedAnswer: item.expectedAnswer, choices: item.choices,
+                    explanation: item.explanation, verificationVersion: version, difficulty: 3
+                )
+                let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first, item.prompt)
+                XCTAssertEqual(Set(accepted.choices), Set(item.choices), item.prompt)
+                XCTAssertEqual(accepted.expectedAnswer, item.expectedAnswer, item.prompt)
+                for choice in accepted.choices {
+                    XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: accepted).result,
+                                   choice == item.expectedAnswer ? .correct : .incorrect, item.prompt)
+                }
+            }
+        }
+    }
+
+    func testVerifiedAnswerUsesTheSameBoundaryWhitespaceIdentityAsSanitization() throws {
+        let goal = makeGoal()
+        let question = makeQuestion(goal: goal, index: 1, expectedAnswer: " salt ",
+                                    choices: [" salt ", "sugar", "tea", "water"])
+        let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first)
+        for choice in accepted.choices {
+            XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: accepted).result,
+                           choice == " salt " ? .correct : .incorrect)
+        }
+    }
+
+    func testLegacyGraderCannotTreatAnUnofferedRawExpectedAnswerAsCorrect() {
+        let goal = makeGoal()
+        let question = makeQuestion(goal: goal, index: 1, expectedAnswer: "Missing answer",
+                                    choices: ["first", "second", "third", "fourth"], verificationVersion: 0)
+        XCTAssertEqual(AnswerGrader.evaluate(answer: "Missing answer", question: question).result, .incorrect)
+    }
+
+    func testCanonicalDuplicatesAreRejected() {
+        let goal = makeGoal()
+        for choices in [["café", "cafe\u{301}", "tea", "water"], ["salt", " salt ", "sugar", "water"]] {
+            let question = makeQuestion(goal: goal, index: 1, expectedAnswer: choices[0], choices: choices)
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+        }
+    }
+
+    func testChoiceSetIdentityCannotCollideOnLiteralSeparators() {
+        let goal = makeGoal()
+        let first = makeQuestion(goal: goal, index: 1, prompt: "Which is the first pipe expression?",
+                                 expectedAnswer: "a|b", choices: ["a|b", "c", "d", "e"])
+        let second = makeQuestion(goal: goal, index: 2, prompt: "Which is the second pipe expression?",
+                                  expectedAnswer: "b|c", choices: ["a", "b|c", "d", "e"])
+        XCTAssertEqual(QuestionBatchSanitizer.sanitize([first, second], for: makeRequest(goal: goal)).count, 2)
+    }
+
+    func testSharedStudyCoachingIntentContract() throws {
+        let goal = makeGoal()
+        let fixtures = try identityFixtures()
+        for prompt in fixtures.subject_prompts {
+            let question = makeQuestion(goal: goal, index: 1, prompt: prompt)
+            XCTAssertEqual(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).count, 1, prompt)
+        }
+        for prompt in fixtures.coaching_prompts {
+            let question = makeQuestion(goal: goal, index: 1, prompt: prompt)
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty, prompt)
+        }
+    }
+
     func testVerifiedQuestionKeepsExactNumericAnswerAndTeachingFeedback() throws {
         let goal = makeGoal()
         var question = makeQuestion(goal: goal, index: 2)
@@ -190,7 +288,7 @@ final class QuestionValidationTests: XCTestCase {
         )
     }
 
-    func testSanitizerRejectsBareAnswerLabelChoices() {
+    func testSanitizerRejectsAnswerLabelMissingFromVisibleChoices() {
         let goal = makeGoal()
         let request = makeRequest(goal: goal)
         let question = makeQuestion(
@@ -198,7 +296,7 @@ final class QuestionValidationTests: XCTestCase {
             index: 1,
             prompt: "Which labeled answer should be rejected?",
             expectedAnswer: "B",
-            choices: ["A", "B", "C", "D"],
+            choices: ["first", "second", "third", "fourth"],
             difficulty: 2
         )
 
@@ -310,9 +408,9 @@ final class QuestionValidationTests: XCTestCase {
             goal: goal,
             index: 1,
             prompt: "Which answer choice should be rejected for duplicate options?",
-            expectedAnswer: "A. The same answer",
+            expectedAnswer: "The same answer",
             choices: [
-                "A. The same answer",
+                "The same answer",
                 "The same answer",
                 "B. A different answer",
                 "C. Another different answer"
@@ -323,54 +421,6 @@ final class QuestionValidationTests: XCTestCase {
         let sanitized = QuestionBatchSanitizer.sanitize([question], for: request)
 
         XCTAssertTrue(sanitized.isEmpty)
-    }
-
-    func testSanitizerRejectsSemanticallyDuplicateInflectedChoices() {
-        let goal = makeGoal()
-        let request = makeRequest(goal: goal)
-        let question = makeQuestion(
-            goal: goal,
-            index: 1,
-            prompt: "Which item can perform the requested operation?",
-            expectedAnswer: "A machine",
-            choices: ["A machine", "machines", "dogs", "birds"],
-            explanation: "A machine is the item designed to perform the requested operation.",
-            difficulty: 2
-        )
-
-        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: request).isEmpty)
-    }
-
-    func testSanitizerRejectsChoicesThatDifferOnlyByDiacritics() {
-        let goal = makeGoal()
-        let request = makeRequest(goal: goal)
-        let question = makeQuestion(
-            goal: goal,
-            index: 1,
-            prompt: "Which French word names a coffee shop?",
-            expectedAnswer: "café",
-            choices: ["café", "cafe", "dogs", "birds"],
-            explanation: "Café is the French word used here for a coffee shop.",
-            difficulty: 2
-        )
-
-        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: request).isEmpty)
-    }
-
-    func testSanitizerUsesLocaleIndependentChoiceFolding() {
-        let goal = makeGoal()
-        let request = makeRequest(goal: goal)
-        let question = makeQuestion(
-            goal: goal,
-            index: 1,
-            prompt: "Which city spans Europe and Asia?",
-            expectedAnswer: "İstanbul",
-            choices: ["İstanbul", "istanbul", "Ankara", "Bursa"],
-            explanation: "İstanbul is the city in this set that spans Europe and Asia.",
-            difficulty: 2
-        )
-
-        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: request).isEmpty)
     }
 
     func testSanitizerKeepsShortPluralChoiceBoundaryDistinct() {

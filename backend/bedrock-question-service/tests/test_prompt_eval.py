@@ -132,14 +132,14 @@ class PromptEvalTests(unittest.TestCase):
 
         self.assert_question_rejected_for(question, "free-response artifact")
 
-    def test_rejects_answer_labels_instead_of_answer_text(self):
+    def test_rejects_answer_label_missing_from_actual_choices(self):
         question = {
             **_good_question(),
             "expectedAnswer": "B",
-            "choices": ["A", "B", "C", "D"],
+            "choices": ["first", "second", "third", "fourth"],
         }
 
-        self.assert_question_rejected_for(question, "answer label")
+        self.assert_question_rejected_for(question, "expectedAnswer must exactly match")
 
     def test_rejects_embedded_answer_options(self):
         question = {
@@ -149,19 +149,19 @@ class PromptEvalTests(unittest.TestCase):
 
         self.assert_question_rejected_for(question, "embeds answer options")
 
-    def test_rejects_duplicate_choices_after_generic_normalization(self):
+    def test_rejects_duplicate_choices_after_canonical_normalization(self):
         question = {
             **_good_question(),
             "expectedAnswer": "The supported result",
             "choices": [
                 "The supported result",
-                "Choice B: the supported result!",
+                "The supported result",
                 "A contradictory result",
                 "An unrelated result",
             ],
         }
 
-        self.assert_question_rejected_for(question, "duplicates after case")
+        self.assert_question_rejected_for(question, "duplicates after canonical")
 
     def test_rejects_disallowed_all_or_none_choices(self):
         question = {

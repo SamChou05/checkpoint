@@ -1,0 +1,164 @@
+{
+  "contract": "NFC plus surrounding whitespace only; no case, accent, symbol, label, inflection or internal whitespace folding.",
+  "equivalent": [
+    [
+      " café ",
+      "café"
+    ],
+    [
+      "\nTrue\t",
+      "True"
+    ]
+  ],
+  "distinct": [
+    [
+      "D F A C",
+      "D F# A C"
+    ],
+    [
+      "n + 1",
+      "n - 1"
+    ],
+    [
+      "True",
+      "true"
+    ],
+    [
+      "si",
+      "sí"
+    ],
+    [
+      "machine",
+      "machines"
+    ],
+    [
+      "a b",
+      "ab"
+    ],
+    [
+      "\"a  b\"",
+      "\"a b\""
+    ],
+    [
+      "x²",
+      "x2"
+    ],
+    [
+      "1.5",
+      "5"
+    ],
+    [
+      "C. elegans",
+      "elegans"
+    ],
+    [
+      "Answer: yes",
+      "yes"
+    ]
+  ],
+  "questions": [
+    {
+      "prompt": "Which pitch set forms a D minor seventh chord?",
+      "choices": [
+        "D F A C",
+        "D F# A C",
+        "D F A C#",
+        "D F# A C#"
+      ],
+      "expectedAnswer": "D F A C",
+      "explanation": "A minor third, perfect fifth and minor seventh above D give F, A and C."
+    },
+    {
+      "prompt": "Which Python literal is the Boolean value true?",
+      "choices": [
+        "true",
+        "TRUE",
+        "False",
+        "True"
+      ],
+      "expectedAnswer": "True",
+      "explanation": "Python Boolean literals are case sensitive; True denotes the true value."
+    },
+    {
+      "prompt": "Which Spanish word is the accented affirmative meaning yes?",
+      "choices": [
+        "si",
+        "sí",
+        "tu",
+        "tú"
+      ],
+      "expectedAnswer": "sí",
+      "explanation": "The affirmative sí bears an accent; si without an accent introduces a condition."
+    },
+    {
+      "prompt": "Which is the regular English plural of machine?",
+      "choices": [
+        "machine",
+        "machines",
+        "machinery",
+        "machining"
+      ],
+      "expectedAnswer": "machines",
+      "explanation": "The regular plural adds s to the singular noun machine."
+    },
+    {
+      "prompt": "What is the sum of the decimal numbers 1.0 and 2.5?",
+      "choices": [
+        "1.5",
+        "2.5",
+        "3.5",
+        "4.5"
+      ],
+      "expectedAnswer": "3.5",
+      "explanation": "Adding one to two and a half yields three and a half."
+    },
+    {
+      "prompt": "Which note is the tonic of the C major scale?",
+      "choices": [
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "expectedAnswer": "C",
+      "explanation": "The tonic is the note that names the scale, so C is the tonic of C major."
+    },
+    {
+      "prompt": "Which Python expression adds one to the integer n?",
+      "choices": [
+        "n + 1",
+        "n - 1",
+        "n * 1",
+        "n / 1"
+      ],
+      "expectedAnswer": "n + 1",
+      "explanation": "The plus operator adds one; the other operations subtract, multiply or divide."
+    },
+    {
+      "prompt": "Which quoted Python string contains two internal spaces?",
+      "choices": [
+        "\"a  b\"",
+        "\"a b\"",
+        "\"ab\"",
+        "\"a   b\""
+      ],
+      "expectedAnswer": "\"a  b\"",
+      "explanation": "The first string has exactly two spaces between the letters a and b."
+    }
+  ],
+  "subject_prompts": [
+    "A dough has doubled at room temperature and is ready to shape. What should you do next?",
+    "Given 2x + 3 = 7, what is the next step that isolates the term 2x?",
+    "In a randomized study, which study plan removes treatment allocation bias?",
+    "In psychology, which example illustrates intrinsic motivation?",
+    "A runner crosses the finish line at 12 m/s. What is the kinetic energy for a mass of 50 kg?",
+    "A driver looks at a phone and misses a stop sign. Which distraction explains the error?"
+  ],
+  "coaching_prompts": [
+    "How should you study after missing a question about fractions?",
+    "Which 10-minute study rep would create the clearest progress on logical reasoning?",
+    "What should your study schedule contain tomorrow?",
+    "After missing a quiz question, what should you review next?",
+    "Which practice plan would help you prepare for the exam?"
+  ]
+}

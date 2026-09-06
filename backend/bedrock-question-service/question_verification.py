@@ -8,6 +8,7 @@ from typing import Any, Callable
 from generation_diagnostics import record_quality
 from question_quality import _extract_json_object
 from service_errors import ProviderError
+from request_contract import _choice_uniqueness_key
 
 VERIFICATION_VERSION = 1
 REVIEW_SYSTEM_PROMPT = """
@@ -306,7 +307,8 @@ def _validated_solutions(raw: str, count: int) -> list[dict[str, Any]] | None:
 def _has_reviewable_choices(question: dict[str, Any]) -> bool:
     choices = question.get("choices", [])
     if (
-        len(choices) != 4
+        not isinstance(choices, list)
+        or len(choices) != 4
         or question.get("expectedAnswer") not in choices
         or any(
             not isinstance(choice, str) or not 1 <= len(choice) <= 140
@@ -314,17 +316,10 @@ def _has_reviewable_choices(question: dict[str, Any]) -> bool:
         )
     ):
         return False
-    keys = [" ".join(choice.lower().split()) for choice in choices]
-    for index, first in enumerate(keys):
-        for second in keys[index + 1 :]:
-            short, long = sorted([first, second], key=len)
-            if short == long or (
-                len(short) >= 60
-                and long.startswith(short)
-                and len(short) / len(long) >= 0.9
-            ):
-                return False
-    return True
+    keys = [_choice_uniqueness_key(choice) for choice in choices]
+    # Similar wording and short final qualifiers require semantic review. They
+    # are not duplicates merely because one text is a long prefix of another.
+    return all(keys) and len(set(keys)) == 4
 
 
 def _bounded_explanation(value: Any, limit: int) -> bool:

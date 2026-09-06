@@ -92,12 +92,12 @@ class QuestionVerificationTests(unittest.TestCase):
                 )
                 self.assertEqual(accepted, [])
 
-    def test_long_and_truncated_duplicate_choices_never_reach_review(self):
+    def test_long_and_exact_duplicate_choices_never_reach_review(self):
         for choices in [
             ["x" * 141, "second", "third", "fourth"],
             [
                 "A complete explanation with a sufficiently long shared prefix for a choice",
-                "A complete explanation with a sufficiently long shared prefix for a choice tail",
+                "A complete explanation with a sufficiently long shared prefix for a choice",
                 "third",
                 "fourth",
             ],
@@ -110,6 +110,18 @@ class QuestionVerificationTests(unittest.TestCase):
             reviewer = mock.Mock()
             self.assertEqual(verify_questions([question], self.request, reviewer), [])
             reviewer.assert_not_called()
+
+    def test_meaningful_final_qualifier_reaches_semantic_review(self):
+        self.question["choices"] = [
+            "Every member of the committee approved the proposal at yesterday's meeting",
+            "Every member of the committee approved the proposal at yesterday's meeting except Jo",
+            "The committee rejected the proposal unanimously",
+            "No committee member attended the meeting",
+        ]
+        self.question["expectedAnswer"] = self.question["choices"][0]
+        reviewer = mock.Mock(return_value=json.dumps({"reviews": [self.verdict()]}))
+        self.assertEqual(len(verify_questions([self.question], self.request, reviewer)), 1)
+        reviewer.assert_called_once()
 
     def test_identical_reasoning_uses_same_review_contract_for_any_goal(self):
         self.question = {

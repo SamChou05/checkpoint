@@ -24,11 +24,11 @@ DEFAULT_FORBIDDEN_TERMS = [
     "motivation",
 ]
 DISALLOWED_CHOICE_TEXT = {
-    "allabove",
-    "noneabove",
-    "bothandb",
+    "alloftheabove",
+    "noneoftheabove",
+    "bothaandb",
     "bothbandc",
-    "allchoicearecorrect",
+    "allchoicesarecorrect",
 }
 SCENARIO_SIGNALS = [
     "if ",
@@ -219,13 +219,13 @@ def score_question(
     ]
 
     prompt = clean_text(question.get("prompt"))
-    expected_answer = clean_text(question.get("expectedAnswer"))
+    expected_answer = choice_key(str(question.get("expectedAnswer") or ""))
     explanation = clean_text(question.get("explanation"))
     topic = clean_text(question.get("topic"))
     choices = [
         cleaned
         for choice in question.get("choices", [])
-        if (cleaned := clean_text(choice))
+        if (cleaned := choice_key(str(choice)))
     ]
     difficulty = integer(question.get("difficulty"))
     format_value = clean_text(question.get("format")).lower()
@@ -259,8 +259,6 @@ def score_question(
         )
     if not expected_answer:
         failures.append("Missing expectedAnswer.")
-    if looks_like_answer_label(expected_answer):
-        failures.append("expectedAnswer is an answer label instead of answer text.")
     if not explanation:
         failures.append("Missing explanation.")
     if not topic:
@@ -269,8 +267,6 @@ def score_question(
         failures.append(f"Unexpected format: {question.get('format')!r}.")
     if len(choices) != 4:
         failures.append(f"Expected 4 choices, found {len(choices)}.")
-    elif any(looks_like_answer_label(choice) for choice in choices):
-        failures.append("One or more choices are answer labels instead of answer text.")
     if difficulty < minimum_difficulty:
         failures.append(
             f"Difficulty {difficulty} is below requested minimum {minimum_difficulty}."
@@ -284,11 +280,11 @@ def score_question(
 
     if len({choice_key(choice) for choice in choices}) != len(choices):
         failures.append(
-            "Choices are duplicates after case, punctuation, and answer-label normalization."
+            "Choices are duplicates after canonical Unicode and boundary-whitespace normalization."
         )
 
     disallowed_choices = [
-        choice for choice in choices if choice_key(choice) in DISALLOWED_CHOICE_TEXT
+        choice for choice in choices if canonical(choice) in DISALLOWED_CHOICE_TEXT
     ]
     if disallowed_choices:
         failures.append(f"Disallowed choice text: {', '.join(disallowed_choices)}.")

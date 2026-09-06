@@ -7,12 +7,10 @@ struct AnswerEvaluation: Equatable, Sendable {
 
 enum MultipleChoiceAnswerNormalizer {
     static func key(for text: String) -> String {
-        let normalized = normalizedText(text)
-        return compact(
-            strippingChoiceLabel(
-                from: strippingAnswerPrefix(from: normalized)
-            )
-        )
+        // Shared with request_contract._choice_uniqueness_key. Never erase
+        // case, accents, symbols, labels, inflection or internal whitespace.
+        text.precomposedStringWithCanonicalMapping
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     static func choiceIndex(from text: String) -> Int? {
@@ -50,7 +48,7 @@ enum MultipleChoiceAnswerNormalizer {
             return nil
         }
 
-        let normalizedExplanation = key(for: explanation)
+        let normalizedExplanation = key(for: phraseMatchingText)
         let mentionedChoices = choices.filter { choice in
             let choiceKey = key(for: choice)
             return choiceKey.count >= 12 && normalizedExplanation.contains(choiceKey)
@@ -174,7 +172,8 @@ enum AnswerGrader {
     private static func evaluateMultipleChoice(answer: String, question: CheckpointQuestion) -> AnswerEvaluation {
         if question.verificationVersion == 1 {
             let correct = question.choices.contains(question.expectedAnswer)
-                && answer == question.expectedAnswer
+                && MultipleChoiceAnswerNormalizer.key(for: answer)
+                    == MultipleChoiceAnswerNormalizer.key(for: question.expectedAnswer)
             return AnswerEvaluation(
                 result: correct ? .correct : .incorrect,
                 feedback: correct ? "Correct choice." : "That choice is not correct yet."
@@ -187,7 +186,10 @@ enum AnswerGrader {
         ).flatMap { index in
             question.choices.indices.contains(index) ? question.choices[index] : nil
         }
-        let matchingExpectedChoice = indexedExpectedChoice ?? question.choices.first {
+        let exactExpectedChoice = question.choices.first { key in
+            MultipleChoiceAnswerNormalizer.key(for: key) == expectedKey
+        }
+        let matchingExpectedChoice = exactExpectedChoice ?? indexedExpectedChoice ?? question.choices.first {
             let choiceKey = MultipleChoiceAnswerNormalizer.key(for: $0)
             return choiceKey == expectedKey || (choiceKey.count >= 12 && expectedKey.contains(choiceKey))
         }
@@ -200,7 +202,10 @@ enum AnswerGrader {
         } ?? expectedKey
         let allowsRawExpectedFallback = explanationChoice == nil
 
-        if answerKey == resolvedExpectedKey || (allowsRawExpectedFallback && answerKey == expectedKey) {
+        let isOfferedChoice = question.choices.contains {
+            MultipleChoiceAnswerNormalizer.key(for: $0) == answerKey
+        }
+        if isOfferedChoice && (answerKey == resolvedExpectedKey || (allowsRawExpectedFallback && answerKey == expectedKey)) {
             return AnswerEvaluation(result: .correct, feedback: "Correct choice.")
         }
 

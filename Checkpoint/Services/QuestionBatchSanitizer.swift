@@ -127,7 +127,8 @@ enum QuestionBatchSanitizer {
             .map(choiceUniquenessKey)
             .filter { !$0.isEmpty }
             .sorted()
-            .joined(separator: "|")
+            .map { "\($0.utf8.count):\($0)" }
+            .joined()
         if question.choices.count == 4, !choiceSetKey.isEmpty {
             keys.insert("choice-set:\(choiceSetKey)")
         }
@@ -146,7 +147,7 @@ enum QuestionBatchSanitizer {
 
         if topicKey.count >= 3,
            answerKey.count >= 16 {
-            keys.insert("topic-answer:\(topicKey):\(answerKey)")
+            keys.insert("topic-answer:\(topicKey.utf8.count):\(topicKey)\(answerKey)")
         }
 
         return keys
@@ -159,8 +160,6 @@ enum QuestionBatchSanitizer {
             && question.choices.count == 4
             && hasUniqueChoices(question.choices)
             && question.choices.filter { answerKey($0) == answerKey(question.expectedAnswer) }.count == 1
-            && !question.choices.contains { isBareAnswerLabel($0) }
-            && !isBareAnswerLabel(question.expectedAnswer)
             && !question.explanation.isEmpty
             && !question.topic.isEmpty
             && !isGenericAssessmentMetaQuestion(question)
@@ -174,7 +173,7 @@ enum QuestionBatchSanitizer {
     }
 
     private static func isGenericAssessmentMetaQuestion(_ question: CheckpointQuestion) -> Bool {
-        let expectedKey = answerKey(question.expectedAnswer)
+        let expectedKey = genericProseKey(question.expectedAnswer)
         let exactGenericAnswerSignals = [
             "answerthatfollowsfromthestatedfacts",
             "answerfollowsfromthestatedfacts",
@@ -198,7 +197,7 @@ enum QuestionBatchSanitizer {
             "unrelatedbuteasiertoremember"
         ]
         let genericDistractorCount = question.choices.reduce(into: 0) { count, choice in
-            let key = answerKey(choice)
+            let key = genericProseKey(choice)
             if genericDistractorSignals.contains(where: key.contains) {
                 count += 1
             }
@@ -210,50 +209,19 @@ enum QuestionBatchSanitizer {
     private static func isStudyStrategyPrompt(_ prompt: String, context: GoalQuestionContext) -> Bool {
         guard !context.allowsStudyStrategyQuestions else { return false }
 
-        let normalizedPrompt = canonicalPrompt(prompt)
-        let blockedPhrases = [
-            "how should you study",
-            "study plan",
-            "study rep",
-            "study schedule",
-            "study strategy",
-            "practice rep",
-            "clearest progress",
-            "next step",
-            "visible progress",
-            "finish line",
-            "try harder",
-            "motivation",
-            "blocked app",
-            "open another app",
-            "distraction",
-            "what should you do next"
+        // Match explicit coaching requests. General words such as "next step"
+        // or "motivation" can be the subject itself; the reviewer judges context.
+        let patterns = [
+            #"\bhow (?:should|can|could) (?:you|i|we) study\b"#,
+            #"\b(?:your|my|our) (?:study|practice) (?:plan|schedule|strategy|routine)\b"#,
+            #"\b(?:study|practice) (?:rep|reps|plan|schedule|strategy)\b.{0,100}\b(?:your|you|my|me|progress|prepare)\b"#,
+            #"\bafter (?:missing|failing)\b.{0,80}\b(?:question|quiz|item|test)\b.{0,80}\b(?:study|practice|review|next)\b"#
         ]
-
-        return blockedPhrases.contains { normalizedPrompt.contains($0) }
+        return patterns.contains { prompt.range(of: $0, options: [.regularExpression, .caseInsensitive]) != nil }
     }
 
     private static func promptKeys(_ prompt: String) -> Set<String> {
         questionStemKeys(prompt)
-    }
-
-    private static func isBareAnswerLabel(_ text: String) -> Bool {
-        var normalized = QuestionText.collapsedWhitespace(text)
-            .folding(
-                options: [.diacriticInsensitive, .caseInsensitive],
-                locale: Locale(identifier: "en_US_POSIX")
-            )
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        for prefix in ["answer", "choice", "option"] where normalized.hasPrefix(prefix) {
-            normalized.removeFirst(prefix.count)
-            normalized = normalized.trimmingCharacters(in: CharacterSet(charactersIn: " \t\n:-."))
-            break
-        }
-
-        normalized = normalized.trimmingCharacters(in: CharacterSet(charactersIn: "[]().: "))
-        return ["a", "b", "c", "d"].contains(normalized)
     }
 
     private static func containsEmbeddedAnswerOptions(_ prompt: String) -> Bool {
@@ -331,27 +299,28 @@ enum QuestionBatchSanitizer {
         expectedAnswer: String,
         explanation: String
     ) -> (expectedAnswer: String, choices: [String])? {
-        let clippedChoices = choices
-            .map { QuestionText.clipped(QuestionText.collapsedWhitespace($0), maxLength: 140) }
+        let normalizedChoices = choices
+            .map { MultipleChoiceAnswerNormalizer.key(for: $0) }
             .filter { !$0.isEmpty }
 
         var seen: Set<String> = []
         var uniqueChoices: [String] = []
 
-        for choice in clippedChoices {
+        for choice in normalizedChoices {
             let key = choiceUniquenessKey(choice)
             guard !seen.contains(key) else { continue }
             seen.insert(key)
             uniqueChoices.append(choice)
         }
 
-        guard uniqueChoices.count == 4 else { return nil }
+        guard uniqueChoices.count == 4, uniqueChoices.allSatisfy({ $0.count <= 140 }) else { return nil }
 
         let indexedChoice = MultipleChoiceAnswerNormalizer.choiceIndex(from: expectedAnswer).flatMap { index in
             uniqueChoices.indices.contains(index) ? uniqueChoices[index] : nil
         }
         let expectedKey = answerKey(expectedAnswer)
-        let matchedChoice = indexedChoice ?? uniqueChoices.first { choice in
+        let exactChoice = uniqueChoices.first { answerKey($0) == expectedKey }
+        let matchedChoice = exactChoice ?? indexedChoice ?? uniqueChoices.first { choice in
             let choiceKey = answerKey(choice)
             return choiceKey == expectedKey || (choiceKey.count >= 12 && expectedKey.contains(choiceKey))
         }
@@ -391,81 +360,11 @@ enum QuestionBatchSanitizer {
     }
 
     private static func choiceUniquenessKey(_ text: String) -> String {
-        let semanticKey = semanticChoiceKey(text)
-        return semanticKey.isEmpty ? answerKey(text) : semanticKey
+        MultipleChoiceAnswerNormalizer.key(for: text)
     }
 
-    private static func semanticChoiceKey(_ text: String) -> String {
-        var normalized = text
-            .folding(
-                options: [.diacriticInsensitive, .caseInsensitive],
-                locale: Locale(identifier: "en_US_POSIX")
-            )
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        normalized = MultipleChoiceAnswerNormalizer.strippingAnswerPrefix(from: normalized)
-        normalized = MultipleChoiceAnswerNormalizer.strippingChoiceLabel(from: normalized)
-
-        let tokens = normalized
-            .split { !$0.isLetter && !$0.isNumber }
-            .compactMap { semanticChoiceToken(String($0)) }
-
-        return tokens.joined(separator: "")
-    }
-
-    private static func semanticChoiceToken(_ token: String) -> String? {
-        let normalized = singularizedSemanticToken(token)
-
-        let stopWords: Set<String> = [
-            "a",
-            "an",
-            "as",
-            "by",
-            "choice",
-            "for",
-            "it",
-            "of",
-            "option",
-            "that",
-            "the",
-            "this",
-            "those",
-            "to",
-            "which",
-            "with"
-        ]
-
-        guard !stopWords.contains(normalized) else { return nil }
-        return normalized
-    }
-
-    private static func singularizedSemanticToken(_ token: String) -> String {
-        guard token.count > 4 else { return token }
-
-        if token.hasSuffix("ies") {
-            return String(token.dropLast(3)) + "y"
-        }
-
-        if token.hasSuffix("s"), !token.hasSuffix("ss") {
-            return String(token.dropLast())
-        }
-
-        return token
-    }
-
-    private static func canonicalPrompt(_ prompt: String) -> String {
-        QuestionText.collapsedWhitespace(prompt)
-            .folding(
-                options: [.caseInsensitive, .diacriticInsensitive],
-                locale: Locale(identifier: "en_US_POSIX")
-            )
-            .lowercased()
-            .trimmingCharacters(
-                in: .whitespacesAndNewlines.union(
-                    CharacterSet(charactersIn: ".?!:;\"'“”‘’")
-                )
-            )
+    private static func genericProseKey(_ text: String) -> String {
+        String(text.lowercased().filter { $0.isLetter || $0.isNumber })
     }
 
     private static func exactQuestionStemKey(_ prompt: String) -> String {
