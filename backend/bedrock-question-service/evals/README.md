@@ -128,3 +128,25 @@ python evals/checkpoint_learning_eval.py --output /tmp/general-learning.json \
 `--infer-skills` first calls the production skill-map inference function. It then assigns alternating target levels 2 and 4 (respecting the goal minimum), requests coverage of every inferred skill, and prepares 5–6 reviewed questions in at most three bounded jobs. These synthetic levels test per-skill generation; the iOS tests separately exercise progression from answer history. Inference has a separate three-call budget. Generation and review share five calls per job. Reports retain partial inventory when a job exhausts its budget.
 
 Use `--generation-fixtures /path/to/goals.jsonl` for an arbitrary JSONL file with `case_id` and `payload` fields. Repeat `--case-id` to select cases; omitted selection runs all eligible cases, including the known-error review controls. Selected generation-only runs do not establish that those correctness controls passed. Inspect the saved questions and skill maps: filling inventory alone does not establish factual accuracy, appropriate challenge, or educational efficacy.
+
+## Source access during authorship
+
+`checkpoint_source_authoring_eval.py` compares goal-only authorship with source-fed authorship on two fresh goals. Both arms' solver and reviewer receive the identical evidence packet. The [prospective design](../../../docs/QUESTION_SOURCE_AUTHORING_EXPERIMENT.md) defines the assessment and limits; source selection is assistant-assisted, not deployed retrieval.
+
+Prepare without credentials or model calls, using the same Python environment that will execute the plan:
+
+```sh
+python evals/checkpoint_source_authoring_eval.py \
+  --fixture evals/fixtures/question_source_authoring.json \
+  --output /tmp/source-authoring-plan
+```
+
+After inspecting the frozen plan, use its returned canonical hash and a fresh output directory for the bounded live experiment:
+
+```sh
+python evals/checkpoint_source_authoring_eval.py --execute \
+  --plan /tmp/source-authoring-plan/plan.json --plan-sha256 HASH_FROM_PREPARATION \
+  --output /tmp/source-authoring-capture --aws-cli-credentials
+```
+
+At most twelve calls run, three per arm, with no retries, repairs or top-ups. The first operational or malformed-output failure stops the entire run. Preserve the resulting capture instead of rerunning until favorable output appears. Freeze independent answer and difficulty judgments from `blinded.json` before inspecting keys, arm labels, or reviewer feedback in `capture.json`. Audit raw and displayed candidates, including rejected questions; key agreement and inventory counts alone are not correctness measures.
