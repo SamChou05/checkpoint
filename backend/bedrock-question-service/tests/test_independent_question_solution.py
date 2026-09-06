@@ -27,7 +27,7 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
             "index": 0,
             "outcome": "resolved",
             "answer": "A bounded result under the stated assumptions.",
-            "limitations": "An unstated condition would change the result.",
+            "limitations": "",
             "assumptionsRequired": [],
         }
 
@@ -45,9 +45,11 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
             self.assertEqual(data["independentSolutions"], [solution])
             return json.dumps({"reviews": [{"index": 0, "valid": False, "answer": ""}]})
 
+        reviewer = Mock(side_effect=audit)
         self.assertEqual(
-            verify_questions([self.question], self.request, audit, solve=solve), []
+            verify_questions([self.question], self.request, reviewer, solve=solve), []
         )
+        reviewer.assert_called_once()
 
     def test_missing_or_malformed_solutions_never_reach_final_audit(self):
         for raw in [

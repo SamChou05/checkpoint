@@ -95,7 +95,10 @@ def evaluate_review(case, client=None):
             "metrics": metrics,
         }
     decisions = metrics.get("QuestionQuality", {}).get("review", {})
-    abstained = bool(decisions.get("solver_uncertain"))
+    abstained = any(
+        decisions.get(reason)
+        for reason in ("solver_uncertain", "solver_unresolved_limitations")
+    )
     semantic_rejection = not abstained and any(
         decisions.get(reason, 0)
         for reason in (

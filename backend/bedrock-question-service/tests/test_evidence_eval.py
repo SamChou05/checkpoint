@@ -132,9 +132,15 @@ class EvidenceComparisonTests(unittest.TestCase):
             "expected_accept": False,
             "rationale": "The authored key is wrong.",
         }
-        for outcome, reason, passed in (
-            ("no_solution", "solver_outcome_mismatch", True),
-            ("uncertain", "solver_uncertain", False),
+        for outcome, limitations, reason, passed in (
+            ("no_solution", "", "solver_outcome_mismatch", True),
+            ("uncertain", "", "solver_uncertain", False),
+            (
+                "resolved",
+                "The conclusion has an unresolved qualification.",
+                "solver_unresolved_limitations",
+                False,
+            ),
         ):
             with self.subTest(outcome=outcome):
                 raw = json.dumps(
@@ -144,7 +150,7 @@ class EvidenceComparisonTests(unittest.TestCase):
                                 "index": 0,
                                 "outcome": outcome,
                                 "answer": "A synthetic result.",
-                                "limitations": "",
+                                "limitations": limitations,
                                 "assumptionsRequired": [],
                             }
                         ]
@@ -162,7 +168,8 @@ class EvidenceComparisonTests(unittest.TestCase):
                 ):
                     result = evaluate_review(case)
                 self.assertEqual(result["passed"], passed)
-                self.assertEqual(result["abstained"], outcome == "uncertain")
+                self.assertEqual(result["abstained"], not passed)
+                self.assertEqual(result["semantic_rejection"], passed)
                 self.assertEqual(result["provider_calls"], 1)
                 self.assertEqual(result["reviews"], [raw])
                 self.assertEqual(

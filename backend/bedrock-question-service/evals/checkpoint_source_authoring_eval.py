@@ -511,6 +511,7 @@ def run_experiment(
                     "accepted",
                     "unsupported_solution",
                     "solver_uncertain",
+                    "solver_unresolved_limitations",
                     "solver_outcome_mismatch",
                     "rejected_by_model",
                     "answer_disagreement",

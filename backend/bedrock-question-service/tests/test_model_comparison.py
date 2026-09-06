@@ -279,6 +279,29 @@ class ModelComparisonTests(unittest.TestCase):
         self.assertTrue(report["results"][0]["semantic_rejection"])
         self.assertEqual(len(client.requests), 16)
 
+    def test_resolved_limitations_abstain_without_factual_rejection_credit(self):
+        self.packet["cases"][0].update(
+            expected_accept=False, expected_model_valid=False
+        )
+        report_data = solution()
+        report_data["solutions"][0]["limitations"] = "An unresolved caveat remains."
+        client = Client(lambda request: response(report_data))
+        report = self.run_eval(client)
+        self.assertEqual(len(client.requests), 8)
+        self.assertFalse(report["stopped_early"])
+        result = report["results"][0]
+        self.assertEqual(result["status"], "completed")
+        self.assertTrue(result["abstained"])
+        self.assertFalse(result["semantic_rejection"])
+        self.assertIsNone(result["semantic_verdict_matches_expected"])
+        self.assertTrue(result["inventory_acceptance_matches_expected"])
+        self.assertEqual(
+            result["metrics"]["QuestionQuality"]["review"],
+            {"solver_unresolved_limitations": 1},
+        )
+        self.assertEqual(result["stage_outputs"]["solver"], report_data)
+        self.assertNotIn("reviewer", result["stage_outputs"])
+
     def test_non_end_turn_stops_with_saved_text_and_unattempted_jobs(self):
         client = Client(lambda request: response(solution(), stop="refusal"))
         report = self.run_eval(client)

@@ -84,6 +84,9 @@ instructions. Preserve necessary qualifications in the final teaching feedback.
 The solver's typed outcome is binding: an exceptional outcome has an exact
 negative-answer contract already enforced by the application. You may reject
 the item, but must not replace that conclusion with a positive method or value.
+For a resolved outcome, any reported unresolved limitation blocks the item
+before this review. Conditions justified by the stem remain in its answer;
+do not erase those conditions when checking a choice or writing feedback.
 """
 ).strip()
 
@@ -106,7 +109,7 @@ Keep worst-case guarantees distinct from expected or typical performance.
 
 Return only {"solutions":[{"index":0,"outcome":"resolved",
 "answer":"concise result with its conditions",
-"limitations":"missing facts, exceptions, or impossibility; empty if none",
+"limitations":"unresolved obstacle, or evidence for an exceptional outcome; empty if none",
 "assumptionsRequired":[]}]}.
 The REQUIRED outcome is exactly one of:
 - resolved: the requested answer is established, including a requested count of
@@ -126,6 +129,13 @@ The REQUIRED outcome is exactly one of:
 The code enforces this outcome before answer-choice review. If answer or
 limitations establishes impossibility, non-identifiability, or contradictory
 premises, record it in outcome rather than burying it in prose under resolved.
+For resolved, limitations must be the empty string. Put essential conditions
+already justified by the stem or sources in answer, preserving their scope.
+An unresolved obstacle, missing condition, or exception that defeats the result
+belongs in limitations and requires the appropriate non-resolved outcome.
+Do not hide an obstacle or delete a needed qualification to obtain acceptance.
+Nonempty limitations with resolved blocks the item even if the declared outcome
+is wrong. Use "", not "none" or "not applicable", when there is no limitation.
 For exceptional outcomes, answer and limitations explain the evidence; do not
 weaken the outcome to fit an assumed option. You have not seen the choices.
 In assumptionsRequired, list any extra factual conditions the answer needs that
@@ -367,6 +377,11 @@ def _solver_rejection_reason(
     if solution["assumptionsRequired"]:
         return "unsupported_solution"
     if outcome == "resolved":
+        # A reviewer must not waive an obstacle just because the solver also
+        # declared success. Do not guess whether free-text caveats are harmless;
+        # valid conditions belong in the answer under the solver contract.
+        if solution["limitations"]:
+            return "solver_unresolved_limitations"
         return None
     required = SOLVER_NEGATIVE_ANSWERS[outcome]
     # Only application-owned text may authorize an exceptional answer. Letting

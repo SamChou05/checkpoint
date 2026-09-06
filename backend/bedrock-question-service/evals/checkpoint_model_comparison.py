@@ -385,7 +385,10 @@ def run_experiment(
                         solve=lambda system, user: generate("solver", system, user),
                     )
                 reasons = metrics.get("QuestionQuality", {}).get("review", {})
-                abstained = bool(reasons.get("solver_uncertain"))
+                abstained = any(
+                    reasons.get(reason)
+                    for reason in ("solver_uncertain", "solver_unresolved_limitations")
+                )
                 semantic_rejection = not abstained and any(
                     reasons.get(key)
                     for key in (
@@ -397,6 +400,7 @@ def run_experiment(
                 malformed = set(reasons) - {
                     "unsupported_solution",
                     "solver_uncertain",
+                    "solver_unresolved_limitations",
                     "solver_outcome_mismatch",
                     "rejected_by_model",
                     "answer_disagreement",

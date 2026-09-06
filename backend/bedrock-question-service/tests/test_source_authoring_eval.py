@@ -293,9 +293,14 @@ class SourceAuthoringTests(unittest.TestCase):
     def test_solver_abstention_and_control_rejection_are_not_operational_success_claims(
         self,
     ):
-        for outcome, reason in (
-            ("uncertain", "solver_uncertain"),
-            ("no_solution", "solver_outcome_mismatch"),
+        for outcome, limitations, reason in (
+            ("uncertain", "", "solver_uncertain"),
+            ("no_solution", "", "solver_outcome_mismatch"),
+            (
+                "resolved",
+                "An unresolved condition remains.",
+                "solver_unresolved_limitations",
+            ),
         ):
             with self.subTest(outcome=outcome):
                 self.output = self.root / outcome
@@ -304,6 +309,7 @@ class SourceAuthoringTests(unittest.TestCase):
                     if stage == "solver":
                         for row in data["solutions"]:
                             row["outcome"] = outcome
+                            row["limitations"] = limitations
                     return response(data)
 
                 report = self.run_eval(Client(solve))
