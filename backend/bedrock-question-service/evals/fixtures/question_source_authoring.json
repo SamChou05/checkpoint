@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-09-06",
+  "purpose": "Paired upstream author evidence-access experiment; both checkers receive identical evidence. No automatic retrieval or production change.",
+  "source_draft_sha256": {
+    "checkpoint-source-authoring-plant-draft.json": "d0ee1103748a5d4cd68f00bb11cb81862c7ae821f229a549dab506c52fc4c9c5",
+    "checkpoint-source-authoring-forms-draft.json": "a65e25e1b8e58ceb567e8176b2bac57f69b9454d641b91b1925c3785a84a1126"
+  },
+  "prospective_assessment": {
+    "blind_first": [
+      "all supported literal answers",
+      "missing facts or ambiguity",
+      "distinct and plausible distractors",
+      "subject relevance",
+      "difficulty using shared rubric"
+    ],
+    "after_freeze": [
+      "raw key and author explanation",
+      "reviewer key",
+      "main reviewer explanation",
+      "each choice explanation",
+      "runtime exclusions separate from factual judgments",
+      "usable count at requested difficulty"
+    ],
+    "success_boundary": "Source-first must produce supported unique keys, defensible distractors, accurate feedback, and the requested challenge across both goals. Small selected samples cannot qualify general correctness or automated retrieval."
+  },
+  "cases": [
+    {
+      "case_id": "plant_stem_cuttings",
+      "payload": {
+        "goal": {
+          "title": "Learn indoor plant propagation by stem cuttings",
+          "focusAreas": "Choosing viable stem material; preparing cuttings; managing rooting moisture, drainage, humidity and light; recognizing species differences; deciding when to pot rooted cuttings"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Iowa State University Extension and Outreach: How to Propagate Houseplants by Stem Tip Cuttings",
+            "text": "Source: https://yardandgarden.extension.iastate.edu/how-to/how-propagate-houseplants-stem-tip-cuttings (accessed 2026-09-06). Paraphrased guidance: The guide recommends 3–6 inch stems with at least two nodes. Remove lower leaves; place at least one node in premoistened rooting medium with leaves above it. Containers need drainage; the medium needs both moisture retention and aeration. Unrooted cuttings lose water while having little capacity to replace it. A loose clear cover can raise humidity; keep it off foliage and allow air exchange. Use bright indirect light: excessive light can burn foliage, particularly under covers. Check conditions regularly and moisten drying medium. Rooting hormone is optional. These are preparation and care recommendations, not a guarantee that every cutting roots."
+          },
+          {
+            "name": "University of Minnesota Extension: Monstera deliciosa",
+            "text": "Source: https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa (accessed 2026-09-06). Paraphrased guidance: Monstera deliciosa stem propagation requires a node with an axillary bud. A detached leaf and petiole lacking this stem tissue will not form a new growing plant. A node-bearing cutting can root in several media, including water, so no single medium is necessary. Rooting medium must drain well; excessive wetness and cool soil can lead to disease. Inspect roots gently before moving a cutting; if roots are absent or sparse, return it to the medium. Added auxin may promote rooting, but Monstera can root without it. These statements concern Monstera deliciosa, not every houseplant."
+          },
+          {
+            "name": "University of Illinois Extension: Cuttings",
+            "text": "Source: https://extension.illinois.edu/houseplants/cuttings (accessed 2026-09-06). Paraphrased guidance: Illinois recommends starting with insect- and disease-free material. Stem-cutting instructions generally remove leaves below the medium and remove flowers or seeds. Immediate insertion has species exceptions: the article lists some succulents, cacti, Pelargonium and rubber plant as requiring the cut surface to dry and heal first. It describes bright light without direct sun. Rooting speed varies with species and stem characteristics, so its approximate times are not a universal deadline. Check actual roots before potting individually; its guide uses roots about one inch long. Leaf propagation is a different technique that works for some species and cannot be assumed to work for all stem-cutting subjects."
+          }
+        ],
+        "targetCount": 3,
+        "minimumDifficulty": 3
+      },
+      "source_provenance": [
+        {
+          "source_id": "isu_stem_tip",
+          "title": "How to Propagate Houseplants by Stem Tip Cuttings",
+          "publisher": "Iowa State University Extension and Outreach",
+          "authors": [
+            "Aaron Steil"
+          ],
+          "url": "https://yardandgarden.extension.iastate.edu/how-to/how-propagate-houseplants-stem-tip-cuttings",
+          "last_reviewed_as_displayed": "January 2025",
+          "supporting_sections": [
+            "Rooting Media for Cuttings",
+            "Decreasing Water Loss",
+            "Light and Temperature",
+            "How to Propagate by Stem Cuttings"
+          ],
+          "document_index": 0,
+          "accessed_on": "2026-09-06",
+          "retrieval_method": "Assistant web search followed by reading the primary institution page",
+          "summary_is_paraphrase": true,
+          "raw_page_snapshot_stored": false,
+          "summary_word_count": 100,
+          "summary_sha256": "f3b30fd735cd950d2b5b6b34cb8ccec939e0bb36abbd80f43eb37833b7c1404c",
+          "source_document_text_sha256": "7788ca938406e4f748faebd6d5c5a2d898322041903487a7ce0c03c48f2bf661"
+        },
+        {
+          "source_id": "umn_monstera",
+          "title": "Monstera deliciosa",
+          "publisher": "University of Minnesota Extension",
+          "authors": [
+            "Noah Burley",
+            "Julie Weisenhorn"
+          ],
+          "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+          "last_reviewed_as_displayed": "2026",
+          "supporting_sections": [
+            "Propagation",
+            "Propagation by stem cuttings",
+            "Rooting media",
+            "Rooting hormone"
+          ],
+          "document_index": 1,
+          "accessed_on": "2026-09-06",
+          "retrieval_method": "Assistant web search followed by reading the primary institution page",
+          "summary_is_paraphrase": true,
+          "raw_page_snapshot_stored": false,
+          "summary_word_count": 94,
+          "summary_sha256": "0611b717cab9dd45085d747d3b3d3639c50c8defeaf19217f8b3c143025875b1",
+          "source_document_text_sha256": "8d84e626a9b4694e08280782a595d162350530a25671c8866b4d2f5bd7d77a5d"
+        },
+        {
+          "source_id": "illinois_cuttings",
+          "title": "Cuttings",
+          "publisher": "University of Illinois Extension",
+          "authors": [],
+          "url": "https://extension.illinois.edu/houseplants/cuttings",
+          "last_reviewed_as_displayed": null,
+          "supporting_sections": [
+            "Stem Cuttings",
+            "How long will this take?",
+            "Leaf Cuttings",
+            "Leaf-bud Cuttings"
+          ],
+          "document_index": 2,
+          "accessed_on": "2026-09-06",
+          "retrieval_method": "Assistant web search followed by reading the primary institution page",
+          "summary_is_paraphrase": true,
+          "raw_page_snapshot_stored": false,
+          "summary_word_count": 105,
+          "summary_sha256": "81d3fc608e29415782b0b4630f1b0b8fa7828b91e959634ab8e8472c18fd2d3a",
+          "source_document_text_sha256": "5940c53654408c7fdceaae1d2484c7172d19396740fe46c01230af1a2dc11447"
+        }
+      ],
+      "adjudication_checklist": [
+        {
+          "id": "P01",
+          "source_id": "isu_stem_tip",
+          "fact": "Use moist, aerated medium and containers with drainage."
+        },
+        {
+          "id": "P02",
+          "source_id": "isu_stem_tip",
+          "fact": "Bury a node; keep leaves above the medium."
+        },
+        {
+          "id": "P03",
+          "source_id": "isu_stem_tip",
+          "fact": "A loose cover raises humidity while allowing air exchange."
+        },
+        {
+          "id": "P04",
+          "source_id": "isu_stem_tip",
+          "fact": "Excessive light can burn covered cuttings."
+        },
+        {
+          "id": "P05",
+          "source_id": "umn_monstera",
+          "fact": "Monstera leaf-and-petiole material alone lacks the required growth point."
+        },
+        {
+          "id": "P06",
+          "source_id": "umn_monstera",
+          "fact": "Monstera can root in water or solid media."
+        },
+        {
+          "id": "P07",
+          "source_id": "umn_monstera",
+          "fact": "Sparse roots warrant continued rooting before transfer."
+        },
+        {
+          "id": "P08",
+          "source_id": "umn_monstera",
+          "fact": "Added auxin is optional for Monstera."
+        },
+        {
+          "id": "P09",
+          "source_id": "illinois_cuttings",
+          "fact": "Choose material without insects or disease."
+        },
+        {
+          "id": "P10",
+          "source_id": "illinois_cuttings",
+          "fact": "The listed species exceptions need wound drying before insertion."
+        },
+        {
+          "id": "P11",
+          "source_id": "illinois_cuttings",
+          "fact": "Rooting speed varies; observe roots before potting."
+        },
+        {
+          "id": "P12",
+          "source_id": "illinois_cuttings",
+          "fact": "Leaf-cutting suitability depends on the plant."
+        }
+      ],
+      "scope_limits": [
+        "Source acquisition and summarization were assistant-assisted for this experiment; this is not autonomous deployed retrieval.",
+        "Only request_payload is proposed as model input. Source provenance, checklist, and assessment notes are external audit material; do not inject them as extra author instructions or expected answers.",
+        "The goal-only arm should use the identical goal with sourceDocuments empty. Root owns all other experimental settings and must freeze them before generation.",
+        "Source recommendations are conditional guidance. A procedural node-count recommendation is not a universal biological minimum; preserve the stated plant and method.",
+        "Keep air humidity distinct from medium moisture and drainage. Do not manufacture a uniquely best diagnosis from a generic symptom alone.",
+        "Material selection establishes prerequisites, not guaranteed survival or a promised rooting date. Species exceptions must remain explicit.",
+        "The references differ in typical timelines and some medium recommendations. The summaries omit competing general deadlines and retain species and procedure context; do not merge them into a universal rule.",
+        "The sources are institutional horticultural guidance, not comparative trials proving one optimal propagation method.",
+        "Future questions need literal-stem uniqueness and key/feedback review. A plausible reference fact or missing mention of a claim does not independently establish that a distractor is false.",
+        "No generated questions, expected answer keys, authored explanations, provider settings, model calls, or production changes are included in this draft."
+      ]
+    },
+    {
+      "case_id": "accessible_web_forms",
+      "payload": {
+        "goal": {
+          "title": "Learn accessible web forms",
+          "focusAreas": "visible form labels, explicit label associations, input instructions, identifying form errors"
+        },
+        "sourceDocuments": [
+          {
+            "name": "W3C WAI: Labeling Controls",
+            "text": "Source: https://www.w3.org/WAI/tutorials/forms/labels/\n\nLabels identify a control's purpose. Associate a label with its control so assistive technology can present that relationship. An explicit HTML label uses a for attribute whose value exactly matches the control's id. Wrapping a control inside its label is another association method. Visible labels help users understand forms. In some layouts the purpose is already clear visually; a visually hidden label can still provide the programmatic label. aria-label supplies an accessible name but does not itself display label text. These alternatives do not mean visible cues are unnecessary in every form."
+          },
+          {
+            "name": "W3C WCAG 2.2: Labels or Instructions",
+            "text": "Source: https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html\n\nSuccess Criterion 3.3.2 applies to optional as well as required input fields. Users need labels or instructions indicating what to enter or select. Explain unusual formats or constraints when needed, without unnecessary detail. A label is presented to users; an accessible name may be exposed only through assistive technology. An aria-label alone can provide a programmatic name while leaving other users without the needed visible cue. This criterion is distinct from programmatic association under 1.3.1 and accessible names under 4.1.2. It does not demand a separate visible text label where another adequate label or instruction already communicates the purpose."
+          },
+          {
+            "name": "W3C WCAG 2.2: Error Identification",
+            "text": "Source: https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html\n\nUnder Success Criterion 3.3.1, automatically detected input errors need text identifying the affected item and describing what is wrong. Missing required input and disallowed formats or values are input errors. Redisplaying a failed form without an error indication is insufficient. Color may supplement the text; color alone does not supply that description. This criterion does not prescribe one layout: messages can appear beside fields, in a summary, or in another suitable presentation. Explaining how to correct an error is addressed separately by 3.3.3, although one message may do both."
+          }
+        ],
+        "targetCount": 3,
+        "minimumDifficulty": 3
+      },
+      "source_provenance": [
+        {
+          "source_document_name": "W3C WAI: Labeling Controls",
+          "url": "https://www.w3.org/WAI/tutorials/forms/labels/",
+          "publisher": "W3C Web Accessibility Initiative",
+          "kind": "Informative implementation tutorial",
+          "checked_date": "2026-09-06",
+          "summary_method": "Independent faithful paraphrase; no model-generated quiz inspected.",
+          "text_sha256": "b66810425b27b14c869bab94413609c2f0c425e5a33d107f3cf5cec5c71d7cae"
+        },
+        {
+          "source_document_name": "W3C WCAG 2.2: Labels or Instructions",
+          "url": "https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html",
+          "publisher": "W3C Web Accessibility Initiative",
+          "kind": "Informative Understanding document explaining SC 3.3.2",
+          "checked_date": "2026-09-06",
+          "summary_method": "Independent faithful paraphrase; no model-generated quiz inspected.",
+          "text_sha256": "3b7f155357a64a462a9316de7be59f1a6c98bd2b2a9c5a3a1245efc6eee3ec29"
+        },
+        {
+          "source_document_name": "W3C WCAG 2.2: Error Identification",
+          "url": "https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html",
+          "publisher": "W3C Web Accessibility Initiative",
+          "kind": "Informative Understanding document explaining SC 3.3.1",
+          "checked_date": "2026-09-06",
+          "summary_method": "Independent faithful paraphrase; no model-generated quiz inspected.",
+          "text_sha256": "0a3fc77d0398af022b6c94ed5d5f29c67b1b708d20114529e89fee948da318b1"
+        }
+      ],
+      "adjudication_checklist": [
+        {
+          "id": "explicit_association",
+          "source_index": 0,
+          "check": "An explicit label uses the control id as its for value; nearby text alone does not establish this HTML association."
+        },
+        {
+          "id": "implicit_association",
+          "source_index": 0,
+          "check": "Wrapping a control in a label is possible; explicit association is not the only labeling method."
+        },
+        {
+          "id": "visible_cues",
+          "source_index": 0,
+          "check": "Hidden labels need context that already communicates purpose visually; do not prescribe hiding every label."
+        },
+        {
+          "id": "optional_inputs",
+          "source_index": 1,
+          "check": "Optional fields also need suitable labels or instructions; required does not limit the criterion to mandatory fields."
+        },
+        {
+          "id": "name_vs_label",
+          "source_index": 1,
+          "check": "A programmatic accessible name alone does not guarantee that all users receive needed labels or instructions."
+        },
+        {
+          "id": "input_instructions",
+          "source_index": 1,
+          "check": "Explain unfamiliar format constraints when needed; not every simple field needs extra instructions."
+        },
+        {
+          "id": "error_identity",
+          "source_index": 2,
+          "check": "For an automatically detected error, identify its field and describe the error in text; color can supplement this."
+        },
+        {
+          "id": "error_presentation_scope",
+          "source_index": 2,
+          "check": "SC 3.3.1 does not mandate inline errors or a summary; error identification and correction suggestions are distinct."
+        }
+      ],
+      "scope_limits": [
+        "Selected informative guidance supports teaching applications, not a complete WCAG conformance judgment.",
+        "Only goal and sourceDocuments are authoring inputs. Provenance and checklist are assessment metadata; exclude them from model requests."
+      ]
+    }
+  ]
+}
