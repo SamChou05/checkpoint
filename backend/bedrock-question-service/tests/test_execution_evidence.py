@@ -7,8 +7,11 @@ managed Linux experiment must qualify the actual memory-limit setup.
 """
 
 import base64
+import builtins
+import contextlib
 import copy
 import hashlib
+import io
 import json
 import os
 import subprocess
@@ -69,6 +72,72 @@ def run_prepared_synthetic(job):
 
 
 class ExecutionEvidencePreparationTests(unittest.TestCase):
+    def test_restricted_namespace_would_invent_errors_for_omitted_builtins(self):
+        # Fixed benign expressions prove why these references must be unsupported:
+        # the restricted child namespace cannot reproduce ordinary Python here.
+        for source, expected_stdout, missing_name in (
+            ("print(ArithmeticError)", "<class 'ArithmeticError'>\n", "ArithmeticError"),
+            ("print(Ellipsis)", "Ellipsis\n", "Ellipsis"),
+        ):
+            with self.subTest(source=source):
+                normal_stdout = io.StringIO()
+                with contextlib.redirect_stdout(normal_stdout):
+                    exec(source, {"__builtins__": vars(builtins)})
+                self.assertEqual(normal_stdout.getvalue(), expected_stdout)
+                restricted = {
+                    "__builtins__": {
+                        name: getattr(builtins, name) for name in evidence.SAFE_BUILTINS
+                    }
+                }
+                with self.assertRaises(NameError) as raised:
+                    exec(source, restricted)
+                self.assertEqual(raised.exception.name, missing_name)
+
+    def test_omitted_builtin_loads_are_unsupported_in_exec_and_eval(self):
+        for spelling, name in (
+            ("ArithmeticError", "ArithmeticError"),
+            ("Ellipsis", "Ellipsis"),
+            ("NotImplemented", "NotImplemented"),
+            ("type", "type"),
+            ("ＡrithmeticError", "ArithmeticError"),
+            ("Ｅllipsis", "Ellipsis"),
+        ):
+            for mode, source in (
+                ("exec", f"print({spelling})"),
+                ("eval", f"repr({spelling})"),
+            ):
+                with self.subTest(mode=mode, source=source):
+                    job = evidence.prepare_execution_job("omitted", source, mode=mode)
+                    self.assertFalse(job["eligible"])
+                    self.assertEqual(
+                        job["unsupported_reason"], f"unsupported_builtin_reference:{name}"
+                    )
+                    parsed = evidence.parse_execution_observation(job, {})
+                    self.assertEqual(parsed["status"], "unsupported")
+                    self.assertEqual(parsed["reason"], job["unsupported_reason"])
+                    self.assertNotIn("approved", parsed)
+
+    def test_omitted_builtin_shadowing_is_conservatively_unsupported(self):
+        # The eligibility check intentionally performs no scope analysis, even
+        # when a local binding would make an omitted builtin name available.
+        for source, name in (
+            ("Ellipsis = 3\nprint(Ellipsis)", "Ellipsis"),
+            ("def f(ArithmeticError):\n    return ArithmeticError", "ArithmeticError"),
+            ("def type(value):\n    return value\nprint(type(3))", "type"),
+        ):
+            with self.subTest(source=source):
+                job = evidence.prepare_execution_job("shadowed", source)
+                self.assertFalse(job["eligible"])
+                self.assertEqual(
+                    job["unsupported_reason"], f"unsupported_builtin_reference:{name}"
+                )
+
+    def test_store_only_omitted_builtin_names_do_not_require_builtin_resolution(self):
+        job = evidence.prepare_execution_job(
+            "store-only", "ArithmeticError = 3\nEllipsis = 4\nprint(7)"
+        )
+        self.assertTrue(job["eligible"])
+
     def test_exact_source_inputs_and_harness_are_hashed_without_normalization(self):
         source = 'def f(value):\n    return value.replace("  ", "|")\n'
         inputs = {"entrypoint": "f", "args": ["e\u0301  x"], "kwargs": {}}
@@ -168,6 +237,46 @@ class ExecutionEvidencePreparationTests(unittest.TestCase):
 
 
 class ExecutionEvidenceSyntheticRuntimeTests(unittest.TestCase):
+    def test_remote_builtin_check_does_not_inherit_hosts_missing_builtin_catalog(self):
+        # Model a host that does not know this builtin. The unmodified remote
+        # harness must discover it and decline before starting the restricted child.
+        with patch.object(evidence, "OMITTED_BUILTIN_NAMES", frozenset()):
+            job = evidence.prepare_execution_job("remote-builtins", "print(ArithmeticError)")
+        self.assertTrue(job["eligible"])
+        _, _, result, _ = run_prepared_synthetic(job)
+        self.assertEqual(result["status"], "unsupported")
+        self.assertEqual(result["reason"], "unsupported_builtin_reference:ArithmeticError")
+        self.assertTrue(result["compile"]["valid"])
+        self.assertIsNone(result["child"])
+        self.assertIsNone(result["child_exit_code"])
+        self.assertIs(result["envelope_valid"], True)
+        self.assertIs(result["operational_failure"], False)
+
+    def test_unknown_nonbuiltin_names_preserve_genuine_nameerror_observations(self):
+        for mode, source in (
+            ("exec", "print(checkpoint_missing_name)"),
+            ("eval", "checkpoint_missing_name"),
+        ):
+            with self.subTest(mode=mode):
+                _, _, observed, _ = run_synthetic(source, mode=mode)
+                self.assertEqual(observed["status"], "observed")
+                self.assertTrue(observed["compile"]["valid"])
+                self.assertEqual(observed["child"]["exception"]["type"], "NameError")
+                self.assertIn(
+                    "checkpoint_missing_name", observed["child"]["exception"]["message"]
+                )
+
+    def test_allowed_builtin_references_still_produce_exact_results(self):
+        _, _, executed, _ = run_synthetic("print(len([1, 2]))")
+        self.assertEqual(executed["status"], "observed")
+        self.assertEqual(executed["child"]["stdout"], "2\n")
+        self.assertIsNone(executed["child"]["exception"])
+        # Python normalizes this fullwidth first character to the allowed `len`.
+        _, _, evaluated, _ = run_synthetic("ｌen([1, 2])", mode="eval")
+        self.assertEqual(evaluated["status"], "observed")
+        self.assertEqual(evaluated["child"]["return_value"], {"type": "int", "value": "2"})
+        self.assertIsNone(evaluated["child"]["exception"])
+
     def test_remote_parent_rehashes_actual_payload_before_compilation(self):
         job = evidence.prepare_execution_job("tamper", "1 + 2", mode="eval")
         original = '"source":"1 + 2"'
@@ -208,7 +317,7 @@ class ExecutionEvidenceSyntheticRuntimeTests(unittest.TestCase):
     def test_invalid_complete_source_and_parse_only_success_get_compile_observation(
         self,
     ):
-        for source in ("def f(): if True: return 1", "return 1"):
+        for source in ("def f(): if True: return 1", "return 1", "print(Ellipsis"):
             with self.subTest(source=source):
                 _, _, observed, _ = run_synthetic(source)
                 self.assertEqual(observed["status"], "observed")

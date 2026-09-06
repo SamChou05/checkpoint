@@ -6,6 +6,7 @@ allowlist is an eligibility rule, not an arbitrary-Python security boundary.
 
 import ast
 import base64
+import builtins
 import hashlib
 import inspect
 import json
@@ -50,6 +51,10 @@ SAFE_BUILTINS = (
     "tuple",
     "zip",
 )
+# The remote namespace deliberately exposes fewer builtins than ordinary Python.
+# Bare references matter as well as calls: print(ArithmeticError) must not become
+# an apparently genuine NameError merely because our wrapper omitted the class.
+OMITTED_BUILTIN_NAMES = frozenset(vars(builtins)) - frozenset(SAFE_BUILTINS)
 SAFE_METHODS = (
     "append",
     "extend",
@@ -185,6 +190,16 @@ def _eligibility(source: str, mode: str, inputs: Any) -> str | None:
         names = [getattr(node, name, "") for name in ("id", "name", "arg", "attr")]
         if any("__" in name for name in names if isinstance(name, str)):
             return "unsupported_reflection_name"
+        if (
+            isinstance(node, ast.Name)
+            and isinstance(node.ctx, ast.Load)
+            and node.id in OMITTED_BUILTIN_NAMES
+        ):
+            # Conservatively decline locally shadowed names too. Eligibility
+            # does not perform scope analysis and is not a Python-equivalence
+            # certificate. Unknown non-builtin names remain compiler/runtime
+            # observations, including intentional NameError questions.
+            return f"unsupported_builtin_reference:{node.id}"
         if isinstance(node, ast.FunctionDef) and (node.decorator_list or node.returns):
             return "unsupported_function_metadata"
         if isinstance(node, (ast.arg, ast.AnnAssign)) and getattr(
@@ -545,6 +560,7 @@ return result
 HARNESS_PREFIX += (
     "\nSAFE_BUILTINS = "
     + repr(SAFE_BUILTINS)
+    + "\nOMITTED_BUILTIN_NAMES = frozenset(vars(builtins)) - frozenset(SAFE_BUILTINS)"
     + "\nSAFE_METHODS = "
     + repr(SAFE_METHODS)
     + "\nSAFE_NODES = "
