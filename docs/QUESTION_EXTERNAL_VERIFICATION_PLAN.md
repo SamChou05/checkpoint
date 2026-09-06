@@ -1,0 +1,50 @@
+# External verification: proposed experiment boundary
+
+Status, September 6, 2026: research and experiment design only. No web-grounding integration, paid tool session, permission change, deployment, or new production model is established by this note.
+
+The next experiment should test whether external observations remain faithful to the question and survive into the acceptance decision and teaching feedback. Prior added-verdict runs did not resolve the measured failures. In the [evidence experiment](QUESTION_EVIDENCE_EXPERIMENT.md), the reviewer received relevant facts yet still accepted both defective controls. In the [isolated-candidate experiment](QUESTION_ISOLATED_CANDIDATE_EXPERIMENT.md), completed judgments invented claims despite hiding sibling choices. Retrieval quality and use of retrieved evidence must therefore be measured separately.
+
+## One generalized interface, several kinds of evidence
+
+Route by the claim being checked, not by exam or goal name. A single music question can need both a sourced instrument convention and a computed transposition; a programming question can require documented language semantics and exact execution. A fictional game should use its supplied rules even when public information describes a similarly named game differently.
+
+| Evidence type | Useful for | What it does not establish |
+| --- | --- | --- |
+| Versioned user material | Course-specific facts, policies, fictional rules | Truth outside that material, omitted premises, or the answer to every scenario |
+| Retrieved primary source passage | Definitions, factual claims, procedures, current or specialized details | That the passage supports the particular inference, that absence proves falsehood, or that a cited URL was actually read |
+| Exact calculation or execution | Arithmetic, code behavior, transposition, finite rule simulations | That the executed program represents the displayed question, or that finite examples prove a universal bound |
+| Independent semantic review | Relevance, assumptions, ambiguity, option-relative comparisons, explanation adequacy | An objective correctness certificate merely because models agree |
+
+The current small-document bridge remains useful. Ordinary goals should still begin from the user's goal and inferred skills; users should not have to assemble a verification packet. Automatic retrieval is a future service responsibility, with source material optional unless the goal depends on it.
+
+## AWS retrieval options researched
+
+**Nova 2 Web Grounding** uses `nova_grounding` as a Converse system tool. The model chooses when to search and returns citation content. AWS documents US inference profiles, an additional tool cost, and `bedrock:InvokeTool` authorization. Grounded citations must be retained and displayed to users. This is a possible separate evidence-gathering call; it is not a switch that gives the existing Claude reviewer browsing. Account access and observed tool use have not been tested. The documented output is synthesized text with citations; access to underlying source passages or raw search observations has not been demonstrated. Check that capability before treating this output as an external evidence capture. See [Nova Web Grounding](https://docs.aws.amazon.com/nova/latest/nova2-userguide/web-grounding.html).
+
+**Bedrock Web Search for supported OpenAI models** uses the Responses API on `bedrock-mantle`, rather than the application's current Converse path. Search and Fetch have separate IAM actions. Explicit `external_web_access:false` keeps retrieval within the AWS index/cache boundary. AWS warns that a citation can come from a search observation even when page fetching fails, so a URL is insufficient evidence of full-page retrieval. The service also requires retaining and displaying citations. This option adds a provider path and requires its own access qualification; model catalog listings have previously failed to establish this account's invoke permission. See [Bedrock Web Search](https://docs.aws.amazon.com/bedrock/latest/userguide/web-search.html).
+
+Neither option has demonstrated quality, cost, or latency for Checkpoint. Do not select a new model solely to obtain a tool before testing whether its returned observations are accessible and useful. Numeric pricing is intentionally omitted here because it was not independently verified in this research pass. One inference request may perform multiple searches. In Bedrock Web Search, `search_context_size` bounds returned observations rather than the number of searches; an API-call ceiling is not a nested tool-call ceiling. A live plan must distinguish enforceable provider, session, and tool limits from usage that can only be observed afterward.
+
+## Preserve observations rather than replacing them with summaries
+
+A future evidence record should retain the exact question content identity, source version or submitted code, observation type, retrieved passage or raw tool result, retrieval time, and the claim it can address. A model's explanation should be stored separately from the external observation. Any change to the stem, options, inputs, or relevant source invalidates the association until it is checked again.
+
+For source checks, distinguish a successful passage retrieval from a snippet, cache miss, denied fetch, or empty result. Confirm that quoted text occurs in the captured source before assessing what it supports. A valid citation proves provenance, not entailment. Missing evidence should remain unknown; it must not become a false distractor by default. Preserve qualifications such as “can,” “must,” “typically,” and “under these conditions.”
+
+For execution, submit the literal artifact and explicit inputs. Record the actual submitted code and raw result; a model-rewritten program is evidence about that rewrite only. A compile error may be the correct answer to a debugging question, and a successful run does not establish every claimed property. Use a managed execution boundary rather than executing arbitrary generated code inside the question worker with its application credentials. The [execution feasibility note](QUESTION_EXECUTION_VERIFICATION.md) covers that integration, documented limits, and the read-only account checks.
+
+For an MCQ, check all four choices as answers to the complete stem, including legitimate comparisons among the choices. Exactly one warranted answer is required; the other three need a defensible reason they do not answer this question. A distractor can contain a true statement that is irrelevant or insufficient. Teaching feedback should explain that actual mismatch without inventing how a learner arrived at it.
+
+## Small next experiment and stop conditions
+
+First qualify the execution adapter without a model reviewer: submit frozen exact artifacts with known observations, including valid code, invalid code, Unicode and layout distinctions, excessive output, and nontermination. Verify capture, artifact binding, bounded operation, and cleanup. This tests a new external observation boundary without repeating the failed prompt-only experiment. It does not yet change MCQ acceptance.
+
+After that boundary works, use a frozen diagnostic set containing both bad and valid counterparts. Include invalid displayed code with a claimed normal result, valid code with an exact result, an intentionally invalid program whose answer is the error, a source-supported factual claim, a source that only supports a weaker claim, and a valid option-relative comparison. Keep the previous two unresolved controls as regression cases, but do not treat repeated success on them as held-out evidence.
+
+Comparing the current reviewer with the same reviewer receiving captured tool observations would measure evidence use only. It is close to the earlier context experiment and must not be described as a new enforcement mechanism. A separate application-enforced contradiction check is worth evaluating only where the observation and choices have an unambiguous machine-readable interpretation; source entailment and arbitrary prose choices do not automatically meet that condition. Such a check needs its own arm and valid controls, including the correct error-answer case, rather than silently changing the acceptance policy in an evidence-only comparison.
+
+Fix the question text and model settings; declare each arm's acceptance policy and capture every actual request before sending it. Reviewers must not see author keys. Freeze independent expected decisions and acceptable feedback before live results. Predeclare provider-call and session ceilings, available tool limits, timeout, and stop-on-failure behavior in the executable plan. An unavailable tool, malformed response, unsupported tool use, or timeout is an operational failure rather than credit for rejecting a bad question.
+
+Score five outcomes separately: observation fidelity to the displayed item, evidence relevance, correct acceptance or rejection, accurate teaching feedback, and usable inventory within the deadline. Record actual tool use, token usage when returned, unknown timeout usage, and elapsed time. For execution, deliberately include a case where repairing the code would produce the intended key; the system must not credit that repaired execution.
+
+Stop if the system ignores a decisive external result, rewrites the artifact without exposing the mismatch, or adds unsupported claims to feedback. Diagnose the binding or decision failure before increasing retries or reasoning effort. If this small diagnostic test passes, qualify fresh questions across the unattempted subjects from the [full-pipeline experiment](QUESTION_FULL_PIPELINE_EXPERIMENT.md), then measure difficulty and adaptive progression separately. Tool availability alone is not a reason to promote the configuration.

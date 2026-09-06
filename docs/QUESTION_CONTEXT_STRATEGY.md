@@ -2,6 +2,8 @@
 
 Status: the small-document bridge and protection-readiness safeguards described below are implemented. Retrieval, citations, and non-quiz progress gates are recommendations for the next product phase.
 
+The September 6 [external verification experiment plan](QUESTION_EXTERNAL_VERIFICATION_PLAN.md) distinguishes source retrieval from evidence that actually supports an answer. Its AWS tool options are researched candidates, not implemented or qualified services.
+
 ## Product Principle
 
 Checkpoint should optimize for **sufficient, useful context with the least user effort**, not for the largest prompt. The user is trying to make progress, not configure an assessment system.
