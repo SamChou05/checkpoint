@@ -23,6 +23,11 @@ def _indented_block(document: str, heading: str) -> str:
 
 
 class BackendInfrastructureTemplateTests(unittest.TestCase):
+    def test_max_claude_effort_is_available_without_changing_deployment_default(self):
+        parameter = _indented_block(self.template, "BedrockClaudeEffort")
+        self.assertIn("Default: high", parameter)
+        self.assertIn("AllowedValues: [low, medium, high, max]", parameter)
+
     def test_reasoning_settings_reach_both_functions(self):
         for parameter, env in [
             ("BedrockThinkingMaxTokens", "BEDROCK_THINKING_MAX_TOKENS"),

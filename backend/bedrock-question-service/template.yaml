@@ -76,7 +76,8 @@ Parameters:
   BedrockClaudeEffort:
     Type: String
     Default: high
-    AllowedValues: [low, medium, high]
+    AllowedValues: [low, medium, high, max]
+    Description: Adaptive thinking effort. Max is supported only for the configured Claude Opus 4.6 model.
   GenerationAttempts:
     Type: Number
     Default: 3

@@ -56,7 +56,14 @@ class GenerationDiagnosticsTests(unittest.TestCase):
             def converse(self, **_):
                 return {
                     "stopReason": "max_tokens",
-                    "output": {"message": {"content": [{"text": '{"questions": []}'}]}},
+                    "output": {
+                        "message": {
+                            "content": [
+                                {"reasoningContent": {"redactedContent": b"private"}},
+                                {"text": '{"questions": []}'},
+                            ]
+                        }
+                    },
                 }
 
         metrics = {
@@ -74,6 +81,10 @@ class GenerationDiagnosticsTests(unittest.TestCase):
         self.assertEqual(
             quality_summary(metrics), {"provider": {"output_truncated": 1}}
         )
+        self.assertEqual(
+            metrics["ProviderObservations"][0]["reasoningContentBlockCount"], 1
+        )
+        self.assertNotIn("private", json.dumps(metrics))
 
     def test_logging_only_allows_fixed_reason_names_and_positive_counts(self):
         self.assertEqual(

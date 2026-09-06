@@ -389,6 +389,7 @@ def _generate_with_bedrock(
     except Exception as error:
         record_quality(request_metrics, "provider", "request_failed")
         raise ProviderError("Bedrock invocation failed.") from error
+    content = response.get("output", {}).get("message", {}).get("content", [])
     if request_metrics is not None:
         request_metrics.setdefault("ProviderObservations", []).append(
             {
@@ -398,6 +399,12 @@ def _generate_with_bedrock(
                 ).hexdigest(),
                 "inferenceConfig": dict(inference_config),
                 "reasoningConfig": additional_model_request_fields,
+                # Record returned block presence separately from requested
+                # effort, without retaining reasoning text or signatures.
+                "reasoningContentBlockCount": sum(
+                    isinstance(block, dict) and "reasoningContent" in block
+                    for block in content
+                ),
                 "stopReason": response.get("stopReason"),
                 "elapsedSeconds": round(time.monotonic() - call_started, 3),
                 "usage": response.get("usage", {}),
@@ -417,7 +424,7 @@ def _generate_with_bedrock(
         raise ProviderError("Bedrock output exhausted its token budget.")
 
     text_parts = []
-    for block in response.get("output", {}).get("message", {}).get("content", []):
+    for block in content:
         text = block.get("text")
         if isinstance(text, str):
             text_parts.append(text)
@@ -470,9 +477,16 @@ def _additional_model_request_fields(
             "BEDROCK_CLAUDE_THINKING", "disabled", {"adaptive", "disabled"}
         )
         if mode == "adaptive":
-            effort = _model_setting(
-                "BEDROCK_CLAUDE_EFFORT", "high", {"low", "medium", "high"}
-            )
+            allowed_efforts = {"low", "medium", "high"}
+            # Only explicitly known Opus 4.6 model/profile identifiers qualify;
+            # a substring match must not enable max on another model version.
+            model_name = normalized_model_id.rsplit("/", 1)[-1]
+            if model_name in {
+                prefix + "anthropic.claude-opus-4-6-v1"
+                for prefix in ("", "us.", "eu.", "apac.", "global.")
+            }:
+                allowed_efforts.add("max")
+            effort = _model_setting("BEDROCK_CLAUDE_EFFORT", "high", allowed_efforts)
             return {
                 "thinking": {"type": "adaptive"},
                 "output_config": {"effort": effort},
