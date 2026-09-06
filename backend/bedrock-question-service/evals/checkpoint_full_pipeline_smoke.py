@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""One bounded full-pipeline generation job for each of six synthetic goals.
+"""One bounded full-pipeline generation job for each selected synthetic goal.
 
-At most 36 real provider calls, six per goal. Stop the entire experiment on a
-provider failure; never resume or retry an unsuccessful experiment implicitly.
+At most 36 real provider calls, six per goal. By default, stop the entire
+experiment on a provider failure. Opt-in continuation advances to the next
+independent goal, never retrying a failed goal or expanding its call budget.
 Capture exact request prompts and only final response text, never reasoning
-content. Blinded output excludes authored answers, explanations, and difficulty.
+content. Separate blind exports cover retained questions and all parseable raw
+author candidates, excluding answers, explanations, difficulty, and verdicts.
 No deployed queue, skill inference, learner simulation, or deployment is run.
 """
 
@@ -27,11 +29,13 @@ sys.path.insert(0, str(SERVICE_DIR))
 from evals.checkpoint_learning_eval import generate_sample  # noqa: E402
 from evals.checkpoint_prompt_ablation import use_aws_cli_credentials  # noqa: E402
 from question_generation import _bedrock_client, _system_prompt  # noqa: E402
+from question_quality import _extract_json_object  # noqa: E402
 from question_verification import (  # noqa: E402
     REVIEW_SYSTEM_PROMPT,
     SOLUTION_SYSTEM_PROMPT,
 )
 from request_contract import _normalize_request  # noqa: E402
+from service_errors import ProviderError  # noqa: E402
 
 FIXTURE_PATH = SERVICE_DIR / "evals/fixtures/question_full_pipeline_smoke.json"
 MAX_CALLS_PER_GOAL = 6
@@ -62,7 +66,7 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
 
 
-def load_cases():
+def load_cases(case_ids=None):
     cases = json.loads(FIXTURE_PATH.read_text())
     if len(cases) != 6 or len({case["case_id"] for case in cases}) != 6:
         raise ValueError("The smoke experiment requires six unique synthetic goals.")
@@ -76,7 +80,15 @@ def load_cases():
             for document in request["sourceDocuments"]
         ] != payload["sourceDocuments"]:
             raise ValueError("Source text must survive normalization unchanged.")
-    return cases
+    if not case_ids:
+        return cases
+    if len(set(case_ids)) != len(case_ids):
+        raise ValueError("Each selected goal must appear only once.")
+    by_id = {case["case_id"]: case for case in cases}
+    unknown = set(case_ids) - set(by_id)
+    if unknown:
+        raise ValueError("Unknown goal IDs: " + ", ".join(sorted(unknown)))
+    return [by_id[case_id] for case_id in case_ids]
 
 
 class CapturingClient:
@@ -140,17 +152,91 @@ def blinded_items(case, questions):
     ]
 
 
-def run_experiment(directory, cases, client=None):
+def raw_author_items(case, calls, author_system_prompt):
+    """Export exact raw candidates without exposing author keys or survival.
+
+    Use the same JSON extractor as runtime; invalid JSON remains an observed
+    parse failure. No heuristic or model repair is performed by this exporter.
+    A full content hash is stable across later calls and different goal order.
+    """
+    blinded, keys, observations = [], [], []
+    for call_index, call in enumerate(calls, 1):
+        if call["request"].get("system") != [{"text": author_system_prompt}]:
+            continue
+        observation = {"call_index": call_index}
+        response = call.get("response")
+        if not isinstance(response, dict):
+            observation["status"] = "provider_error"
+            observations.append(observation)
+            continue
+        try:
+            payload = _extract_json_object("\n".join(response.get("text", [])))
+        except ProviderError:
+            observation["status"] = "invalid_json"
+            observations.append(observation)
+            continue
+        questions = payload.get("questions")
+        if not isinstance(questions, list):
+            observation["status"] = "invalid_questions_envelope"
+            observations.append(observation)
+            continue
+        observation.update(
+            status="parsed",
+            raw_item_count=len(questions),
+            blindable_item_count=0,
+            unblindable_item_indices=[],
+        )
+        for item_index, question in enumerate(questions):
+            if (
+                not isinstance(question, dict)
+                or not isinstance(question.get("prompt"), str)
+                or not isinstance(question.get("choices"), list)
+                or not all(isinstance(choice, str) for choice in question["choices"])
+            ):
+                observation["unblindable_item_indices"].append(item_index)
+                continue
+            content = {
+                "goal": case["payload"]["goal"],
+                "sourceDocuments": case["payload"]["sourceDocuments"],
+                "prompt": question["prompt"],
+                "choices": question["choices"],
+            }
+            content_id = hashlib.sha256(
+                json.dumps(
+                    content, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+                ).encode()
+            ).hexdigest()
+            blinded.append({"id": content_id, **content})
+            keys.append(
+                {
+                    "id": content_id,
+                    "case_id": case["case_id"],
+                    "call_index": call_index,
+                    "item_index": item_index,
+                    "question": copy.deepcopy(question),
+                }
+            )
+            observation["blindable_item_count"] += 1
+        observations.append(observation)
+    return blinded, keys, observations
+
+
+def run_experiment(directory, cases, client=None, *, continue_after_goal_failure=False):
     if not 1 <= len(cases) <= 6 or len({case["case_id"] for case in cases}) != len(
         cases
     ):
         raise ValueError("At most six unique goals may run in this bounded experiment.")
+    if type(continue_after_goal_failure) is not bool:
+        raise ValueError("The continuation policy must be explicitly true or false.")
+    total_call_cap = min(MAX_TOTAL_CALLS, MAX_CALLS_PER_GOAL * len(cases))
     directory.mkdir(parents=True, exist_ok=False)
     report = {
         "settings": SETTINGS,
         "max_calls_per_goal": MAX_CALLS_PER_GOAL,
-        "max_total_calls": MAX_TOTAL_CALLS,
+        "max_total_calls": total_call_cap,
         "max_jobs_per_goal": 1,
+        "continue_after_goal_failure": continue_after_goal_failure,
+        "had_goal_failures": False,
         "cases": cases,
         "results": [],
         "stopped_early": False,
@@ -162,6 +248,8 @@ def run_experiment(directory, cases, client=None):
     except (OSError, subprocess.CalledProcessError):
         report["git_revision"] = None
     blinded = []
+    raw_blinded_by_id = {}
+    raw_keys = []
     with patch.dict(os.environ, SETTINGS):
         prompts = {
             "author": _system_prompt(),
@@ -175,6 +263,8 @@ def run_experiment(directory, cases, client=None):
         }
         write_json(directory / "capture.json", report)
         write_json(directory / "blinded.json", blinded)
+        write_json(directory / "blinded_raw_authors.json", [])
+        write_json(directory / "raw_author_keys.json", raw_keys)
         base_client = client if client is not None else _bedrock_client()
         for case in cases:
             capture = CapturingClient(
@@ -185,6 +275,12 @@ def run_experiment(directory, cases, client=None):
             result["elapsed_seconds"] = round(time.monotonic() - started, 3)
             result["actual_provider_calls"] = len(capture.calls)
             result["provider_failed"] = capture.failed
+            raw_blinded, keys, observations = raw_author_items(
+                case, capture.calls, prompts["author"]
+            )
+            result["raw_author_observations"] = observations
+            raw_blinded_by_id.update({item["id"]: item for item in raw_blinded})
+            raw_keys.extend(keys)
             report["results"].append(result)
             blinded.extend(blinded_items(case, result["questions"]))
             total_calls = sum(
@@ -193,16 +289,25 @@ def run_experiment(directory, cases, client=None):
             provider_rejections = (
                 result["metrics"].get("QuestionQuality", {}).get("provider", {})
             )
-            report["stopped_early"] = bool(
+            result["goal_failed"] = bool(
                 capture.failed
                 or result["errors"]
                 or provider_rejections.get("request_failed")
                 or provider_rejections.get("output_truncated")
-                or total_calls >= MAX_TOTAL_CALLS
+            )
+            report["had_goal_failures"] |= result["goal_failed"]
+            report["stopped_early"] = bool(
+                result["goal_failed"]
+                and not continue_after_goal_failure
+                or total_calls >= total_call_cap
                 and len(report["results"]) < len(cases)
             )
             write_json(directory / "capture.json", report)
             write_json(directory / "blinded.json", blinded)
+            write_json(
+                directory / "blinded_raw_authors.json", list(raw_blinded_by_id.values())
+            )
+            write_json(directory / "raw_author_keys.json", raw_keys)
             print(
                 json.dumps(
                     {
@@ -212,8 +317,12 @@ def run_experiment(directory, cases, client=None):
                         "calls": len(capture.calls),
                         "elapsed_seconds": result["elapsed_seconds"],
                         "errors": result["errors"],
+                        "goal_failed": result["goal_failed"],
                         "stopped_early": report["stopped_early"],
                         "blinded_path": str(directory / "blinded.json"),
+                        "blinded_raw_authors_path": str(
+                            directory / "blinded_raw_authors.json"
+                        ),
                     }
                 ),
                 flush=True,
@@ -228,14 +337,31 @@ def main():
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--aws-cli-credentials", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        default=[],
+        help="Select a goal in run order (repeatable); defaults to all six goals.",
+    )
+    parser.add_argument(
+        "--continue-after-goal-failure",
+        action="store_true",
+        help="Proceed to the next independent goal after a failure; do not retry it.",
+    )
     args = parser.parse_args()
-    cases = load_cases()
+    try:
+        cases = load_cases(args.case_id)
+    except ValueError as error:
+        parser.error(str(error))
     if args.dry_run:
         print(
             json.dumps(
                 {
                     "cases": [case["case_id"] for case in cases],
-                    "max_calls": MAX_TOTAL_CALLS,
+                    "max_calls": min(
+                        MAX_TOTAL_CALLS, MAX_CALLS_PER_GOAL * len(cases)
+                    ),
+                    "continue_after_goal_failure": args.continue_after_goal_failure,
                     "settings": SETTINGS,
                 },
                 indent=2,
@@ -244,10 +370,15 @@ def main():
         return 0
     if args.aws_cli_credentials:
         use_aws_cli_credentials()
-    report = run_experiment(args.output_dir, cases)
+    report = run_experiment(
+        args.output_dir,
+        cases,
+        continue_after_goal_failure=args.continue_after_goal_failure,
+    )
     return (
         0
         if not report["stopped_early"]
+        and not report["had_goal_failures"]
         and all(item["passed"] for item in report["results"])
         else 1
     )
