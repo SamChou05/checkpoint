@@ -4,6 +4,8 @@ import json
 import re
 from typing import Any
 
+from generation_diagnostics import record_quality
+
 from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 from request_contract import (
     MAX_OBJECTIVE_NAME_CHARS,
@@ -96,13 +98,19 @@ def _parse_provider_json(candidate: str) -> dict[str, Any] | None:
 
 
 def _sanitize_questions(
-    raw_questions: Any, request: dict[str, Any]
+    raw_questions: Any,
+    request: dict[str, Any],
+    request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     if not isinstance(raw_questions, list):
+        record_quality(request_metrics, "sanitize", "invalid_envelope")
         return []
 
     requested_objective_allocation = _requested_objective_allocation_limits(request)
     if requested_objective_allocation is None:
+        record_quality(
+            request_metrics, "sanitize", "invalid_allocation", len(raw_questions)
+        )
         return []
 
     minimum_difficulty = request["minimumDifficulty"]
@@ -134,22 +142,26 @@ def _sanitize_questions(
             seen_choice_sets.add(coverage_choice_key)
     sanitized: list[dict[str, Any]] = []
 
-    for raw_question in raw_questions:
+    for candidate_index, raw_question in enumerate(raw_questions):
         if not isinstance(raw_question, dict):
+            record_quality(request_metrics, "sanitize", "invalid_item")
             continue
 
         skill_tag = _normalized_question_skill_tag(raw_question, request)
         if request.get("skillMap") and skill_tag is None:
+            record_quality(request_metrics, "sanitize", "invalid_skill")
             continue
         if skill_tag:
             skill_id = skill_tag["skillID"]
             allowed_count = request.get("requestedSkillAllocation", {}).get(skill_id, 0)
             if accepted_skill_counts.get(skill_id, 0) >= allowed_count:
+                record_quality(request_metrics, "sanitize", "skill_quota")
                 continue
             if skill_id in objective_scoped_skill_ids:
                 objective_pair = (skill_id, skill_tag["objectiveID"])
                 objective_limit = requested_objective_allocation.get(objective_pair, 0)
                 if accepted_objective_counts.get(objective_pair, 0) >= objective_limit:
+                    record_quality(request_metrics, "sanitize", "objective_quota")
                     continue
 
         raw_prompt = _prompt_without_trailing_choice_echo(
@@ -157,6 +169,7 @@ def _sanitize_questions(
             raw_question.get("choices"),
         )
         if len(raw_prompt) > MAX_PROVIDER_PROMPT_CHARS:
+            record_quality(request_metrics, "sanitize", "prompt_length")
             continue
 
         prompt = _clip(raw_prompt, 360)
@@ -182,34 +195,47 @@ def _sanitize_questions(
             or _looks_like_answer_label(expected_answer)
             or not explanation
             or _explanation_admits_bad_answer(explanation)
-            or any(prompt_key in seen_prompts for prompt_key in prompt_keys)
-            or stem_fingerprint in seen_stem_fingerprints
-            or not seen_coverage.isdisjoint(coverage_keys)
             or _looks_like_study_strategy(prompt, request["goal"])
             or _prompt_contains_embedded_options(prompt)
             or _prompt_contains_latex_markup(prompt)
         ):
+            record_quality(request_metrics, "sanitize", "invalid_content")
+            continue
+        if (
+            any(key in seen_prompts for key in prompt_keys)
+            or stem_fingerprint in seen_stem_fingerprints
+        ):
+            record_quality(request_metrics, "sanitize", "duplicate_stem")
+            continue
+        if not seen_coverage.isdisjoint(coverage_keys):
+            record_quality(request_metrics, "sanitize", "duplicate_answer")
             continue
 
         choices = _normalized_choices(raw_question.get("choices"), expected_answer)
         if len(choices) != 4:
+            record_quality(request_metrics, "sanitize", "invalid_choices")
             continue
         choice_set_key = _choice_set_key(choices)
         if not choice_set_key or choice_set_key in seen_choice_sets:
+            record_quality(request_metrics, "sanitize", "duplicate_choices")
             continue
         if any(_looks_like_answer_label(choice) for choice in choices):
+            record_quality(request_metrics, "sanitize", "invalid_choices")
             continue
         if _looks_like_generic_meta_question(
             prompt, expected_answer, choices, explanation
         ):
+            record_quality(request_metrics, "sanitize", "generic_content")
             continue
         if _explanation_supports_different_choice(
             expected_answer, choices, explanation
         ):
+            record_quality(request_metrics, "sanitize", "contradictory_explanation")
             continue
 
         difficulty = _clamped_int(raw_question.get("difficulty"), minimum=1, maximum=5)
         if difficulty < minimum_difficulty:
+            record_quality(request_metrics, "sanitize", "difficulty_floor")
             continue
         skill_plan = next(
             (
@@ -220,6 +246,7 @@ def _sanitize_questions(
             None,
         )
         if skill_plan and difficulty != skill_plan["targetDifficulty"]:
+            record_quality(request_metrics, "sanitize", "difficulty_target")
             continue
 
         seen_prompts.update(prompt_keys)
@@ -246,8 +273,15 @@ def _sanitize_questions(
                     accepted_objective_counts.get(objective_pair, 0) + 1
                 )
         sanitized.append(question)
+        record_quality(request_metrics, "sanitize", "accepted")
 
         if len(sanitized) >= request["targetCount"]:
+            record_quality(
+                request_metrics,
+                "sanitize",
+                "surplus",
+                len(raw_questions) - candidate_index - 1,
+            )
             break
 
     return sanitized

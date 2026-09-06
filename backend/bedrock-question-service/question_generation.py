@@ -6,6 +6,8 @@ import math
 import os
 from typing import Any, Callable
 
+from generation_diagnostics import record_quality
+
 from question_quality import (
     _extract_json_object,
     _question_coverage_payload,
@@ -127,6 +129,7 @@ def _generate_provider_payload(
         try:
             return _extract_json_object(raw_text)
         except ProviderError as first_error:
+            record_quality(request_metrics, "provider", "invalid_json")
             errors.append(first_error)
 
         try:
@@ -153,6 +156,7 @@ def _generate_provider_payload(
         try:
             return _extract_json_object(retry_text)
         except ProviderError as second_error:
+            record_quality(request_metrics, "provider", "invalid_json")
             errors.append(second_error)
 
     raise (
@@ -181,7 +185,7 @@ def _generate_sanitized_questions(
                 request_metrics=request_metrics,
             )
             candidates = _sanitize_questions(
-                provider_payload.get("questions", []), current_request
+                provider_payload.get("questions", []), current_request, request_metrics
             )
             generated_questions = verify_questions(
                 candidates,
@@ -195,6 +199,7 @@ def _generate_sanitized_questions(
                     call_budget=call_budget,
                     request_metrics=request_metrics,
                 ),
+                request_metrics=request_metrics,
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -312,6 +317,9 @@ def _generate_with_bedrock(
         )
     if response.get("stopReason") == "guardrail_intervened":
         raise SafetyInterventionError("Bedrock Guardrail intervened.")
+    if response.get("stopReason") == "max_tokens":
+        record_quality(request_metrics, "provider", "output_truncated")
+        raise ProviderError("Bedrock output exhausted its token budget.")
 
     text_parts = []
     for block in response.get("output", {}).get("message", {}).get("content", []):
@@ -321,6 +329,7 @@ def _generate_with_bedrock(
 
     text = "\n".join(text_parts).strip()
     if not text:
+        record_quality(request_metrics, "provider", "empty_output")
         raise ProviderError("Bedrock returned an empty response.")
 
     return text

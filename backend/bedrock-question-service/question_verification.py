@@ -5,6 +5,7 @@ import json
 import re
 from typing import Any, Callable
 
+from generation_diagnostics import record_quality
 from question_quality import _extract_json_object
 from service_errors import ProviderError
 
@@ -53,10 +54,15 @@ def verify_questions(
     questions: list[dict[str, Any]],
     request: dict[str, Any],
     review: Callable[[str, str], str],
+    request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    original_count = len(questions)
     questions = [
         question for question in questions if _has_reviewable_choices(question)
     ]
+    record_quality(
+        request_metrics, "review", "invalid_choices", original_count - len(questions)
+    )
     if not questions:
         return []
     items = []
@@ -87,12 +93,17 @@ def verify_questions(
     try:
         reviews = _extract_json_object(raw).get("reviews")
     except ProviderError:
+        record_quality(request_metrics, "review", "invalid_json", len(questions))
         return []
     if not isinstance(reviews, list) or len(reviews) != len(questions):
+        record_quality(request_metrics, "review", "invalid_envelope", len(questions))
         return []
     by_index = {}
     for item in reviews:
         if not isinstance(item, dict):
+            record_quality(
+                request_metrics, "review", "invalid_envelope", len(questions)
+            )
             return []
         index = item.get("index")
         if (
@@ -100,16 +111,18 @@ def verify_questions(
             or not 0 <= index < len(questions)
             or index in by_index
         ):
+            record_quality(request_metrics, "review", "invalid_index", len(questions))
             return []
         by_index[index] = item
 
     accepted = []
     for index, question in enumerate(questions):
         item = by_index[index]
-        if (
-            item.get("valid") is not True
-            or item.get("answer") != question["expectedAnswer"]
-        ):
+        if item.get("valid") is not True:
+            record_quality(request_metrics, "review", "rejected_by_model")
+            continue
+        if item.get("answer") != question["expectedAnswer"]:
+            record_quality(request_metrics, "review", "answer_disagreement")
             continue
         # Store the independently assessed challenge, not the author's label.
         # Explicit adaptive targets still require that exact assessed level.
@@ -122,26 +135,31 @@ def verify_questions(
             ),
             None,
         )
-        if (
-            type(difficulty) is not int
-            or not 1 <= difficulty <= 5
-            or difficulty < request.get("minimumDifficulty", 1)
-            or (target is not None and difficulty != target)
-        ):
+        if type(difficulty) is not int or not 1 <= difficulty <= 5:
+            record_quality(request_metrics, "review", "invalid_difficulty")
+            continue
+        if difficulty < request.get("minimumDifficulty", 1):
+            record_quality(request_metrics, "review", "difficulty_floor")
+            continue
+        if target is not None and difficulty != target:
+            record_quality(request_metrics, "review", "difficulty_target")
             continue
         explanation = item.get("explanation")
         choices = item.get("choiceExplanations")
         if not _bounded_explanation(explanation, 420) or not isinstance(choices, dict):
+            record_quality(request_metrics, "review", "invalid_feedback")
             continue
         if set(choices) != set(question["choices"]) or not all(
             _bounded_explanation(value, 280) for value in choices.values()
         ):
+            record_quality(request_metrics, "review", "invalid_feedback")
             continue
         if any(
             re.search(r"\b(?:choice|option|answer)\s+[A-D]\b", text, re.I)
             for text in [explanation, *choices.values()]
         ):
             # Choices are shuffled on the phone; feedback must name the concept.
+            record_quality(request_metrics, "review", "answer_labels")
             continue
         accepted.append(
             {
@@ -154,6 +172,7 @@ def verify_questions(
                 "verificationVersion": VERIFICATION_VERSION,
             }
         )
+        record_quality(request_metrics, "review", "accepted")
     return accepted
 
 

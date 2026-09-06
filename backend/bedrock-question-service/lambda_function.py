@@ -661,6 +661,8 @@ def _new_request_metrics(context: Any | None) -> dict[str, Any]:
 
 
 def _emit_request_metrics(metrics: dict[str, Any]) -> None:
+    from generation_diagnostics import quality_summary
+
     emit_by_default = bool(os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
     if not _bool_env("EMIT_STRUCTURED_METRICS", emit_by_default):
         return
@@ -706,6 +708,7 @@ def _emit_request_metrics(metrics: dict[str, Any]) -> None:
         "StatusCode": status_code,
         "RequestId": str(metrics.get("RequestId", "unavailable")),
         **metric_values,
+        "QuestionQuality": quality_summary(metrics),
     }
     try:
         # Raw JSON on stdout is the Lambda-supported Embedded Metric Format transport.
