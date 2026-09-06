@@ -14,6 +14,7 @@ from typing import Any
 
 import question_bank
 from question_bank_common import _validated_blocked_stem_fingerprints
+from question_difficulty import _difficulty_guidance
 from service_errors import BadRequestError
 
 
@@ -435,6 +436,10 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
     except ValueError as error:
         raise BadRequestError(str(error)) from error
 
+    # Validate the legacy field for request-contract compatibility, but derive
+    # all teaching guidance from the numeric target and the server rubric.
+    _validated_text(payload.get("difficultyGuidance"), "difficultyGuidance", 500)
+
     normalized_request = {
         "goal": {
             "title": title,
@@ -476,12 +481,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         "targetCount": target_count,
         "minimumDifficulty": minimum_difficulty,
         "requiresFullObjectiveCoverage": requires_full_objective_coverage,
-        "difficultyGuidance": _validated_text(
-            payload.get("difficultyGuidance"),
-            "difficultyGuidance",
-            500,
-        )
-        or _difficulty_guidance(minimum_difficulty),
+        "difficultyGuidance": _difficulty_guidance(minimum_difficulty),
     }
     if skill_map:
         normalized_request["skillMap"] = skill_map
@@ -1150,18 +1150,6 @@ def _topics_from_focus(value: Any) -> list[str]:
         if len(topics) >= 8:
             break
     return topics
-
-
-def _difficulty_guidance(level: int) -> str:
-    if level <= 1:
-        return "Foundations: direct recognition, definitions, single-step facts, and gentle distractors."
-    if level == 2:
-        return "Easy application: one concept in a familiar context with light reasoning and clear distractors."
-    if level == 3:
-        return "Medium application: apply concepts to a short scenario with qualifiers and plausible distractors."
-    if level == 4:
-        return "Hard reasoning: use multi-step logic, edge cases, constraints, counterexamples, or nuanced distractors."
-    return "Expert synthesis: combine multiple concepts in a dense exam-style scenario with subtle traps."
 
 
 def _normalized_competencies(value: Any) -> list[dict[str, Any]]:

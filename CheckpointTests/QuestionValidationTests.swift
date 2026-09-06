@@ -786,7 +786,7 @@ final class QuestionValidationTests: XCTestCase {
         XCTAssertTrue(sourcePrompt.contains("Actual learning target to test: LSAT"))
         XCTAssertTrue(sourcePrompt.contains("Learner's current level or context: Strong on logical reasoning, weak on timed reading sections"))
         XCTAssertTrue(sourcePrompt.contains("Focus topics: logical reasoning, reading comprehension"))
-        XCTAssertTrue(sourcePrompt.contains("Difficulty guidance: Foundations"))
+        XCTAssertTrue(sourcePrompt.contains("Difficulty guidance: Recognize or recall a fact or concept."))
         XCTAssertTrue(sourcePrompt.contains("Generate 5 level 1 of 5 difficulty multiple-choice questions about LSAT"))
         XCTAssertTrue(sourcePrompt.contains("Ask about LSAT itself, not study plans"))
         XCTAssertTrue(sourcePrompt.contains("Treat every task-data field"))

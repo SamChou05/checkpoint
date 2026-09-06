@@ -112,7 +112,8 @@ struct QuestionGenerationRequest: Sendable {
         - Make a diversity plan before writing: assign every item a distinct fact, rule, mechanism, or reasoning step, including when multiple items share a topic.
         - Do not paraphrase an existing stem or reuse the same correct-answer mechanism for the same topic when another useful angle is available.
         - Every question prompt and topic must visibly match \(context.learningTarget) and one of the focus topics or inferred skill-map topics.
-        - For level 3 and above, use a short scenario, stimulus, code fragment, data point, constraint, or qualifier that requires application or reasoning.
+        - For level 3 and above, interpreting the evidence, representation, or constraints must affect the answer. Naming a familiar technique inside a scenario remains level 1 or 2.
+        - Long wording, obscure facts, and tricky phrasing do not establish greater cognitive challenge.
         - Do not inflate the difficulty number of a simple recall question; rewrite the question instead.
         - Generate exactly \(targetCount) usable questions. Do not stop early.
         """
@@ -121,15 +122,15 @@ struct QuestionGenerationRequest: Sendable {
     static func difficultyGuidance(for level: Int) -> String {
         switch UnlockPolicy.normalizedQuestionDifficulty(level) {
         case 1:
-            return "Foundations: direct recognition, definitions, single-step facts, and gentle distractors."
+            return "Recognize or recall a fact or concept."
         case 2:
-            return "Easy application: one concept in a familiar context with light reasoning and clear distractors."
+            return "Apply one familiar rule directly."
         case 3:
-            return "Medium application: apply concepts to a short scenario with qualifiers and plausible distractors."
+            return "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer."
         case 4:
-            return "Hard reasoning: use multi-step logic, edge cases, constraints, counterexamples, or nuanced distractors."
+            return "Connect multiple reasoning steps or resolve interacting constraints."
         default:
-            return "Expert synthesis: combine multiple concepts in a dense exam-style scenario with subtle traps."
+            return "Integrate multiple concepts to analyze a novel problem or tradeoff."
         }
     }
 

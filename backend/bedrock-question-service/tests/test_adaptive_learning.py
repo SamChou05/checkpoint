@@ -3,6 +3,7 @@ import unittest
 
 from lambda_test_support import _request_payload, _skill_map, _raw_question
 from question_generation import _user_prompt, _json_retry_prompt
+from question_difficulty import _difficulty_guidance
 from question_quality import _sanitize_questions
 from question_bank_worker import _worker_objective_allocation
 from request_contract import _normalize_request
@@ -75,7 +76,8 @@ class AdaptiveLearningTests(unittest.TestCase):
             with self.subTest(prompt=prompt[:40]):
                 self.assertNotIn("OLD_BASELINE", prompt)
                 self.assertIn(
-                    f"{skill['name']} ({skill['id']}), level 4: Hard reasoning", prompt
+                    f"{skill['name']} ({skill['id']}), level 4: {_difficulty_guidance(4)}",
+                    prompt,
                 )
                 self.assertIn("goal minimum is only a lower bound", prompt)
         self.assertEqual(request, original)
@@ -84,7 +86,7 @@ class AdaptiveLearningTests(unittest.TestCase):
         request = _normalize_request(self.payload())
         other_skill = request["skillMap"]["skills"][1]
         self.assertIn(
-            f"{other_skill['name']} ({other_skill['id']}), level 1: Foundations",
+            f"{other_skill['name']} ({other_skill['id']}), level 1: {_difficulty_guidance(1)}",
             _user_prompt(request),
         )
         request["adaptiveSkillPlans"] = []
@@ -93,7 +95,8 @@ class AdaptiveLearningTests(unittest.TestCase):
             _user_prompt(request),
             _json_retry_prompt(request, "invalid JSON"),
         ]:
-            self.assertIn("Custom guidance for the initial goal.", prompt)
+            self.assertNotIn("Custom guidance for the initial goal.", prompt)
+            self.assertIn(_difficulty_guidance(request["minimumDifficulty"]), prompt)
 
     def test_question_difficulty_must_match_its_skill_plan(self):
         payload = self.payload()

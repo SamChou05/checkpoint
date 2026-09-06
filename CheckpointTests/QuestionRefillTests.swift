@@ -720,7 +720,7 @@ final class QuestionRefillTests: CheckpointWorkflowTestCase {
         let request = try XCTUnwrap(appleEngine.receivedRequest)
         XCTAssertEqual(store.goal?.minimumQuestionDifficulty, 4)
         XCTAssertEqual(request.minimumDifficulty, 4)
-        XCTAssertTrue(request.sourcePrompt(provider: .appleFoundation).contains("Hard reasoning"))
+        XCTAssertTrue(request.sourcePrompt(provider: .appleFoundation).contains("Connect multiple reasoning steps or resolve interacting constraints."))
         XCTAssertTrue(store.questions.filter { originalQuestionIDs.contains($0.id) }.allSatisfy { $0.status == .retired })
         XCTAssertTrue(store.activeQuestions.contains { $0.difficulty >= 4 && !originalQuestionIDs.contains($0.id) })
         XCTAssertEqual(store.questionRefreshesUsed, 1)
