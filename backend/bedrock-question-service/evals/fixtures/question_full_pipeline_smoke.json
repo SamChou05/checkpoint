@@ -1,0 +1,84 @@
+[
+  {
+    "case_id": "python_control_flow_strings",
+    "payload": {
+      "goal": {
+        "title": "Learn Python control flow and string handling",
+        "focusAreas": "loops, conditionals, string replacement, splitting and whitespace"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Python string examples.py",
+          "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+        }
+      ],
+      "targetCount": 5,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "case_id": "music_harmony_transposition",
+    "payload": {
+      "goal": {
+        "title": "Learn music harmony and transposition",
+        "focusAreas": "chord construction, harmonic function, transposition"
+      },
+      "sourceDocuments": [],
+      "targetCount": 5,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "case_id": "spanish_grammar_pronouns",
+    "payload": {
+      "goal": {
+        "title": "Improve Spanish grammar and pronouns",
+        "focusAreas": "subjunctive and indicative meaning, direct and indirect object pronouns"
+      },
+      "sourceDocuments": [],
+      "targetCount": 5,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "case_id": "sourdough_fermentation",
+    "payload": {
+      "goal": {
+        "title": "Learn sourdough baking",
+        "focusAreas": "starter feeding, dough fermentation, proofing and handling"
+      },
+      "sourceDocuments": [],
+      "targetCount": 5,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "case_id": "photography_exposure",
+    "payload": {
+      "goal": {
+        "title": "Learn photography",
+        "focusAreas": "exposure, metering, depth of field and motion"
+      },
+      "sourceDocuments": [],
+      "targetCount": 5,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "case_id": "morrow_rules",
+    "payload": {
+      "goal": {
+        "title": "Learn the Morrow tabletop game",
+        "focusAreas": "movement, token management and scoring"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Morrow rules",
+          "text": "Morrow is a fictional tabletop game. The circular board has eight spaces numbered 0 through 7. Moving forward from 7 wraps to 0. On each turn choose exactly one action: move forward one or two spaces, gather one blue token without moving, or exchange tokens. Blue tokens are capped at three; any excess is lost. Landing on a beacon at space 2 or 6 earns one blue token. Passing a beacon earns nothing. Exchanging is allowed only at space 4 and trades two blue tokens for one gold token without moving. A player with fewer than two blue tokens cannot exchange. Gold tokens cannot be spent and have no cap. All players start at space 0 with zero tokens. At the end, score two points per gold token plus one point per blue token. Position itself earns no points."
+        }
+      ],
+      "targetCount": 5,
+      "minimumDifficulty": 3
+    }
+  }
+]
