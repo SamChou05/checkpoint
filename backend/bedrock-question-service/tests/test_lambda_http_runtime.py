@@ -412,7 +412,7 @@ class LambdaHttpRuntimeTests(BackendTestCase):
         metrics = json.loads(output.getvalue())
         self.assertEqual(response["statusCode"], 200)
         self.assertEqual(metrics["Outcome"], "success")
-        self.assertEqual(metrics["ProviderCalls"], 2)
+        self.assertEqual(metrics["ProviderCalls"], 3)
         self.assertNotIn("private-goal-marker", output.getvalue())
         self.assertNotIn("private-install-marker", output.getvalue())
         self.assertNotIn("203.0.113.99", output.getvalue())

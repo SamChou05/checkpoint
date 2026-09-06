@@ -37,9 +37,16 @@ from service_errors import ProviderCallBudgetExceededError  # noqa: E402
 
 
 def evaluate_review(case, client=None):
-    request = _normalize_request({"goal": case["goal"], "targetCount": 1})
+    request = _normalize_request(
+        {
+            "goal": case["goal"],
+            "sourceDocuments": case.get("sourceDocuments", []),
+            "targetCount": 1,
+        }
+    )
     reviews = []
-    budget = ProviderCallBudget(1)
+    budget = ProviderCallBudget(2)
+    metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
 
     def review(system, prompt):
         raw = _generate_with_bedrock(
@@ -49,19 +56,32 @@ def evaluate_review(case, client=None):
             user_prompt=prompt,
             system_prompt=system,
             call_budget=budget,
+            request_metrics=metrics,
         )
         reviews.append(raw)
         return raw
 
-    accepted = verify_questions([case["question"]], request, review)
+    accepted = verify_questions(
+        [case["question"]], request, review, metrics, solve=review
+    )
+    decisions = metrics.get("QuestionQuality", {}).get("review", {})
+    semantic_rejection = any(
+        decisions.get(reason, 0)
+        for reason in (
+            "rejected_by_model",
+            "answer_disagreement",
+            "unsupported_solution",
+        )
+    )
     return {
         "case_id": case["case_id"],
-        "passed": bool(accepted) == case["expected_accept"],
+        "passed": bool(accepted) if case["expected_accept"] else semantic_rejection,
         "expected_accept": case["expected_accept"],
         "accepted": bool(accepted),
         "rationale": case["rationale"],
         "reviews": reviews,
         "provider_calls": budget.calls,
+        "metrics": metrics,
     }
 
 
@@ -70,12 +90,14 @@ def generate_sample(case, client=None, *, infer_skills=False):
     payload = copy.deepcopy(case["payload"])
     target_count = 5
     calls = 0
+    metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
     if infer_skills:
         inference_budget = ProviderCallBudget(3)
         skill_map = _infer_skill_map(
             _normalize_skill_map_inference_request(payload),
             client,
             call_budget=inference_budget,
+            request_metrics=metrics,
         )
         calls += inference_budget.calls
         skills = skill_map["skills"]
@@ -114,7 +136,7 @@ def generate_sample(case, client=None, *, infer_skills=False):
         budget = ProviderCallBudget(5)
         try:
             questions += _generate_sanitized_questions(
-                request, client, call_budget=budget
+                request, client, call_budget=budget, request_metrics=metrics
             )
         except ProviderCallBudgetExceededError:
             # Keep prior inventory visible in the report even if a bounded job
@@ -133,12 +155,18 @@ def generate_sample(case, client=None, *, infer_skills=False):
         "adaptive_skill_plans": base["adaptiveSkillPlans"],
         "provider_calls": calls,
         "jobs": jobs,
+        "metrics": metrics,
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True)
+    parser.add_argument(
+        "--review-fixtures",
+        type=Path,
+        default=SERVICE_DIR / "evals/fixtures/question_verification_cases.jsonl",
+    )
     parser.add_argument(
         "--generation",
         action="store_true",
@@ -165,12 +193,7 @@ def main():
     if args.infer_skills and not args.generation:
         parser.error("--infer-skills requires --generation")
     results = []
-    cases = [
-        json.loads(line)
-        for line in (SERVICE_DIR / "evals/fixtures/question_verification_cases.jsonl")
-        .read_text()
-        .splitlines()
-    ]
+    cases = [json.loads(line) for line in args.review_fixtures.read_text().splitlines()]
     tasks = [
         (case["case_id"], lambda case=case: evaluate_review(case)) for case in cases
     ]

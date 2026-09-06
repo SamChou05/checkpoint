@@ -9,11 +9,35 @@ class FakeBedrockClient:
         self.texts = text if isinstance(text, list) else [text]
         self.calls = []
         self.review_calls = []
+        self.solution_calls = []
         self.auto_review = auto_review
         self.last_questions = []
 
     def converse(self, **kwargs):
         prompt = kwargs["messages"][0]["content"][0]["text"]
+        if self.auto_review and "<question_solution_json>" in prompt:
+            self.solution_calls.append(kwargs)
+            data = json.loads(
+                prompt.split("<question_solution_json>\n", 1)[1].split(
+                    "\n</question_solution_json>", 1
+                )[0]
+            )
+            solutions = [
+                {
+                    "index": item["index"],
+                    "answer": "Independent fixture solution of the stated problem.",
+                    "limitations": "",
+                    "assumptionsRequired": [],
+                }
+                for item in data["items"]
+            ]
+            return {
+                "output": {
+                    "message": {
+                        "content": [{"text": json.dumps({"solutions": solutions})}]
+                    }
+                }
+            }
         if self.auto_review and "<question_review_json>" in prompt:
             # Existing provider tests use a trusted synthetic reviewer. Dedicated
             # verification tests disable this and script independent verdicts.

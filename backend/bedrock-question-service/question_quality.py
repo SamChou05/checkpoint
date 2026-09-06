@@ -84,8 +84,8 @@ def _extract_json_object(text: str) -> dict[str, Any]:
 
 def _parse_provider_json(candidate: str) -> dict[str, Any] | None:
     try:
-        parsed = json.loads(candidate)
-    except json.JSONDecodeError:
+        parsed = json.loads(candidate, object_pairs_hook=_unique_json_object)
+    except ValueError:
         return None
 
     if isinstance(parsed, dict):
@@ -95,6 +95,15 @@ def _parse_provider_json(candidate: str) -> dict[str, Any] | None:
         return {"questions": parsed}
 
     return None
+
+
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("Duplicate JSON property.")
+        result[key] = value
+    return result
 
 
 def _sanitize_questions(

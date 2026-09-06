@@ -31,7 +31,7 @@ class LearningEvalTests(unittest.TestCase):
         }
         skills = skill_map["skills"]
 
-        def infer(request, client, *, call_budget):
+        def infer(request, client, *, call_budget, request_metrics=None):
             self.assertEqual(request["goal"]["title"], "Learn Morrow")
             self.assertEqual(request["suggestedSkills"], [])
             call_budget.consume()
@@ -54,7 +54,7 @@ class LearningEvalTests(unittest.TestCase):
         ]
         requests = []
 
-        def generate(request, client, *, call_budget):
+        def generate(request, client, *, call_budget, request_metrics=None):
             requests.append(request)
             call_budget.consume()
             call_budget.consume()

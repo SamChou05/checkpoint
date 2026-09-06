@@ -24,6 +24,8 @@ QUALITY_REASONS = {
         "surplus",
     },
     "review": {
+        "invalid_solution",
+        "unsupported_solution",
         "invalid_choices",
         "invalid_json",
         "invalid_envelope",

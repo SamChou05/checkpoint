@@ -68,7 +68,7 @@ class QuestionVerificationTests(unittest.TestCase):
         self.assertEqual(accepted[0]["verificationVersion"], 1)
         self.assertEqual(accepted[0]["explanation"], self.verdict()["explanation"])
         self.assertEqual(len(accepted[0]["choiceExplanations"]), 4)
-        self.assertIn("counterexamples", prompts[0][0])
+        self.assertIn("zero valid choices", prompts[0][0])
 
     def test_disagreement_ambiguity_missing_choice_and_wrong_difficulty_fail_closed(
         self,
@@ -213,18 +213,42 @@ class QuestionVerificationTests(unittest.TestCase):
         client = FakeBedrockClient(
             [
                 json.dumps({"questions": [self.question]}),
+                json.dumps(
+                    {
+                        "solutions": [
+                            {
+                                "index": 0,
+                                "answer": "The stated conclusion is not supported.",
+                                "limitations": "",
+                                "assumptionsRequired": [],
+                            }
+                        ]
+                    }
+                ),
                 json.dumps({"reviews": [self.verdict(valid=False)]}),
                 json.dumps({"questions": [replacement]}),
+                json.dumps(
+                    {
+                        "solutions": [
+                            {
+                                "index": 0,
+                                "answer": "The stated conclusion follows from the assumptions.",
+                                "limitations": "",
+                                "assumptionsRequired": [],
+                            }
+                        ]
+                    }
+                ),
                 json.dumps({"reviews": [self.verdict()]}),
             ],
             auto_review=False,
         )
-        budget = ProviderCallBudget(4)
+        budget = ProviderCallBudget(6)
         accepted = _generate_sanitized_questions(
             self.request, client, call_budget=budget
         )
         self.assertEqual([q["prompt"] for q in accepted], [replacement["prompt"]])
-        self.assertEqual(budget.calls, 4)
-        self.assertEqual(len(client.calls), 4)
-        retry_prompt = client.calls[2]["messages"][0]["content"][0]["text"]
+        self.assertEqual(budget.calls, 6)
+        self.assertEqual(len(client.calls), 6)
+        retry_prompt = client.calls[3]["messages"][0]["content"][0]["text"]
         self.assertIn(self.question["prompt"], retry_prompt)

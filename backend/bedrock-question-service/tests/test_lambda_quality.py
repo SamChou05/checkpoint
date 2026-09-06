@@ -560,14 +560,11 @@ class LambdaQualityTests(BackendTestCase):
     def test_system_prompt_is_universal_instead_of_naming_special_case_domains(self):
         system_prompt = lambda_function._system_prompt()  # noqa: SLF001
 
-        self.assertIn("for any educational goal", system_prompt)
-        self.assertIn("exam, course, profession, language, or skill", system_prompt)
-        self.assertIn("a topic label is not evidence or a scenario", system_prompt)
-        self.assertIn(
-            "Make every choice a concrete possible answer within the requested subject",
-            system_prompt,
-        )
-        self.assertIn("plan a distinct tested objective for every item", system_prompt)
+        self.assertIn("for any learning goal", system_prompt)
+        self.assertIn("Test the subject itself", system_prompt)
+        self.assertIn("Each stem must be self-contained", system_prompt)
+        self.assertIn("three plausible but demonstrably wrong answers", system_prompt)
+        self.assertIn("Choose the assigned objective", system_prompt)
         for overfit_term in [
             "LeetCode",
             "system-design",
