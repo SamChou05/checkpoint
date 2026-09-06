@@ -1285,7 +1285,7 @@ enum HomeFirstWinJourneyAction: Equatable {
     }
 }
 
-enum HomeFirstWinJourneyPhase: Hashable {
+enum HomeFirstWinJourneyPhase: Hashable, CaseIterable {
     case screenTimeUnavailable
     case screenTimeAuthorizationRequired
     case requestingScreenTime
@@ -1298,6 +1298,25 @@ enum HomeFirstWinJourneyPhase: Hashable {
     case readyToProtect
     case startingProtection
     case firstCheckpointReady
+
+    var showsMascotIdentity: Bool {
+        switch self {
+        case .chooseApps,
+             .preparingCheckpoint,
+             .readyToProtect,
+             .startingProtection,
+             .firstCheckpointReady:
+            true
+        case .screenTimeUnavailable,
+             .screenTimeAuthorizationRequired,
+             .requestingScreenTime,
+             .screenTimePermissionRequired,
+             .protectionNeedsAttention,
+             .checkpointNeedsAttention,
+             .checkpointNotReady:
+            false
+        }
+    }
 }
 
 struct HomeFirstWinJourneyPresentation: Equatable {
@@ -1631,30 +1650,12 @@ struct HomeFirstWinJourneyCard: View {
     }
 
     private var identityIcon: some View {
-        Image(systemName: "flag.checkered")
-            .font(.system(size: 19, weight: .bold))
-            .foregroundStyle(CheckpointTheme.ink)
-            .frame(width: 46, height: 46)
-            .background(CheckpointTheme.mint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .symbolEffect(.bounce, options: .nonRepeating, value: presentation.phase)
-            .symbolEffectsRemoved(reduceMotion)
-            .fixedSize()
-            .accessibilityHidden(true)
+        journeyIdentityIcon(size: 46, cornerRadius: 14, systemImageSize: 19)
     }
 
     private var compactIdentity: some View {
         HStack(alignment: .center, spacing: 8) {
-            Image(systemName: "flag.checkered")
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(CheckpointTheme.ink)
-                .frame(width: 28, height: 28)
-                .background(
-                    CheckpointTheme.mint,
-                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
-                )
-                .symbolEffect(.bounce, options: .nonRepeating, value: presentation.phase)
-                .symbolEffectsRemoved(reduceMotion)
-                .accessibilityHidden(true)
+            journeyIdentityIcon(size: 32, cornerRadius: 10, systemImageSize: 13)
 
             Text(presentation.headline)
                 .font(.headline.weight(.bold))
@@ -1666,9 +1667,33 @@ struct HomeFirstWinJourneyCard: View {
         }
     }
 
+    @ViewBuilder
+    private func journeyIdentityIcon(
+        size: CGFloat,
+        cornerRadius: CGFloat,
+        systemImageSize: CGFloat
+    ) -> some View {
+        if presentation.phase.showsMascotIdentity {
+            CheckpointMascotMark(size: size, cornerRadius: cornerRadius)
+        } else {
+            Image(systemName: "flag.checkered")
+                .font(.system(size: systemImageSize, weight: .bold))
+                .foregroundStyle(CheckpointTheme.ink)
+                .frame(width: size, height: size)
+                .background(
+                    CheckpointTheme.mint,
+                    in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                )
+                .symbolEffect(.bounce, options: .nonRepeating, value: presentation.phase)
+                .symbolEffectsRemoved(reduceMotion)
+                .fixedSize()
+                .accessibilityHidden(true)
+        }
+    }
+
     private var identityCopy: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text("YOUR PATH")
+            Text("CHECKPOINT")
                 .font(.caption2.weight(.bold))
                 .tracking(0.8)
                 .foregroundStyle(CheckpointTheme.heroSuccess)

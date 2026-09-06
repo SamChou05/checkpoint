@@ -550,6 +550,29 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
         XCTAssertNil(reduced.connectorAnimation)
     }
 
+    func testFirstWinJourneyMascotIdentityOnlyAppearsInHealthyGuidancePhases() {
+        let mascotPhases: Set<HomeFirstWinJourneyPhase> = [
+            .chooseApps,
+            .preparingCheckpoint,
+            .readyToProtect,
+            .startingProtection,
+            .firstCheckpointReady,
+        ]
+
+        for phase in HomeFirstWinJourneyPhase.allCases {
+            XCTAssertEqual(
+                phase.showsMascotIdentity,
+                mascotPhases.contains(phase),
+                "Unexpected mascot policy for \(phase)"
+            )
+        }
+    }
+
+    @MainActor
+    func testCheckpointMascotIsBundledForTheMainApp() {
+        XCTAssertNotNil(CheckpointMascotMark.image)
+    }
+
     func testWeeklySignalPresentationDrivesVisibleMetricsAndAccessibilityValue() {
         let longSkill = "Multi-stage causal inference with counterfactual model calibration"
         let metrics = WeeklyMetricsSummary(

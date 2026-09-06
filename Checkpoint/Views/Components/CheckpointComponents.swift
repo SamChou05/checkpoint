@@ -1052,6 +1052,44 @@ struct CheckpointHeroSurface<Content: View>: View {
     }
 }
 
+struct CheckpointMascotMark: View {
+    static let assetName = "ShieldMascot"
+    static let image = UIImage(
+        named: assetName,
+        in: .main,
+        compatibleWith: nil
+    )
+
+    let size: CGFloat
+    let cornerRadius: CGFloat
+
+    var body: some View {
+        resolvedImage
+            .renderingMode(.original)
+            .resizable()
+            .interpolation(.high)
+            .scaledToFit()
+            .frame(width: size, height: size)
+            .clipShape(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
+            }
+            .fixedSize()
+            .accessibilityHidden(true)
+    }
+
+    private var resolvedImage: Image {
+        if let image = Self.image {
+            Image(uiImage: image)
+        } else {
+            Image(systemName: "checkmark.shield.fill")
+        }
+    }
+}
+
 struct StatusBadge: View {
     var text: String
     var tint: Color
