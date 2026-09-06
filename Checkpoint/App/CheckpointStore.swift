@@ -3292,7 +3292,7 @@ final class CheckpointStore {
             adaptiveDifficultyBySkillID: Dictionary(uniqueKeysWithValues:
                 targetGoal.map { adaptiveSkillPlans(for: $0).map { ($0.skillID, $0.targetDifficulty) } } ?? []
             ),
-            requiresVerifiedQuestions: isMember
+            requiresVerifiedQuestions: targetGoal.map { usesVerifiedLearning(for: $0) } ?? false
         )
     }
 
@@ -6519,6 +6519,11 @@ final class CheckpointStore {
         .map { "\($0.key.uuidString):\($0.value)" }
         .sorted()
         .joined(separator: "|")
+        // Baseline targets equal the existing minimum, so receiving the first
+        // reviewed item need not restart an otherwise identical in-flight bank.
+        let currentPlans = adaptiveSkillPlans(for: goal)
+        let revisionPlans = isMember && currentPlans.isEmpty
+            ? AdaptiveLearningPolicy.plans(for: goal, attempts: []) : currentPlans
         let components = [
             isMember ? "verified-learning-v1" : "starter",
             goal.title,
@@ -6530,7 +6535,7 @@ final class CheckpointStore {
                 SkillMapReconciler.skillMapContentSignature(topics: $0.topics)
             } ?? "",
             skillAllocationSignature
-        ] + adaptiveSkillPlans(for: goal).map(\.revisionKey).sorted()
+        ] + revisionPlans.map(\.revisionKey).sorted()
             + goal.sourceDocuments.flatMap { document in
             [document.id.uuidString, document.name, document.text]
         }
@@ -6578,7 +6583,7 @@ final class CheckpointStore {
                 competencies: generationCompetencies
             ),
             adaptiveSkillPlans: adaptiveSkillPlans(for: goal),
-            requiresVerifiedQuestions: isMember,
+            requiresVerifiedQuestions: usesVerifiedLearning(for: goal),
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken
         )
@@ -6632,8 +6637,16 @@ final class CheckpointStore {
         return allocation
     }
 
+    private func usesVerifiedLearning(for targetGoal: Goal) -> Bool {
+        guard isMember else { return false }
+        // Older services do not yet supply reviewed inventory. Activate per goal
+        // once the service has delivered it; retained attempts preserve activation.
+        return questions.contains { $0.goalID == targetGoal.id && $0.verificationVersion == 1 }
+            || attempts.contains { $0.goalID == targetGoal.id && $0.questionVerificationVersion == 1 }
+    }
+
     private func adaptiveSkillPlans(for targetGoal: Goal) -> [AdaptiveSkillPlan] {
-        guard isMember else { return [] }
+        guard usesVerifiedLearning(for: targetGoal) else { return [] }
         let excludedQuestions = Set(questionReports.filter { $0.goalID == targetGoal.id }.map(\.questionID))
         return AdaptiveLearningPolicy.plans(for: targetGoal, attempts: attempts.filter { !excludedQuestions.contains($0.questionID) })
     }

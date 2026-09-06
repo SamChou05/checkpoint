@@ -346,4 +346,22 @@ extension AdaptiveSchedulingTests {
         XCTAssertFalse(selector.isSelectableQuestion(legacy))
         XCTAssertEqual(selector.nextQuestion()?.id, checked.id)
     }
+
+    @MainActor
+    func testProRolloutKeepsLegacyServiceUsableUntilReviewedInventoryArrives() throws {
+        let goal = makeGoal()
+        let store = CheckpointStore(defaults: defaults)
+        store.membershipTier = .member
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let legacy = makeQuestion(goal: goal, index: 1, verificationVersion: 0)
+        store.questions = [legacy]
+        XCTAssertEqual(store.nextQuestion()?.id, legacy.id)
+        let reviewed = makeQuestion(goal: goal, index: 2)
+        store.questions.append(reviewed)
+        XCTAssertEqual(store.nextQuestion()?.id, reviewed.id)
+        _ = store.submitAnswer(question: reviewed, answer: reviewed.expectedAnswer, result: .correct, grantsUnlock: false)
+        store.questions = [legacy]
+        XCTAssertNil(store.nextQuestion(), "Retained reviewed evidence must prevent reverting to unverified practice.")
+    }
 }

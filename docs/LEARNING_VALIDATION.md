@@ -9,6 +9,9 @@ still a release gate; passing software tests is not proof of educational efficac
 - The complete iOS simulator suite passed: 876 tests, including goal creation,
   protection and break workflows, persistence, question selection, progression,
   and existing rendering coverage.
+- After the final rollout guard, a full 877-test run found two bank-transition
+  regressions. Both were fixed; all 29 adaptive scheduling and asynchronous bank
+  tests passed on rerun. The other 875 tests had passed in that full run.
 - The backend suite passed: 239 tests. Ruff, Python compilation, deployment
   script tests, and SAM template validation passed.
 - The Release build stopped at an existing configuration requirement: a real
@@ -48,7 +51,22 @@ sample. Manual inspection of those banks still exposed structural and wording
 issues, which led to the additional choice and feedback checks. A full bank alone
 must never be reported as a correctness or learning-quality result.
 
+A subsequent run with the additional guards again filled all three five-question
+banks in two jobs, taking 82–94 seconds. Manual inspection still found substantive
+failures: a BST deletion answer omitted the immediate-successor exception, and an
+MCAT item treated continuous DNA labeling over more than a full cell cycle as an
+instantaneous S-phase measurement. Both are now retained as additional failing
+live-evaluation cases. They are why broad deployment is held; the new reviewer
+must not be presented as a guarantee of accurate teaching.
+
 ## Reproduce and release
+
+The next quality milestone should ground factual questions in vetted reference
+material and use domain checks for calculations, timelines, and algorithm edge
+cases. AI should plan the curriculum, identify misconceptions, explain concepts,
+and generate varied applications; its agreement with another model should not
+be the final authority on an answer. Keep an unseen evaluation set so prompt
+changes cannot merely learn the already documented failures.
 
 From `backend/bedrock-question-service`, configure AWS credentials, `AWS_REGION`,
 the intended `BEDROCK_MODEL_ID`, and `BEDROCK_VERIFICATION_MODEL_ID`, then run:
@@ -67,6 +85,7 @@ Before distribution, evaluate unseen questions at several difficulty levels,
 inspect question-to-skill alignment and transfer rather than cosmetic novelty,
 and run repeated learner sessions. Resolve the remaining false rejections and
 review any ambiguous assumptions. Configure the reviewer's explicit invocation
-permissions, deploy and smoke-test the backend, and only then distribute the
-client that requires verified inventory. The local quiz remains fast once its
+permissions, deploy and smoke-test the backend, and then validate activation in the
+client. Each Pro goal adopts reviewed learning when verified inventory first
+arrives; legacy service responses remain usable until that transition. The local quiz remains fast once its
 reviewed reserve is ready.
