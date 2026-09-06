@@ -114,3 +114,17 @@ Suggested release bar:
 - 0 prompt-injection/app-blocking leaks.
 - 0 normalized duplicate answer-choice failures.
 - No regression in generation latency/cost beyond an explicit threshold.
+
+## General learning pipeline
+
+`checkpoint_learning_eval.py` exercises the production answer-blind review and question-generation functions. `--generation` includes every generation fixture, with no subject allowlist. The title-only photography, music theory, and sourdough cases require no derived fields; the fictional Morrow game case supplies its own rules as source material.
+
+```sh
+python evals/checkpoint_learning_eval.py --output /tmp/general-learning.json \
+  --generation --infer-skills \
+  --case-id photography_raw_goal --case-id fictional_game_source_goal
+```
+
+`--infer-skills` first calls the production skill-map inference function. It then assigns alternating target levels 2 and 4 (respecting the goal minimum), requests coverage of every inferred skill, and prepares 5–6 reviewed questions in at most three bounded jobs. These synthetic levels test per-skill generation; the iOS tests separately exercise progression from answer history. Inference has a separate three-call budget. Generation and review share five calls per job. Reports retain partial inventory when a job exhausts its budget.
+
+Use `--generation-fixtures /path/to/goals.jsonl` for an arbitrary JSONL file with `case_id` and `payload` fields. Repeat `--case-id` to select cases; omitted selection runs all eligible cases, including the known-error review controls. Selected generation-only runs do not establish that those correctness controls passed. Inspect the saved questions and skill maps: filling inventory alone does not establish factual accuracy, appropriate challenge, or educational efficacy.

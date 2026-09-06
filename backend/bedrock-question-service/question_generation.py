@@ -377,8 +377,8 @@ def _conversation_prompt(user_prompt: str, system_prompt: str | None = None) -> 
 
 
 def _verification_model_id() -> str:
-    # Reviewed separately from the author: self-review missed a concrete LSAT
-    # converse error in the live regression set. SAM supplies an explicit ARN.
+    # Review independently from the author. Agreement is a quality signal, not
+    # a correctness guarantee. SAM supplies an explicit reviewer ARN.
     return (
         os.getenv("BEDROCK_VERIFICATION_MODEL_ID", "").strip()
         or "us.anthropic.claude-sonnet-4-6"

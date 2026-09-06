@@ -7,25 +7,11 @@ from lambda_test_support import FakeBedrockClient, _raw_question, _request_paylo
 from question_generation import ProviderCallBudget, _generate_sanitized_questions
 from question_generation import _verification_model_id
 from question_verification import verify_questions
-from question_verification import _claims_unbounded_linear_pair_output
 from request_contract import _normalize_request
 from service_errors import ProviderCallBudgetExceededError
 
 
 class QuestionVerificationTests(unittest.TestCase):
-    def test_pair_output_guard_rejects_unbounded_enumeration_and_preserves_bounded_variants(
-        self,
-    ):
-        prompt = "Find all pairs in an unsorted array that sum to k. Which approach gives O(n) time?"
-        self.assertTrue(_claims_unbounded_linear_pair_output(prompt))
-        for bounded in [
-            prompt.replace("all pairs", "all unique pairs"),
-            prompt.replace("O(n)", "O(n + k)"),
-            prompt.replace("all pairs", "whether any pair exists"),
-            prompt + " The array has no duplicates.",
-        ]:
-            self.assertFalse(_claims_unbounded_linear_pair_output(bounded))
-
     def test_review_uses_its_pinned_model_separately_from_author(self):
         with mock.patch.dict(
             "os.environ",
@@ -125,36 +111,59 @@ class QuestionVerificationTests(unittest.TestCase):
             self.assertEqual(verify_questions([question], self.request, reviewer), [])
             reviewer.assert_not_called()
 
-    def test_conditional_inference_requires_a_valid_unique_proof(self):
+    def test_identical_reasoning_uses_same_review_contract_for_any_goal(self):
+        self.question = {
+            **self.question,
+            "prompt": "Every certified technician is trained. Mira is certified. Which conclusion must follow?",
+            "choices": [
+                "Mira is trained.",
+                "Every trained person is certified.",
+                "Mira is the only trained person.",
+                "Mira was trained yesterday.",
+            ],
+            "expectedAnswer": "Mira is trained.",
+        }
+        item_payloads = []
+        for title in [
+            "Study for the LSAT",
+            "Learn conditional logic",
+            "Learn workplace reasoning",
+            "Learn the rules of a new fictional world",
+        ]:
+            with self.subTest(title=title):
+                request = _normalize_request({"goal": {"title": title}})
+
+                def review(system, prompt):
+                    data = json.loads(prompt.split("\n", 1)[1].rsplit("\n", 1)[0])
+                    self.assertEqual(data["goal"]["title"], title)
+                    item_payloads.append(data["items"])
+                    return json.dumps({"reviews": [self.verdict()]})
+
+                self.assertEqual(
+                    len(verify_questions([self.question], request, review)), 1
+                )
+                self.assertEqual(
+                    verify_questions(
+                        [self.question],
+                        request,
+                        lambda *_: json.dumps({"reviews": [self.verdict(valid=False)]}),
+                    ),
+                    [],
+                )
+        self.assertTrue(all(items == item_payloads[0] for items in item_payloads))
+
+    def test_content_with_matching_keywords_reaches_independent_review(self):
+        # A wording pattern cannot establish whether a claim is correct. The
+        # same words can appear in a question asking the learner to refute it.
         question = {
             **self.question,
-            "prompt": "Which conclusion must follow from these statements?",
+            "prompt": "A proposal claims: Find all pairs in O(n) time. Why can duplicate values invalidate its complexity claim?",
         }
-        request = {**self.request, "goal": {"title": "Study for the LSAT"}}
-        verdict = self.verdict()
-        review = lambda *_: json.dumps({"reviews": [verdict]})  # noqa: E731
-        self.assertEqual(verify_questions([question], request, review), [])
-        choices = question["choices"]
-        verdict["logicProof"] = {
-            "atoms": {
-                "A": "first property",
-                "B": "second property",
-                "C": "third property",
-            },
-            "premises": [["implies", "A", "B"], ["implies", "B", "C"]],
-            "choiceClaims": {
-                choices[0]: ["implies", "A", "C"],
-                choices[1]: ["implies", "B", "A"],
-                choices[2]: ["implies", "C", "A"],
-                choices[3]: ["implies", "A", ["not", "C"]],
-            },
-        }
-        self.assertEqual(len(verify_questions([question], request, review)), 1)
-        verdict["logicProof"]["premises"] = [
-            ["implies", "B", "A"],
-            ["implies", "B", "C"],
-        ]
-        self.assertEqual(verify_questions([question], request, review), [])
+        reviewer = mock.Mock(
+            return_value=json.dumps({"reviews": [self.verdict(valid=False)]})
+        )
+        self.assertEqual(verify_questions([question], self.request, reviewer), [])
+        reviewer.assert_called_once()
 
     def test_missing_duplicate_or_malformed_review_never_approves(self):
         for payload in [

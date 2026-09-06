@@ -2,6 +2,7 @@ import unittest
 
 import lambda_function
 from evals import checkpoint_question_eval
+from question_verification import REVIEW_SYSTEM_PROMPT
 
 
 CROSS_DOMAIN_CASE_IDS = (
@@ -130,27 +131,28 @@ class CrossDomainPromptContractTests(unittest.TestCase):
         payload = self.fixtures["backyard_beekeeping_raw_goal"]["payload"]
         normalized = lambda_function._normalize_request(payload)  # noqa: SLF001
 
-        self.assertEqual(normalized["goal"]["learningTarget"], "Learn backyard beekeeping")
+        self.assertEqual(
+            normalized["goal"]["learningTarget"], "Learn backyard beekeeping"
+        )
         self.assertEqual(
             normalized["goal"]["contentTopics"],
             ["colony inspections", "swarm prevention", "Varroa monitoring"],
         )
         self.assertFalse(normalized["goal"]["needsSkillMap"])
 
-    def test_system_prompt_contains_no_named_domain_playbooks(self):
-        system_prompt = lambda_function._system_prompt().casefold()  # noqa: SLF001
-
-        for domain_term in [
-            "lsat",
-            "mcat",
-            "spanish",
-            "calculus",
-            "leetcode",
-            "system-design interview",
-            "beekeeping",
-        ]:
-            with self.subTest(domain_term=domain_term):
-                self.assertNotIn(domain_term, system_prompt)
+    def test_generation_and_review_share_a_domain_general_contract(self):
+        for prompt in [lambda_function._system_prompt(), REVIEW_SYSTEM_PROMPT]:
+            for domain_term in [
+                "lsat",
+                "mcat",
+                "spanish",
+                "calculus",
+                "leetcode",
+                "system-design interview",
+                "beekeeping",
+            ]:
+                with self.subTest(domain_term=domain_term, prompt=prompt[:60]):
+                    self.assertNotIn(domain_term, prompt.casefold())
 
     def test_representative_items_from_each_domain_pass_the_same_quality_gate(self):
         for case_id, question in REPRESENTATIVE_QUESTIONS.items():
@@ -229,7 +231,9 @@ class CrossDomainPromptContractTests(unittest.TestCase):
 
         self.assertTrue(result["passed"], result)
 
-    def test_history_grounding_accepts_valid_variation_across_supplied_focus_areas(self):
+    def test_history_grounding_accepts_valid_variation_across_supplied_focus_areas(
+        self,
+    ):
         questions = [
             {
                 "prompt": "A factory replaces skilled hand production with steam-powered machinery. Which social change is most directly associated with this industrial shift?",
@@ -283,7 +287,9 @@ class CrossDomainPromptContractTests(unittest.TestCase):
                         "The fourth statement addresses another issue.",
                     ],
                     "explanation": f"The hidden subject label is {grounding_term}.",
-                    "topic": fixture["payload"]["goal"].get("learningTarget", fixture["payload"]["goal"]["title"]),
+                    "topic": fixture["payload"]["goal"].get(
+                        "learningTarget", fixture["payload"]["goal"]["title"]
+                    ),
                     "difficulty": fixture["payload"]["minimumDifficulty"],
                     "format": "Multiple Choice",
                 }
