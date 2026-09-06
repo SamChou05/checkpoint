@@ -101,3 +101,7 @@ Two read-only control-plane calls succeeded with the current local AWS identity 
 | `GetCodeInterpreter` for `aws.codeinterpreter.v1` | Built-in interpreter `READY`, with the system ARN above | The built-in configuration is readable and available in this region. |
 
 These checks neither create nor start an interpreter. They do not prove data-plane start/invoke/stop authorization, runtime properties, reliability, latency, or cost. The JSON request shapes above were checked offline against the installed SDK service model. No effective-policy simulation, paid session, policy change, resource creation, or deployment was performed.
+
+## Subsequent managed-session trial
+
+A later [execution experiment](QUESTION_EXECUTION_EXPERIMENT.md) tested the bounded eval-only runner. Its seven attempted controls produced the expected observations and successful session cleanup; a runner classification defect left the eighth control unattempted. The discussion above records the preceding read-only feasibility investigation, not the later measured results.
