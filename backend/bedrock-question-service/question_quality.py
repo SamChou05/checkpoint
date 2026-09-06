@@ -690,13 +690,15 @@ def _prompt_without_trailing_choice_echo(prompt: Any, raw_choices: Any) -> str:
 
 
 def _prompt_contains_embedded_options(prompt: str) -> bool:
+    # Empty parentheses can be calls or tuple literals. Only explicit choice
+    # structure is evidence here; matching trailing choice echoes are removed
+    # separately using the actual offered choices.
     normalized = prompt.lower()
     return bool(
         "options:" in normalized
         or re.search(r"\b(?:option|choice)\s+[a-d1-4][\).:]", normalized)
         or re.search(r"(?:^|\s)1[\).]\s+.+\s+2[\).]\s+", prompt)
         or re.search(r"(?:^|\s)A[\).]\s+.+\s+B[\).]\s+", prompt)
-        or len(re.findall(r"\(\s*\)", prompt)) >= 2
     )
 
 

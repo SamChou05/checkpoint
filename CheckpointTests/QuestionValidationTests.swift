@@ -1329,3 +1329,55 @@ final class StemIdentityContractTests: XCTestCase {
         XCTAssertTrue(Set(codeQuestions.map(\.id)).isSubset(of: Set(session.questions.map(\.id))))
     }
 }
+
+final class EmbeddedOptionsContractTests: XCTestCase {
+    private struct Fixtures: Decodable {
+        var valid_questions: [GeneratedQuestionPayload]
+        var embedded_choice_prompts: [String]
+    }
+
+    private func fixtures() throws -> Fixtures {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        return try JSONDecoder().decode(Fixtures.self, from: Data(contentsOf: root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/embedded_options_contract.json")))
+    }
+
+    func testCapturedCodeAndEmptyParenthesesSurviveSanitizationAndGrading() throws {
+        let goal = makeGoal()
+        for item in try fixtures().valid_questions {
+            for version in [0, 1] {
+                var question = item.makeQuestion(goalID: goal.id, sourcePrompt: "captured regression")
+                question.verificationVersion = version
+                let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first, question.prompt)
+                XCTAssertEqual(Data(accepted.prompt.utf8), Data(question.prompt.utf8))
+                for choice in accepted.choices {
+                    XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: accepted).result,
+                                   Data(choice.utf8) == Data(question.expectedAnswer.utf8) ? .correct : .incorrect)
+                }
+            }
+        }
+    }
+
+    func testExplicitAnswerListsStillFailStructuralValidation() throws {
+        let fixture = try fixtures()
+        let goal = makeGoal()
+        for prompt in fixture.embedded_choice_prompts {
+            var question = fixture.valid_questions[0].makeQuestion(goalID: goal.id, sourcePrompt: "regression")
+            question.prompt = prompt
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+        }
+    }
+
+    func testExactChoiceEchoRemovalPreservesCodeCalls() throws {
+        let goal = makeGoal()
+        let question = try fixtures().valid_questions[0].makeQuestion(goalID: goal.id, sourcePrompt: "regression")
+        for labeled in [false, true] {
+            let echo = question.choices.enumerated().map { index, choice in
+                (labeled ? ["A", "B", "C", "D"][index] + ". " : "") + choice
+            }.joined(separator: "\n")
+            var echoed = question
+            echoed.prompt += "\n\n" + echo
+            let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([echoed], for: makeRequest(goal: goal)).first)
+            XCTAssertEqual(Data(accepted.prompt.utf8), Data(question.prompt.utf8))
+        }
+    }
+}

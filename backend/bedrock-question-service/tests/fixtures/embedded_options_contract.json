@@ -1,0 +1,51 @@
+{
+  "provenance": "Captured author-schema question, September 6 2026; second and third questions are local whitespace/empty-tuple regressions.",
+  "valid_questions": [
+    {
+      "prompt": "Processing 'a  b  c' with value.replace('  ', '|', 1).strip() yields 'a|b  c'. If this result is passed to text.split() with no arguments, what is returned?",
+      "expectedAnswer": "['a|b', 'c']",
+      "explanation": "split() with no arguments splits on any whitespace and discards empties. In 'a|b  c', the pipe is not whitespace, so the only split point is the double space before 'c'. The result is ['a|b', 'c'].",
+      "topic": "splitting and whitespace",
+      "choices": [
+        "['a|b', 'c']",
+        "['a', 'b', 'c']",
+        "['a|b  c']",
+        "['a', 'b  c']"
+      ],
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    },
+    {
+      "prompt": "Processing 'a  b  c' with value.replace('  ', '|', 1).strip( ) yields 'a|b  c'. If this result is passed to text.split( ) with no arguments, what is returned?",
+      "expectedAnswer": "['a|b', 'c']",
+      "explanation": "split() with no arguments splits on any whitespace and discards empties. In 'a|b  c', the pipe is not whitespace, so the only split point is the double space before 'c'. The result is ['a|b', 'c'].",
+      "topic": "splitting and whitespace",
+      "choices": [
+        "['a|b', 'c']",
+        "['a', 'b', 'c']",
+        "['a|b  c']",
+        "['a', 'b  c']"
+      ],
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    },
+    {
+      "prompt": "In Python, what is the result of len(( )) + len(( ))?",
+      "expectedAnswer": "0",
+      "choices": [
+        "0",
+        "1",
+        "2",
+        "4"
+      ],
+      "explanation": "Both values are empty tuples. Their lengths are zero, so their sum is zero.",
+      "topic": "Python sequences",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  ],
+  "embedded_choice_prompts": [
+    "Which output is returned? Options: ( ) first ( ) second ( ) third ( ) fourth",
+    "Which output is returned? A. first B. second C. third D. fourth"
+  ]
+}

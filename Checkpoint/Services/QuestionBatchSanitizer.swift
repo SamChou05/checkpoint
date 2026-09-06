@@ -247,6 +247,8 @@ enum QuestionBatchSanitizer {
     }
 
     private static func containsEmbeddedAnswerOptions(_ prompt: String) -> Bool {
+        // Empty parentheses can be calls or tuples, not just checkbox marks.
+        // Exact trailing choice echoes are handled using the offered choices.
         let normalized = prompt.lowercased()
         if normalized.contains("options:") { return true }
 
@@ -263,7 +265,7 @@ enum QuestionBatchSanitizer {
         ) != nil || prompt.range(
             of: #"(?s)(?:^|\s)A[\).]\s+.+\s+B[\).]\s+"#,
             options: .regularExpression
-        ) != nil || prompt.components(separatedBy: "( )").count - 1 >= 2
+        ) != nil
     }
 
     private static func explanationSupportsDifferentChoice(
