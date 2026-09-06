@@ -600,33 +600,49 @@ struct RootView: View {
             isPresented: firstRunAppSelectionPresentationBinding,
             onDismiss: handleFirstRunAppSelectionDismissed
         ) {
-            RestrictedAppsView(
-                screenTime: screenTime,
-                onStartProtection: startFirstRunProtection,
-                onFinishProtectedSetup: {
-                    firstGoalSuccessHandoff.discardPending()
-                    firstRunSetup.finishProtectedSetup()
-                },
-                onContinueWithoutProtection: {
-                    firstGoalSuccessHandoff.discardPending()
-                    firstRunSetup.continueWithoutProtection(
-                        currentGoalID: store.goal?.id,
-                        stopProtection: workflow.stopProtectionWithoutReview
+            Group {
+                if let goalContext = FirstRunGoalContext(goal: store.goal) {
+                    RestrictedAppsView(
+                        screenTime: screenTime,
+                        onStartProtection: {
+                            await startFirstRunProtection(
+                                expectedGoalID: goalContext.goalID
+                            )
+                        },
+                        onFinishProtectedSetup: {
+                            firstGoalSuccessHandoff.discardPending()
+                            firstRunSetup.finishProtectedSetup()
+                        },
+                        onContinueWithoutProtection: {
+                            firstGoalSuccessHandoff.discardPending()
+                            firstRunSetup.continueWithoutProtection(
+                                currentGoalID: goalContext.goalID,
+                                stopProtection: workflow.stopProtectionWithoutReview
+                            )
+                        },
+                        onProtectionUnavailable: {
+                            firstRunSetup.protectionDidBecomeUnavailable()
+                        },
+                        goalContext: goalContext,
+                        allowsFirstGoalHandoffDelivery: FirstGoalSuccessHandoffExposure.allowsDelivery(
+                            isSceneActive: scenePhase == .active,
+                            blocksUnderlyingPresentations: screenTimeAccessGate.blocksUnderlyingPresentations
+                        ),
+                        firstGoalHandoff: firstGoalSuccessHandoff.pendingToken,
+                        onFirstGoalHandoffConsumed: { token in
+                            firstGoalSuccessHandoff.consume(
+                                token,
+                                currentGoalContext: FirstRunGoalContext(goal: store.goal)
+                            )
+                        }
                     )
-                },
-                onProtectionUnavailable: {
-                    firstRunSetup.protectionDidBecomeUnavailable()
-                },
-                activeGoalID: store.goal?.id,
-                allowsFirstGoalHandoffDelivery: FirstGoalSuccessHandoffExposure.allowsDelivery(
-                    isSceneActive: scenePhase == .active,
-                    blocksUnderlyingPresentations: screenTimeAccessGate.blocksUnderlyingPresentations
-                ),
-                firstGoalHandoff: firstGoalSuccessHandoff.pendingToken,
-                onFirstGoalHandoffConsumed: { token in
-                    firstGoalSuccessHandoff.consume(token)
+                    .id(goalContext.goalID)
+                } else {
+                    FirstRunMissingGoalRecoveryView(
+                        recover: recoverMissingFirstRunGoal
+                    )
                 }
-            )
+            }
             .interactiveDismissDisabled()
         }
         .sheet(
@@ -1015,6 +1031,16 @@ struct RootView: View {
         presentDeferredMembershipActivationIfPossible()
     }
 
+    private func recoverMissingFirstRunGoal() {
+        firstGoalSuccessHandoff.discardPending()
+        beginFirstRunSetup()
+        firstRunSetup.setAppSelectionPresented(false)
+        Task { @MainActor in
+            await Task.yield()
+            store.isOnboardingPresented = true
+        }
+    }
+
     private func handleCheckpointDismissed() {
         isCheckpointSheetActive = false
         handlePendingShieldActivation()
@@ -1296,19 +1322,40 @@ struct RootView: View {
         }
     }
 
-    private func startFirstRunProtection() async -> FirstRunProtectionStartResult {
+    private func startFirstRunProtection(
+        expectedGoalID: Goal.ID
+    ) async -> FirstRunProtectionStartResult {
+        guard store.goal?.id == expectedGoalID else {
+            return .failed(message: FirstRunSetupCoordinator.goalChangedMessage)
+        }
+
         let previousResultID = workflow.pendingProtectionStartResult?.id
         let result = await firstRunSetup.startProtection(
             isPreparingQuestions: { store.isPreparingActiveGoalQuestions },
-            startProtection: { await workflow.startProtection() },
+            startProtection: {
+                guard !Task.isCancelled,
+                      store.goal?.id == expectedGoalID else {
+                    return false
+                }
+                return await workflow.startProtection(
+                    expectedGoalID: expectedGoalID
+                )
+            },
             checkpointNotice: { store.checkpointNotice },
             screenTimeErrorMessage: { screenTime.userFacingErrorMessage },
             selectionSummary: { screenTime.restrictedAppsSummary },
-            currentGoalID: { store.goal?.id }
+            currentGoalID: { store.goal?.id },
+            expectedGoalID: expectedGoalID
         )
         if let pendingResult = workflow.pendingProtectionStartResult,
            pendingResult.id != previousResultID {
             _ = workflow.takePendingProtectionStartResult(id: pendingResult.id)
+        }
+        guard !Task.isCancelled else {
+            return .failed(message: "Setup was interrupted. Try turning protection on again.")
+        }
+        guard store.goal?.id == expectedGoalID else {
+            return .failed(message: FirstRunSetupCoordinator.goalChangedMessage)
         }
         return result
     }
@@ -1477,6 +1524,143 @@ struct RootView: View {
             || screenTimeAccessGate.blocksUnderlyingPresentations
             || isAuthorizationRecoveryAppSelectionPresented
             || firstRunSetup.isAppSelectionPresented
+    }
+}
+
+enum FirstRunMissingGoalRecoveryLayoutElement: Hashable {
+    case viewport
+    case actionBar
+    case primaryAction
+}
+
+private let firstRunMissingGoalRecoveryCoordinateSpaceName =
+    "Checkpoint.FirstRunMissingGoalRecovery.Layout"
+
+private struct FirstRunMissingGoalRecoveryFrameReporter: ViewModifier {
+    let element: FirstRunMissingGoalRecoveryLayoutElement
+    let report: (@MainActor (FirstRunMissingGoalRecoveryLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(
+                        in: .named(firstRunMissingGoalRecoveryCoordinateSpaceName)
+                    )
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func reportFirstRunMissingGoalRecoveryFrame(
+        _ element: FirstRunMissingGoalRecoveryLayoutElement,
+        using report: (@MainActor (FirstRunMissingGoalRecoveryLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(
+            FirstRunMissingGoalRecoveryFrameReporter(
+                element: element,
+                report: report
+            )
+        )
+    }
+}
+
+struct FirstRunMissingGoalRecoveryView: View {
+    let recover: () -> Void
+    private let layoutReporter: (@MainActor (FirstRunMissingGoalRecoveryLayoutElement, CGRect) -> Void)?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    init(
+        recover: @escaping () -> Void,
+        layoutReporter: (@MainActor (FirstRunMissingGoalRecoveryLayoutElement, CGRect) -> Void)? = nil
+    ) {
+        self.recover = recover
+        self.layoutReporter = layoutReporter
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            ScrollView {
+                recoveryMessage
+                    .padding(24)
+                    .frame(
+                        maxWidth: .infinity,
+                        minHeight: max(0, proxy.size.height - 96),
+                        alignment: .center
+                    )
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                recoveryAction
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .reportFirstRunMissingGoalRecoveryFrame(.viewport, using: layoutReporter)
+        .checkpointScreenBackground()
+        .coordinateSpace(name: firstRunMissingGoalRecoveryCoordinateSpaceName)
+    }
+
+    private var recoveryMessage: some View {
+        VStack(spacing: dynamicTypeSize.isAccessibilitySize ? 12 : 18) {
+            if !dynamicTypeSize.isAccessibilitySize {
+                Image(systemName: "scope")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .frame(width: 58, height: 58)
+                    .background(
+                        CheckpointTheme.teal.opacity(0.10),
+                        in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    )
+                    .accessibilityHidden(true)
+            }
+
+            VStack(spacing: 8) {
+                Text("Restore your goal")
+                    .font(.title2.bold())
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text("Checkpoint needs a current goal before you choose where protection should pause you.")
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: 440)
+    }
+
+    private var recoveryAction: some View {
+        VStack(spacing: 10) {
+            Divider()
+                .overlay(CheckpointTheme.hairline)
+
+            PrimaryActionButton(
+                title: "Return to goal setup",
+                systemImage: "arrow.right",
+                action: recover
+            )
+            .accessibilityIdentifier(
+                "first-run-missing-goal-recovery-action"
+            )
+            .reportFirstRunMissingGoalRecoveryFrame(
+                .primaryAction,
+                using: layoutReporter
+            )
+            .padding(.horizontal, 24)
+        }
+        .padding(.bottom, 10)
+        .background(.ultraThinMaterial)
+        .reportFirstRunMissingGoalRecoveryFrame(.actionBar, using: layoutReporter)
     }
 }
 

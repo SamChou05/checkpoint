@@ -222,6 +222,12 @@ final class FirstRunProtectionFlow {
         phase = .preparing(selectionSummary: selectionSummary)
         let result = await startProtectionAction()
 
+        guard !Task.isCancelled else {
+            if case .preparing = phase {
+                phase = .selecting
+            }
+            return
+        }
         guard !didConclude, case .preparing = phase else { return }
         switch result {
         case let .failed(message):
@@ -273,20 +279,24 @@ enum FirstRunProtectionStatusTone: Equatable {
 }
 
 struct FirstRunProtectionStatusPresentation: Equatable {
+    let goalContext: FirstRunGoalContext
     let stage: String
     let eyebrow: String
     let title: String
     let detail: String
     let supportingTitle: String
     let supportingDetail: String
+    let operationalNote: String?
     let selectionSummary: String
     let systemImage: String
     let tone: FirstRunProtectionStatusTone
 
     init?(
         phase: FirstRunProtectionPhase,
+        goalContext: FirstRunGoalContext,
         hasSelection: Bool = true
     ) {
+        self.goalContext = goalContext
         switch phase {
         case .selecting:
             return nil
@@ -294,35 +304,40 @@ struct FirstRunProtectionStatusPresentation: Equatable {
             stage = "Turning on protection"
             eyebrow = "FINALIZING SETUP"
             title = "Preparing your first checkpoint"
-            detail = "Checkpoint is making sure your first attempt is ready before protection turns on."
+            detail = "Checkpoint is preparing a reliable first attempt for this goal before protection turns on."
             supportingTitle = "Protection waits for a ready checkpoint"
             supportingDetail = "Enough questions must be ready before Checkpoint protects your apps."
+            operationalNote = "Keep Checkpoint open while your first checkpoint is prepared."
             self.selectionSummary = selectionSummary
             systemImage = "hourglass"
             tone = .working
         case let .failed(capturedSelectionSummary, message):
             stage = "Needs attention"
             eyebrow = "SETUP NEEDS ATTENTION"
-            title = "Protection didn't turn on"
+            title = "Protection isn't on yet"
             detail = message
             if hasSelection {
-                supportingTitle = "Your app choices are saved"
-                supportingDetail = "Try again, choose different apps, or finish setup without protection."
+                supportingTitle = "Your goal and app choices are saved"
+                supportingDetail = "Try again, choose different apps, or continue with this goal without protection."
                 selectionSummary = capturedSelectionSummary
             } else {
-                supportingTitle = "Choose apps to continue"
+                supportingTitle = "Choose apps for this goal"
                 supportingDetail = "Select at least one app or website, then try turning protection on again."
                 selectionSummary = "No protected apps selected"
             }
+            operationalNote = nil
             systemImage = "exclamationmark.shield.fill"
             tone = .failure
         case let .protected(selectionSummary):
             stage = "Protection ready"
             eyebrow = "SETUP COMPLETE"
             title = "Protection is on"
-            detail = "Opening a protected app now starts a checkpoint before a timed break."
+            detail = "Opening a protected app now starts a checkpoint for this goal before a timed break."
             supportingTitle = "Your first checkpoint is ready"
-            supportingDetail = "Open a protected app whenever you're ready. You can change your app choices later in Settings."
+            supportingDetail =
+                "Open a protected app to practice this goal. "
+                + "You can change your app choices later in Settings."
+            operationalNote = nil
             self.selectionSummary = selectionSummary
             systemImage = "checkmark.shield.fill"
             tone = .success
@@ -330,7 +345,17 @@ struct FirstRunProtectionStatusPresentation: Equatable {
     }
 
     var accessibilityLabel: String {
-        "\(title). \(selectionSummary). \(detail)"
+        switch tone {
+        case .working:
+            "Preparing the first checkpoint for \(goalContext.title). "
+                + "\(selectionSummary). Protection will turn on when enough questions are ready. "
+                + (operationalNote ?? "")
+        case .failure:
+            "Protection is not on for \(goalContext.title). \(selectionSummary). \(detail)"
+        case .success:
+            "Protection is on for \(goalContext.title). \(selectionSummary). "
+                + "Opening a protected app now starts a checkpoint before a timed break."
+        }
     }
 }
 
@@ -349,6 +374,7 @@ enum FirstRunProtectionPrimaryAction: Equatable {
 struct FirstRunProtectionActionPresentation: Equatable {
     let detail: String?
     let detailTone: FirstRunProtectionActionDetailTone
+    let hidesDetailAtAccessibilitySizes: Bool
     let primaryTitle: String
     let primarySystemImage: String
     let isPrimaryLoading: Bool
@@ -363,6 +389,7 @@ struct FirstRunProtectionActionPresentation: Equatable {
     ) {
         switch phase {
         case .selecting:
+            hidesDetailAtAccessibilitySizes = true
             if hasSelection {
                 detail = "Your choices are saved. Turn on protection when you're ready."
                 detailTone = .standard
@@ -373,13 +400,14 @@ struct FirstRunProtectionActionPresentation: Equatable {
                 detail = "Select at least one app or website to continue."
                 detailTone = .warning
             }
-            primaryTitle = "Turn on protection"
+            primaryTitle = hasSelection ? "Turn on protection" : "Choose apps first"
             primarySystemImage = "checkmark.shield"
             isPrimaryLoading = false
             isPrimaryEnabled = hasSelection
             primaryAction = hasSelection ? .startProtection : .none
             secondaryTitle = nil
         case .preparing:
+            hidesDetailAtAccessibilitySizes = true
             detail = "Keep Checkpoint open while your first checkpoint is prepared."
             detailTone = .standard
             primaryTitle = "Turning on protection"
@@ -389,6 +417,7 @@ struct FirstRunProtectionActionPresentation: Equatable {
             primaryAction = .none
             secondaryTitle = nil
         case .failed:
+            hidesDetailAtAccessibilitySizes = false
             detail = nil
             detailTone = .standard
             primaryTitle = hasSelection ? "Try again" : "Choose apps"
@@ -398,6 +427,7 @@ struct FirstRunProtectionActionPresentation: Equatable {
             primaryAction = hasSelection ? .startProtection : .editSelection
             secondaryTitle = "Continue without protection"
         case .protected:
+            hidesDetailAtAccessibilitySizes = false
             detail = nil
             detailTone = .standard
             primaryTitle = "Go to Home"
@@ -417,13 +447,27 @@ enum FirstRunProtectionMotionStyle: Equatable {
 
 struct FirstRunProtectionMotionPolicy {
     let reduceMotion: Bool
+    let voiceOverEnabled: Bool
+    let switchControlEnabled: Bool
+
+    init(
+        reduceMotion: Bool,
+        voiceOverEnabled: Bool = false,
+        switchControlEnabled: Bool = false
+    ) {
+        self.reduceMotion = reduceMotion
+        self.voiceOverEnabled = voiceOverEnabled
+        self.switchControlEnabled = switchControlEnabled
+    }
 
     var style: FirstRunProtectionMotionStyle {
-        reduceMotion ? .identity : .choreographed
+        reduceMotion || voiceOverEnabled || switchControlEnabled
+            ? .identity
+            : .choreographed
     }
 
     var animation: Animation? {
-        CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+        style == .identity ? nil : CheckpointMotion.reveal
     }
 }
 
@@ -434,13 +478,27 @@ enum FirstGoalSuccessHandoffMotionStyle: Equatable {
 
 struct FirstGoalSuccessHandoffMotionPolicy {
     let reduceMotion: Bool
+    let voiceOverEnabled: Bool
+    let switchControlEnabled: Bool
+
+    init(
+        reduceMotion: Bool,
+        voiceOverEnabled: Bool = false,
+        switchControlEnabled: Bool = false
+    ) {
+        self.reduceMotion = reduceMotion
+        self.voiceOverEnabled = voiceOverEnabled
+        self.switchControlEnabled = switchControlEnabled
+    }
 
     var style: FirstGoalSuccessHandoffMotionStyle {
-        reduceMotion ? .identity : .reveal
+        reduceMotion || voiceOverEnabled || switchControlEnabled
+            ? .identity
+            : .reveal
     }
 
     var animation: Animation? {
-        CheckpointMotion.animation(CheckpointMotion.reveal, reduceMotion: reduceMotion)
+        style == .identity ? nil : CheckpointMotion.reveal
     }
 }
 
@@ -451,24 +509,29 @@ struct FirstGoalSuccessHandoffDeliveryTaskID: Hashable {
 }
 
 struct FirstRunAppSelectionHeaderPresentation: Equatable {
+    let goalContext: FirstRunGoalContext
     let isSuccessHandoff: Bool
     let stage: String
     let title: String
     let systemImage: String
     let detail: String
 
-    init(handoff: FirstGoalSuccessHandoffToken?) {
-        isSuccessHandoff = handoff != nil
+    init(
+        goalContext: FirstRunGoalContext,
+        didJustSaveGoal: Bool
+    ) {
+        self.goalContext = goalContext
+        isSuccessHandoff = didJustSaveGoal
         if !isSuccessHandoff {
             stage = "Choose apps"
             title = "Choose your pause points."
             systemImage = "checkmark.shield.fill"
-            detail = "Now choose the apps and websites that should pause for a goal-based checkpoint before a timed break."
+            detail = "Select the apps and websites that should pause for a checkpoint tied to this goal."
         } else {
             stage = "Goal saved"
             title = "Choose your pause points."
             systemImage = "checkmark.circle.fill"
-            detail = "Now choose the apps and websites that should pause for a goal-based checkpoint before a timed break."
+            detail = "Select the apps and websites that should pause for a checkpoint tied to this goal."
         }
     }
 
@@ -481,7 +544,7 @@ struct FirstRunAppSelectionHeaderPresentation: Equatable {
         if isCondensed {
             var lines = [
                 isSuccessHandoff ? "Goal saved · Final" : "Step 3 of 3",
-                "Choose apps",
+                "Checkpoint for: \(goalContext.title)",
                 condensedSelectionSummary ?? selectionSummary,
             ]
             if let errorMessage {
@@ -492,7 +555,7 @@ struct FirstRunAppSelectionHeaderPresentation: Equatable {
 
         var sections = [
             "\(stage) · Step 3 of 3",
-            "\(title)\n\(selectionSummary)",
+            "\(title)\nCheckpoint for: \(goalContext.title)\n\(selectionSummary)",
             detail,
         ]
         if let errorMessage {
@@ -516,6 +579,22 @@ enum FirstRunAppSelectionChrome: Equatable {
         self = dynamicTypeSize >= .accessibility3
             ? .systemPickerCopy
             : .brandedHeader
+    }
+}
+
+enum FirstRunAppSelectionLayoutPolicy {
+    static func showsCategorySelectionDetail(
+        dynamicTypeSize: DynamicTypeSize,
+        availableHeight: CGFloat
+    ) -> Bool {
+        dynamicTypeSize.isAccessibilitySize || availableHeight >= 700
+    }
+
+    static func usesMinimalAccessibilityHeader(
+        dynamicTypeSize: DynamicTypeSize,
+        availableHeight: CGFloat
+    ) -> Bool {
+        dynamicTypeSize.isAccessibilitySize && availableHeight < 700
     }
 }
 
@@ -546,16 +625,23 @@ enum FirstRunProtectionFocus: Hashable {
             .success
         }
     }
+
+    static func movesProgrammatically(
+        voiceOverEnabled: Bool,
+        switchControlEnabled: Bool
+    ) -> Bool {
+        voiceOverEnabled && !switchControlEnabled
+    }
 }
 
 struct RestrictedAppsView: View {
     let screenTime: ScreenTimeController
     let presentationMode: RestrictedAppsPresentationMode
     private let reduceMotionOverride: Bool?
-    private let activeGoalID: UUID?
+    private let goalContext: FirstRunGoalContext?
     private let allowsFirstGoalHandoffDelivery: Bool
     private let firstGoalHandoff: FirstGoalSuccessHandoffToken?
-    private let onFirstGoalHandoffConsumed: @MainActor (FirstGoalSuccessHandoffToken) -> Bool
+    private let onFirstGoalHandoffConsumed: @MainActor (FirstGoalSuccessHandoffToken) -> FirstRunGoalContext?
     private let onFirstGoalHandoffDelivered: @MainActor (FirstGoalSuccessHandoffDeliveryEffect) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -565,15 +651,16 @@ struct RestrictedAppsView: View {
     @State private var firstGoalHandoffRevealSequence = 0
     @State private var successFeedbackSequence = 0
     @State private var errorFeedbackSequence = 0
+    @State private var protectionStartTask: Task<Void, Never>? = nil
 
     init(screenTime: ScreenTimeController) {
         self.screenTime = screenTime
         presentationMode = .management
         reduceMotionOverride = nil
-        activeGoalID = nil
+        goalContext = nil
         allowsFirstGoalHandoffDelivery = false
         firstGoalHandoff = nil
-        onFirstGoalHandoffConsumed = { _ in false }
+        onFirstGoalHandoffConsumed = { _ in nil }
         onFirstGoalHandoffDelivered = { _ in }
         _firstRunFlow = State(
             initialValue: FirstRunProtectionFlow(
@@ -597,16 +684,17 @@ struct RestrictedAppsView: View {
         onProtectionUnavailable: @escaping @MainActor () -> Void = {},
         initialPhase: FirstRunProtectionPhase = .selecting,
         reduceMotionOverride: Bool? = nil,
-        activeGoalID: UUID?,
+        goalContext: FirstRunGoalContext,
         allowsFirstGoalHandoffDelivery: Bool = true,
         firstGoalHandoff: FirstGoalSuccessHandoffToken? = nil,
-        onFirstGoalHandoffConsumed: @escaping @MainActor (FirstGoalSuccessHandoffToken) -> Bool = { _ in false },
+        onFirstGoalHandoffConsumed: @escaping @MainActor
+            (FirstGoalSuccessHandoffToken) -> FirstRunGoalContext? = { _ in nil },
         onFirstGoalHandoffDelivered: @escaping @MainActor (FirstGoalSuccessHandoffDeliveryEffect) -> Void = { _ in }
     ) {
         self.screenTime = screenTime
         presentationMode = .firstRun
         self.reduceMotionOverride = reduceMotionOverride
-        self.activeGoalID = activeGoalID
+        self.goalContext = goalContext
         self.allowsFirstGoalHandoffDelivery = allowsFirstGoalHandoffDelivery
         self.firstGoalHandoff = firstGoalHandoff
         self.onFirstGoalHandoffConsumed = onFirstGoalHandoffConsumed
@@ -663,7 +751,9 @@ struct RestrictedAppsView: View {
         .onChange(of: firstGoalHandoff) { _, token in
             firstGoalHandoffDelivery.receive(token)
         }
-        .onChange(of: activeGoalID) { _, goalID in
+        .onChange(of: goalContext?.goalID) { _, goalID in
+            protectionStartTask?.cancel()
+            protectionStartTask = nil
             firstGoalHandoffDelivery.invalidate(unless: goalID)
         }
         .onChange(of: firstRunFlow.phase) { _, phase in
@@ -704,14 +794,22 @@ struct RestrictedAppsView: View {
             guard !state.isValid else { return }
             reconcileLiveProtectionState()
         }
+        .onDisappear {
+            protectionStartTask?.cancel()
+            protectionStartTask = nil
+        }
     }
 
     @ViewBuilder
     private var content: some View {
         if presentationMode == .firstRun,
-           FirstRunProtectionStatusPresentation(phase: firstRunFlow.phase) != nil {
+           FirstRunProtectionStatusPresentation(
+               phase: firstRunFlow.phase,
+               goalContext: firstRunGoalContext
+           ) != nil {
             FirstRunProtectionStatusView(
                 phase: firstRunFlow.phase,
+                goalContext: firstRunGoalContext,
                 reduceMotion: reduceMotion,
                 hasSelection: screenTime.hasSelection,
                 editSelection: {
@@ -724,7 +822,8 @@ struct RestrictedAppsView: View {
             FamilyPickerContent(
                 screenTime: screenTime,
                 presentationMode: presentationMode,
-                firstGoalHandoff: firstGoalHandoffDelivery.presentedToken,
+                goalContext: goalContext,
+                didJustSaveGoal: presentedFirstGoalHandoff != nil,
                 firstGoalHandoffRevealSequence: firstGoalHandoffRevealSequence,
                 reduceMotion: reduceMotion
             )
@@ -795,9 +894,12 @@ struct RestrictedAppsView: View {
     private func handleFirstRunPrimaryAction() {
         switch firstRunActionPresentation.primaryAction {
         case .startProtection:
+            guard protectionStartTask == nil else { return }
             let selectionSummary = screenTime.restrictedAppsSummary
-            Task { @MainActor in
-                await firstRunFlow.start(selectionSummary: selectionSummary)
+            let flow = firstRunFlow
+            protectionStartTask = Task { @MainActor in
+                defer { protectionStartTask = nil }
+                await flow.start(selectionSummary: selectionSummary)
             }
         case .editSelection:
             _ = firstRunFlow.editSelection()
@@ -832,7 +934,7 @@ struct RestrictedAppsView: View {
 
     private var firstGoalHandoffDeliveryContext: FirstGoalSuccessHandoffDeliveryContext {
         FirstGoalSuccessHandoffDeliveryContext(
-            activeGoalID: activeGoalID,
+            goalContext: goalContext,
             phase: firstRunFlow.phase,
             isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
             errorMessage: screenTime.userFacingErrorMessage,
@@ -854,13 +956,27 @@ struct RestrictedAppsView: View {
         guard presentationMode == .firstRun else { return }
         guard let effect = firstGoalHandoffDelivery.attemptDelivery(
             in: firstGoalHandoffDeliveryContext,
-            authoritativeConsume: onFirstGoalHandoffConsumed
+            authoritativeConsumeAndResolveContext: onFirstGoalHandoffConsumed
         ) else { return }
 
         firstGoalHandoffRevealSequence += effect.revealSequenceIncrement
         successFeedbackSequence += effect.successFeedbackSequenceIncrement
         AccessibilityNotification.Announcement(effect.accessibilityAnnouncement).post()
         onFirstGoalHandoffDelivered(effect)
+    }
+
+    private var firstRunGoalContext: FirstRunGoalContext {
+        guard let goalContext else {
+            preconditionFailure("First-run app selection requires a current goal")
+        }
+        return goalContext
+    }
+
+    private var presentedFirstGoalHandoff: FirstGoalSuccessHandoffToken? {
+        guard firstGoalHandoffDelivery.presentedToken?.goalID == goalContext?.goalID else {
+            return nil
+        }
+        return firstGoalHandoffDelivery.presentedToken
     }
 }
 
@@ -869,12 +985,15 @@ struct FirstRunProtectionActionBar: View {
     let primaryAction: () -> Void
     let secondaryAction: () -> Void
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Divider()
                 .overlay(CheckpointTheme.hairline)
 
-            if let detail = presentation.detail {
+            if let detail = presentation.detail,
+               !(presentation.hidesDetailAtAccessibilitySizes && dynamicTypeSize.isAccessibilitySize) {
                 Text(detail)
                     .font(.caption)
                     .foregroundStyle(detailColor)
@@ -890,6 +1009,7 @@ struct FirstRunProtectionActionBar: View {
                 action: primaryAction
             )
             .disabled(!presentation.isPrimaryEnabled)
+            .accessibilityHint(presentation.detail ?? "")
             .padding(.horizontal, 20)
 
             if let secondaryTitle = presentation.secondaryTitle {
@@ -918,13 +1038,83 @@ struct FirstRunProtectionActionBar: View {
     }
 }
 
+struct FirstRunGoalContextStrip: View {
+    let goalContext: FirstRunGoalContext
+    var compactsTitleForPicker = false
+    var compactPickerLineLimit = 3
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 9) {
+            Image(systemName: "scope")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 28, height: 28)
+                .background(
+                    CheckpointTheme.teal.opacity(0.10),
+                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                )
+                .fixedSize()
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("CHECKPOINT FOR")
+                    .font(.caption2.weight(.bold))
+                    .tracking(0.75)
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+
+                Text(goalContext.title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .dynamicTypeSize(...titleMaximumDynamicTypeSize)
+                    .lineLimit(
+                        compactsTitleForPicker && dynamicTypeSize.isAccessibilitySize
+                            ? compactPickerLineLimit
+                            : (dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.panelRaised,
+            in: RoundedRectangle(
+                cornerRadius: CheckpointTheme.compactCornerRadius,
+                style: .continuous
+            )
+        )
+        .overlay {
+            RoundedRectangle(
+                cornerRadius: CheckpointTheme.compactCornerRadius,
+                style: .continuous
+            )
+            .stroke(CheckpointTheme.hairline, lineWidth: 1)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(goalContext.accessibilityLabel)
+    }
+
+    private var titleMaximumDynamicTypeSize: DynamicTypeSize {
+        compactsTitleForPicker ? .accessibility2 : .accessibility5
+    }
+}
+
 struct FirstRunProtectionStatusView: View {
     let phase: FirstRunProtectionPhase
+    let goalContext: FirstRunGoalContext
     let reduceMotion: Bool
     var hasSelection = true
     let editSelection: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @AccessibilityFocusState private var focusedDestination: FirstRunProtectionFocus?
     @State private var isRevealed = false
     @State private var successSymbolSequence = 0
@@ -939,9 +1129,13 @@ struct FirstRunProtectionStatusView: View {
                         stage: presentation.stage,
                         step: 3,
                         systemImage: setupSystemImage,
-                        compact: usesTightSpacing
+                        compact: usesTightSpacing,
+                        reduceMotionOverride: motionPolicy.style == .identity
                     )
 
+                    FirstRunGoalContextStrip(
+                        goalContext: goalContext
+                    )
                     statusHero(usesTightSpacing: usesTightSpacing)
                     supportingPanel
                 }
@@ -952,11 +1146,7 @@ struct FirstRunProtectionStatusView: View {
                 .frame(maxWidth: .infinity)
             }
         }
-        .opacity(reduceMotion || isRevealed ? 1 : 0)
-        .scaleEffect(
-            reduceMotion || isRevealed ? 1 : 0.98,
-            anchor: .top
-        )
+        .opacity(motionPolicy.style == .identity || isRevealed ? 1 : 0)
         .onAppear {
             revealStatus()
         }
@@ -965,7 +1155,12 @@ struct FirstRunProtectionStatusView: View {
             let tone = presentation.tone
             await Task.yield()
             guard !Task.isCancelled else { return }
-            focusedDestination = destination
+            if FirstRunProtectionFocus.movesProgrammatically(
+                voiceOverEnabled: voiceOverEnabled,
+                switchControlEnabled: switchControlEnabled
+            ) {
+                focusedDestination = destination
+            }
             if tone == .success {
                 successSymbolSequence += 1
             }
@@ -989,6 +1184,23 @@ struct FirstRunProtectionStatusView: View {
                     )
                     .foregroundStyle(CheckpointTheme.heroMuted)
                     .fixedSize(horizontal: false, vertical: true)
+
+                if dynamicTypeSize.isAccessibilitySize,
+                   let operationalNote = presentation.operationalNote {
+                    Label(operationalNote, systemImage: "iphone")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            CheckpointTheme.heroSubtleFill,
+                            in: RoundedRectangle(
+                                cornerRadius: CheckpointTheme.compactCornerRadius,
+                                style: .continuous
+                            )
+                        )
+                }
 
                 if !dynamicTypeSize.isAccessibilitySize {
                     Label(presentation.selectionSummary, systemImage: "checklist")
@@ -1043,7 +1255,9 @@ struct FirstRunProtectionStatusView: View {
                 )
             )
             .symbolEffect(.bounce, options: .nonRepeating, value: successSymbolSequence)
-            .symbolEffectsRemoved(reduceMotion || presentation.tone != .success)
+            .symbolEffectsRemoved(
+                motionPolicy.style == .identity || presentation.tone != .success
+            )
             .fixedSize()
             .accessibilityHidden(true)
     }
@@ -1147,6 +1361,7 @@ struct FirstRunProtectionStatusView: View {
     private var presentation: FirstRunProtectionStatusPresentation {
         guard let presentation = FirstRunProtectionStatusPresentation(
             phase: phase,
+            goalContext: goalContext,
             hasSelection: hasSelection
         ) else {
             preconditionFailure("A selecting phase does not have a status presentation")
@@ -1206,10 +1421,17 @@ struct FirstRunProtectionStatusView: View {
     }
 
     private func revealStatus() {
-        let motion = FirstRunProtectionMotionPolicy(reduceMotion: reduceMotion)
-        withAnimation(motion.animation) {
+        withAnimation(motionPolicy.animation) {
             isRevealed = true
         }
+    }
+
+    private var motionPolicy: FirstRunProtectionMotionPolicy {
+        FirstRunProtectionMotionPolicy(
+            reduceMotion: reduceMotion,
+            voiceOverEnabled: voiceOverEnabled,
+            switchControlEnabled: switchControlEnabled
+        )
     }
 }
 
@@ -1441,51 +1663,78 @@ struct ProtectedAppsManagementShell<PickerContent: View>: View {
 }
 
 struct FirstRunAppSelectionHeader: View {
+    let goalContext: FirstRunGoalContext
     let selectionSummary: String
     let categorySelectionDetail: String?
     let errorMessage: String?
-    var firstGoalHandoff: FirstGoalSuccessHandoffToken? = nil
+    var didJustSaveGoal = false
     var firstGoalHandoffRevealSequence = 0
     var reduceMotionOverride: Bool?
+    var usesMinimalAccessibilityLayout = false
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
 
     private var reduceMotion: Bool {
         reduceMotionOverride ?? systemReduceMotion
     }
 
     private var presentation: FirstRunAppSelectionHeaderPresentation {
-        FirstRunAppSelectionHeaderPresentation(handoff: firstGoalHandoff)
+        FirstRunAppSelectionHeaderPresentation(
+            goalContext: goalContext,
+            didJustSaveGoal: didJustSaveGoal
+        )
+    }
+
+    private var handoffMotionPolicy: FirstGoalSuccessHandoffMotionPolicy {
+        FirstGoalSuccessHandoffMotionPolicy(
+            reduceMotion: reduceMotion,
+            voiceOverEnabled: voiceOverEnabled,
+            switchControlEnabled: switchControlEnabled
+        )
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             VStack(alignment: .leading, spacing: 10) {
-                CheckpointSetupMark(
-                    stage: presentation.stage,
-                    step: 3,
-                    systemImage: presentation.systemImage,
-                    compact: dynamicTypeSize.isAccessibilitySize,
-                    symbolEffectSequence: firstGoalHandoffRevealSequence,
-                    reduceMotionOverride: reduceMotion
-                )
-                .animation(
-                    FirstGoalSuccessHandoffMotionPolicy(reduceMotion: reduceMotion).animation,
-                    value: presentation.stage
-                )
+                if !usesMinimalAccessibilityLayout {
+                    CheckpointSetupMark(
+                        stage: presentation.stage,
+                        step: 3,
+                        systemImage: presentation.systemImage,
+                        compact: dynamicTypeSize.isAccessibilitySize,
+                        symbolEffectSequence: firstGoalHandoffRevealSequence,
+                        reduceMotionOverride: handoffMotionPolicy.style == .identity
+                    )
+                    .animation(
+                        handoffMotionPolicy.animation,
+                        value: presentation.stage
+                    )
+                }
 
-                Text(presentation.title)
-                    .font(dynamicTypeSize.isAccessibilitySize ? .title3.bold() : .title2.bold())
-                    .foregroundStyle(CheckpointTheme.text)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Text(presentation.title)
+                        .font(.title2.bold())
+                        .foregroundStyle(CheckpointTheme.text)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityAddTraits(.isHeader)
+                }
             }
 
-            Text(presentation.detail)
-                .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
-                .fixedSize(horizontal: false, vertical: true)
+            FirstRunGoalContextStrip(
+                goalContext: goalContext,
+                compactsTitleForPicker: true,
+                compactPickerLineLimit: usesMinimalAccessibilityLayout ? 2 : 3
+            )
+
+            if !dynamicTypeSize.isAccessibilitySize {
+                Text(presentation.detail)
+                    .font(.subheadline)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
             Label(selectionSummary, systemImage: "checklist")
                 .font(.caption.weight(.semibold))
@@ -1521,7 +1770,8 @@ struct FirstRunAppSelectionHeader: View {
 private struct FamilyPickerContent: View {
     let screenTime: ScreenTimeController
     let presentationMode: RestrictedAppsPresentationMode
-    let firstGoalHandoff: FirstGoalSuccessHandoffToken?
+    let goalContext: FirstRunGoalContext?
+    let didJustSaveGoal: Bool
     let firstGoalHandoffRevealSequence: Int
     let reduceMotion: Bool
 
@@ -1533,39 +1783,8 @@ private struct FamilyPickerContent: View {
     var body: some View {
         Group {
             if presentationMode == .firstRun {
-                switch FirstRunAppSelectionChrome(dynamicTypeSize: dynamicTypeSize) {
-                case .brandedHeader:
-                    VStack(spacing: 0) {
-                        VStack(alignment: .leading, spacing: 10) {
-                            FirstRunAppSelectionHeader(
-                                selectionSummary: selectionSummary,
-                                categorySelectionDetail: categorySelectionDetail,
-                                errorMessage: screenTime.userFacingErrorMessage,
-                                firstGoalHandoff: firstGoalHandoff,
-                                firstGoalHandoffRevealSequence: firstGoalHandoffRevealSequence,
-                                reduceMotionOverride: reduceMotion
-                            )
-                        }
-                        .padding(16)
-                        .background(CheckpointTheme.panel)
-
-                        FamilyActivityPicker(selection: selectionBinding)
-                    }
-                case .systemPickerCopy:
-                    FamilyActivityPicker(
-                        headerText: firstRunHeaderPresentation.pickerHeaderText(
-                            selectionSummary: selectionSummary,
-                            errorMessage: screenTime.userFacingErrorMessage,
-                            isCondensed: true,
-                            condensedSelectionSummary: screenTime.hasSelection
-                                ? selectionSummary
-                                : "0 selected"
-                        ),
-                        footerText: firstRunHeaderPresentation.pickerFooterText(
-                            categorySelectionDetail: categorySelectionDetail
-                        ),
-                        selection: selectionBinding
-                    )
+                GeometryReader { proxy in
+                    firstRunPicker(availableHeight: proxy.size.height)
                 }
             } else {
                 GeometryReader { proxy in
@@ -1580,6 +1799,51 @@ private struct FamilyPickerContent: View {
         }
         .sensoryFeedback(.selection, trigger: selectionFeedbackSequence)
         .sensoryFeedback(.error, trigger: selectionRejectionFeedbackSequence)
+    }
+
+    @ViewBuilder
+    private func firstRunPicker(availableHeight: CGFloat) -> some View {
+        switch FirstRunAppSelectionChrome(dynamicTypeSize: dynamicTypeSize) {
+        case .brandedHeader:
+            VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 10) {
+                    FirstRunAppSelectionHeader(
+                        goalContext: firstRunGoalContext,
+                        selectionSummary: firstRunSelectionSummary,
+                        categorySelectionDetail: inlineCategorySelectionDetail(
+                            availableHeight: availableHeight
+                        ),
+                        errorMessage: screenTime.userFacingErrorMessage,
+                        didJustSaveGoal: didJustSaveGoal,
+                        firstGoalHandoffRevealSequence: firstGoalHandoffRevealSequence,
+                        reduceMotionOverride: reduceMotion,
+                        usesMinimalAccessibilityLayout: FirstRunAppSelectionLayoutPolicy
+                            .usesMinimalAccessibilityHeader(
+                                dynamicTypeSize: dynamicTypeSize,
+                                availableHeight: availableHeight
+                            )
+                    )
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(CheckpointTheme.panel)
+
+                FamilyActivityPicker(selection: selectionBinding)
+            }
+        case .systemPickerCopy:
+            FamilyActivityPicker(
+                headerText: firstRunHeaderPresentation.pickerHeaderText(
+                    selectionSummary: firstRunSelectionSummary,
+                    errorMessage: screenTime.userFacingErrorMessage,
+                    isCondensed: true,
+                    condensedSelectionSummary: firstRunCondensedSelectionSummary
+                ),
+                footerText: firstRunHeaderPresentation.pickerFooterText(
+                    categorySelectionDetail: categorySelectionDetail
+                ),
+                selection: selectionBinding
+            )
+        }
     }
 
     @ViewBuilder
@@ -1633,8 +1897,31 @@ private struct FamilyPickerContent: View {
         screenTime.restrictedAppsSummary
     }
 
+    private var firstRunSelectionSummary: String {
+        hasCategoryOnlySelection
+            ? "Category selected · choose an app inside"
+            : selectionSummary
+    }
+
+    private var firstRunCondensedSelectionSummary: String {
+        if hasCategoryOnlySelection {
+            return firstRunSelectionSummary
+        }
+        return screenTime.hasSelection ? selectionSummary : "0 selected"
+    }
+
     private var firstRunHeaderPresentation: FirstRunAppSelectionHeaderPresentation {
-        FirstRunAppSelectionHeaderPresentation(handoff: firstGoalHandoff)
+        FirstRunAppSelectionHeaderPresentation(
+            goalContext: firstRunGoalContext,
+            didJustSaveGoal: didJustSaveGoal
+        )
+    }
+
+    private var firstRunGoalContext: FirstRunGoalContext {
+        guard let goalContext else {
+            preconditionFailure("First-run app selection requires a current goal")
+        }
+        return goalContext
     }
 
     private var managementPresentation: ProtectedAppsManagementPresentation {
@@ -1654,6 +1941,20 @@ private struct FamilyPickerContent: View {
             hasProtectedItems: screenTime.hasSelection,
             usesLegacyCategoryEnforcement: screenTime.usesLegacyCategoryEnforcement
         ).detail
+    }
+
+    private var hasCategoryOnlySelection: Bool {
+        !screenTime.selection.categoryTokens.isEmpty && !screenTime.hasSelection
+    }
+
+    private func inlineCategorySelectionDetail(availableHeight: CGFloat) -> String? {
+        guard FirstRunAppSelectionLayoutPolicy.showsCategorySelectionDetail(
+            dynamicTypeSize: dynamicTypeSize,
+            availableHeight: availableHeight
+        ) else {
+            return nil
+        }
+        return categorySelectionDetail
     }
 
 }

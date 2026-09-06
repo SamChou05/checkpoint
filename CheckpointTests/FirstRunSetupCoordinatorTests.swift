@@ -85,6 +85,104 @@ final class FirstRunSetupCoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testGoalMismatchBeforeProtectionStartPreservesPendingSetup() async {
+        let expectedGoalID = UUID()
+        let currentGoalID = UUID()
+        let coordinator = FirstRunSetupCoordinator(defaults: defaults)
+        var startCount = 0
+        coordinator.begin()
+        coordinator.presentAppSelection()
+
+        let result = await coordinator.startProtection(
+            isPreparingQuestions: { false },
+            startProtection: {
+                startCount += 1
+                return true
+            },
+            checkpointNotice: { nil },
+            screenTimeErrorMessage: { nil },
+            selectionSummary: { "2 apps selected" },
+            currentGoalID: { currentGoalID },
+            expectedGoalID: expectedGoalID
+        )
+
+        XCTAssertEqual(
+            result,
+            .failed(message: FirstRunSetupCoordinator.goalChangedMessage)
+        )
+        XCTAssertEqual(startCount, 0)
+        XCTAssertTrue(coordinator.isPending)
+        XCTAssertTrue(coordinator.isAppSelectionPresented)
+        XCTAssertTrue(FirstRunSetupProgress.isPending(defaults: defaults))
+        XCTAssertNil(coordinator.suppressedSuggestedSkillMapGoalID)
+    }
+
+    @MainActor
+    func testGoalReplacementDuringProtectionStartDoesNotCompleteSetup() async {
+        let expectedGoalID = UUID()
+        let replacementGoalID = UUID()
+        let coordinator = FirstRunSetupCoordinator(defaults: defaults)
+        var currentGoalID = expectedGoalID
+        coordinator.begin()
+        coordinator.presentAppSelection()
+
+        let result = await coordinator.startProtection(
+            isPreparingQuestions: { false },
+            startProtection: {
+                currentGoalID = replacementGoalID
+                return true
+            },
+            checkpointNotice: { nil },
+            screenTimeErrorMessage: { nil },
+            selectionSummary: { "2 apps selected" },
+            currentGoalID: { currentGoalID },
+            expectedGoalID: expectedGoalID
+        )
+
+        XCTAssertEqual(
+            result,
+            .failed(message: FirstRunSetupCoordinator.goalChangedMessage)
+        )
+        XCTAssertEqual(currentGoalID, replacementGoalID)
+        XCTAssertTrue(coordinator.isPending)
+        XCTAssertTrue(coordinator.isAppSelectionPresented)
+        XCTAssertTrue(FirstRunSetupProgress.isPending(defaults: defaults))
+        XCTAssertNil(coordinator.suppressedSuggestedSkillMapGoalID)
+    }
+
+    @MainActor
+    func testCancellationAfterProtectionStartPreservesPendingSetup() async {
+        let goalID = UUID()
+        let coordinator = FirstRunSetupCoordinator(defaults: defaults)
+        coordinator.begin()
+        coordinator.presentAppSelection()
+
+        let result = await coordinator.startProtection(
+            isPreparingQuestions: { false },
+            startProtection: {
+                withUnsafeCurrentTask { task in
+                    task?.cancel()
+                }
+                return true
+            },
+            checkpointNotice: { nil },
+            screenTimeErrorMessage: { nil },
+            selectionSummary: { "2 apps selected" },
+            currentGoalID: { goalID },
+            expectedGoalID: goalID
+        )
+
+        XCTAssertEqual(
+            result,
+            .failed(message: "Setup was interrupted. Try turning protection on again.")
+        )
+        XCTAssertTrue(coordinator.isPending)
+        XCTAssertTrue(coordinator.isAppSelectionPresented)
+        XCTAssertTrue(FirstRunSetupProgress.isPending(defaults: defaults))
+        XCTAssertNil(coordinator.suppressedSuggestedSkillMapGoalID)
+    }
+
+    @MainActor
     func testWorkflowFailureUsesRealNoticeAndSkipExplicitlyStopsProtection() async {
         let goalID = UUID()
         let coordinator = FirstRunSetupCoordinator(defaults: defaults)

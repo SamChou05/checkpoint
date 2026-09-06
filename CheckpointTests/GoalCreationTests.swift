@@ -86,7 +86,9 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
         store.updateAIProviderPreference(.appleFoundation)
         store.goal = makeGoal()
 
-        let isReady = await store.prepareQuestionsForProtectionStart()
+        let isReady = await store.prepareQuestionsForProtectionStart(
+            expectedGoalID: store.goal?.id
+        )
 
         XCTAssertTrue(isReady)
         XCTAssertTrue(store.hasReadyCheckpointSet)
@@ -106,7 +108,9 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
         store.updateAIProviderPreference(.appleFoundation)
         store.goal = makeGoal()
 
-        let isReady = await store.prepareQuestionsForProtectionStart()
+        let isReady = await store.prepareQuestionsForProtectionStart(
+            expectedGoalID: store.goal?.id
+        )
 
         XCTAssertFalse(isReady)
         XCTAssertFalse(store.hasReadyCheckpointSet)

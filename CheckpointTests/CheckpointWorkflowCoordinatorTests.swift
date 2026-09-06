@@ -162,14 +162,66 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertNil(queue.pendingToken)
     }
 
+    func testFirstGoalSuccessHandoffConsumptionUsesTheLiveGoalContext() throws {
+        let goalID = UUID()
+        var queue = FirstGoalSuccessHandoffQueue()
+        XCTAssertTrue(
+            queue.issue(
+                goalID: goalID,
+                goalTitle: "An older goal title",
+                isFirstRunSetupPending: true
+            )
+        )
+        let token = try XCTUnwrap(queue.pendingToken)
+        let renamedGoalContext = FirstRunGoalContext(
+            goalID: goalID,
+            title: "The current goal title"
+        )
+
+        XCTAssertEqual(
+            queue.consume(token, currentGoalContext: renamedGoalContext),
+            renamedGoalContext
+        )
+        XCTAssertNil(queue.pendingToken)
+        XCTAssertTrue(queue.deliveredGoalIDs.contains(goalID))
+
+        let replacementGoalID = UUID()
+        var replacedQueue = FirstGoalSuccessHandoffQueue()
+        XCTAssertTrue(
+            replacedQueue.issue(
+                goalID: goalID,
+                goalTitle: token.goalTitle,
+                isFirstRunSetupPending: true
+            )
+        )
+        let staleToken = try XCTUnwrap(replacedQueue.pendingToken)
+
+        XCTAssertNil(
+            replacedQueue.consume(
+                staleToken,
+                currentGoalContext: FirstRunGoalContext(
+                    goalID: replacementGoalID,
+                    title: "A replacement goal"
+                )
+            )
+        )
+        XCTAssertNil(replacedQueue.pendingToken)
+        XCTAssertTrue(replacedQueue.deliveredGoalIDs.isEmpty)
+    }
+
     func testFirstGoalSuccessHandoffDeliverySurvivesParentConsumptionWithoutReplaying() throws {
+        let firstGoalID = UUID()
         let firstToken = FirstGoalSuccessHandoffToken(
-            goalID: UUID(),
-            goalTitle: "Prepare for the MCAT"
+            goalID: firstGoalID,
+            goalTitle: "An older MCAT plan"
+        )
+        let currentGoalContext = FirstRunGoalContext(
+            goalID: firstGoalID,
+            title: "Prepare for the MCAT"
         )
         var delivery = FirstGoalSuccessHandoffDeliveryState(token: firstToken)
         let firstContext = FirstGoalSuccessHandoffDeliveryContext(
-            activeGoalID: firstToken.goalID,
+            goalContext: currentGoalContext,
             phase: .selecting,
             isAuthorized: true,
             errorMessage: nil,
@@ -182,11 +234,12 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             delivery.attemptDelivery(in: firstContext) { $0 == firstToken }
         )
         XCTAssertEqual(firstEffect.token, firstToken)
+        XCTAssertEqual(firstEffect.goalContext, currentGoalContext)
         XCTAssertEqual(firstEffect.revealSequenceIncrement, 1)
         XCTAssertEqual(firstEffect.successFeedbackSequenceIncrement, 1)
         XCTAssertEqual(
             firstEffect.accessibilityAnnouncement,
-            firstToken.accessibilityAnnouncement
+            currentGoalContext.savedGoalAccessibilityAnnouncement
         )
         XCTAssertNil(delivery.pendingToken)
         XCTAssertEqual(delivery.presentedToken, firstToken)
@@ -210,7 +263,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertEqual(
             delivery.attemptDelivery(
                 in: FirstGoalSuccessHandoffDeliveryContext(
-                    activeGoalID: nextToken.goalID,
+                    goalContext: firstRunGoalContext(for: nextToken),
                     phase: .selecting,
                     isAuthorized: true,
                     errorMessage: nil,
@@ -231,7 +284,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertNil(
             rejectedDelivery.attemptDelivery(
                 in: FirstGoalSuccessHandoffDeliveryContext(
-                    activeGoalID: staleToken.goalID,
+                    goalContext: firstRunGoalContext(for: staleToken),
                     phase: .selecting,
                     isAuthorized: true,
                     errorMessage: nil,
@@ -256,7 +309,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertEqual(
             rejectedDelivery.attemptDelivery(
                 in: FirstGoalSuccessHandoffDeliveryContext(
-                    activeGoalID: correctedToken.goalID,
+                    goalContext: firstRunGoalContext(for: correctedToken),
                     phase: .selecting,
                     isAuthorized: true,
                     errorMessage: nil,
@@ -273,7 +326,10 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertNil(
             mismatchedDelivery.attemptDelivery(
                 in: FirstGoalSuccessHandoffDeliveryContext(
-                    activeGoalID: UUID(),
+                    goalContext: FirstRunGoalContext(
+                        goalID: UUID(),
+                        title: "A different current goal"
+                    ),
                     phase: .selecting,
                     isAuthorized: true,
                     errorMessage: nil,
@@ -293,7 +349,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertNil(
             mismatchedDelivery.attemptDelivery(
                 in: FirstGoalSuccessHandoffDeliveryContext(
-                    activeGoalID: staleToken.goalID,
+                    goalContext: firstRunGoalContext(for: staleToken),
                     phase: .selecting,
                     isAuthorized: true,
                     errorMessage: nil,
@@ -307,6 +363,101 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             "A token first seen against another goal must not become deliverable later."
         )
         XCTAssertEqual(mismatchedConsumptionAttempts, 0)
+    }
+
+    func testFirstGoalSuccessHandoffDeliveryRefreshesGoalCopyAtConsumption() throws {
+        let goalID = UUID()
+        var queue = FirstGoalSuccessHandoffQueue()
+        XCTAssertTrue(
+            queue.issue(
+                goalID: goalID,
+                goalTitle: "An older goal title",
+                isFirstRunSetupPending: true
+            )
+        )
+        let token = try XCTUnwrap(queue.pendingToken)
+        let renderedContext = FirstRunGoalContext(
+            goalID: goalID,
+            title: token.goalTitle
+        )
+        let liveContext = FirstRunGoalContext(
+            goalID: goalID,
+            title: "The current goal title"
+        )
+        var delivery = FirstGoalSuccessHandoffDeliveryState(token: token)
+        var consumptionAttempts = 0
+
+        let effect = try XCTUnwrap(
+            delivery.attemptDelivery(
+                in: FirstGoalSuccessHandoffDeliveryContext(
+                    goalContext: renderedContext,
+                    phase: .selecting,
+                    isAuthorized: true,
+                    errorMessage: nil,
+                    isExposed: true
+                ),
+                authoritativeConsumeAndResolveContext: { candidate in
+                    consumptionAttempts += 1
+                    return queue.consume(
+                        candidate,
+                        currentGoalContext: liveContext
+                    )
+                }
+            )
+        )
+
+        XCTAssertEqual(consumptionAttempts, 1)
+        XCTAssertEqual(effect.goalContext, liveContext)
+        XCTAssertEqual(
+            effect.accessibilityAnnouncement,
+            liveContext.savedGoalAccessibilityAnnouncement
+        )
+        XCTAssertFalse(effect.accessibilityAnnouncement.contains(token.goalTitle))
+        XCTAssertTrue(queue.deliveredGoalIDs.contains(goalID))
+    }
+
+    func testFirstGoalSuccessHandoffDeliveryRejectsALiveReplacementGoal() throws {
+        let originalGoalID = UUID()
+        var queue = FirstGoalSuccessHandoffQueue()
+        XCTAssertTrue(
+            queue.issue(
+                goalID: originalGoalID,
+                goalTitle: "The original goal",
+                isFirstRunSetupPending: true
+            )
+        )
+        let token = try XCTUnwrap(queue.pendingToken)
+        let renderedContext = firstRunGoalContext(for: token)
+        let replacementContext = FirstRunGoalContext(
+            goalID: UUID(),
+            title: "A replacement goal"
+        )
+        var delivery = FirstGoalSuccessHandoffDeliveryState(token: token)
+        var consumptionAttempts = 0
+
+        let effect = delivery.attemptDelivery(
+            in: FirstGoalSuccessHandoffDeliveryContext(
+                goalContext: renderedContext,
+                phase: .selecting,
+                isAuthorized: true,
+                errorMessage: nil,
+                isExposed: true
+            ),
+            authoritativeConsumeAndResolveContext: { candidate in
+                consumptionAttempts += 1
+                return queue.consume(
+                    candidate,
+                    currentGoalContext: replacementContext
+                )
+            }
+        )
+
+        XCTAssertNil(effect)
+        XCTAssertEqual(consumptionAttempts, 1)
+        XCTAssertNil(queue.pendingToken)
+        XCTAssertTrue(queue.deliveredGoalIDs.isEmpty)
+        XCTAssertNil(delivery.pendingToken)
+        XCTAssertNil(delivery.presentedToken)
     }
 
     func testFirstGoalSuccessHandoffEmitsOneCompleteEffectAfterEligibilityRekeys() throws {
@@ -323,7 +474,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             XCTAssertNil(
                 delivery.attemptDelivery(
                     in: FirstGoalSuccessHandoffDeliveryContext(
-                        activeGoalID: nil,
+                        goalContext: nil,
                         phase: .selecting,
                         isAuthorized: true,
                         errorMessage: nil,
@@ -339,7 +490,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             XCTAssertNil(
                 delivery.attemptDelivery(
                     in: FirstGoalSuccessHandoffDeliveryContext(
-                        activeGoalID: token.goalID,
+                        goalContext: firstRunGoalContext(for: token),
                         phase: .selecting,
                         isAuthorized: false,
                         errorMessage: nil,
@@ -354,7 +505,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             XCTAssertNil(
                 delivery.attemptDelivery(
                     in: FirstGoalSuccessHandoffDeliveryContext(
-                        activeGoalID: token.goalID,
+                        goalContext: firstRunGoalContext(for: token),
                         phase: .selecting,
                         isAuthorized: true,
                         errorMessage: "Screen Time access changed.",
@@ -369,7 +520,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             XCTAssertNil(
                 delivery.attemptDelivery(
                     in: FirstGoalSuccessHandoffDeliveryContext(
-                        activeGoalID: token.goalID,
+                        goalContext: firstRunGoalContext(for: token),
                         phase: .preparing(selectionSummary: "1 app selected"),
                         isAuthorized: true,
                         errorMessage: nil,
@@ -384,7 +535,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             XCTAssertNil(
                 delivery.attemptDelivery(
                     in: FirstGoalSuccessHandoffDeliveryContext(
-                        activeGoalID: token.goalID,
+                        goalContext: firstRunGoalContext(for: token),
                         phase: .selecting,
                         isAuthorized: true,
                         errorMessage: nil,
@@ -400,7 +551,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
 
             if let effect = delivery.attemptDelivery(
                 in: FirstGoalSuccessHandoffDeliveryContext(
-                    activeGoalID: token.goalID,
+                    goalContext: firstRunGoalContext(for: token),
                     phase: .selecting,
                     isAuthorized: true,
                     errorMessage: nil,
@@ -418,7 +569,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             delivery.receive(token)
             if let repeatedEffect = delivery.attemptDelivery(
                 in: FirstGoalSuccessHandoffDeliveryContext(
-                    activeGoalID: token.goalID,
+                    goalContext: firstRunGoalContext(for: token),
                     phase: .selecting,
                     isAuthorized: true,
                     errorMessage: nil,
@@ -460,7 +611,7 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
 
         func context(isSceneActive: Bool) -> FirstGoalSuccessHandoffDeliveryContext {
             FirstGoalSuccessHandoffDeliveryContext(
-                activeGoalID: token.goalID,
+                goalContext: firstRunGoalContext(for: token),
                 phase: .selecting,
                 isAuthorized: true,
                 errorMessage: nil,
@@ -506,15 +657,59 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
             "A second background/foreground cycle must not replay the delivered effect."
         )
         XCTAssertEqual(consumptionAttempts, 1)
-        XCTAssertEqual(effects, [FirstGoalSuccessHandoffDeliveryEffect(token: token)])
+        XCTAssertEqual(
+            effects,
+            [
+                FirstGoalSuccessHandoffDeliveryEffect(
+                    token: token,
+                    goalContext: firstRunGoalContext(for: token)
+                )
+            ]
+        )
     }
 
-    func testDurableResumeDoesNotInventAnEphemeralSuccessHandoff() {
+    @MainActor
+    func testDurableResumeRestoresCurrentGoalWithoutInventingAnEphemeralSuccessHandoff() throws {
         FirstRunSetupProgress.begin(defaults: defaults)
+        var savedGoal = makeCoordinatorTestGoal()
+        savedGoal.title = "  Finish the portfolio  "
+        let originalStore = CheckpointStore(defaults: defaults)
+        originalStore.goal = savedGoal
+        originalStore.goalProfiles = [savedGoal]
+        originalStore.updateRequiredCorrectAnswers(
+            originalStore.unlockPolicy.requiredCorrectAnswers
+        )
+
+        let relaunchedStore = CheckpointStore(defaults: defaults)
         let relaunchedQueue = FirstGoalSuccessHandoffQueue()
+        let goalContext = try XCTUnwrap(
+            FirstRunGoalContext(goal: relaunchedStore.goal)
+        )
+        let resumedHeader = FirstRunAppSelectionHeaderPresentation(
+            goalContext: goalContext,
+            didJustSaveGoal: false
+        )
 
         XCTAssertTrue(FirstRunSetupProgress.isPending(defaults: defaults))
         XCTAssertNil(relaunchedQueue.pendingToken)
+        XCTAssertEqual(goalContext.goalID, savedGoal.id)
+        XCTAssertEqual(goalContext.title, "Finish the portfolio")
+        XCTAssertEqual(goalContext.accessibilityLabel, "Current goal: Finish the portfolio.")
+        XCTAssertFalse(resumedHeader.isSuccessHandoff)
+        XCTAssertTrue(
+            resumedHeader.pickerHeaderText(
+                selectionSummary: "Nothing selected yet",
+                errorMessage: nil,
+                isCondensed: true,
+                condensedSelectionSummary: "0 selected"
+            ).contains("Checkpoint for: Finish the portfolio")
+        )
+
+        XCTAssertEqual(
+            FirstRunGoalContext(goalID: UUID(), title: " \n ").title,
+            "Your goal"
+        )
+        XCTAssertNil(FirstRunGoalContext(goal: nil))
     }
 
     // MARK: - Earned-break handoff
@@ -812,6 +1007,41 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
     // MARK: - Protection and break transitions
 
     @MainActor
+    func testQuestionPreparationRejectsAStaleExpectedGoalBeforeMutation() async throws {
+        let delayedEngine = SuspendedProtectionQuestionEngine()
+        let store = makeStore(
+            questionCount: 0,
+            questionEngine: HybridQuestionEngine(
+                backendEngine: delayedEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            )
+        )
+        store.updateAIProviderPreference(.backend)
+        let staleGoalID = try XCTUnwrap(store.goal?.id)
+        let replacementGoal = makeCoordinatorTargetGoal()
+        store.goal = replacementGoal
+        store.goalProfiles.append(replacementGoal)
+        store.questionBatchState = .idle
+        let replacementNotice = "Keep this replacement-goal notice."
+        store.checkpointNotice = replacementNotice
+        let questionIDs = store.questions.map(\.id)
+        let sharedReadiness = SharedAppGroup.checkpointReady
+
+        let isReady = await store.prepareQuestionsForProtectionStart(
+            expectedGoalID: staleGoalID
+        )
+        let didRequestQuestions = await delayedEngine.hasReceivedRequest()
+
+        XCTAssertFalse(isReady)
+        XCTAssertFalse(didRequestQuestions)
+        XCTAssertEqual(store.goal?.id, replacementGoal.id)
+        XCTAssertEqual(store.questionBatchState, .idle)
+        XCTAssertEqual(store.checkpointNotice, replacementNotice)
+        XCTAssertEqual(store.questions.map(\.id), questionIDs)
+        XCTAssertEqual(SharedAppGroup.checkpointReady, sharedReadiness)
+    }
+
+    @MainActor
     func testReadyProtectionStartAppliesShieldOnce() async throws {
         let store = makeStore(questionCount: 5)
         let protection = FakeAppProtectionController()
@@ -880,6 +1110,116 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertTrue(result.didStart)
         XCTAssertNil(workflow.startingProtectionReadinessGoalID)
         XCTAssertFalse(appleEngine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
+    func testProtectionStartDoesNotShieldAReplacementGoalAfterPreparation() async throws {
+        let delayedEngine = SuspendedProtectionQuestionEngine()
+        let store = makeStore(
+            questionCount: 0,
+            questionEngine: HybridQuestionEngine(
+                backendEngine: delayedEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            )
+        )
+        store.updateAIProviderPreference(.backend)
+        let expectedGoalID = try XCTUnwrap(store.goal?.id)
+        let replacementGoal = makeCoordinatorTargetGoal()
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: protection
+        )
+
+        let startTask = Task { @MainActor in
+            await workflow.startProtection(expectedGoalID: expectedGoalID)
+        }
+        await delayedEngine.waitUntilRequested()
+
+        store.goal = replacementGoal
+        store.goalProfiles.append(replacementGoal)
+        store.questionBatchState = .idle
+        store.questionGenerationStartedAt = nil
+        store.lastQuestionProvider = .localTemplates
+        store.lastQuestionGenerationFailure = .safetyIntervention
+        let replacementError = "Keep this replacement-goal error."
+        store.lastAIErrorMessage = replacementError
+        let replacementNotice = "Keep this replacement-goal notice."
+        store.checkpointNotice = replacementNotice
+        let replacementQuestionIDs = store.questions.map(\.id)
+        let replacementTraceIDs = store.questionGenerationTraces.map(\.id)
+        await delayedEngine.resumeGeneration()
+
+        let started = await startTask.value
+
+        XCTAssertFalse(started)
+        XCTAssertEqual(store.goal?.id, replacementGoal.id)
+        XCTAssertEqual(protection.applyShieldCount, 0)
+        XCTAssertFalse(protection.isShieldingEnabled)
+        XCTAssertEqual(store.questionBatchState, .idle)
+        XCTAssertNil(store.questionGenerationStartedAt)
+        XCTAssertEqual(store.lastQuestionProvider, .localTemplates)
+        XCTAssertEqual(store.lastQuestionGenerationFailure, .safetyIntervention)
+        XCTAssertEqual(store.lastAIErrorMessage, replacementError)
+        XCTAssertEqual(store.checkpointNotice, replacementNotice)
+        XCTAssertEqual(store.questions.map(\.id), replacementQuestionIDs)
+        XCTAssertEqual(store.questionGenerationTraces.map(\.id), replacementTraceIDs)
+        XCTAssertNil(workflow.pendingProtectionStartResult)
+        XCTAssertNil(workflow.startingProtectionReadinessGoalID)
+        XCTAssertNil(workflow.operation)
+    }
+
+    @MainActor
+    func testCancelledProtectionStartDoesNotApplyShieldOrPublishAResult() async throws {
+        let delayedEngine = SuspendedProtectionQuestionEngine()
+        let store = makeStore(
+            questionCount: 0,
+            questionEngine: HybridQuestionEngine(
+                backendEngine: delayedEngine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            )
+        )
+        store.updateAIProviderPreference(.backend)
+        let expectedGoalID = try XCTUnwrap(store.goal?.id)
+        let protection = FakeAppProtectionController()
+        let workflow = CheckpointWorkflowCoordinator(
+            store: store,
+            protection: protection
+        )
+
+        let startTask = Task { @MainActor in
+            await workflow.startProtection(expectedGoalID: expectedGoalID)
+        }
+        await delayedEngine.waitUntilRequested()
+
+        store.lastQuestionProvider = .localTemplates
+        store.lastQuestionGenerationFailure = .safetyIntervention
+        let cancellationError = "Keep this cancellation error."
+        store.lastAIErrorMessage = cancellationError
+        let cancellationNotice = "Keep this cancellation notice."
+        store.checkpointNotice = cancellationNotice
+        let questionIDs = store.questions.map(\.id)
+        let traceIDs = store.questionGenerationTraces.map(\.id)
+        startTask.cancel()
+        await delayedEngine.resumeGeneration()
+
+        let started = await startTask.value
+
+        XCTAssertFalse(started)
+        XCTAssertEqual(protection.applyShieldCount, 0)
+        XCTAssertFalse(protection.isShieldingEnabled)
+        XCTAssertEqual(store.questionBatchState, .idle)
+        XCTAssertNil(store.questionGenerationStartedAt)
+        XCTAssertFalse(store.isPreparingActiveGoalQuestions)
+        XCTAssertEqual(store.lastQuestionProvider, .localTemplates)
+        XCTAssertEqual(store.lastQuestionGenerationFailure, .safetyIntervention)
+        XCTAssertEqual(store.lastAIErrorMessage, cancellationError)
+        XCTAssertEqual(store.checkpointNotice, cancellationNotice)
+        XCTAssertEqual(store.questions.map(\.id), questionIDs)
+        XCTAssertEqual(store.questionGenerationTraces.map(\.id), traceIDs)
+        XCTAssertNil(workflow.pendingProtectionStartResult)
+        XCTAssertNil(workflow.startingProtectionReadinessGoalID)
+        XCTAssertNil(workflow.operation)
     }
 
     @MainActor
@@ -1312,7 +1652,9 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         for index in store.questions.indices {
             store.questions[index].nextReviewAt = Date().addingTimeInterval(-1)
         }
-        let isReady = await store.prepareQuestionsForProtectionStart()
+        let isReady = await store.prepareQuestionsForProtectionStart(
+            expectedGoalID: store.goal?.id
+        )
 
         XCTAssertTrue(isReady)
         XCTAssertEqual(SharedAppGroup.checkpointReady, true)
@@ -2555,6 +2897,57 @@ private struct FailingCoordinatorQuestionEngine: QuestionGenerating {
     }
 }
 
+private actor SuspendedProtectionQuestionEngine: QuestionGenerating {
+    nonisolated let provider: AIProviderKind = .backend
+
+    private var didReceiveRequest = false
+    private var requestWaiters: [CheckedContinuation<Void, Never>] = []
+    private var generationContinuation: CheckedContinuation<Void, Never>?
+
+    func generateQuestions(
+        for request: QuestionGenerationRequest
+    ) async throws -> [CheckpointQuestion] {
+        didReceiveRequest = true
+        requestWaiters.forEach { $0.resume() }
+        requestWaiters.removeAll()
+
+        await withCheckedContinuation { continuation in
+            generationContinuation = continuation
+        }
+        try Task.checkCancellation()
+
+        guard request.targetCount > 0 else { return [] }
+        return (1...request.targetCount).map { index in
+            makeQuestion(
+                goal: request.goal,
+                index: index,
+                topic: request.questionContext.contentTopics[
+                    (index - 1) % request.questionContext.contentTopics.count
+                ],
+                prompt: "\(request.goal.title) suspended protection question \(index)",
+                difficulty: request.minimumDifficulty,
+                sourcePrompt: request.sourcePrompt(provider: provider)
+            )
+        }
+    }
+
+    func waitUntilRequested() async {
+        guard !didReceiveRequest else { return }
+        await withCheckedContinuation { continuation in
+            requestWaiters.append(continuation)
+        }
+    }
+
+    func hasReceivedRequest() -> Bool {
+        didReceiveRequest
+    }
+
+    func resumeGeneration() {
+        generationContinuation?.resume()
+        generationContinuation = nil
+    }
+}
+
 private func makeCoordinatorTestGoal() -> Goal {
     Goal(
         title: "Prepare for interviews",
@@ -2564,6 +2957,27 @@ private func makeCoordinatorTestGoal() -> Goal {
         focusAreas: "arrays, recursion",
         preferredQuestionStyle: .multipleChoice
     )
+}
+
+private func firstRunGoalContext(
+    for token: FirstGoalSuccessHandoffToken
+) -> FirstRunGoalContext {
+    FirstRunGoalContext(goalID: token.goalID, title: token.goalTitle)
+}
+
+private extension FirstGoalSuccessHandoffDeliveryState {
+    mutating func attemptDelivery(
+        in context: FirstGoalSuccessHandoffDeliveryContext,
+        authoritativeConsume: (FirstGoalSuccessHandoffToken) -> Bool
+    ) -> FirstGoalSuccessHandoffDeliveryEffect? {
+        attemptDelivery(
+            in: context,
+            authoritativeConsumeAndResolveContext: { token in
+                guard authoritativeConsume(token) else { return nil }
+                return context.goalContext
+            }
+        )
+    }
 }
 
 private func makeCoordinatorTargetGoal(

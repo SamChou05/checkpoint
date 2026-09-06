@@ -590,15 +590,32 @@ final class CheckpointWorkflowCoordinator {
     }
 
     @discardableResult
-    func startProtection() async -> Bool {
-        guard operation == nil else { return false }
-        operation = .startingProtection
+    func startProtection(expectedGoalID: Goal.ID? = nil) async -> Bool {
+        guard operation == nil,
+              !Task.isCancelled else { return false }
         let goalID = store.goal?.id
+        if let expectedGoalID,
+           expectedGoalID != goalID {
+            return false
+        }
+
+        operation = .startingProtection
         let beganWithoutReadyCheckpoint = !store.hasReadyCheckpointSet
         startingProtectionReadinessGoalID = beganWithoutReadyCheckpoint
             ? goalID
             : nil
-        let didPrepare = await store.prepareQuestionsForProtectionStart()
+        defer {
+            startingProtectionReadinessGoalID = nil
+            operation = nil
+        }
+
+        let didPrepare = await store.prepareQuestionsForProtectionStart(
+            expectedGoalID: goalID
+        )
+        guard !Task.isCancelled,
+              store.goal?.id == goalID else {
+            return false
+        }
         if didPrepare {
             protection.applyShield()
         }
@@ -612,8 +629,6 @@ final class CheckpointWorkflowCoordinator {
             checkpointNotice: didStart ? nil : store.checkpointNotice,
             protectionErrorMessage: didStart ? nil : protection.userFacingErrorMessage
         )
-        startingProtectionReadinessGoalID = nil
-        operation = nil
         return didStart
     }
 

@@ -2479,8 +2479,15 @@ final class CheckpointStore {
         save()
     }
 
-    private func generateInitialQuestionBatch(for newGoal: Goal) async {
+    private func generateInitialQuestionBatch(
+        for newGoal: Goal,
+        requiredActiveGoalID: Goal.ID? = nil
+    ) async {
         let lifecycleID = dataLifecycleID
+        guard requiredActiveGoalID == nil
+                || (!Task.isCancelled && goal?.id == requiredActiveGoalID) else {
+            return
+        }
         guard goalProfiles.contains(where: { $0.id == newGoal.id }) || goal?.id == newGoal.id else { return }
         guard !backgroundGenerationGoalIDs.contains(newGoal.id) else { return }
         backgroundGenerationGoalIDs.insert(newGoal.id)
@@ -2493,16 +2500,38 @@ final class CheckpointStore {
 
         let generationGoal = await goalByPreparingSkillMapIfNeeded(
             for: newGoal,
-            lifecycleID: lifecycleID
+            lifecycleID: lifecycleID,
+            requiredActiveGoalID: requiredActiveGoalID
         )
-        guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
+        guard hasQuestionGenerationMutationAuthority(
+            lifecycleID: lifecycleID,
+            requiredActiveGoalID: requiredActiveGoalID
+        ) else {
+            clearCancelledRequiredQuestionGeneration(
+                for: newGoal.id,
+                lifecycleID: lifecycleID,
+                requiredActiveGoalID: requiredActiveGoalID
+            )
+            return
+        }
 
         if shouldUseDurableQuestionBank {
             let syncOutcome = await synchronizeDurableQuestionBank(
                 for: generationGoal,
-                minimumLocalQuestionCount: questionBankTargetCount
+                minimumLocalQuestionCount: questionBankTargetCount,
+                requiredActiveGoalID: requiredActiveGoalID
             )
-            guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
+            guard hasQuestionGenerationMutationAuthority(
+                lifecycleID: lifecycleID,
+                requiredActiveGoalID: requiredActiveGoalID
+            ) else {
+                clearCancelledRequiredQuestionGeneration(
+                    for: newGoal.id,
+                    lifecycleID: lifecycleID,
+                    requiredActiveGoalID: requiredActiveGoalID
+                )
+                return
+            }
             guard let latestGoal = storedGoalProfile(withID: newGoal.id) else { return }
 
             if !SkillMapReconciler.hasSameGenerationContext(latestGoal, generationGoal) {
@@ -2510,7 +2539,10 @@ final class CheckpointStore {
                 if goal?.id == newGoal.id {
                     finishQuestionGeneration(for: newGoal.id)
                 }
-                await generateInitialQuestionBatch(for: latestGoal)
+                await generateInitialQuestionBatch(
+                    for: latestGoal,
+                    requiredActiveGoalID: requiredActiveGoalID
+                )
                 return
             }
 
@@ -2550,7 +2582,17 @@ final class CheckpointStore {
             preference: providerPreference
         )
 
-        guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
+        guard hasQuestionGenerationMutationAuthority(
+            lifecycleID: lifecycleID,
+            requiredActiveGoalID: requiredActiveGoalID
+        ) else {
+            clearCancelledRequiredQuestionGeneration(
+                for: newGoal.id,
+                lifecycleID: lifecycleID,
+                requiredActiveGoalID: requiredActiveGoalID
+            )
+            return
+        }
 
         guard var resolvedGoal = storedGoalProfile(withID: newGoal.id) else {
             return
@@ -2561,7 +2603,10 @@ final class CheckpointStore {
             if goal?.id == newGoal.id {
                 finishQuestionGeneration(for: newGoal.id)
             }
-            await generateInitialQuestionBatch(for: resolvedGoal)
+            await generateInitialQuestionBatch(
+                for: resolvedGoal,
+                requiredActiveGoalID: requiredActiveGoalID
+            )
             return
         }
 
@@ -2638,7 +2683,8 @@ final class CheckpointStore {
 
     private func goalByPreparingSkillMapIfNeeded(
         for targetGoal: Goal,
-        lifecycleID: UUID
+        lifecycleID: UUID,
+        requiredActiveGoalID: Goal.ID?
     ) async -> Goal {
         guard targetGoal.derivedSkillMap == nil else { return targetGoal }
 
@@ -2657,8 +2703,10 @@ final class CheckpointStore {
             return targetGoal
         }
 
-        guard lifecycleID == dataLifecycleID,
-              permitsPersistenceWrites,
+        guard hasQuestionGenerationMutationAuthority(
+                  lifecycleID: lifecycleID,
+                  requiredActiveGoalID: requiredActiveGoalID
+              ),
               var latestGoal = storedGoalProfile(withID: targetGoal.id),
               latestGoal.derivedSkillMap == nil,
               SkillMapReconciler.hasSameGenerationContext(latestGoal, targetGoal),
@@ -2691,7 +2739,11 @@ final class CheckpointStore {
     }
 
     @discardableResult
-    func prepareQuestionsForProtectionStart() async -> Bool {
+    func prepareQuestionsForProtectionStart(
+        expectedGoalID: Goal.ID?
+    ) async -> Bool {
+        guard !Task.isCancelled,
+              goal?.id == expectedGoalID else { return false }
         guard let goal else {
             checkpointNotice = "Create a goal before starting app protection."
             return false
@@ -2708,12 +2760,22 @@ final class CheckpointStore {
         }
 
         if !hasConsumedStarterPractice {
-            await generateInitialQuestionBatch(for: goal)
+            await generateInitialQuestionBatch(
+                for: goal,
+                requiredActiveGoalID: expectedGoalID
+            )
         } else if isMember {
-            _ = await refreshQuestionBatchIfNeeded()
+            _ = await refreshQuestionBatchIfNeeded(
+                requiredActiveGoalID: expectedGoalID
+            )
         } else {
             checkpointNotice = starterQuestionLimitMessage
             requestMembership(for: .freshQuestionGeneration)
+        }
+
+        guard !Task.isCancelled,
+              self.goal?.id == expectedGoalID else {
+            return false
         }
 
         guard hasReadyCheckpointSet else {
@@ -2941,9 +3003,19 @@ final class CheckpointStore {
         await refreshQuestionBatch(reason: .manual)
     }
 
-    private func refreshQuestionBatch(reason: QuestionRefreshReason, targetCount: Int? = nil) async {
+    private func refreshQuestionBatch(
+        reason: QuestionRefreshReason,
+        targetCount: Int? = nil,
+        requiredActiveGoalID: Goal.ID? = nil
+    ) async {
         let lifecycleID = dataLifecycleID
-        guard let goal else { return }
+        guard hasQuestionGenerationMutationAuthority(
+                  lifecycleID: lifecycleID,
+                  requiredActiveGoalID: requiredActiveGoalID
+              ),
+              let goal else {
+            return
+        }
         guard isMember else {
             checkpointNotice = starterQuestionLimitMessage
             lastAIErrorMessage = starterQuestionLimitMessage
@@ -2964,11 +3036,19 @@ final class CheckpointStore {
             } ?? questionBankTargetCount
             let syncOutcome = await synchronizeDurableQuestionBank(
                 for: goal,
-                minimumLocalQuestionCount: minimumLocalQuestionCount
+                minimumLocalQuestionCount: minimumLocalQuestionCount,
+                requiredActiveGoalID: requiredActiveGoalID
             )
-            guard lifecycleID == dataLifecycleID,
-                  permitsPersistenceWrites,
+            guard hasQuestionGenerationMutationAuthority(
+                      lifecycleID: lifecycleID,
+                      requiredActiveGoalID: requiredActiveGoalID
+                  ),
                   self.goal?.id == goal.id else {
+                clearCancelledRequiredQuestionGeneration(
+                    for: goal.id,
+                    lifecycleID: lifecycleID,
+                    requiredActiveGoalID: requiredActiveGoalID
+                )
                 return
             }
 
@@ -2990,9 +3070,6 @@ final class CheckpointStore {
 
         questionBatchState = .generating
         beginQuestionGeneration(for: goal.id)
-        if reason.countsTowardRefreshUsage {
-            questionRefreshesUsed += 1
-        }
 
         let refreshRequest = generationRequest(
             goal: goal,
@@ -3007,12 +3084,25 @@ final class CheckpointStore {
             for: refreshRequest,
             preference: providerPreference
         )
-        guard lifecycleID == dataLifecycleID, permitsPersistenceWrites else { return }
+        guard hasQuestionGenerationMutationAuthority(
+            lifecycleID: lifecycleID,
+            requiredActiveGoalID: requiredActiveGoalID
+        ) else {
+            clearCancelledRequiredQuestionGeneration(
+                for: goal.id,
+                lifecycleID: lifecycleID,
+                requiredActiveGoalID: requiredActiveGoalID
+            )
+            return
+        }
         guard var currentGoal = self.goal, currentGoal.id == goal.id else {
             if questionBatchState != .generating {
                 questionGenerationStartedAt = nil
             }
             return
+        }
+        if reason.countsTowardRefreshUsage {
+            questionRefreshesUsed += 1
         }
         currentGoal = commitInferredSkillMapIfNeeded(
             for: currentGoal,
@@ -3053,10 +3143,14 @@ final class CheckpointStore {
     @discardableResult
     func refreshQuestionBatchIfNeeded(
         minimumUsableQuestionCount: Int? = nil,
-        allowsEarlyCorrectReuse: Bool = false
+        allowsEarlyCorrectReuse: Bool = false,
+        requiredActiveGoalID: Goal.ID? = nil
     ) async -> Bool {
         let lifecycleID = dataLifecycleID
-        guard permitsPersistenceWrites,
+        guard hasQuestionGenerationMutationAuthority(
+                  lifecycleID: lifecycleID,
+                  requiredActiveGoalID: requiredActiveGoalID
+              ),
               let goal,
               questionBatchState != .generating else {
             return false
@@ -3066,10 +3160,13 @@ final class CheckpointStore {
            questionBankSyncIntents.contains(where: { $0.goalID == goal.id }) {
             let syncOutcome = await synchronizeDurableQuestionBank(
                 for: goal,
-                minimumLocalQuestionCount: questionBankTargetCount
+                minimumLocalQuestionCount: questionBankTargetCount,
+                requiredActiveGoalID: requiredActiveGoalID
             )
-            guard lifecycleID == dataLifecycleID,
-                  permitsPersistenceWrites,
+            guard hasQuestionGenerationMutationAuthority(
+                      lifecycleID: lifecycleID,
+                      requiredActiveGoalID: requiredActiveGoalID
+                  ),
                   self.goal?.id == goal.id else {
                 return false
             }
@@ -3083,7 +3180,16 @@ final class CheckpointStore {
                 return true
             }
             if !isMember, !hasConsumedStarterPractice, activeQuestions.isEmpty {
-                await generateInitialQuestionBatch(for: goal)
+                await generateInitialQuestionBatch(
+                    for: goal,
+                    requiredActiveGoalID: requiredActiveGoalID
+                )
+                guard hasQuestionGenerationMutationAuthority(
+                    lifecycleID: lifecycleID,
+                    requiredActiveGoalID: requiredActiveGoalID
+                ) else {
+                    return false
+                }
                 return hasReadyCheckpointSet
             }
         }
@@ -3125,10 +3231,13 @@ final class CheckpointStore {
             )
             await refreshQuestionBatch(
                 reason: .automaticCoreRefill,
-                targetCount: urgentTargetCount
+                targetCount: urgentTargetCount,
+                requiredActiveGoalID: requiredActiveGoalID
             )
-            guard lifecycleID == dataLifecycleID,
-                  permitsPersistenceWrites,
+            guard hasQuestionGenerationMutationAuthority(
+                      lifecycleID: lifecycleID,
+                      requiredActiveGoalID: requiredActiveGoalID
+                  ),
                   self.goal?.id == goal.id else {
                 return false
             }
@@ -4747,6 +4856,36 @@ final class CheckpointStore {
         questionBankSynchronizationGoalIDs.remove(goalID)
     }
 
+    private func hasQuestionGenerationMutationAuthority(
+        lifecycleID: UUID,
+        requiredActiveGoalID: Goal.ID?
+    ) -> Bool {
+        guard lifecycleID == dataLifecycleID,
+              permitsPersistenceWrites else {
+            return false
+        }
+        guard let requiredActiveGoalID else { return true }
+        return !Task.isCancelled && goal?.id == requiredActiveGoalID
+    }
+
+    private func clearCancelledRequiredQuestionGeneration(
+        for goalID: Goal.ID,
+        lifecycleID: UUID,
+        requiredActiveGoalID: Goal.ID?
+    ) {
+        guard Task.isCancelled,
+              lifecycleID == dataLifecycleID,
+              permitsPersistenceWrites,
+              let requiredActiveGoalID,
+              goalID == requiredActiveGoalID,
+              goal?.id == requiredActiveGoalID else {
+            return
+        }
+
+        questionBatchState = hasReadyCheckpointSet ? .ready : .idle
+        questionGenerationStartedAt = nil
+    }
+
     private func beginQuestionGeneration(for goalID: Goal.ID) {
         guard goal?.id == goalID else { return }
         questionGenerationStartedAt = Date()
@@ -5691,15 +5830,25 @@ final class CheckpointStore {
 
     private func synchronizeDurableQuestionBank(
         for targetGoal: Goal,
-        minimumLocalQuestionCount: Int? = nil
+        minimumLocalQuestionCount: Int? = nil,
+        requiredActiveGoalID: Goal.ID? = nil
     ) async -> DurableQuestionBankSyncOutcome {
+        let lifecycleID = dataLifecycleID
+        guard hasQuestionGenerationMutationAuthority(
+            lifecycleID: lifecycleID,
+            requiredActiveGoalID: requiredActiveGoalID
+        ) else {
+            return DurableQuestionBankSyncOutcome(
+                serviceSupported: true,
+                addedQuestionCount: 0
+            )
+        }
         guard !questionBankSynchronizationGoalIDs.contains(targetGoal.id) else {
             return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
         }
         questionBankSynchronizationGoalIDs.insert(targetGoal.id)
         defer { questionBankSynchronizationGoalIDs.remove(targetGoal.id) }
 
-        let lifecycleID = dataLifecycleID
         let localTarget = minimumLocalQuestionCount ?? questionBankTargetCount
         let initialDeficit = questionBankDeficit(
             for: targetGoal,
@@ -5749,11 +5898,29 @@ final class CheckpointStore {
                 lowWatermark: lowWatermark
             )
         } catch QuestionBankAPIError.bankNotFound {
+            guard hasQuestionGenerationMutationAuthority(
+                lifecycleID: lifecycleID,
+                requiredActiveGoalID: requiredActiveGoalID
+            ) else {
+                return DurableQuestionBankSyncOutcome(
+                    serviceSupported: true,
+                    addedQuestionCount: 0
+                )
+            }
             durableQuestionBankUnavailableForLifecycle = true
             removeQuestionBankSyncIntent(for: targetGoal.id)
             save()
             return DurableQuestionBankSyncOutcome(serviceSupported: false, addedQuestionCount: 0)
         } catch let error as QuestionBankAPIError {
+            guard hasQuestionGenerationMutationAuthority(
+                lifecycleID: lifecycleID,
+                requiredActiveGoalID: requiredActiveGoalID
+            ) else {
+                return DurableQuestionBankSyncOutcome(
+                    serviceSupported: true,
+                    addedQuestionCount: 0
+                )
+            }
             switch error {
             case .backendNotConfigured, .invalidRequest, .unauthorized, .contextConflict, .badResponse:
                 removeQuestionBankSyncIntent(for: targetGoal.id)
@@ -5766,14 +5933,25 @@ final class CheckpointStore {
             save()
             return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
         } catch {
+            guard hasQuestionGenerationMutationAuthority(
+                lifecycleID: lifecycleID,
+                requiredActiveGoalID: requiredActiveGoalID
+            ) else {
+                return DurableQuestionBankSyncOutcome(
+                    serviceSupported: true,
+                    addedQuestionCount: 0
+                )
+            }
             markQuestionBankSyncAttempt(for: targetGoal.id)
             lastAIErrorMessage = error.localizedDescription
             save()
             return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
         }
 
-        guard lifecycleID == dataLifecycleID,
-              permitsPersistenceWrites,
+        guard hasQuestionGenerationMutationAuthority(
+                  lifecycleID: lifecycleID,
+                  requiredActiveGoalID: requiredActiveGoalID
+              ),
               let currentGoal = storedGoalProfile(withID: targetGoal.id) else {
             return DurableQuestionBankSyncOutcome(serviceSupported: true, addedQuestionCount: 0)
         }
@@ -5874,6 +6052,15 @@ final class CheckpointStore {
                     for: claimRequest
                 )
             } catch let error as QuestionBankAPIError where error == .bankNotFound || error == .contextConflict {
+                guard hasQuestionGenerationMutationAuthority(
+                    lifecycleID: lifecycleID,
+                    requiredActiveGoalID: requiredActiveGoalID
+                ) else {
+                    return DurableQuestionBankSyncOutcome(
+                        serviceSupported: true,
+                        addedQuestionCount: totalAdded
+                    )
+                }
                 intent.bankID = nil
                 intent.claimID = UUID().uuidString
                 intent.lastAttemptAt = Date()
@@ -5881,14 +6068,25 @@ final class CheckpointStore {
                 save()
                 break
             } catch {
+                guard hasQuestionGenerationMutationAuthority(
+                    lifecycleID: lifecycleID,
+                    requiredActiveGoalID: requiredActiveGoalID
+                ) else {
+                    return DurableQuestionBankSyncOutcome(
+                        serviceSupported: true,
+                        addedQuestionCount: totalAdded
+                    )
+                }
                 markQuestionBankSyncAttempt(for: targetGoal.id)
                 lastAIErrorMessage = error.localizedDescription
                 save()
                 break
             }
 
-            guard lifecycleID == dataLifecycleID,
-                  permitsPersistenceWrites,
+            guard hasQuestionGenerationMutationAuthority(
+                      lifecycleID: lifecycleID,
+                      requiredActiveGoalID: requiredActiveGoalID
+                  ),
                   var resolvedGoal = storedGoalProfile(withID: targetGoal.id) else {
                 break
             }

@@ -37,6 +37,30 @@ enum FirstRunSetupProgress {
     }
 }
 
+struct FirstRunGoalContext: Equatable, Hashable {
+    let goalID: Goal.ID
+    let title: String
+
+    init(goalID: Goal.ID, title: String) {
+        self.goalID = goalID
+        let normalizedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.title = normalizedTitle.isEmpty ? "Your goal" : normalizedTitle
+    }
+
+    init?(goal: Goal?) {
+        guard let goal else { return nil }
+        self.init(goalID: goal.id, title: goal.title)
+    }
+
+    var accessibilityLabel: String {
+        "Current goal: \(title)."
+    }
+
+    var savedGoalAccessibilityAnnouncement: String {
+        "Goal saved: \(title). Step 3 of 3. Now choose the apps and websites that should pause for a checkpoint."
+    }
+}
+
 struct FirstGoalSuccessHandoffToken: Equatable, Hashable, Identifiable {
     let deliveryID: UUID
     let goalID: UUID
@@ -95,6 +119,19 @@ struct FirstGoalSuccessHandoffQueue: Equatable {
         return true
     }
 
+    mutating func consume(
+        _ token: FirstGoalSuccessHandoffToken,
+        currentGoalContext: FirstRunGoalContext?
+    ) -> FirstRunGoalContext? {
+        guard let currentGoalContext,
+              currentGoalContext.goalID == token.goalID else {
+            invalidate(unless: currentGoalContext?.goalID)
+            return nil
+        }
+        guard consume(token) else { return nil }
+        return currentGoalContext
+    }
+
     mutating func invalidate(unless currentGoalID: UUID?) {
         guard pendingToken?.goalID != currentGoalID else { return }
         pendingToken = nil
@@ -107,18 +144,43 @@ struct FirstGoalSuccessHandoffQueue: Equatable {
 
 struct FirstGoalSuccessHandoffDeliveryEffect: Equatable {
     let token: FirstGoalSuccessHandoffToken
+    let goalContext: FirstRunGoalContext
+
+    init(
+        token: FirstGoalSuccessHandoffToken,
+        goalContext: FirstRunGoalContext
+    ) {
+        self.token = token
+        self.goalContext = goalContext
+    }
 
     var revealSequenceIncrement: Int { 1 }
     var successFeedbackSequenceIncrement: Int { 1 }
-    var accessibilityAnnouncement: String { token.accessibilityAnnouncement }
+    var accessibilityAnnouncement: String {
+        goalContext.savedGoalAccessibilityAnnouncement
+    }
 }
 
 struct FirstGoalSuccessHandoffDeliveryContext: Equatable, Hashable {
-    let activeGoalID: UUID?
+    let goalContext: FirstRunGoalContext?
     let phase: FirstRunProtectionPhase
     let isAuthorized: Bool
     let errorMessage: String?
     let isExposed: Bool
+
+    init(
+        goalContext: FirstRunGoalContext?,
+        phase: FirstRunProtectionPhase,
+        isAuthorized: Bool,
+        errorMessage: String?,
+        isExposed: Bool
+    ) {
+        self.goalContext = goalContext
+        self.phase = phase
+        self.isAuthorized = isAuthorized
+        self.errorMessage = errorMessage
+        self.isExposed = isExposed
+    }
 }
 
 enum FirstGoalSuccessHandoffExposure {
@@ -171,12 +233,13 @@ struct FirstGoalSuccessHandoffDeliveryState: Equatable {
 
     mutating func attemptDelivery(
         in context: FirstGoalSuccessHandoffDeliveryContext,
-        authoritativeConsume: (FirstGoalSuccessHandoffToken) -> Bool
+        authoritativeConsumeAndResolveContext:
+            (FirstGoalSuccessHandoffToken) -> FirstRunGoalContext?
     ) -> FirstGoalSuccessHandoffDeliveryEffect? {
         guard let candidate = candidateForDelivery else { return nil }
 
-        if let activeGoalID = context.activeGoalID,
-           candidate.goalID != activeGoalID {
+        if let goalContext = context.goalContext,
+           candidate.goalID != goalContext.goalID {
             pendingToken = nil
             resolvedDeliveryIDs.insert(candidate.deliveryID)
             return nil
@@ -186,17 +249,21 @@ struct FirstGoalSuccessHandoffDeliveryState: Equatable {
               case .selecting = context.phase,
               context.isAuthorized,
               context.errorMessage == nil,
-              context.activeGoalID != nil else {
+              context.goalContext != nil else {
             return nil
         }
 
         pendingToken = nil
         resolvedDeliveryIDs.insert(candidate.deliveryID)
-        guard authoritativeConsume(candidate) else {
+        guard let authoritativeGoalContext = authoritativeConsumeAndResolveContext(candidate),
+              authoritativeGoalContext.goalID == candidate.goalID else {
             return nil
         }
         presentedToken = candidate
-        return FirstGoalSuccessHandoffDeliveryEffect(token: candidate)
+        return FirstGoalSuccessHandoffDeliveryEffect(
+            token: candidate,
+            goalContext: authoritativeGoalContext
+        )
     }
 }
 
@@ -208,6 +275,9 @@ enum FirstRunProtectionStartResult: Equatable {
 @MainActor
 @Observable
 final class FirstRunSetupCoordinator {
+    static let goalChangedMessage =
+        "Your goal changed during setup. Review the current goal, then try turning protection on again."
+
     private(set) var isPending: Bool
     private(set) var isAppSelectionPresented = false
     private(set) var suppressedSuggestedSkillMapGoalID: UUID?
@@ -255,8 +325,13 @@ final class FirstRunSetupCoordinator {
         checkpointNotice: @MainActor () -> String?,
         screenTimeErrorMessage: @MainActor () -> String?,
         selectionSummary: @MainActor () -> String,
-        currentGoalID: @MainActor () -> UUID?
+        currentGoalID: @MainActor () -> UUID?,
+        expectedGoalID: UUID? = nil
     ) async -> FirstRunProtectionStartResult {
+        guard expectedGoalID == nil || currentGoalID() == expectedGoalID else {
+            return .failed(message: Self.goalChangedMessage)
+        }
+
         let preparationDeadline = now().addingTimeInterval(preparationTimeout)
         while isPreparingQuestions(), now() < preparationDeadline {
             do {
@@ -266,6 +341,9 @@ final class FirstRunSetupCoordinator {
                     message: "Setup was interrupted. Try turning protection on again."
                 )
             }
+            guard expectedGoalID == nil || currentGoalID() == expectedGoalID else {
+                return .failed(message: Self.goalChangedMessage)
+            }
         }
 
         guard !isPreparingQuestions() else {
@@ -274,10 +352,19 @@ final class FirstRunSetupCoordinator {
             )
         }
 
-        let didStartProtection = await FirstRunSetupProgress.completeAfterStartingProtection(
-            defaults: defaults,
-            startProtection: startProtection
-        )
+        guard expectedGoalID == nil || currentGoalID() == expectedGoalID else {
+            return .failed(message: Self.goalChangedMessage)
+        }
+
+        let didStartProtection = await startProtection()
+        guard !Task.isCancelled else {
+            return .failed(
+                message: "Setup was interrupted. Try turning protection on again."
+            )
+        }
+        guard expectedGoalID == nil || currentGoalID() == expectedGoalID else {
+            return .failed(message: Self.goalChangedMessage)
+        }
         guard didStartProtection else {
             return .failed(
                 message: checkpointNotice()
@@ -286,6 +373,7 @@ final class FirstRunSetupCoordinator {
             )
         }
 
+        FirstRunSetupProgress.complete(defaults: defaults)
         isPending = false
         suppressedSuggestedSkillMapGoalID = currentGoalID()
         return .protected(selectionSummary: selectionSummary())
