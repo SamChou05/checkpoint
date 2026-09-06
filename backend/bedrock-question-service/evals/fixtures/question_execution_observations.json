@@ -1,0 +1,58 @@
+[
+  {
+    "id": "exact_multiline_default_split",
+    "source": "def words(text, explicit=False):\n    if explicit:\n        return text.split(' ')\n    return text.split()",
+    "inputs": {"entrypoint": "words", "args": ["a  b"], "kwargs": {}},
+    "mode": "exec",
+    "expected": {"status": "observed", "compile_valid": true, "return_value": {"type": "list", "value": [{"type": "str", "value": "a"}, {"type": "str", "value": "b"}]}}
+  },
+  {
+    "id": "invalid_flattened_definition",
+    "source": "def words(text, explicit=False): if explicit: return text.split(' '); return text.split()",
+    "inputs": {"entrypoint": "words", "args": ["a  b"], "kwargs": {}},
+    "mode": "exec",
+    "expected": {"status": "observed", "compile_valid": false, "exception": "SyntaxError"}
+  },
+  {
+    "id": "same_artifact_explicit_split",
+    "source": "def words(text, explicit=False):\n    if explicit:\n        return text.split(' ')\n    return text.split()",
+    "inputs": {"entrypoint": "words", "args": ["a  b"], "kwargs": {"explicit": true}},
+    "mode": "exec",
+    "expected": {"status": "observed", "compile_valid": true, "return_value": {"type": "list", "value": [{"type": "str", "value": "a"}, {"type": "str", "value": ""}, {"type": "str", "value": "b"}]}}
+  },
+  {
+    "id": "decomposed_unicode_length",
+    "source": "len('e\u0301')",
+    "inputs": null,
+    "mode": "eval",
+    "expected": {"status": "observed", "compile_valid": true, "return_value": {"type": "int", "value": "2"}}
+  },
+  {
+    "id": "quoted_internal_spaces",
+    "source": "'a  b  c'.replace('  ', '|', 1).strip()",
+    "inputs": null,
+    "mode": "eval",
+    "expected": {"status": "observed", "compile_valid": true, "return_value": {"type": "str", "value": "a|b  c"}}
+  },
+  {
+    "id": "ast_valid_compile_invalid",
+    "source": "return 1",
+    "inputs": null,
+    "mode": "exec",
+    "expected": {"status": "observed", "compile_valid": false, "exception": "SyntaxError"}
+  },
+  {
+    "id": "nontermination",
+    "source": "while True:\n    pass",
+    "inputs": null,
+    "mode": "exec",
+    "expected": {"status": "inconclusive", "compile_valid": true, "child_reaped": true, "permitted_reasons": ["child_deadline", "child_nonzero_exit"]}
+  },
+  {
+    "id": "output_limit",
+    "source": "print('x' * 4097, end='')",
+    "inputs": null,
+    "mode": "exec",
+    "expected": {"status": "inconclusive", "compile_valid": true, "child_reaped": true, "child_reason": "output_limit", "child_truncated": true}
+  }
+]
