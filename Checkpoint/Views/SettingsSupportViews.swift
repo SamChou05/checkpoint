@@ -1734,6 +1734,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
     let state: SettingsPlanState
     let proActivity: SettingsProActivityPresentation?
     let activePlanKind: MembershipPlanKind?
+    let activePlanPresentation: MembershipActivePlanPresentation?
     let upgradePlanOption: MembershipPlanOption?
 
     init(
@@ -1742,7 +1743,11 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         hasUnresolvedPurchase: Bool = false,
         proActivity: SettingsProActivityPresentation? = nil,
         activePlanSnapshot: MembershipActivePlanSnapshot? = nil,
-        upgradePlanOption: MembershipPlanOption? = nil
+        upgradePlanOption: MembershipPlanOption? = nil,
+        now: Date = Date(),
+        locale: Locale = .autoupdatingCurrent,
+        calendar: Calendar = .autoupdatingCurrent,
+        timeZone: TimeZone = .autoupdatingCurrent
     ) {
         let resolvedState: SettingsPlanState
         if membershipTier == .member {
@@ -1758,6 +1763,15 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         state = resolvedState
         self.proActivity = resolvedState == .pro ? proActivity : nil
         activePlanKind = resolvedState == .pro ? activePlanSnapshot?.planKind : nil
+        activePlanPresentation = resolvedState == .pro
+            ? MembershipActivePlanPresentation(
+                snapshot: activePlanSnapshot,
+                now: now,
+                locale: locale,
+                calendar: calendar,
+                timeZone: timeZone
+            )
+            : nil
         let isCatalogUnavailable: Bool
         switch purchaseNotice {
         case .catalogUnavailable:
@@ -1792,7 +1806,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .unconfirmedPurchase:
             "UNCONFIRMED"
         case .pro:
-            "PRO ACTIVE"
+            activePlanPresentation?.badgeText ?? "ACTIVE"
         }
     }
 
@@ -1829,7 +1843,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .pendingPurchase, .unconfirmedPurchase:
             "Check purchase status"
         case .pro:
-            "Manage plan & billing"
+            "View plan & billing"
         }
     }
 
@@ -1842,7 +1856,7 @@ struct SettingsPlanPresentation: Equatable, Sendable {
         case .unconfirmedPurchase:
             "questionmark.circle.fill"
         case .pro:
-            "sparkles"
+            activePlanPresentation?.planSystemImage ?? "checkmark.seal.fill"
         }
     }
 
@@ -1882,9 +1896,9 @@ struct SettingsPlanPresentation: Equatable, Sendable {
             "Unconfirmed App Store purchase. It may still complete."
         case .pro:
             if let proActivity {
-                "Active access. \(activePlanAccessibilityValue)\(proActivity.accessibilityValue)."
+                "\(activePlanAccessibilityValue)\(proActivity.accessibilityValue)."
             } else {
-                "Active access. \(activePlanAccessibilityValue)Fresh checkpoints, adaptive guidance, and separate goal lanes are unlocked."
+                "\(activePlanAccessibilityValue)Fresh checkpoints, adaptive guidance, and separate goal lanes are unlocked."
             }
         }
     }
@@ -1901,17 +1915,32 @@ struct SettingsPlanPresentation: Equatable, Sendable {
     }
 
     var visualStateKey: SettingsPlanVisualStateKey {
-        SettingsPlanVisualStateKey(state: state, activePlanKind: activePlanKind)
+        SettingsPlanVisualStateKey(
+            state: state,
+            activePlanKind: activePlanKind,
+            activePlan: activePlanPresentation?.visualStateKey
+        )
     }
 
     private var activePlanAccessibilityValue: String {
-        activePlanKind.map { "\($0.shortTitle) plan. " } ?? ""
+        guard let activePlanPresentation else {
+            return "Active access. "
+        }
+
+        return [
+            activePlanPresentation.planTitle,
+            activePlanPresentation.badgeText.capitalized,
+            activePlanPresentation.statusText,
+            activePlanPresentation.supportText,
+        ]
+        .joined(separator: ". ") + ". "
     }
 }
 
 struct SettingsPlanVisualStateKey: Equatable, Sendable {
     let state: SettingsPlanState
     let activePlanKind: MembershipPlanKind?
+    let activePlan: MembershipActivePlanVisualStateKey?
 }
 
 enum SettingsPlanMotionStyle: Equatable {
@@ -1950,6 +1979,7 @@ struct SettingsPlanMotionPolicy: Equatable {
 
 enum SettingsPlanLayoutElement: Hashable {
     case card
+    case subscriptionStatus
     case proActivity
     case proActivityRow(SettingsProActivityID)
     case upgradeOffer
@@ -2026,6 +2056,11 @@ struct SettingsPlanCard: View {
                 VStack(alignment: .leading, spacing: 16) {
                     planHeader
 
+                    if let activePlanPresentation = presentation.activePlanPresentation {
+                        activePlanStatus(activePlanPresentation)
+                            .transition(motionPolicy.activityTransition)
+                    }
+
                     planSummary
 
                     Divider()
@@ -2053,6 +2088,51 @@ struct SettingsPlanCard: View {
         .onChange(of: presentation.visualStateKey) { _, _ in
             triggerSymbolEffectIfNeeded()
         }
+    }
+
+    private func activePlanStatus(
+        _ activePlan: MembershipActivePlanPresentation
+    ) -> some View {
+        HStack(alignment: .top, spacing: 11) {
+            Image(systemName: activePlan.statusSystemImage)
+                .symbolRenderingMode(.hierarchical)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(accentTint)
+                .frame(width: 30, height: 30)
+                .background(
+                    accentTint.opacity(0.13),
+                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                )
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffectsRemoved(!motionPolicy.animatesSymbol)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(activePlan.statusText)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.heroText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.interpolate)
+
+                Text(activePlan.supportText)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.interpolate)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            CheckpointTheme.heroSubtleFill,
+            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .stroke(accentTint.opacity(0.22), lineWidth: 1)
+        }
+        .reportSettingsPlanLayoutFrame(.subscriptionStatus, using: layoutReporter)
+        .accessibilityHidden(true)
     }
 
     @ViewBuilder
@@ -2403,7 +2483,14 @@ struct SettingsPlanCard: View {
         case .unconfirmedPurchase:
             CheckpointTheme.heroInfo
         case .pro:
-            CheckpointTheme.mint
+            switch presentation.activePlanPresentation?.tone {
+            case .scheduled:
+                CheckpointTheme.heroInfo
+            case .attention:
+                CheckpointTheme.heroWarning
+            case .active, nil:
+                CheckpointTheme.mint
+            }
         }
     }
 

@@ -1285,6 +1285,16 @@ final class SettingsViewRenderingTests: XCTestCase {
         await screenTime.bootstrapAuthorizationIfNeeded()
         let purchaseController = PurchaseController(
             grantsDebugTesterEntitlement: false,
+            initialActivePlanSnapshot: MembershipActivePlanSnapshot(
+                transactionID: 204,
+                productID: MembershipProductID.yearly,
+                planKind: .annual,
+                subscriptionGroupID: "checkpoint.pro",
+                purchaseDate: fixedDate(year: 2026, month: 8, day: 12),
+                currentPeriodEnd: fixedDate(year: 2027, month: 8, day: 12),
+                renewalDisposition: .renews,
+                ownership: .purchased
+            ),
             pendingPurchaseDefaults: nil
         )
         let workflow = CheckpointWorkflowCoordinator(store: store, protection: screenTime)

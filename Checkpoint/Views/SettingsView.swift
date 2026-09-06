@@ -162,7 +162,10 @@ struct SettingsView: View {
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.calendar) private var calendar
     @Environment(\.checkpointGoalSelection) private var selectGoal
+    @Environment(\.locale) private var locale
+    @Environment(\.timeZone) private var timeZone
 
     @State private var isRestrictedAppsPresented = false
     @State private var isHistoryPresented = false
@@ -1191,7 +1194,10 @@ struct SettingsView: View {
                 activePlanSnapshot: purchaseController.activePlanSnapshot,
                 upgradePlanOption: MembershipCatalogPresentation(
                     products: purchaseController.products
-                ).defaultPlanOption
+                ).defaultPlanOption,
+                locale: locale,
+                calendar: calendar,
+                timeZone: timeZone
             )
         ) {
             store.requestMembershipOverview()

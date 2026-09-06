@@ -1888,45 +1888,137 @@ final class MembershipViewRenderingTests: XCTestCase {
         XCTAssertFalse(unconfirmed.accessibilityValue.contains(annualOption.displayPrice))
 
         XCTAssertEqual(pro.state, .pro)
-        XCTAssertEqual(pro.badgeText, "PRO ACTIVE")
+        XCTAssertEqual(pro.badgeText, "ACTIVE")
         XCTAssertEqual(pro.headline, "Pro is working in the background.")
         XCTAssertEqual(
             pro.detail,
             "Fresh checkpoints, adaptive guidance, and separate goal lanes stay ready as you practice."
         )
-        XCTAssertEqual(pro.actionTitle, "Manage plan & billing")
+        XCTAssertEqual(pro.actionTitle, "View plan & billing")
         XCTAssertEqual(pro.accessibilityLabel, "Checkpoint Pro")
         XCTAssertEqual(pro.accessibilityHint, "Opens plan and billing.")
         XCTAssertEqual(pro.proActivity, proActivity)
+        XCTAssertEqual(pro.activePlanPresentation?.statusText, "Pro access is active")
+        XCTAssertTrue(pro.accessibilityValue.contains("Open Apple subscriptions"))
         XCTAssertNil(pro.upgradePlanOption)
         XCTAssertFalse(pro.accessibilityValue.contains(annualOption.displayPrice))
         XCTAssertTrue(pro.accessibilityValue.contains("Next Focus: Caught up for now"))
         XCTAssertTrue(pro.accessibilityValue.contains("Goal Lanes: 2 of 5 in use"))
     }
 
-    func testSettingsPlanPresentationIdentifiesVerifiedPlanWithoutAffectingOtherStates() {
+    func testSettingsPlanPresentationCarriesVerifiedPlanHealthWithoutAffectingOtherStates() throws {
+        let context = try makeActivePlanDateContext()
+        let periodEnd = try XCTUnwrap(
+            context.calendar.date(
+                from: DateComponents(year: 2026, month: 10, day: 2)
+            )
+        )
         let annualSnapshot = makeActivePlanSnapshot(
             planKind: .annual,
+            currentPeriodEnd: periodEnd,
             renewalDisposition: .renews
         )
         let annual = SettingsPlanPresentation(
             membershipTier: .member,
             purchaseNotice: nil,
-            activePlanSnapshot: annualSnapshot
+            activePlanSnapshot: annualSnapshot,
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
         )
         let ignoredWhileFree = SettingsPlanPresentation(
             membershipTier: .starter,
             purchaseNotice: nil,
             activePlanSnapshot: annualSnapshot
         )
+        let ending = SettingsPlanPresentation(
+            membershipTier: .member,
+            purchaseNotice: nil,
+            activePlanSnapshot: makeActivePlanSnapshot(
+                planKind: .monthly,
+                currentPeriodEnd: periodEnd,
+                renewalDisposition: .ends
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+        let scheduled = SettingsPlanPresentation(
+            membershipTier: .member,
+            purchaseNotice: nil,
+            activePlanSnapshot: makeActivePlanSnapshot(
+                planKind: .annual,
+                currentPeriodEnd: periodEnd,
+                renewalDisposition: .changesTo(.monthly)
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+        let grace = SettingsPlanPresentation(
+            membershipTier: .member,
+            purchaseNotice: nil,
+            activePlanSnapshot: makeActivePlanSnapshot(
+                planKind: .monthly,
+                renewalDisposition: .gracePeriod(until: periodEnd)
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
+        let family = SettingsPlanPresentation(
+            membershipTier: .member,
+            purchaseNotice: nil,
+            activePlanSnapshot: makeActivePlanSnapshot(
+                planKind: .annual,
+                renewalDisposition: .renews,
+                ownership: .familyShared
+            ),
+            now: context.now,
+            locale: context.locale,
+            calendar: context.calendar,
+            timeZone: context.timeZone
+        )
 
         XCTAssertEqual(annual.planName, "Checkpoint Pro · Annual")
         XCTAssertEqual(annual.accessibilityLabel, "Checkpoint Pro · Annual")
+        XCTAssertEqual(annual.badgeText, "ACTIVE")
+        XCTAssertEqual(annual.activePlanPresentation?.tone, .active)
+        XCTAssertEqual(annual.activePlanPresentation?.statusText, "Renews Oct 2, 2026")
         XCTAssertTrue(annual.accessibilityValue.contains("Annual plan"))
+        XCTAssertTrue(annual.accessibilityValue.contains("Renews Oct 2, 2026"))
         XCTAssertEqual(annual.visualStateKey.activePlanKind, .annual)
+        XCTAssertEqual(
+            annual.visualStateKey.activePlan,
+            annual.activePlanPresentation?.visualStateKey
+        )
+
+        XCTAssertEqual(ending.activePlanPresentation?.statusText, "Access through Oct 2, 2026")
+        XCTAssertTrue(ending.accessibilityValue.contains("current billing period"))
+
+        XCTAssertEqual(scheduled.badgeText, "SCHEDULED")
+        XCTAssertEqual(scheduled.activePlanPresentation?.tone, .scheduled)
+        XCTAssertEqual(
+            scheduled.activePlanPresentation?.statusText,
+            "Changes to Monthly on Oct 2, 2026"
+        )
+
+        XCTAssertEqual(grace.badgeText, "NEEDS ATTENTION")
+        XCTAssertEqual(grace.activePlanPresentation?.tone, .attention)
+        XCTAssertTrue(grace.accessibilityValue.contains("Update payment details with Apple"))
+
+        XCTAssertEqual(family.activePlanPresentation?.statusText, "Shared through Family Sharing")
+        XCTAssertTrue(family.accessibilityValue.contains("purchaser manages billing"))
+        XCTAssertEqual(family.actionTitle, "View plan & billing")
 
         XCTAssertEqual(ignoredWhileFree.planName, "Checkpoint Free")
         XCTAssertNil(ignoredWhileFree.activePlanKind)
+        XCTAssertNil(ignoredWhileFree.activePlanPresentation)
+        XCTAssertNil(ignoredWhileFree.visualStateKey.activePlan)
     }
 
     func testSettingsProActivityPresentationUsesTruthfulLiveStates() throws {
@@ -2083,6 +2175,12 @@ final class MembershipViewRenderingTests: XCTestCase {
 
     @MainActor
     func testSettingsPlanCardRendersAcrossKeyLayoutsAndStates() throws {
+        let planDateContext = try makeActivePlanDateContext()
+        let futurePlanDate = try XCTUnwrap(
+            planDateContext.calendar.date(
+                from: DateComponents(year: 2026, month: 10, day: 2)
+            )
+        )
         let annualOption = try XCTUnwrap(
             try makePlanOptions().first { $0.id == MembershipProductID.yearly }
         )
@@ -2190,8 +2288,13 @@ final class MembershipViewRenderingTests: XCTestCase {
                     ),
                     activePlanSnapshot: makeActivePlanSnapshot(
                         planKind: .annual,
+                        currentPeriodEnd: futurePlanDate,
                         renewalDisposition: .renews
-                    )
+                    ),
+                    now: planDateContext.now,
+                    locale: planDateContext.locale,
+                    calendar: planDateContext.calendar,
+                    timeZone: planDateContext.timeZone
                 ),
                 width: 393,
                 height: 852,
@@ -2210,13 +2313,102 @@ final class MembershipViewRenderingTests: XCTestCase {
                     ),
                     activePlanSnapshot: makeActivePlanSnapshot(
                         planKind: .monthly,
+                        currentPeriodEnd: futurePlanDate,
                         renewalDisposition: .renews
-                    )
+                    ),
+                    now: planDateContext.now,
+                    locale: planDateContext.locale,
+                    calendar: planDateContext.calendar,
+                    timeZone: planDateContext.timeZone
                 ),
                 width: 320,
                 height: 568,
                 colorScheme: .dark,
                 dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pro-ending-compact-dark",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .member,
+                    purchaseNotice: nil,
+                    proActivity: makeSettingsProActivity(goalCount: 3),
+                    activePlanSnapshot: makeActivePlanSnapshot(
+                        planKind: .monthly,
+                        currentPeriodEnd: futurePlanDate,
+                        renewalDisposition: .ends
+                    ),
+                    now: planDateContext.now,
+                    locale: planDateContext.locale,
+                    calendar: planDateContext.calendar,
+                    timeZone: planDateContext.timeZone
+                ),
+                width: 320,
+                height: 760,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pro-change-scheduled-light",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .member,
+                    purchaseNotice: nil,
+                    proActivity: makeSettingsProActivity(goalCount: 3),
+                    activePlanSnapshot: makeActivePlanSnapshot(
+                        planKind: .annual,
+                        currentPeriodEnd: futurePlanDate,
+                        renewalDisposition: .changesTo(.monthly)
+                    ),
+                    now: planDateContext.now,
+                    locale: planDateContext.locale,
+                    calendar: planDateContext.calendar,
+                    timeZone: planDateContext.timeZone
+                ),
+                width: 393,
+                height: 852,
+                colorScheme: .light,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pro-grace-dark",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .member,
+                    purchaseNotice: nil,
+                    proActivity: makeSettingsProActivity(goalCount: 3),
+                    activePlanSnapshot: makeActivePlanSnapshot(
+                        planKind: .monthly,
+                        renewalDisposition: .gracePeriod(until: futurePlanDate)
+                    ),
+                    now: planDateContext.now,
+                    locale: planDateContext.locale,
+                    calendar: planDateContext.calendar,
+                    timeZone: planDateContext.timeZone
+                ),
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                dynamicTypeSize: .large
+            ),
+            SettingsPlanRenderFixture(
+                name: "settings-plan-pro-family-accessibility5",
+                presentation: SettingsPlanPresentation(
+                    membershipTier: .member,
+                    purchaseNotice: nil,
+                    proActivity: makeSettingsProActivity(goalCount: 3),
+                    activePlanSnapshot: makeActivePlanSnapshot(
+                        planKind: .annual,
+                        renewalDisposition: .renews,
+                        ownership: .familyShared
+                    ),
+                    now: planDateContext.now,
+                    locale: planDateContext.locale,
+                    calendar: planDateContext.calendar,
+                    timeZone: planDateContext.timeZone
+                ),
+                width: 393,
+                height: 1_800,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility5,
+                reduceMotion: true
             ),
             SettingsPlanRenderFixture(
                 name: "settings-plan-pro-accessibility5-reduce-motion",
@@ -2294,6 +2486,31 @@ final class MembershipViewRenderingTests: XCTestCase {
                     )
                 }
 
+                if fixture.presentation.activePlanPresentation != nil {
+                    let subscriptionStatus = try? XCTUnwrap(
+                        layoutCapture.frames[.subscriptionStatus],
+                        fixture.name
+                    )
+                    if let card, let action, let subscriptionStatus {
+                        XCTAssertGreaterThan(subscriptionStatus.width, 0, fixture.name)
+                        XCTAssertGreaterThan(subscriptionStatus.height, 0, fixture.name)
+                        XCTAssertTrue(
+                            card.insetBy(dx: -0.5, dy: -0.5).contains(subscriptionStatus),
+                            "\(fixture.name) subscription status escaped the plan card"
+                        )
+                        XCTAssertLessThanOrEqual(
+                            subscriptionStatus.maxY,
+                            action.minY + 0.5,
+                            "\(fixture.name) subscription status overlaps the plan action"
+                        )
+                    }
+                } else {
+                    XCTAssertNil(
+                        layoutCapture.frames[.subscriptionStatus],
+                        "\(fixture.name) exposed subscription health outside the Pro state"
+                    )
+                }
+
                 if fixture.presentation.upgradePlanOption != nil {
                     let upgradeOffer = try? XCTUnwrap(
                         layoutCapture.frames[.upgradeOffer],
@@ -2340,6 +2557,14 @@ final class MembershipViewRenderingTests: XCTestCase {
                             first.maxY,
                             second.minY + 0.5,
                             "\(fixture.name) activity rows overlap"
+                        )
+                    }
+
+                    if let subscriptionStatus = layoutCapture.frames[.subscriptionStatus] {
+                        XCTAssertLessThanOrEqual(
+                            subscriptionStatus.maxY,
+                            activity.minY + 0.5,
+                            "\(fixture.name) subscription status overlaps Pro activity"
                         )
                     }
                 }
