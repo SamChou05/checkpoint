@@ -12,8 +12,8 @@ still a release gate; passing software tests is not proof of educational efficac
 - After the final rollout guard, a full 877-test run found two bank-transition
   regressions. Both were fixed; all 29 adaptive scheduling and asynchronous bank
   tests passed on rerun. The other 875 tests had passed in that full run.
-- After generalizing review and the evaluation runner, the backend suite passed:
-  238 tests. Ruff and Python compilation passed. Deployment script tests and SAM
+- After generalizing review and fixing contradictory adaptive guidance, the backend
+  suite passed: 240 tests. Ruff and Python compilation passed. Deployment script tests and SAM
   template validation had passed for the unchanged deployment configuration.
 - The Release build stopped at an existing configuration requirement: a real
   `CHECKPOINT_PRIVACY_POLICY_URL` is missing. That check was not bypassed.
@@ -41,7 +41,7 @@ appropriate requirement for a general learning system; the formal translation
 also caused false rejections of valid questions. Their observed errors remain
 in the live regression fixtures instead of becoming special product branches.
 
-The latest general reviewer passed five of the nine correctness controls. It
+The nine-control general-review run passed five cases. It
 accepted all three valid controls, including the named-person inference formerly
 rejected by the proof requirement, but still accepted four known-invalid items.
 This is a quality limitation, not a list of unsupported subjects.
@@ -78,6 +78,21 @@ Manual inspection also found photography wording dependent on unstated camera
 conventions. This confirms general subject handling, but exposes a shared
 challenge-calibration and answer-quality gap. It does not establish reliable
 adaptive generation at higher levels.
+
+A shared prompt defect was then corrected: adaptive requests still sent the
+goal's old beginner guidance alongside advanced skill targets, and JSON retries
+showed the goal minimum as the example answer difficulty. Initial prompts, JSON
+payloads, and retries now use consistent per-skill challenge guidance. Tests cover
+advanced and unplanned skills, preservation of non-adaptive guidance, and request
+immutability. A subsequent comparison reused the same inferred maps: photography
+now retained one level-4 item, but still filled only 3 of 5 slots; the invented
+game still filled 3 of 5 with only level-2 items. The instruction conflict is
+fixed, while reliable higher-level coverage remains unresolved. These two runs
+took about 145–196 seconds without repeating map inference. Manual inspection
+found the retained level-4 photography item assumed an unsupported RAW-editing
+sequence and contradicted itself about recovering permanently clipped data. It
+is now the tenth correctness fixture. A higher difficulty label alone is not a
+quality improvement; this new case has not been rerun as a standalone control.
 
 ## Reproduce and release
 

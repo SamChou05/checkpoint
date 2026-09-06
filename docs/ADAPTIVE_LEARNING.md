@@ -18,7 +18,7 @@ Pro practice uses the user's goal and source material as its scope. Each active 
 
 `adaptiveSkillPlans` is an optional array of at most six plans, each scoped to an active skill UUID. Plans carry `targetDifficulty`, recent accuracy/evidence count, up to five focus objective IDs, and up to three recent mistakes. The service validates skill/objective ownership and bounds every learner-provided string. These fields are untrusted evidence, never model instructions.
 
-Generated questions must match their skill's target difficulty. The worker weights missed objectives more heavily while retaining coverage of the other objectives. Follow-up questions should test the same concept in a new scenario or representation, not reproduce a previously revealed answer.
+Generated questions must match their skill's target difficulty. When adaptive plans exist, both the serialized request and the initial/retry prompts derive challenge guidance from those plans; stale goal-wide beginner guidance cannot override an advanced skill. Unplanned skills retain the goal minimum. Without adaptive plans, the original goal guidance remains intact. The worker weights missed objectives more heavily while retaining coverage of the other objectives. Follow-up questions should test the same concept in a new scenario or representation, not reproduce a previously revealed answer.
 
 ## Validation boundary
 

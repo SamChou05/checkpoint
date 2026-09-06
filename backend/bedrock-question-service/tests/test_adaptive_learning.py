@@ -2,7 +2,7 @@ import copy
 import unittest
 
 from lambda_test_support import _request_payload, _skill_map, _raw_question
-from question_generation import _user_prompt
+from question_generation import _user_prompt, _json_retry_prompt
 from question_quality import _sanitize_questions
 from question_bank_worker import _worker_objective_allocation
 from request_contract import _normalize_request
@@ -59,6 +59,41 @@ class AdaptiveLearningTests(unittest.TestCase):
                 invalid["adaptiveSkillPlans"][0][field] = value
                 with self.assertRaises(BadRequestError):
                     _normalize_request(invalid)
+
+    def test_advanced_skills_replace_stale_baseline_guidance_in_initial_and_retry_prompts(
+        self,
+    ):
+        payload = self.payload()
+        payload["difficultyGuidance"] = "OLD_BASELINE: only ask simple definitions."
+        request = _normalize_request(payload)
+        original = copy.deepcopy(request)
+        skill = request["skillMap"]["skills"][0]
+        for prompt in [
+            _user_prompt(request),
+            _json_retry_prompt(request, "invalid JSON"),
+        ]:
+            with self.subTest(prompt=prompt[:40]):
+                self.assertNotIn("OLD_BASELINE", prompt)
+                self.assertIn(
+                    f"{skill['name']} ({skill['id']}), level 4: Hard reasoning", prompt
+                )
+                self.assertIn("goal minimum is only a lower bound", prompt)
+        self.assertEqual(request, original)
+
+    def test_guidance_keeps_unplanned_skills_at_the_goal_minimum(self):
+        request = _normalize_request(self.payload())
+        other_skill = request["skillMap"]["skills"][1]
+        self.assertIn(
+            f"{other_skill['name']} ({other_skill['id']}), level 1: Foundations",
+            _user_prompt(request),
+        )
+        request["adaptiveSkillPlans"] = []
+        request["difficultyGuidance"] = "Custom guidance for the initial goal."
+        for prompt in [
+            _user_prompt(request),
+            _json_retry_prompt(request, "invalid JSON"),
+        ]:
+            self.assertIn("Custom guidance for the initial goal.", prompt)
 
     def test_question_difficulty_must_match_its_skill_plan(self):
         payload = self.payload()
