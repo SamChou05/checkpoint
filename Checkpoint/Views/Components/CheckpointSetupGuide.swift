@@ -34,7 +34,7 @@ struct CheckpointSetupGuide: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 14) {
             if step == .goal && dynamicTypeSize.isAccessibilitySize {
                 compactGoalGreeting
             } else if dynamicTypeSize.isAccessibilitySize {
@@ -52,18 +52,8 @@ struct CheckpointSetupGuide: View {
                 }
             }
         }
-        .padding(16)
+        .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            CheckpointTheme.panel,
-            in: RoundedRectangle(cornerRadius: 24, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(CheckpointTheme.hairline.opacity(0.75), lineWidth: 1)
-                .allowsHitTesting(false)
-        }
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 8)
         .task(id: reduceMotion) {
             withAnimation(reduceMotion ? nil : .spring(duration: 0.5, bounce: 0.3)) {
                 hasAppeared = true
@@ -83,7 +73,7 @@ struct CheckpointSetupGuide: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(step.accessibilityLabel)
 
-            Text("What will you learn?")
+            Text("Welcome!")
                 .font(.headline)
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
@@ -137,7 +127,7 @@ struct CheckpointSetupGuide: View {
     }
 
     private var mascot: some View {
-        CheckpointMascotMark(size: 64, cornerRadius: 20)
+        CheckpointMascotMark(size: 56, cornerRadius: 18)
             .shadow(color: CheckpointTheme.shadowCard, radius: 8, y: 5)
             .rotationEffect(.degrees(hasAppeared || reduceMotion ? 0 : -5))
             .scaleEffect(hasAppeared || reduceMotion ? 1 : 0.94)

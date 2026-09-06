@@ -475,7 +475,7 @@ struct GoalSetupPrimaryActionPresentation: Equatable {
 
         switch mode {
         case .firstGoal:
-            title = "Build my Skill Map"
+            title = "Build my map"
             systemImage = "arrow.right"
             intent = .save
         case .newGoal:
@@ -501,7 +501,7 @@ struct GoalSetupPrimaryActionPresentation: Equatable {
             return isAccessibilitySize ? "Reading files" : "Reading study materials"
         }
         if isAccessibilitySize, mode == .firstGoal {
-            return "Build Skill Map"
+            return "Build map"
         }
         return title
     }
@@ -528,6 +528,7 @@ enum GoalSetupLayoutElement: Hashable {
     case goalPanel
     case titleLabel
     case titleField
+    case optionalDetails
     case actionBar
 }
 
@@ -597,6 +598,7 @@ struct OnboardingView: View {
     @State private var minimumQuestionDifficulty = UnlockPolicy.default.minimumQuestionDifficulty
     @State private var isCreating = false
     @State private var isCustomizationExpanded = false
+    @State private var isFirstRunDetailsExpanded = false
     @State private var isSourceImporterPresented = false
     @State private var isImportingSources = false
     @State private var sourceImportMessage: String?
@@ -676,6 +678,10 @@ struct OnboardingView: View {
                 || !goal.sourceDocuments.isEmpty
                 || goal.minimumQuestionDifficulty != UnlockPolicy.default.minimumQuestionDifficulty
             _isCustomizationExpanded = State(initialValue: hasCustomizations)
+            _isFirstRunDetailsExpanded = State(
+                initialValue: !goal.currentLevel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    || !goal.sourceDocuments.isEmpty
+            )
         } else {
             let presentedDeadline = Calendar.current.date(
                 byAdding: .month,
@@ -798,27 +804,152 @@ struct OnboardingView: View {
 
     private var goalEntryContent: some View {
         ScrollView {
-                VStack(
-                    alignment: .leading,
-                    spacing: dynamicTypeSize.isAccessibilitySize ? 14 : 16
-                ) {
-                    goalSetupHeader
-                        .reportGoalSetupLayoutFrame(.hero, using: layoutReporter)
+            VStack(
+                alignment: .leading,
+                spacing: dynamicTypeSize.isAccessibilitySize ? 14 : 16
+            ) {
+                goalSetupHeader
+                    .reportGoalSetupLayoutFrame(.hero, using: layoutReporter)
 
-                    SectionPanel(goalTimingSectionTitle) {
-                        Text("Learning goal")
+                SectionPanel(goalTimingSectionTitle) {
+                    Text(isFirstRunWalkthrough ? "What’s your goal?" : "Learning goal")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                        .reportGoalSetupLayoutFrame(.titleLabel, using: layoutReporter)
+
+                    TextField(
+                        "Learning goal",
+                        text: $title,
+                        prompt: Text(goalTitlePrompt),
+                        axis: .vertical
+                    )
+                        .textFieldStyle(.plain)
+                        .font(.headline)
+                        .foregroundStyle(CheckpointTheme.text)
+                        .padding(12)
+                        .background(
+                            CheckpointTheme.panelRaised,
+                            in: RoundedRectangle(
+                                cornerRadius: CheckpointTheme.compactCornerRadius,
+                                style: .continuous
+                            )
+                        )
+                        .focused($focusedField, equals: .title)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            focusedField = nil
+                        }
+                        .reportGoalSetupLayoutFrame(.titleField, using: layoutReporter)
+
+                    if !isFirstRunWalkthrough {
+                        targetDatePicker
+                    }
+                }
+                .reportGoalSetupLayoutFrame(.goalPanel, using: layoutReporter)
+
+                if dynamicTypeSize.isAccessibilitySize && !isFirstRunWalkthrough {
+                    accessibilitySetupContext
+                }
+
+                if isFirstRunWalkthrough {
+                    firstRunOptionalDetails
+                        .reportGoalSetupLayoutFrame(.optionalDetails, using: layoutReporter)
+                }
+
+                if let persistenceMessage = store.persistenceRecoveryMessage {
+                    Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.amber)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(12)
+                        .background(
+                            CheckpointTheme.panel,
+                            in: RoundedRectangle(
+                                cornerRadius: CheckpointTheme.compactCornerRadius,
+                                style: .continuous
+                            )
+                        )
+                }
+
+                if !isFirstRunWalkthrough, let direction = directionPreviewState.presentation {
+                    GoalSetupDirectionCard(
+                        presentation: direction,
+                        reduceMotionOverride: reduceMotion
+                    )
+                        .transition(goalSetupMotionPolicy.transition)
+                }
+
+                if !isFirstRunWalkthrough {
+                    practiceCustomization
+                }
+
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .padding(.bottom, 20)
+        }
+        .reportGoalSetupLayoutFrame(.viewport, using: layoutReporter)
+        .disabled(isGoalSaveWorking)
+        .scrollDismissesKeyboard(.interactively)
+        .checkpointScreenBackground()
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            saveActionBar
+                .reportGoalSetupLayoutFrame(.actionBar, using: layoutReporter)
+        }
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                if !isFirstRunWalkthrough && mode != .firstGoal {
+                    Button("Cancel") {
+                        requestGoalSetupDismissal()
+                    }
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .disabled(isGoalSaveWorking)
+                }
+            }
+        }
+    }
+
+    private var firstRunOptionalDetails: some View {
+        SectionPanel {
+            DisclosureGroup(isExpanded: $isFirstRunDetailsExpanded) {
+                VStack(alignment: .leading, spacing: 16) {
+                    firstRunContextField
+                    Divider()
+                    studyMaterialsSection
+                }
+                .padding(.top, 12)
+            } label: {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label("Add context or files", systemImage: "paperclip")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                    Text("Optional")
+                        .font(.caption)
+                        .foregroundStyle(CheckpointTheme.muted)
+                }
+                .frame(minHeight: 44, alignment: .leading)
+            }
+            .tint(CheckpointTheme.teal)
+        }
+    }
+
+    private var practiceCustomization: some View {
+        SectionPanel {
+            DisclosureGroup(isExpanded: $isCustomizationExpanded) {
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Topics to focus on")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(CheckpointTheme.text)
-                            .reportGoalSetupLayoutFrame(.titleLabel, using: layoutReporter)
 
-                        TextField(
-                            "Learning goal",
-                            text: $title,
-                            prompt: Text(goalTitlePrompt),
-                            axis: .vertical
-                        )
+                        Text("Add anything Checkpoint must cover. Leave this blank and we’ll suggest an editable topic map from your goal.")
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        TextField("For example: contracts, vocabulary", text: $focusAreas, axis: .vertical)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                             .textFieldStyle(.plain)
-                            .font(.headline)
                             .foregroundStyle(CheckpointTheme.text)
                             .padding(12)
                             .background(
@@ -828,166 +959,67 @@ struct OnboardingView: View {
                                     style: .continuous
                                 )
                             )
-                            .focused($focusedField, equals: .title)
+                            .focused($focusedField, equals: .focusAreas)
                             .submitLabel(.done)
-                            .onSubmit {
-                                focusedField = nil
-                            }
-                            .reportGoalSetupLayoutFrame(.titleField, using: layoutReporter)
-
-                        targetDatePicker
-                    }
-                    .reportGoalSetupLayoutFrame(.goalPanel, using: layoutReporter)
-
-                    if dynamicTypeSize.isAccessibilitySize && !isFirstRunWalkthrough {
-                        accessibilitySetupContext
                     }
 
-                    if isFirstRunWalkthrough {
-                        SectionPanel("Make it yours · optional") {
-                            firstRunContextField
-                            Divider()
-                            studyMaterialsSection
-                        }
-                    }
+                    Divider()
 
-                    if let persistenceMessage = store.persistenceRecoveryMessage {
-                        Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.amber)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("What you already know")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+
+                        Text("Optional. A short note helps us avoid questions that are far too easy or hard. Leave it blank and we'll learn from your answers.")
+                            .font(.footnote)
+                            .foregroundStyle(CheckpointTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(12)
-                            .background(
-                                CheckpointTheme.panel,
-                                in: RoundedRectangle(
-                                    cornerRadius: CheckpointTheme.compactCornerRadius,
-                                    style: .continuous
-                                )
-                            )
-                    }
 
-                    if !isFirstRunWalkthrough, let direction = directionPreviewState.presentation {
-                        GoalSetupDirectionCard(
-                            presentation: direction,
-                            reduceMotionOverride: reduceMotion
+                        TextField(
+                            "For example: new to this; strong on algebra, weak on proofs",
+                            text: $currentLevel,
+                            axis: .vertical
                         )
-                            .transition(goalSetupMotionPolicy.transition)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
+                        .textFieldStyle(.plain)
+                        .foregroundStyle(CheckpointTheme.text)
+                        .padding(12)
+                        .background(
+                            CheckpointTheme.panelRaised,
+                            in: RoundedRectangle(
+                                cornerRadius: CheckpointTheme.compactCornerRadius,
+                                style: .continuous
+                            )
+                        )
+                        .focused($focusedField, equals: .currentLevel)
+                        .submitLabel(.done)
                     }
 
-                    SectionPanel {
-                        DisclosureGroup(isExpanded: $isCustomizationExpanded) {
-                            VStack(alignment: .leading, spacing: 16) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Topics to focus on")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.text)
+                    Divider()
 
-                                    Text("Add anything Checkpoint must cover. Leave this blank and we’ll suggest an editable topic map from your goal.")
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
+                    studyMaterialsSection
 
-                                    TextField("For example: contracts, vocabulary", text: $focusAreas, axis: .vertical)
-                                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
-                                        .textFieldStyle(.plain)
-                                        .foregroundStyle(CheckpointTheme.text)
-                                        .padding(12)
-                                        .background(
-                                            CheckpointTheme.panelRaised,
-                                            in: RoundedRectangle(
-                                                cornerRadius: CheckpointTheme.compactCornerRadius,
-                                                style: .continuous
-                                            )
-                                        )
-                                        .focused($focusedField, equals: .focusAreas)
-                                        .submitLabel(.done)
-                                }
+                    Divider()
 
-                                Divider()
-
-                                if !isFirstRunWalkthrough {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("What you already know")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.text)
-
-                                    Text("Optional. A short note helps us avoid questions that are far too easy or hard. Leave it blank and we'll learn from your answers.")
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-
-                                    TextField(
-                                        "For example: new to this; strong on algebra, weak on proofs",
-                                        text: $currentLevel,
-                                        axis: .vertical
-                                    )
-                                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
-                                    .textFieldStyle(.plain)
-                                    .foregroundStyle(CheckpointTheme.text)
-                                    .padding(12)
-                                    .background(
-                                        CheckpointTheme.panelRaised,
-                                        in: RoundedRectangle(
-                                            cornerRadius: CheckpointTheme.compactCornerRadius,
-                                            style: .continuous
-                                        )
-                                    )
-                                    .focused($focusedField, equals: .currentLevel)
-                                    .submitLabel(.done)
-                                }
-
-                                Divider()
-
-                                studyMaterialsSection
-
-                                Divider()
-
-                                }
-
-                                startingLevelControl
-                            }
-                            .padding(.top, 12)
-                        } label: {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("Fine-tune practice")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Text(customizationSummary.text)
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(.trailing, dynamicTypeSize.isAccessibilitySize ? 24 : 0)
-                        }
-                        .tint(CheckpointTheme.teal)
-                        .sensoryFeedback(.selection, trigger: isCustomizationExpanded)
-                    }
-
+                    startingLevelControl
                 }
-                .padding(.horizontal, 20)
                 .padding(.top, 12)
-                .padding(.bottom, 20)
-            }
-            .reportGoalSetupLayoutFrame(.viewport, using: layoutReporter)
-            .disabled(isGoalSaveWorking)
-            .scrollDismissesKeyboard(.interactively)
-            .checkpointScreenBackground()
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                saveActionBar
-                    .reportGoalSetupLayoutFrame(.actionBar, using: layoutReporter)
-            }
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    if !isFirstRunWalkthrough && mode != .firstGoal {
-                        Button("Cancel") {
-                            requestGoalSetupDismissal()
-                        }
-                        .foregroundStyle(CheckpointTheme.teal)
-                        .disabled(isGoalSaveWorking)
-                    }
+            } label: {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Fine-tune practice")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+
+                    Text(customizationSummary.text)
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                .padding(.trailing, dynamicTypeSize.isAccessibilitySize ? 24 : 0)
             }
+            .tint(CheckpointTheme.teal)
+            .sensoryFeedback(.selection, trigger: isCustomizationExpanded)
+        }
     }
 
     @ViewBuilder
@@ -996,14 +1028,14 @@ struct OnboardingView: View {
             CheckpointSetupGuide(
                 step: .goal,
                 title: "Welcome to Checkpoint!",
-                message: "What would you like to learn? I’ll turn your goal into a Skill Map, then help you make room for it.",
+                message: "A little learning, every time you take a break.",
                 reduceMotionOverride: reduceMotion
             )
         } else {
-        GoalSetupHero(
-            presentation: heroPresentation,
-            reduceMotion: reduceMotion
-        )
+            GoalSetupHero(
+                presentation: heroPresentation,
+                reduceMotion: reduceMotion
+            )
         }
     }
 
@@ -1013,7 +1045,7 @@ struct OnboardingView: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
             TextField(
-                "What do you already know, and what would you like to focus on?",
+                "Anything to focus on? What do you already know?",
                 text: $currentLevel,
                 axis: .vertical
             )
@@ -1089,7 +1121,8 @@ struct OnboardingView: View {
 
     private var primaryButtonDisplayTitle: String {
         if isFirstRunWalkthrough && !isImportingSources {
-            return isGoalSaveWorking ? "Building your map" : "Build my Skill Map"
+            if dynamicTypeSize.isAccessibilitySize { return "Build map" }
+            return isGoalSaveWorking ? "Building your map" : "Build my map"
         }
         return primaryActionPresentation.displayTitle(
             isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
@@ -1101,17 +1134,20 @@ struct OnboardingView: View {
         if isImportingSources {
             return "Reading study materials, in progress"
         }
+        if isFirstRunWalkthrough && isGoalSaveWorking {
+            return "Building your map, in progress"
+        }
         return isGoalSaveWorking
             ? "\(primaryActionPresentation.title), in progress"
             : primaryButtonDisplayTitle
     }
 
     private var goalTimingSectionTitle: String? {
-        dynamicTypeSize.isAccessibilitySize ? nil : (isFirstRunWalkthrough ? "What is your goal?" : "Goal and timing")
+        isFirstRunWalkthrough || dynamicTypeSize.isAccessibilitySize ? nil : "Goal and timing"
     }
 
     private var goalTitlePrompt: String {
-        dynamicTypeSize.isAccessibilitySize ? "Your goal" : "e.g. Pass the bar exam"
+        dynamicTypeSize.isAccessibilitySize ? "Your goal" : "e.g. Learn Spanish"
     }
 
     private var isTitleEmpty: Bool {
@@ -1529,7 +1565,9 @@ struct OnboardingView: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(CheckpointTheme.text)
 
-            Text("Add text, Markdown, or a text-based PDF when practice should follow specific material. Checkpoint extracts readable text for the question service; the original file is not uploaded.")
+            Text(isFirstRunWalkthrough
+                 ? "Add notes or a text-based PDF. Readable text is shared to tailor your practice."
+                 : "Add text, Markdown, or a text-based PDF when practice should follow specific material. Checkpoint extracts readable text for the question service; the original file is not uploaded.")
                 .font(.footnote)
                 .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)

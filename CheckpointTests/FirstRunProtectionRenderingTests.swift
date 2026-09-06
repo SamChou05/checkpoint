@@ -42,7 +42,6 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         XCTAssertFalse(flow.finishProtectedSetup())
         XCTAssertTrue(flow.editSelection())
         XCTAssertEqual(flow.phase, .selecting)
-        XCTAssertFalse(flow.continueWithoutProtection())
 
         await flow.start(selectionSummary: "3 apps selected")
 
@@ -57,6 +56,33 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         XCTAssertEqual(continueWithoutProtectionCount, 1)
         XCTAssertFalse(flow.continueWithoutProtection())
         XCTAssertFalse(flow.editSelection())
+    }
+
+    @MainActor
+    func testFirstRunProtectionCanBeSkippedBeforeSelectingApps() async {
+        var startCount = 0
+        var finishProtectedCount = 0
+        var continueWithoutProtectionCount = 0
+        let flow = FirstRunProtectionFlow(
+            startProtection: {
+                startCount += 1
+                return .protected(selectionSummary: "2 apps selected")
+            },
+            finishProtectedSetup: {
+                finishProtectedCount += 1
+            },
+            continueWithoutProtection: {
+                continueWithoutProtectionCount += 1
+            }
+        )
+
+        XCTAssertTrue(flow.continueWithoutProtection())
+        XCTAssertEqual(continueWithoutProtectionCount, 1)
+        XCTAssertFalse(flow.continueWithoutProtection())
+        XCTAssertFalse(flow.finishProtectedSetup())
+        await flow.start(selectionSummary: "2 apps selected")
+        XCTAssertEqual(startCount, 0)
+        XCTAssertEqual(finishProtectedCount, 0)
     }
 
     @MainActor
@@ -310,10 +336,21 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
             hasSelection: false,
             hasCategoryOnlySelection: false
         )
-        XCTAssertEqual(emptySelection.detail, "Select at least one app or website to continue.")
+        XCTAssertNil(emptySelection.detail)
         XCTAssertEqual(emptySelection.primaryTitle, "Choose apps first")
+        XCTAssertEqual(emptySelection.secondaryTitle, "Set up later")
         XCTAssertTrue(emptySelection.hidesDetailAtAccessibilitySizes)
         XCTAssertFalse(emptySelection.isPrimaryEnabled)
+
+        let selectedApps = FirstRunProtectionActionPresentation(
+            phase: .selecting,
+            hasSelection: true,
+            hasCategoryOnlySelection: false
+        )
+        XCTAssertNil(selectedApps.detail)
+        XCTAssertEqual(selectedApps.primaryTitle, "Turn on protection")
+        XCTAssertEqual(selectedApps.secondaryTitle, "Set up later")
+        XCTAssertTrue(selectedApps.isPrimaryEnabled)
 
         let categoryOnly = FirstRunProtectionActionPresentation(
             phase: .selecting,
@@ -322,7 +359,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         )
         XCTAssertEqual(
             categoryOnly.detail,
-            "Keep at least one app selected inside the category to continue."
+            "Select an app inside the category, or set this up later."
         )
 
         let failedAction = FirstRunProtectionActionPresentation(
@@ -669,7 +706,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         XCTAssertFalse(ordinaryHeader.isSuccessHandoff)
         XCTAssertEqual(ordinaryHeader.stage, "Choose apps")
         XCTAssertEqual(ordinaryHeader.title, "Choose apps to protect")
-        XCTAssertTrue(ordinaryHeader.detail.contains("skip this for now"))
+        XCTAssertTrue(ordinaryHeader.detail.contains("This is optional"))
         XCTAssertEqual(ordinaryHeader.systemImage, "checkmark.shield.fill")
         XCTAssertEqual(
             ordinaryHeader.pickerHeaderText(
@@ -702,8 +739,8 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         XCTAssertEqual(successHeader.stage, "Goal saved")
         XCTAssertEqual(successHeader.title, ordinaryHeader.title)
         XCTAssertEqual(successHeader.systemImage, "checkmark.circle.fill")
-        XCTAssertTrue(successHeader.detail.hasPrefix("Select the apps"))
-        XCTAssertTrue(successHeader.detail.contains("skip this for now"))
+        XCTAssertTrue(successHeader.detail.hasPrefix("Pause distracting apps"))
+        XCTAssertTrue(successHeader.detail.contains("This is optional"))
         XCTAssertEqual(
             successHeader.pickerHeaderText(
                 selectionSummary: "Nothing selected yet",

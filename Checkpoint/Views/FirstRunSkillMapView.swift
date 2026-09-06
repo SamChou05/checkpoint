@@ -47,9 +47,11 @@ struct FirstRunSkillMapView: View {
     let onEditGoal: () -> Void
     var reduceMotionOverride: Bool? = nil
 
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
     @State private var reviewPresentation = SkillMapReviewPresentationState()
     @State private var approval = FirstRunSkillMapApproval()
     @State private var isRetrying = false
+    @State private var expandedTopicIDs: Set<UUID> = []
 
     private var phase: FirstRunSkillMapPhase {
         FirstRunSkillMapPhase(
@@ -61,7 +63,7 @@ struct FirstRunSkillMapView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 16) {
                 CheckpointSetupGuide(
                     step: .skillMap,
                     title: guideTitle,
@@ -76,7 +78,7 @@ struct FirstRunSkillMapView: View {
                             .tracking(1.4)
                             .foregroundStyle(CheckpointTheme.muted)
                         Text(goal.title)
-                            .font(.title3.weight(.semibold))
+                            .font(.headline)
                             .foregroundStyle(CheckpointTheme.text)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -100,9 +102,7 @@ struct FirstRunSkillMapView: View {
             .padding(.bottom, 24)
         }
         .checkpointScreenBackground()
-        .navigationTitle("Your Skill Map")
-        .toolbarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden()
+        .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom) {
             if phase == .review, let context = SkillMapReviewContext(goal: store.goal) {
                 approvalActions(context)
@@ -124,7 +124,7 @@ struct FirstRunSkillMapView: View {
     private var guideTitle: String {
         switch phase {
         case .building: "Let's map your next steps."
-        case .review: "Does this feel like your path?"
+        case .review: "Your map is ready."
         case .needsAttention: "Let's give that another try."
         }
     }
@@ -132,11 +132,11 @@ struct FirstRunSkillMapView: View {
     private var guideMessage: String {
         switch phase {
         case .building:
-            "I'm turning your goal and any materials you shared into a few focused skills. You'll get to review them next."
+            "I'm finding a few skills to help you reach your goal."
         case .review:
-            "These skills will guide your practice. Look them over, make any changes, then approve your map to continue."
+            "Here's where we'll start. Tap a skill to see more."
         case .needsAttention:
-            "Your goal is saved. We need a skill map before we can continue, so try again or adjust your goal."
+            "Your goal is saved. Let's try building your map again."
         }
     }
 
@@ -151,7 +151,7 @@ struct FirstRunSkillMapView: View {
                     Text("Building your skill map")
                         .font(.headline)
                         .foregroundStyle(CheckpointTheme.text)
-                    Text("This may take a moment. Your map will appear here as soon as it's ready.")
+                    Text("It'll appear here when it's ready.")
                         .font(.subheadline)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -168,36 +168,15 @@ struct FirstRunSkillMapView: View {
                 .foregroundStyle(CheckpointTheme.text)
                 .accessibilityAddTraits(.isHeader)
 
-            ForEach(Array(map.topics.enumerated()), id: \.element.id) { index, topic in
-                SectionPanel {
-                    HStack(alignment: .top, spacing: 12) {
-                        Text(String(format: "%02d", index + 1))
-                            .font(.subheadline.monospacedDigit().weight(.bold))
-                            .foregroundStyle(CheckpointTheme.teal)
-                            .padding(10)
-                            .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 12))
-                            .accessibilityHidden(true)
-
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(topic.name)
-                                .font(.headline)
-                                .foregroundStyle(CheckpointTheme.text)
-                                .accessibilityAddTraits(.isHeader)
-                                .fixedSize(horizontal: false, vertical: true)
-
-                            ForEach(topic.objectives) { objective in
-                                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                    Image(systemName: "circle.fill")
-                                        .font(.system(size: 4))
-                                        .accessibilityHidden(true)
-                                    Text(objective.name)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                .font(.subheadline)
-                                .foregroundStyle(CheckpointTheme.muted)
-                            }
+            SectionPanel(contentPadding: 14) {
+                VStack(spacing: 0) {
+                    ForEach(Array(map.topics.enumerated()), id: \.element.id) { index, topic in
+                        skillRow(topic, index: index)
+                        if index < map.topics.count - 1 {
+                            Divider()
+                                .overlay(CheckpointTheme.hairline)
+                                .padding(.leading, 42)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
@@ -207,6 +186,65 @@ struct FirstRunSkillMapView: View {
                 .foregroundStyle(CheckpointTheme.teal)
                 .frame(minHeight: 44)
                 .disabled(reviewPresentation.blocksUnderlyingPresentations)
+        }
+    }
+
+    private func skillRow(_ topic: SkillMapTopic, index: Int) -> some View {
+        let isExpanded = expandedTopicIDs.contains(topic.id)
+        return VStack(alignment: .leading, spacing: 0) {
+            Button {
+                let reduceMotion = reduceMotionOverride ?? accessibilityReduceMotion
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.18)) {
+                    if isExpanded {
+                        expandedTopicIDs.remove(topic.id)
+                    } else {
+                        expandedTopicIDs.insert(topic.id)
+                    }
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Text("\(index + 1)")
+                        .font(.subheadline.monospacedDigit().weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.teal)
+                        .frame(width: 30, height: 30)
+                        .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 9))
+                        .accessibilityHidden(true)
+                    Text(topic.name)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.text)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .accessibilityHidden(true)
+                }
+                .frame(minHeight: 44)
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(topic.name)
+            .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+            .accessibilityHint(isExpanded ? "Hide the practice details for this skill." : "Show the practice details for this skill.")
+
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(topic.objectives) { objective in
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 4))
+                                .accessibilityHidden(true)
+                            Text(objective.name)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.muted)
+                    }
+                }
+                .padding(.leading, 42)
+                .padding(.bottom, 14)
+            }
         }
     }
 

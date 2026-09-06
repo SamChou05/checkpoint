@@ -42,8 +42,8 @@ Important platform constraint:
 - For members, question replenishment is abstracted away: Checkpoint quietly prepares fresh AI-generated questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
-- Mascot-guided, three-step onboarding: Goal, Skill Map, Protection. Context and study-material attachments are visible during initial goal entry, with advanced practice customization collapsed.
-- Skill Map review shows generated skills and objectives, supports editing, and requires explicit durable approval before permission setup. Generation failures offer retry or goal edits; map availability is independent of question readiness.
+- Mascot-guided, three-step onboarding: Goal, Skill Map, Protection. Initial entry requires only a goal; one collapsed optional row holds context and study materials. Timing and difficulty remain available in goal settings.
+- Skill Map review shows a compact skill list with objectives available on tap, supports editing, and requires explicit durable approval before permission setup. Generation failures offer retry or goal edits; map availability is independent of question readiness.
 - Natural-language goal profile onboarding with sensible defaults and optional topic/starting-level customization.
 - Optional text and text-based PDF study materials can be attached to a goal. The app extracts and bounds their text locally, persists it with the profile, and uses it as untrusted grounding data for generation.
 - Onboarding starts blank and rejects empty goal titles.

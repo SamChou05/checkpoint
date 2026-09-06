@@ -923,11 +923,11 @@ final class GoalSetupPresentationTests: XCTestCase {
             editImpact: .none,
             isWorking: false
         )
-        XCTAssertEqual(firstGoal.title, "Build my Skill Map")
+        XCTAssertEqual(firstGoal.title, "Build my map")
         XCTAssertEqual(firstGoal.intent, .save)
         XCTAssertEqual(
             firstGoal.displayTitle(isAccessibilitySize: true),
-            "Build Skill Map"
+            "Build map"
         )
 
         let firstGoalWorking = GoalSetupPrimaryActionPresentation(
@@ -937,7 +937,7 @@ final class GoalSetupPresentationTests: XCTestCase {
         )
         XCTAssertEqual(
             firstGoalWorking.displayTitle(isAccessibilitySize: true),
-            "Build Skill Map",
+            "Build map",
             "The accessibility-size action bar should not resize while saving."
         )
         XCTAssertEqual(
@@ -1531,6 +1531,11 @@ final class GoalSetupPresentationTests: XCTestCase {
                 XCTAssertTrue(
                     visibleViewport.insetBy(dx: -0.5, dy: -0.5).contains(titleField),
                     "\(fixture.name) pushed the primary input below the first fold"
+                )
+                let optionalDetails = try XCTUnwrap(capture.frames[.optionalDetails], fixture.name)
+                XCTAssertTrue(
+                    visibleViewport.insetBy(dx: -0.5, dy: -0.5).contains(optionalDetails),
+                    "\(fixture.name) hid the optional context/file entry below the first fold"
                 )
             } else {
                 let visibleTitleField = titleField.intersection(visibleViewport)

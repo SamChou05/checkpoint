@@ -254,7 +254,13 @@ final class FirstRunProtectionFlow {
 
     @discardableResult
     func continueWithoutProtection() -> Bool {
-        guard !didConclude, case .failed = phase else { return false }
+        guard !didConclude else { return false }
+        switch phase {
+        case .selecting, .failed:
+            break
+        case .preparing, .protected:
+            return false
+        }
         didConclude = true
         continueWithoutProtectionAction()
         return true
@@ -391,21 +397,21 @@ struct FirstRunProtectionActionPresentation: Equatable {
         case .selecting:
             hidesDetailAtAccessibilitySizes = true
             if hasSelection {
-                detail = "Your choices are saved. Turn on protection when you're ready."
+                detail = nil
                 detailTone = .standard
             } else if hasCategoryOnlySelection {
-                detail = "Keep at least one app selected inside the category to continue."
+                detail = "Select an app inside the category, or set this up later."
                 detailTone = .warning
             } else {
-                detail = "Select at least one app or website to continue."
-                detailTone = .warning
+                detail = nil
+                detailTone = .standard
             }
             primaryTitle = hasSelection ? "Turn on protection" : "Choose apps first"
             primarySystemImage = "checkmark.shield"
             isPrimaryLoading = false
             isPrimaryEnabled = hasSelection
             primaryAction = hasSelection ? .startProtection : .none
-            secondaryTitle = nil
+            secondaryTitle = "Set up later"
         case .preparing:
             hidesDetailAtAccessibilitySizes = true
             detail = "Keep Checkpoint open while your first checkpoint is prepared."
@@ -526,12 +532,12 @@ struct FirstRunAppSelectionHeaderPresentation: Equatable {
             stage = "Choose apps"
             title = "Choose apps to protect"
             systemImage = "checkmark.shield.fill"
-            detail = "Select the apps and websites to pause for a checkpoint, or skip this for now."
+            detail = "Pause distracting apps until you clear a checkpoint. This is optional."
         } else {
             stage = "Goal saved"
             title = "Choose apps to protect"
             systemImage = "checkmark.circle.fill"
-            detail = "Select the apps and websites to pause for a checkpoint, or skip this for now."
+            detail = "Pause distracting apps until you clear a checkpoint. This is optional."
         }
     }
 
@@ -1698,29 +1704,19 @@ struct FirstRunAppSelectionHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            VStack(alignment: .leading, spacing: 10) {
-                if !usesMinimalAccessibilityLayout {
-                    mascotIdentity
-                        .animation(
-                            handoffMotionPolicy.animation,
-                            value: presentation.stage
-                        )
-                }
-
-                if !dynamicTypeSize.isAccessibilitySize {
-                    Text(presentation.title)
-                        .font(.title2.bold())
-                        .foregroundStyle(CheckpointTheme.text)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityAddTraits(.isHeader)
-                }
+            if !usesMinimalAccessibilityLayout {
+                mascotIdentity
+                    .animation(
+                        handoffMotionPolicy.animation,
+                        value: presentation.stage
+                    )
             }
 
-            FirstRunGoalContextStrip(
-                goalContext: goalContext,
-                compactsTitleForPicker: true,
-                compactPickerLineLimit: usesMinimalAccessibilityLayout ? 2 : 3
-            )
+            Text("For: \(goalContext.title)")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(CheckpointTheme.muted)
+                .lineLimit(2)
+                .accessibilityLabel(goalContext.accessibilityLabel)
 
             if !dynamicTypeSize.isAccessibilitySize {
                 Text(presentation.detail)
@@ -1766,16 +1762,16 @@ struct FirstRunAppSelectionHeader: View {
             )
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("CHECKPOINT")
+                Text("STEP 3 OF 3 · OPTIONAL")
                     .font(.caption2.weight(.bold))
-                    .tracking(1.1)
-                    .foregroundStyle(CheckpointTheme.text)
-
-                Text("STEP 3 OF 3 · \(presentation.stage.uppercased())")
-                    .font(.caption2.weight(.semibold))
                     .foregroundStyle(CheckpointTheme.muted)
+
+                Text(presentation.title)
+                    .font(.headline)
+                    .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.opacity)
+                    .accessibilityAddTraits(.isHeader)
             }
             .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         }

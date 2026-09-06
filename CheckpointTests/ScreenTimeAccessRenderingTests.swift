@@ -57,12 +57,11 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(initial.state.systemImage, "checkmark.shield")
         XCTAssertEqual(initial.state.tone, .informational)
         XCTAssertEqual(initial.heading, "Let’s protect your focus")
-        XCTAssertTrue(initial.detail.contains("Your goal and skill map are ready"))
+        XCTAssertTrue(initial.detail.contains("Screen Time lets Checkpoint pause distracting apps"))
         XCTAssertEqual(initial.primaryAction, .request)
         XCTAssertEqual(initial.primaryTitle, "Allow Screen Time")
         XCTAssertEqual(initial.primarySystemImage, "checkmark.shield")
         XCTAssertFalse(initial.isWorking)
-        XCTAssertTrue(initial.showsSetupSequence)
         XCTAssertTrue(initial.showsPrivacyProofInHero)
         XCTAssertNil(initial.recoveryTitle)
         XCTAssertNil(initial.statusMessage)
@@ -140,7 +139,6 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(unavailable.state.status, "iPhone required")
         XCTAssertEqual(unavailable.state.systemImage, "iphone.slash")
         XCTAssertEqual(unavailable.heading, "Screen Time access needs an iPhone")
-        XCTAssertFalse(unavailable.showsSetupSequence)
         XCTAssertFalse(unavailable.showsPrivacyProofInHero)
         XCTAssertNil(unavailable.primaryTitle)
         XCTAssertNil(unavailable.primarySystemImage)
@@ -151,7 +149,6 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             requiresProtectedAppReselection: false
         )
         XCTAssertEqual(initialUnavailable.heading, "Screen Time access needs an iPhone")
-        XCTAssertFalse(initialUnavailable.showsSetupSequence)
         XCTAssertTrue(initialUnavailable.showsPrivacyProofInHero)
 
         for approvedState in [
@@ -170,7 +167,6 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             XCTAssertEqual(approved.state.status, "Connected")
             XCTAssertEqual(approved.state.tone, .success)
             XCTAssertFalse(approved.isWorking)
-            XCTAssertFalse(approved.showsSetupSequence)
             XCTAssertNil(approved.statusMessage)
         }
     }
@@ -184,12 +180,11 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(initial.heading, "Screen Time connected")
         XCTAssertEqual(
             initial.detail,
-            "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
+            "Choose apps to pause, or skip for now. You can change this later."
         )
         XCTAssertEqual(initial.primaryAction, .continueAfterConnection)
         XCTAssertEqual(initial.primaryTitle, "Continue setup")
         XCTAssertEqual(initial.primarySystemImage, "arrow.right")
-        XCTAssertFalse(initial.showsSetupSequence)
 
         let resume = ScreenTimeAccessPresentation(
             context: .resumeSetup,
@@ -199,12 +194,11 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(resume.heading, "Screen Time connected")
         XCTAssertEqual(
             resume.detail,
-            "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
+            "Choose apps to pause, or skip for now. You can change this later."
         )
         XCTAssertEqual(resume.primaryAction, .continueAfterConnection)
         XCTAssertEqual(resume.primaryTitle, "Continue setup")
         XCTAssertEqual(resume.primarySystemImage, "arrow.right")
-        XCTAssertFalse(resume.showsSetupSequence)
 
         let selectionRecovery = ScreenTimeAccessPresentation(
             context: .restoreProtection,
@@ -219,7 +213,6 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(selectionRecovery.primaryAction, .continueAfterConnection)
         XCTAssertEqual(selectionRecovery.primaryTitle, "Choose apps again")
         XCTAssertEqual(selectionRecovery.primarySystemImage, "square.grid.2x2")
-        XCTAssertFalse(selectionRecovery.showsSetupSequence)
 
         let returnToCheckpoint = ScreenTimeAccessPresentation(
             context: .restoreProtection,
@@ -234,7 +227,6 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(returnToCheckpoint.primaryAction, .continueAfterConnection)
         XCTAssertEqual(returnToCheckpoint.primaryTitle, "Return to Checkpoint")
         XCTAssertEqual(returnToCheckpoint.primarySystemImage, "arrow.right")
-        XCTAssertFalse(returnToCheckpoint.showsSetupSequence)
 
         let returnToOnboarding = ScreenTimeAccessPresentation(
             context: .restoreProtection,
@@ -285,7 +277,6 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
 
         XCTAssertEqual(selectionRecovery.stage, "Protection paused")
         XCTAssertNil(selectionRecovery.step)
-        XCTAssertFalse(selectionRecovery.showsSetupSequence)
         XCTAssertEqual(selectionRecovery.recoveryTitle, "Your learning data is safe")
         XCTAssertEqual(selectionRecovery.recoverySystemImage, "lock.shield.fill")
         XCTAssertTrue(selectionRecovery.detail.localizedCaseInsensitiveContains("choose apps again"))
@@ -312,7 +303,6 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(eraseRecovery.state.systemImage, "trash")
         XCTAssertEqual(eraseRecovery.primaryTitle, "Retry data erasure")
         XCTAssertEqual(eraseRecovery.primarySystemImage, "trash")
-        XCTAssertFalse(eraseRecovery.showsSetupSequence)
         XCTAssertNil(eraseRecovery.recoveryTitle)
         XCTAssertNil(eraseRecovery.statusMessage)
     }

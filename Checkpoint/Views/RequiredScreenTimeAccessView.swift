@@ -220,7 +220,6 @@ struct ScreenTimeAccessPresentation: Equatable {
     let primaryTitle: String?
     let primarySystemImage: String?
     let isWorking: Bool
-    let showsSetupSequence: Bool
     let recoveryTitle: String?
     let recoveryDetail: String?
     let recoverySystemImage: String?
@@ -259,16 +258,13 @@ struct ScreenTimeAccessPresentation: Equatable {
             step = 3
             if state == .connected {
                 heading = "Screen Time connected"
-                detail = "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
-                showsSetupSequence = false
+                detail = "Choose apps to pause, or skip for now. You can change this later."
             } else if authorizationState == .unavailable {
                 heading = "Screen Time access needs an iPhone"
                 detail = "Open Checkpoint on a supported iPhone to finish setup and choose the apps you want to protect."
-                showsSetupSequence = false
             } else {
                 heading = "Let’s protect your focus"
-                detail = "Your goal and skill map are ready. Connect Screen Time, then choose any apps you’d like to protect."
-                showsSetupSequence = true
+                detail = "Screen Time lets Checkpoint pause distracting apps. You’ll choose which ones next."
             }
             recoveryTitle = nil
             recoveryDetail = nil
@@ -278,16 +274,13 @@ struct ScreenTimeAccessPresentation: Equatable {
             step = 3
             if state == .connected {
                 heading = "Screen Time connected"
-                detail = "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
-                showsSetupSequence = false
+                detail = "Choose apps to pause, or skip for now. You can change this later."
             } else if authorizationState == .unavailable {
                 heading = "Finish setup on a supported iPhone"
                 detail = "Your goal and skill map are saved. Open Checkpoint on an iPhone to connect Screen Time and finish setup."
-                showsSetupSequence = false
             } else {
                 heading = "Let’s protect your focus"
-                detail = "Your goal and skill map are ready. Connect Screen Time, then choose any apps you’d like to protect."
-                showsSetupSequence = true
+                detail = "Screen Time lets Checkpoint pause distracting apps. You’ll choose which ones next."
             }
             recoveryTitle = nil
             recoveryDetail = nil
@@ -327,7 +320,6 @@ struct ScreenTimeAccessPresentation: Equatable {
                 detail = "Restore Screen Time access to continue using Checkpoint."
                 recoveryDetail = "Your goals, answers, and progress stay saved while Screen Time access is off."
             }
-            showsSetupSequence = false
             recoveryTitle = "Your learning data is safe"
             recoverySystemImage = "lock.shield.fill"
         case .eraseRecovery:
@@ -335,7 +327,6 @@ struct ScreenTimeAccessPresentation: Equatable {
             step = nil
             heading = "Finish erasing Checkpoint data"
             detail = "Checkpoint must verify that its local app and Screen Time data are removed before you can continue or create a new goal."
-            showsSetupSequence = false
             recoveryTitle = nil
             recoveryDetail = nil
             recoverySystemImage = nil
@@ -467,8 +458,7 @@ struct RequiredScreenTimeAccessView: View {
                 )
                 .reportScreenTimeAccessLayoutFrame(.hero, using: layoutReporter)
 
-                if !accessPresentation.showsSetupSequence,
-                   accessPresentation.recoveryTitle != nil {
+                if accessPresentation.recoveryTitle != nil {
                     recoveryPanel
                 }
 
@@ -786,9 +776,17 @@ struct ScreenTimeAccessHero: View {
                     message: presentation.detail,
                     reduceMotionOverride: reduceMotion
                 )
-            }
 
-            accessDetails
+                if presentation.state != .connected {
+                    Label(ScreenTimeAccessPrivacyCopy.detail, systemImage: "hand.raised")
+                        .font(.footnote)
+                        .foregroundStyle(CheckpointTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 4)
+                }
+            } else {
+                accessDetails
+            }
         }
         .animation(motionPolicy.animation, value: presentation.state)
     }
@@ -800,39 +798,21 @@ struct ScreenTimeAccessHero: View {
             contentPadding: dynamicTypeSize.isAccessibilitySize ? 16 : 12
         ) {
             VStack(alignment: .leading, spacing: dynamicTypeSize.isAccessibilitySize ? 16 : 8) {
-                if presentation.showsPrivacyProofInHero {
-                    statusBadge
-                } else {
-                    heroIdentity
+                heroIdentity
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(presentation.heading)
-                            .font(.title2.bold())
-                            .foregroundStyle(CheckpointTheme.heroText)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .contentTransition(.opacity)
-                            .accessibilityAddTraits(.isHeader)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(presentation.heading)
+                        .font(.title2.bold())
+                        .foregroundStyle(CheckpointTheme.heroText)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.opacity)
+                        .accessibilityAddTraits(.isHeader)
 
-                        Text(presentation.detail)
-                            .font(.subheadline)
-                            .foregroundStyle(CheckpointTheme.heroMuted)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .contentTransition(.opacity)
-                    }
-                }
-
-                if presentation.showsSetupSequence {
-                    Divider()
-                        .overlay(CheckpointTheme.heroDivider)
-
-                    setupJourney
-                }
-
-                if presentation.showsPrivacyProofInHero {
-                    Divider()
-                        .overlay(CheckpointTheme.heroDivider)
-
-                    privacyPromise
+                    Text(presentation.detail)
+                        .font(.subheadline)
+                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.opacity)
                 }
             }
         }
@@ -957,137 +937,6 @@ struct ScreenTimeAccessHero: View {
         StatusBadge(text: presentation.state.status, tint: accent)
             .contentTransition(.opacity)
             .accessibilityLabel("Status: \(presentation.state.status)")
-    }
-
-    private var privacyPromise: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(alignment: .top, spacing: 10) {
-                privacyIcon
-                privacyCopy
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                privacyIcon
-                privacyCopy
-            }
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    @ViewBuilder
-    private var setupJourney: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("HOW IT WORKS")
-                .font(.caption2.weight(.bold))
-                .tracking(0.9)
-                .foregroundStyle(CheckpointTheme.heroMuted)
-                .accessibilityAddTraits(.isHeader)
-
-            if usesStackedJourneyLayout {
-                VStack(alignment: .leading, spacing: 8) {
-                    verticalJourneyStep(
-                        title: "Choose apps",
-                        systemImage: "square.grid.2x2"
-                    )
-                    verticalJourneyStep(
-                        title: "Clear a checkpoint",
-                        systemImage: "checkmark.circle"
-                    )
-                    verticalJourneyStep(
-                        title: "Unlock a timed break",
-                        systemImage: "timer"
-                    )
-                }
-            } else {
-                HStack(alignment: .top, spacing: 8) {
-                    journeyStep(title: "Choose apps", systemImage: "square.grid.2x2")
-                    journeyArrow
-                    journeyStep(title: "Checkpoint", systemImage: "checkmark.circle")
-                    journeyArrow
-                    journeyStep(title: "Timed break", systemImage: "timer")
-                }
-            }
-        }
-    }
-
-    private func journeyStep(title: String, systemImage: String) -> some View {
-        VStack(spacing: 6) {
-            Image(systemName: systemImage)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(accent)
-                .frame(width: 32, height: 32)
-                .background(
-                    CheckpointTheme.heroSubtleFill,
-                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                )
-                .accessibilityHidden(true)
-
-            Text(title)
-                .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(CheckpointTheme.heroText)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(fullJourneyTitle(for: title))
-    }
-
-    private var journeyArrow: some View {
-        Image(systemName: "chevron.right")
-            .font(.system(size: 9, weight: .bold))
-            .foregroundStyle(CheckpointTheme.heroMuted)
-            .padding(.top, 11)
-            .accessibilityHidden(true)
-    }
-
-    private func verticalJourneyStep(title: String, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.heroText)
-            .symbolRenderingMode(.hierarchical)
-            .tint(accent)
-            .frame(minHeight: 34)
-    }
-
-    private var usesStackedJourneyLayout: Bool {
-        dynamicTypeSize == .xLarge ||
-            dynamicTypeSize == .xxLarge ||
-            dynamicTypeSize == .xxxLarge ||
-            dynamicTypeSize.isAccessibilitySize
-    }
-
-    private func fullJourneyTitle(for compactTitle: String) -> String {
-        switch compactTitle {
-        case "Checkpoint":
-            "Clear a checkpoint"
-        case "Timed break":
-            "Unlock a timed break"
-        default:
-            compactTitle
-        }
-    }
-
-    private var privacyIcon: some View {
-        Image(systemName: "hand.raised.fill")
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(accent)
-            .frame(width: 30, height: 30)
-            .background(accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 9))
-            .accessibilityHidden(true)
-    }
-
-    private var privacyCopy: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(ScreenTimeAccessPrivacyCopy.title)
-                .font(.footnote.weight(.bold))
-                .foregroundStyle(CheckpointTheme.heroText)
-
-            Text(ScreenTimeAccessPrivacyCopy.detail)
-                .font(.caption)
-                .foregroundStyle(CheckpointTheme.heroMuted)
-                .fixedSize(horizontal: false, vertical: true)
-        }
     }
 
     private var stageText: String {

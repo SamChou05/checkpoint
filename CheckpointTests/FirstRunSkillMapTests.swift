@@ -142,18 +142,33 @@ final class FirstRunSkillMapTests: CheckpointWorkflowTestCase {
 
     @MainActor
     func testFirstRunMapStatesRenderInLightDarkAndAccessibilitySizes() {
-        let fixtures: [(String, Bool, QuestionBatchState, ColorScheme, DynamicTypeSize)] = [
-            ("review-light", true, .generating, .light, .large),
-            ("review-dark", true, .failed, .dark, .large),
-            ("review-large-type", true, .ready, .light, .accessibility3),
-            ("building", false, .generating, .light, .large),
-            ("retry", false, .failed, .dark, .large)
+        let fixtures: [(String, Int, QuestionBatchState, ColorScheme, DynamicTypeSize)] = [
+            ("review-light", 3, .generating, .light, .large),
+            ("review-dark", 3, .failed, .dark, .large),
+            ("review-six-skills", 6, .ready, .light, .large),
+            ("review-large-type", 6, .ready, .light, .accessibility3),
+            ("building", 0, .generating, .light, .large),
+            ("retry", 0, .failed, .dark, .large)
         ]
 
-        for (name, hasMap, batchState, scheme, typeSize) in fixtures {
+        for (name, topicCount, batchState, scheme, typeSize) in fixtures {
             let store = CheckpointStore(defaults: defaults)
             var goal = firstRunGoal()
-            if !hasMap { goal.derivedSkillMap = nil }
+            if topicCount == 0 {
+                goal.derivedSkillMap = nil
+            } else if topicCount == 6 {
+                goal.derivedSkillMap?.topics.append(contentsOf: [
+                    SkillMapTopic(name: "Algorithm design", objectives: [
+                        SkillMapObjective(name: "Break a complex problem into smaller steps")
+                    ]),
+                    SkillMapTopic(name: "Time and space complexity", objectives: [
+                        SkillMapObjective(name: "Compare the costs of different approaches")
+                    ]),
+                    SkillMapTopic(name: "Clear communication", objectives: [
+                        SkillMapObjective(name: "Walk through a solution with an example")
+                    ])
+                ])
+            }
             store.goal = goal
             store.questionBatchState = batchState
             var continueCount = 0
