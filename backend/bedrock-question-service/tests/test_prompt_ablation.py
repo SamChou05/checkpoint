@@ -6,9 +6,31 @@ from unittest.mock import patch
 
 from evals import checkpoint_prompt_ablation as experiment
 from lambda_test_support import _raw_question
+from service_errors import ProviderError
 
 
 class PromptAblationTests(unittest.TestCase):
+    def test_failed_capture_keeps_bounded_cause_codes_without_provider_messages(self):
+        job = experiment.make_plan(experiment.experiment_cases(), 123)[0]
+        provider_cause = RuntimeError("private provider detail")
+        provider_cause.response = {"Error": {"Code": "ThrottlingException"}}
+        wrapper_cause = RuntimeError("private transport detail")
+        wrapper_cause.response = None
+        wrapper_cause.__cause__ = provider_cause
+        error = ProviderError("Bedrock invocation failed.")
+        error.__cause__ = wrapper_cause
+        with patch.object(experiment, "_generate_with_bedrock", side_effect=error):
+            result = experiment.capture(job, "test-model")
+        self.assertEqual(result["questions"], [])
+        self.assertEqual(
+            result["error_causes"],
+            [
+                {"type": "RuntimeError"},
+                {"type": "RuntimeError", "provider_code": "ThrottlingException"},
+            ],
+        )
+        self.assertNotIn("private", json.dumps(result))
+
     def test_paired_arms_receive_identical_context(self):
         cases = experiment.experiment_cases()
         jobs = experiment.make_plan(cases, 123)

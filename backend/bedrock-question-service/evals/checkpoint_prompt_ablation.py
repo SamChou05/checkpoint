@@ -141,6 +141,17 @@ def capture(job, model):
     except Exception as error:
         result["error_type"] = type(error).__name__
         result["error_message"] = str(error)
+        causes = []
+        cause = error.__cause__
+        while cause is not None and len(causes) < 3:
+            detail = {"type": type(cause).__name__}
+            response = getattr(cause, "response", None)
+            provider_error = response.get("Error") if isinstance(response, dict) else None
+            if isinstance(provider_error, dict) and provider_error.get("Code"):
+                detail["provider_code"] = provider_error["Code"]
+            causes.append(detail)
+            cause = cause.__cause__
+        result["error_causes"] = causes
     result["elapsed_seconds"] = round(time.monotonic() - started, 3)
     return result
 
