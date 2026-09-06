@@ -1856,7 +1856,8 @@ struct CompetencyView: View {
                         accessibilityFocusRequestID: competencyAccessibilityFocusRequest?.competencyID
                             == competency.id
                             ? competencyAccessibilityFocusRequest?.id
-                            : nil
+                            : nil,
+                        learningPlan: store.adaptiveLearningPlan(for: competency)
                     )
                     .id(ProgressScrollAnchor.competency(competency.id))
 

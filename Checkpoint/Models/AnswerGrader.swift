@@ -172,6 +172,14 @@ enum AnswerGrader {
     }
 
     private static func evaluateMultipleChoice(answer: String, question: CheckpointQuestion) -> AnswerEvaluation {
+        if question.verificationVersion == 1 {
+            let correct = question.choices.contains(question.expectedAnswer)
+                && answer == question.expectedAnswer
+            return AnswerEvaluation(
+                result: correct ? .correct : .incorrect,
+                feedback: correct ? "Correct choice." : "That choice is not correct yet."
+            )
+        }
         let answerKey = MultipleChoiceAnswerNormalizer.key(for: answer)
         let expectedKey = MultipleChoiceAnswerNormalizer.key(for: question.expectedAnswer)
         let indexedExpectedChoice = MultipleChoiceAnswerNormalizer.choiceIndex(

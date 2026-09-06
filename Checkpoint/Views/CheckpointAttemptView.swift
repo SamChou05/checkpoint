@@ -94,7 +94,7 @@ struct CheckpointTerminalAnswerReviewPresentation: Equatable {
             ?? "This question's prompt is unavailable."
         answerLabel = "Your answer"
         answerText = Self.nonEmptyText(answer) ?? "No answer was recorded."
-        explanation = Self.nonEmptyText(question.explanation)
+        explanation = Self.nonEmptyText(question.feedbackExplanation(for: answer))
             ?? "No explanation is available for this question."
 
         if result == .correct {
@@ -2304,7 +2304,7 @@ struct CheckpointAttemptView: View {
                         .font(.caption.weight(.bold))
                         .foregroundStyle(CheckpointTheme.muted)
 
-                    Text(question.explanation)
+                    Text(question.feedbackExplanation(for: answer))
                         .font(.footnote)
                         .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)

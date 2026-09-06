@@ -62,6 +62,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var expectedAnswer: String
     var choices: [String]
     var explanation: String
+    var choiceExplanations: [String: String]
+    var verificationVersion: Int
     var topic: String
     var skillID: SkillMapTopic.ID?
     var objectiveID: SkillMapObjective.ID?
@@ -83,6 +85,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         expectedAnswer: String,
         choices: [String] = [],
         explanation: String,
+        choiceExplanations: [String: String] = [:],
+        verificationVersion: Int = 0,
         topic: String,
         skillID: SkillMapTopic.ID? = nil,
         objectiveID: SkillMapObjective.ID? = nil,
@@ -103,6 +107,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         self.expectedAnswer = expectedAnswer
         self.choices = choices
         self.explanation = explanation
+        self.choiceExplanations = choiceExplanations
+        self.verificationVersion = verificationVersion
         self.topic = topic
         self.skillID = skillID
         self.objectiveID = objectiveID
@@ -125,6 +131,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         case expectedAnswer
         case choices
         case explanation
+        case choiceExplanations
+        case verificationVersion
         case topic
         case skillID
         case objectiveID
@@ -148,6 +156,8 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         expectedAnswer = try container.decode(String.self, forKey: .expectedAnswer)
         choices = try container.decodeIfPresent([String].self, forKey: .choices) ?? []
         explanation = try container.decode(String.self, forKey: .explanation)
+        choiceExplanations = try container.decodeIfPresent([String: String].self, forKey: .choiceExplanations) ?? [:]
+        verificationVersion = try container.decodeIfPresent(Int.self, forKey: .verificationVersion) ?? 0
         topic = try container.decode(String.self, forKey: .topic)
         skillID = try container.decodeIfPresent(SkillMapTopic.ID.self, forKey: .skillID)
         objectiveID = try container.decodeIfPresent(SkillMapObjective.ID.self, forKey: .objectiveID)
@@ -160,6 +170,13 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         lastAskedAt = try container.decodeIfPresent(Date.self, forKey: .lastAskedAt)
         nextReviewAt = try container.decodeIfPresent(Date.self, forKey: .nextReviewAt)
         sourcePrompt = try container.decodeIfPresent(String.self, forKey: .sourcePrompt) ?? ""
+    }
+
+    func feedbackExplanation(for answer: String) -> String {
+        guard let choiceExplanation = choiceExplanations[answer],
+              !choiceExplanation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              choiceExplanation != explanation else { return explanation }
+        return choiceExplanation + "\n\n" + explanation
     }
 }
 

@@ -184,9 +184,7 @@ def ensure_bank(
     effective_desired_count = max(desired_count, _number(meta, "desiredCount"))
     effective_low_watermark = _number(meta, "lowWatermark")
     if _inventory_progress(meta) >= effective_desired_count:
-        if effective_low_watermark == 0 and not _boolean(
-            meta, "initialFillComplete"
-        ):
+        if effective_low_watermark == 0 and not _boolean(meta, "initialFillComplete"):
             _mark_initial_fill_complete(client, table_name, bank_key, now)
             meta = _get_item(client, table_name, bank_key, consistent=True) or meta
     else:
@@ -221,6 +219,9 @@ def claim_questions(
     bank_id = _required_hex_identifier(payload.get("bankID"), "bankID")
     claim_id = _required_identifier(payload.get("claimID"), "claimID")
     limit = _required_int(payload.get("limit"), "limit", 1, MAX_CLAIM_COUNT)
+    minimum_verification = _required_int(
+        payload.get("minimumVerificationVersion", 0), "minimumVerificationVersion", 0, 1
+    )
     bank_key = _bank_key(owner_digest, bank_id)
     claim_key = {"pk": bank_key["pk"], "sk": _s(f"CLAIM#{_plain_digest(claim_id)}")}
 
@@ -232,6 +233,7 @@ def claim_questions(
     existing_claim = _get_item(client, table_name, claim_key, consistent=True)
     if existing_claim:
         response = _stored_claim(existing_claim)
+        _require_claim_verification(response, minimum_verification)
         _recover_refill_after_claim(
             client,
             queue,
@@ -245,9 +247,7 @@ def claim_questions(
 
     try:
         blocked_stem_fingerprints = set(
-            _validated_blocked_stem_fingerprints(
-                payload.get("blockedStemFingerprints")
-            )
+            _validated_blocked_stem_fingerprints(payload.get("blockedStemFingerprints"))
         )
     except ValueError as error:
         raise QuestionBankError(400, str(error), "invalid_request") from error
@@ -291,10 +291,15 @@ def claim_questions(
             if not isinstance(question, dict):
                 discard_items.append(item)
                 continue
+            if (
+                minimum_verification
+                and question.get("verificationVersion") != minimum_verification
+            ):
+                discard_items.append(item)
+                continue
             stem_identity = _normalized_stem_identity(question.get("prompt"))
             stem_is_blocked = (
-                _stem_fingerprint(question.get("prompt"))
-                in blocked_stem_fingerprints
+                _stem_fingerprint(question.get("prompt")) in blocked_stem_fingerprints
             )
             if (
                 not stem_identity
@@ -457,6 +462,7 @@ def claim_questions(
             existing_claim = _get_item(client, table_name, claim_key, consistent=True)
             if existing_claim:
                 response = _stored_claim(existing_claim)
+                _require_claim_verification(response, minimum_verification)
                 _recover_refill_after_claim(
                     client,
                     queue,
@@ -485,6 +491,18 @@ def claim_questions(
     raise QuestionBankError(
         409, "Question inventory changed; retry the claim.", "claim_conflict"
     )
+
+
+def _require_claim_verification(response: dict[str, Any], minimum: int) -> None:
+    if minimum and any(
+        not isinstance(question, dict) or question.get("verificationVersion") != minimum
+        for question in response.get("questions", [])
+    ):
+        raise QuestionBankError(
+            409,
+            "Claim was created under an older question quality requirement.",
+            "claim_conflict",
+        )
 
 
 def _consume_duplicate_question_rows(
@@ -592,9 +610,7 @@ def _consume_duplicate_question_rows(
                     "TableName": table_name,
                     "Key": pointer_key,
                     "ConditionExpression": "currentBankID = :bank",
-                    "ExpressionAttributeValues": {
-                        ":bank": _s(_string(meta, "bankID"))
-                    },
+                    "ExpressionAttributeValues": {":bank": _s(_string(meta, "bankID"))},
                 }
             },
         ]

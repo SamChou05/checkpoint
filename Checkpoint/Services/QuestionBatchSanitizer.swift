@@ -42,6 +42,7 @@ enum QuestionBatchSanitizer {
         var sanitizedQuestions: [CheckpointQuestion] = []
 
         for question in questions {
+            guard !request.requiresVerifiedQuestions || question.verificationVersion == 1 else { continue }
             var sanitizedQuestion = question
             sanitizedQuestion.prompt = QuestionText.clipped(
                 question.prompt.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -51,15 +52,32 @@ enum QuestionBatchSanitizer {
                 question.expectedAnswer.trimmingCharacters(in: .whitespacesAndNewlines),
                 maxLength: 280
             )
-            guard let choiceResolution = sanitizedChoices(
-                question.choices,
-                expectedAnswer: expectedAnswer,
-                explanation: question.explanation
-            ) else {
+            let choiceResolution: (expectedAnswer: String, choices: [String])?
+            if question.verificationVersion == 1 {
+                // A reviewed answer is the exact choice text. Legacy label/cue
+                // heuristics must never reinterpret numbers inside that text.
+                choiceResolution = question.choices.count == 4
+                    && hasUniqueChoices(question.choices)
+                    && question.choices.contains(question.expectedAnswer)
+                    && question.choices.allSatisfy { !$0.isEmpty && $0.count <= 140 }
+                    ? (question.expectedAnswer, question.choices.shuffled()) : nil
+            } else {
+                choiceResolution = sanitizedChoices(
+                    question.choices,
+                    expectedAnswer: expectedAnswer,
+                    explanation: question.explanation
+                )
+            }
+            guard let choiceResolution else {
                 continue
             }
             sanitizedQuestion.expectedAnswer = choiceResolution.expectedAnswer
+            if question.verificationVersion == 1,
+               choiceResolution.expectedAnswer != question.expectedAnswer { continue }
             sanitizedQuestion.choices = choiceResolution.choices
+            sanitizedQuestion.choiceExplanations = question.choiceExplanations.filter {
+                sanitizedQuestion.choices.contains($0.key) && (12...280).contains($0.value.count)
+            }
             sanitizedQuestion.explanation = QuestionText.clipped(
                 question.explanation.trimmingCharacters(in: .whitespacesAndNewlines),
                 maxLength: 420
@@ -148,11 +166,11 @@ enum QuestionBatchSanitizer {
             && !isGenericAssessmentMetaQuestion(question)
             && !isStudyStrategyPrompt(question.prompt, context: request.questionContext)
             && !containsEmbeddedAnswerOptions(question.prompt)
-            && !explanationSupportsDifferentChoice(
+            && (question.verificationVersion == 1 || !explanationSupportsDifferentChoice(
                 expectedAnswer: question.expectedAnswer,
                 choices: question.choices,
                 explanation: question.explanation
-            )
+            ))
     }
 
     private static func isGenericAssessmentMetaQuestion(_ question: CheckpointQuestion) -> Bool {

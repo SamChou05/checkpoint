@@ -267,6 +267,7 @@ final class AppSnapshotPersistenceTests: XCTestCase {
                 "D. Overbroad claim"
             ],
             explanation: explanation,
+            verificationVersion: 0,
             status: .retired,
             timesAsked: 2
         )

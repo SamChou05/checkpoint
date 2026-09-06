@@ -325,6 +325,25 @@ extension AdaptiveSchedulingTests {
     }
 
     private func adaptiveAttempt(goal: Goal, skill: SkillMapTopic, index: Int, difficulty: Int, correct: Bool, at date: Date) -> CheckpointAttempt {
-        CheckpointAttempt(questionID: UUID(), goalID: goal.id, skillID: skill.id, objectiveID: skill.objectives[index % skill.objectives.count].id, questionDifficulty: difficulty, prompt: "Apply this concept to scenario \(index)", answer: correct ? "Supported answer" : "Tempting wrong answer", result: correct ? .correct : .incorrect, unlockMinutes: 0, reviewSnapshot: CheckpointAttemptReviewSnapshot(topic: skill.name, format: .multipleChoice, referenceAnswer: "Supported answer", explanation: "Reasoning"), createdAt: date)
+        CheckpointAttempt(questionID: UUID(), goalID: goal.id, skillID: skill.id, objectiveID: skill.objectives[index % skill.objectives.count].id, questionDifficulty: difficulty, questionVerificationVersion: 1, prompt: "Apply this concept to scenario \(index)", answer: correct ? "Supported answer" : "Tempting wrong answer", result: correct ? .correct : .incorrect, unlockMinutes: 0, reviewSnapshot: CheckpointAttemptReviewSnapshot(topic: skill.name, format: .multipleChoice, referenceAnswer: "Supported answer", explanation: "Reasoning"), createdAt: date)
+    }
+
+    @MainActor
+    func testUnverifiedCacheAndLegacyAnswersCannotDriveProPracticeOrAdvancement() {
+        let skill = SkillMapTopic(name: "Logic", objectives: [SkillMapObjective(name: "Apply logic")])
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill])
+        let attempts = (0..<10).map { index -> CheckpointAttempt in
+            var attempt = adaptiveAttempt(goal: goal, skill: skill, index: index, difficulty: 5, correct: true, at: Date().addingTimeInterval(-60))
+            attempt.questionVerificationVersion = index.isMultiple(of: 2) ? nil : 0
+            return attempt
+        }
+        XCTAssertEqual(AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)[0].evidenceCount, 0)
+        XCTAssertEqual(AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)[0].targetDifficulty, 1)
+        let legacy = makeQuestion(goal: goal, index: 1, verificationVersion: 0, skillID: skill.id)
+        let checked = makeQuestion(goal: goal, index: 2, skillID: skill.id)
+        let selector = CheckpointQuestionSelector(questions: [legacy, checked], goalProfiles: [goal], currentGoal: goal, competencies: [], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2, requiresVerifiedQuestions: true)
+        XCTAssertFalse(selector.isSelectableQuestion(legacy))
+        XCTAssertEqual(selector.nextQuestion()?.id, checked.id)
     }
 }

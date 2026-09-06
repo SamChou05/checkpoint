@@ -21,6 +21,68 @@ from question_bank_test_support import (
 
 
 class QuestionBankInventoryTests(QuestionBankTestCase):
+    def test_verified_claim_discards_old_inventory_and_refills(self):
+        bank_id, meta, pointer, question = _claim_records(low=0)
+        meta["generatedCount"] = meta["desiredCount"] = {"N": "1"}
+        meta["initialFillComplete"] = {"BOOL": True}
+        dynamo = ClaimDynamo(meta, pointer, [question])
+        with mock.patch.object(question_bank, "_ensure_refill") as refill:
+            response = question_bank.claim_questions(
+                {
+                    "bankID": bank_id,
+                    "claimID": "verified-only",
+                    "limit": 1,
+                    "minimumVerificationVersion": 1,
+                },
+                _event(),
+                dynamodb_client=dynamo,
+                sqs_client=FakeQueue(),
+            )
+        self.assertEqual(response["questions"], [])
+        self.assertEqual(question["state"], {"S": "discarded"})
+        self.assertEqual(dynamo.meta["generatedCount"], {"N": "0"})
+        refill.assert_called_once()
+
+    def test_verified_claim_preserves_checked_payload_and_replay(self):
+        bank_id, meta, pointer, question = _claim_records(low=0)
+        payload = json.loads(question["questionJSON"]["S"])
+        payload["verificationVersion"] = 1
+        payload["choiceExplanations"] = {"B": "This reverses the condition."}
+        question["questionJSON"]["S"] = json.dumps(payload)
+        dynamo = ClaimDynamo(meta, pointer, [question])
+        request = {
+            "bankID": bank_id,
+            "claimID": "checked-replay",
+            "limit": 1,
+            "minimumVerificationVersion": 1,
+        }
+        with mock.patch.object(question_bank, "_ensure_refill"):
+            first = question_bank.claim_questions(
+                request, _event(), dynamodb_client=dynamo, sqs_client=FakeQueue()
+            )
+            second = question_bank.claim_questions(
+                request, _event(), dynamodb_client=dynamo, sqs_client=FakeQueue()
+            )
+        self.assertEqual(first, second)
+        self.assertEqual(first["questions"], [payload])
+
+    def test_legacy_claim_cannot_replay_as_verified(self):
+        bank_id, meta, pointer, question = _claim_records(low=0)
+        dynamo = ClaimDynamo(meta, pointer, [question])
+        request = {"bankID": bank_id, "claimID": "old-replay", "limit": 1}
+        with mock.patch.object(question_bank, "_ensure_refill"):
+            question_bank.claim_questions(
+                request, _event(), dynamodb_client=dynamo, sqs_client=FakeQueue()
+            )
+            with self.assertRaises(question_bank.QuestionBankError) as raised:
+                question_bank.claim_questions(
+                    {**request, "minimumVerificationVersion": 1},
+                    _event(),
+                    dynamodb_client=dynamo,
+                    sqs_client=FakeQueue(),
+                )
+        self.assertEqual(raised.exception.code, "claim_conflict")
+
     def test_ensure_bank_identity_uses_owner_goal_and_explicit_revision(self):
         payload = _ensure_payload()
         normalized = _normalized_request()
@@ -313,7 +375,9 @@ class QuestionBankInventoryTests(QuestionBankTestCase):
         fallback = client.update_item.call_args_list[1].kwargs
         self.assertNotIn("desiredCount = :desired", fallback["UpdateExpression"])
         self.assertIn("contextRevision = :revision", fallback["ConditionExpression"])
-        self.assertIn("skillAllocationKey = :allocation", fallback["ConditionExpression"])
+        self.assertIn(
+            "skillAllocationKey = :allocation", fallback["ConditionExpression"]
+        )
         self.assertIn("desiredCount >= :desired", fallback["ConditionExpression"])
 
     def test_smaller_repeat_ensure_refills_to_effective_stored_target(self):
@@ -510,9 +574,7 @@ class QuestionBankInventoryTests(QuestionBankTestCase):
             novel_prompts,
         )
         self.assertEqual(response["readyCount"], 0)
-        self.assertTrue(
-            all(item["state"] == {"S": "discarded"} for item in duplicates)
-        )
+        self.assertTrue(all(item["state"] == {"S": "discarded"} for item in duplicates))
         self.assertTrue(
             all(item["state"] == {"S": "claimed"} for item in novel_questions)
         )
@@ -596,17 +658,17 @@ class QuestionBankInventoryTests(QuestionBankTestCase):
             1,
         )
         self.assertEqual(
-            sum(
-                item["state"] == {"S": "discarded"}
-                for item in duplicate_questions
-            ),
+            sum(item["state"] == {"S": "discarded"} for item in duplicate_questions),
             24,
         )
         self.assertEqual(dynamo.meta["generatedCount"], {"N": "3"})
         self.assertEqual(response["status"], "queued")
         refill.assert_called_once()
         self.assertTrue(
-            all(len(transaction["TransactItems"]) <= 25 for transaction in dynamo.transactions)
+            all(
+                len(transaction["TransactItems"]) <= 25
+                for transaction in dynamo.transactions
+            )
         )
 
     def test_finite_bank_replenishes_discarded_duplicate_idempotently(self):
@@ -854,9 +916,7 @@ class QuestionBankInventoryTests(QuestionBankTestCase):
             for item in dynamo.transactions[0]["TransactItems"]
             if "Update" in item and item["Update"]["Key"]["sk"]["S"] == "META"
         )
-        self.assertNotIn(
-            "failedGenerationJobCount", meta_update["UpdateExpression"]
-        )
+        self.assertNotIn("failedGenerationJobCount", meta_update["UpdateExpression"])
 
     def test_zero_watermark_is_finite_but_positive_watermark_refills(self):
         bank_id, meta, pointer, question = _claim_records(low=0)

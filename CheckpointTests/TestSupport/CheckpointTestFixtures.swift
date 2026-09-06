@@ -74,6 +74,7 @@ func makeQuestion(
     expectedAnswer: String? = nil,
     choices: [String]? = nil,
     explanation: String? = nil,
+    verificationVersion: Int = 1,
     skillID: SkillMapTopic.ID? = nil,
     objectiveID: SkillMapObjective.ID? = nil,
     objective: String? = nil,
@@ -97,6 +98,7 @@ func makeQuestion(
             "Distractor \(index)C"
         ],
         explanation: explanation ?? "Explanation \(index)",
+        verificationVersion: verificationVersion,
         topic: topic,
         skillID: skillID,
         objectiveID: objectiveID,

@@ -37,6 +37,7 @@ enum AdaptiveLearningPolicy {
         return attempts
             .filter {
                 $0.goalID == goalID && $0.skillID == skill.id
+                    && $0.questionVerificationVersion == 1
                     && $0.createdAt <= now
                     && $0.createdAt >= now.addingTimeInterval(-evidenceMaximumAge)
             }

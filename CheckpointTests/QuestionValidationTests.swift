@@ -4,6 +4,45 @@ import XCTest
 // MARK: - Question validation
 
 final class QuestionValidationTests: XCTestCase {
+    func testVerifiedQuestionKeepsExactNumericAnswerAndTeachingFeedback() throws {
+        let goal = makeGoal()
+        var question = makeQuestion(goal: goal, index: 2)
+        question.choiceExplanations = [question.choices[1]: "This choice reverses the relationship."]
+        var request = makeRequest(goal: goal)
+        request.requiresVerifiedQuestions = true
+        let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: request).first)
+        XCTAssertEqual(accepted.expectedAnswer, "Correct answer 2")
+        for choice in accepted.choices {
+            XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: accepted).result,
+                           choice == accepted.expectedAnswer ? .correct : .incorrect)
+        }
+        XCTAssertEqual(accepted.choiceExplanations, question.choiceExplanations)
+        XCTAssertEqual(accepted.feedbackExplanation(for: question.choices[1]),
+                       "This choice reverses the relationship.\n\nExplanation 2")
+        var legacy = question
+        legacy.verificationVersion = 0
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([legacy], for: request).isEmpty)
+    }
+
+    func testVerificationAndChoiceFeedbackSurviveWireAndPersistenceWhileLegacyIsUnverified() throws {
+        let goal = makeGoal()
+        var question = makeQuestion(goal: goal, index: 1)
+        question.choiceExplanations = [question.choices[1]: "This option omits a required condition."]
+        let encoded = try JSONEncoder().encode(question)
+        let payload = try JSONDecoder().decode(GeneratedQuestionPayload.self, from: encoded)
+        let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
+        XCTAssertEqual(received.verificationVersion, 1)
+        XCTAssertEqual(received.choiceExplanations, question.choiceExplanations)
+        let restored = try JSONDecoder().decode(CheckpointQuestion.self, from: encoded)
+        XCTAssertEqual(restored.choiceExplanations, question.choiceExplanations)
+        var oldJSON = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        oldJSON.removeValue(forKey: "verificationVersion")
+        oldJSON.removeValue(forKey: "choiceExplanations")
+        let legacy = try JSONDecoder().decode(CheckpointQuestion.self, from: JSONSerialization.data(withJSONObject: oldJSON))
+        XCTAssertEqual(legacy.verificationVersion, 0)
+        XCTAssertTrue(legacy.choiceExplanations.isEmpty)
+    }
+
     func testExactStemNormalizationDoesNotEraseLeadingMeaningfulPunctuation() {
         XCTAssertFalse(
             QuestionBatchSanitizer.hasSameQuestionStem(
@@ -136,6 +175,7 @@ final class QuestionValidationTests: XCTestCase {
                 "C. Another distractor",
                 "D. Final distractor"
             ],
+            verificationVersion: 0,
             difficulty: 2
         )
 
@@ -178,6 +218,7 @@ final class QuestionValidationTests: XCTestCase {
             expectedAnswer: "positive",
             choices: ["positive", "negative", "zero", "undefined"],
             explanation: "The computed result is -1, which is negative.",
+            verificationVersion: 0,
             difficulty: 4
         )
 
@@ -473,6 +514,7 @@ final class QuestionValidationTests: XCTestCase {
                 "A too-broad answer"
             ],
             explanation: "The answer supported by the argument is correct because it follows from the stated evidence.",
+            verificationVersion: 0,
             difficulty: 2
         )
 
@@ -504,6 +546,7 @@ final class QuestionValidationTests: XCTestCase {
                 "A too-broad answer"
             ],
             explanation: "The answer supported by the argument is the best\nanswer because it follows from the evidence.",
+            verificationVersion: 0,
             difficulty: 2
         )
 
@@ -526,6 +569,7 @@ final class QuestionValidationTests: XCTestCase {
                 "A too-broad answer"
             ],
             explanation: "The answer supported by the argument is correct because it follows from the stated evidence.",
+            verificationVersion: 0,
             difficulty: 2
         )
 
@@ -555,7 +599,8 @@ final class QuestionValidationTests: XCTestCase {
             goal: goal,
             index: 1,
             expectedAnswer: "B",
-            choices: choices
+            choices: choices,
+            verificationVersion: 0
         )
 
         for result in [AnswerResult.partial, .incorrect, .unclear] {
@@ -641,6 +686,7 @@ final class QuestionValidationTests: XCTestCase {
                 "A too-broad answer"
             ],
             explanation: "The answer supported by the argument is the best\nanswer because it follows from the evidence.",
+            verificationVersion: 0,
             difficulty: 2
         )
 

@@ -9,6 +9,7 @@ struct CheckpointQuestionSelector {
     private let activeQuestionDifficulty: Int
     private let maximumExactQuestionAskCount: Int
     private let adaptiveDifficultyBySkillID: [SkillMapTopic.ID: Int]
+    private let requiresVerifiedQuestions: Bool
 
     init(
         questions: [CheckpointQuestion],
@@ -17,7 +18,8 @@ struct CheckpointQuestionSelector {
         competencies: [TopicCompetency],
         activeQuestionDifficulty: Int,
         maximumExactQuestionAskCount: Int,
-        adaptiveDifficultyBySkillID: [SkillMapTopic.ID: Int] = [:]
+        adaptiveDifficultyBySkillID: [SkillMapTopic.ID: Int] = [:],
+        requiresVerifiedQuestions: Bool = false
     ) {
         self.questions = questions
         self.goalProfiles = goalProfiles
@@ -26,6 +28,7 @@ struct CheckpointQuestionSelector {
         self.activeQuestionDifficulty = activeQuestionDifficulty
         self.maximumExactQuestionAskCount = maximumExactQuestionAskCount
         self.adaptiveDifficultyBySkillID = adaptiveDifficultyBySkillID
+        self.requiresVerifiedQuestions = requiresVerifiedQuestions
     }
 
     private var activeQuestions: [CheckpointQuestion] {
@@ -397,6 +400,7 @@ struct CheckpointQuestionSelector {
     }
 
     func isSelectableQuestion(_ question: CheckpointQuestion) -> Bool {
+        guard !requiresVerifiedQuestions || question.verificationVersion == 1 else { return false }
         guard question.status != .retired,
               question.timesAsked < maximumExactQuestionAskCount else {
             return false

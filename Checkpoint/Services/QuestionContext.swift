@@ -36,6 +36,7 @@ struct QuestionGenerationRequest: Sendable {
     var minimumDifficulty: Int
     var desiredSkillAllocation: [SkillMapTopic.ID: Int] = [:]
     var adaptiveSkillPlans: [AdaptiveSkillPlan] = []
+    var requiresVerifiedQuestions = false
     var backendEndpoint: URL?
     var backendAuthorizationToken: String? = nil
 

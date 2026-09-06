@@ -2,6 +2,23 @@ import XCTest
 @testable import Checkpoint
 
 final class CheckpointSessionTests: CheckpointWorkflowTestCase {
+    @MainActor
+    func testSubmittedAnswerRetainsSpecificTeachingFeedbackAfterRelaunch() throws {
+        let goal = makeGoal()
+        var question = makeQuestion(goal: goal, index: 1)
+        let selected = question.choices[1]
+        question.choiceExplanations[selected] = "This choice reverses the condition."
+        let store = CheckpointStore(defaults: defaults)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = [question]
+        _ = store.submitAnswer(question: question, answer: selected, result: .incorrect, grantsUnlock: false)
+        let restored = CheckpointStore(defaults: defaults)
+        let attempt = try XCTUnwrap(restored.attempts.first)
+        XCTAssertEqual(attempt.questionVerificationVersion, 1)
+        XCTAssertEqual(attempt.reviewSnapshot?.explanation, "This choice reverses the condition.\n\nExplanation 1")
+    }
+
     // MARK: - Answer review presentation
 
     func testAnswerReviewPresentationUsesFormatSpecificLabels() throws {
@@ -60,7 +77,8 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
                 "An unrelated answer",
                 "A too-broad answer"
             ],
-            explanation: explanation
+            explanation: explanation,
+            verificationVersion: 0
         )
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
@@ -100,7 +118,8 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
                 index: index + 1,
                 expectedAnswer: "B",
                 choices: choices,
-                explanation: "A stack removes the most recently added element."
+                explanation: "A stack removes the most recently added element.",
+                verificationVersion: 0
             )
             store.questions.append(question)
 

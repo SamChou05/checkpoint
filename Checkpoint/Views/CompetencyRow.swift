@@ -96,6 +96,7 @@ struct CompetencyRow: View {
     private let expandedCompetencyID: Binding<TopicCompetency.ID?>?
     let isHighlighted: Bool
     let accessibilityFocusRequestID: UUID?
+    let learningPlan: AdaptiveSkillPlan?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
@@ -110,12 +111,14 @@ struct CompetencyRow: View {
         competency: TopicCompetency,
         expandedCompetencyID: Binding<TopicCompetency.ID?>? = nil,
         isHighlighted: Bool = false,
-        accessibilityFocusRequestID: UUID? = nil
+        accessibilityFocusRequestID: UUID? = nil,
+        learningPlan: AdaptiveSkillPlan? = nil
     ) {
         self.competency = competency
         self.expandedCompetencyID = expandedCompetencyID
         self.isHighlighted = isHighlighted
         self.accessibilityFocusRequestID = accessibilityFocusRequestID
+        self.learningPlan = learningPlan
     }
 
     private var isExpanded: Bool {
@@ -165,6 +168,14 @@ struct CompetencyRow: View {
             .accessibilityValue(accessibilityValue)
             .accessibilityHint(isExpanded ? "Hides the answer breakdown." : "Shows the answer breakdown.")
             .accessibilityFocused($isAccessibilityFocused)
+
+            if let learningPlan, learningPlan.evidenceCount > 0 {
+                Text("Level \(learningPlan.targetDifficulty) practice · Adjusts with your answers")
+                    .font(.caption)
+                    .foregroundStyle(CheckpointTheme.teal)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, 10)
+            }
 
             if isExpanded {
                 Divider()

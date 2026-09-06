@@ -3291,7 +3291,8 @@ final class CheckpointStore {
             maximumExactQuestionAskCount: Self.maximumExactQuestionAskCount,
             adaptiveDifficultyBySkillID: Dictionary(uniqueKeysWithValues:
                 targetGoal.map { adaptiveSkillPlans(for: $0).map { ($0.skillID, $0.targetDifficulty) } } ?? []
-            )
+            ),
+            requiresVerifiedQuestions: isMember
         )
     }
 
@@ -3363,7 +3364,8 @@ final class CheckpointStore {
         let reviewSnapshot = attemptReviewSnapshot(
             for: question,
             result: result,
-            canonicalTopic: mappedSkill?.name ?? question.topic
+            canonicalTopic: mappedSkill?.name ?? question.topic,
+            answer: answer
         )
         let attempt = CheckpointAttempt(
             questionID: question.id,
@@ -3371,6 +3373,7 @@ final class CheckpointStore {
             skillID: mappedSkill?.id ?? question.skillID,
             objectiveID: question.objectiveID,
             questionDifficulty: question.difficulty,
+            questionVerificationVersion: question.verificationVersion,
             prompt: question.prompt,
             answer: answer,
             result: result,
@@ -4288,7 +4291,8 @@ final class CheckpointStore {
         for skill: SkillMapTopic,
         goalID: Goal.ID
     ) -> [CheckpointAttempt] {
-        Array(AdaptiveLearningPolicy.distinctAttempts(for: skill, goalID: goalID, attempts: attempts)
+        let excludedQuestions = Set(questionReports.filter { $0.goalID == goalID }.map(\.questionID))
+        return Array(AdaptiveLearningPolicy.distinctAttempts(for: skill, goalID: goalID, attempts: attempts.filter { !excludedQuestions.contains($0.questionID) })
             .suffix(Self.evolutionRecentAttemptLimitPerSkill).reversed())
     }
 
@@ -5562,13 +5566,14 @@ final class CheckpointStore {
     private func attemptReviewSnapshot(
         for question: CheckpointQuestion,
         result: AnswerResult,
-        canonicalTopic: String
+        canonicalTopic: String,
+        answer: String? = nil
     ) -> CheckpointAttemptReviewSnapshot {
         CheckpointAttemptReviewSnapshot(
             topic: canonicalTopic,
             format: question.format,
             referenceAnswer: AnswerGrader.correctAnswerText(for: question, after: result),
-            explanation: question.explanation
+            explanation: answer.map { question.feedbackExplanation(for: $0) } ?? question.explanation
         )
     }
 
@@ -6515,6 +6520,7 @@ final class CheckpointStore {
         .sorted()
         .joined(separator: "|")
         let components = [
+            isMember ? "verified-learning-v1" : "starter",
             goal.title,
             goal.currentLevel,
             goal.focusAreas,
@@ -6572,6 +6578,7 @@ final class CheckpointStore {
                 competencies: generationCompetencies
             ),
             adaptiveSkillPlans: adaptiveSkillPlans(for: goal),
+            requiresVerifiedQuestions: isMember,
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken
         )
@@ -6627,7 +6634,13 @@ final class CheckpointStore {
 
     private func adaptiveSkillPlans(for targetGoal: Goal) -> [AdaptiveSkillPlan] {
         guard isMember else { return [] }
-        return AdaptiveLearningPolicy.plans(for: targetGoal, attempts: attempts)
+        let excludedQuestions = Set(questionReports.filter { $0.goalID == targetGoal.id }.map(\.questionID))
+        return AdaptiveLearningPolicy.plans(for: targetGoal, attempts: attempts.filter { !excludedQuestions.contains($0.questionID) })
+    }
+
+    func adaptiveLearningPlan(for competency: TopicCompetency) -> AdaptiveSkillPlan? {
+        guard let goal, let skillID = competency.skillID else { return nil }
+        return adaptiveSkillPlans(for: goal).first { $0.skillID == skillID }
     }
 
     private var resolvedBackendEndpoint: URL? {

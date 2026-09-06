@@ -261,6 +261,7 @@ struct BackendQuestionBankClaimRequest: Encodable {
     var claimID: String
     var limit: Int
     var blockedStemFingerprints: [String]
+    var minimumVerificationVersion: Int
 
     init(
         bankID: String,
@@ -271,6 +272,7 @@ struct BackendQuestionBankClaimRequest: Encodable {
         self.bankID = bankID
         self.claimID = claimID
         self.limit = limit
+        minimumVerificationVersion = request?.requiresVerifiedQuestions == true ? 1 : 0
         blockedStemFingerprints = request.map {
             BackendQuestionHistory.blockedStemFingerprints(for: $0)
         } ?? []

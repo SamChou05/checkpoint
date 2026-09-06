@@ -2465,6 +2465,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 prompt: "Explain a practical decision in \(topic.name.lowercased()).",
                 expectedAnswer: "A clear decision with a stated tradeoff.",
                 explanation: "Connect the decision to the system constraint.",
+                verificationVersion: 1,
                 topic: topic.name,
                 skillID: topic.id,
                 difficulty: 3,

@@ -3036,6 +3036,7 @@ private func makeCoordinatorTestQuestion(
         expectedAnswer: "Answer \(index)",
         choices: ["Answer \(index)", "A", "B", "C"],
         explanation: "Explanation \(index)",
+        verificationVersion: 1,
         topic: "arrays",
         difficulty: difficulty,
         format: .multipleChoice,

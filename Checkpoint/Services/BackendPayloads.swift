@@ -414,6 +414,8 @@ struct GeneratedQuestionPayload: Decodable {
     var expectedAnswer: String
     var choices: [String]
     var explanation: String
+    var choiceExplanations: [String: String]
+    var verificationVersion: Int
     var topic: String
     var skillID: SkillMapTopic.ID?
     var objectiveID: SkillMapObjective.ID?
@@ -429,6 +431,8 @@ struct GeneratedQuestionPayload: Decodable {
         case expectedAnswer
         case choices
         case explanation
+        case choiceExplanations
+        case verificationVersion
         case topic
         case skillID
         case objectiveID
@@ -447,6 +451,8 @@ struct GeneratedQuestionPayload: Decodable {
         expectedAnswer = try container.decodeIfPresent(String.self, forKey: .expectedAnswer) ?? ""
         choices = try container.decodeIfPresent([String].self, forKey: .choices) ?? []
         explanation = try container.decodeIfPresent(String.self, forKey: .explanation) ?? ""
+        choiceExplanations = try container.decodeIfPresent([String: String].self, forKey: .choiceExplanations) ?? [:]
+        verificationVersion = try container.decodeIfPresent(Int.self, forKey: .verificationVersion) ?? 0
         topic = try container.decodeIfPresent(String.self, forKey: .topic) ?? ""
         skillID = try container.decodeIfPresent(String.self, forKey: .skillID)
             .flatMap(SkillMapTopic.ID.init(uuidString:))
@@ -469,6 +475,8 @@ struct GeneratedQuestionPayload: Decodable {
             expectedAnswer: expectedAnswer,
             choices: choices,
             explanation: explanation,
+            choiceExplanations: choiceExplanations,
+            verificationVersion: verificationVersion,
             topic: topic,
             skillID: skillID,
             objectiveID: objectiveID,
