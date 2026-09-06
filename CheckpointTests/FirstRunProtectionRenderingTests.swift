@@ -668,7 +668,8 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         )
         XCTAssertFalse(ordinaryHeader.isSuccessHandoff)
         XCTAssertEqual(ordinaryHeader.stage, "Choose apps")
-        XCTAssertEqual(ordinaryHeader.title, "Choose your pause points.")
+        XCTAssertEqual(ordinaryHeader.title, "Choose apps to protect")
+        XCTAssertTrue(ordinaryHeader.detail.contains("skip this for now"))
         XCTAssertEqual(ordinaryHeader.systemImage, "checkmark.shield.fill")
         XCTAssertEqual(
             ordinaryHeader.pickerHeaderText(
@@ -702,6 +703,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         XCTAssertEqual(successHeader.title, ordinaryHeader.title)
         XCTAssertEqual(successHeader.systemImage, "checkmark.circle.fill")
         XCTAssertTrue(successHeader.detail.hasPrefix("Select the apps"))
+        XCTAssertTrue(successHeader.detail.contains("skip this for now"))
         XCTAssertEqual(
             successHeader.pickerHeaderText(
                 selectionSummary: "Nothing selected yet",

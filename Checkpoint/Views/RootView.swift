@@ -56,9 +56,25 @@ enum OnboardingScreenTimeAccessRouting {
     static func shouldPresentOnboarding(
         isRequested: Bool,
         isAuthorized: Bool,
-        isAlreadyActive: Bool
+        isAlreadyActive: Bool,
+        isInitialGoalSetup: Bool = false,
+        requiresDataEraseRecovery: Bool = false
     ) -> Bool {
-        isRequested && (isAuthorized || isAlreadyActive)
+        isRequested
+            && (isInitialGoalSetup || isAuthorized || isAlreadyActive)
+            && (isAlreadyActive || !requiresDataEraseRecovery)
+    }
+
+    static func shouldDeferAuthorization(
+        hasGoal: Bool,
+        isFirstRunPending: Bool,
+        needsSkillMapReview: Bool,
+        isOnboardingRequested: Bool,
+        isOnboardingActive: Bool
+    ) -> Bool {
+        !hasGoal || (isFirstRunPending && (
+            needsSkillMapReview || isOnboardingRequested || isOnboardingActive
+        ))
     }
 
     static func recoveryHost(
@@ -102,8 +118,15 @@ struct ScreenTimeAccessGateCoordinator: Equatable {
 
     mutating func reconcile(
         isAuthorized: Bool,
-        requiredHost: ScreenTimeAccessPresentationHost?
+        requiredHost: ScreenTimeAccessPresentationHost?,
+        defersAuthorization: Bool = false
     ) {
+        if defersAuthorization {
+            phase = .hidden
+            visibleGateHost = nil
+            dismissalHost = nil
+            return
+        }
         switch phase {
         case .hidden:
             guard !isAuthorized,
@@ -658,6 +681,7 @@ struct RootView: View {
             await bootstrap()
         }
         .onAppear {
+            resumeFirstRunGoalSetupIfNeeded()
             reconcileScreenTimeAccessGate()
         }
         .onChange(of: scenePhase) { _, newPhase in
@@ -676,6 +700,8 @@ struct RootView: View {
             if goal == nil {
                 beginFirstRunSetup()
             }
+            resumeFirstRunGoalSetupIfNeeded()
+            reconcileScreenTimeAccessGate()
             guard !invalidateSuggestedSkillMapReviewIfStale(for: goal) else { return }
             presentSuggestedSkillMapReviewIfNeeded()
         }
@@ -688,6 +714,7 @@ struct RootView: View {
             presentSuggestedSkillMapReviewIfNeeded()
         }
         .onChange(of: store.isOnboardingPresented) { _, _ in
+            reconcileScreenTimeAccessGate()
             presentSuggestedSkillMapReviewIfNeeded()
         }
         .onChange(of: screenTime.hasSelection) { _, hasSelection in
@@ -704,16 +731,21 @@ struct RootView: View {
     }
 
     private var onboardingSheetContent: some View {
-        OnboardingView(store: store, workflow: workflow, onFirstGoalCreated: {
-            beginFirstRunSetup()
-            if let goal = store.goal {
-                firstGoalSuccessHandoff.issue(
-                    goalID: goal.id,
-                    goalTitle: goal.title,
-                    isFirstRunSetupPending: firstRunSetup.isPending
-                )
+        OnboardingView(
+            store: store,
+            workflow: workflow,
+            isFirstRunWalkthrough: firstRunSetup.isPending || store.goal == nil,
+            onFirstGoalCreated: {
+                beginFirstRunSetup()
+                if let goal = store.goal {
+                    firstGoalSuccessHandoff.issue(
+                        goalID: goal.id,
+                        goalTitle: goal.title,
+                        isFirstRunSetupPending: firstRunSetup.isPending
+                    )
+                }
             }
-        })
+        )
         .onAppear {
             isOnboardingSheetActive = true
         }
@@ -911,6 +943,7 @@ struct RootView: View {
         if store.goal == nil {
             beginFirstRunSetup()
         }
+        resumeFirstRunGoalSetupIfNeeded()
 
         await screenTime.bootstrapAuthorizationIfNeeded()
         reconcileScreenTimeAccessGate()
@@ -1167,6 +1200,9 @@ struct RootView: View {
             requiredHost: requiredScreenTimeAuthorizationHost
         )
         queueAuthorizationRecoveryAppSelectionIfNeeded()
+        if isInitialGoalSetupActive {
+            resumeFirstRunGoalSetupIfNeeded()
+        }
         guard completedConnectedHandoff else { return }
 
         reconcileProtectionAndHandlePendingAttempt()
@@ -1216,7 +1252,8 @@ struct RootView: View {
     private func reconcileScreenTimeAccessGate() {
         screenTimeAccessGate.reconcile(
             isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
-            requiredHost: requiredScreenTimeAuthorizationHost
+            requiredHost: requiredScreenTimeAuthorizationHost,
+            defersAuthorization: isInitialGoalSetupActive
         )
     }
 
@@ -1285,9 +1322,34 @@ struct RootView: View {
         firstRunSetup.begin()
     }
 
+    private var needsFirstRunSkillMapReview: Bool {
+        FirstRunSetupProgress.shouldReviewSkillMap(
+            isPending: firstRunSetup.isPending,
+            goalID: store.goal?.id
+        )
+    }
+
+    private var isInitialGoalSetupActive: Bool {
+        OnboardingScreenTimeAccessRouting.shouldDeferAuthorization(
+            hasGoal: store.goal != nil,
+            isFirstRunPending: firstRunSetup.isPending,
+            needsSkillMapReview: needsFirstRunSkillMapReview,
+            isOnboardingRequested: store.isOnboardingPresented,
+            isOnboardingActive: isOnboardingSheetActive
+        )
+    }
+
+    private func resumeFirstRunGoalSetupIfNeeded() {
+        guard needsFirstRunSkillMapReview,
+              !store.requiresPersistenceEraseRecovery,
+              !screenTime.requiresSharedDataEraseRecovery else { return }
+        store.isOnboardingPresented = true
+    }
+
     private func resumeFirstRunSetupIfNeeded() {
         guard
             !screenTimeAccessGate.blocksUnderlyingPresentations,
+            !needsFirstRunSkillMapReview,
             FirstRunSetupProgress.shouldResumeAppSelection(
                 isPending: firstRunSetup.isPending,
                 hasGoal: store.goal != nil,
@@ -1306,6 +1368,7 @@ struct RootView: View {
             await Task.yield()
             guard
                 !screenTimeAccessGate.blocksUnderlyingPresentations,
+                !needsFirstRunSkillMapReview,
                 FirstRunSetupProgress.shouldResumeAppSelection(
                     isPending: firstRunSetup.isPending,
                     hasGoal: store.goal != nil,
@@ -1435,7 +1498,9 @@ struct RootView: View {
                 let shouldPresent = OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
                     isRequested: store.isOnboardingPresented,
                     isAuthorized: screenTime.hasRequiredScreenTimeAuthorization,
-                    isAlreadyActive: isOnboardingSheetActive
+                    isAlreadyActive: isOnboardingSheetActive,
+                    isInitialGoalSetup: isInitialGoalSetupActive,
+                    requiresDataEraseRecovery: dataEraseRecoveryHost != nil
                 )
                 return shouldPresent && (
                     isOnboardingSheetActive ||
@@ -1478,7 +1543,8 @@ struct RootView: View {
     }
 
     private var requiredScreenTimeAuthorizationHost: ScreenTimeAccessPresentationHost? {
-        OnboardingScreenTimeAccessRouting.recoveryHost(
+        guard !isInitialGoalSetupActive else { return nil }
+        return OnboardingScreenTimeAccessRouting.recoveryHost(
             requiresRecovery: screenTime.requiresScreenTimeAuthorization,
             isOnboardingActive: isOnboardingSheetActive
         )
@@ -1509,8 +1575,7 @@ struct RootView: View {
             || isAuthorizationRecoveryAppSelectionPresented
             || isCheckpointPresentationActive
             || store.pendingMembershipPresentation != nil
-            || (store.isOnboardingPresented
-                && screenTime.hasRequiredScreenTimeAuthorization)
+            || store.isOnboardingPresented
             || isOnboardingSheetActive
             || firstRunSetup.isAppSelectionPresented
             || suggestedSkillMapReviewPresentation.blocksUnderlyingPresentations

@@ -3,6 +3,7 @@ import Observation
 
 enum FirstRunSetupProgress {
     static let pendingKey = "checkpoint.firstRunSetup.pendingAppSelection.v1"
+    static let approvedSkillMapGoalKey = "checkpoint.firstRunSetup.approvedSkillMapGoal.v1"
 
     static func isPending(defaults: UserDefaults = .standard) -> Bool {
         defaults.bool(forKey: pendingKey)
@@ -14,6 +15,30 @@ enum FirstRunSetupProgress {
 
     static func complete(defaults: UserDefaults = .standard) {
         defaults.removeObject(forKey: pendingKey)
+        defaults.removeObject(forKey: approvedSkillMapGoalKey)
+    }
+
+    static func approveSkillMap(
+        goalID: UUID,
+        defaults: UserDefaults = .standard
+    ) {
+        defaults.set(goalID.uuidString, forKey: approvedSkillMapGoalKey)
+    }
+
+    static func isSkillMapApproved(
+        goalID: UUID,
+        defaults: UserDefaults = .standard
+    ) -> Bool {
+        defaults.string(forKey: approvedSkillMapGoalKey) == goalID.uuidString
+    }
+
+    static func shouldReviewSkillMap(
+        isPending: Bool,
+        goalID: UUID?,
+        defaults: UserDefaults = .standard
+    ) -> Bool {
+        guard isPending, let goalID else { return false }
+        return !isSkillMapApproved(goalID: goalID, defaults: defaults)
     }
 
     static func shouldResumeAppSelection(

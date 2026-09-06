@@ -19,6 +19,87 @@ final class FirstRunSetupCoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testUnapprovedFirstSkillMapResumesAfterRelaunch() {
+        let goalID = UUID()
+        let coordinator = FirstRunSetupCoordinator(defaults: defaults)
+        coordinator.begin()
+
+        let relaunchedCoordinator = FirstRunSetupCoordinator(defaults: defaults)
+
+        XCTAssertTrue(FirstRunSetupProgress.shouldReviewSkillMap(
+            isPending: relaunchedCoordinator.isPending,
+            goalID: goalID,
+            defaults: defaults
+        ))
+        XCTAssertFalse(FirstRunSetupProgress.shouldReviewSkillMap(
+            isPending: relaunchedCoordinator.isPending,
+            goalID: nil,
+            defaults: defaults
+        ))
+        XCTAssertFalse(FirstRunSetupProgress.shouldReviewSkillMap(
+            isPending: false,
+            goalID: goalID,
+            defaults: defaults
+        ))
+    }
+
+    @MainActor
+    func testSkillMapApprovalSurvivesHandoffAndRelaunchForOnlyItsGoal() {
+        let goalID = UUID()
+        let coordinator = FirstRunSetupCoordinator(defaults: defaults)
+        coordinator.begin()
+        FirstRunSetupProgress.approveSkillMap(goalID: goalID, defaults: defaults)
+        coordinator.begin()
+
+        let relaunchedCoordinator = FirstRunSetupCoordinator(defaults: defaults)
+
+        XCTAssertTrue(relaunchedCoordinator.isPending)
+        XCTAssertTrue(FirstRunSetupProgress.isSkillMapApproved(
+            goalID: goalID,
+            defaults: defaults
+        ))
+        XCTAssertFalse(FirstRunSetupProgress.shouldReviewSkillMap(
+            isPending: relaunchedCoordinator.isPending,
+            goalID: goalID,
+            defaults: defaults
+        ))
+        XCTAssertTrue(FirstRunSetupProgress.shouldReviewSkillMap(
+            isPending: relaunchedCoordinator.isPending,
+            goalID: UUID(),
+            defaults: defaults
+        ))
+    }
+
+    @MainActor
+    func testOptionalAppSelectionCompletionClearsWalkthroughAcrossRelaunch() {
+        let goalID = UUID()
+        let coordinator = FirstRunSetupCoordinator(defaults: defaults)
+        coordinator.begin()
+        FirstRunSetupProgress.approveSkillMap(goalID: goalID, defaults: defaults)
+        coordinator.presentAppSelection()
+        var stopCount = 0
+
+        coordinator.continueWithoutProtection(
+            currentGoalID: goalID,
+            stopProtection: { stopCount += 1 }
+        )
+
+        let relaunchedCoordinator = FirstRunSetupCoordinator(defaults: defaults)
+        XCTAssertEqual(stopCount, 1)
+        XCTAssertFalse(coordinator.isAppSelectionPresented)
+        XCTAssertFalse(relaunchedCoordinator.isPending)
+        XCTAssertFalse(FirstRunSetupProgress.isSkillMapApproved(
+            goalID: goalID,
+            defaults: defaults
+        ))
+        XCTAssertFalse(FirstRunSetupProgress.shouldReviewSkillMap(
+            isPending: relaunchedCoordinator.isPending,
+            goalID: goalID,
+            defaults: defaults
+        ))
+    }
+
+    @MainActor
     func testPreparationTimeoutPreservesPendingSetupAndPresentation() async {
         let clock = FirstRunSetupTestClock()
         let coordinator = FirstRunSetupCoordinator(

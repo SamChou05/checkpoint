@@ -551,6 +551,7 @@ final class CheckpointStore {
             return false
         }
 
+        let rollbackState = goalProfileMutationRollbackState()
         let previousMap = existingMap
         let contentChanged = SkillMapReconciler.skillMapContentSignature(
             topics: existingMap.topics
@@ -566,7 +567,10 @@ final class CheckpointStore {
             reviewedMap.updatedAt = Date()
             updatedGoal.derivedSkillMap = reviewedMap
             storeGoalProfile(updatedGoal)
-            save()
+            guard save() else {
+                restoreGoalProfileMutationState(rollbackState)
+                return false
+            }
             publishShieldContext()
             return true
         }
@@ -629,13 +633,18 @@ final class CheckpointStore {
             )
         )
         invalidateQuestionBankSynchronization(for: updatedGoal.id)
-        if applyStarterGenerationLimitIfNeeded(
-            starterPracticeWasConsumed: starterPracticeWasConsumed
-        ) {
-            return true
+        let reachedStarterLimit = !isMember && starterPracticeWasConsumed
+        if reachedStarterLimit {
+            questionBatchState = hasReadyCheckpointSet ? .ready : .idle
+            checkpointNotice = starterQuestionLimitMessage
+            requestMembership(for: .freshQuestionGeneration)
         }
-        save()
+        guard save() else {
+            restoreGoalProfileMutationState(rollbackState)
+            return false
+        }
         publishShieldContext()
+        guard !reachedStarterLimit else { return true }
 
         let selector = questionSelector
         let retainedQuestionIDs = Set(

@@ -7,6 +7,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 ## Current Build
 
 - Native SwiftUI app shell.
+- Mascot-guided first launch: describe a goal, add optional context and study materials, review or edit the generated Skill Map, then connect Screen Time and optionally choose protected apps. Saved goals resume at map review until explicitly approved.
 - Natural-language goal onboarding flow with the first goal included and membership unlocking goal switching plus fresh ongoing question generation.
 - Optional text and text-based PDF study materials can be attached to a goal; their extracted text is bounded, stored with the goal, and used to ground generated questions.
 - The raw typed goal is authoritative. Legacy goal category remains compatibility metadata and new goals default to `Custom` instead of being classified by subject keywords.
@@ -32,7 +33,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 - Users can switch goal profiles from Home; each profile keeps its own focus areas, question difficulty, practice set, history, reports, and Skill Map.
 - Starter/membership product behavior: the first goal, app blocking, and checkpoint unlock loop are usable before payment; membership keeps fresh checkpoints ready, unlocks goal profiles, larger question banks, and adaptive Study Assist.
 - Privacy manifests for the app and Screen Time extensions.
-- A required first-launch Screen Time authorization gate precedes goal setup, followed by app selection, shielding, temporary unlocks, and re-lock reconciliation.
+- Required Screen Time authorization follows first-goal Skill Map approval; optional app selection offers protection setup or a clear skip into Home. Returning-user authorization recovery remains required.
 - Shield Configuration extension target for branded Screen Time shield UI.
 - Shield Action extension target that records a pending checkpoint and, on iOS 26.5 or newer, asks iOS to open Checkpoint when the shield primary button is tapped. Older systems show an explicit manual-open instruction.
 - Device Activity Monitor extension target that re-applies shields when a temporary unlock expires.
@@ -89,16 +90,16 @@ For real Screen Time testing:
 1. Use a real iPhone when possible.
 2. Confirm development signing for the app and all three extensions includes Family Controls and the shared App Group.
 3. Confirm all four bundle IDs are registered to your Apple Developer team.
-4. Launch Checkpoint and approve the required Screen Time request before goal setup appears.
+4. Launch Checkpoint, create a goal, review and approve its Skill Map, then connect Screen Time.
 5. Select apps/categories and tap `Start protection` from Home.
 
 The current code includes the FamilyControls picker, selection persistence, ManagedSettings shielding, temporary unshielding after a successful checkpoint, automatic re-shielding after the unlock timer, a Device Activity monitor extension for background re-locking, shield configuration/action extensions, and App Group state sharing.
 
 ## Real-Device Loop To Verify
 
-1. Launch Checkpoint and approve Screen Time access from the required startup screen.
-2. Create a goal.
-3. Home -> `Choose apps`.
+1. Launch Checkpoint, enter a learning goal and optional context or study materials.
+2. Review the generated Skill Map, edit if needed, and approve it; then connect Screen Time.
+3. Choose apps during setup, or skip and use Home -> `Choose apps` later.
 4. Home -> `Start protection`.
 5. Open a selected blocked app.
 6. Confirm the Checkpoint shield appears with current goal/prompt copy.

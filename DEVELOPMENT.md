@@ -1,6 +1,6 @@
 # Checkpoint Development Status
 
-Last updated: August 27, 2026
+Last updated: September 6, 2026
 
 ## Current Product Direction
 
@@ -8,10 +8,10 @@ Checkpoint is an iOS app that lets a user pick restricted apps, set a goal, and 
 
 The App Store-safe workflow is:
 
-1. Checkpoint explains why Screen Time access is required, and the user explicitly grants Family Controls permission.
-2. User creates a goal profile in Checkpoint.
-3. Checkpoint generates and caches a multiple-choice question bank for that active profile.
-4. User picks restricted apps inside Checkpoint.
+1. The mascot welcomes the user and helps them describe a goal with optional context and study materials.
+2. Checkpoint generates a Skill Map; the user reviews, optionally edits, and explicitly approves it.
+3. Checkpoint explains Screen Time access, and the user explicitly grants Family Controls permission. Questions prepare in the background.
+4. User optionally picks restricted apps inside Checkpoint, or finishes setup and chooses apps later.
 5. Checkpoint shields those apps.
 6. User opens a restricted app.
 7. iOS shows a Checkpoint shield.
@@ -36,12 +36,14 @@ Important platform constraint:
 - The app is currently modeled as a starter-membership product: the first goal and core blocker loop are included before payment, while membership unlocks goal switching and ongoing fresh generation.
 - Checkpoint history is accessible from Settings instead of occupying a primary tab.
 - Feedback notes are accessible from Settings, saved locally, and shareable through the system share sheet.
-- Screen Time authorization is a required startup phase shown before first-goal onboarding; denial or cancellation stays on a clear retry screen instead of hiding recovery in Settings.
+- First-goal onboarding precedes Screen Time authorization. A persisted approval marker resumes saved goals at Skill Map review until approval, then at permission/app selection; denial or cancellation stays on a clear retry screen.
 - Stopping blocking is intentionally harder than starting it: active blockers route through blocked-app checkpoint attempts, while full stop requires an 18-of-20 review from Settings.
 - Settings places a compact Plan section below the core goal and app-protection controls.
 - For members, question replenishment is abstracted away: Checkpoint quietly prepares fresh AI-generated questions when the current set can no longer fill the next checkpoint.
 - Home does not preview upcoming questions; question selection stays inside the checkpoint moment.
 - Study Assist adds next-topic guidance without exposing question-bank status.
+- Mascot-guided, three-step onboarding: Goal, Skill Map, Protection. Context and study-material attachments are visible during initial goal entry, with advanced practice customization collapsed.
+- Skill Map review shows generated skills and objectives, supports editing, and requires explicit durable approval before permission setup. Generation failures offer retry or goal edits; map availability is independent of question readiness.
 - Natural-language goal profile onboarding with sensible defaults and optional topic/starting-level customization.
 - Optional text and text-based PDF study materials can be attached to a goal. The app extracts and bounds their text locally, persists it with the profile, and uses it as untrusted grounding data for generation.
 - Onboarding starts blank and rejects empty goal titles.

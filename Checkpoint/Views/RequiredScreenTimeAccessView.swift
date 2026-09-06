@@ -255,38 +255,38 @@ struct ScreenTimeAccessPresentation: Equatable {
 
         switch context {
         case .initialSetup:
-            stage = "Screen Time"
-            step = 1
+            stage = "Protection"
+            step = 3
             if state == .connected {
                 heading = "Screen Time connected"
-                detail = "Continue to create your goal, then choose the apps you want to protect."
+                detail = "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
                 showsSetupSequence = false
             } else if authorizationState == .unavailable {
                 heading = "Screen Time access needs an iPhone"
                 detail = "Open Checkpoint on a supported iPhone to finish setup and choose the apps you want to protect."
                 showsSetupSequence = false
             } else {
-                heading = "Practice before you scroll."
-                detail = "Choose apps. Clear a checkpoint for a timed break."
+                heading = "Let’s protect your focus"
+                detail = "Your goal and skill map are ready. Connect Screen Time, then choose any apps you’d like to protect."
                 showsSetupSequence = true
             }
             recoveryTitle = nil
             recoveryDetail = nil
             recoverySystemImage = nil
         case .resumeSetup:
-            stage = "Resume setup"
-            step = nil
+            stage = "Protection"
+            step = 3
             if state == .connected {
                 heading = "Screen Time connected"
-                detail = "Your goal is saved. Continue to choose the apps it will protect."
+                detail = "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
                 showsSetupSequence = false
             } else if authorizationState == .unavailable {
                 heading = "Finish setup on a supported iPhone"
-                detail = "Your goal is saved. Open Checkpoint on an iPhone to reconnect Screen Time and choose protected apps."
+                detail = "Your goal and skill map are saved. Open Checkpoint on an iPhone to connect Screen Time and finish setup."
                 showsSetupSequence = false
             } else {
-                heading = "Reconnect Screen Time to finish setup"
-                detail = "Your goal is saved. Restore access, then finish choosing the apps it will protect."
+                heading = "Let’s protect your focus"
+                detail = "Your goal and skill map are ready. Connect Screen Time, then choose any apps you’d like to protect."
                 showsSetupSequence = true
             }
             recoveryTitle = nil
@@ -778,27 +778,47 @@ struct ScreenTimeAccessHero: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if presentation.showsPrivacyProofInHero {
+                CheckpointSetupGuide(
+                    step: .protection,
+                    title: presentation.heading,
+                    message: presentation.detail,
+                    reduceMotionOverride: reduceMotion
+                )
+            }
+
+            accessDetails
+        }
+        .animation(motionPolicy.animation, value: presentation.state)
+    }
+
+    private var accessDetails: some View {
         CheckpointHeroSurface(
             glowColor: accent,
             glowOpacity: presentation.state == .requesting ? 0.15 : 0.10,
             contentPadding: dynamicTypeSize.isAccessibilitySize ? 16 : 12
         ) {
             VStack(alignment: .leading, spacing: dynamicTypeSize.isAccessibilitySize ? 16 : 8) {
-                heroIdentity
+                if presentation.showsPrivacyProofInHero {
+                    statusBadge
+                } else {
+                    heroIdentity
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(presentation.heading)
-                        .font(.title2.bold())
-                        .foregroundStyle(CheckpointTheme.heroText)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .contentTransition(.opacity)
-                        .accessibilityAddTraits(.isHeader)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(presentation.heading)
+                            .font(.title2.bold())
+                            .foregroundStyle(CheckpointTheme.heroText)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .contentTransition(.opacity)
+                            .accessibilityAddTraits(.isHeader)
 
-                    Text(presentation.detail)
-                        .font(.subheadline)
-                        .foregroundStyle(CheckpointTheme.heroMuted)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .contentTransition(.opacity)
+                        Text(presentation.detail)
+                            .font(.subheadline)
+                            .foregroundStyle(CheckpointTheme.heroMuted)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .contentTransition(.opacity)
+                    }
                 }
 
                 if presentation.showsSetupSequence {
@@ -816,7 +836,6 @@ struct ScreenTimeAccessHero: View {
                 }
             }
         }
-        .animation(motionPolicy.animation, value: presentation.state)
     }
 
     @ViewBuilder

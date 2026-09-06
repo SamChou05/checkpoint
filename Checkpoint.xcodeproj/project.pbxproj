@@ -14,10 +14,12 @@
 		A10000000000000000000006 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* RootView.swift */; };
 		A10000000000000000000007 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* HomeView.swift */; };
 		A10000000000000000000008 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* OnboardingView.swift */; };
+		A97200000000000000000002 /* FirstRunSkillMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97100000000000000000002 /* FirstRunSkillMapView.swift */; };
 		A10000000000000000000009 /* CheckpointAttemptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* CheckpointAttemptView.swift */; };
 		A1000000000000000000000A /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* HistoryView.swift */; };
 		A1000000000000000000000B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* SettingsView.swift */; };
 		A1000000000000000000000C /* CheckpointComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* CheckpointComponents.swift */; };
+		A97200000000000000000001 /* CheckpointSetupGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97100000000000000000001 /* CheckpointSetupGuide.swift */; };
 		A1000000000000000000000E /* RestrictedAppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* RestrictedAppsView.swift */; };
 		A10000000000000000000010 /* CompetencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* CompetencyView.swift */; };
 		A10000000000000000000011 /* BackendQuestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* BackendQuestionEngine.swift */; };
@@ -102,6 +104,7 @@
 		CB000000000000000000001F /* CheckpointAttemptRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000001F /* CheckpointAttemptRenderingTests.swift */; };
 		CB0000000000000000000020 /* FirstRunProtectionRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000020 /* FirstRunProtectionRenderingTests.swift */; };
 		CB0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift */; };
+		A97200000000000000000003 /* FirstRunSkillMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97100000000000000000003 /* FirstRunSkillMapTests.swift */; };
 		CB0000000000000000000022 /* MembershipViewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000022 /* MembershipViewRenderingTests.swift */; };
 		CB0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */; };
 		CB0000000000000000000024 /* WeeklyReviewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */; };
@@ -173,10 +176,12 @@
 		A20000000000000000000006 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		A20000000000000000000007 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		A20000000000000000000008 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A97100000000000000000002 /* FirstRunSkillMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunSkillMapView.swift; sourceTree = "<group>"; };
 		A20000000000000000000009 /* CheckpointAttemptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointAttemptView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000A /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000C /* CheckpointComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointComponents.swift; sourceTree = "<group>"; };
+		A97100000000000000000001 /* CheckpointSetupGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointSetupGuide.swift; sourceTree = "<group>"; };
 		A2000000000000000000000D /* Checkpoint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Checkpoint.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000000000000000000000E /* RestrictedAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestrictedAppsView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000F /* Checkpoint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Checkpoint.entitlements; sourceTree = "<group>"; };
@@ -269,6 +274,7 @@
 		CA000000000000000000001F /* CheckpointAttemptRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointAttemptRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000020 /* FirstRunProtectionRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunProtectionRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunSetupCoordinatorTests.swift; sourceTree = "<group>"; };
+		A97100000000000000000003 /* FirstRunSkillMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunSkillMapTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000022 /* MembershipViewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipViewRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeAccessRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyReviewRenderingTests.swift; sourceTree = "<group>"; };
@@ -412,6 +418,7 @@
 				AA000000000000000000000D /* HomeProtectionControls.swift */,
 				AA0000000000000000000013 /* WeeklyReviewView.swift */,
 				A20000000000000000000008 /* OnboardingView.swift */,
+				A97100000000000000000002 /* FirstRunSkillMapView.swift */,
 				A20000000000000000000009 /* CheckpointAttemptView.swift */,
 				A20000000000000000000020 /* QuestionQualityFeedbackView.swift */,
 				A2000000000000000000000A /* HistoryView.swift */,
@@ -436,6 +443,7 @@
 			isa = PBXGroup;
 			children = (
 				A2000000000000000000000C /* CheckpointComponents.swift */,
+				A97100000000000000000001 /* CheckpointSetupGuide.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -516,6 +524,7 @@
 				CA000000000000000000001F /* CheckpointAttemptRenderingTests.swift */,
 				CA0000000000000000000020 /* FirstRunProtectionRenderingTests.swift */,
 				CA0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift */,
+				A97100000000000000000003 /* FirstRunSkillMapTests.swift */,
 				CA0000000000000000000022 /* MembershipViewRenderingTests.swift */,
 				CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */,
 				CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */,
@@ -806,6 +815,7 @@
 				AB000000000000000000000D /* HomeProtectionControls.swift in Sources */,
 				AB0000000000000000000013 /* WeeklyReviewView.swift in Sources */,
 				A10000000000000000000008 /* OnboardingView.swift in Sources */,
+				A97200000000000000000002 /* FirstRunSkillMapView.swift in Sources */,
 				A10000000000000000000009 /* CheckpointAttemptView.swift in Sources */,
 				A1000000000000000000001C /* QuestionQualityFeedbackView.swift in Sources */,
 				A1000000000000000000000A /* HistoryView.swift in Sources */,
@@ -822,6 +832,7 @@
 				A1000000000000000000000E /* RestrictedAppsView.swift in Sources */,
 				A10000000000000000000016 /* MembershipView.swift in Sources */,
 				A1000000000000000000000C /* CheckpointComponents.swift in Sources */,
+				A97200000000000000000001 /* CheckpointSetupGuide.swift in Sources */,
 				B10000000000000000000001 /* SharedAppGroup.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -868,6 +879,7 @@
 				CB000000000000000000001F /* CheckpointAttemptRenderingTests.swift in Sources */,
 				CB0000000000000000000020 /* FirstRunProtectionRenderingTests.swift in Sources */,
 				CB0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift in Sources */,
+				A97200000000000000000003 /* FirstRunSkillMapTests.swift in Sources */,
 				CB0000000000000000000022 /* MembershipViewRenderingTests.swift in Sources */,
 				CB0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift in Sources */,
 				CB0000000000000000000024 /* WeeklyReviewRenderingTests.swift in Sources */,

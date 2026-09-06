@@ -43,20 +43,21 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         )
     }
 
-    func testInitialSetupPresentationUsesTheOnlyNumberedAccessStep() {
+    func testFirstRunAccessFollowsTheGoalAndSkillMapAsStepThree() {
         let initial = ScreenTimeAccessPresentation(
             context: .initialSetup,
             authorizationState: .notDetermined,
             requiresProtectedAppReselection: false
         )
 
-        XCTAssertEqual(initial.stage, "Screen Time")
-        XCTAssertEqual(initial.step, 1)
+        XCTAssertEqual(initial.stage, "Protection")
+        XCTAssertEqual(initial.step, 3)
         XCTAssertEqual(initial.state, .permissionRequired)
         XCTAssertEqual(initial.state.status, "Permission needed")
         XCTAssertEqual(initial.state.systemImage, "checkmark.shield")
         XCTAssertEqual(initial.state.tone, .informational)
-        XCTAssertEqual(initial.heading, "Practice before you scroll.")
+        XCTAssertEqual(initial.heading, "Let’s protect your focus")
+        XCTAssertTrue(initial.detail.contains("Your goal and skill map are ready"))
         XCTAssertEqual(initial.primaryAction, .request)
         XCTAssertEqual(initial.primaryTitle, "Allow Screen Time")
         XCTAssertEqual(initial.primarySystemImage, "checkmark.shield")
@@ -66,11 +67,16 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertNil(initial.recoveryTitle)
         XCTAssertNil(initial.statusMessage)
 
-        for context in [
-            ScreenTimeAccessContext.resumeSetup,
-            .restoreProtection,
-            .eraseRecovery
-        ] {
+        let resumed = ScreenTimeAccessPresentation(
+            context: .resumeSetup,
+            authorizationState: .notDetermined,
+            requiresProtectedAppReselection: false
+        )
+        XCTAssertEqual(resumed.step, 3)
+        XCTAssertEqual(resumed.stage, "Protection")
+        XCTAssertEqual(resumed.detail, initial.detail)
+
+        for context in [ScreenTimeAccessContext.restoreProtection, .eraseRecovery] {
             let presentation = ScreenTimeAccessPresentation(
                 context: context,
                 authorizationState: .notDetermined,
@@ -178,7 +184,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(initial.heading, "Screen Time connected")
         XCTAssertEqual(
             initial.detail,
-            "Continue to create your goal, then choose the apps you want to protect."
+            "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
         )
         XCTAssertEqual(initial.primaryAction, .continueAfterConnection)
         XCTAssertEqual(initial.primaryTitle, "Continue setup")
@@ -193,7 +199,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(resume.heading, "Screen Time connected")
         XCTAssertEqual(
             resume.detail,
-            "Your goal is saved. Continue to choose the apps it will protect."
+            "Your goal and skill map are ready. Next, choose apps to protect or continue without blocking any."
         )
         XCTAssertEqual(resume.primaryAction, .continueAfterConnection)
         XCTAssertEqual(resume.primaryTitle, "Continue setup")
@@ -375,7 +381,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         )
     }
 
-    func testInitialUnauthorizedOnboardingStillRoutesAccessRecoveryFromRoot() {
+    func testReturningUserGoalCreationStillRoutesAccessRecoveryFromRoot() {
         XCTAssertFalse(
             OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
                 isRequested: true,
@@ -389,6 +395,149 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
                 isOnboardingActive: false
             ),
             .root
+        )
+    }
+
+    func testFirstLaunchPresentsGoalWalkthroughBeforeScreenTimeAuthorization() {
+        let defersAuthorization = OnboardingScreenTimeAccessRouting.shouldDeferAuthorization(
+            hasGoal: false,
+            isFirstRunPending: false,
+            needsSkillMapReview: false,
+            isOnboardingRequested: true,
+            isOnboardingActive: false
+        )
+        XCTAssertTrue(defersAuthorization, "The first render precedes persisted setup initialization")
+        XCTAssertTrue(OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+            isRequested: true,
+            isAuthorized: false,
+            isAlreadyActive: false,
+            isInitialGoalSetup: defersAuthorization
+        ))
+
+        var gate = ScreenTimeAccessGateCoordinator()
+        gate.reconcile(
+            isAuthorized: false,
+            requiredHost: nil,
+            defersAuthorization: defersAuthorization
+        )
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+    }
+
+    func testSavedUnapprovedSkillMapDefersAuthorizationBeforeReviewResumes() {
+        XCTAssertTrue(OnboardingScreenTimeAccessRouting.shouldDeferAuthorization(
+            hasGoal: true,
+            isFirstRunPending: true,
+            needsSkillMapReview: true,
+            isOnboardingRequested: false,
+            isOnboardingActive: false
+        ))
+    }
+
+    func testFirstGoalWalkthroughWaitsForDataEraseRecoveryButKeepsAnActiveDraft() {
+        XCTAssertFalse(OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+            isRequested: true,
+            isAuthorized: false,
+            isAlreadyActive: false,
+            isInitialGoalSetup: true,
+            requiresDataEraseRecovery: true
+        ))
+        XCTAssertTrue(OnboardingScreenTimeAccessRouting.shouldPresentOnboarding(
+            isRequested: true,
+            isAuthorized: false,
+            isAlreadyActive: true,
+            isInitialGoalSetup: true,
+            requiresDataEraseRecovery: true
+        ))
+    }
+
+    func testApprovedSkillMapWaitsForOnboardingDismissalThenRequiresScreenTime() {
+        var gate = ScreenTimeAccessGateCoordinator()
+        let duringDismissal = OnboardingScreenTimeAccessRouting.shouldDeferAuthorization(
+            hasGoal: true,
+            isFirstRunPending: true,
+            needsSkillMapReview: false,
+            isOnboardingRequested: false,
+            isOnboardingActive: true
+        )
+        XCTAssertTrue(duringDismissal)
+        gate.reconcile(
+            isAuthorized: false,
+            requiredHost: nil,
+            defersAuthorization: duringDismissal
+        )
+        XCTAssertEqual(gate.phase, .hidden)
+
+        let afterDismissal = OnboardingScreenTimeAccessRouting.shouldDeferAuthorization(
+            hasGoal: true,
+            isFirstRunPending: true,
+            needsSkillMapReview: false,
+            isOnboardingRequested: false,
+            isOnboardingActive: false
+        )
+        XCTAssertFalse(afterDismissal)
+        gate.reconcile(
+            isAuthorized: false,
+            requiredHost: .root,
+            defersAuthorization: afterDismissal
+        )
+        XCTAssertEqual(gate.phase, .required(.root))
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+        XCTAssertFalse(FirstRunSetupProgress.shouldResumeAppSelection(
+            isPending: true,
+            hasGoal: true,
+            isAuthorized: false,
+            isOnboardingPresented: false
+        ))
+
+        gate.presentationDidAppear(host: .root, isAuthorizationGateVisible: true)
+        gate.reconcile(isAuthorized: true, requiredHost: nil)
+        XCTAssertTrue(gate.continueAfterConnection())
+        XCTAssertTrue(gate.blocksUnderlyingPresentations)
+        XCTAssertTrue(gate.presentationDidDisappear(host: .root))
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+        XCTAssertTrue(FirstRunSetupProgress.shouldResumeAppSelection(
+            isPending: true,
+            hasGoal: true,
+            isAuthorized: true,
+            isOnboardingPresented: false
+        ))
+    }
+
+    func testReturningGoalEditorCannotDeferPermissionRecovery() {
+        XCTAssertFalse(OnboardingScreenTimeAccessRouting.shouldDeferAuthorization(
+            hasGoal: true,
+            isFirstRunPending: false,
+            needsSkillMapReview: false,
+            isOnboardingRequested: true,
+            isOnboardingActive: true
+        ))
+    }
+
+    func testRestartingGoalSetupDismissesPriorGateWithoutConnectedSuccess() {
+        var gate = ScreenTimeAccessGateCoordinator()
+        gate.reconcile(isAuthorized: false, requiredHost: .root)
+        gate.presentationDidAppear(host: .root, isAuthorizationGateVisible: true)
+
+        gate.reconcile(
+            isAuthorized: false,
+            requiredHost: nil,
+            defersAuthorization: true
+        )
+
+        XCTAssertEqual(gate.phase, .hidden)
+        XCTAssertFalse(gate.isConnected)
+        XCTAssertFalse(gate.continueAfterConnection())
+        XCTAssertTrue(gate.blocksUnderlyingPresentations, "The old cover must finish dismissing")
+        XCTAssertFalse(gate.presentationDidDisappear(host: .root))
+        XCTAssertFalse(gate.blocksUnderlyingPresentations)
+        XCTAssertEqual(
+            OnboardingScreenTimeAccessRouting.recoveryHost(
+                requiresRecovery: true,
+                isOnboardingActive: false
+            ),
+            .root,
+            "Data erase recovery remains separately presentable during the walkthrough"
         )
     }
 

@@ -524,14 +524,14 @@ struct FirstRunAppSelectionHeaderPresentation: Equatable {
         isSuccessHandoff = didJustSaveGoal
         if !isSuccessHandoff {
             stage = "Choose apps"
-            title = "Choose your pause points."
+            title = "Choose apps to protect"
             systemImage = "checkmark.shield.fill"
-            detail = "Select the apps and websites that should pause for a checkpoint tied to this goal."
+            detail = "Select the apps and websites to pause for a checkpoint, or skip this for now."
         } else {
             stage = "Goal saved"
-            title = "Choose your pause points."
+            title = "Choose apps to protect"
             systemImage = "checkmark.circle.fill"
-            detail = "Select the apps and websites that should pause for a checkpoint tied to this goal."
+            detail = "Select the apps and websites to pause for a checkpoint, or skip this for now."
         }
     }
 
@@ -1700,18 +1700,11 @@ struct FirstRunAppSelectionHeader: View {
         VStack(alignment: .leading, spacing: 10) {
             VStack(alignment: .leading, spacing: 10) {
                 if !usesMinimalAccessibilityLayout {
-                    CheckpointSetupMark(
-                        stage: presentation.stage,
-                        step: 3,
-                        systemImage: presentation.systemImage,
-                        compact: dynamicTypeSize.isAccessibilitySize,
-                        symbolEffectSequence: firstGoalHandoffRevealSequence,
-                        reduceMotionOverride: handoffMotionPolicy.style == .identity
-                    )
-                    .animation(
-                        handoffMotionPolicy.animation,
-                        value: presentation.stage
-                    )
+                    mascotIdentity
+                        .animation(
+                            handoffMotionPolicy.animation,
+                            value: presentation.stage
+                        )
                 }
 
                 if !dynamicTypeSize.isAccessibilitySize {
@@ -1763,6 +1756,31 @@ struct FirstRunAppSelectionHeader: View {
                     )
             }
         }
+    }
+
+    private var mascotIdentity: some View {
+        HStack(spacing: 10) {
+            CheckpointMascotMark(
+                size: dynamicTypeSize.isAccessibilitySize ? 40 : 52,
+                cornerRadius: dynamicTypeSize.isAccessibilitySize ? 13 : 16
+            )
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("CHECKPOINT")
+                    .font(.caption2.weight(.bold))
+                    .tracking(1.1)
+                    .foregroundStyle(CheckpointTheme.text)
+
+                Text("STEP 3 OF 3 · \(presentation.stage.uppercased())")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.opacity)
+            }
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Checkpoint setup, step 3 of 3, \(presentation.stage). App selection is optional.")
     }
 }
 

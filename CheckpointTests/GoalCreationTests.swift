@@ -746,10 +746,10 @@ final class GoalSetupPresentationTests: XCTestCase {
         )
         XCTAssertEqual(firstEmpty.state, .awaitingGoal)
         XCTAssertEqual(firstEmpty.status, "Goal needed")
-        XCTAssertEqual(firstEmpty.eyebrow, "SETUP · STEP 2 OF 3")
+        XCTAssertEqual(firstEmpty.eyebrow, "SETUP · STEP 1 OF 3")
         XCTAssertEqual(firstEmpty.title, "Set your outcome.")
         XCTAssertEqual(firstEmpty.guidance, "Enter one outcome to continue.")
-        XCTAssertEqual(firstEmpty.accessibilityContext, "Checkpoint setup, step 2 of 3")
+        XCTAssertEqual(firstEmpty.accessibilityContext, "Checkpoint setup, step 1 of 3")
 
         let firstReady = GoalSetupHeroPresentation(
             mode: .firstGoal,
@@ -923,11 +923,11 @@ final class GoalSetupPresentationTests: XCTestCase {
             editImpact: .none,
             isWorking: false
         )
-        XCTAssertEqual(firstGoal.title, "Continue to app selection")
+        XCTAssertEqual(firstGoal.title, "Build my Skill Map")
         XCTAssertEqual(firstGoal.intent, .save)
         XCTAssertEqual(
             firstGoal.displayTitle(isAccessibilitySize: true),
-            "Choose apps"
+            "Build Skill Map"
         )
 
         let firstGoalWorking = GoalSetupPrimaryActionPresentation(
@@ -937,7 +937,7 @@ final class GoalSetupPresentationTests: XCTestCase {
         )
         XCTAssertEqual(
             firstGoalWorking.displayTitle(isAccessibilitySize: true),
-            "Choose apps",
+            "Build Skill Map",
             "The accessibility-size action bar should not resize while saving."
         )
         XCTAssertEqual(

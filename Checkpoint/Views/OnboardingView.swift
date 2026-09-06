@@ -168,8 +168,8 @@ struct GoalSetupHeroPresentation: Equatable {
 
         switch mode {
         case .firstGoal:
-            eyebrow = "SETUP · STEP 2 OF 3"
-            accessibilityContext = "Checkpoint setup, step 2 of 3"
+            eyebrow = "SETUP · STEP 1 OF 3"
+            accessibilityContext = "Checkpoint setup, step 1 of 3"
             title = "Set your outcome."
             subtitle = "Checkpoint turns it into short practice before selected apps and sites open."
         case .newGoal:
@@ -475,7 +475,7 @@ struct GoalSetupPrimaryActionPresentation: Equatable {
 
         switch mode {
         case .firstGoal:
-            title = "Continue to app selection"
+            title = "Build my Skill Map"
             systemImage = "arrow.right"
             intent = .save
         case .newGoal:
@@ -501,7 +501,7 @@ struct GoalSetupPrimaryActionPresentation: Equatable {
             return isAccessibilitySize ? "Reading files" : "Reading study materials"
         }
         if isAccessibilitySize, mode == .firstGoal {
-            return "Choose apps"
+            return "Build Skill Map"
         }
         return title
     }
@@ -575,6 +575,7 @@ struct OnboardingView: View {
     let store: CheckpointStore
     private let workflow: CheckpointWorkflowCoordinator
     private let mode: GoalSetupMode
+    private let isFirstRunWalkthrough: Bool
     private let editBaseline: GoalSetupEditBaseline?
     private let initialDraft: GoalSetupDraftSnapshot
     private let preferredQuestionStyle: QuestionFormat
@@ -587,6 +588,7 @@ struct OnboardingView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: GoalSetupField?
+    @State private var isReviewingFirstSkillMap = false
     @State private var title = ""
     @State private var deadline: Date
     @State private var focusAreas = ""
@@ -612,6 +614,7 @@ struct OnboardingView: View {
     init(
         store: CheckpointStore,
         workflow: CheckpointWorkflowCoordinator,
+        isFirstRunWalkthrough: Bool = false,
         reduceMotionOverride: Bool? = nil,
         workingStateOverride: Bool? = nil,
         layoutReporter: (@MainActor (GoalSetupLayoutElement, CGRect) -> Void)? = nil,
@@ -623,6 +626,8 @@ struct OnboardingView: View {
         self.workingStateOverride = workingStateOverride
         self.layoutReporter = layoutReporter
         self.onFirstGoalCreated = onFirstGoalCreated
+        self.isFirstRunWalkthrough = isFirstRunWalkthrough || store.goal == nil
+        _isReviewingFirstSkillMap = State(initialValue: isFirstRunWalkthrough && store.goal != nil)
         _mutationRequestID = State(initialValue: UUID())
         _mutationCreatedAt = State(initialValue: Date())
 
@@ -701,190 +706,19 @@ struct OnboardingView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(
-                    alignment: .leading,
-                    spacing: dynamicTypeSize.isAccessibilitySize ? 14 : 16
-                ) {
-                    goalSetupHeader
-                        .reportGoalSetupLayoutFrame(.hero, using: layoutReporter)
-
-                    SectionPanel(goalTimingSectionTitle) {
-                        Text("Learning goal")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.text)
-                            .reportGoalSetupLayoutFrame(.titleLabel, using: layoutReporter)
-
-                        TextField(
-                            "Learning goal",
-                            text: $title,
-                            prompt: Text(goalTitlePrompt),
-                            axis: .vertical
-                        )
-                            .textFieldStyle(.plain)
-                            .font(.headline)
-                            .foregroundStyle(CheckpointTheme.text)
-                            .padding(12)
-                            .background(
-                                CheckpointTheme.panelRaised,
-                                in: RoundedRectangle(
-                                    cornerRadius: CheckpointTheme.compactCornerRadius,
-                                    style: .continuous
-                                )
-                            )
-                            .focused($focusedField, equals: .title)
-                            .submitLabel(.done)
-                            .onSubmit {
-                                focusedField = nil
-                            }
-                            .reportGoalSetupLayoutFrame(.titleField, using: layoutReporter)
-
-                        targetDatePicker
-                    }
-                    .reportGoalSetupLayoutFrame(.goalPanel, using: layoutReporter)
-
-                    if dynamicTypeSize.isAccessibilitySize {
-                        accessibilitySetupContext
-                    }
-
-                    if let persistenceMessage = store.persistenceRecoveryMessage {
-                        Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.amber)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(12)
-                            .background(
-                                CheckpointTheme.panel,
-                                in: RoundedRectangle(
-                                    cornerRadius: CheckpointTheme.compactCornerRadius,
-                                    style: .continuous
-                                )
-                            )
-                    }
-
-                    if let direction = directionPreviewState.presentation {
-                        GoalSetupDirectionCard(
-                            presentation: direction,
-                            reduceMotionOverride: reduceMotion
-                        )
-                            .transition(goalSetupMotionPolicy.transition)
-                    }
-
-                    SectionPanel {
-                        DisclosureGroup(isExpanded: $isCustomizationExpanded) {
-                            VStack(alignment: .leading, spacing: 16) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Topics to focus on")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.text)
-
-                                    Text("Add anything Checkpoint must cover. Leave this blank and we’ll suggest an editable topic map from your goal.")
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-
-                                    TextField("For example: contracts, vocabulary", text: $focusAreas, axis: .vertical)
-                                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
-                                        .textFieldStyle(.plain)
-                                        .foregroundStyle(CheckpointTheme.text)
-                                        .padding(12)
-                                        .background(
-                                            CheckpointTheme.panelRaised,
-                                            in: RoundedRectangle(
-                                                cornerRadius: CheckpointTheme.compactCornerRadius,
-                                                style: .continuous
-                                            )
-                                        )
-                                        .focused($focusedField, equals: .focusAreas)
-                                        .submitLabel(.done)
-                                }
-
-                                Divider()
-
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("What you already know")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(CheckpointTheme.text)
-
-                                    Text("Optional. A short note helps us avoid questions that are far too easy or hard. Leave it blank and we'll learn from your answers.")
-                                        .font(.footnote)
-                                        .foregroundStyle(CheckpointTheme.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-
-                                    TextField(
-                                        "For example: new to this; strong on algebra, weak on proofs",
-                                        text: $currentLevel,
-                                        axis: .vertical
-                                    )
-                                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
-                                    .textFieldStyle(.plain)
-                                    .foregroundStyle(CheckpointTheme.text)
-                                    .padding(12)
-                                    .background(
-                                        CheckpointTheme.panelRaised,
-                                        in: RoundedRectangle(
-                                            cornerRadius: CheckpointTheme.compactCornerRadius,
-                                            style: .continuous
-                                        )
-                                    )
-                                    .focused($focusedField, equals: .currentLevel)
-                                    .submitLabel(.done)
-                                }
-
-                                Divider()
-
-                                studyMaterialsSection
-
-                                Divider()
-
-                                startingLevelControl
-                            }
-                            .padding(.top, 12)
-                        } label: {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("Fine-tune practice")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(CheckpointTheme.text)
-
-                                Text(customizationSummary.text)
-                                    .font(.footnote)
-                                    .foregroundStyle(CheckpointTheme.muted)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(.trailing, dynamicTypeSize.isAccessibilitySize ? 24 : 0)
-                        }
-                        .tint(CheckpointTheme.teal)
-                        .sensoryFeedback(.selection, trigger: isCustomizationExpanded)
-                    }
-
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 20)
-            }
-            .reportGoalSetupLayoutFrame(.viewport, using: layoutReporter)
-            .disabled(isGoalSaveWorking)
-            .scrollDismissesKeyboard(.interactively)
-            .checkpointScreenBackground()
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                saveActionBar
-                    .reportGoalSetupLayoutFrame(.actionBar, using: layoutReporter)
-            }
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    if mode != .firstGoal {
-                        Button("Cancel") {
-                            requestGoalSetupDismissal()
-                        }
-                        .foregroundStyle(CheckpointTheme.teal)
-                        .disabled(isGoalSaveWorking)
-                    }
-                }
+            if isReviewingFirstSkillMap {
+                FirstRunSkillMapView(
+                    store: store,
+                    onApproved: finishFirstRunSkillMap,
+                    onEditGoal: editFirstRunGoal
+                )
+            } else {
+                goalEntryContent
             }
         }
         .coordinateSpace(name: goalSetupLayoutCoordinateSpaceName)
         .interactiveDismissDisabled(
-            dismissalPolicy.preventsInteractiveDismissal
+            isFirstRunWalkthrough || dismissalPolicy.preventsInteractiveDismissal
                 || store.hasResumedMembershipGoalCreation
         )
         .fileImporter(
@@ -962,11 +796,234 @@ struct OnboardingView: View {
         }
     }
 
+    private var goalEntryContent: some View {
+        ScrollView {
+                VStack(
+                    alignment: .leading,
+                    spacing: dynamicTypeSize.isAccessibilitySize ? 14 : 16
+                ) {
+                    goalSetupHeader
+                        .reportGoalSetupLayoutFrame(.hero, using: layoutReporter)
+
+                    SectionPanel(goalTimingSectionTitle) {
+                        Text("Learning goal")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.text)
+                            .reportGoalSetupLayoutFrame(.titleLabel, using: layoutReporter)
+
+                        TextField(
+                            "Learning goal",
+                            text: $title,
+                            prompt: Text(goalTitlePrompt),
+                            axis: .vertical
+                        )
+                            .textFieldStyle(.plain)
+                            .font(.headline)
+                            .foregroundStyle(CheckpointTheme.text)
+                            .padding(12)
+                            .background(
+                                CheckpointTheme.panelRaised,
+                                in: RoundedRectangle(
+                                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                                    style: .continuous
+                                )
+                            )
+                            .focused($focusedField, equals: .title)
+                            .submitLabel(.done)
+                            .onSubmit {
+                                focusedField = nil
+                            }
+                            .reportGoalSetupLayoutFrame(.titleField, using: layoutReporter)
+
+                        targetDatePicker
+                    }
+                    .reportGoalSetupLayoutFrame(.goalPanel, using: layoutReporter)
+
+                    if dynamicTypeSize.isAccessibilitySize && !isFirstRunWalkthrough {
+                        accessibilitySetupContext
+                    }
+
+                    if isFirstRunWalkthrough {
+                        SectionPanel("Make it yours · optional") {
+                            firstRunContextField
+                            Divider()
+                            studyMaterialsSection
+                        }
+                    }
+
+                    if let persistenceMessage = store.persistenceRecoveryMessage {
+                        Label(persistenceMessage, systemImage: "externaldrive.badge.exclamationmark")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.amber)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(12)
+                            .background(
+                                CheckpointTheme.panel,
+                                in: RoundedRectangle(
+                                    cornerRadius: CheckpointTheme.compactCornerRadius,
+                                    style: .continuous
+                                )
+                            )
+                    }
+
+                    if !isFirstRunWalkthrough, let direction = directionPreviewState.presentation {
+                        GoalSetupDirectionCard(
+                            presentation: direction,
+                            reduceMotionOverride: reduceMotion
+                        )
+                            .transition(goalSetupMotionPolicy.transition)
+                    }
+
+                    SectionPanel {
+                        DisclosureGroup(isExpanded: $isCustomizationExpanded) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Topics to focus on")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.text)
+
+                                    Text("Add anything Checkpoint must cover. Leave this blank and we’ll suggest an editable topic map from your goal.")
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+
+                                    TextField("For example: contracts, vocabulary", text: $focusAreas, axis: .vertical)
+                                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
+                                        .textFieldStyle(.plain)
+                                        .foregroundStyle(CheckpointTheme.text)
+                                        .padding(12)
+                                        .background(
+                                            CheckpointTheme.panelRaised,
+                                            in: RoundedRectangle(
+                                                cornerRadius: CheckpointTheme.compactCornerRadius,
+                                                style: .continuous
+                                            )
+                                        )
+                                        .focused($focusedField, equals: .focusAreas)
+                                        .submitLabel(.done)
+                                }
+
+                                Divider()
+
+                                if !isFirstRunWalkthrough {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("What you already know")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(CheckpointTheme.text)
+
+                                    Text("Optional. A short note helps us avoid questions that are far too easy or hard. Leave it blank and we'll learn from your answers.")
+                                        .font(.footnote)
+                                        .foregroundStyle(CheckpointTheme.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+
+                                    TextField(
+                                        "For example: new to this; strong on algebra, weak on proofs",
+                                        text: $currentLevel,
+                                        axis: .vertical
+                                    )
+                                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
+                                    .textFieldStyle(.plain)
+                                    .foregroundStyle(CheckpointTheme.text)
+                                    .padding(12)
+                                    .background(
+                                        CheckpointTheme.panelRaised,
+                                        in: RoundedRectangle(
+                                            cornerRadius: CheckpointTheme.compactCornerRadius,
+                                            style: .continuous
+                                        )
+                                    )
+                                    .focused($focusedField, equals: .currentLevel)
+                                    .submitLabel(.done)
+                                }
+
+                                Divider()
+
+                                studyMaterialsSection
+
+                                Divider()
+
+                                }
+
+                                startingLevelControl
+                            }
+                            .padding(.top, 12)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Fine-tune practice")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(CheckpointTheme.text)
+
+                                Text(customizationSummary.text)
+                                    .font(.footnote)
+                                    .foregroundStyle(CheckpointTheme.muted)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .padding(.trailing, dynamicTypeSize.isAccessibilitySize ? 24 : 0)
+                        }
+                        .tint(CheckpointTheme.teal)
+                        .sensoryFeedback(.selection, trigger: isCustomizationExpanded)
+                    }
+
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 20)
+            }
+            .reportGoalSetupLayoutFrame(.viewport, using: layoutReporter)
+            .disabled(isGoalSaveWorking)
+            .scrollDismissesKeyboard(.interactively)
+            .checkpointScreenBackground()
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                saveActionBar
+                    .reportGoalSetupLayoutFrame(.actionBar, using: layoutReporter)
+            }
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    if !isFirstRunWalkthrough && mode != .firstGoal {
+                        Button("Cancel") {
+                            requestGoalSetupDismissal()
+                        }
+                        .foregroundStyle(CheckpointTheme.teal)
+                        .disabled(isGoalSaveWorking)
+                    }
+                }
+            }
+    }
+
+    @ViewBuilder
     private var goalSetupHeader: some View {
+        if isFirstRunWalkthrough {
+            CheckpointSetupGuide(
+                step: .goal,
+                title: "Welcome to Checkpoint!",
+                message: "What would you like to learn? I’ll turn your goal into a Skill Map, then help you make room for it.",
+                reduceMotionOverride: reduceMotion
+            )
+        } else {
         GoalSetupHero(
             presentation: heroPresentation,
             reduceMotion: reduceMotion
         )
+        }
+    }
+
+    private var firstRunContextField: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Additional context")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+            TextField(
+                "What do you already know, and what would you like to focus on?",
+                text: $currentLevel,
+                axis: .vertical
+            )
+            .lineLimit(2...5)
+            .textFieldStyle(.plain)
+            .padding(12)
+            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius))
+            .focused($focusedField, equals: .currentLevel)
+            .accessibilityLabel("Additional context, optional")
+        }
     }
 
     private var accessibilitySetupContext: some View {
@@ -1002,6 +1059,10 @@ struct OnboardingView: View {
                 isLoading: isGoalSaveWorking || isImportingSources
             ) {
                 clearFocusForTransition()
+                if isFirstRunWalkthrough {
+                    requestGoalSave()
+                    return
+                }
                 switch primaryActionPresentation.intent {
                 case .dismiss:
                     dismissGoalSetup()
@@ -1027,7 +1088,10 @@ struct OnboardingView: View {
     }
 
     private var primaryButtonDisplayTitle: String {
-        primaryActionPresentation.displayTitle(
+        if isFirstRunWalkthrough && !isImportingSources {
+            return isGoalSaveWorking ? "Building your map" : "Build my Skill Map"
+        }
+        return primaryActionPresentation.displayTitle(
             isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
             isImportingSources: isImportingSources
         )
@@ -1039,11 +1103,11 @@ struct OnboardingView: View {
         }
         return isGoalSaveWorking
             ? "\(primaryActionPresentation.title), in progress"
-            : primaryActionPresentation.title
+            : primaryButtonDisplayTitle
     }
 
     private var goalTimingSectionTitle: String? {
-        dynamicTypeSize.isAccessibilitySize ? nil : "Goal and timing"
+        dynamicTypeSize.isAccessibilitySize ? nil : (isFirstRunWalkthrough ? "What is your goal?" : "Goal and timing")
     }
 
     private var goalTitlePrompt: String {
@@ -1368,11 +1432,27 @@ struct OnboardingView: View {
     }
 
     private func finishGoalSave() {
-        guard !store.isOnboardingPresented else { return }
-        if mode == .firstGoal, store.goal != nil {
-            onFirstGoalCreated()
+        if isFirstRunWalkthrough, store.goal != nil {
+            store.isOnboardingPresented = true
+            isReviewingFirstSkillMap = true
+            return
         }
+        guard !store.isOnboardingPresented else { return }
         dismiss()
+    }
+
+    private func finishFirstRunSkillMap() {
+        guard let goal = store.goal else { return }
+        FirstRunSetupProgress.approveSkillMap(goalID: goal.id)
+        onFirstGoalCreated()
+        store.isOnboardingPresented = false
+        dismiss()
+    }
+
+    private func editFirstRunGoal() {
+        mutationRequestID = UUID()
+        mutationCreatedAt = Date()
+        isReviewingFirstSkillMap = false
     }
 
     private var protectionConfirmationIsPresented: Binding<Bool> {
@@ -1427,7 +1507,9 @@ struct OnboardingView: View {
             minimumQuestionDifficulty: minimumQuestionDifficulty
         )
         let operation: GoalProfileMutationRequest.Operation
-        if mode == .editGoal {
+        if isFirstRunWalkthrough, let goal = store.goal {
+            operation = .edit(expectedGoalID: goal.id, draft: draft)
+        } else if mode == .editGoal {
             guard let editBaseline else { return nil }
             operation = .edit(expectedGoalID: editBaseline.goalID, draft: draft)
         } else {
@@ -1800,7 +1882,7 @@ struct GoalSetupHero: View {
     }
 
     private var compactEyebrow: String {
-        presentation.eyebrow == "SETUP · STEP 2 OF 3"
+        presentation.eyebrow == "SETUP · STEP 1 OF 3"
             ? "STEP 2 OF 3"
             : presentation.eyebrow
     }
