@@ -1,0 +1,987 @@
+{
+  "schema_version": 1,
+  "purpose": "Bounded retrospective item-eligibility audit of a proposed nonempty solver limitations veto. Not a production accuracy estimate or new generation experiment.",
+  "created_date": "2026-09-06",
+  "runner": {
+    "path": "/private/tmp/checkpoint-limitations-impact-audit-20260906.py",
+    "sha256": "d869f62d139ae54ac8fdc8a3d19742770b0262cc458c59cf7d55a9142c75d96b",
+    "invocation": "python3 /tmp/checkpoint-limitations-impact-audit-20260906.py --repo /Users/samchou/Documents/Checkpoint"
+  },
+  "source_artifacts": [
+    {
+      "path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "sha256": "cb3b3442eb6159e55c703edd14e0dcdb61b50835f83fd7e1f2e96a5da5de8a91"
+    },
+    {
+      "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+      "sha256": "8c7646b57400ada8244090da607f7bf18bbaf31390de61aa72ce1e6b5b343d5b"
+    },
+    {
+      "path": "docs/evidence/solver-outcome-smoke-20260906.json",
+      "sha256": "c5d33ad38b8b6bcded69acd5fc2ada3e1537c62a51f411c19c4dd18c4801f907"
+    },
+    {
+      "path": "docs/evidence/evidence-review-feasibility-20260906.json",
+      "sha256": "d93465d39ab8f5a5b29b3895fe2ac25295469363b39e0657aff7cee73a335c73"
+    },
+    {
+      "path": "docs/evidence/four-domain-feasibility-20260906.json",
+      "sha256": "eb1b6a180f04b59e58413b1ee4d6cd0b5e7616b91d0751b1bfb5588f648c313e"
+    },
+    {
+      "path": "docs/evidence/four-domain-adjudication-20260906.json",
+      "sha256": "590a21c6abf9ad2065a6bceefff291317a18b362c86d1dbd242117062516b68f"
+    }
+  ],
+  "committed_schema_reference": {
+    "revision": "eb5543316ce639082016f3329107b29d213b1717",
+    "path": "backend/bedrock-question-service/question_verification.py",
+    "sha256": "1cd204f504e841b4bcf3d7bd07bfe895274603948c765309dc48579111935fd7",
+    "inspection_note": "Frozen parent of gate commit 26feed4: resolved + empty assumptions was eligible even with limitations; exceptional outcomes required canonical app-owned choices. This runner inventories captures and does not execute either gate.",
+    "subsequent_gate_commit": "26feed4fab44763eb0ea3b6451fe09a8a6d76a36"
+  },
+  "method": [
+    "Exactly 16 explicit-outcome solution records are parsed from eight canonical actual solver responses: four three-item source-authoring calls and four single-item outcome-smoke calls.",
+    "Parsed responses are exact-joined to archived stage_outputs and presented stems. Repeated stage_outputs, adjudication embeddings, and pre-fix mock/replay archives are not additional model calls.",
+    "A JSON-pointer-like locator uses #json to parse an embedded string and #concat_then_json to concatenate the response text list before parsing.",
+    "Veto simulation only checks trimmed limitations text, once for all outcomes and once only for explicit resolved. It does not rerun generation, reindex batches, or predict changed reviewer responses.",
+    "Three older actual responses illustrate mechanisms only; their schema lacks outcome. Four nearby old valid control metadata records are checked separately for empty limitations.",
+    "No malformed responses, mocks, unit fixtures, author responses, reviewer responses, or native grounding probes are counted as current solver outcomes."
+  ],
+  "current_summary": {
+    "actual_solver_calls": 8,
+    "actual_solution_records": 16,
+    "outcome_counts": {
+      "resolved": 15,
+      "no_solution": 1
+    },
+    "nonempty_limitations_records": 1,
+    "resolved_only_veto_records": [
+      "source-0-0"
+    ],
+    "all_outcome_veto_records": [
+      "source-0-0"
+    ],
+    "assumptions_nonempty_records": 0,
+    "newly_vetoed_previously_returned_records": 1
+  },
+  "current_records": [
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/1/response/text#concat_then_json/solutions/0",
+      "call_locator": "/calls/1",
+      "provider_response_text_sha256": "a7067dec093fc7aa39a9db7d181d17e57f3b69fa770ccb32c16ce15d4736e21c",
+      "solution_sha256": "5952a9829e8232eb757bb0b8437cf5ec4cc51a8f974c731c1b0d3c9f4ba08ec5",
+      "identity": {
+        "record_id": "source-0-0",
+        "experiment": "source_authoring",
+        "job_index": 0,
+        "case_id": "plant_stem_cuttings",
+        "arm": "goal_only",
+        "item_index": 0,
+        "display_id": "79637e799752300472e234d07c8dc11d0c17b9ba566fbe2ec4d214703d618a1a"
+      },
+      "prompt": "You are selecting a Monstera deliciosa cutting for water propagation. The plant has both mature and juvenile stems. Which described cutting is most likely to root successfully?",
+      "solver": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "The cutting most likely to root is a stem section that includes at least one node with an axillary bud (and ideally two nodes), taken from healthy, pest-/disease-free material. Per the UMN source, Monstera deliciosa propagation *requires* a node with an axillary bud; a detached leaf-and-petiole piece lacking stem node tissue will not produce a new plant. The cutting should be 3–6 inches long (Iowa State guideline), with lower leaves removed and at least one node submerged. Whether the stem is mature or juvenile matters less than the presence of a viable node with bud tissue.",
+        "limitations": "The prompt references described cuttings that appear to be in unseen answer choices; the principle applied is that a node with axillary bud is the non-negotiable requirement per the UMN source.",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/0",
+        "returned": true,
+        "complete_reviewed_content": false,
+        "independent_difficulty": 3
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1942,
+          "outputTokens": 1285,
+          "totalTokens": 3227,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": true,
+      "counterfactual_new_item_veto_resolved_only": true
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/1/response/text#concat_then_json/solutions/1",
+      "call_locator": "/calls/1",
+      "provider_response_text_sha256": "a7067dec093fc7aa39a9db7d181d17e57f3b69fa770ccb32c16ce15d4736e21c",
+      "solution_sha256": "566cfe801f8d9ce7705f25d33637b85dd65b434c75bb5fa27d4f0c87a0c80e99",
+      "identity": {
+        "record_id": "source-0-1",
+        "experiment": "source_authoring",
+        "job_index": 0,
+        "case_id": "plant_stem_cuttings",
+        "arm": "goal_only",
+        "item_index": 1,
+        "display_id": "5943dc17f8a1cc24c3324075aaf6b118e6015b31338fbfd3944cf62c9167e8d9"
+      },
+      "prompt": "Two weeks ago you placed Tradescantia cuttings in water inside a sealed clear plastic bag on a bright windowsill. The stems now show white fuzz at the waterline, lower leaves are mushy, and no roots have formed. What is the most likely primary cause?",
+      "solver": {
+        "index": 1,
+        "outcome": "resolved",
+        "answer": "The most likely primary cause is the sealed plastic bag eliminating air exchange, creating a stagnant, excessively humid environment that promoted fungal/bacterial rot. The Iowa State source specifies that humidity covers must be loose and allow air exchange. A sealed bag traps moisture and heat (especially on a bright windowsill), encouraging pathogen growth (the white fuzz is likely mold/fungus) and tissue decay (mushy leaves, soft stems). Bright light through the sealed cover also intensifies heat stress. Opening or loosening the cover and reducing direct light exposure would have been needed.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/1",
+        "returned": true,
+        "complete_reviewed_content": false,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1942,
+          "outputTokens": 1285,
+          "totalTokens": 3227,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/1/response/text#concat_then_json/solutions/2",
+      "call_locator": "/calls/1",
+      "provider_response_text_sha256": "a7067dec093fc7aa39a9db7d181d17e57f3b69fa770ccb32c16ce15d4736e21c",
+      "solution_sha256": "7cacaf7bcead93737aa30d864d431ed454b1df809a08d2996792a921c6afe5a7",
+      "identity": {
+        "record_id": "source-0-2",
+        "experiment": "source_authoring",
+        "job_index": 0,
+        "case_id": "plant_stem_cuttings",
+        "arm": "goal_only",
+        "item_index": 2,
+        "display_id": "c8c7605cca321206142f48cf1c81e1012d772e33d3f94614643d7fda76d16a7c"
+      },
+      "prompt": "You water-propagated Philodendron cuttings at different times. A: 0.5 cm nubs just emerging. B: 3 cm white roots with secondary branching. C: 12 cm tangled translucent roots, tips browning. D: no roots after four weeks, soft stem base. Which group is ideal for potting into soil?",
+      "solver": {
+        "index": 2,
+        "outcome": "resolved",
+        "answer": "Group B (3 cm white roots with secondary branching) is ideal for potting into soil. The Illinois Extension guide recommends potting when roots are about one inch long (~2.5 cm); 3 cm is close to that benchmark, and the white color and secondary branching indicate healthy, actively growing roots. The UMN source advises returning cuttings with absent or sparse roots to the medium, ruling out A (0.5 cm nubs, too sparse) and D (no roots, soft base indicating rot/failure). Group C (12 cm tangled roots with browning tips) has been left in water too long and is showing decline; water-adapted roots also transition to soil less readily when overgrown.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/2",
+        "returned": true,
+        "complete_reviewed_content": false,
+        "independent_difficulty": 3
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1942,
+          "outputTokens": 1285,
+          "totalTokens": 3227,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/4/response/text#concat_then_json/solutions/0",
+      "call_locator": "/calls/4",
+      "provider_response_text_sha256": "4e2417b1ed8387f7a008b734bcf232ec827178a623efb5b59a8f3d204ea9e474",
+      "solution_sha256": "6cd6031200c20ffa7d6379bca47da8374a5f8b8055690a1dd2ede72b0814562e",
+      "identity": {
+        "record_id": "source-1-0",
+        "experiment": "source_authoring",
+        "job_index": 1,
+        "case_id": "plant_stem_cuttings",
+        "arm": "source_first",
+        "item_index": 0,
+        "display_id": "dd00b8aee5a41f87e2b430106b42c8f54798f9302720447cd5d9bfecf4ce7242"
+      },
+      "prompt": "A Monstera deliciosa cutting consisting of one leaf with its petiole—but no node or axillary bud—is placed in water. After three weeks, small roots appear at the petiole base. What is the most likely long-term outcome?",
+      "solver": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "The leaf will not develop into a new plant. Per the University of Minnesota Extension source, Monstera deliciosa propagation requires a node with an axillary bud; a detached leaf and petiole lacking this stem tissue will not form a new growing plant. Adventitious roots may emerge from the petiole base, but without a node/axillary bud the cutting cannot produce new stems or leaves. It will persist as a rooted leaf that eventually declines.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/3",
+        "returned": true,
+        "complete_reviewed_content": true,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1932,
+          "outputTokens": 1030,
+          "totalTokens": 2962,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/4/response/text#concat_then_json/solutions/1",
+      "call_locator": "/calls/4",
+      "provider_response_text_sha256": "4e2417b1ed8387f7a008b734bcf232ec827178a623efb5b59a8f3d204ea9e474",
+      "solution_sha256": "76cecc08b2215ec33d749a1e32ff5aec6d0beda200342a87ac019e226066f348",
+      "identity": {
+        "record_id": "source-1-1",
+        "experiment": "source_authoring",
+        "job_index": 1,
+        "case_id": "plant_stem_cuttings",
+        "arm": "source_first",
+        "item_index": 1,
+        "display_id": "12b4ef1b66c9aa85e5db76f91f3b2bad89d83ff0068c04e5a53661b2585a23a7"
+      },
+      "prompt": "Fresh stem cuttings are placed in a tightly sealed clear container of moist medium on a windowsill that receives strong direct afternoon sun. After one week the foliage is brown and wilted. Which factor combination most likely caused the damage?",
+      "solver": {
+        "index": 1,
+        "outcome": "resolved",
+        "answer": "Excessive direct light combined with a sealed (no-air-exchange) enclosure most likely caused the damage. The Iowa State source specifies bright indirect light (not direct sun), warns that excessive light burns foliage especially under covers, and recommends a loose cover that allows air exchange. A tightly sealed clear container in strong direct afternoon sun traps heat and intensifies light, scorching foliage, while the lack of ventilation compounds heat stress and can promote fungal disease. Both factors—direct sun under a clear sealed cover and no air exchange—acted together.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/4",
+        "returned": true,
+        "complete_reviewed_content": false,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1932,
+          "outputTokens": 1030,
+          "totalTokens": 2962,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/4/response/text#concat_then_json/solutions/2",
+      "call_locator": "/calls/4",
+      "provider_response_text_sha256": "4e2417b1ed8387f7a008b734bcf232ec827178a623efb5b59a8f3d204ea9e474",
+      "solution_sha256": "cce0963699199dfd48439c49922e7c0c1fa49491592337f42be4300080883366",
+      "identity": {
+        "record_id": "source-1-2",
+        "experiment": "source_authoring",
+        "job_index": 1,
+        "case_id": "plant_stem_cuttings",
+        "arm": "source_first",
+        "item_index": 2,
+        "display_id": "b02f99e5590a6c584ca6a4c5ce10653d7af381dbd462405517876cfe77966c52"
+      },
+      "prompt": "After six weeks you inspect three stem cuttings. Cutting A has several roots about 1.5 inches long. Cutting B has one fragile 0.25-inch root. Cutting C shows callus tissue but no visible roots. Which action best follows recommended practice?",
+      "solver": {
+        "index": 2,
+        "outcome": "resolved",
+        "answer": "Pot Cutting A individually; return Cuttings B and C to the rooting medium. The Illinois Extension guide says to check actual roots before potting and uses approximately one inch of root length as the benchmark. The Minnesota Extension advises that if roots are absent or sparse, return the cutting to the medium. Cutting A (several roots ~1.5 inches) exceeds the one-inch guideline and is ready to pot. Cutting B (one fragile 0.25-inch root) is too sparse and short. Cutting C (callus only, no roots) is not yet rooted. Both B and C should remain in the rooting medium.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/5",
+        "returned": true,
+        "complete_reviewed_content": true,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1932,
+          "outputTokens": 1030,
+          "totalTokens": 2962,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/7/response/text#concat_then_json/solutions/0",
+      "call_locator": "/calls/7",
+      "provider_response_text_sha256": "ece17a61ac2cef2fa0aa9d769d799ff6d05fa64717d6de2766e25664459ffec1",
+      "solution_sha256": "93eefdd95da11a71a0eab74a08892c24a04db078b9e094da12ac4d3b0f4968bd",
+      "identity": {
+        "record_id": "source-2-0",
+        "experiment": "source_authoring",
+        "job_index": 2,
+        "case_id": "accessible_web_forms",
+        "arm": "source_first",
+        "item_index": 0,
+        "display_id": "affbcfefebab118ad4d57bbf5e547b74222b06731e57fbcc5fb421bbf2d93c16"
+      },
+      "prompt": "A form redisplays after failed submission. Invalid fields have red borders. A banner at the top reads \"There are errors on this page.\" No text identifies which fields have errors or what is wrong. Which assessment of SC 3.3.1 compliance is correct?",
+      "solver": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "This fails SC 3.3.1. The generic banner ('There are errors on this page') does not identify which specific fields have errors or describe what is wrong with them. Red borders use color alone, which per SC 3.3.1 'does not supply that description.' The criterion requires text that identifies the affected item and describes the error. Neither the banner nor the red borders meet that requirement.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/6",
+        "returned": true,
+        "complete_reviewed_content": true,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1730,
+          "outputTokens": 1101,
+          "totalTokens": 2831,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/7/response/text#concat_then_json/solutions/1",
+      "call_locator": "/calls/7",
+      "provider_response_text_sha256": "ece17a61ac2cef2fa0aa9d769d799ff6d05fa64717d6de2766e25664459ffec1",
+      "solution_sha256": "6cb242a007c7f823efcd9697dd8d51ddd42f000f3cd5e782ef40af20f74406f3",
+      "identity": {
+        "record_id": "source-2-1",
+        "experiment": "source_authoring",
+        "job_index": 2,
+        "case_id": "accessible_web_forms",
+        "arm": "source_first",
+        "item_index": 1,
+        "display_id": "9febb477ebdedd4eec3b9d1dadf6999a085e6613519596e283f07bc119c3606a"
+      },
+      "prompt": "A date-of-birth input uses aria-label=\"Date of birth\" and placeholder=\"MM/DD/YYYY\". No visible text label appears near the field. Which SC 3.3.2 assessment is correct?",
+      "solver": {
+        "index": 1,
+        "outcome": "resolved",
+        "answer": "This likely fails SC 3.3.2. The aria-label provides a programmatic accessible name ('Date of birth') but is not visible to sighted users. The placeholder 'MM/DD/YYYY' offers a format hint but does not clearly communicate the field's purpose (date of birth) and disappears once the user begins typing. Per the source, 'an aria-label alone can provide a programmatic name while leaving other users without the needed visible cue.' Without another adequate visible label or instruction communicating the field's purpose, SC 3.3.2 is not satisfied.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/7",
+        "returned": true,
+        "complete_reviewed_content": false,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1730,
+          "outputTokens": 1101,
+          "totalTokens": 2831,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/7/response/text#concat_then_json/solutions/2",
+      "call_locator": "/calls/7",
+      "provider_response_text_sha256": "ece17a61ac2cef2fa0aa9d769d799ff6d05fa64717d6de2766e25664459ffec1",
+      "solution_sha256": "428afd32052e676dd7d96b847e1c285631ca7bec7f21f983dbd808ff40cd8f47",
+      "identity": {
+        "record_id": "source-2-2",
+        "experiment": "source_authoring",
+        "job_index": 2,
+        "case_id": "accessible_web_forms",
+        "arm": "source_first",
+        "item_index": 2,
+        "display_id": "6158986a9296d6b5fd94ed4569a3a30696358839d5098982129ec2a742d1f5ba"
+      },
+      "prompt": "A form shows visible \"Email\" text inside a span element, followed by an input with id=\"email\". The span has no for attribute and no ARIA attributes. Which statement about this field's accessibility is accurate?",
+      "solver": {
+        "index": 2,
+        "outcome": "resolved",
+        "answer": "The field has a visible label ('Email') but lacks an explicit programmatic label association. A <span> cannot serve as a <label> element and has no for attribute. Without a <label for=\"email\">, without wrapping the input inside a <label>, and without ARIA attributes (e.g., aria-labelledby) linking the span text to the input, assistive technology cannot programmatically determine the relationship between the visible text and the input. The visible text satisfies the visual aspect of SC 3.3.2, but the missing programmatic association fails requirements under SC 1.3.1 and SC 4.1.2.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/8",
+        "returned": false,
+        "complete_reviewed_content": false,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1730,
+          "outputTokens": 1101,
+          "totalTokens": 2831,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/10/response/text#concat_then_json/solutions/0",
+      "call_locator": "/calls/10",
+      "provider_response_text_sha256": "883e1c695ff5f85a1f2b148a7ef33a7c703dd666710f6625aa84dbaaa0fc5422",
+      "solution_sha256": "3625f793fa2318ee99a8ba1c46bfa7b04e8d7a7e3ca8b3294db4a1884bfd4a99",
+      "identity": {
+        "record_id": "source-3-0",
+        "experiment": "source_authoring",
+        "job_index": 3,
+        "case_id": "accessible_web_forms",
+        "arm": "goal_only",
+        "item_index": 0,
+        "display_id": "aa837de4f4102ed0a82fa5a9ed31db774f9ac90a3c66c96ba65ce7e776c37fbf"
+      },
+      "prompt": "A developer writes: <label>Email</label> <input type=\"email\" id=\"email\" aria-label=\"Email address\">. A speech-input user says \"click Email\" but focus does not move to the field. Which detail in the markup most directly explains this failure?",
+      "solver": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "The <label> element has no 'for' attribute linking it to the input's id=\"email\". Without an explicit association (for=\"email\") or implicit association (wrapping the input inside the <label>), the label is not programmatically connected to the control. Speech-input tools match visible label text to the associated control; because no association exists, saying \"click Email\" cannot move focus to the field. The aria-label provides a programmatic accessible name to assistive technology but does not create the label-to-control association that speech-input software needs via the <label> element.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/9",
+        "returned": false,
+        "complete_reviewed_content": false,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1750,
+          "outputTokens": 903,
+          "totalTokens": 2653,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/10/response/text#concat_then_json/solutions/1",
+      "call_locator": "/calls/10",
+      "provider_response_text_sha256": "883e1c695ff5f85a1f2b148a7ef33a7c703dd666710f6625aa84dbaaa0fc5422",
+      "solution_sha256": "9bf691dcd8a05d61af2e3454b1a967a21829cf779340efe458d4d36752d7d4eb",
+      "identity": {
+        "record_id": "source-3-1",
+        "experiment": "source_authoring",
+        "job_index": 3,
+        "case_id": "accessible_web_forms",
+        "arm": "goal_only",
+        "item_index": 1,
+        "display_id": "0ce472b97ab5819dfe63861dc624685d31489c4a613404e0f723001a406f11ef"
+      },
+      "prompt": "After submission, a form shows a red banner: \"There are errors in your form.\" Each invalid field receives a red border but no inline text message. A color-blind user cannot determine which fields need correction. Which detail most directly causes this barrier?",
+      "solver": {
+        "index": 1,
+        "outcome": "resolved",
+        "answer": "The individual invalid fields are identified only by color (red border) with no accompanying text description of each error. Per SC 3.3.1, input errors that are automatically detected must be identified in text that describes the item in error and what is wrong. The generic banner says errors exist but does not identify which fields are affected, and the red border alone communicates the per-field error through color only. A color-blind user cannot perceive the red borders, leaving them with no way to determine which fields need correction. Adding inline text messages for each erroneous field would resolve the barrier.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/10",
+        "returned": false,
+        "complete_reviewed_content": true,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1750,
+          "outputTokens": 903,
+          "totalTokens": 2653,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/source-authoring-feasibility-20260906.json",
+      "raw_solution_locator": "/calls/10/response/text#concat_then_json/solutions/2",
+      "call_locator": "/calls/10",
+      "provider_response_text_sha256": "883e1c695ff5f85a1f2b148a7ef33a7c703dd666710f6625aa84dbaaa0fc5422",
+      "solution_sha256": "57935a515cb46acfc29700756342f3a26df073f0209a1133111b72018bf2975a",
+      "identity": {
+        "record_id": "source-3-2",
+        "experiment": "source_authoring",
+        "job_index": 3,
+        "case_id": "accessible_web_forms",
+        "arm": "goal_only",
+        "item_index": 2,
+        "display_id": "3d86506b96995dc3ecb6ed6bf2eda69b9e7d138d1fce55bf7d6d3a414e178944"
+      },
+      "prompt": "A date field uses: <label for=\"dob\">Date</label> <input id=\"dob\" type=\"text\" placeholder=\"MM/DD/YYYY\">. Users frequently enter dates in the wrong format. Which aspect of this markup most likely contributes to the problem?",
+      "solver": {
+        "index": 2,
+        "outcome": "resolved",
+        "answer": "The required date format (MM/DD/YYYY) is conveyed only through the placeholder attribute, which disappears as soon as the user begins typing. This means the format instruction is not persistently visible. Per SC 3.3.2, labels or instructions should communicate expected input formats. Placeholder text is an unreliable substitute for a visible, persistent instruction because users lose the cue mid-entry. The format instruction should be provided as permanent visible text (e.g., as part of the label or as helper text adjacent to the field) so users can reference it while typing.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/source-authoring-adjudication-20260906.json",
+        "locator": "/candidate_rows/11",
+        "returned": false,
+        "complete_reviewed_content": true,
+        "independent_difficulty": 2
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "response_received",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1750,
+          "outputTokens": 903,
+          "totalTokens": 2653,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/solver-outcome-smoke-20260906.json",
+      "raw_solution_locator": "/capture/calls/0/response/text#concat_then_json/solutions/0",
+      "call_locator": "/capture/calls/0",
+      "provider_response_text_sha256": "fac196b8faaae7fca532a8c86bedd6d23ef54d4e264d370cb5c02be13fe505a7",
+      "solution_sha256": "cc96f2230dbfefcafc9c2b58bec0f9ae04790eef30ce1f0e4b5bf185050936a7",
+      "identity": {
+        "record_id": "outcome-all_pairs_output_bound",
+        "experiment": "solver_outcome_smoke",
+        "case_id": "all_pairs_output_bound"
+      },
+      "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+      "solver": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "Use a hash set (or hash map). In a single pass over the array, for each element x check whether (k − x) already exists in the set. If it does, record the pair (x, k − x). Then insert x into the set. Lookup and insertion in a hash set are O(1) amortized, so the total time is O(n). The set stores at most n elements, giving O(n) space.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/solver-outcome-smoke-20260906.json",
+        "locator": "/adjudication/0",
+        "returned": true,
+        "adjudication": {
+          "case_id": "all_pairs_output_bound",
+          "finding": "False acceptance of an underqualified total linear-time claim. The stem permits inputs with quadratic matching index-pair output; the solver silently substitutes a set-based matching procedure, declares resolved, and reports no limitations or assumptions. Reviewer repeats linear-time claim.",
+          "prospective_criterion_met": false
+        }
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "completed",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 985,
+          "outputTokens": 259,
+          "totalTokens": 1244,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/solver-outcome-smoke-20260906.json",
+      "raw_solution_locator": "/capture/calls/2/response/text#concat_then_json/solutions/0",
+      "call_locator": "/capture/calls/2",
+      "provider_response_text_sha256": "aa8ed0127c82bf4b791878ba13b40e071509d5dd85ef546b3137825c20438116",
+      "solution_sha256": "ccd7f552807f7ab01e73ea921d35168819f47e2620674f31cfa25cf4c2244f9a",
+      "identity": {
+        "record_id": "outcome-valid_no_solution_counterpart",
+        "experiment": "solver_outcome_smoke",
+        "case_id": "valid_no_solution_counterpart"
+      },
+      "prompt": "For an arbitrary integer array of length n, which method can explicitly enumerate every pair of distinct indices summing to k in total O(n) time, including writing the output?",
+      "solver": {
+        "index": 0,
+        "outcome": "no_solution",
+        "answer": "No method can guarantee O(n) total time for explicitly enumerating all pairs. The output itself can be Θ(n²) in the worst case (e.g., every element is v and k = 2v, yielding n(n−1)/2 pairs), so merely writing the pairs requires Ω(n²) time. A hash-map approach can *detect* or *find one* such pair in O(n) expected time, but enumerating all pairs in O(n) time is impossible when the output size exceeds O(n).",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/solver-outcome-smoke-20260906.json",
+        "locator": "/adjudication/1",
+        "returned": true,
+        "adjudication": {
+          "case_id": "valid_no_solution_counterpart",
+          "finding": "Correct no_solution outcome and canonical key. Solver and main reviewer explanation give the quadratic-output counterexample; exactly one offered answer meets the explicit total-work task. Sorting-choice feedback additionally assumes O(n log n) sorting without specifying the comparison model, so retention of the correct key is not a blanket certification of every explanatory assertion.",
+          "key_and_main_explanation_sound": true,
+          "feedback_qualification": "The quadratic-output rejection is sufficient; the sorting cost should be qualified as comparison sorting or omitted.",
+          "prospective_criterion_fully_met": false
+        }
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "completed",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 989,
+          "outputTokens": 474,
+          "totalTokens": 1463,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/solver-outcome-smoke-20260906.json",
+      "raw_solution_locator": "/capture/calls/4/response/text#concat_then_json/solutions/0",
+      "call_locator": "/capture/calls/4",
+      "provider_response_text_sha256": "91058c08572ab6c725c66eaed482e0371073feacd8f5d7f2d201cb72eb6bd03d",
+      "solution_sha256": "8c2d2baca9594dc518a5d1e9674f86c8fae4ed1c875182088f7a83576eb65128",
+      "identity": {
+        "record_id": "outcome-raw_highlight_recovery_unsupported_sequence",
+        "experiment": "solver_outcome_smoke",
+        "case_id": "raw_highlight_recovery_unsupported_sequence"
+      },
+      "prompt": "A photographer edits a RAW image with severely clipped highlights in a sunset sky and crushed shadows in the foreground rocks. The histogram shows data touching both edges. Which processing sequence maximizes recoverable detail while minimizing artifacts?",
+      "solver": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "The sequence that maximizes recoverable detail while minimizing artifacts is: (1) Set white balance first (non-destructive in RAW, ensures accurate tonal evaluation). (2) Pull back global Exposure if needed to protect highlights. (3) Reduce Highlights (negative) to recover clipped highlight data from the raw sensor channels. (4) Raise Shadows to open crushed shadow detail. (5) Fine-tune Whites and Blacks sliders to reset tonal endpoints. (6) Apply tone curve / contrast adjustments only after highlight and shadow recovery is complete—applying contrast before recovery permanently clips recoverable data. (7) Apply luminance noise reduction, because lifting shadows amplifies sensor noise. (8) Apply sharpening and local adjustments last to avoid amplifying artifacts. The critical principle: tonal recovery (highlights down, shadows up) must precede any contrast-increasing operation, and noise reduction must follow shadow recovery but precede sharpening.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/solver-outcome-smoke-20260906.json",
+        "locator": "/adjudication/2",
+        "returned": true,
+        "adjudication": {
+          "case_id": "raw_highlight_recovery_unsupported_sequence",
+          "finding": "False acceptance. The solver invents a uniquely preferred sequence and says contrast before recovery permanently clips data, without the stem establishing a destructive editing workflow or whether raw sensor data survives. It declares resolved with empty limitations and assumptions. Reviewer asserts a necessary order and unqualified recovery from the underdetermined facts.",
+          "prospective_criterion_met": false
+        }
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "completed",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 995,
+          "outputTokens": 773,
+          "totalTokens": 1768,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    },
+    {
+      "capture_path": "docs/evidence/solver-outcome-smoke-20260906.json",
+      "raw_solution_locator": "/capture/calls/6/response/text#concat_then_json/solutions/0",
+      "call_locator": "/capture/calls/6",
+      "provider_response_text_sha256": "b7afe0b9efb9756441705f752b062c85301bb0e90f2c1421c825977c1adfbbc9",
+      "solution_sha256": "53cec6070c165eae3d89f428165ac79fa0a04386535f34a453f90ad6a12004d9",
+      "identity": {
+        "record_id": "outcome-valid_conditional",
+        "experiment": "solver_outcome_smoke",
+        "case_id": "valid_conditional"
+      },
+      "prompt": "Every certified technician has completed safety training. Mira is a certified technician. Which conclusion must follow?",
+      "solver": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "Mira has completed safety training. This follows by modus ponens: the universal rule (all certified technicians have completed safety training) combined with the fact that Mira is a certified technician entails that Mira has completed safety training.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "archived_assessment": {
+        "path": "docs/evidence/solver-outcome-smoke-20260906.json",
+        "locator": "/adjudication/3",
+        "returned": true,
+        "adjudication": {
+          "case_id": "valid_conditional",
+          "finding": "Correct resolved outcome, Mira safety-training key, main explanation, and four choice explanations. The conditional supplies the conclusion, not its converse, uniqueness, or an ordering among technicians.",
+          "prospective_criterion_met": true
+        }
+      },
+      "call_provenance": {
+        "kind": "actual_recorded_model_response",
+        "modelId": "us.anthropic.claude-opus-4-6-v1",
+        "status": "completed",
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 979,
+          "outputTokens": 135,
+          "totalTokens": 1114,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        }
+      },
+      "counterfactual_new_item_veto_all_outcomes": false,
+      "counterfactual_new_item_veto_resolved_only": false
+    }
+  ],
+  "older_examples": [
+    {
+      "capture_path": "docs/evidence/evidence-review-feasibility-20260906.json",
+      "raw_solution_locator": "/results/1/reviews/0#json/solutions/0",
+      "kind": "actual_old_schema_model_response",
+      "schema_note": "outcome absent; do not relabel as resolved under the current contract.",
+      "case_id": "raw_highlight_recovery_unsupported_sequence",
+      "arm": "evidence",
+      "repeat": 1,
+      "question": {
+        "prompt": "A photographer edits a RAW image with severely clipped highlights in a sunset sky and crushed shadows in the foreground rocks. The histogram shows data touching both edges. Which processing sequence maximizes recoverable detail while minimizing artifacts?",
+        "expectedAnswer": "First reduce exposure to recover highlight data, then lift shadows with a tone curve that avoids excessive local contrast",
+        "choices": [
+          "First reduce exposure to recover highlight data, then lift shadows with a tone curve that avoids excessive local contrast",
+          "Apply aggressive shadow recovery first to reveal detail, then pull back highlights with recovery slider",
+          "Convert to JPEG first for smaller file size, then apply shadow and highlight adjustments",
+          "Increase overall contrast to stretch the midtones and hide the clipping"
+        ],
+        "explanation": "In RAW processing, highlights that are clipped are permanently lost; recovering them requires pulling the exposure or highlights slider first. Shadows retain more recoverable data and can be lifted afterward with a tone curve. Avoiding excessive local contrast in the shadow lift prevents halo artifacts. This sequence preserves the most detail with fewest artifacts.",
+        "topic": "Color and image processing",
+        "difficulty": 4,
+        "format": "Multiple Choice",
+        "objective": "Apply basic tonal corrections to recover shadow and highlight detail"
+      },
+      "solver": {
+        "index": 0,
+        "answer": "Begin with a global Exposure reduction to pull overall brightness down, bringing near-clipped highlight data back into representable range. Next, drag Highlights strongly negative to recover remaining sunset-sky detail (works best where only one or two color channels are clipped in the raw data). Then push Shadows positive to open crushed foreground detail. Finally, refine Whites and Blacks end-points. This broad-to-targeted order maximizes recovery because each successive, narrower control operates on a better-distributed tonal range. Because Camera Raw / Lightroom edits are nondestructive metadata applied to the original raw samples, no pixel data is permanently altered at any step.",
+        "limitations": "The sources state that recovery is not guaranteed when all three color channels are fully clipped; truly blown highlights or absolutely black shadows in the raw capture cannot be restored. The sources also note that edit order is flexible (nondestructive), so the 'sequence' is a recommended workflow rather than a strict computational requirement.",
+        "assumptionsRequired": []
+      },
+      "solution_sha256": "e3eef777eb3ce5c0a89bf28cfd80fcef9cd13873a6951d3bb392e13bb36ed519",
+      "accepted_then": true,
+      "classification": "meaningful_missing_conditions_or_unjustified_optimum",
+      "new_schema_gate_rate_not_computable": true
+    },
+    {
+      "capture_path": "docs/evidence/evidence-review-feasibility-20260906.json",
+      "raw_solution_locator": "/results/4/reviews/0#json/solutions/0",
+      "kind": "actual_old_schema_model_response",
+      "schema_note": "outcome absent; do not relabel as resolved under the current contract.",
+      "case_id": "all_pairs_output_bound",
+      "arm": "evidence",
+      "repeat": 1,
+      "question": {
+        "choices": [
+          "Hash map storing complements seen so far",
+          "Sort then two-pointer scan",
+          "Nested loop checking all pairs",
+          "Binary search for each element's complement"
+        ],
+        "difficulty": 3,
+        "expectedAnswer": "Hash map storing complements seen so far",
+        "explanation": "A hash map lets you check in O(1) if (k - current) was already seen, achieving single-pass O(n) time with O(n) space for the map. Sorting takes O(n log n), nested loops are O(n²), and binary search per element is O(n log n).",
+        "format": "Multiple Choice",
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "topic": "hash maps"
+      },
+      "solver": {
+        "index": 0,
+        "answer": "Use a hash map. In one pass, for each element x check whether the map already contains (k − x); if so, record/count the pair. Then insert x (or increment its frequency) in the map. Each lookup and insert is O(1) expected, so the scan is O(n) time with O(n) space for the map. Important caveat: O(n) time covers detecting that pairs exist and finding distinct-value pairs. If you must enumerate every (i,j) pair, the output itself can be Θ(n²) (e.g., n zeros, target 0 yields n(n−1)/2 pairs), so total work is O(n + number of output pairs). The O(n) guarantee applies only when the output size is O(n) or you just need existence/count per distinct complement.",
+        "limitations": "The O(n) time bound assumes average-case O(1) hash operations; worst-case hash collisions can degrade to O(n) per operation. Additionally, enumerating all index pairs is output-sensitive and can exceed O(n).",
+        "assumptionsRequired": []
+      },
+      "solution_sha256": "418c878bf1c908adabe961851ef7f61bbc1a10eb35908033827243c6a43c96fb",
+      "accepted_then": true,
+      "classification": "decisive_output_size_limitation",
+      "new_schema_gate_rate_not_computable": true
+    },
+    {
+      "capture_path": "docs/evidence/four-domain-feasibility-20260906.json",
+      "raw_solution_locator": "/executed_artifact_files/7/exact_utf8_text#json/1/response/text/0#json/solutions/1",
+      "kind": "actual_old_schema_model_response",
+      "schema_note": "outcome absent; do not relabel as resolved under the current contract.",
+      "case_id": "photography_exposure",
+      "content_id": "591ba4316f9396aceba7ee39b206808ff9352572192ececc8961ec438865e9eb",
+      "question": {
+        "prompt": "A photographer takes a group photo with a 50mm lens at f/4. The front row at 3 m is sharp, but the back row at 5 m is noticeably soft. Without moving, which single change most effectively sharpens both rows?",
+        "expectedAnswer": "Stop down the aperture to f/11",
+        "choices": [
+          "Stop down the aperture to f/11",
+          "Switch to an 85mm lens at f/4",
+          "Raise ISO by 3 stops",
+          "Increase shutter speed to 1/1000s"
+        ],
+        "explanation": "Stopping down from f/4 to f/11 significantly increases depth of field, bringing both the 3 m and 5 m rows into acceptable focus. ISO and shutter speed do not affect DoF. An 85 mm lens at f/4 would narrow DoF further.",
+        "topic": "depth of field",
+        "objective": "Select aperture changes to solve a specific depth-of-field problem",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "solver": {
+        "index": 1,
+        "answer": "Stop down the aperture (e.g., change from f/4 to f/11 or smaller). A smaller aperture increases depth of field, extending the zone of acceptable sharpness so both 3 m and 5 m are covered. This is the single most effective change; alternatives like focusing between the rows help less on their own.",
+        "limitations": "Stopping down requires a longer shutter speed or higher ISO to maintain correct exposure.",
+        "assumptionsRequired": []
+      },
+      "solution_sha256": "f624df7ad2c2022c9fd9a8fd301737837cb5c8e4f6529b43047ad0e585c2f4a2",
+      "accepted_then": true,
+      "classification": "useful_exposure_caveat_separate_from_key_and_feedback",
+      "frozen_assessment_locator": "docs/evidence/four-domain-adjudication-20260906.json#/rows/14",
+      "key_status": "supported_best_listed_answer",
+      "qualification": "Stopping down improves the focus range; f/11 does not guarantee both specified planes meet every sensor/output sharpness criterion without knowing focus distance and format. Exposure must remain usable. The question asks the most effective listed change, not a precise guaranteed depth-of-field boundary.",
+      "reviewer_main_status": "incorrect",
+      "new_schema_gate_rate_not_computable": true
+    }
+  ],
+  "older_nearby_valid_controls": [
+    {
+      "locator": "docs/evidence/evidence-review-feasibility-20260906.json#/results/0/reviews/0#json/solutions/0",
+      "case_id": "valid_pair_existence",
+      "arm": "unaided",
+      "outcome_present": false,
+      "limitations_nonempty": false
+    },
+    {
+      "locator": "docs/evidence/evidence-review-feasibility-20260906.json#/results/2/reviews/0#json/solutions/0",
+      "case_id": "raw_nondestructive_valid",
+      "arm": "unaided",
+      "outcome_present": false,
+      "limitations_nonempty": false
+    },
+    {
+      "locator": "docs/evidence/evidence-review-feasibility-20260906.json#/results/3/reviews/0#json/solutions/0",
+      "case_id": "raw_nondestructive_valid",
+      "arm": "evidence",
+      "outcome_present": false,
+      "limitations_nonempty": false
+    },
+    {
+      "locator": "docs/evidence/evidence-review-feasibility-20260906.json#/results/6/reviews/0#json/solutions/0",
+      "case_id": "valid_pair_existence",
+      "arm": "evidence",
+      "outcome_present": false,
+      "limitations_nonempty": false
+    }
+  ],
+  "impact_findings": [
+    {
+      "finding": "The sole current veto is a choice-blinding caveat, not an admission that the complete MCQ has no correct answer.",
+      "record_id": "source-0-0",
+      "exact_limitation": "The prompt references described cuttings that appear to be in unseen answer choices; the principle applied is that a node with axillary bud is the non-negotiable requirement per the UMN source.",
+      "key_assessment": "Frozen independent review supported the best-listed key. Relevant descriptions live in the choices, so the authored stem does not meet a stronger requirement to be fully answerable before seeing choices.",
+      "returned_content_assessment": "Returned main explanation was supported, but one distractor explanation overstated the effect of leaflessness; complete reviewed content was false. Rejecting this item is not demonstrated as either a clean factual catch or a clean complete-content false rejection.",
+      "assessment_locator": "docs/evidence/source-authoring-adjudication-20260906.json#/original_documents/plants-feedback-review/original_utf8_text#json/rows/0"
+    },
+    {
+      "finding": "The most consequential latest failures bypass this proposed field check because limitations is empty.",
+      "records": [
+        "source-2-1",
+        "source-2-2",
+        "source-1-1",
+        "outcome-all_pairs_output_bound",
+        "outcome-raw_highlight_recovery_unsupported_sequence"
+      ],
+      "details": "The DOB-label item preserves a missing-condition clause in answer instead of limitations; the span item invents absent associations, the plant item invents light amplification, and the outcome smoke repeats unsupported linear-time and mandatory RAW sequence claims. All have resolved, limitations empty, and assumptionsRequired empty."
+    },
+    {
+      "finding": "All four outcome-smoke records survive either proposed limitations check.",
+      "details": "This includes both known invalid questions, the supported canonical no_solution key/main explanation, and the fully supported Mira conditional control. The no_solution record happened to have empty limitations; this archive does not empirically test legitimate nonempty exceptional-outcome explanations."
+    },
+    {
+      "finding": "Older limitations range from decisive objections to useful caveats.",
+      "details": "The RAW caveat preserves missing recoverability and nonmandatory-order qualifications; the all-pairs evidence caveat explicitly flags output-sensitive work. The DoF exposure caveat does not invalidate the best-listed key, although the solver overpromises exact sharpness and returned feedback had independent errors. These old records cannot supply a current resolved-only rejection rate."
+    },
+    {
+      "finding": "No fully sound returned current item is observed to be newly vetoed in this bounded inventory.",
+      "details": "This is not evidence that nonempty limitations never accompany fully sound questions. It describes one nonempty current record and three selected older examples; empty limitations is not proof of correctness."
+    }
+  ],
+  "validation_cases_for_root": [
+    "Resolved with nonempty prose containing an actual unmet precondition: intended veto.",
+    "Resolved with a choice-hidden caveat: fail the declared choice-independent author contract without labeling the complete MCQ factually wrong.",
+    "Resolved with an innocuous valid caveat: document the deliberate abstention/coverage cost if all nonempty text is vetoed.",
+    "Resolved with the missing condition only in answer and empty limitations: preserve as known uncovered case.",
+    "Canonical no_solution/underdetermined/inconsistent_premises with nonempty evidence limitations: preserve if the rule is resolved-only; do not confuse proof qualifications with a required positive-answer assumption.",
+    "Whitespace-only limitations and strings containing only a denial such as None: decide using the explicit contract, without unsupported semantic string heuristics."
+  ],
+  "limits": [
+    "Frozen outputs only; no new model behavior, production rates, broad false-rejection estimates, or call-saving estimates are established.",
+    "A stricter gate can enforce an output-field contract while missing identical problems expressed elsewhere or not admitted by the model.",
+    "The audit reuses prior independent subject adjudications; it is not a fresh blinded regrade.",
+    "Source-authoring occurrence counts remain 12 actual questions, not raw/display duplicate identities."
+  ]
+}

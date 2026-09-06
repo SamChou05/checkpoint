@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-06",
+  "kind": "Offline synthetic callback replay, not live model evaluation",
+  "base_revision": "eb55433",
+  "source_sha256": {
+    "before": "1cd204f504e841b4bcf3d7bd07bfe895274603948c765309dc48579111935fd7",
+    "after": "6a25b5625808c862adfe75b91b1237c56a77ce97d6961e9c0157ce8c0f70b95f"
+  },
+  "source_change_scope": "Resolved plus nonempty normalized limitations veto; no answer keyword parsing.",
+  "request": {
+    "goal": {
+      "title": "Reason from explicit premises",
+      "category": "",
+      "focusAreas": "",
+      "currentLevel": "",
+      "learningTarget": "Reason from explicit premises",
+      "contentTopics": [
+        "Reason from explicit premises"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": true,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "competencies": [],
+    "existingPrompts": [],
+    "existingQuestionCoverage": [],
+    "reportedPrompts": [],
+    "blockedStemFingerprints": [],
+    "stemFingerprintVersion": 1,
+    "sourceDocuments": [],
+    "targetCount": 1,
+    "minimumDifficulty": 1,
+    "requiresFullObjectiveCoverage": false,
+    "difficultyGuidance": "Recognize or recall a fact or concept.",
+    "adaptiveSkillPlans": []
+  },
+  "cases": [
+    {
+      "id": "contradictory_resolved_with_limitations",
+      "question": {
+        "prompt": "Which real number x satisfies x² = -1?",
+        "expectedAnswer": "0",
+        "choices": [
+          "0",
+          "1",
+          "-1",
+          "2"
+        ],
+        "topic": "reasoning",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "This is synthetic authored feedback for a control-flow replay."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "No real number satisfies the equation.",
+        "limitations": "A real square cannot be negative.",
+        "assumptionsRequired": []
+      },
+      "scope": "Reported obstacle now blocks; synthetic reviewer deliberately approves a wrong key.",
+      "results": {
+        "before": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        },
+        "after": {
+          "accepted_count": 0,
+          "reviewer_calls": 0,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "solver_unresolved_limitations": 1
+              }
+            }
+          },
+          "verification_versions": []
+        }
+      }
+    },
+    {
+      "id": "answer_only_contradiction_remaining",
+      "question": {
+        "prompt": "Which real number x satisfies x² = -1?",
+        "expectedAnswer": "0",
+        "choices": [
+          "0",
+          "1",
+          "-1",
+          "2"
+        ],
+        "topic": "reasoning",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "This is synthetic authored feedback for a control-flow replay."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "No real number satisfies the equation.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "scope": "Unresolved failure: empty limitation plus contradictory answer still reaches semantic review.",
+      "results": {
+        "before": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        },
+        "after": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "supported_conditional_answer",
+      "question": {
+        "prompt": "For real x, y = 2x. What is y when x = 3?",
+        "expectedAnswer": "6",
+        "choices": [
+          "6",
+          "3",
+          "2",
+          "12"
+        ],
+        "topic": "reasoning",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "This is synthetic authored feedback for a control-flow replay."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "y = 6 when x = 3, as specified.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "scope": "Supported answer scope remains eligible.",
+      "results": {
+        "before": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        },
+        "after": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "harmless_caveat_noncompliance",
+      "question": {
+        "prompt": "For real x, y = 2x. What is y when x = 3?",
+        "expectedAnswer": "6",
+        "choices": [
+          "6",
+          "3",
+          "2",
+          "12"
+        ],
+        "topic": "reasoning",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "This is synthetic authored feedback for a control-flow replay."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "y = 6 when x = 3.",
+        "limitations": "This value applies to the stated x = 3.",
+        "assumptionsRequired": []
+      },
+      "scope": "Conservative loss: correct answer blocked for a harmless nonempty scope note; no factual-defect credit.",
+      "results": {
+        "before": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        },
+        "after": {
+          "accepted_count": 0,
+          "reviewer_calls": 0,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "solver_unresolved_limitations": 1
+              }
+            }
+          },
+          "verification_versions": []
+        }
+      }
+    },
+    {
+      "id": "canonical_negative_support",
+      "question": {
+        "prompt": "Which real number x satisfies x² = -1?",
+        "expectedAnswer": "No solution exists under the stated conditions.",
+        "choices": [
+          "No solution exists under the stated conditions.",
+          "0",
+          "1",
+          "-1"
+        ],
+        "topic": "reasoning",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "This is synthetic authored feedback for a control-flow replay."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "no_solution",
+        "answer": "No solution exists under the stated conditions.",
+        "limitations": "A real square cannot be negative.",
+        "assumptionsRequired": []
+      },
+      "scope": "Valid negative answer retains supporting limitation and remains eligible.",
+      "results": {
+        "before": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        },
+        "after": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "unstated_condition_only_in_answer_remaining",
+      "question": {
+        "prompt": "A journey covers 10 km. How long does it take?",
+        "expectedAnswer": "One hour.",
+        "choices": [
+          "One hour.",
+          "Two hours.",
+          "Three hours.",
+          "Four hours."
+        ],
+        "topic": "reasoning",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "This is synthetic authored feedback for a control-flow replay."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "One hour if the average speed is 10 km/h.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "scope": "Unresolved failure: an absent condition in answer only still reaches semantic review.",
+      "results": {
+        "before": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        },
+        "after": {
+          "accepted_count": 1,
+          "reviewer_calls": 1,
+          "metrics": {
+            "QuestionQuality": {
+              "review": {
+                "accepted": 1
+              }
+            }
+          },
+          "verification_versions": [
+            1
+          ]
+        }
+      }
+    }
+  ],
+  "runner_source": "\"\"\"Offline control-flow replay; no provider calls or semantic-accuracy estimate.\"\"\"\n\nimport copy\nimport hashlib\nimport json\nfrom pathlib import Path\nimport subprocess\nimport sys\nimport types\nfrom unittest.mock import Mock\n\nROOT = Path('/Users/samchou/Documents/Checkpoint')\nSERVICE = ROOT / 'backend/bedrock-question-service'\nBASE = 'eb55433'\nRELATIVE = 'backend/bedrock-question-service/question_verification.py'\nsys.path.insert(0, str(SERVICE))\nfrom request_contract import _normalize_request\n\n\ndef module(name, source):\n    value = types.ModuleType(name)\n    exec(compile(source, name, 'exec'), value.__dict__)\n    return value\n\n\nbefore_source = subprocess.check_output(\n    ['git', 'show', f'{BASE}:{RELATIVE}'], cwd=ROOT\n).decode()\nafter_source = (ROOT / RELATIVE).read_text()\nversions = {\n    'before': module('before_verifier', before_source),\n    'after': module('after_verifier', after_source),\n}\nrequest = _normalize_request({'goal': {'title': 'Reason from explicit premises'}, 'minimumDifficulty': 1})\n\n\ndef record(answer, limitations='', outcome='resolved'):\n    return {'index': 0, 'outcome': outcome, 'answer': answer,\n            'limitations': limitations, 'assumptionsRequired': []}\n\n\ndef item(prompt, key, others):\n    return {'prompt': prompt, 'expectedAnswer': key, 'choices': [key, *others],\n            'topic': 'reasoning', 'difficulty': 2, 'format': 'Multiple Choice',\n            'explanation': 'This is synthetic authored feedback for a control-flow replay.'}\n\n\nimpossible = item('Which real number x satisfies x² = -1?', '0', ['1', '-1', '2'])\nconditional = item('For real x, y = 2x. What is y when x = 3?', '6', ['3', '2', '12'])\nnegative_key = 'No solution exists under the stated conditions.'\ncases = [\n    {'id': 'contradictory_resolved_with_limitations', 'question': impossible,\n     'solution': record('No real number satisfies the equation.', 'A real square cannot be negative.'),\n     'scope': 'Reported obstacle now blocks; synthetic reviewer deliberately approves a wrong key.'},\n    {'id': 'answer_only_contradiction_remaining', 'question': impossible,\n     'solution': record('No real number satisfies the equation.'),\n     'scope': 'Unresolved failure: empty limitation plus contradictory answer still reaches semantic review.'},\n    {'id': 'supported_conditional_answer', 'question': conditional,\n     'solution': record('y = 6 when x = 3, as specified.'),\n     'scope': 'Supported answer scope remains eligible.'},\n    {'id': 'harmless_caveat_noncompliance', 'question': conditional,\n     'solution': record('y = 6 when x = 3.', 'This value applies to the stated x = 3.'),\n     'scope': 'Conservative loss: correct answer blocked for a harmless nonempty scope note; no factual-defect credit.'},\n    {'id': 'canonical_negative_support',\n     'question': item('Which real number x satisfies x² = -1?', negative_key, ['0', '1', '-1']),\n     'solution': record(negative_key, 'A real square cannot be negative.', 'no_solution'),\n     'scope': 'Valid negative answer retains supporting limitation and remains eligible.'},\n    {'id': 'unstated_condition_only_in_answer_remaining',\n     'question': item('A journey covers 10 km. How long does it take?', 'One hour.', ['Two hours.', 'Three hours.', 'Four hours.']),\n     'solution': record('One hour if the average speed is 10 km/h.'),\n     'scope': 'Unresolved failure: an absent condition in answer only still reaches semantic review.'},\n]\n\nfor case in cases:\n    case['results'] = {}\n    for name, verifier in versions.items():\n        q = copy.deepcopy(case['question'])\n        response = {'reviews': [{'index': 0, 'valid': True, 'answer': q['expectedAnswer'],\n            'difficulty': 2, 'explanation': 'Synthetic approving feedback; not an independent correctness assessment.',\n            'choiceExplanations': {c: 'Synthetic choice feedback for this control-flow replay.' for c in q['choices']}}]}\n        reviewer = Mock(return_value=json.dumps(response))\n        metrics = {}\n        accepted = verifier.verify_questions([q], copy.deepcopy(request), reviewer,\n            metrics, solve=lambda *_: json.dumps({'solutions': [case['solution']]}))\n        case['results'][name] = {'accepted_count': len(accepted),\n            'reviewer_calls': reviewer.call_count, 'metrics': metrics,\n            'verification_versions': [r['verificationVersion'] for r in accepted]}\n\nreport = {\n    'schema_version': 1, 'date': '2026-09-06',\n    'kind': 'Offline synthetic callback replay, not live model evaluation',\n    'base_revision': BASE,\n    'source_sha256': {name: hashlib.sha256(source.encode()).hexdigest()\n        for name, source in [('before', before_source), ('after', after_source)]},\n    'source_change_scope': 'Resolved plus nonempty normalized limitations veto; no answer keyword parsing.',\n    'request': request, 'cases': cases,\n    'runner_source': Path(__file__).read_text(),\n    'limits': ['Synthetic approving reviewer is intentionally wrong in invalid cases.',\n        'No model calls, runtime deployment, inventory-yield measurement, or correctness-rate estimate.',\n        'Residual answer-only contradiction and unsupported condition remain accepted with this approving reviewer.',\n        'A harmless scope note is rejected as contract noncompliance; that is not detection of factual error.'],\n}\nout = Path('/tmp/checkpoint-solver-limitations-replay-20260906.json')\nout.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\\n')\nprint(json.dumps({'path': str(out), 'sha256': hashlib.sha256(out.read_bytes()).hexdigest(),\n    'observations': [{'id': c['id'], 'before': c['results']['before']['accepted_count'],\n        'after': c['results']['after']['accepted_count']} for c in cases]}, indent=2))\n",
+  "limits": [
+    "Synthetic approving reviewer is intentionally wrong in invalid cases.",
+    "No model calls, runtime deployment, inventory-yield measurement, or correctness-rate estimate.",
+    "Residual answer-only contradiction and unsupported condition remain accepted with this approving reviewer.",
+    "A harmless scope note is rejected as contract noncompliance; that is not detection of factual error."
+  ]
+}

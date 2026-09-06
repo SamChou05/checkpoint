@@ -1,5 +1,7 @@
 # Enforcing the independent solver's outcome
 
+September 6 follow-up: [`26feed4` also blocks nonempty limitations on a `resolved` report](QUESTION_SOLVER_LIMITATIONS_GATE.md). It preserves explanatory limitations for canonical negative outcomes. Answer-only contradictions and wrong `resolved` records with empty limitations remain outside that check. The measurements below describe the earlier `de82f43` contract.
+
 Commit `de82f43` makes the stem-only solver's declared outcome an application-enforced condition for continuing to answer-choice review. Previously, the code checked `assumptionsRequired` but treated the solver's `answer` and `limitations` as advisory prose. A final reviewer could accept a positive answer after the solver had identified a decisive obstacle. The change adds no solver or reviewer call; it strengthens the existing two-stage contract.
 
 The [pre-fix replay archive](evidence/solver-outcome-pre-fix-20260906.json) preserves the exact existing evidence and offline callback reproductions. Its SHA256 is `69784fc31d69613b993e6e81b71016fdd830907baa07c3a58375aa62e2482d62`, identical to the original `/tmp/checkpoint-solver-contract-audit-20260906.json`. Replay used the committed verifier at `8bd099047967b2438757dca3c2dc837c1d726025`, whose file SHA256 is `fab717a0a07a163f762841a4df44a8e18c0652f43416645097e16145b5e43f2f`; concurrent implementation edits were excluded. No model was called for this replay.
