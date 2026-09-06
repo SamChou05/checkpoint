@@ -1,0 +1,103 @@
+{
+  "source": "/tmp/checkpoint-choice-audit-20260906.json",
+  "source_sha256": "d9055d0df7afafc0dfbb292e47c9e1bdd12e9541a86bf2a004c72c5f8e0f7f49",
+  "harness_sha256": "f64b7330e17012c5cfe15bc3882d86c0f523e806af064e5c86905fcf47d935d7",
+  "status": "Diagnostic only. Primary results are unchanged. Outer Markdown fence removal was performed after observing failures and does not qualify invalid-item detection. Citation and requirement checks validate declared structure, not semantic entailment.",
+  "results": [
+    {
+      "case_id": "raw_highlight_recovery_unsupported_sequence",
+      "primary_outcome": "audit_format_error",
+      "elapsed_seconds": 98.282,
+      "input_tokens": 1262,
+      "output_tokens": 6764,
+      "assistant_inspection_notes": [
+        "Labels the intended answer supported by elimination even though it lists unsupported recovery, missing sensor-data conditions, and missing optimal-order evidence.",
+        "Several refutations rely on uncited recalled facts or equate aggressive with necessarily artifact-producing."
+      ],
+      "normalization": "Removed exactly one outer json Markdown fence; no inner JSON edits.",
+      "normalized_structural_error": "Support has unresolved limitations",
+      "claimed_choice_states": {
+        "C1": "supported",
+        "C2": "refuted",
+        "C3": "refuted",
+        "C4": "refuted"
+      }
+    },
+    {
+      "case_id": "raw_nondestructive_valid",
+      "primary_outcome": "audit_format_error",
+      "elapsed_seconds": 17.889,
+      "input_tokens": 1224,
+      "output_tokens": 1627,
+      "assistant_inspection_notes": [
+        "Concludes the correct choice.",
+        "The refutation of universal sensor recovery cites absence of a guarantee and output-representation clipping; these do not independently prove the sensor-level assertion false. Original-data retention is separately well supported."
+      ],
+      "normalization": "Removed exactly one outer json Markdown fence; no inner JSON edits.",
+      "normalized_structural_result": {
+        "accepted": true,
+        "choice_states": {
+          "C1": "supported",
+          "C2": "refuted",
+          "C3": "refuted",
+          "C4": "refuted"
+        },
+        "selected_choice_id": "C1"
+      },
+      "claimed_choice_states": {
+        "C1": "supported",
+        "C2": "refuted",
+        "C3": "refuted",
+        "C4": "refuted"
+      }
+    },
+    {
+      "case_id": "all_pairs_output_bound",
+      "primary_outcome": "audit_format_error",
+      "elapsed_seconds": 84.075,
+      "input_tokens": 1106,
+      "output_tokens": 5837,
+      "assistant_inspection_notes": [
+        "Preserves the ambiguity between value pairs and index pairs and does not designate a supported hash-map answer.",
+        "Several supported/refuted claims have no citations. One E1 quotation replaces the longer original list with a three-entry list and therefore is not a contiguous quote."
+      ],
+      "normalization": "Removed exactly one outer json Markdown fence; no inner JSON edits.",
+      "normalized_structural_error": "Support/refutation has no evidence",
+      "claimed_choice_states": {
+        "C1": "refuted",
+        "C2": "undetermined",
+        "C3": "refuted",
+        "C4": "refuted"
+      }
+    },
+    {
+      "case_id": "valid_pair_existence",
+      "primary_outcome": "audit_format_error",
+      "elapsed_seconds": 36.674,
+      "input_tokens": 1141,
+      "output_tokens": 2890,
+      "assistant_inspection_notes": [
+        "Concludes the correct choice.",
+        "Some claim text is itself true (for example comparison-sort lower bound), yet its status is refuted because the method violates the requested requirement. This is label-scope drift.",
+        "Comparison-sort lower bound relies on recalled knowledge absent from supplied evidence; citing the requested time limit does not establish that lower bound."
+      ],
+      "normalization": "Removed exactly one outer json Markdown fence; no inner JSON edits.",
+      "normalized_structural_result": {
+        "accepted": true,
+        "choice_states": {
+          "C1": "supported",
+          "C2": "refuted",
+          "C3": "refuted",
+          "C4": "refuted"
+        },
+        "selected_choice_id": "C1"
+      },
+      "claimed_choice_states": {
+        "C1": "supported",
+        "C2": "refuted",
+        "C3": "refuted",
+        "C4": "refuted"
+      }
+    }
+  ]
+}
