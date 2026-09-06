@@ -4,6 +4,8 @@
 
 The repository has stronger validation and better diagnostics, but the correctness issue is **not fully resolved**. No backend deployment or production model promotion was performed during this audit. Model agreement remains insufficient evidence of correctness. Existing app-blocking and break rules were not changed.
 
+September 6 follow-up: [the independent solver's declared outcome is now enforced in code](QUESTION_SOLVER_OUTCOME_GATE.md). A live four-case diagnostic retained both valid keys but still accepted both known invalid questions because the solver incorrectly declared them `resolved`. This closes a control-flow gap without qualifying the system for release. The historical measurements below remain unchanged.
+
 ## What is holding the system back
 
 1. **Confident substitution of a familiar problem.** Reviewers sometimes answer a standard textbook problem instead of the actual wording. One failing fixture asks to enumerate all matching pairs in linear time; the reviewer approves a method for finding whether a pair exists. Another assumes an image-editing order can recover detail without establishing whether the source data still contains that detail.
