@@ -255,11 +255,13 @@ final class AppSnapshotPersistenceTests: XCTestCase {
             provenance: .userEdited
         )
         let explanation = "The supported conclusion is correct because it follows from the stated evidence."
+        // This fixture checks legacy label resolution and durable backfill.
+        // The declared key is authoritative; prose must not infer a different key.
         let question = makeQuestion(
             goal: goal,
             index: 1,
             topic: "argument flaws",
-            expectedAnswer: "A",
+            expectedAnswer: "B",
             choices: [
                 "A. Tempting distractor",
                 "B. Supported conclusion",
