@@ -866,6 +866,16 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                 isProtectionActive: true
             ),
             HomeGoalSwitchRenderFixture(
+                name: "home-weekly-signal-protected-accessibility2-light",
+                width: 393,
+                height: 1_800,
+                colorScheme: .light,
+                dynamicTypeSize: .accessibility2,
+                state: .practiced,
+                referenceDate: fixedGoalSwitchDate(month: 1, day: 5),
+                isProtectionActive: true
+            ),
+            HomeGoalSwitchRenderFixture(
                 name: "home-weekly-signal-populated-compact-320-light",
                 width: 320,
                 height: 568,
@@ -979,6 +989,143 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
             let attachment = XCTAttachment(image: image)
             attachment.name = fixture.name
             attachment.lifetime = XCTAttachment.Lifetime.keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
+    func testHealthyReturningHomeKeepsWeeklySignalPrimaryMetricInFirstFold() throws {
+        let fixtures: [HomeFirstFoldRenderFixture] = [
+            HomeFirstFoldRenderFixture(
+                name: "home-first-fold-compact-light",
+                width: 320,
+                height: 568,
+                colorScheme: .light,
+                reduceMotion: false
+            ),
+            HomeFirstFoldRenderFixture(
+                name: "home-first-fold-regular-dark-reduced-motion",
+                width: 393,
+                height: 852,
+                colorScheme: .dark,
+                reduceMotion: true
+            )
+        ]
+
+        resetSharedAppGroupState()
+        defer { resetSharedAppGroupState() }
+
+        for fixture in fixtures {
+            let storeSuiteName = "HomeFirstFoldTests.Store.\(UUID().uuidString)"
+            let screenTimeSuiteName = "HomeFirstFoldTests.ScreenTime.\(UUID().uuidString)"
+            let storeDefaults = try XCTUnwrap(UserDefaults(suiteName: storeSuiteName))
+            let screenTimeDefaults = try XCTUnwrap(UserDefaults(suiteName: screenTimeSuiteName))
+            defer {
+                storeDefaults.removePersistentDomain(forName: storeSuiteName)
+                screenTimeDefaults.removePersistentDomain(forName: screenTimeSuiteName)
+            }
+
+            let referenceDate = fixedGoalSwitchDate(month: 1, day: 5)
+            let store = makeGoalSwitchRenderStore(
+                defaults: storeDefaults,
+                state: .practiced,
+                referenceDate: referenceDate
+            )
+            let screenTime = ScreenTimeController(
+                defaults: screenTimeDefaults,
+                authorizer: HomeRenderScreenTimeAuthorizer()
+            )
+            screenTime.setupState = .shieldActive
+            screenTime.isShieldingEnabled = true
+            screenTime.restrictedAppsSummary = "3 apps and 2 websites selected"
+            let workflow = CheckpointWorkflowCoordinator(
+                store: store,
+                protection: screenTime
+            )
+            let capture = HomeLayoutCapture()
+
+            let image = HostedViewRenderer.image(
+                for: TabView {
+                    HomeView(
+                        store: store,
+                        screenTime: screenTime,
+                        workflow: workflow,
+                        refreshesQuestionsOnActivation: false,
+                        reduceMotionOverride: fixture.reduceMotion,
+                        referenceDate: referenceDate,
+                        calendar: fixedGoalSwitchCalendar,
+                        layoutReporter: { element, frame in
+                            capture.frames[element] = frame
+                        }
+                    )
+                    .tabItem {
+                        Label("Home", systemImage: "target")
+                    }
+                }
+                .environment(\.colorScheme, fixture.colorScheme)
+                .environment(\.dynamicTypeSize, DynamicTypeSize.large),
+                width: fixture.width,
+                height: fixture.height,
+                colorScheme: fixture.colorScheme,
+                settlingTime: fixture.reduceMotion ? 0.05 : 0.35,
+                renderScale: 1
+            )
+
+            let viewport = try XCTUnwrap(capture.frames[.viewport], fixture.name)
+            let content = try XCTUnwrap(capture.frames[.content], fixture.name)
+            let goalSummary = try XCTUnwrap(capture.frames[.goalSummary], fixture.name)
+            let primaryMetric = try XCTUnwrap(
+                capture.frames[.weeklySignalPrimaryMetric],
+                fixture.name
+            )
+            for frame in [viewport, content, goalSummary, primaryMetric] {
+                XCTAssertFalse(frame.isNull, fixture.name)
+                XCTAssertFalse(frame.isInfinite, fixture.name)
+                XCTAssertGreaterThan(frame.width, 0, fixture.name)
+                XCTAssertGreaterThan(frame.height, 0, fixture.name)
+            }
+            XCTAssertEqual(
+                content.minY,
+                viewport.minY,
+                accuracy: 0.5,
+                "\(fixture.name) did not render Home at its initial scroll position"
+            )
+            XCTAssertGreaterThanOrEqual(
+                goalSummary.minY,
+                viewport.minY - 0.5,
+                "\(fixture.name) did not begin at the top of Home"
+            )
+            XCTAssertLessThanOrEqual(
+                goalSummary.maxY,
+                viewport.maxY + 0.5,
+                "\(fixture.name) goal summary escaped the Home first fold"
+            )
+            XCTAssertGreaterThanOrEqual(
+                primaryMetric.minX,
+                viewport.minX - 0.5,
+                "\(fixture.name) weekly value escaped the Home viewport horizontally"
+            )
+            XCTAssertLessThanOrEqual(
+                primaryMetric.maxX,
+                viewport.maxX + 0.5,
+                "\(fixture.name) weekly value escaped the Home viewport horizontally"
+            )
+            XCTAssertGreaterThanOrEqual(
+                primaryMetric.minY,
+                viewport.minY - 0.5,
+                "\(fixture.name) weekly value began above the Home first fold"
+            )
+            XCTAssertLessThanOrEqual(
+                primaryMetric.maxY,
+                viewport.maxY + 0.5,
+                "\(fixture.name) weekly value fell below the Home first fold"
+            )
+
+            XCTAssertEqual(image.size.width, fixture.width, accuracy: 0.5, fixture.name)
+            XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
+            let attachment = XCTAttachment(image: image)
+            attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
             add(attachment)
         }
     }
@@ -1747,6 +1894,19 @@ private struct HomeWeeklySignalRenderFixture {
     var insight: WeeklySignalInsight?
     var reduceMotion = false
     var expectedLayout: HomeWeeklySignalLayout
+}
+
+private struct HomeFirstFoldRenderFixture {
+    var name: String
+    var width: CGFloat
+    var height: CGFloat
+    var colorScheme: ColorScheme
+    var reduceMotion: Bool
+}
+
+@MainActor
+private final class HomeLayoutCapture {
+    var frames: [HomeLayoutElement: CGRect] = [:]
 }
 
 @MainActor

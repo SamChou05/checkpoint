@@ -9,6 +9,47 @@ struct HomeWeeklyReviewDestination: Identifiable, Equatable {
     var id: String { metricsID }
 }
 
+enum HomeLayoutElement: Hashable {
+    case viewport
+    case content
+    case goalSummary
+    case weeklySignalPrimaryMetric
+}
+
+private let homeLayoutCoordinateSpaceName = "Checkpoint.Home.Layout"
+
+struct HomeLayoutFrameReporter: ViewModifier {
+    let element: HomeLayoutElement
+    let report: (@MainActor (HomeLayoutElement, CGRect) -> Void)?
+
+    func body(content: Content) -> some View {
+        content.background {
+            if let report {
+                GeometryReader { proxy in
+                    let frame = proxy.frame(in: .named(homeLayoutCoordinateSpaceName))
+
+                    Color.clear
+                        .onAppear {
+                            report(element, frame)
+                        }
+                        .onChange(of: frame) { _, updatedFrame in
+                            report(element, updatedFrame)
+                        }
+                }
+            }
+        }
+    }
+}
+
+extension View {
+    func reportHomeLayoutFrame(
+        _ element: HomeLayoutElement,
+        using report: (@MainActor (HomeLayoutElement, CGRect) -> Void)?
+    ) -> some View {
+        modifier(HomeLayoutFrameReporter(element: element, report: report))
+    }
+}
+
 struct HomeView: View {
     let store: CheckpointStore
     let screenTime: ScreenTimeController
@@ -17,6 +58,7 @@ struct HomeView: View {
     private let reduceMotionOverride: Bool?
     private let referenceDateOverride: Date?
     private let calendar: Calendar
+    private let layoutReporter: (@MainActor (HomeLayoutElement, CGRect) -> Void)?
     private let isVisible: Bool
     private let isSceneActive: Bool
     private let isCoveredByParentModal: Bool
@@ -66,6 +108,7 @@ struct HomeView: View {
         reduceMotionOverride: Bool? = nil,
         referenceDate: Date? = nil,
         calendar: Calendar = .current,
+        layoutReporter: (@MainActor (HomeLayoutElement, CGRect) -> Void)? = nil,
         isVisible: Bool = true,
         isSceneActive: Bool = true,
         isCoveredByParentModal: Bool = false,
@@ -87,6 +130,7 @@ struct HomeView: View {
         self.reduceMotionOverride = reduceMotionOverride
         referenceDateOverride = referenceDate
         self.calendar = calendar
+        self.layoutReporter = layoutReporter
         self.isVisible = isVisible
         self.isSceneActive = isSceneActive
         self.isCoveredByParentModal = isCoveredByParentModal
@@ -164,7 +208,9 @@ struct HomeView: View {
                     .padding(.horizontal, homeHorizontalMargin(viewportWidth: viewportWidth))
                     .padding(.top, homeTopMargin(viewportWidth: viewportWidth))
                     .padding(.bottom, 112)
+                    .reportHomeLayoutFrame(.content, using: layoutReporter)
                 }
+                .reportHomeLayoutFrame(.viewport, using: layoutReporter)
                 .checkpointScreenBackground()
                 .navigationTitle("Checkpoint")
                 .toolbarTitleDisplayMode(.inline)
@@ -274,6 +320,7 @@ struct HomeView: View {
                 .environment(\.homeWeeklySignalViewportWidth, viewportWidth)
             }
         }
+        .coordinateSpace(name: homeLayoutCoordinateSpaceName)
     }
 
     private func goalScopedContent(_ goal: Goal, viewportWidth: CGFloat) -> some View {
@@ -291,21 +338,23 @@ struct HomeView: View {
                 }
             } else {
                 goalHero(goal)
+                    .reportHomeLayoutFrame(.goalSummary, using: layoutReporter)
 
                 switch homeStudyBeaconPresentation {
                 case .firstWinJourney:
                     homeStudyBeaconSection
 
                 case .weeklySignal:
-                    homeNextFocusPanel
-                        .transition(homeNextFocusTransition)
-
                     if isHealthyProtectionState {
                         homeStudyBeaconSection
+                        homeNextFocusPanel
+                            .transition(homeNextFocusTransition)
                         compactProtectionRow
                     } else {
                         screenTimePanel
                         homeStudyBeaconSection
+                        homeNextFocusPanel
+                            .transition(homeNextFocusTransition)
                     }
                 }
             }
@@ -335,7 +384,7 @@ struct HomeView: View {
         return HomeGoalOverviewCard(
             presentation: presentation,
             reduceMotion: reduceMotion,
-            layout: usesCompactFirstWinHomeLayout ? .firstWinCompact : .standard,
+            layout: homeGoalOverviewLayout,
             retryQuestions: retryInitialQuestionGeneration,
             editGoal: store.presentActiveGoalEditor
         ) {
@@ -619,7 +668,8 @@ struct HomeView: View {
             insight: metrics.weeklySignalInsight,
             reduceMotionOverride: reduceMotion,
             referenceDate: asOf,
-            calendar: calendar
+            calendar: calendar,
+            homeLayoutReporter: layoutReporter
         ) {
             weeklyReviewDestination = HomeWeeklyReviewDestination(
                 metricsID: metrics.id,
@@ -834,34 +884,43 @@ struct HomeView: View {
         Button {
             isRestrictedAppsPresented = true
         } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "shield.checkered")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
-                    .frame(width: 40, height: 40)
-                    .background(CheckpointTheme.teal.opacity(0.11), in: RoundedRectangle(cornerRadius: 12))
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 12) {
+                        compactProtectionIdentity
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Protection on")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.text)
+                        HStack(spacing: 8) {
+                            Text("Manage protected apps")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(CheckpointTheme.teal)
+                                .fixedSize(horizontal: false, vertical: true)
 
-                    Text(screenTime.restrictedAppsSummary)
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .lineLimit(2)
+                            Spacer(minLength: 8)
+
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(CheckpointTheme.teal)
+                                .accessibilityHidden(true)
+                        }
+                        .frame(minHeight: 44)
+                    }
+                } else {
+                    HStack(spacing: 12) {
+                        compactProtectionIdentity
+
+                        Spacer(minLength: 8)
+
+                        Text("Manage")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.teal)
+                            .lineLimit(1)
+
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(CheckpointTheme.teal)
+                            .accessibilityHidden(true)
+                    }
                 }
-
-                Spacer(minLength: 8)
-
-                Text("Manage")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.teal)
-                    .accessibilityHidden(true)
             }
             .padding(14)
             .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -870,6 +929,29 @@ struct HomeView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Protection on. \(screenTime.restrictedAppsSummary)")
         .accessibilityHint("Manage protected apps")
+    }
+
+    private var compactProtectionIdentity: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "shield.checkered")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(CheckpointTheme.teal)
+                .frame(width: 40, height: 40)
+                .background(CheckpointTheme.teal.opacity(0.11), in: RoundedRectangle(cornerRadius: 12))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Protection on")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(screenTime.restrictedAppsSummary)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
     }
 
     private var emptyState: some View {
@@ -924,6 +1006,28 @@ struct HomeView: View {
             dynamicTypeSize == .small ||
             dynamicTypeSize == .medium ||
             dynamicTypeSize == .large
+    }
+
+    private var usesCompactSteadyStateHomeLayout: Bool {
+        guard homeStudyBeaconPresentation.kind == .weeklySignal,
+              isHealthyProtectionState else {
+            return false
+        }
+
+        return dynamicTypeSize == .xSmall ||
+            dynamicTypeSize == .small ||
+            dynamicTypeSize == .medium ||
+            dynamicTypeSize == .large
+    }
+
+    private var homeGoalOverviewLayout: HomeGoalOverviewLayout {
+        if usesCompactFirstWinHomeLayout {
+            return .firstWinCompact
+        }
+        if usesCompactSteadyStateHomeLayout {
+            return .steadyStateCompact
+        }
+        return .standard
     }
 
     private func usesCompactHomeMargins(viewportWidth: CGFloat) -> Bool {

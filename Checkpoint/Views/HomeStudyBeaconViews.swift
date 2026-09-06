@@ -323,6 +323,7 @@ struct HomeGoalOverviewMotionPolicy: Equatable {
 enum HomeGoalOverviewLayout: Equatable {
     case standard
     case firstWinCompact
+    case steadyStateCompact
 }
 
 struct HomeGoalOverviewCard<GoalControl: View>: View {
@@ -353,7 +354,7 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
 
     var body: some View {
         cardContent
-            .padding(layout == .firstWinCompact ? 12 : 18)
+            .padding(cardPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
@@ -383,6 +384,8 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
             standardContent
         case .firstWinCompact:
             firstWinCompactContent
+        case .steadyStateCompact:
+            steadyStateCompactContent
         }
     }
 
@@ -427,6 +430,37 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
         }
     }
 
+    @ViewBuilder
+    private var steadyStateCompactContent: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            compactHeader
+
+            Text(presentation.goalTitle)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(CheckpointTheme.text)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+
+            steadyStateMetadata
+
+            if presentation.checkpointState.phase != .ready {
+                checkpointStatus
+                    .id(presentation.checkpointState.phase)
+                    .transition(motionPolicy.transition)
+            }
+        }
+    }
+
+    private var cardPadding: CGFloat {
+        switch layout {
+        case .standard:
+            18
+        case .firstWinCompact, .steadyStateCompact:
+            12
+        }
+    }
+
     private var compactHeader: some View {
         HStack(alignment: .center, spacing: 10) {
             HStack(spacing: 7) {
@@ -440,17 +474,43 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
                     )
                     .accessibilityHidden(true)
 
-                Text("CURRENT FOCUS")
-                    .font(.caption2.weight(.bold))
-                    .tracking(0.7)
-                    .foregroundStyle(CheckpointTheme.muted)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("CURRENT FOCUS")
+                        .font(.caption2.weight(.bold))
+                        .tracking(0.7)
+                        .foregroundStyle(CheckpointTheme.muted)
+
+                    if let compactReadyLabel {
+                        Text(compactReadyLabel)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(CheckpointTheme.teal)
+                            .lineLimit(1)
+                    }
+                }
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Current focus")
+            .accessibilityLabel(compactHeaderAccessibilityLabel)
 
             Spacer(minLength: 4)
             goalControl
         }
+    }
+
+    private var compactReadyLabel: String? {
+        guard layout == .steadyStateCompact,
+              case let .ready(_, _, isNewlyPrepared) = presentation.checkpointState else {
+            return nil
+        }
+        return isNewlyPrepared ? "QUESTIONS READY" : "CHECKPOINT READY"
+    }
+
+    private var compactHeaderAccessibilityLabel: String {
+        guard layout == .steadyStateCompact,
+              case let .ready(requiredCount, _, isNewlyPrepared) = presentation.checkpointState else {
+            return "Current focus"
+        }
+        let status = isNewlyPrepared ? "Questions ready" : "Checkpoint ready"
+        return "Current focus. \(status). Your next \(requiredCount)-question checkpoint is ready."
     }
 
     private var compactMetadata: some View {
@@ -469,6 +529,64 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
                 accessibilityLabel: presentation.passTargetAccessibilityLabel
             )
         }
+    }
+
+    private var steadyStateMetadata: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 14) {
+                steadyStateMetadataItem(
+                    value: presentation.deadline.text,
+                    systemImage: deadlineSystemImage,
+                    tint: deadlineTint,
+                    accessibilityLabel: presentation.deadline.accessibilityLabel
+                )
+
+                steadyStateMetadataItem(
+                    value: presentation.passTargetText,
+                    systemImage: "checkmark.circle",
+                    tint: CheckpointTheme.blue,
+                    accessibilityLabel: presentation.passTargetAccessibilityLabel
+                )
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                steadyStateMetadataItem(
+                    value: presentation.deadline.text,
+                    systemImage: deadlineSystemImage,
+                    tint: deadlineTint,
+                    accessibilityLabel: presentation.deadline.accessibilityLabel
+                )
+
+                steadyStateMetadataItem(
+                    value: presentation.passTargetText,
+                    systemImage: "checkmark.circle",
+                    tint: CheckpointTheme.blue,
+                    accessibilityLabel: presentation.passTargetAccessibilityLabel
+                )
+            }
+        }
+    }
+
+    private func steadyStateMetadataItem(
+        value: String,
+        systemImage: String,
+        tint: Color,
+        accessibilityLabel: String
+    ) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: systemImage)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(tint)
+                .accessibilityHidden(true)
+
+            Text(value)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(CheckpointTheme.text)
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
     }
 
     private func compactMetadataItem(
@@ -2235,6 +2353,7 @@ struct LightStudyBeaconSection: View {
 
     private let reduceMotionOverride: Bool?
     private let layoutReporter: (@MainActor (HomeWeeklySignalLayoutElement, CGRect) -> Void)?
+    private let homeLayoutReporter: (@MainActor (HomeLayoutElement, CGRect) -> Void)?
     private let referenceDate: Date
     private let calendar: Calendar
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -2250,6 +2369,7 @@ struct LightStudyBeaconSection: View {
         referenceDate: Date = Date(),
         calendar: Calendar = .current,
         layoutReporter: (@MainActor (HomeWeeklySignalLayoutElement, CGRect) -> Void)? = nil,
+        homeLayoutReporter: (@MainActor (HomeLayoutElement, CGRect) -> Void)? = nil,
         action: @escaping () -> Void
     ) {
         self.metrics = metrics
@@ -2259,6 +2379,7 @@ struct LightStudyBeaconSection: View {
         self.referenceDate = referenceDate
         self.calendar = calendar
         self.layoutReporter = layoutReporter
+        self.homeLayoutReporter = homeLayoutReporter
         self.action = action
     }
 
@@ -2316,17 +2437,25 @@ struct LightStudyBeaconSection: View {
 
     @ViewBuilder
     private var signalHeader: some View {
-        if layoutPolicy.layout == .stacked {
-            VStack(alignment: .leading, spacing: 8) {
-                signalIdentity
-                viewImpactLabel
-            }
+        if usesCondensedSignalHeader {
+            horizontalSignalHeader
         } else {
-            HStack(alignment: .center, spacing: 12) {
-                signalIdentity
-                Spacer(minLength: 8)
-                viewImpactLabel
+            ViewThatFits(in: .horizontal) {
+                horizontalSignalHeader
+
+                VStack(alignment: .leading, spacing: 8) {
+                    signalIdentity
+                    viewImpactLabel
+                }
             }
+        }
+    }
+
+    private var horizontalSignalHeader: some View {
+        HStack(alignment: .center, spacing: usesCondensedSignalHeader ? 8 : 12) {
+            signalIdentity
+            Spacer(minLength: usesCondensedSignalHeader ? 4 : 8)
+            viewImpactLabel
         }
     }
 
@@ -2356,7 +2485,7 @@ struct LightStudyBeaconSection: View {
 
     private var viewImpactLabel: some View {
         HStack(spacing: 6) {
-            Text("View impact")
+            Text(usesCondensedSignalHeader ? "Impact" : "View impact")
                 .fixedSize(horizontal: false, vertical: true)
             Image(systemName: "arrow.up.right")
                 .font(.caption2.weight(.bold))
@@ -2369,6 +2498,19 @@ struct LightStudyBeaconSection: View {
         .background(CheckpointTheme.heroSubtleFill, in: Capsule())
         .accessibilityHidden(true)
         .reportHomeWeeklySignalLayoutFrame(.actionAffordance, using: layoutReporter)
+    }
+
+    private var usesCondensedSignalHeader: Bool {
+        guard HomeWeeklySignalLayoutPolicy.usesCompactHomeMargins(
+            viewportWidth: viewportWidth
+        ) else {
+            return false
+        }
+
+        return dynamicTypeSize == .xSmall ||
+            dynamicTypeSize == .small ||
+            dynamicTypeSize == .medium ||
+            dynamicTypeSize == .large
     }
 
     @ViewBuilder
@@ -2432,6 +2574,7 @@ struct LightStudyBeaconSection: View {
         .frame(maxWidth: layoutPolicy.layout == .stacked ? .infinity : nil, alignment: .leading)
         .accessibilityElement(children: .combine)
         .reportHomeWeeklySignalLayoutFrame(.primaryMetric, using: layoutReporter)
+        .reportHomeLayoutFrame(.weeklySignalPrimaryMetric, using: homeLayoutReporter)
     }
 
     private var supportingMetrics: some View {
