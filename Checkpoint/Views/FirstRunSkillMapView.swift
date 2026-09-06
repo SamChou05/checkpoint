@@ -14,6 +14,15 @@ enum FirstRunSkillMapPhase: Equatable {
             self = .needsAttention
         }
     }
+
+    var mascotPose: CheckpointMascotPose {
+        switch self {
+        case .building: .think
+        case .review: .celebrate
+        case .needsAttention: .wave
+        }
+    }
+
 }
 
 struct FirstRunSkillMapApproval {
@@ -68,7 +77,8 @@ struct FirstRunSkillMapView: View {
                     step: .skillMap,
                     title: guideTitle,
                     message: guideMessage,
-                    reduceMotionOverride: reduceMotionOverride
+                    reduceMotionOverride: reduceMotionOverride,
+                    pose: phase.mascotPose
                 )
 
                 if let goal = store.goal {
@@ -124,7 +134,7 @@ struct FirstRunSkillMapView: View {
     private var guideTitle: String {
         switch phase {
         case .building: "Let's map your next steps."
-        case .review: "Your map is ready."
+        case .review: "Made you a map!"
         case .needsAttention: "Let's give that another try."
         }
     }

@@ -308,9 +308,9 @@ struct FirstRunProtectionStatusPresentation: Equatable {
             return nil
         case let .preparing(selectionSummary):
             stage = "Turning on protection"
-            eyebrow = "FINALIZING SETUP"
-            title = "Preparing your first checkpoint"
-            detail = "Checkpoint is preparing a reliable first attempt for this goal before protection turns on."
+            eyebrow = "CHECKPOINT"
+            title = "I’m getting your checkpoint ready"
+            detail = "I’m preparing your first questions. Protection will turn on when they’re ready."
             supportingTitle = "Protection waits for a ready checkpoint"
             supportingDetail = "Enough questions must be ready before Checkpoint protects your apps."
             operationalNote = "Keep Checkpoint open while your first checkpoint is prepared."
@@ -319,7 +319,7 @@ struct FirstRunProtectionStatusPresentation: Equatable {
             tone = .working
         case let .failed(capturedSelectionSummary, message):
             stage = "Needs attention"
-            eyebrow = "SETUP NEEDS ATTENTION"
+            eyebrow = "CHECKPOINT"
             title = "Protection isn't on yet"
             detail = message
             if hasSelection {
@@ -336,9 +336,9 @@ struct FirstRunProtectionStatusPresentation: Equatable {
             tone = .failure
         case let .protected(selectionSummary):
             stage = "Protection ready"
-            eyebrow = "SETUP COMPLETE"
-            title = "Protection is on"
-            detail = "Opening a protected app now starts a checkpoint for this goal before a timed break."
+            eyebrow = "CHECKPOINT"
+            title = "You’re ready to go!"
+            detail = "Protection is on. Clear a checkpoint to take a break in the apps you chose."
             supportingTitle = "Your first checkpoint is ready"
             supportingDetail =
                 "Open a protected app to practice this goal. "
@@ -530,14 +530,14 @@ struct FirstRunAppSelectionHeaderPresentation: Equatable {
         isSuccessHandoff = didJustSaveGoal
         if !isSuccessHandoff {
             stage = "Choose apps"
-            title = "Choose apps to protect"
+            title = "Which apps pull you away?"
             systemImage = "checkmark.shield.fill"
-            detail = "Pause distracting apps until you clear a checkpoint. This is optional."
+            detail = "I’ll pause these until you clear a checkpoint. This is optional."
         } else {
             stage = "Goal saved"
-            title = "Choose apps to protect"
+            title = "Which apps pull you away?"
             systemImage = "checkmark.circle.fill"
-            detail = "Pause distracting apps until you clear a checkpoint. This is optional."
+            detail = "I’ll pause these until you clear a checkpoint. This is optional."
         }
     }
 
@@ -549,7 +549,7 @@ struct FirstRunAppSelectionHeaderPresentation: Equatable {
     ) -> String {
         if isCondensed {
             var lines = [
-                isSuccessHandoff ? "Goal saved · Final" : "Step 3 of 3",
+                isSuccessHandoff ? "Goal saved · Optional" : "Choose apps · Optional",
                 "Checkpoint for: \(goalContext.title)",
                 condensedSelectionSummary ?? selectionSummary,
             ]
@@ -560,7 +560,7 @@ struct FirstRunAppSelectionHeaderPresentation: Equatable {
         }
 
         var sections = [
-            "\(stage) · Step 3 of 3",
+            "\(stage) · Optional",
             "\(title)\nCheckpoint for: \(goalContext.title)\n\(selectionSummary)",
             detail,
         ]
@@ -1123,7 +1123,6 @@ struct FirstRunProtectionStatusView: View {
     @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
     @AccessibilityFocusState private var focusedDestination: FirstRunProtectionFocus?
     @State private var isRevealed = false
-    @State private var successSymbolSequence = 0
 
     var body: some View {
         GeometryReader { proxy in
@@ -1131,14 +1130,6 @@ struct FirstRunProtectionStatusView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: usesTightSpacing ? 14 : 20) {
-                    CheckpointSetupMark(
-                        stage: presentation.stage,
-                        step: 3,
-                        systemImage: setupSystemImage,
-                        compact: usesTightSpacing,
-                        reduceMotionOverride: motionPolicy.style == .identity
-                    )
-
                     FirstRunGoalContextStrip(
                         goalContext: goalContext
                     )
@@ -1158,7 +1149,6 @@ struct FirstRunProtectionStatusView: View {
         }
         .task(id: phase) {
             let destination = focusDestination
-            let tone = presentation.tone
             await Task.yield()
             guard !Task.isCancelled else { return }
             if FirstRunProtectionFocus.movesProgrammatically(
@@ -1166,9 +1156,6 @@ struct FirstRunProtectionStatusView: View {
                 switchControlEnabled: switchControlEnabled
             ) {
                 focusedDestination = destination
-            }
-            if tone == .success {
-                successSymbolSequence += 1
             }
         }
     }
@@ -1248,24 +1235,11 @@ struct FirstRunProtectionStatusView: View {
     }
 
     private func statusIcon(usesTightSpacing: Bool) -> some View {
-        let size: CGFloat = usesTightSpacing ? 48 : 56
-        return Image(systemName: presentation.systemImage)
-            .font(.system(size: usesTightSpacing ? 20 : 23, weight: .bold))
-            .foregroundStyle(CheckpointTheme.ink)
-            .frame(width: size, height: size)
-            .background(
-                accent,
-                in: RoundedRectangle(
-                    cornerRadius: usesTightSpacing ? 15 : 17,
-                    style: .continuous
-                )
-            )
-            .symbolEffect(.bounce, options: .nonRepeating, value: successSymbolSequence)
-            .symbolEffectsRemoved(
-                motionPolicy.style == .identity || presentation.tone != .success
-            )
-            .fixedSize()
-            .accessibilityHidden(true)
+        CheckpointMascotCharacter(
+            pose: presentation.tone == .success ? .celebrate : .think,
+            size: usesTightSpacing ? 64 : 80
+        )
+        .accessibilityHidden(true)
     }
 
     private func statusTitle(usesTightSpacing: Bool) -> some View {
@@ -1412,17 +1386,6 @@ struct FirstRunProtectionStatusView: View {
             "arrow.clockwise"
         case .success:
             "flag.checkered"
-        }
-    }
-
-    private var setupSystemImage: String {
-        switch presentation.tone {
-        case .working:
-            "hourglass"
-        case .failure:
-            "exclamationmark.shield.fill"
-        case .success:
-            "checkmark.shield.fill"
         }
     }
 
@@ -1756,13 +1719,13 @@ struct FirstRunAppSelectionHeader: View {
 
     private var mascotIdentity: some View {
         HStack(spacing: 10) {
-            CheckpointMascotMark(
-                size: dynamicTypeSize.isAccessibilitySize ? 40 : 52,
-                cornerRadius: dynamicTypeSize.isAccessibilitySize ? 13 : 16
+            CheckpointMascotCharacter(
+                pose: presentation.isSuccessHandoff ? .celebrate : .wave,
+                size: dynamicTypeSize.isAccessibilitySize ? 40 : 52
             )
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("STEP 3 OF 3 · OPTIONAL")
+                Text("CHECKPOINT · OPTIONAL")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(CheckpointTheme.muted)
 
@@ -1776,7 +1739,7 @@ struct FirstRunAppSelectionHeader: View {
             .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Checkpoint setup, step 3 of 3, \(presentation.stage). App selection is optional.")
+        .accessibilityLabel("Checkpoint says: \(presentation.title) App selection is optional.")
     }
 }
 

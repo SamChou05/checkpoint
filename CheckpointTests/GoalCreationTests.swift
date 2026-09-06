@@ -738,6 +738,31 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
 }
 
 final class GoalSetupPresentationTests: XCTestCase {
+    func testFirstRunDialogueFollowsMeaningfulWorkWithoutChangingPerKeystroke() {
+        func dialogue(
+            goal: Bool = false, direction: Bool = false, materials: Bool = false,
+            reading: Bool = false, saving: Bool = false, recovery: Bool = false
+        ) -> FirstRunGoalDialogue {
+            FirstRunGoalDialogue(
+                hasGoal: goal, hasDirection: direction, hasMaterials: materials,
+                isReading: reading, isSaving: saving, needsRecovery: recovery
+            )
+        }
+        XCTAssertEqual(dialogue(), .welcome)
+        XCTAssertEqual(dialogue(goal: true), .listening)
+        XCTAssertEqual(dialogue(goal: true, direction: true), .ready)
+        XCTAssertEqual(dialogue(direction: true), .welcome, "Clearing the goal overrides an older preview.")
+        XCTAssertEqual(dialogue(goal: true, direction: true, materials: true), .materialsReady)
+        XCTAssertEqual(dialogue(goal: true, direction: true, materials: true, reading: true), .reading)
+        XCTAssertEqual(dialogue(goal: true, direction: true, saving: true, recovery: true), .planning)
+        XCTAssertEqual(dialogue(goal: true, direction: true, recovery: true), .recovery)
+        XCTAssertEqual(FirstRunGoalDialogue.welcome.pose, .wave)
+        XCTAssertEqual(FirstRunGoalDialogue.listening.pose, .think)
+        XCTAssertEqual(FirstRunGoalDialogue.ready.pose, .celebrate)
+        XCTAssertEqual(FirstRunGoalDialogue.reading.pose, .think)
+        XCTAssertEqual(FirstRunGoalDialogue.recovery.pose, .wave)
+    }
+
     func testHeroPresentationCoversModesAndStates() {
         let firstEmpty = GoalSetupHeroPresentation(
             mode: .firstGoal,
@@ -746,10 +771,10 @@ final class GoalSetupPresentationTests: XCTestCase {
         )
         XCTAssertEqual(firstEmpty.state, .awaitingGoal)
         XCTAssertEqual(firstEmpty.status, "Goal needed")
-        XCTAssertEqual(firstEmpty.eyebrow, "SETUP · STEP 1 OF 3")
+        XCTAssertEqual(firstEmpty.eyebrow, "YOUR GOAL")
         XCTAssertEqual(firstEmpty.title, "Set your outcome.")
         XCTAssertEqual(firstEmpty.guidance, "Enter one outcome to continue.")
-        XCTAssertEqual(firstEmpty.accessibilityContext, "Checkpoint setup, step 1 of 3")
+        XCTAssertEqual(firstEmpty.accessibilityContext, "Your learning goal")
 
         let firstReady = GoalSetupHeroPresentation(
             mode: .firstGoal,

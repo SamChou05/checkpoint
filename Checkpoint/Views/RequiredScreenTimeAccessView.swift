@@ -255,32 +255,32 @@ struct ScreenTimeAccessPresentation: Equatable {
         switch context {
         case .initialSetup:
             stage = "Protection"
-            step = 3
+            step = nil
             if state == .connected {
-                heading = "Screen Time connected"
-                detail = "Choose apps to pause, or skip for now. You can change this later."
+                heading = "We’re connected!"
+                detail = "Screen Time is ready. Choose apps to pause, or leave this for later."
             } else if authorizationState == .unavailable {
                 heading = "Screen Time access needs an iPhone"
                 detail = "Open Checkpoint on a supported iPhone to finish setup and choose the apps you want to protect."
             } else {
-                heading = "Let’s protect your focus"
-                detail = "Screen Time lets Checkpoint pause distracting apps. You’ll choose which ones next."
+                heading = "Want me to guard your focus?"
+                detail = "Allow Screen Time so I can pause distracting apps. You choose which ones."
             }
             recoveryTitle = nil
             recoveryDetail = nil
             recoverySystemImage = nil
         case .resumeSetup:
             stage = "Protection"
-            step = 3
+            step = nil
             if state == .connected {
-                heading = "Screen Time connected"
-                detail = "Choose apps to pause, or skip for now. You can change this later."
+                heading = "We’re connected!"
+                detail = "Screen Time is ready. Choose apps to pause, or leave this for later."
             } else if authorizationState == .unavailable {
                 heading = "Finish setup on a supported iPhone"
                 detail = "Your goal and skill map are saved. Open Checkpoint on an iPhone to connect Screen Time and finish setup."
             } else {
-                heading = "Let’s protect your focus"
-                detail = "Screen Time lets Checkpoint pause distracting apps. You’ll choose which ones next."
+                heading = "Want me to guard your focus?"
+                detail = "Allow Screen Time so I can pause distracting apps. You choose which ones."
             }
             recoveryTitle = nil
             recoveryDetail = nil
@@ -372,7 +372,7 @@ struct ScreenTimeAccessPresentation: Equatable {
             primaryAction = .continueAfterConnection
             switch context {
             case .initialSetup, .resumeSetup:
-                primaryTitle = "Continue setup"
+                primaryTitle = "Choose apps"
                 primarySystemImage = "arrow.right"
             case .restoreProtection where continuesOnboardingAfterDismissal:
                 primaryTitle = "Continue setup"
@@ -774,7 +774,8 @@ struct ScreenTimeAccessHero: View {
                     step: .protection,
                     title: presentation.heading,
                     message: presentation.detail,
-                    reduceMotionOverride: reduceMotion
+                    reduceMotionOverride: reduceMotion,
+                    pose: presentation.state == .connected ? .celebrate : .think
                 )
 
                 if presentation.state != .connected {
@@ -940,24 +941,15 @@ struct ScreenTimeAccessHero: View {
     }
 
     private var stageText: String {
-        guard let step = presentation.step else {
-            return presentation.stage.uppercased()
-        }
-        return "\(presentation.stage.uppercased()) · STEP \(step) OF 3"
+        presentation.stage.uppercased()
     }
 
     private var compactStageText: String {
-        guard let step = presentation.step else {
-            return presentation.stage.uppercased()
-        }
-        return "STEP \(step) OF 3"
+        presentation.stage.uppercased()
     }
 
     private var accessibilityContext: String {
-        guard let step = presentation.step else {
-            return "Checkpoint, \(presentation.stage)"
-        }
-        return "Checkpoint setup, step \(step) of 3, \(presentation.stage)"
+        "Checkpoint, \(presentation.stage)"
     }
 
     private var accent: Color {

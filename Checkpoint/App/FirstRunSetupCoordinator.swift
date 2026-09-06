@@ -82,7 +82,7 @@ struct FirstRunGoalContext: Equatable, Hashable {
     }
 
     var savedGoalAccessibilityAnnouncement: String {
-        "Goal saved: \(title). Step 3 of 3. Now choose the apps and websites that should pause for a checkpoint."
+        "Goal saved: \(title). You can choose apps and websites to pause for a checkpoint, or set this up later."
     }
 }
 
@@ -105,7 +105,7 @@ struct FirstGoalSuccessHandoffToken: Equatable, Hashable, Identifiable {
     }
 
     var accessibilityAnnouncement: String {
-        "Goal saved: \(goalTitle). Step 3 of 3. Now choose the apps and websites that should pause for a checkpoint."
+        "Goal saved: \(goalTitle). You can choose apps and websites to pause for a checkpoint, or set this up later."
     }
 }
 

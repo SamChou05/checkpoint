@@ -43,7 +43,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         )
     }
 
-    func testFirstRunAccessFollowsTheGoalAndSkillMapAsStepThree() {
+    func testFirstRunAccessUsesAMascotInvitationWithoutNumberedStages() {
         let initial = ScreenTimeAccessPresentation(
             context: .initialSetup,
             authorizationState: .notDetermined,
@@ -51,13 +51,13 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
         )
 
         XCTAssertEqual(initial.stage, "Protection")
-        XCTAssertEqual(initial.step, 3)
+        XCTAssertNil(initial.step)
         XCTAssertEqual(initial.state, .permissionRequired)
         XCTAssertEqual(initial.state.status, "Permission needed")
         XCTAssertEqual(initial.state.systemImage, "checkmark.shield")
         XCTAssertEqual(initial.state.tone, .informational)
-        XCTAssertEqual(initial.heading, "Let’s protect your focus")
-        XCTAssertTrue(initial.detail.contains("Screen Time lets Checkpoint pause distracting apps"))
+        XCTAssertEqual(initial.heading, "Want me to guard your focus?")
+        XCTAssertTrue(initial.detail.contains("Allow Screen Time so I can pause distracting apps"))
         XCTAssertEqual(initial.primaryAction, .request)
         XCTAssertEqual(initial.primaryTitle, "Allow Screen Time")
         XCTAssertEqual(initial.primarySystemImage, "checkmark.shield")
@@ -71,7 +71,7 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             authorizationState: .notDetermined,
             requiresProtectedAppReselection: false
         )
-        XCTAssertEqual(resumed.step, 3)
+        XCTAssertNil(resumed.step)
         XCTAssertEqual(resumed.stage, "Protection")
         XCTAssertEqual(resumed.detail, initial.detail)
 
@@ -177,13 +177,13 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             authorizationState: .approved,
             requiresProtectedAppReselection: false
         )
-        XCTAssertEqual(initial.heading, "Screen Time connected")
+        XCTAssertEqual(initial.heading, "We’re connected!")
         XCTAssertEqual(
             initial.detail,
-            "Choose apps to pause, or skip for now. You can change this later."
+            "Screen Time is ready. Choose apps to pause, or leave this for later."
         )
         XCTAssertEqual(initial.primaryAction, .continueAfterConnection)
-        XCTAssertEqual(initial.primaryTitle, "Continue setup")
+        XCTAssertEqual(initial.primaryTitle, "Choose apps")
         XCTAssertEqual(initial.primarySystemImage, "arrow.right")
 
         let resume = ScreenTimeAccessPresentation(
@@ -191,13 +191,13 @@ final class ScreenTimeAccessRenderingTests: CheckpointWorkflowTestCase {
             authorizationState: .approvedWithDataAccess,
             requiresProtectedAppReselection: false
         )
-        XCTAssertEqual(resume.heading, "Screen Time connected")
+        XCTAssertEqual(resume.heading, "We’re connected!")
         XCTAssertEqual(
             resume.detail,
-            "Choose apps to pause, or skip for now. You can change this later."
+            "Screen Time is ready. Choose apps to pause, or leave this for later."
         )
         XCTAssertEqual(resume.primaryAction, .continueAfterConnection)
-        XCTAssertEqual(resume.primaryTitle, "Continue setup")
+        XCTAssertEqual(resume.primaryTitle, "Choose apps")
         XCTAssertEqual(resume.primarySystemImage, "arrow.right")
 
         let selectionRecovery = ScreenTimeAccessPresentation(

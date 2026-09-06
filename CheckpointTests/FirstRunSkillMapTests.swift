@@ -3,6 +3,15 @@ import XCTest
 @testable import Checkpoint
 
 final class FirstRunSkillMapTests: CheckpointWorkflowTestCase {
+    func testDialoguePoseReflectsMapResultRatherThanQuestionPreparation() {
+        XCTAssertEqual(FirstRunSkillMapPhase.building.mascotPose, .think)
+        XCTAssertEqual(FirstRunSkillMapPhase.needsAttention.mascotPose, .wave)
+        let readyWhileQuestionsBuild = FirstRunSkillMapPhase(
+            hasSkillMap: true, isBuildingSkillMap: false, questionBatchState: .generating
+        )
+        XCTAssertEqual(readyWhileQuestionsBuild.mascotPose, .celebrate)
+    }
+
     func testGeneratedMapCanBeReviewedBeforeQuestionsAreReady() {
         for batchState in [QuestionBatchState.idle, .generating, .ready, .failed] {
             XCTAssertEqual(

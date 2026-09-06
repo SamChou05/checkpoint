@@ -105,6 +105,7 @@
 		CB0000000000000000000020 /* FirstRunProtectionRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000020 /* FirstRunProtectionRenderingTests.swift */; };
 		CB0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift */; };
 		A97200000000000000000003 /* FirstRunSkillMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97100000000000000000003 /* FirstRunSkillMapTests.swift */; };
+		A97200000000000000000004 /* CheckpointDialogueRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97100000000000000000004 /* CheckpointDialogueRenderingTests.swift */; };
 		CB0000000000000000000022 /* MembershipViewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000022 /* MembershipViewRenderingTests.swift */; };
 		CB0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */; };
 		CB0000000000000000000024 /* WeeklyReviewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */; };
@@ -275,6 +276,7 @@
 		CA0000000000000000000020 /* FirstRunProtectionRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunProtectionRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunSetupCoordinatorTests.swift; sourceTree = "<group>"; };
 		A97100000000000000000003 /* FirstRunSkillMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunSkillMapTests.swift; sourceTree = "<group>"; };
+		A97100000000000000000004 /* CheckpointDialogueRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointDialogueRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000022 /* MembershipViewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipViewRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeAccessRenderingTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyReviewRenderingTests.swift; sourceTree = "<group>"; };
@@ -525,6 +527,7 @@
 				CA0000000000000000000020 /* FirstRunProtectionRenderingTests.swift */,
 				CA0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift */,
 				A97100000000000000000003 /* FirstRunSkillMapTests.swift */,
+				A97100000000000000000004 /* CheckpointDialogueRenderingTests.swift */,
 				CA0000000000000000000022 /* MembershipViewRenderingTests.swift */,
 				CA0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift */,
 				CA0000000000000000000024 /* WeeklyReviewRenderingTests.swift */,
@@ -880,6 +883,7 @@
 				CB0000000000000000000020 /* FirstRunProtectionRenderingTests.swift in Sources */,
 				CB0000000000000000000021 /* FirstRunSetupCoordinatorTests.swift in Sources */,
 				A97200000000000000000003 /* FirstRunSkillMapTests.swift in Sources */,
+				A97200000000000000000004 /* CheckpointDialogueRenderingTests.swift in Sources */,
 				CB0000000000000000000022 /* MembershipViewRenderingTests.swift in Sources */,
 				CB0000000000000000000023 /* ScreenTimeAccessRenderingTests.swift in Sources */,
 				CB0000000000000000000024 /* WeeklyReviewRenderingTests.swift in Sources */,

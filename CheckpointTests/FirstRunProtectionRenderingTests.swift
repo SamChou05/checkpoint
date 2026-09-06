@@ -269,10 +269,10 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
             )
         )
         XCTAssertEqual(preparing.stage, "Turning on protection")
-        XCTAssertEqual(preparing.title, "Preparing your first checkpoint")
+        XCTAssertEqual(preparing.title, "I’m getting your checkpoint ready")
         XCTAssertEqual(
             preparing.detail,
-            "Checkpoint is preparing a reliable first attempt for this goal before protection turns on."
+            "I’m preparing your first questions. Protection will turn on when they’re ready."
         )
         XCTAssertEqual(preparing.goalContext, goalContext)
         XCTAssertEqual(
@@ -320,11 +320,11 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
             )
         )
         XCTAssertEqual(protected.stage, "Protection ready")
-        XCTAssertEqual(protected.eyebrow, "SETUP COMPLETE")
-        XCTAssertEqual(protected.title, "Protection is on")
+        XCTAssertEqual(protected.eyebrow, "CHECKPOINT")
+        XCTAssertEqual(protected.title, "You’re ready to go!")
         XCTAssertEqual(
             protected.detail,
-            "Opening a protected app now starts a checkpoint for this goal before a timed break."
+            "Protection is on. Clear a checkpoint to take a break in the apps you chose."
         )
         XCTAssertEqual(protected.supportingTitle, "Your first checkpoint is ready")
         XCTAssertNil(protected.operationalNote)
@@ -705,7 +705,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         )
         XCTAssertFalse(ordinaryHeader.isSuccessHandoff)
         XCTAssertEqual(ordinaryHeader.stage, "Choose apps")
-        XCTAssertEqual(ordinaryHeader.title, "Choose apps to protect")
+        XCTAssertEqual(ordinaryHeader.title, "Which apps pull you away?")
         XCTAssertTrue(ordinaryHeader.detail.contains("This is optional"))
         XCTAssertEqual(ordinaryHeader.systemImage, "checkmark.shield.fill")
         XCTAssertEqual(
@@ -715,7 +715,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
                 isCondensed: true,
                 condensedSelectionSummary: "0 selected"
             ),
-            "Step 3 of 3\nCheckpoint for: Prepare for the MCAT\n0 selected"
+            "Choose apps · Optional\nCheckpoint for: Prepare for the MCAT\n0 selected"
         )
         XCTAssertEqual(
             ordinaryHeader.pickerHeaderText(
@@ -724,7 +724,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
                 isCondensed: true,
                 condensedSelectionSummary: "0 selected"
             ),
-            "Step 3 of 3\nCheckpoint for: Prepare for the MCAT\n0 selected\nNeeds attention: Choose at least one app."
+            "Choose apps · Optional\nCheckpoint for: Prepare for the MCAT\n0 selected\nNeeds attention: Choose at least one app."
         )
         XCTAssertEqual(
             ordinaryHeader.pickerFooterText(categorySelectionDetail: nil),
@@ -739,7 +739,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         XCTAssertEqual(successHeader.stage, "Goal saved")
         XCTAssertEqual(successHeader.title, ordinaryHeader.title)
         XCTAssertEqual(successHeader.systemImage, "checkmark.circle.fill")
-        XCTAssertTrue(successHeader.detail.hasPrefix("Pause distracting apps"))
+        XCTAssertTrue(successHeader.detail.hasPrefix("I’ll pause these"))
         XCTAssertTrue(successHeader.detail.contains("This is optional"))
         XCTAssertEqual(
             successHeader.pickerHeaderText(
@@ -748,7 +748,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
                 isCondensed: true,
                 condensedSelectionSummary: "0 selected"
             ),
-            "Goal saved · Final\nCheckpoint for: Prepare for the MCAT\n0 selected"
+            "Goal saved · Optional\nCheckpoint for: Prepare for the MCAT\n0 selected"
         )
         XCTAssertEqual(
             successHeader.pickerFooterText(
@@ -830,7 +830,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
         )
         XCTAssertEqual(
             handoff.accessibilityAnnouncement,
-            "Goal saved: Prepare for the MCAT. Step 3 of 3. Now choose the apps and websites that should pause for a checkpoint."
+            "Goal saved: Prepare for the MCAT. You can choose apps and websites to pause for a checkpoint, or set this up later."
         )
 
         XCTAssertNil(FirstRunProtectionFocus.destination(for: .selecting))
@@ -1450,7 +1450,7 @@ final class FirstRunProtectionRenderingTests: XCTestCase {
             XCTAssertEqual(capture.deliveryEffects.first?.successFeedbackSequenceIncrement, 1)
             XCTAssertEqual(
                 capture.deliveryEffects.first?.accessibilityAnnouncement,
-                "Goal saved: \(currentGoalTitle). Step 3 of 3. Now choose the apps and websites that should pause for a checkpoint."
+                "Goal saved: \(currentGoalTitle). You can choose apps and websites to pause for a checkpoint, or set this up later."
             )
         }
     }

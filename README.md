@@ -7,7 +7,7 @@ See `DEVELOPMENT.md` for the current build status, platform constraints, product
 ## Current Build
 
 - Native SwiftUI app shell.
-- Mascot-guided first launch: describe a goal, add optional context and study materials, review or edit the generated Skill Map, then connect Screen Time and optionally choose protected apps. Saved goals resume at map review until explicitly approved.
+- Character-led first launch with expressive poses and short game-style dialogue: describe a goal, add optional context and study materials, review or edit the generated Skill Map, then connect Screen Time and optionally choose protected apps. Saved goals resume at map review until explicitly approved.
 - Natural-language goal onboarding flow with the first goal included and membership unlocking goal switching plus fresh ongoing question generation.
 - Optional text and text-based PDF study materials can be attached to a goal; their extracted text is bounded, stored with the goal, and used to ground generated questions.
 - The raw typed goal is authoritative. Legacy goal category remains compatibility metadata and new goals default to `Custom` instead of being classified by subject keywords.

@@ -168,8 +168,8 @@ struct GoalSetupHeroPresentation: Equatable {
 
         switch mode {
         case .firstGoal:
-            eyebrow = "SETUP · STEP 1 OF 3"
-            accessibilityContext = "Checkpoint setup, step 1 of 3"
+            eyebrow = "YOUR GOAL"
+            accessibilityContext = "Your learning goal"
             title = "Set your outcome."
             subtitle = "Checkpoint turns it into short practice before selected apps and sites open."
         case .newGoal:
@@ -572,6 +572,60 @@ private enum GoalSetupField: Hashable {
     case currentLevel
 }
 
+/// Dialogue follows meaningful changes, so ordinary keystrokes do not replay the entrance.
+enum FirstRunGoalDialogue: Equatable {
+    case welcome, listening, ready, reading, materialsReady, planning, recovery
+
+    init(
+        hasGoal: Bool,
+        hasDirection: Bool,
+        hasMaterials: Bool,
+        isReading: Bool,
+        isSaving: Bool,
+        needsRecovery: Bool
+    ) {
+        if isSaving { self = .planning }
+        else if isReading { self = .reading }
+        else if needsRecovery { self = .recovery }
+        else if hasMaterials { self = .materialsReady }
+        else if !hasGoal { self = .welcome }
+        else if hasDirection { self = .ready }
+        else { self = .listening }
+    }
+
+    var pose: CheckpointMascotPose {
+        switch self {
+        case .welcome, .recovery: .wave
+        case .listening, .reading, .planning: .think
+        case .ready, .materialsReady: .celebrate
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .welcome: "Oh, hello!"
+        case .listening: "I’m listening."
+        case .ready: "Let’s make it happen."
+        case .reading: "Let me take a look…"
+        case .materialsReady: "I’ve got your notes."
+        case .planning: "Leave this with me."
+        case .recovery: "We can try again."
+        }
+    }
+
+    var message: String {
+        switch self {
+        case .welcome: "I’m Checkpoint. What would you like to learn?"
+        case .listening: "One goal is plenty to start with."
+        case .ready: "I’ll turn your goal into a skill map."
+        case .reading: "I’m reading the materials you shared."
+        case .materialsReady: "We’ll put them to work in your practice."
+        case .planning: "I’m putting your goal together."
+        case .recovery: "Your draft is still here."
+        }
+    }
+}
+
 struct OnboardingView: View {
     let store: CheckpointStore
     private let workflow: CheckpointWorkflowCoordinator
@@ -716,7 +770,8 @@ struct OnboardingView: View {
                 FirstRunSkillMapView(
                     store: store,
                     onApproved: finishFirstRunSkillMap,
-                    onEditGoal: editFirstRunGoal
+                    onEditGoal: editFirstRunGoal,
+                    reduceMotionOverride: reduceMotion
                 )
             } else {
                 goalEntryContent
@@ -812,7 +867,7 @@ struct OnboardingView: View {
                     .reportGoalSetupLayoutFrame(.hero, using: layoutReporter)
 
                 SectionPanel(goalTimingSectionTitle) {
-                    Text(isFirstRunWalkthrough ? "What’s your goal?" : "Learning goal")
+                    Text(isFirstRunWalkthrough ? "Your goal" : "Learning goal")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(CheckpointTheme.text)
                         .reportGoalSetupLayoutFrame(.titleLabel, using: layoutReporter)
@@ -1022,14 +1077,28 @@ struct OnboardingView: View {
         }
     }
 
+    private var firstRunDialogue: FirstRunGoalDialogue {
+        FirstRunGoalDialogue(
+            hasGoal: !isTitleEmpty,
+            hasDirection: directionPreviewState.presentation != nil,
+            hasMaterials: !sourceDocuments.isEmpty,
+            isReading: isImportingSources,
+            isSaving: isGoalSaveWorking,
+            needsRecovery: store.persistenceRecoveryMessage != nil
+                || (sourceImportMessage != nil
+                    && sourceImportMessage != "Stopped reading study materials.")
+        )
+    }
+
     @ViewBuilder
     private var goalSetupHeader: some View {
         if isFirstRunWalkthrough {
             CheckpointSetupGuide(
                 step: .goal,
-                title: "Welcome to Checkpoint!",
-                message: "A little learning, every time you take a break.",
-                reduceMotionOverride: reduceMotion
+                title: firstRunDialogue.title,
+                message: firstRunDialogue.message,
+                reduceMotionOverride: reduceMotion,
+                pose: firstRunDialogue.pose
             )
         } else {
             GoalSetupHero(
@@ -1920,9 +1989,7 @@ struct GoalSetupHero: View {
     }
 
     private var compactEyebrow: String {
-        presentation.eyebrow == "SETUP · STEP 1 OF 3"
-            ? "STEP 2 OF 3"
-            : presentation.eyebrow
+        presentation.eyebrow
     }
 
     private var identityIcon: some View {
