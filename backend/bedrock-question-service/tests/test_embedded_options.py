@@ -11,14 +11,54 @@ from question_quality import (
     _prompt_without_trailing_choice_echo,
     _sanitize_questions,
 )
+from question_verification import verify_questions
 from request_contract import _normalize_request
 
 FIXTURES = json.loads(
     (Path(__file__).parent / "fixtures/embedded_options_contract.json").read_text()
 )
+REVIEWED_STEM = json.loads(
+    (Path(__file__).parent / "fixtures/reviewed_stem_contract.json").read_text()
+)
 
 
 class EmbeddedOptionsTests(unittest.TestCase):
+    def test_reordered_reviewed_choices_do_not_make_the_stimulus_disposable(self):
+        # Synthetic integrity contract shared with the iOS admission test. The
+        # fixed model replies isolate transport behavior, not model accuracy.
+        raw = REVIEWED_STEM["raw_author_question"]
+        request = _normalize_request(REVIEWED_STEM["request"])
+        sanitized = _sanitize_questions([raw], request)
+        self.assertEqual(sanitized, [REVIEWED_STEM["sanitized_question"]])
+        self.assertEqual(sanitized[0]["prompt"], raw["prompt"])
+        self.assertNotEqual(sanitized[0]["choices"], raw["choices"])
+        script_lines = raw["prompt"].split("\n")[1:]
+        self.assertEqual(script_lines, sanitized[0]["choices"])
+        self.assertEqual(script_lines[0], raw["expectedAnswer"])
+        self.assertEqual(len(ast.parse("\n".join(script_lines)).body), 4)
+        seen_stages = []
+
+        def response(stage, prompt, result_key):
+            data = json.loads(
+                prompt.split(f"<question_{stage}_json>\n", 1)[1].split(
+                    f"\n</question_{stage}_json>", 1
+                )[0]
+            )
+            self.assertEqual(data["items"][0]["prompt"], raw["prompt"])
+            seen_stages.append(stage)
+            return json.dumps(REVIEWED_STEM[result_key])
+
+        verified = verify_questions(
+            sanitized,
+            request,
+            lambda _, prompt: response("review", prompt, "fixed_reviewer_response"),
+            solve=lambda _, prompt: response("solution", prompt, "fixed_solver_response"),
+        )
+        self.assertEqual(seen_stages, ["solution", "review"])
+        self.assertEqual(
+            json.loads(json.dumps(verified)), [REVIEWED_STEM["verified_response"]]
+        )
+
     def test_real_python_question_and_empty_syntax_variants_survive(self):
         request = _normalize_request(_request_payload(target_count=1))
         for question in FIXTURES["valid_questions"]:

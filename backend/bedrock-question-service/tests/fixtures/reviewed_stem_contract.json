@@ -1,0 +1,106 @@
+{
+  "kind": "synthetic local deterministic reproduction; fixed solver/reviewer responses, no provider calls",
+  "request": {
+    "goal": {
+      "title": "Learn Python sequential execution",
+      "category": "",
+      "focusAreas": "Trace ordinary straight-line scripts",
+      "currentLevel": "",
+      "learningTarget": "Learn Python sequential execution",
+      "contentTopics": [
+        "Trace ordinary straight-line scripts"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "competencies": [],
+    "existingPrompts": [],
+    "existingQuestionCoverage": [],
+    "reportedPrompts": [],
+    "blockedStemFingerprints": [],
+    "stemFingerprintVersion": 1,
+    "sourceDocuments": [],
+    "targetCount": 1,
+    "minimumDifficulty": 1,
+    "requiresFullObjectiveCoverage": false,
+    "difficultyGuidance": "Recognize or recall a fact or concept.",
+    "adaptiveSkillPlans": []
+  },
+  "raw_author_question": {
+    "prompt": "In Python 3, which call runs first in this straight-line script?\nprint('alpha')\nprint('beta')\nprint('gamma')\nprint('delta')",
+    "choices": [
+      "print('beta')",
+      "print('alpha')",
+      "print('gamma')",
+      "print('delta')"
+    ],
+    "expectedAnswer": "print('alpha')",
+    "explanation": "Python executes the top-level calls in source order, so print('alpha') runs first.",
+    "topic": "Sequential execution",
+    "difficulty": 1
+  },
+  "sanitized_question": {
+    "prompt": "In Python 3, which call runs first in this straight-line script?\nprint('alpha')\nprint('beta')\nprint('gamma')\nprint('delta')",
+    "expectedAnswer": "print('alpha')",
+    "choices": [
+      "print('alpha')",
+      "print('beta')",
+      "print('gamma')",
+      "print('delta')"
+    ],
+    "explanation": "Python executes the top-level calls in source order, so print('alpha') runs first.",
+    "topic": "Sequential execution",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  "fixed_solver_response": {
+    "solutions": [
+      {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "print('alpha') runs first because Python executes these top-level calls in source order.",
+        "limitations": "",
+        "assumptionsRequired": []
+      }
+    ]
+  },
+  "fixed_reviewer_response": {
+    "reviews": [
+      {
+        "index": 0,
+        "valid": true,
+        "answer": "print('alpha')",
+        "difficulty": 1,
+        "explanation": "Python executes the top-level calls in source order, so print('alpha') runs first.",
+        "choiceExplanations": {
+          "print('alpha')": "This is the first top-level call, so it runs before the other calls.",
+          "print('beta')": "This is the second top-level call; the alpha call has already run.",
+          "print('gamma')": "This is the third top-level call, after the alpha and beta calls.",
+          "print('delta')": "This is the fourth top-level call, so it runs last in this script."
+        }
+      }
+    ]
+  },
+  "verified_response": {
+    "prompt": "In Python 3, which call runs first in this straight-line script?\nprint('alpha')\nprint('beta')\nprint('gamma')\nprint('delta')",
+    "expectedAnswer": "print('alpha')",
+    "choices": [
+      "print('alpha')",
+      "print('beta')",
+      "print('gamma')",
+      "print('delta')"
+    ],
+    "explanation": "Python executes the top-level calls in source order, so print('alpha') runs first.",
+    "topic": "Sequential execution",
+    "difficulty": 1,
+    "format": "Multiple Choice",
+    "choiceExplanations": {
+      "print('alpha')": "This is the first top-level call, so it runs before the other calls.",
+      "print('beta')": "This is the second top-level call; the alpha call has already run.",
+      "print('gamma')": "This is the third top-level call, after the alpha and beta calls.",
+      "print('delta')": "This is the fourth top-level call, so it runs last in this script."
+    },
+    "verificationVersion": 1
+  }
+}

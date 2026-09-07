@@ -44,7 +44,11 @@ enum QuestionBatchSanitizer {
         for question in questions {
             guard !request.requiresVerifiedQuestions || question.verificationVersion == 1 else { continue }
             var sanitizedQuestion = question
-            let prompt = promptWithoutTrailingChoiceEcho(question.prompt, choices: question.choices)
+            // Review binds to this exact stem. Reordered choices can make real
+            // stimulus lines resemble an echo, so only legacy items may clean it.
+            let prompt = question.verificationVersion == 1
+                ? question.prompt
+                : promptWithoutTrailingChoiceEcho(question.prompt, choices: question.choices)
             guard prompt.count <= 360 else { continue }
             sanitizedQuestion.prompt = prompt
             let expectedAnswer = MultipleChoiceAnswerNormalizer.text(for: question.expectedAnswer)
@@ -155,7 +159,8 @@ enum QuestionBatchSanitizer {
     }
 
     private static func isUsable(_ question: CheckpointQuestion, for request: QuestionGenerationRequest) -> Bool {
-        question.prompt.count >= 12
+        // Validate meaningful content without replacing a reviewed stem.
+        QuestionText.subjectContent(question.prompt).count >= 12
             && !question.expectedAnswer.isEmpty
             && question.format == .multipleChoice
             && question.choices.count == 4

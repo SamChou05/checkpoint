@@ -1227,6 +1227,98 @@ final class QuestionContentPreservationTests: XCTestCase {
     }
 }
 
+final class ReviewedStemPreservationTests: XCTestCase {
+    private struct Fixture: Decodable {
+        var raw_author_question: GeneratedQuestionPayload
+        var verified_response: GeneratedQuestionPayload
+    }
+
+    private func fixture() throws -> Fixture {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let path = root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/reviewed_stem_contract.json")
+        return try QuestionContentJSONDecoder.decode(Fixture.self, from: Data(contentsOf: path))
+    }
+
+    func testReviewedCodeSurvivesChoiceReorderWireAdmissionShufflingAndGrading() throws {
+        let item = try fixture()
+        let goal = makeGoal()
+        let reviewed = item.verified_response.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
+        let author = item.raw_author_question
+        let lines = reviewed.prompt.components(separatedBy: "\n")
+        XCTAssertEqual(lines.count, 5)
+        XCTAssertEqual(Array(lines.dropFirst()), ["print('alpha')", "print('beta')", "print('gamma')", "print('delta')"])
+        // The first source call, independently of choice order, establishes the key.
+        XCTAssertEqual(reviewed.expectedAnswer, lines[1])
+        XCTAssertNotEqual(author.choices, reviewed.choices)
+        XCTAssertEqual(QuestionBatchSanitizer.promptWithoutTrailingChoiceEcho(author.prompt, choices: author.choices), author.prompt)
+        XCTAssertEqual(QuestionBatchSanitizer.promptWithoutTrailingChoiceEcho(reviewed.prompt, choices: reviewed.choices), lines[0])
+        XCTAssertEqual(reviewed.verificationVersion, 1)
+
+        for offset in reviewed.choices.indices {
+            var wireQuestion = reviewed
+            wireQuestion.choices = Array(reviewed.choices[offset...]) + Array(reviewed.choices[..<offset])
+            let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(wireQuestion))
+            let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "serialized service")
+            var request = makeRequest(goal: goal)
+            request.requiresVerifiedQuestions = true
+            let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: request).first)
+            let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(accepted))
+            XCTAssertEqual(Data(restored.prompt.utf8), Data(reviewed.prompt.utf8))
+            XCTAssertEqual(Data(restored.expectedAnswer.utf8), Data(lines[1].utf8))
+            XCTAssertEqual(Set(restored.choices.map { Data($0.utf8) }), Set(reviewed.choices.map { Data($0.utf8) }))
+            for choice in restored.choices {
+                XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: restored).result,
+                               Data(choice.utf8) == Data(lines[1].utf8) ? .correct : .incorrect)
+            }
+            XCTAssertEqual(restored.choiceExplanations, reviewed.choiceExplanations)
+        }
+    }
+
+    func testReviewedPromptPreservesExactTransportTextAndDuplicateRejection() throws {
+        let goal = makeGoal()
+        var question = try fixture().verified_response.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
+        question.prompt = "\r\n" + question.prompt.replacingOccurrences(of: "\n", with: "\r\n") + "  \r\n"
+        XCTAssertNotEqual(Data(QuestionText.subjectContent(question.prompt).utf8), Data(question.prompt.utf8))
+        let admitted = QuestionBatchSanitizer.sanitize([question, question], for: makeRequest(goal: goal))
+        XCTAssertEqual(admitted.count, 1)
+        let accepted = try XCTUnwrap(admitted.first)
+        XCTAssertEqual(Data(accepted.prompt.utf8), Data(question.prompt.utf8))
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal, existingQuestions: [accepted])).isEmpty)
+    }
+
+    func testReviewedStemStillEnforcesReceivedLengthAndExplicitOptionRules() throws {
+        let goal = makeGoal()
+        let reviewed = try fixture().verified_response.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
+        for length in [360, 361] {
+            var question = reviewed
+            // Empty boundary lines would disappear under legacy cleanup. The
+            // reviewed path checks its received length without rewriting it.
+            question.prompt += String(repeating: "\n", count: length - question.prompt.count)
+            let accepted = QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal))
+            XCTAssertEqual(accepted.count, length == 360 ? 1 : 0)
+            if let kept = accepted.first {
+                XCTAssertEqual(Data(kept.prompt.utf8), Data(question.prompt.utf8))
+            }
+        }
+        var explicitOptions = reviewed
+        explicitOptions.prompt += "\n" + reviewed.choices.enumerated().map { index, choice in
+            ["A", "B", "C", "D"][index] + ". " + choice
+        }.joined(separator: "\n")
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([explicitOptions], for: makeRequest(goal: goal)).isEmpty)
+    }
+
+    func testReviewedPromptCannotPassMinimumLengthWithBlankLinePadding() throws {
+        let goal = makeGoal()
+        let reviewed = try fixture().verified_response.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
+        for prompt in [String(repeating: "\n", count: 12), String(repeating: " \n", count: 12), String(repeating: "\n", count: 12) + "x"] {
+            var question = reviewed
+            question.prompt = prompt
+            XCTAssertGreaterThanOrEqual(question.prompt.count, 12)
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+        }
+    }
+}
+
 final class StemIdentityContractTests: XCTestCase {
     private struct Fixtures: Decodable {
         struct Pair: Decodable {
@@ -1361,15 +1453,19 @@ final class EmbeddedOptionsContractTests: XCTestCase {
         let fixture = try fixtures()
         let goal = makeGoal()
         for prompt in fixture.embedded_choice_prompts {
-            var question = fixture.valid_questions[0].makeQuestion(goalID: goal.id, sourcePrompt: "regression")
-            question.prompt = prompt
-            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+            for version in [0, 1] {
+                var question = fixture.valid_questions[0].makeQuestion(goalID: goal.id, sourcePrompt: "regression")
+                question.prompt = prompt
+                question.verificationVersion = version
+                XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+            }
         }
     }
 
-    func testExactChoiceEchoRemovalPreservesCodeCalls() throws {
+    func testLegacyExactChoiceEchoRemovalPreservesCodeCalls() throws {
         let goal = makeGoal()
-        let question = try fixtures().valid_questions[0].makeQuestion(goalID: goal.id, sourcePrompt: "regression")
+        var question = try fixtures().valid_questions[0].makeQuestion(goalID: goal.id, sourcePrompt: "regression")
+        question.verificationVersion = 0
         for labeled in [false, true] {
             let echo = question.choices.enumerated().map { index, choice in
                 (labeled ? ["A", "B", "C", "D"][index] + ". " : "") + choice
