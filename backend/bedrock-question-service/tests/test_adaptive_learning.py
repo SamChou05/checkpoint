@@ -1,4 +1,6 @@
+import ast
 import copy
+import json
 import unittest
 
 from lambda_test_support import _request_payload, _skill_map, _raw_question
@@ -41,6 +43,46 @@ class AdaptiveLearningTests(unittest.TestCase):
         self.assertIn("A tempting misconception", prompt)
         self.assertIn("goal minimum is only a lower bound", prompt)
         self.assertEqual(request["adaptiveSkillPlans"][0]["targetDifficulty"], 4)
+
+    def test_mistake_code_and_distinct_outputs_survive_authoring_and_retry(self):
+        payload = self.payload()
+        mistake = payload["adaptiveSkillPlans"][0]["recentMistakes"][0]
+        mistake.update(
+            prompt='Python 3: what is printed?\nif True:\n\tprint("red  blue")',
+            selectedAnswer='"red blue"',
+            expectedAnswer='"red  blue"',
+        )
+        request = _normalize_request(payload)
+        for prompt in [_user_prompt(request), _json_retry_prompt(request, "bad JSON")]:
+            with self.subTest(prompt=prompt[:40]):
+                data = json.loads(
+                    prompt.split("<generation_request_json>\n", 1)[1].split(
+                        "\n</generation_request_json>", 1
+                    )[0]
+                )
+                observed = data["adaptiveSkillPlans"][0]["recentMistakes"][0]
+                self.assertEqual(observed, mistake)
+                self.assertNotEqual(observed["selectedAnswer"], observed["expectedAnswer"])
+                code = observed["prompt"].split("\n", 1)[1]
+                self.assertEqual(
+                    ast.dump(ast.parse(code)),
+                    ast.dump(ast.parse(mistake["prompt"].split("\n", 1)[1])),
+                )
+
+    def test_mistake_limits_count_meaningful_spacing_without_shortening_it(self):
+        for field, limit in [("prompt", 360), ("selectedAnswer", 280), ("expectedAnswer", 280)]:
+            with self.subTest(field=field):
+                payload = self.payload()
+                mistake = payload["adaptiveSkillPlans"][0]["recentMistakes"][0]
+                mistake[field] = "x" + " " * (limit - 2) + "y"
+                request = _normalize_request(payload)
+                self.assertEqual(
+                    request["adaptiveSkillPlans"][0]["recentMistakes"][0][field],
+                    mistake[field],
+                )
+                mistake[field] = "x" + " " * (limit - 1) + "y"
+                with self.assertRaises(BadRequestError):
+                    _normalize_request(payload)
 
     def test_plan_cannot_cross_skill_boundaries_or_override_floor(self):
         payload = self.payload()

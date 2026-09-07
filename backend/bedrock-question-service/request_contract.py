@@ -551,7 +551,15 @@ def _normalized_adaptive_skill_plans(
                 {
                     "objectiveID": objective_id(mistake.get("objectiveID")),
                     **{
-                        name: _validated_text(mistake.get(name), name, limit)
+                        # Mistake evidence is subject content, just like the
+                        # original question. Layout and quoted spaces may
+                        # distinguish the selected answer from the correct one.
+                        name: _validated_text(
+                            mistake.get(name),
+                            name,
+                            limit,
+                            preserve_subject_content=True,
+                        )
                         for name, limit in [
                             ("prompt", 360),
                             ("selectedAnswer", 280),
