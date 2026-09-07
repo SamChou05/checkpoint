@@ -1,0 +1,120 @@
+{
+  "kind": "Local browser observations for assistant-created source sanity controls; not generated MCQ evaluation",
+  "date": "2026-09-06",
+  "browserVersion": "151.0.7922.34",
+  "playwrightVersion": "1.62.1",
+  "settings": {
+    "offline": true,
+    "javaScriptEnabled": false,
+    "acceptDownloads": false,
+    "allRoutesAborted": true
+  },
+  "source": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html",
+  "cases": [
+    {
+      "id": "first_legend_and_body",
+      "html": "<fieldset disabled><legend><input id=\"legend\" required></legend><input id=\"body\" required></fieldset>",
+      "expected": {
+        "legend": {
+          "ownDisabled": false,
+          "effectiveDisabled": false,
+          "willValidate": true,
+          "checkValidity": false
+        },
+        "body": {
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "actual": {
+        "legend": {
+          "ownDisabled": false,
+          "effectiveDisabled": false,
+          "willValidate": true,
+          "checkValidity": false
+        },
+        "body": {
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "serializedDOM": "<fieldset disabled=\"\"><legend><input id=\"legend\" required=\"\"></legend><input id=\"body\" required=\"\"></fieldset>",
+      "matchesExpected": true
+    },
+    {
+      "id": "inner_legend_does_not_exempt_outer_fieldset",
+      "html": "<fieldset disabled><legend>Outer</legend><fieldset disabled><legend><input id=\"nested\" required></legend></fieldset></fieldset>",
+      "expected": {
+        "nested": {
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "actual": {
+        "nested": {
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "serializedDOM": "<fieldset disabled=\"\"><legend>Outer</legend><fieldset disabled=\"\"><legend><input id=\"nested\" required=\"\"></legend></fieldset></fieldset>",
+      "matchesExpected": true
+    },
+    {
+      "id": "own_boolean_attribute_inside_legend",
+      "html": "<fieldset disabled><legend><input id=\"own\" disabled=\"false\" required></legend></fieldset>",
+      "expected": {
+        "own": {
+          "ownDisabled": true,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "actual": {
+        "own": {
+          "ownDisabled": true,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "serializedDOM": "<fieldset disabled=\"\"><legend><input id=\"own\" disabled=\"false\" required=\"\"></legend></fieldset>",
+      "matchesExpected": true
+    },
+    {
+      "id": "barred_does_not_imply_disabled",
+      "html": "<datalist><input id=\"listed\" required></datalist>",
+      "expected": {
+        "listed": {
+          "ownDisabled": false,
+          "effectiveDisabled": false,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "actual": {
+        "listed": {
+          "ownDisabled": false,
+          "effectiveDisabled": false,
+          "willValidate": false,
+          "checkValidity": true
+        }
+      },
+      "serializedDOM": "<datalist><input id=\"listed\" required=\"\"></datalist>",
+      "matchesExpected": true
+    }
+  ],
+  "runnerSource": "const fs = require('fs');\nconst crypto = require('crypto');\nconst playwrightRoot = '/Users/samchou/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright';\nconst { chromium } = require(playwrightRoot);\nconst cases = [\n  {\n    id: 'first_legend_and_body',\n    html: '<fieldset disabled><legend><input id=\"legend\" required></legend><input id=\"body\" required></fieldset>',\n    expected: {\n      legend: { ownDisabled: false, effectiveDisabled: false, willValidate: true, checkValidity: false },\n      body: { ownDisabled: false, effectiveDisabled: true, willValidate: false, checkValidity: true },\n    },\n  },\n  {\n    id: 'inner_legend_does_not_exempt_outer_fieldset',\n    html: '<fieldset disabled><legend>Outer</legend><fieldset disabled><legend><input id=\"nested\" required></legend></fieldset></fieldset>',\n    expected: { nested: { ownDisabled: false, effectiveDisabled: true, willValidate: false, checkValidity: true } },\n  },\n  {\n    id: 'own_boolean_attribute_inside_legend',\n    html: '<fieldset disabled><legend><input id=\"own\" disabled=\"false\" required></legend></fieldset>',\n    expected: { own: { ownDisabled: true, effectiveDisabled: true, willValidate: false, checkValidity: true } },\n  },\n  {\n    id: 'barred_does_not_imply_disabled',\n    html: '<datalist><input id=\"listed\" required></datalist>',\n    expected: { listed: { ownDisabled: false, effectiveDisabled: false, willValidate: false, checkValidity: true } },\n  },\n];\n(async () => {\n  const browser = await chromium.launch({ headless: true, chromiumSandbox: true });\n  try {\n    const context = await browser.newContext({ offline: true, javaScriptEnabled: false, acceptDownloads: false });\n    await context.route('**/*', route => route.abort());\n    const page = await context.newPage();\n    for (const item of cases) {\n      await page.setContent(item.html);\n      item.actual = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll('input')].map(input => [input.id, {\n        ownDisabled: input.disabled,\n        effectiveDisabled: input.matches(':disabled'),\n        willValidate: input.willValidate,\n        checkValidity: input.checkValidity(),\n      }])));\n      item.serializedDOM = await page.locator('body').innerHTML();\n      item.matchesExpected = JSON.stringify(item.actual) === JSON.stringify(item.expected);\n    }\n    const report = {\n      kind: 'Local browser observations for assistant-created source sanity controls; not generated MCQ evaluation',\n      date: '2026-09-06', browserVersion: browser.version(),\n      playwrightVersion: require(playwrightRoot + '/package.json').version,\n      settings: { offline: true, javaScriptEnabled: false, acceptDownloads: false, allRoutesAborted: true },\n      source: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html',\n      cases, runnerSource: fs.readFileSync(__filename, 'utf8'),\n      limits: ['Only these exact DOMs and properties were observed.', 'The browser result does not establish correctness of arbitrary question prose, explanations, or learning difficulty.'],\n    };\n    const path = '/tmp/checkpoint-html-evidence-preflight-20260906.json';\n    fs.writeFileSync(path, JSON.stringify(report, null, 2) + '\\n');\n    console.log(JSON.stringify({ path, sha256: crypto.createHash('sha256').update(fs.readFileSync(path)).digest('hex'), browser: report.browserVersion, results: cases.map(c => ({ id: c.id, matches: c.matchesExpected })) }));\n    if (cases.some(c => !c.matchesExpected)) process.exitCode = 1;\n  } finally { await browser.close(); }\n})().catch(error => { console.error(error.message); process.exitCode = 1; });\n",
+  "limits": [
+    "Only these exact DOMs and properties were observed.",
+    "The browser result does not establish correctness of arbitrary question prose, explanations, or learning difficulty."
+  ]
+}

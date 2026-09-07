@@ -1,0 +1,363 @@
+{
+  "kind": "Local chess-engine observations for assistant-created source sanity controls; not generated MCQ evaluation",
+  "date": "2026-09-06",
+  "chess_version": "1.11.2",
+  "chess_module_sha256": "1fde6a8e932508d14b31f6a584497b49c2969fc3c7cdc675347f819f0d667a5b",
+  "source": "https://handbook.fide.com/chapter/E012023",
+  "observed_property_order": [
+    "white_kingside_right",
+    "white_queenside_right",
+    "white_kingside_castle_is_legal_now"
+  ],
+  "cases": [
+    {
+      "id": "initial_obstructed",
+      "moves": [],
+      "expected": [
+        true,
+        true,
+        false
+      ],
+      "trace": [],
+      "final_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "library_valid_position": true,
+      "standard_start_legal_move_replay": true,
+      "actual": [
+        true,
+        true,
+        false
+      ],
+      "matches_expected": true
+    },
+    {
+      "id": "path_cleared",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nf6"
+      ],
+      "expected": [
+        true,
+        true,
+        true
+      ],
+      "trace": [
+        {
+          "san": "e4",
+          "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"
+        },
+        {
+          "san": "e5",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+        },
+        {
+          "san": "Nf3",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"
+        },
+        {
+          "san": "Bc4",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
+        },
+        {
+          "san": "Nf6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+        }
+      ],
+      "final_fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "library_valid_position": true,
+      "standard_start_legal_move_replay": true,
+      "actual": [
+        true,
+        true,
+        true
+      ],
+      "matches_expected": true
+    },
+    {
+      "id": "king_moved_and_returned",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nf6",
+        "Ke2",
+        "Nb8",
+        "Ke1",
+        "Nc6"
+      ],
+      "expected": [
+        false,
+        false,
+        false
+      ],
+      "trace": [
+        {
+          "san": "e4",
+          "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"
+        },
+        {
+          "san": "e5",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+        },
+        {
+          "san": "Nf3",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"
+        },
+        {
+          "san": "Bc4",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
+        },
+        {
+          "san": "Nf6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+        },
+        {
+          "san": "Ke2",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPPKPPP/RNBQ3R b kq - 5 4"
+        },
+        {
+          "san": "Nb8",
+          "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/5N2/PPPPKPPP/RNBQ3R w kq - 6 5"
+        },
+        {
+          "san": "Ke1",
+          "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b kq - 7 5"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w kq - 8 6"
+        }
+      ],
+      "final_fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w kq - 8 6",
+      "library_valid_position": true,
+      "standard_start_legal_move_replay": true,
+      "actual": [
+        false,
+        false,
+        false
+      ],
+      "matches_expected": true
+    },
+    {
+      "id": "rook_moved_and_returned",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nf6",
+        "Rg1",
+        "Nb8",
+        "Rh1",
+        "Nc6"
+      ],
+      "expected": [
+        false,
+        true,
+        false
+      ],
+      "trace": [
+        {
+          "san": "e4",
+          "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"
+        },
+        {
+          "san": "e5",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+        },
+        {
+          "san": "Nf3",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"
+        },
+        {
+          "san": "Bc4",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
+        },
+        {
+          "san": "Nf6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+        },
+        {
+          "san": "Rg1",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK1R1 b Qkq - 5 4"
+        },
+        {
+          "san": "Nb8",
+          "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK1R1 w Qkq - 6 5"
+        },
+        {
+          "san": "Rh1",
+          "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b Qkq - 7 5"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w Qkq - 8 6"
+        }
+      ],
+      "final_fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w Qkq - 8 6",
+      "library_valid_position": true,
+      "standard_start_legal_move_replay": true,
+      "actual": [
+        false,
+        true,
+        false
+      ],
+      "matches_expected": true
+    },
+    {
+      "id": "temporary_bishop_obstacle",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nf6",
+        "Bf1",
+        "Nb8"
+      ],
+      "expected": [
+        true,
+        true,
+        false
+      ],
+      "trace": [
+        {
+          "san": "e4",
+          "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"
+        },
+        {
+          "san": "e5",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+        },
+        {
+          "san": "Nf3",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"
+        },
+        {
+          "san": "Bc4",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
+        },
+        {
+          "san": "Nf6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+        },
+        {
+          "san": "Bf1",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 5 4"
+        },
+        {
+          "san": "Nb8",
+          "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 6 5"
+        }
+      ],
+      "final_fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 6 5",
+      "library_valid_position": true,
+      "standard_start_legal_move_replay": true,
+      "actual": [
+        true,
+        true,
+        false
+      ],
+      "matches_expected": true
+    },
+    {
+      "id": "temporary_obstacle_removed",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nf6",
+        "Bf1",
+        "Nb8",
+        "Bc4",
+        "Nc6"
+      ],
+      "expected": [
+        true,
+        true,
+        true
+      ],
+      "trace": [
+        {
+          "san": "e4",
+          "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"
+        },
+        {
+          "san": "e5",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+        },
+        {
+          "san": "Nf3",
+          "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"
+        },
+        {
+          "san": "Bc4",
+          "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
+        },
+        {
+          "san": "Nf6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+        },
+        {
+          "san": "Bf1",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 5 4"
+        },
+        {
+          "san": "Nb8",
+          "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 6 5"
+        },
+        {
+          "san": "Bc4",
+          "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 7 5"
+        },
+        {
+          "san": "Nc6",
+          "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 8 6"
+        }
+      ],
+      "final_fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 8 6",
+      "library_valid_position": true,
+      "standard_start_legal_move_replay": true,
+      "actual": [
+        true,
+        true,
+        true
+      ],
+      "matches_expected": true
+    }
+  ],
+  "runner_source": "import hashlib\nimport json\nfrom pathlib import Path\nimport sys\n\nsys.path.insert(0, '/tmp/checkpoint-chess-checker-20260906')\nimport chess\n\nready = ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Nf6']\ncases = [\n    {'id': 'initial_obstructed', 'moves': [], 'expected': [True, True, False]},\n    {'id': 'path_cleared', 'moves': ready, 'expected': [True, True, True]},\n    {'id': 'king_moved_and_returned', 'moves': ready + ['Ke2', 'Nb8', 'Ke1', 'Nc6'], 'expected': [False, False, False]},\n    {'id': 'rook_moved_and_returned', 'moves': ready + ['Rg1', 'Nb8', 'Rh1', 'Nc6'], 'expected': [False, True, False]},\n    {'id': 'temporary_bishop_obstacle', 'moves': ready + ['Bf1', 'Nb8'], 'expected': [True, True, False]},\n    {'id': 'temporary_obstacle_removed', 'moves': ready + ['Bf1', 'Nb8', 'Bc4', 'Nc6'], 'expected': [True, True, True]},\n]\nfor row in cases:\n    board = chess.Board()\n    row['trace'] = []\n    for san in row['moves']:\n        move = board.parse_san(san)\n        assert move in board.legal_moves\n        board.push(move)\n        row['trace'].append({'san': san, 'fen': board.fen()})\n    row['final_fen'] = board.fen()\n    row['library_valid_position'] = board.is_valid()\n    row['standard_start_legal_move_replay'] = True\n    row['actual'] = [board.has_kingside_castling_rights(chess.WHITE), board.has_queenside_castling_rights(chess.WHITE), chess.Move.from_uci('e1g1') in board.legal_moves]\n    row['matches_expected'] = row['actual'] == row['expected']\n\nreport = {\n    'kind': 'Local chess-engine observations for assistant-created source sanity controls; not generated MCQ evaluation',\n    'date': '2026-09-06', 'chess_version': chess.__version__,\n    'chess_module_sha256': hashlib.sha256(Path(chess.__file__).read_bytes()).hexdigest(),\n    'source': 'https://handbook.fide.com/chapter/E012023',\n    'observed_property_order': ['white_kingside_right', 'white_queenside_right', 'white_kingside_castle_is_legal_now'],\n    'cases': cases, 'runner_source': Path(__file__).read_text(),\n    'limits': ['These six positions were reached by replaying legal moves from the standard initial position; arbitrary FEN validity alone is not a proof of historical reachability.', 'No arbitrary model-authored chess explanation or difficulty was checked.'],\n}\npath = Path('/tmp/checkpoint-chess-evidence-preflight-20260906.json')\npath.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\\n')\nprint(json.dumps({'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'results': [{'id': row['id'], 'matches': row['matches_expected']} for row in cases]}))\nassert all(row['matches_expected'] and row['library_valid_position'] for row in cases)\n",
+  "limits": [
+    "These six positions were reached by replaying legal moves from the standard initial position; arbitrary FEN validity alone is not a proof of historical reachability.",
+    "No arbitrary model-authored chess explanation or difficulty was checked."
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-09-06",
+  "purpose": "Prospective diagnostic of a 320 versus 1200 character question-stem allowance on two ordinary source-backed learning goals. Both arms receive identical goal/source payloads. No live calls or production qualification are included.",
+  "source_draft_sha256": {
+    "checkpoint-real-rule-lessons-draft-20260906.json": "4c9c76eb723ba67291ee4dbedfb0c8eed8dabb20b0a87fab542f9192d0c110ef"
+  },
+  "intervention": {
+    "arms": [
+      {
+        "name": "stem_320",
+        "maximum_stem_characters": 320
+      },
+      {
+        "name": "stem_1200",
+        "maximum_stem_characters": 1200
+      }
+    ],
+    "changed_dimension": "Author stem-length guidance and corresponding experimental admission length jointly. This is not a pure prompt-only causal experiment.",
+    "held_equal": "Goal payloads, references, requested count, minimum difficulty, model/provider settings, remaining prompts, and non-stem constraints are shared. The harness freezes exact jobs/settings before execution.",
+    "metadata_boundary": "Only case.payload enters normalization/provider input. Source provenance, applied-objective audit copy, checklists, and prospective assessments remain external. No exact future questions or expected answer keys are specified."
+  },
+  "prospective_assessment": {
+    "blinding": "Independent assessment is key-, explanation-, and verdict-blinded until frozen. Length may reveal the arm; do not claim arm blinding.",
+    "raw_first": "Preserve all authored candidates and their exact displayed text. Assess literal completeness, warranted choices, distinct/plausible distractors, goal/objective fit, and independent 1–5 difficulty before unblinding. Zero or multiple warranted choices are allowed findings.",
+    "feedback": "After freezing, assess author main feedback and any final main/all-choice feedback separately. Unsupported mechanisms, lost qualifiers, invented distractor faults, or false absolute claims fail complete content.",
+    "difficulty": "Use question_difficulty.py. Level 3 requires interpretation whose meaningful scenario details affect the answer. More characters, more listed facts, obscure terminology, or two stated rules do not by themselves establish level 3.",
+    "complete_item": "A complete success requires a self-contained literal problem with one warranted unchanged answer, three distinct and plausible wrong alternatives, substantive goal fit, accurate main/all available choice feedback, and independent difficulty at least 3. Sources cannot fill missing case facts.",
+    "denominators": "Count all requested slots and all actual raw candidates, including malformed or removed items. Report retained inventory separately. Do not count raw/display identities as separate questions or treat parse/provider errors as factual rejections.",
+    "intervention_exercised": "Each expanded goal must contain at least one stem longer than 320 characters whose additional text supplies useful premises or representation needed for the task. Padding or unused details do not exercise the intended intervention.",
+    "feasibility_threshold": "For each of both expanded goals, all three requested items must meet complete-item criteria and the intervention-exercised condition must hold. One-goal success is mixed; failure of either goal prevents promotion. Baseline and expanded-arm counts remain separate, not a population accuracy estimate.",
+    "failure_policy": "An operational failure stops the bounded run. Content failures do not trigger repair or replacement; continue only the predeclared jobs, retain all failures, and prevent promotion.",
+    "practicality": "Preserve raw/admitted stems and whether each fits the current client separately. Successful expanded offline content is not proof that current presentation, response latency, cost, or adaptive progression is ready.",
+    "interpretation": "These two selected goals diagnose whether extra room helps complete applied questions. They do not establish arbitrary-subject coverage, factual grounding from retrieval, calibrated mastery, or a release decision."
+  },
+  "cases": [
+    {
+      "case_id": "html_disabled_constraint_validation",
+      "payload": {
+        "goal": {
+          "title": "Understand HTML form disabled state and constraint validation",
+          "focusAreas": "Trace inherited disabling through nested fieldsets and first-legend exceptions; Predict effective disabled state after changing the input's own attribute; Interpret willValidate and checkValidity for barred inputs"
+        },
+        "sourceDocuments": [
+          {
+            "name": "WHATWG HTML Living Standard: disabled controls and constraint validation",
+            "text": "Source: https://html.spec.whatwg.org/multipage/form-control-infrastructure.html (accessed 2026-09-06). Paraphrased guidance:\n\nAn input's disabled attribute disables it whenever present, regardless of its string value. An input is also disabled by a fieldset ancestor with that attribute, except when inside that fieldset's first legend element child. Evaluate this exception separately for each fieldset ancestor: exemption from one does not remove another qualifying ancestor or the input's own attribute. Removing the input's attribute therefore need not enable it. Disabled controls are barred from constraint validation. A datalist ancestor is another barring condition; these examples are not an exhaustive list. willValidate is true exactly when the element is a candidate for constraint validation. checkValidity() returns false when a candidate fails its constraints and fires invalid; otherwise it returns true. Consequently, true does not prove that a barred control's value satisfies its constraints. Disabling does not prevent every modification: JavaScript can still change value or checkedness. These rules apply to the current DOM state; changes to attributes or ancestry can change the result."
+          }
+        ],
+        "targetCount": 3,
+        "minimumDifficulty": 3
+      },
+      "applied_objectives": [
+        "Trace inherited disabling through nested fieldsets and first-legend exceptions",
+        "Predict effective disabled state after changing the input's own attribute",
+        "Interpret willValidate and checkValidity for barred inputs"
+      ],
+      "source_provenance": [
+        {
+          "document_index": 0,
+          "source_id": "html_disabled_constraint_validation_primary",
+          "name": "WHATWG HTML Living Standard: disabled controls and constraint validation",
+          "publisher": "WHATWG",
+          "url": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html",
+          "supporting_sections": [
+            "4.10.19.5",
+            "4.10.21.1",
+            "4.10.21.3: willValidate getter and check validity steps"
+          ],
+          "version_as_displayed": "Living Standard — Last Updated 4 September 2026",
+          "reviewed_on": "2026-09-06",
+          "retrieval_method": "Assistant read the current primary page; root independently reviews before any live run.",
+          "summary_is_paraphrase": true,
+          "summary_word_count": 158,
+          "summary_sha256": "d06ce13bb81a865e2340a485c61b2b50c3010fdb472c83a3218d7fd777e7509f",
+          "source_document_text_sha256": "4d3c45a664338a19353b9f0e083200bc6858d1ac15336554bf2890966e7c93e6",
+          "raw_page_snapshot_stored": false,
+          "current_source_review": "Checked the cited normative definitions and algorithms; recommendations below are external evaluation criteria, not an assertion that generated items are qualified."
+        }
+      ],
+      "adjudication_checklist": [
+        {
+          "id": "literal_dom",
+          "criterion": "Judge the exact displayed DOM or complete prose ancestry, including every relevant ancestor and control attribute. Do not supply omitted structure."
+        },
+        {
+          "id": "nested_exception",
+          "criterion": "Apply the source exception at the correct ancestor and child; do not treat one local exemption as a global conclusion."
+        },
+        {
+          "id": "state_change",
+          "criterion": "Use the exact stated before/after operation and current state, without silently changing another attribute or tree relationship."
+        },
+        {
+          "id": "api_semantics",
+          "criterion": "Keep property values and method results tied to their cited algorithms; distinguish eligibility from the validity of content."
+        },
+        {
+          "id": "independent_check",
+          "criterion": "When literal executable DOM code is present, inspect its actual parsed structure and native behavior where feasible; never repair its text or substitute an intended tree."
+        }
+      ],
+      "scope_limits": [
+        "The target is ordinary HTML input behavior under the cited Living Standard, not general accessibility conformance or a complete browser-security assessment.",
+        "The packet is a focused excerpt of relevant rules. Missing reference coverage is not evidence that a proposed subject claim is false.",
+        "Sources establish general rules; all particular DOM facts needed to select a unique answer must appear in the question.",
+        "Three objectives should yield distinct applications, not three cosmetic rewrites of one inheritance example."
+      ]
+    },
+    {
+      "case_id": "chess_castling_rights",
+      "payload": {
+        "goal": {
+          "title": "Learn castling legality in standard chess",
+          "focusAreas": "Evaluate castling rights from the move histories of the king and chosen rook; Apply castling rules about attacked squares and intervening pieces; Decide whether position and history facts establish castling legality"
+        },
+        "sourceDocuments": [
+          {
+            "name": "FIDE Laws of Chess: castling and legal moves",
+            "text": "Source: https://handbook.fide.com/chapter/E012023 (accessed 2026-09-06). Paraphrased guidance:\n\nThese rules concern standard over-the-board chess. Castling moves the king from its original square two squares toward a rook on its original square, then moves that rook to the square the king crossed. Prior king movement loses castling rights; prior rook movement loses the right with that rook. Returning a moved piece to its original square does not restore the lost right. Castling is temporarily prevented if an opponent attacks the king's starting, crossing, or destination square, or if any piece lies between king and chosen rook. The attack restriction concerns those king squares, not every square crossed by the rook. A piece still attacks a square when moving there would expose its own king. A legal move must satisfy all relevant move rules; retaining castling rights alone does not establish current legality. Distinguish the history of the king and chosen rook from current occupancy and attacks. Chess960 has separate castling provisions and is outside this summary."
+          }
+        ],
+        "targetCount": 3,
+        "minimumDifficulty": 3
+      },
+      "applied_objectives": [
+        "Evaluate castling rights from the move histories of the king and chosen rook",
+        "Apply castling rules about attacked squares and intervening pieces",
+        "Decide whether position and history facts establish castling legality"
+      ],
+      "source_provenance": [
+        {
+          "document_index": 0,
+          "source_id": "chess_castling_rights_primary",
+          "name": "FIDE Laws of Chess: castling and legal moves",
+          "publisher": "FIDE",
+          "url": "https://handbook.fide.com/chapter/E012023",
+          "supporting_sections": [
+            "Introduction 0.1",
+            "3.1.3",
+            "3.8.2",
+            "3.8.2.1",
+            "3.8.2.2",
+            "3.9.2",
+            "3.10.1–3.10.2"
+          ],
+          "version_as_displayed": "Taking effect from 1 January 2023",
+          "reviewed_on": "2026-09-06",
+          "retrieval_method": "Assistant read the current primary page; root independently reviews before any live run.",
+          "summary_is_paraphrase": true,
+          "summary_word_count": 157,
+          "summary_sha256": "bccd27e718fcfaf263cb93d2537715206d4f9576c5bbe25124131e90bafaa808",
+          "source_document_text_sha256": "6ac1c5b3dc7ce4965221cabe385657a7073b17d6fc782e6affeb059ee7ab7d49",
+          "raw_page_snapshot_stored": false,
+          "current_source_review": "Checked the cited normative definitions and algorithms; recommendations below are external evaluation criteria, not an assertion that generated items are qualified."
+        }
+      ],
+      "adjudication_checklist": [
+        {
+          "id": "scope_and_side",
+          "criterion": "Identify the side to move and castling wing and evaluate one coherent standard-chess position under the stated rules."
+        },
+        {
+          "id": "history",
+          "criterion": "Do not infer move history from current piece locations or silently replace the chosen rook with a different one."
+        },
+        {
+          "id": "position",
+          "criterion": "Check every claimed attack or intervening square against the literal board information; a relevant omission cannot be resolved from the rule packet."
+        },
+        {
+          "id": "sufficiency",
+          "criterion": "Apply the stated conditions in their warranted direction; distinguish a sufficient prohibition from all conditions needed to permit a move."
+        },
+        {
+          "id": "independent_check",
+          "criterion": "If a board or move sequence is supplied, check legal consistency independently where feasible and preserve any unproved history or reachability condition as unresolved."
+        }
+      ],
+      "scope_limits": [
+        "The target is position-based castling legality and its required move history in an ongoing standard game, not Chess960, clock rules, touch-move rulings, or tournament penalties.",
+        "Sources do not invent a board, tell whose turn it is, establish attack maps, or certify the history of a future authored position.",
+        "A plausible intended diagram or an assumed rook history cannot rescue an incomplete literal question.",
+        "Three objectives should exercise distinct history, board-condition, and information-sufficiency reasoning, not substitute chess words into abstract Boolean puzzles."
+      ]
+    }
+  ]
+}
