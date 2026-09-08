@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "id": "item-1",
+      "prompt": "CPython 3.12.13: run source, then call. What returns/raises (exact types/value/order)?\n\ndef f(x):\n a=[[1,2],[3,4]]\n b=a[:]\n a[0].append(x)\n a[1]=[5]\n return b\n\nCall:\nf(*[9], **{})",
+      "choices": [
+        "Returns [[1, 2, 9], [3, 4]] (list)",
+        "Returns [[1, 2, 9], [5]] (list)",
+        "Returns [[1, 2], [3, 4]] (list)",
+        "Returns [[1, 2], [5]] (list)"
+      ],
+      "goal": {
+        "title": "Prepare for Python interviews by understanding program behavior",
+        "focusAreas": "Interpret reference sharing and control flow instead of memorizing outputs"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Python assignment and shallow copying",
+          "url": "https://docs.python.org/3.12/library/copy.html",
+          "text": "Assignment binds names to objects. A shallow copy recreates the outer container while preserving references to its members. A whole-list slice is a shallow copy."
+        },
+        {
+          "name": "Python loop control",
+          "url": "https://docs.python.org/3.12/tutorial/controlflow.html#else-clauses-on-loops",
+          "text": "Loop else runs after normal completion. A break, return or raised exception skips it. Break exits the innermost enclosing loop; continue advances that loop."
+        }
+      ]
+    },
+    {
+      "id": "item-2",
+      "prompt": "CPython 3.12.13: run source, then call. What returns/raises (exact types/value/order)?\n\ndef g(ns):\n r=0\n for n in ns:\n  if n<0:\n   break\n  r=r+n\n else:\n  r=r*10\n return r\n\nCall:\ng(*[[2, 3, -1, 4]], **{})",
+      "choices": [
+        "Returns 5 (int)",
+        "Returns 50 (int)",
+        "Returns 80 (int)",
+        "Returns 8 (int)"
+      ],
+      "goal": {
+        "title": "Prepare for Python interviews by understanding program behavior",
+        "focusAreas": "Interpret reference sharing and control flow instead of memorizing outputs"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Python assignment and shallow copying",
+          "url": "https://docs.python.org/3.12/library/copy.html",
+          "text": "Assignment binds names to objects. A shallow copy recreates the outer container while preserving references to its members. A whole-list slice is a shallow copy."
+        },
+        {
+          "name": "Python loop control",
+          "url": "https://docs.python.org/3.12/tutorial/controlflow.html#else-clauses-on-loops",
+          "text": "Loop else runs after normal completion. A break, return or raised exception skips it. Break exits the innermost enclosing loop; continue advances that loop."
+        }
+      ]
+    },
+    {
+      "id": "item-3",
+      "prompt": null,
+      "choices": [],
+      "goal": {
+        "title": "Understand HTML form behavior when states and constraints interact",
+        "focusAreas": "Predict native form-control state from the actual ancestor structure and attributes"
+      },
+      "sourceDocuments": [
+        {
+          "name": "HTML disabled controls and validation",
+          "url": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html",
+          "text": "A disabled fieldset disables descendant controls except descendants of its first legend child. Disabled controls are barred from constraint validation. willValidate reflects validation candidacy. checkValidity() returns false only for a candidate that fails its constraints; otherwise it returns true."
+        }
+      ]
+    },
+    {
+      "id": "item-4",
+      "prompt": null,
+      "choices": [],
+      "goal": {
+        "title": "Understand HTML form behavior when states and constraints interact",
+        "focusAreas": "Predict native form-control state from the actual ancestor structure and attributes"
+      },
+      "sourceDocuments": [
+        {
+          "name": "HTML disabled controls and validation",
+          "url": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html",
+          "text": "A disabled fieldset disables descendant controls except descendants of its first legend child. Disabled controls are barred from constraint validation. willValidate reflects validation candidacy. checkValidity() returns false only for a candidate that fails its constraints; otherwise it returns true."
+        }
+      ]
+    }
+  ]
+}

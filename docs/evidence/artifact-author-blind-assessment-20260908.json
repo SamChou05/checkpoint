@@ -1,0 +1,215 @@
+{
+  "assessment": "artifact-author-blind-content-v1",
+  "assessor": "review_design",
+  "date_utc": "2026-09-08",
+  "inputs": {
+    "packet": "docs/evidence/artifact-author-blind-packet-20260908.json",
+    "packet_sha256": "faf6170d955b5330fc8b13c672307ea4ad099be43fb50479a8fd70f6b3a93b55",
+    "rubric": "backend/bedrock-question-service/question_difficulty.py",
+    "rubric_sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "content_hash_convention": "SHA256 of UTF-8 JSON with sorted keys, ensure_ascii=False and separators(',', ':') for {goal,sourceDocuments,prompt,choices}; authored occurrence ID is recorded separately."
+  },
+  "method": {
+    "author_key_or_preference_seen": false,
+    "native_key_or_observation_seen": false,
+    "author_feedback_seen": false,
+    "author_proposed_difficulty_seen": false,
+    "experiment_minimum_difficulty_known": 3,
+    "trial_source_executed": false,
+    "native_or_model_calls": 0,
+    "basis": "Manual interpretation of the exact displayed source and invocation, using the supplied packet, shared rubric and official Python documentation. No source repair, substituted input or local execution. The assessor previously reviewed the experiment and prototype adapters; those fixtures are not these trial candidates.",
+    "difficulty_scope": "Independent assistant judgment, not calibrated learner performance or an educator panel. Adjacent-level uncertainty is stated per item.",
+    "plausibility_scope": "A proposed plausible interpretation of a distractor is not a factual assertion about why an actual learner chose it. No distractor statistics or learner observations were collected.",
+    "documentation_version_note": "The official Python /3.12 documentation currently identifies its maintained page set as 3.12.14. The assessed rules are ordinary assignment, shallow-copy, list mutation, loop control and function-call semantics; no fresh CPython3.12.13 execution or patch-specific empirical comparison was performed."
+  },
+  "primary_sources": [
+    {
+      "url": "https://docs.python.org/3.12/library/copy.html",
+      "used_for": "Assignment binds names; an outer shallow copy retains references to contained objects; a full-list slice is a shallow copy."
+    },
+    {
+      "url": "https://docs.python.org/3.12/tutorial/controlflow.html#else-clauses-on-loops",
+      "used_for": "Break exits the loop and suppresses its else; normal exhaustion executes else."
+    },
+    {
+      "url": "https://docs.python.org/3.12/tutorial/datastructures.html",
+      "used_for": "List append mutates the referenced list; ordered lists retain their represented contents."
+    }
+  ],
+  "items": [
+    {
+      "id": "item-1",
+      "content_sha256": "498a8c00826301573fd0012ab6645ad256de9f201c1c7a0ff2c976a7f3ab7ada",
+      "status": "assessed",
+      "prompt_length": 179,
+      "warranted_choices": ["Returns [[1, 2, 9], [3, 4]] (list)"],
+      "warranted_choice_positions_zero_based": [0],
+      "unique_warranted_answer": true,
+      "complete_premises": true,
+      "completeness_rationale": "The complete function, exact argument9, operation order and requested returned structural value are displayed. One-space function indentation is consistent. No global state, external setup or omitted input is needed.",
+      "evidence": [
+        "b=a[:] creates a separate outer list holding the two original inner-list references.",
+        "Appending9 to a[0] changes the same first inner list referenced by b[0].",
+        "Assigning a[1]=[5] changes a's outer slot; b's separate outer slot still refers to [3,4].",
+        "The returned b therefore contains [[1,2,9],[3,4]], with list types throughout."
+      ],
+      "choice_assessments": [
+        {
+          "choice": "Returns [[1, 2, 9], [3, 4]] (list)",
+          "position_zero_based": 0,
+          "answers_stem": true,
+          "reason": "It retains the shared first inner-list mutation and the original second inner-list reference."
+        },
+        {
+          "choice": "Returns [[1, 2, 9], [5]] (list)",
+          "position_zero_based": 1,
+          "answers_stem": false,
+          "plausibility": "strong",
+          "plausible_distractor": true,
+          "reason": "It incorrectly propagates the outer-slot replacement into b as well as the shared inner mutation. This is a focused alternative to correctly interpreting the outer slice copy."
+        },
+        {
+          "choice": "Returns [[1, 2], [3, 4]] (list)",
+          "position_zero_based": 2,
+          "answers_stem": false,
+          "plausibility": "strong",
+          "plausible_distractor": true,
+          "reason": "It treats the nested contents as independently copied, losing the visible effect of the append."
+        },
+        {
+          "choice": "Returns [[1, 2], [5]] (list)",
+          "position_zero_based": 3,
+          "answers_stem": false,
+          "plausibility": "moderate",
+          "plausible_distractor": true,
+          "reason": "It reverses which of the two changes is visible through b. This is the weaker alternative, but it still distinguishes nested mutation from outer-slot replacement rather than introducing unrelated data or an arbitrary exception."
+        }
+      ],
+      "all_choices_distinct_in_task_meaning": true,
+      "all_three_distractors_plausible": true,
+      "goal_fit": true,
+      "goal_fit_rationale": "The question directly exercises reference sharing, shallow copying and mutation versus replacement in an ordinary interview-sized program.",
+      "independent_difficulty": 3,
+      "difficulty_rationale": "The learner must interpret the two-level reference structure and track two different updates; both update details affect the offered answer. Recognizing that slicing is shallow is insufficient without applying that distinction to the two actual operations. The compact, familiar setting supports level3 rather than a claim of advanced novel problem solving.",
+      "difficulty_confidence": "moderate",
+      "difficulty_sensitivity": "A level4 judgment is possible under a broad reading of interacting reasoning steps, but is not needed or claimed here. This is clearly more than a standalone definition of shallow copy.",
+      "meets_minimum_difficulty_3": true,
+      "useful_premise_bearing_length": "The short source carries the relevant references, updates and invocation without a redundant scenario introduction. All needed information fits the unchanged stem limit.",
+      "blind_content_criteria_met": true,
+      "feedback_assessment": "not_seen",
+      "native_binding_assessment": "not_observed"
+    },
+    {
+      "id": "item-2",
+      "content_sha256": "bea5015f17e885f2c72f6a64e0af4adf979ce9a1b3fd856339f5d534c1f55882",
+      "status": "assessed",
+      "prompt_length": 203,
+      "warranted_choices": ["Returns 5 (int)"],
+      "warranted_choice_positions_zero_based": [0],
+      "unique_warranted_answer": true,
+      "complete_premises": true,
+      "completeness_rationale": "The full function and list argument are shown. The break precedes the accumulator update, else is aligned with for, and the final return is outside that loop. The types, order and invocation are explicit.",
+      "evidence": [
+        "The first two iterations change r from0 to2 and then5.",
+        "At n=-1 the break runs before r=r+n, so the negative value is not accumulated and the later4 is not visited.",
+        "Breaking prevents the loop else from multiplying r by10. The returned value remains integer5."
+      ],
+      "choice_assessments": [
+        {
+          "choice": "Returns 5 (int)",
+          "position_zero_based": 0,
+          "answers_stem": true,
+          "reason": "It includes only2 and3 and does not run the else after break."
+        },
+        {
+          "choice": "Returns 50 (int)",
+          "position_zero_based": 1,
+          "answers_stem": false,
+          "plausibility": "strong",
+          "plausible_distractor": true,
+          "reason": "It preserves the early accumulator value but incorrectly applies the else multiplier after the break."
+        },
+        {
+          "choice": "Returns 80 (int)",
+          "position_zero_based": 2,
+          "answers_stem": false,
+          "plausibility": "moderate",
+          "plausible_distractor": true,
+          "reason": "It corresponds to summing all four input values and then applying the normal-completion multiplier, overlooking the early termination."
+        },
+        {
+          "choice": "Returns 8 (int)",
+          "position_zero_based": 3,
+          "answers_stem": false,
+          "plausibility": "weak_or_borderline",
+          "plausible_distractor": false,
+          "reason": "It is simply the sum of the entire list, requiring both the early termination and the multiplier after hypothetical exhaustion to be omitted. It is distinct and numerically related to the inputs, but less diagnostic or plausible than the other two alternatives. No single consistent reading of the shown control flow is established for it."
+        }
+      ],
+      "all_choices_distinct_in_task_meaning": true,
+      "all_three_distractors_plausible": false,
+      "goal_fit": true,
+      "goal_fit_rationale": "The question addresses ordinary loop termination and loop-else behavior. It fits the requested subject, though the small example provides limited challenge.",
+      "independent_difficulty": 2,
+      "difficulty_rationale": "This is a direct application of the familiar rule that break suppresses the loop else, with only two simple additions before an explicit negative sentinel. There is one loop, one terminating condition and no interacting state or competing constraints to resolve. Code formatting and a list wrapper do not themselves establish the requested level3 challenge.",
+      "difficulty_confidence": "moderate",
+      "difficulty_sensitivity": "A reviewer may rate this3 because a concrete representation must be traced. The present conservative rating treats that short routine trace as direct application; record a2-versus3 disagreement if one arises rather than presenting this as calibrated difficulty.",
+      "meets_minimum_difficulty_3": false,
+      "useful_premise_bearing_length": "The source and ordered data are complete and fit the limit; the limitation is the cognitive demand and weaker fourth option, not missing room for necessary facts.",
+      "blind_content_criteria_met": false,
+      "feedback_assessment": "not_seen",
+      "native_binding_assessment": "not_observed"
+    },
+    {
+      "id": "item-3",
+      "content_sha256": "a1ed2199fbb22a66dc9a0847b4d1ae27f893977217c4f42f01bc90acfb8ac10a",
+      "status": "unassessable_unreturned",
+      "prompt_length": null,
+      "warranted_choices": null,
+      "unique_warranted_answer": null,
+      "complete_premises": null,
+      "all_choices_distinct_in_task_meaning": null,
+      "all_three_distractors_plausible": null,
+      "goal_fit": null,
+      "independent_difficulty": null,
+      "meets_minimum_difficulty_3": null,
+      "blind_content_criteria_met": null,
+      "reason": "The frozen packet contains no returned prompt or choices. No HTML question is inferred from prototype fixtures or desired objectives.",
+      "feedback_assessment": "not_seen",
+      "native_binding_assessment": "not_observed"
+    },
+    {
+      "id": "item-4",
+      "content_sha256": "a1ed2199fbb22a66dc9a0847b4d1ae27f893977217c4f42f01bc90acfb8ac10a",
+      "status": "unassessable_unreturned",
+      "prompt_length": null,
+      "warranted_choices": null,
+      "unique_warranted_answer": null,
+      "complete_premises": null,
+      "all_choices_distinct_in_task_meaning": null,
+      "all_three_distractors_plausible": null,
+      "goal_fit": null,
+      "independent_difficulty": null,
+      "meets_minimum_difficulty_3": null,
+      "blind_content_criteria_met": null,
+      "reason": "The frozen packet contains no returned prompt or choices. Its identical null-content hash does not merge this separate planned occurrence with item3.",
+      "feedback_assessment": "not_seen",
+      "native_binding_assessment": "not_observed"
+    }
+  ],
+  "summary": {
+    "planned_items": 4,
+    "returned_assessable_items": 2,
+    "unreturned_unassessable_items": 2,
+    "complete_unique_warranted_answers_among_assessed": 2,
+    "all_three_plausible_distractors_among_assessed": 1,
+    "goal_fit_among_assessed": 2,
+    "independent_difficulty_at_least_3_among_assessed": 1,
+    "all_blind_content_criteria_met_among_assessed": 1,
+    "main_explanations_assessed": 0,
+    "choice_explanations_assessed": 0,
+    "native_bindings_assessed": 0,
+    "full_trial_success_established": false,
+    "scope": "Two manually assessed Python questions; no HTML candidate, fresh native observation, explanation assessment, full item qualification or arbitrary-goal accuracy claim. Missing items and the operational stop are not correctness successes."
+  }
+}

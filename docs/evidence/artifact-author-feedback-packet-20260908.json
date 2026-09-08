@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "id": "item-1",
+      "question": {
+        "prompt": "CPython 3.12.13: run source, then call. What returns/raises (exact types/value/order)?\n\ndef f(x):\n a=[[1,2],[3,4]]\n b=a[:]\n a[0].append(x)\n a[1]=[5]\n return b\n\nCall:\nf(*[9], **{})",
+        "choices": [
+          "Returns [[1, 2, 9], [3, 4]] (list)",
+          "Returns [[1, 2, 9], [5]] (list)",
+          "Returns [[1, 2], [3, 4]] (list)",
+          "Returns [[1, 2], [5]] (list)"
+        ],
+        "explanation": "a[:] creates a shallow copy: b gets a new outer list but shares the same inner lists. a[0].append(9) mutates the shared inner list, visible via b[0]. a[1]=[5] only rebinds a's slot, leaving b[1] as [3,4].",
+        "choiceExplanations": {
+          "Returns [[1, 2, 9], [3, 4]] (list)": "The shallow copy shares inner lists, so append modifies b[0]. Rebinding a[1] does not affect b[1], which still holds [3,4].",
+          "Returns [[1, 2, 9], [5]] (list)": "This assumes rebinding a[1]=[5] also updates b[1], but the slice copy gives b its own reference to the original [3,4] object.",
+          "Returns [[1, 2], [3, 4]] (list)": "This assumes a[:] made a deep copy, but it only copies the outer list; inner lists remain shared, so append is visible through b[0].",
+          "Returns [[1, 2], [5]] (list)": "This combines a deep-copy assumption for b[0] with a shared-reference assumption for b[1]—the opposite of what actually happens."
+        },
+        "topic": "Shallow copy vs rebinding with nested lists",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "item-2",
+      "question": {
+        "prompt": "CPython 3.12.13: run source, then call. What returns/raises (exact types/value/order)?\n\ndef g(ns):\n r=0\n for n in ns:\n  if n<0:\n   break\n  r=r+n\n else:\n  r=r*10\n return r\n\nCall:\ng(*[[2, 3, -1, 4]], **{})",
+        "choices": [
+          "Returns 5 (int)",
+          "Returns 50 (int)",
+          "Returns 80 (int)",
+          "Returns 8 (int)"
+        ],
+        "explanation": "The loop accumulates 2+3=5, then breaks when n=-1. Because break exits the loop, the else clause (r=r*10) is skipped, and 5 is returned unchanged.",
+        "choiceExplanations": {
+          "Returns 5 (int)": "The loop sums 2 and 3, then hits -1 and breaks. Break skips the for-else clause, so r remains 5.",
+          "Returns 50 (int)": "This assumes the else clause runs after break, yielding 5*10. In Python, break prevents the loop's else from executing.",
+          "Returns 80 (int)": "This assumes no break occurs and all elements are summed (2+3+(-1)+4=8), then the else multiplies by 10 giving 80.",
+          "Returns 8 (int)": "This assumes all elements are summed without breaking (giving 8) yet the else is skipped—an inconsistent combination of assumptions."
+        },
+        "topic": "for-else with break and conditional accumulation",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    }
+  ]
+}

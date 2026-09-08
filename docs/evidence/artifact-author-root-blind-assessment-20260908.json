@@ -1,0 +1,37 @@
+{
+  "packet_byte_sha256": "faf6170d955b5330fc8b13c672307ea4ad099be43fb50479a8fd70f6b3a93b55",
+  "assessor": "root independent offline reading before authored feedback; no native execution",
+  "scope": "Provisional content judgments, not measured item difficulty or a native verification certificate.",
+  "items": [
+    {
+      "id": "item-1",
+      "answer": "Returns [[1, 2, 9], [3, 4]] (list)",
+      "unique_answer": true,
+      "complete_premises": true,
+      "distinct_choices": true,
+      "all_distractors_plausible": true,
+      "goal_fit": true,
+      "difficulty": 3,
+      "rationale": "The slice creates a separate outer list. Appending9 changes the first shared inner list, while replacing a[1] affects only the original outer list. The alternatives systematically vary those two effects, so the learner must interpret the displayed object relationships and operations."
+    },
+    {
+      "id": "item-2",
+      "answer": "Returns 5 (int)",
+      "unique_answer": true,
+      "complete_premises": true,
+      "distinct_choices": true,
+      "all_distractors_plausible": true,
+      "goal_fit": true,
+      "difficulty": 2,
+      "rationale": "The trace adds2 and3, then breaks before adding-1. Applying the familiar rule that break skips loop else directly yields5. The three rivals combine including later list values and applying the else multiplier. This is useful introductory loop-control practice, but the arithmetic and straight-line trace do not create a substantive interacting constraint beyond one familiar rule."
+    },
+    {
+      "id": "item-3",
+      "status": "unassessable_author_response_unavailable"
+    },
+    {
+      "id": "item-4",
+      "status": "unassessable_author_response_unavailable"
+    }
+  ]
+}

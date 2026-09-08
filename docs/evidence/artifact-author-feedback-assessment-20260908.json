@@ -1,0 +1,236 @@
+{
+  "assessment": "artifact-author-feedback-v1",
+  "assessor": "review_design",
+  "date_utc": "2026-09-08",
+  "inputs": {
+    "feedback_packet": "docs/evidence/artifact-author-feedback-packet-20260908.json",
+    "feedback_packet_sha256": "6a455ce41d24fe3a8da297126068e17cf44f771b83027d54a11d3f7bc1c32aa8",
+    "prior_frozen_blind_assessment": "docs/evidence/artifact-author-blind-assessment-20260908.json",
+    "prior_frozen_blind_assessment_sha256": "46167d5bc3146a95ac4c852a4bb9b5d9c10ab6331fa76f2ebfe9e76d5d45901e",
+    "blind_packet": "docs/evidence/artifact-author-blind-packet-20260908.json",
+    "blind_packet_sha256": "faf6170d955b5330fc8b13c672307ea4ad099be43fb50479a8fd70f6b3a93b55"
+  },
+  "method": {
+    "prior_blind_record_preserved_byte_identical": true,
+    "trial_source_executed": false,
+    "native_or_model_calls": 0,
+    "native_key_or_observation_seen": false,
+    "root_independent_assessment_read": false,
+    "basis": "Manual interpretation of the unchanged source and invocation, frozen key/content judgments, and previously inspected official Python assignment/copy/loop-control documentation. Audit covers every supplied main and choice explanation. No authored text is repaired in the captured question.",
+    "scope": "Model-authored explanations, not final-reviewer output or measured native-result feedback. Plausibility and difficulty remain the prior independent judgments."
+  },
+  "primary_sources": [
+    "https://docs.python.org/3.12/library/copy.html",
+    "https://docs.python.org/3.12/tutorial/controlflow.html#else-clauses-on-loops"
+  ],
+  "items": [
+    {
+      "id": "item-1",
+      "content_sha256": "498a8c00826301573fd0012ab6645ad256de9f201c1c7a0ff2c976a7f3ab7ada",
+      "exact_prompt_and_ordered_choices_match_blind_packet": true,
+      "manual_warranted_choices_unchanged": [
+        "Returns [[1, 2, 9], [3, 4]] (list)"
+      ],
+      "native_key_available": false,
+      "author_proposed_difficulty_now_visible": 3,
+      "frozen_independent_difficulty": 3,
+      "frozen_all_three_distractors_plausible": true,
+      "fields": [
+        {
+          "field": "explanation",
+          "choice_position_zero_based": null,
+          "choice": null,
+          "text": "a[:] creates a shallow copy: b gets a new outer list but shares the same inner lists. a[0].append(9) mutates the shared inner list, visible via b[0]. a[1]=[5] only rebinds a's slot, leaving b[1] as [3,4].",
+          "text_sha256": "039fa23885599c59ad736f5f65a73b2075ec66ec2a72b5114334d9410f585b85",
+          "full_character_count": 204,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "The explanation correctly separates a new outer list from the shared inner-list references, the shared append, and replacing only the outer slot of a. The stated [3,4] remains the object reached by b[1].",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 0,
+          "choice": "Returns [[1, 2, 9], [3, 4]] (list)",
+          "text": "The shallow copy shares inner lists, so append modifies b[0]. Rebinding a[1] does not affect b[1], which still holds [3,4].",
+          "text_sha256": "1774d498dc7fcb76c46c57c558e66f3da52cf65e702af7b50de9c8fd1b1c8661",
+          "full_character_count": 123,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "The same first inner list is mutated through a[0] and observed through b[0]. Replacing a[1] does not replace b[1]. The description is accurate in this exact code.",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 1,
+          "choice": "Returns [[1, 2, 9], [5]] (list)",
+          "text": "This assumes rebinding a[1]=[5] also updates b[1], but the slice copy gives b its own reference to the original [3,4] object.",
+          "text_sha256": "759683adbeb837f054bc332688fac69cbfcb7441558cd4cb4174d8de08642a71",
+          "full_character_count": 125,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "The explanation identifies the precise incorrect propagation of the outer-slot replacement. b has a separate outer slot retaining the original second inner-list reference.",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 2,
+          "choice": "Returns [[1, 2], [3, 4]] (list)",
+          "text": "This assumes a[:] made a deep copy, but it only copies the outer list; inner lists remain shared, so append is visible through b[0].",
+          "text_sha256": "53b930752f9ec95140c3958ec483b978790615ad55f3fcbe09f781aea3076833",
+          "full_character_count": 132,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "Treating the inner lists as independently copied would remove the append from b. A shallow outer copy does not do that, so this is the relevant distinction.",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 3,
+          "choice": "Returns [[1, 2], [5]] (list)",
+          "text": "This combines a deep-copy assumption for b[0] with a shared-reference assumption for b[1]—the opposite of what actually happens.",
+          "text_sha256": "e7a63e3b9a6ccaf5ea4983fa4d3d964c5a001ffcf3037aa93bebe2412f75749e",
+          "full_character_count": 128,
+          "within_required_length": true,
+          "disposition": "ambiguous_teaching_scope",
+          "unqualified_supported_semantics": false,
+          "teaching_quality_adequate": false,
+          "assessment": "The phrase shared-reference assumption for b[1], followed by the opposite of what actually happens, blurs two kinds of sharing. Immediately after the shallow copy both inner lists are shared; the error in this option is propagating a later replacement of a's outer slot into b's separate slot. The proposed text can suggest that sharing the original inner object would propagate that assignment, or that the second inner list was deeply copied. It has an intelligible intended contrast and does not assert a wrong final value, but is not an unqualified explanation of the mechanism being tested.",
+          "demonstrated_false_final_value": false,
+          "issue_severity": "material_to_this_tested_distinction_but_not_a_proved_wrong_result",
+          "suggested_clarification_not_applied": "This option misses the shared append and incorrectly makes replacing a's second slot change b's separate second slot.",
+          "interpretation_caveat": "A reader using the correct main explanation may infer the intended meaning. A separate assessor may regard this as only a wording concern; the conservative classification here preserves that uncertainty instead of declaring the literal result false."
+        }
+      ],
+      "main_explanation_supported": true,
+      "all_choice_explanations_unqualified_supported": false,
+      "complete_unqualified_feedback": false,
+      "full_blind_plus_feedback_criteria_met": false,
+      "native_binding_assessment": "not_observed"
+    },
+    {
+      "id": "item-2",
+      "content_sha256": "bea5015f17e885f2c72f6a64e0af4adf979ce9a1b3fd856339f5d534c1f55882",
+      "exact_prompt_and_ordered_choices_match_blind_packet": true,
+      "manual_warranted_choices_unchanged": [
+        "Returns 5 (int)"
+      ],
+      "native_key_available": false,
+      "author_proposed_difficulty_now_visible": 3,
+      "frozen_independent_difficulty": 2,
+      "frozen_all_three_distractors_plausible": false,
+      "fields": [
+        {
+          "field": "explanation",
+          "choice_position_zero_based": null,
+          "choice": null,
+          "text": "The loop accumulates 2+3=5, then breaks when n=-1. Because break exits the loop, the else clause (r=r*10) is skipped, and 5 is returned unchanged.",
+          "text_sha256": "f9a3c2c9d3cde230591be003199dab16b60499fd5ff754e5205026831bb95e8f",
+          "full_character_count": 146,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "The first two values produce 5; the negative value triggers break before addition, and break suppresses the loop else. No unvisited value contributes. The conclusion is an integer under the displayed operations.",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 0,
+          "choice": "Returns 5 (int)",
+          "text": "The loop sums 2 and 3, then hits -1 and breaks. Break skips the for-else clause, so r remains 5.",
+          "text_sha256": "84ba6db7d888d5ba2872aa04b6763b2f1084442cb536b0ab1430c5b9b263319a",
+          "full_character_count": 96,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "This precisely connects the visited values and early termination to the unchanged accumulator. It does not misstate the loop else as an if else.",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 1,
+          "choice": "Returns 50 (int)",
+          "text": "This assumes the else clause runs after break, yielding 5*10. In Python, break prevents the loop's else from executing.",
+          "text_sha256": "149621b2285e920a90953f5a2278db32638963f84786b9dd07b9d5eb8cb49c1e",
+          "full_character_count": 119,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "50 would result from multiplying the early accumulator after the break; the explanation accurately identifies that incorrect branch execution.",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 2,
+          "choice": "Returns 80 (int)",
+          "text": "This assumes no break occurs and all elements are summed (2+3+(-1)+4=8), then the else multiplies by 10 giving 80.",
+          "text_sha256": "e3431489135034c6b410a9d4d6589023ee19a687396ea884a1fa40a8b5704ffb",
+          "full_character_count": 114,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "Ignoring the break would sum all four values to 8 and normal completion would then multiply by 10. This is a valid counterfactual explanation of the option, not a statement that the actual loop reaches those steps.",
+          "demonstrated_false_final_value": false
+        },
+        {
+          "field": "choiceExplanations",
+          "choice_position_zero_based": 3,
+          "choice": "Returns 8 (int)",
+          "text": "This assumes all elements are summed without breaking (giving 8) yet the else is skipped—an inconsistent combination of assumptions.",
+          "text_sha256": "639888c799b1e3328a0d34171180ba84e4f8004539761645c10f5d10f6ce38fb",
+          "full_character_count": 132,
+          "within_required_length": true,
+          "disposition": "supported",
+          "unqualified_supported_semantics": true,
+          "teaching_quality_adequate": true,
+          "assessment": "For this exact code, summing every element by omitting the break while also omitting the normal-completion else combines two incompatible departures from the specified execution. The explanation correctly exposes that problem. Its correctness does not make the distractor independently plausible or the question sufficiently difficult.",
+          "demonstrated_false_final_value": false
+        }
+      ],
+      "main_explanation_supported": true,
+      "all_choice_explanations_unqualified_supported": true,
+      "complete_unqualified_feedback": true,
+      "full_blind_plus_feedback_criteria_met": false,
+      "native_binding_assessment": "not_observed"
+    }
+  ],
+  "unreturned_items": [
+    {
+      "id": "item-3",
+      "feedback_assessment": null,
+      "reason": "No question or explanation was returned for this planned HTML item."
+    },
+    {
+      "id": "item-4",
+      "feedback_assessment": null,
+      "reason": "No question or explanation was returned for this planned HTML item."
+    }
+  ],
+  "summary": {
+    "planned_items": 4,
+    "assessed_questions": 2,
+    "main_fields_assessed": 2,
+    "main_fields_supported": 2,
+    "choice_fields_assessed": 8,
+    "choice_fields_unqualified_supported": 7,
+    "choice_fields_with_teaching_scope_ambiguity": 1,
+    "clearly_false_final_result_fields": 0,
+    "complete_unqualified_feedback_questions": 1,
+    "full_blind_plus_feedback_criteria_questions": 0,
+    "native_bindings_observed": 0,
+    "full_trial_success_established": false,
+    "interpretation": "Both manual keys and main explanations are supported. Item1 has one conservative teaching-scope concern about its fourth alternative; item2 has sound feedback but retains the earlier difficulty2 rating and weak fourth-distractor judgment. Neither the absent HTML items nor the absence of fresh native evidence is counted as success. If the item1 wording is independently accepted as nonmaterial, that would change its feedback/composite judgment; it would not complete this trial or establish native binding."
+  }
+}
