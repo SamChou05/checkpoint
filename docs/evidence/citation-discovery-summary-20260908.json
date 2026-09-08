@@ -1,0 +1,1235 @@
+{
+  "experiment": "frozen-claim-citation-discovery-v2",
+  "source_revision": "cb41f487f8a9bc2beb6d93bd86ee23593b0b5da7",
+  "plan_canonical_sha256": "6ae4c21692590c48c29d747380572dfd42ba0ff5adfc18fd3f4d4e7874e34fc6",
+  "raw_local_capture_sha256": "f136a693f4fef8e72a6217924d1984021c0bbab1a46d3b4853fc60fe4d2f5a27",
+  "raw_local_capture_bytes": 466891,
+  "scope": "Public derived summary, not the raw capture or a standalone replay archive. Source pages/passages, model source quotations, native result bodies and issue text omitted. Displayed page URLs remove query/fragment; exact URL/capture/request/response hashes preserve identity. Exact original capture remains local. No transformed record substitutes for original evidence.",
+  "status": "completed",
+  "model_calls": 12,
+  "native_tool_uses": 6,
+  "native_tool_results": 6,
+  "fetch_attempts": 8,
+  "acquired_occurrences": 6,
+  "known_usage": {
+    "inputTokens": 45966,
+    "outputTokens": 4390
+  },
+  "sdk_seconds_sum": 85.28553258394822,
+  "worker_seconds_sum": 92.91815370786935,
+  "calls": [
+    {
+      "index_zero_based": 0,
+      "case_id": "dough_reference",
+      "role": "discovery",
+      "request_canonical_sha256": "a421e875f6443ea2237f9c283504e19876ff6ccff503f7cad0701890a83f99fc",
+      "input_utf8_bytes": 4444,
+      "model_id": "us.amazon.nova-2-lite-v1:0",
+      "inference_config": {
+        "maxTokens": 2048
+      },
+      "output_config_sha256": null,
+      "worker_timeout_seconds": 90,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "71e61ed11eda99d2dfe5402c21fb0f4fb96b4d77e9e346254c9f3334ffebccc3",
+      "response_text_characters": 2177,
+      "usage": {
+        "inputTokens": 885,
+        "outputTokens": 205,
+        "totalTokens": 1090
+      },
+      "sdk_elapsed_seconds": 7.821776374999899,
+      "process_elapsed_seconds": 9.06334891601,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 1,
+      "case_id": "dough_reference",
+      "role": "without_sources",
+      "request_canonical_sha256": "dfe6775983470a85d7a25c984353cedcdc75d593d84f41e4a0398956ffc12878",
+      "input_utf8_bytes": 10616,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "179520166bb3d16b523fcbd9ba93c31fba26492d2242c79c606a507bb3efd1f0",
+      "response_text_characters": 1646,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2751,
+        "outputTokens": 384,
+        "totalTokens": 3135
+      },
+      "sdk_elapsed_seconds": 12.463640832982492,
+      "process_elapsed_seconds": 13.107833457994275,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": false,
+          "answer": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+          "difficulty": 4,
+          "explanationSupport": "uncertain"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 5,
+          "sha256": "d3d1857cf432327fc7c15281264f11097b5b759727a715bac3dffd70567a21d6"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": false
+      },
+      "target_relation": "unresolved",
+      "application_result": {
+        "eligible": false,
+        "reason": "invalid_review",
+        "declared_content_eligible": null,
+        "content_rejection_reason": null,
+        "target_relation": null,
+        "target_rejection_reason": null
+      },
+      "target_quote": {
+        "expected_characters": 405,
+        "returned_characters": 246,
+        "expected_sha256": "7f68279431ba5e6fe8c622b0d868202f0f7d75f201e07e1f2a760dd67d6a21e7",
+        "returned_sha256": "4569e1c45a0abdcda142c4fcbe25fa8f1b3a252882a7f64714186e7534ab434a"
+      },
+      "citation_fidelity_without_quotes": []
+    },
+    {
+      "index_zero_based": 2,
+      "case_id": "dough_reference",
+      "role": "with_sources",
+      "request_canonical_sha256": "892943e0cab5d895549faec7d5b1d0bd1a5eb2b1da15e0447fdd51da82527d19",
+      "input_utf8_bytes": 34709,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "aef44b85af17e8182aa4ce6ac45b820fd10094a77017efbbe374288e76ac6b26",
+      "response_text_characters": 3145,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 10030,
+        "outputTokens": 884,
+        "totalTokens": 10914
+      },
+      "sdk_elapsed_seconds": 16.04458520899061,
+      "process_elapsed_seconds": 16.664975541993044,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": false,
+          "answer": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+          "difficulty": 4,
+          "explanationSupport": "uncertain"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 5,
+          "sha256": "20be574d4980fded9d544369476819e3c3985000ed31183ad8e11693a2f6c786"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": false
+      },
+      "target_relation": "unresolved",
+      "application_result": {
+        "eligible": false,
+        "reason": "invalid_review",
+        "declared_content_eligible": null,
+        "content_rejection_reason": null,
+        "target_relation": null,
+        "target_rejection_reason": null
+      },
+      "target_quote": {
+        "expected_characters": 405,
+        "returned_characters": 246,
+        "expected_sha256": "7f68279431ba5e6fe8c622b0d868202f0f7d75f201e07e1f2a760dd67d6a21e7",
+        "returned_sha256": "4569e1c45a0abdcda142c4fcbe25fa8f1b3a252882a7f64714186e7534ab434a"
+      },
+      "citation_fidelity_without_quotes": [
+        {
+          "field": "item",
+          "index": 0,
+          "source_id": "S-2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897-1619-9619",
+          "source_id_exists": true,
+          "quote_characters": 140,
+          "quote_sha256": "9dc5b28b143ae0237677b62e8898484b8192358663f44f2bae32555c34617535",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "item",
+          "index": 1,
+          "source_id": "S-2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897-1619-9619",
+          "source_id_exists": true,
+          "quote_characters": 94,
+          "quote_sha256": "ee01dff12d78df25c181c5654d7721711d20a826a8df3bd30d4eda5782b7ea7c",
+          "exact_occurrences": 0
+        },
+        {
+          "field": "mainExplanation",
+          "index": 0,
+          "source_id": "S-2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897-1619-9619",
+          "source_id_exists": true,
+          "quote_characters": 140,
+          "quote_sha256": "9dc5b28b143ae0237677b62e8898484b8192358663f44f2bae32555c34617535",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "mainExplanation",
+          "index": 1,
+          "source_id": "S-0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb-16000-24000",
+          "source_id_exists": true,
+          "quote_characters": 125,
+          "quote_sha256": "10ec29149c675844ddca6f28730f2c9d7faa69fd43436895c864d2f6d8746ff1",
+          "exact_occurrences": 0
+        },
+        {
+          "field": "target",
+          "index": 0,
+          "source_id": "S-2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897-1619-9619",
+          "source_id_exists": true,
+          "quote_characters": 140,
+          "quote_sha256": "9dc5b28b143ae0237677b62e8898484b8192358663f44f2bae32555c34617535",
+          "exact_occurrences": 1
+        }
+      ]
+    },
+    {
+      "index_zero_based": 3,
+      "case_id": "hotel_reference",
+      "role": "discovery",
+      "request_canonical_sha256": "5b16c4201c60754a46e9c5757623898c31a9ae58bd92ae6604507125d8db7fc9",
+      "input_utf8_bytes": 4114,
+      "model_id": "us.amazon.nova-2-lite-v1:0",
+      "inference_config": {
+        "maxTokens": 2048
+      },
+      "output_config_sha256": null,
+      "worker_timeout_seconds": 90,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "fc963951cb2207536c9567f528485a574b385be19173719a42985e8631d76259",
+      "response_text_characters": 1425,
+      "usage": {
+        "inputTokens": 826,
+        "outputTokens": 142,
+        "totalTokens": 968
+      },
+      "sdk_elapsed_seconds": 3.388607042026706,
+      "process_elapsed_seconds": 4.011425166972913,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 4,
+      "case_id": "hotel_reference",
+      "role": "with_sources",
+      "request_canonical_sha256": "3f3f10bfa340d9005438c7fed6849801b0a9b44d2dae06aa8bcf93b1c3aefc93",
+      "input_utf8_bytes": 19052,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "ee9774add8fcf9a10fb409e7940568920e69de7271a2920253c52d9f82565ac1",
+      "response_text_characters": 1730,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 5681,
+        "outputTokens": 606,
+        "totalTokens": 6287
+      },
+      "sdk_elapsed_seconds": 7.4287813330302015,
+      "process_elapsed_seconds": 7.998147374950349,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "The hotel is now identifiable from the context just established.",
+          "difficulty": 3,
+          "explanationSupport": "supported"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": true
+      },
+      "target_relation": "supported",
+      "application_result": {
+        "eligible": false,
+        "reason": "invalid_review",
+        "declared_content_eligible": null,
+        "content_rejection_reason": null,
+        "target_relation": null,
+        "target_rejection_reason": null
+      },
+      "target_quote": {
+        "expected_characters": 321,
+        "returned_characters": 321,
+        "expected_sha256": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19",
+        "returned_sha256": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19"
+      },
+      "citation_fidelity_without_quotes": [
+        {
+          "field": "item",
+          "index": 0,
+          "source_id": "S-3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08-0-4915",
+          "source_id_exists": true,
+          "quote_characters": 57,
+          "quote_sha256": "912cfce956d017292103e65080cfb3bfaff629c53f60b7796f570df6484a5ce3",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "item",
+          "index": 1,
+          "source_id": "S-3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08-0-4915",
+          "source_id_exists": true,
+          "quote_characters": 57,
+          "quote_sha256": "47157a0c2753e8560074bb7bdd3aff992290bbade60b0506463fed411e525294",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "mainExplanation",
+          "index": 0,
+          "source_id": "S-3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08-0-4915",
+          "source_id_exists": true,
+          "quote_characters": 102,
+          "quote_sha256": "9b0b850dae43dddee7aec6140f9d2bec705f005ad1ee948c3f04c1b0c4d9cd7a",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "mainExplanation",
+          "index": 1,
+          "source_id": "S-3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08-0-4915",
+          "source_id_exists": true,
+          "quote_characters": 148,
+          "quote_sha256": "e466063ab3bec12f6f2889aa96b220706573676dc28162d65aecb3aa1c59d38b",
+          "exact_occurrences": 0
+        },
+        {
+          "field": "target",
+          "index": 0,
+          "source_id": "S-3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08-0-4915",
+          "source_id_exists": true,
+          "quote_characters": 57,
+          "quote_sha256": "912cfce956d017292103e65080cfb3bfaff629c53f60b7796f570df6484a5ce3",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "target",
+          "index": 1,
+          "source_id": "S-3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08-0-4915",
+          "source_id_exists": true,
+          "quote_characters": 57,
+          "quote_sha256": "47157a0c2753e8560074bb7bdd3aff992290bbade60b0506463fed411e525294",
+          "exact_occurrences": 1
+        }
+      ]
+    },
+    {
+      "index_zero_based": 5,
+      "case_id": "hotel_reference",
+      "role": "without_sources",
+      "request_canonical_sha256": "5d250b7baed335fa001d1ee284fcdb1c978fe6bb96cecbf520540b227341eae6",
+      "input_utf8_bytes": 10286,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "b8df3f2c12c5a29d1242b898c2430f80a8dce23f04ac4c23b4f1ceedc5edde09",
+      "response_text_characters": 643,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2667,
+        "outputTokens": 156,
+        "totalTokens": 2823
+      },
+      "sdk_elapsed_seconds": 2.4875469589605927,
+      "process_elapsed_seconds": 3.061409541987814,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "The hotel is now identifiable from the context just established.",
+          "difficulty": 3,
+          "explanationSupport": "supported"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": true
+      },
+      "target_relation": "supported",
+      "application_result": {
+        "eligible": false,
+        "reason": "insufficient_evidence",
+        "declared_content_eligible": true,
+        "content_rejection_reason": null,
+        "target_relation": "supported",
+        "target_rejection_reason": "insufficient_target_evidence"
+      },
+      "target_quote": {
+        "expected_characters": 321,
+        "returned_characters": 321,
+        "expected_sha256": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19",
+        "returned_sha256": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19"
+      },
+      "citation_fidelity_without_quotes": []
+    },
+    {
+      "index_zero_based": 6,
+      "case_id": "butter_reference",
+      "role": "discovery",
+      "request_canonical_sha256": "1af260f7d8e6a28d6734a4c77ef0f4ce26a54843c6056404e8f5f34a32efefd9",
+      "input_utf8_bytes": 4107,
+      "model_id": "us.amazon.nova-2-lite-v1:0",
+      "inference_config": {
+        "maxTokens": 2048
+      },
+      "output_config_sha256": null,
+      "worker_timeout_seconds": 90,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "9f2e2e760270055099a3dab7ab61b41fabc8a72c19548e11f7c0fedb3876a3f2",
+      "response_text_characters": 1653,
+      "usage": {
+        "inputTokens": 842,
+        "outputTokens": 186,
+        "totalTokens": 1028
+      },
+      "sdk_elapsed_seconds": 3.4232279579737224,
+      "process_elapsed_seconds": 3.966476082976442,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 7,
+      "case_id": "butter_reference",
+      "role": "without_sources",
+      "request_canonical_sha256": "e83e8c92fb4d3fe49e5ed20b8250c1453e94bcf6cf7cdc31c75790a7bcef5e6b",
+      "input_utf8_bytes": 10279,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "bc93702539828fb825adeb17719170fa78df8e41520e83018390e2c62989f06e",
+      "response_text_characters": 454,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2702,
+        "outputTokens": 113,
+        "totalTokens": 2815
+      },
+      "sdk_elapsed_seconds": 1.7461358750006184,
+      "process_elapsed_seconds": 2.306051457999274,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+          "difficulty": 3,
+          "explanationSupport": "supported"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": true
+      },
+      "target_relation": "supported",
+      "application_result": {
+        "eligible": false,
+        "reason": "insufficient_evidence",
+        "declared_content_eligible": true,
+        "content_rejection_reason": null,
+        "target_relation": "supported",
+        "target_rejection_reason": "insufficient_target_evidence"
+      },
+      "target_quote": {
+        "expected_characters": 102,
+        "returned_characters": 102,
+        "expected_sha256": "4993568d62a1f440c87d81f4cc8fb5bc5a190871daf702333b35854ddc8f8456",
+        "returned_sha256": "4993568d62a1f440c87d81f4cc8fb5bc5a190871daf702333b35854ddc8f8456"
+      },
+      "citation_fidelity_without_quotes": []
+    },
+    {
+      "index_zero_based": 8,
+      "case_id": "butter_reference",
+      "role": "with_sources",
+      "request_canonical_sha256": "779c6697e54b7b5b2a2a8962609fc2d1e4c3598bc95dbfad5d47040e7199e6e4",
+      "input_utf8_bytes": 22506,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "6f80f8626b8c93c304d643fb95178b183e4b06dec655521c0e6716b2c9aa49d6",
+      "response_text_characters": 2705,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 6580,
+        "outputTokens": 694,
+        "totalTokens": 7274
+      },
+      "sdk_elapsed_seconds": 13.049589333008043,
+      "process_elapsed_seconds": 13.598675750021357,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0,
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": false,
+          "answer": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+          "difficulty": 3,
+          "explanationSupport": "uncertain"
+        },
+        {
+          "index": 0,
+          "valid": false,
+          "answer": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+          "difficulty": 3,
+          "explanationSupport": "uncertain"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 4,
+          "sha256": "7a99e719fe38294b0d210433cecf31b0fa7dcedb7e268226fea12be5cd6efab1"
+        },
+        {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": true
+      },
+      "target_relation": "unresolved",
+      "application_result": {
+        "eligible": false,
+        "reason": "invalid_review",
+        "declared_content_eligible": null,
+        "content_rejection_reason": null,
+        "target_relation": null,
+        "target_rejection_reason": null
+      },
+      "target_quote": {
+        "expected_characters": 102,
+        "returned_characters": 102,
+        "expected_sha256": "4993568d62a1f440c87d81f4cc8fb5bc5a190871daf702333b35854ddc8f8456",
+        "returned_sha256": "4993568d62a1f440c87d81f4cc8fb5bc5a190871daf702333b35854ddc8f8456"
+      },
+      "citation_fidelity_without_quotes": [
+        {
+          "field": "item",
+          "index": 0,
+          "source_id": "S-5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca-1619-9619",
+          "source_id_exists": true,
+          "quote_characters": 181,
+          "quote_sha256": "d5634096c172be7cb657519fa00a2bc1f63d1c7b21cbe411de2b95334175c41e",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "mainExplanation",
+          "index": 0,
+          "source_id": "S-5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca-1619-9619",
+          "source_id_exists": true,
+          "quote_characters": 140,
+          "quote_sha256": "9dc5b28b143ae0237677b62e8898484b8192358663f44f2bae32555c34617535",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "target",
+          "index": 0,
+          "source_id": "S-5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca-1619-9619",
+          "source_id_exists": true,
+          "quote_characters": 220,
+          "quote_sha256": "9f9d8d5e532f280c70eba95aa6abfb30f49227b6ced47589e9332191262deaa8",
+          "exact_occurrences": 1
+        }
+      ]
+    },
+    {
+      "index_zero_based": 9,
+      "case_id": "plant_tissue",
+      "role": "discovery",
+      "request_canonical_sha256": "6e2a58aa9473e55df1441de63fad7fb4ecee3bfaa9b7a4c89f9a2859b58300a1",
+      "input_utf8_bytes": 4208,
+      "model_id": "us.amazon.nova-2-lite-v1:0",
+      "inference_config": {
+        "maxTokens": 2048
+      },
+      "output_config_sha256": null,
+      "worker_timeout_seconds": 90,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "9556b0c35429b601e83e5caced82297381f0bf4e09e750c8c0e3a0df0734d4e9",
+      "response_text_characters": 1576,
+      "usage": {
+        "inputTokens": 860,
+        "outputTokens": 123,
+        "totalTokens": 983
+      },
+      "sdk_elapsed_seconds": 3.2224247090052813,
+      "process_elapsed_seconds": 3.822197333967779,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 10,
+      "case_id": "plant_tissue",
+      "role": "with_sources",
+      "request_canonical_sha256": "29b9755b0ffef8cd4b7b11d92120a107049b9924bb226c0c14114d51fb8699d8",
+      "input_utf8_bytes": 33172,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "9c62fb4e3b8101a13d37d91c27216598fd6691839d50b32f13abbf2b43b17923",
+      "response_text_characters": 1825,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 9417,
+        "outputTokens": 631,
+        "totalTokens": 10048
+      },
+      "sdk_elapsed_seconds": 9.754544541006908,
+      "process_elapsed_seconds": 10.290142707992345,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "difficulty": 3,
+          "explanationSupport": "supported"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": true
+      },
+      "target_relation": "supported",
+      "application_result": {
+        "eligible": true,
+        "reason": null,
+        "declared_content_eligible": true,
+        "content_rejection_reason": null,
+        "target_relation": "supported",
+        "target_rejection_reason": null
+      },
+      "target_quote": {
+        "expected_characters": 223,
+        "returned_characters": 223,
+        "expected_sha256": "a5557a9e6541fb77d3ae5e0188b480f6728a6e371c355f18b31dc27f162b22a6",
+        "returned_sha256": "a5557a9e6541fb77d3ae5e0188b480f6728a6e371c355f18b31dc27f162b22a6"
+      },
+      "citation_fidelity_without_quotes": [
+        {
+          "field": "item",
+          "index": 0,
+          "source_id": "S-154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31-4000-12000",
+          "source_id_exists": true,
+          "quote_characters": 72,
+          "quote_sha256": "d8adfbc2c066e8057eb759b53c287fa35a88c5a4252a082bf5510d31681708f7",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "item",
+          "index": 1,
+          "source_id": "S-732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006-0-8000",
+          "source_id_exists": true,
+          "quote_characters": 66,
+          "quote_sha256": "80e7b150ebb5e7308dd1b2d00c343c0742d9eb774a00f2b69186c63316c8a325",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "mainExplanation",
+          "index": 0,
+          "source_id": "S-154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31-4000-12000",
+          "source_id_exists": true,
+          "quote_characters": 65,
+          "quote_sha256": "4229541fad9202e037cc97594c7ad70010904944fda096be883d412b913fe44a",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "mainExplanation",
+          "index": 1,
+          "source_id": "S-732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006-0-8000",
+          "source_id_exists": true,
+          "quote_characters": 182,
+          "quote_sha256": "799991ddcae30463902c128bd4a5e5895a28051f42dc5709e98782c372fbb1f1",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "target",
+          "index": 0,
+          "source_id": "S-154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31-4000-12000",
+          "source_id_exists": true,
+          "quote_characters": 153,
+          "quote_sha256": "9d2ab8b0e2e611a4f6dcd5bbd2cde7afb7a4886590c708e2e26a242ebe9a2bbb",
+          "exact_occurrences": 1
+        },
+        {
+          "field": "target",
+          "index": 1,
+          "source_id": "S-732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006-0-8000",
+          "source_id_exists": true,
+          "quote_characters": 107,
+          "quote_sha256": "038eb0dfdd996266b4cdd1748e5e4b1d2f3b108e3fac732e86887de97c2d0aea",
+          "exact_occurrences": 1
+        }
+      ]
+    },
+    {
+      "index_zero_based": 11,
+      "case_id": "plant_tissue",
+      "role": "without_sources",
+      "request_canonical_sha256": "dff7aac21f6f92d0d93626ad43b0790a640719cd49628387a01e1194da4348df",
+      "input_utf8_bytes": 10380,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "worker_timeout_seconds": 300,
+      "stop_reason": "end_turn",
+      "response_text_sha256": "383dfcf6e2f22fb08212b1c157d921dda9a5e37ef5badae062ba02f9f3c12467",
+      "response_text_characters": 1145,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2725,
+        "outputTokens": 266,
+        "totalTokens": 2991
+      },
+      "sdk_elapsed_seconds": 4.454672416963149,
+      "process_elapsed_seconds": 5.027470375003759,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "native_schema_valid": true,
+      "bare_json_object": true,
+      "review_indexes": [
+        0
+      ],
+      "review_declarations": [
+        {
+          "index": 0,
+          "valid": false,
+          "answer": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "difficulty": 3,
+          "explanationSupport": "uncertain"
+        }
+      ],
+      "review_issues": [
+        {
+          "count": 3,
+          "sha256": "8c88729e16051a4ac9d1d20f14f43aed949e67c53aca437e30bdd199f30c54d2"
+        }
+      ],
+      "target_echo_matches": {
+        "field": true,
+        "choice": true,
+        "quote": true
+      },
+      "target_relation": "unresolved",
+      "application_result": {
+        "eligible": false,
+        "reason": "insufficient_evidence",
+        "declared_content_eligible": false,
+        "content_rejection_reason": "uncertain_authored_explanation",
+        "target_relation": "unresolved",
+        "target_rejection_reason": "unresolved_target"
+      },
+      "target_quote": {
+        "expected_characters": 223,
+        "returned_characters": 223,
+        "expected_sha256": "a5557a9e6541fb77d3ae5e0188b480f6728a6e371c355f18b31dc27f162b22a6",
+        "returned_sha256": "a5557a9e6541fb77d3ae5e0188b480f6728a6e371c355f18b31dc27f162b22a6"
+      },
+      "citation_fidelity_without_quotes": []
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "dough_reference",
+      "challenge_canonical_sha256": "84f5a108a940ed474dbd1e2fbf10bab23d112afe2de660118ad1d8cf18883bd8",
+      "native_citation_url_occurrences": 3,
+      "native_tool_uses": 3,
+      "fetches": [
+        {
+          "native_citation_locator": {
+            "block_index": 7,
+            "citation_index": 0
+          },
+          "native_url_sha256": "6b07b411e9c73c091f58b99b23bf799c736ba4a60360591d579478f71497b3a6",
+          "page_url_without_query_or_fragment": "https://advice.writing.utoronto.ca/english-language/definite-article/",
+          "status": "acquired",
+          "failure_reason": null,
+          "final_page_url_without_query_or_fragment": "https://advice.writing.utoronto.ca/english-language/definite-article/",
+          "http_statuses": [
+            200
+          ],
+          "raw_content_sha256": "ca0255b4c2c1c5b8f68d5454e3335f7e92827c534f2000a07ba16c443196c3a6",
+          "text_sha256": "9f005f00b50b33a1deacab30eb931479981dd84c04b7e20625096503df46386f",
+          "text_characters": 9619,
+          "source_text_complete": true,
+          "truncated": false,
+          "elapsed_seconds": 0.45191374997375533,
+          "capture_canonical_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897"
+        },
+        {
+          "native_citation_locator": {
+            "block_index": 9,
+            "citation_index": 0
+          },
+          "native_url_sha256": "9e6abf04b8a36d9f0b9594ad52ffb986b47a4363f9c5d265c8051c5cf25eed50",
+          "page_url_without_query_or_fragment": "https://preply.com/en/blog/how-to-use-english-articles",
+          "status": "acquired",
+          "failure_reason": null,
+          "final_page_url_without_query_or_fragment": "https://preply.com/en/blog/how-to-use-english-articles/",
+          "http_statuses": [
+            301,
+            200
+          ],
+          "raw_content_sha256": "9288a5106e3dfc0878b4f4fe094a6706e0ca877144d58e7d314a1d3fe7ba1cac",
+          "text_sha256": "ebfd5504155c2ba861b385b6a4509e3508b25fa2ffa55cc652a591c640888ebe",
+          "text_characters": 57645,
+          "source_text_complete": true,
+          "truncated": false,
+          "elapsed_seconds": 0.5179763329797424,
+          "capture_canonical_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb"
+        }
+      ],
+      "selections": [
+        {
+          "record_index": 0,
+          "start": 1619,
+          "end": 9619
+        },
+        {
+          "record_index": 1,
+          "start": 16000,
+          "end": 24000
+        }
+      ],
+      "selected_spans_without_text": [
+        {
+          "source_id": "S-2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897-1619-9619",
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 1619,
+          "original_end": 9619,
+          "text_sha256": "355ec4a0875280088e74428fc755218885200aca22404acda2c6dfa8e88389bb",
+          "omits_acquired_text": true
+        },
+        {
+          "source_id": "S-0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb-16000-24000",
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 16000,
+          "original_end": 24000,
+          "text_sha256": "da97f859e814406af37a47d25aba3d577eee5868b0fc5f7b36a13794b5c9ee0b",
+          "omits_acquired_text": true
+        }
+      ],
+      "source_packet_canonical_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+      "reviews": {
+        "without_sources": {
+          "eligible": false,
+          "reason": "invalid_review",
+          "declared_content_eligible": null,
+          "content_rejection_reason": null,
+          "target_relation": null
+        },
+        "with_sources": {
+          "eligible": false,
+          "reason": "invalid_review",
+          "declared_content_eligible": null,
+          "content_rejection_reason": null,
+          "target_relation": null
+        }
+      }
+    },
+    {
+      "case_id": "hotel_reference",
+      "challenge_canonical_sha256": "53f2a604a7c4b617c72939ae63904490e76881edd1ce305b5419dacdd777dde3",
+      "native_citation_url_occurrences": 3,
+      "native_tool_uses": 1,
+      "fetches": [
+        {
+          "native_citation_locator": {
+            "block_index": 3,
+            "citation_index": 0
+          },
+          "native_url_sha256": "d17db12ab9ef1bd062404057af73e4e6543434e4809c0a10e678d34d1f6511cd",
+          "page_url_without_query_or_fragment": "https://test-english.com/explanation/a1/aan-no-article-articles/",
+          "status": "acquired",
+          "failure_reason": null,
+          "final_page_url_without_query_or_fragment": "https://test-english.com/explanation/a1/aan-no-article-articles/",
+          "http_statuses": [
+            200
+          ],
+          "raw_content_sha256": "2f2330671298d628089e0d33648c8f400bd1675c8796dbe8e64e1a5fed36f1c2",
+          "text_sha256": "6e79a2553a47a52ce42b0e28d6ce85415922dedd000ad1e2b9893e1822ef379f",
+          "text_characters": 4915,
+          "source_text_complete": true,
+          "truncated": false,
+          "elapsed_seconds": 0.4264159580343403,
+          "capture_canonical_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08"
+        },
+        {
+          "native_citation_locator": {
+            "block_index": 4,
+            "citation_index": 0
+          },
+          "native_url_sha256": "3a26eb47bfc8ae9f4ff2f40038983cecfc8e35fa6bbfa106e060aa491c0a9748",
+          "page_url_without_query_or_fragment": "https://udel.pressbooks.pub/language/chapter/articles-a-an-the/",
+          "status": "failed",
+          "failure_reason": "http_status_not_complete_200",
+          "final_page_url_without_query_or_fragment": null,
+          "http_statuses": [
+            403
+          ],
+          "raw_content_sha256": null,
+          "text_sha256": null,
+          "text_characters": null,
+          "source_text_complete": null,
+          "truncated": false,
+          "elapsed_seconds": 0.14816270797746256,
+          "capture_canonical_sha256": "3f57659054bc06409a2d4bf5106bec77c7d4d93436f2a429b69d1231fa895805"
+        }
+      ],
+      "selections": [
+        {
+          "record_index": 0,
+          "start": 0,
+          "end": 4915
+        }
+      ],
+      "selected_spans_without_text": [
+        {
+          "source_id": "S-3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08-0-4915",
+          "source_record_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08",
+          "original_start": 0,
+          "original_end": 4915,
+          "text_sha256": "6e79a2553a47a52ce42b0e28d6ce85415922dedd000ad1e2b9893e1822ef379f",
+          "omits_acquired_text": false
+        }
+      ],
+      "source_packet_canonical_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+      "reviews": {
+        "with_sources": {
+          "eligible": false,
+          "reason": "invalid_review",
+          "declared_content_eligible": null,
+          "content_rejection_reason": null,
+          "target_relation": null
+        },
+        "without_sources": {
+          "eligible": false,
+          "reason": "insufficient_evidence",
+          "declared_content_eligible": true,
+          "content_rejection_reason": null,
+          "target_relation": "supported"
+        }
+      }
+    },
+    {
+      "case_id": "butter_reference",
+      "challenge_canonical_sha256": "cfa8e9f0b2d55a43dd725062c7582b10907c57623a53787a765454546a05f7e6",
+      "native_citation_url_occurrences": 3,
+      "native_tool_uses": 1,
+      "fetches": [
+        {
+          "native_citation_locator": {
+            "block_index": 3,
+            "citation_index": 0
+          },
+          "native_url_sha256": "6b07b411e9c73c091f58b99b23bf799c736ba4a60360591d579478f71497b3a6",
+          "page_url_without_query_or_fragment": "https://advice.writing.utoronto.ca/english-language/definite-article/",
+          "status": "acquired",
+          "failure_reason": null,
+          "final_page_url_without_query_or_fragment": "https://advice.writing.utoronto.ca/english-language/definite-article/",
+          "http_statuses": [
+            200
+          ],
+          "raw_content_sha256": "ca0255b4c2c1c5b8f68d5454e3335f7e92827c534f2000a07ba16c443196c3a6",
+          "text_sha256": "9f005f00b50b33a1deacab30eb931479981dd84c04b7e20625096503df46386f",
+          "text_characters": 9619,
+          "source_text_complete": true,
+          "truncated": false,
+          "elapsed_seconds": 0.4032641659723595,
+          "capture_canonical_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca"
+        },
+        {
+          "native_citation_locator": {
+            "block_index": 7,
+            "citation_index": 0
+          },
+          "native_url_sha256": "bb0330256430664919d887fba3744d7c66fd5c7a067975687c3bdb791b1aa7e8",
+          "page_url_without_query_or_fragment": "https://advice.writing.utoronto.ca/wp-content/uploads/sites/2/definite-article.pdf",
+          "status": "failed",
+          "failure_reason": "unsupported_media_type",
+          "final_page_url_without_query_or_fragment": null,
+          "http_statuses": [
+            200
+          ],
+          "raw_content_sha256": null,
+          "text_sha256": null,
+          "text_characters": null,
+          "source_text_complete": null,
+          "truncated": false,
+          "elapsed_seconds": 0.28695516602601856,
+          "capture_canonical_sha256": "28971455120a259ade0e699af76ec23392825f61cc2a8b5d8447a67c43c2160e"
+        }
+      ],
+      "selections": [
+        {
+          "record_index": 0,
+          "start": 1619,
+          "end": 9619
+        }
+      ],
+      "selected_spans_without_text": [
+        {
+          "source_id": "S-5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca-1619-9619",
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 1619,
+          "original_end": 9619,
+          "text_sha256": "355ec4a0875280088e74428fc755218885200aca22404acda2c6dfa8e88389bb",
+          "omits_acquired_text": true
+        }
+      ],
+      "source_packet_canonical_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+      "reviews": {
+        "without_sources": {
+          "eligible": false,
+          "reason": "insufficient_evidence",
+          "declared_content_eligible": true,
+          "content_rejection_reason": null,
+          "target_relation": "supported"
+        },
+        "with_sources": {
+          "eligible": false,
+          "reason": "invalid_review",
+          "declared_content_eligible": null,
+          "content_rejection_reason": null,
+          "target_relation": null
+        }
+      }
+    },
+    {
+      "case_id": "plant_tissue",
+      "challenge_canonical_sha256": "c17b9e36b10a279d70b1dcc6f9584e0a1f05797612a46bd283a69ba25e1ddc59",
+      "native_citation_url_occurrences": 4,
+      "native_tool_uses": 1,
+      "fetches": [
+        {
+          "native_citation_locator": {
+            "block_index": 3,
+            "citation_index": 0
+          },
+          "native_url_sha256": "dba99c055a3a957304f3a99003d8ff37bdd6fdbc8456b740d2c3ecfa7dee6283",
+          "page_url_without_query_or_fragment": "https://www.bloomingexpert.com/tips/monstera/propagate/",
+          "status": "acquired",
+          "failure_reason": null,
+          "final_page_url_without_query_or_fragment": "https://www.bloomingexpert.com/tips/monstera/propagate/",
+          "http_statuses": [
+            200
+          ],
+          "raw_content_sha256": "0c3f57d4c062e73752cd97682cda1aedd062ee5e9c7a40f62f638c2d9194b070",
+          "text_sha256": "1257c3be4b5df090055afd6708d37620a966680c0091ae573fbadb3d563b98a3",
+          "text_characters": 28255,
+          "source_text_complete": true,
+          "truncated": false,
+          "elapsed_seconds": 1.749853583984077,
+          "capture_canonical_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31"
+        },
+        {
+          "native_citation_locator": {
+            "block_index": 4,
+            "citation_index": 0
+          },
+          "native_url_sha256": "3332c30857df0b428b4cf777394069da91da4865772ed79a9b4676efe4ab040a",
+          "page_url_without_query_or_fragment": "https://www.bloomingexpert.com/tips/houseplants/african-violets/leaf-propagation/",
+          "status": "acquired",
+          "failure_reason": null,
+          "final_page_url_without_query_or_fragment": "https://www.bloomingexpert.com/tips/houseplants/african-violets/leaf-propagation/",
+          "http_statuses": [
+            200
+          ],
+          "raw_content_sha256": "db5a6400b5185a8309c8e004d9a399d55aad984c0a1e65a3071c1f938eceed85",
+          "text_sha256": "5b6969bfb40a0e935041fdeace2e675eff74616b20769bdbb1ea91464bf93f86",
+          "text_characters": 25039,
+          "source_text_complete": true,
+          "truncated": false,
+          "elapsed_seconds": 2.222424082981888,
+          "capture_canonical_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006"
+        }
+      ],
+      "selections": [
+        {
+          "record_index": 0,
+          "start": 4000,
+          "end": 12000
+        },
+        {
+          "record_index": 1,
+          "start": 0,
+          "end": 8000
+        }
+      ],
+      "selected_spans_without_text": [
+        {
+          "source_id": "S-154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31-4000-12000",
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 4000,
+          "original_end": 12000,
+          "text_sha256": "766d2546e709d666ccb248b5d4bc34ebd2e47fb5f1625d6649687e832bfdf0b8",
+          "omits_acquired_text": true
+        },
+        {
+          "source_id": "S-732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006-0-8000",
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 0,
+          "original_end": 8000,
+          "text_sha256": "5f6d83cd9cb5b266e2198232b26bdedf4b619cf4b184811e79217ec02983baa4",
+          "omits_acquired_text": true
+        }
+      ],
+      "source_packet_canonical_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+      "reviews": {
+        "with_sources": {
+          "eligible": true,
+          "reason": null,
+          "declared_content_eligible": true,
+          "content_rejection_reason": null,
+          "target_relation": "supported"
+        },
+        "without_sources": {
+          "eligible": false,
+          "reason": "insufficient_evidence",
+          "declared_content_eligible": false,
+          "content_rejection_reason": "uncertain_authored_explanation",
+          "target_relation": "unresolved"
+        }
+      }
+    }
+  ]
+}
