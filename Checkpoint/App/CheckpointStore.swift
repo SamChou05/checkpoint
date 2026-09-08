@@ -4157,9 +4157,30 @@ final class CheckpointStore {
 
     // MARK: - Adaptive skill-map evolution
 
+    func learningMapSuggestionAcceptanceIssue(
+        goalID: Goal.ID,
+        expectedMap: GoalSkillMap
+    ) -> LearningMapSuggestionAcceptanceIssue? {
+        guard let currentGoal = goal, currentGoal.id == goalID,
+              currentGoal.derivedSkillMap == expectedMap,
+              expectedMap.growthMode == .reviewSuggestions,
+              let suggestion = expectedMap.pendingEvolutionSuggestion else { return .staleMap }
+        guard isMember else { return .membershipRequired }
+        guard permitsPersistenceWrites else { return .persistenceUnavailable }
+        guard activeCheckpointRun?.goalID != goalID else { return .checkpointInProgress }
+        let intent = SkillMapEvolutionIntent(
+            goalID: goalID,
+            baseVersion: suggestion.baseVersion,
+            baseMapFingerprint: suggestion.baseMapFingerprint,
+            masteredSkillIDs: suggestion.replacements.map(\.predecessorSkillID)
+        )
+        guard isSkillMapEvolutionIntentCurrent(intent, for: currentGoal) else { return .staleMap }
+        return isSkillMapEvolutionIntentCurrentAndEligible(intent, for: currentGoal) ? nil : .needsPractice
+    }
+
     @discardableResult
     func acceptLearningMapSuggestion(goalID: Goal.ID, expectedMap: GoalSkillMap) -> Bool {
-        guard isMember, permitsPersistenceWrites,
+        guard learningMapSuggestionAcceptanceIssue(goalID: goalID, expectedMap: expectedMap) == nil,
               let currentGoal = goal, currentGoal.id == goalID,
               currentGoal.derivedSkillMap == expectedMap,
               expectedMap.growthMode == .reviewSuggestions,

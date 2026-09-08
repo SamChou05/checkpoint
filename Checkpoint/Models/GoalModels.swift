@@ -342,6 +342,20 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
     }
 }
 
+enum LearningMapSuggestionAcceptanceIssue: Equatable {
+    case staleMap, checkpointInProgress, needsPractice, membershipRequired, persistenceUnavailable
+
+    var message: String {
+        switch self {
+        case .staleMap: "Your map changed. Close this view and review the current suggestion."
+        case .checkpointInProgress: "Finish your current checkpoint before accepting these next steps."
+        case .needsPractice: "These skills need more strong, recent practice before advancing. Keep practicing, or keep your current skills to dismiss this suggestion."
+        case .membershipRequired: "Accepting adaptive growth requires Checkpoint Pro. Your current skills and history remain available."
+        case .persistenceUnavailable: "Your changes cannot be saved right now. Try again after storage is available."
+        }
+    }
+}
+
 enum SkillMapEvolutionFailure: String, Codable, Equatable, Sendable {
     case invalidResponse
     case safetyIntervention

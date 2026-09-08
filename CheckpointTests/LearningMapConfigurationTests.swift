@@ -292,6 +292,28 @@ final class LearningMapConfigurationTests: CheckpointWorkflowTestCase {
         )
     }
 
+    @MainActor
+    func testSuggestionPreflightExplainsLiveCheckpointAndExpiredEvidence() async throws {
+        let fixture = makeFixture(growthMode: .reviewSuggestions)
+        XCTAssertTrue(fixture.store.evaluateSkillMapEvolutionIfNeeded())
+        let proposed = await waitUntil { fixture.store.goal?.derivedSkillMap?.pendingEvolutionSuggestion != nil }
+        XCTAssertTrue(proposed)
+        let map = try XCTUnwrap(fixture.store.goal?.derivedSkillMap)
+        XCTAssertNil(fixture.store.learningMapSuggestionAcceptanceIssue(goalID: fixture.goal.id, expectedMap: map))
+        let session = CheckpointSession(questions: fixture.store.questions, requiredCorrectAnswers: 1)
+        fixture.store.activeCheckpointRun = ActiveCheckpointRun(session: session)
+        XCTAssertEqual(fixture.store.learningMapSuggestionAcceptanceIssue(goalID: fixture.goal.id, expectedMap: map), .checkpointInProgress)
+        fixture.store.activeCheckpointRun = nil
+        for index in fixture.store.attempts.indices {
+            fixture.store.attempts[index].createdAt = Date().addingTimeInterval(-31 * 24 * 60 * 60)
+        }
+        XCTAssertEqual(fixture.store.learningMapSuggestionAcceptanceIssue(goalID: fixture.goal.id, expectedMap: map), .needsPractice)
+        XCTAssertFalse(fixture.store.acceptLearningMapSuggestion(goalID: fixture.goal.id, expectedMap: map))
+        XCTAssertEqual(fixture.store.goal?.derivedSkillMap, map)
+        fixture.store.membershipTier = .starter
+        XCTAssertEqual(fixture.store.learningMapSuggestionAcceptanceIssue(goalID: fixture.goal.id, expectedMap: map), .membershipRequired)
+    }
+
     private func makeTopics() -> [SkillMapTopic] {
         ["Arrays", "Recursion", "Hash maps"].map {
             SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: "Apply \($0)"), SkillMapObjective(name: "Explain \($0)")])
