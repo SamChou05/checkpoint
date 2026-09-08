@@ -392,6 +392,15 @@ def _solver_rejection_reason(
         # valid conditions belong in the answer under the solver contract.
         if solution["limitations"]:
             return "solver_unresolved_limitations"
+        # The normalized solver answer can independently name an offered choice.
+        # Review cannot override an exact, different choice. Nonmatching free
+        # prose still reaches review: this does not detect impossibility buried
+        # only in answer text or establish semantic agreement between summaries.
+        if (
+            solution["answer"] in question["choices"]
+            and solution["answer"] != question["expectedAnswer"]
+        ):
+            return "answer_disagreement"
         return None
     required = SOLVER_NEGATIVE_ANSWERS[outcome]
     # Only application-owned text may authorize an exceptional answer. Letting
