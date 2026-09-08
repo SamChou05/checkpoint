@@ -76,15 +76,27 @@ enum QuestionBatchSanitizer {
             if question.verificationVersion == 1,
                answerKey(choiceResolution.expectedAnswer) != answerKey(question.expectedAnswer) { continue }
             sanitizedQuestion.choices = choiceResolution.choices
-            sanitizedQuestion.choiceExplanations = question.choiceExplanations.filter {
-                let entry = $0
-                return sanitizedQuestion.choices.contains { Data($0.utf8) == Data(entry.key.utf8) }
-                    && (12...280).contains(entry.value.count)
+            if question.verificationVersion == 1 {
+                // Reviewed text must remain exact. Damaged supplied feedback
+                // rejects the item instead of being clipped or silently removed.
+                guard isBoundedReviewedFeedback(question.explanation, maximum: 420),
+                      question.choiceExplanations.allSatisfy({ entry in
+                          sanitizedQuestion.choices.contains { Data($0.utf8) == Data(entry.key.utf8) }
+                              && isBoundedReviewedFeedback(entry.value, maximum: 280)
+                      }) else { continue }
+                sanitizedQuestion.explanation = question.explanation
+                sanitizedQuestion.choiceExplanations = question.choiceExplanations
+            } else {
+                sanitizedQuestion.choiceExplanations = question.choiceExplanations.filter {
+                    let entry = $0
+                    return sanitizedQuestion.choices.contains { Data($0.utf8) == Data(entry.key.utf8) }
+                        && (12...280).contains(entry.value.count)
+                }
+                sanitizedQuestion.explanation = QuestionText.clipped(
+                    question.explanation.trimmingCharacters(in: .whitespacesAndNewlines),
+                    maxLength: 420
+                )
             }
-            sanitizedQuestion.explanation = QuestionText.clipped(
-                question.explanation.trimmingCharacters(in: .whitespacesAndNewlines),
-                maxLength: 420
-            )
             sanitizedQuestion.topic = QuestionText.clipped(
                 QuestionText.collapsedWhitespace(question.topic),
                 maxLength: 48
@@ -117,6 +129,13 @@ enum QuestionBatchSanitizer {
         }
 
         return sanitizedQuestions
+    }
+
+    private static func isBoundedReviewedFeedback(_ text: String, maximum: Int) -> Bool {
+        // Python's feedback limits count Unicode code points, not grapheme
+        // clusters. A literal with combining marks can be valid below 12 clusters.
+        text.unicodeScalars.count <= maximum
+            && text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.count >= 12
     }
 
     private static func questionCoverageKeys(_ question: CheckpointQuestion) -> Set<Data> {

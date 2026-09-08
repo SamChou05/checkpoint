@@ -117,8 +117,12 @@ final class QuestionValidationTests: XCTestCase {
             question.expectedAnswer = item.expectedAnswer
             question.choiceExplanations = ["\"é\"": "This feedback belongs to a different literal."]
             XCTAssertEqual(question.feedbackExplanation(for: item.expectedAnswer), question.explanation)
-            let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first)
-            XCTAssertTrue(accepted.choiceExplanations.isEmpty)
+            let sanitized = QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal))
+            if version == 1 {
+                XCTAssertTrue(sanitized.isEmpty, "A reviewed feedback key cannot be silently discarded.")
+            } else {
+                XCTAssertTrue(try XCTUnwrap(sanitized.first).choiceExplanations.isEmpty)
+            }
         }
         let longItem = try XCTUnwrap(identityFixtures().unicode_history_questions.first)
         let unoffered = longItem.expectedAnswer.precomposedStringWithCanonicalMapping
@@ -1653,5 +1657,111 @@ final class EmbeddedOptionsContractTests: XCTestCase {
             let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([echoed], for: makeRequest(goal: goal)).first)
             XCTAssertEqual(Data(accepted.prompt.utf8), Data(question.prompt.utf8))
         }
+    }
+}
+
+final class ReviewedFeedbackPreservationTests: XCTestCase {
+    func testReviewedFeedbackSurvivesWireAdmissionPersistenceAndDisplayExactly() throws {
+        let goal = makeGoal()
+        var question = makeQuestion(goal: goal, index: 1)
+        question.explanation = "\r\n    The literal preserves spaces and decomposed e\u{301}.\t\r\n"
+        question.choiceExplanations = Dictionary(uniqueKeysWithValues: question.choices.enumerated().map { index, choice in
+            (choice, "\tThe comparison for literal \(index) preserves '  e\u{301}  '.\r\n")
+        })
+        var request = makeRequest(goal: goal)
+        request.requiresVerifiedQuestions = true
+        let wire = try JSONEncoder().encode(question)
+        let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: wire)
+        let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
+        let admitted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: request).first)
+        let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(admitted))
+        XCTAssertEqual(Data(restored.explanation.utf8), Data(question.explanation.utf8))
+        XCTAssertEqual(restored.verificationVersion, question.verificationVersion)
+        XCTAssertEqual(restored.verificationPolicyRevision, question.verificationPolicyRevision)
+        for choice in question.choices {
+            let expected = try XCTUnwrap(question.choiceExplanations[choice])
+            let actual = try XCTUnwrap(restored.choiceExplanations[choice])
+            XCTAssertEqual(Data(actual.utf8), Data(expected.utf8))
+            XCTAssertEqual(Data(restored.feedbackExplanation(for: choice).utf8),
+                           Data((expected + "\n\n" + question.explanation).utf8))
+        }
+    }
+
+    func testBackendValidCodePointLengthDoesNotDropCombiningMarkFeedback() throws {
+        let goal = makeGoal()
+        // Seven scalars inside the quotes: one e and six combining accents.
+        // The full explanation has 12 code points but fewer than 12 graphemes.
+        let literal = "e" + String(repeating: "\u{301}", count: 6)
+        let feedback = "\"\(literal)\"=7."
+        XCTAssertEqual(feedback.unicodeScalars.count, 12)
+        XCTAssertLessThan(feedback.count, 12)
+        var question = makeQuestion(goal: goal, index: 1,
+            prompt: "How many Unicode scalar values are in the literal '\(literal)'?",
+            expectedAnswer: "7", choices: ["7", "1", "2", "6"], explanation: feedback)
+        question.choiceExplanations = ["7": feedback]
+        let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(question))
+        let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
+        let admitted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(Data(admitted.explanation.utf8), Data(feedback.utf8))
+        XCTAssertEqual(Data(try XCTUnwrap(admitted.choiceExplanations["7"]).utf8), Data(feedback.utf8))
+    }
+
+    func testReviewedOverlongOrEmptyMainFeedbackRejectsInsteadOfClipping() throws {
+        let goal = makeGoal()
+        for text in [String(repeating: "x", count: 421), String(repeating: "e\u{301}", count: 211), " \n\t ", " \nshort\t "] {
+            var question = makeQuestion(goal: goal, index: 1)
+            question.explanation = text
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+            XCTAssertEqual(Data(question.explanation.utf8), Data(text.utf8))
+        }
+        var atLimit = makeQuestion(goal: goal, index: 1)
+        atLimit.explanation = String(repeating: "e\u{301}", count: 210)
+        XCTAssertEqual(atLimit.explanation.unicodeScalars.count, 420)
+        let admitted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([atLimit], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(Data(admitted.explanation.utf8), Data(atLimit.explanation.utf8))
+    }
+
+    func testDamagedSuppliedReviewedChoiceFeedbackRejectsWholeItem() throws {
+        let goal = makeGoal()
+        for text in [String(repeating: "x", count: 281), String(repeating: "e\u{301}", count: 141), " \n\t ", "short"] {
+            var question = makeQuestion(goal: goal, index: 1)
+            question.choiceExplanations = [question.choices[0]: text]
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).isEmpty)
+            XCTAssertEqual(question.choiceExplanations.count, 1)
+        }
+        var wrongKey = makeQuestion(goal: goal, index: 1)
+        wrongKey.choiceExplanations = ["An unoffered choice": "This feedback is not bound to an offered choice."]
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([wrongKey], for: makeRequest(goal: goal)).isEmpty)
+        var atLimit = makeQuestion(goal: goal, index: 1)
+        atLimit.choiceExplanations = [atLimit.choices[0]: String(repeating: "e\u{301}", count: 140)]
+        let admitted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([atLimit], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(admitted.choiceExplanations, atLimit.choiceExplanations)
+    }
+
+    func testValidPartialReviewedFeedbackRemainsSupportedWithoutBackfill() throws {
+        let goal = makeGoal()
+        for count in [0, 1, 4] {
+            var question = makeQuestion(goal: goal, index: 1)
+            question.choiceExplanations = Dictionary(uniqueKeysWithValues: question.choices.prefix(count).map { choice in
+                (choice, "Compare the unchanged facts in this question.")
+            })
+            let admitted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first)
+            XCTAssertEqual(admitted.choiceExplanations, question.choiceExplanations)
+            XCTAssertEqual(admitted.choiceExplanations.count, count)
+        }
+    }
+
+    func testUnverifiedLegacyFeedbackKeepsExistingCleanupBehavior() throws {
+        let goal = makeGoal()
+        var question = makeQuestion(goal: goal, index: 1, verificationVersion: 0)
+        question.explanation = " \n" + String(repeating: "x", count: 421) + "\n "
+        question.choiceExplanations = [
+            question.choices[0]: "Compare the unchanged facts in this question.",
+            question.choices[1]: String(repeating: "x", count: 281),
+            "An unoffered choice": "This feedback is not bound to an offered choice."
+        ]
+        let admitted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(admitted.explanation, String(repeating: "x", count: 420))
+        XCTAssertEqual(admitted.choiceExplanations, [question.choices[0]: "Compare the unchanged facts in this question."])
     }
 }
