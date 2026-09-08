@@ -74,7 +74,8 @@ final class CheckpointWorkflowCoordinatorTests: XCTestCase {
         XCTAssertEqual(token.id, token.deliveryID)
         XCTAssertEqual(token.goalID, goalID)
         XCTAssertEqual(token.goalTitle, "Pass the bar exam")
-        XCTAssertTrue(token.accessibilityAnnouncement.contains("Step 3 of 3"))
+        XCTAssertTrue(token.accessibilityAnnouncement.contains("Goal saved: Pass the bar exam."))
+        XCTAssertTrue(token.accessibilityAnnouncement.contains("set this up later"))
 
         XCTAssertFalse(
             queue.issue(
