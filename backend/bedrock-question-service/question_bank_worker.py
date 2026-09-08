@@ -135,12 +135,7 @@ def _worker_skill_allocation(
     if not skill_ids or target_count <= 0:
         return {}
 
-    desired_allocation = generation_request.get("desiredSkillAllocation", {})
-    targets = _apportion_skill_counts(
-        skill_ids,
-        desired_allocation if isinstance(desired_allocation, dict) else {},
-        desired_count,
-    )
+    targets = _whole_bank_skill_targets(generation_request, desired_count)
     relevant_items = [
         item
         for item in existing_items
@@ -182,13 +177,7 @@ def _worker_objective_allocation(
     if not skills or not requested_skill_allocation:
         return []
 
-    skill_ids = [skill.get("id", "") for skill in skills if skill.get("id")]
-    desired_allocation = generation_request.get("desiredSkillAllocation", {})
-    whole_bank_skill_targets = _apportion_skill_counts(
-        skill_ids,
-        desired_allocation if isinstance(desired_allocation, dict) else {},
-        desired_count,
-    )
+    whole_bank_skill_targets = _whole_bank_skill_targets(generation_request, desired_count)
     relevant_states = {"", "ready", "claimed"} if low_watermark == 0 else {"", "ready"}
 
     objective_owners: dict[str, tuple[str, str]] = {}
@@ -302,12 +291,33 @@ def _uuid_identity_key(value: Any) -> str:
         return ""
 
 
+def _whole_bank_skill_targets(
+    generation_request: dict[str, Any], desired_count: int
+) -> dict[str, int]:
+    """Share coverage guarantees between validation and every worker chunk."""
+    skills = generation_request.get("skillMap", {}).get("skills", [])
+    skill_ids = [skill["id"] for skill in skills if skill.get("id")]
+    desired_allocation = generation_request.get("desiredSkillAllocation", {})
+    minimum_counts = (
+        {skill["id"]: max(1, len(skill.get("objectives", []))) for skill in skills}
+        if generation_request.get("requiresFullObjectiveCoverage") is True else None
+    )
+    return _apportion_skill_counts(
+        skill_ids,
+        desired_allocation if isinstance(desired_allocation, dict) else {},
+        desired_count,
+        minimum_counts=minimum_counts,
+    )
+
+
 def _apportion_skill_counts(
     skill_ids: list[str],
     desired_allocation: dict[str, int],
     desired_count: int,
+    *,
+    minimum_counts: dict[str, int] | None = None,
 ) -> dict[str, int]:
-    """Apportion a total while reserving one slot for every positive-weight skill."""
+    """Reserve coverage for positive weights, then apportion the remaining total."""
     if desired_count <= 0 or not skill_ids:
         return {}
     weights = {
@@ -332,8 +342,13 @@ def _apportion_skill_counts(
         return targets
 
     for skill_id in positive_skill_ids:
-        targets[skill_id] = 1
-    remaining_count = desired_count - len(positive_skill_ids)
+        targets[skill_id] = max(1, (minimum_counts or {}).get(skill_id, 1))
+    minimum_total = sum(targets.values())
+    if minimum_total > desired_count:
+        # Return a bounded total so request validation can identify insufficient
+        # room. Never silently grow a finite member/starter inventory entitlement.
+        return _apportion_skill_counts(skill_ids, desired_allocation, desired_count)
+    remaining_count = desired_count - minimum_total
     weight_total = sum(weights.values())
     exact = {
         skill_id: remaining_count * weights[skill_id] / weight_total

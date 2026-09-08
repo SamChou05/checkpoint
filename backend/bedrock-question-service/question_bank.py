@@ -99,6 +99,7 @@ from question_bank_worker import (
     _reset_job_for_retry,
     _worker_objective_allocation,
     _worker_skill_allocation,
+    _whole_bank_skill_targets,
 )
 
 

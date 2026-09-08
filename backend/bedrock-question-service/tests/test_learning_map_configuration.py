@@ -1,6 +1,5 @@
 """Contract coverage for learner-controlled skill-map scope and practice."""
 
-import copy
 import json
 import unittest
 

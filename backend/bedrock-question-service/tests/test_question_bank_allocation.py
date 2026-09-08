@@ -614,8 +614,13 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
 
         opted_in = copy.deepcopy(request)
         opted_in["requiresFullObjectiveCoverage"] = True
+        question_bank._validate_durable_skill_allocation(opted_in, 8)  # noqa: SLF001
+        self.assertEqual(
+            question_bank._whole_bank_skill_targets(opted_in, 8),  # noqa: SLF001
+            {major_skill: 6, minor_skill: 2},
+        )
         with self.assertRaises(question_bank.QuestionBankError) as raised:
-            question_bank._validate_durable_skill_allocation(opted_in, 8)  # noqa: SLF001
+            question_bank._validate_durable_skill_allocation(opted_in, 5)  # noqa: SLF001
 
         self.assertEqual(raised.exception.status_code, 400)
         self.assertEqual(raised.exception.code, "invalid_request")
@@ -627,6 +632,78 @@ class QuestionBankAllocationTests(QuestionBankTestCase):
         ignored = copy.deepcopy(opted_in)
         ignored["desiredSkillAllocation"] = {major_skill: 1, minor_skill: 0}
         question_bank._validate_durable_skill_allocation(ignored, 4)  # noqa: SLF001
+
+    def test_largest_configurable_map_covers_every_objective_under_skewed_emphasis(self):
+        skills = [
+            {
+                "id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"skill-{index}")),
+                "name": f"Skill {index}",
+                "objectives": [
+                    {
+                        "id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"objective-{index}-{focus}")),
+                        "name": f"Focus {focus}",
+                    }
+                    for focus in range(5)
+                ],
+            }
+            for index in range(6)
+        ]
+        request = {
+            "skillMap": {"version": 1, "skills": skills},
+            "desiredSkillAllocation": {
+                skill["id"]: 99 if index == 0 else 1
+                for index, skill in enumerate(skills)
+            },
+            "requiresFullObjectiveCoverage": True,
+        }
+        question_bank._validate_durable_skill_allocation(request, 40)  # noqa: SLF001
+        targets = question_bank._whole_bank_skill_targets(request, 40)  # noqa: SLF001
+        self.assertEqual(sum(targets.values()), 40)
+        self.assertTrue(all(value >= 5 for value in targets.values()))
+        self.assertGreater(targets[skills[0]["id"]], targets[skills[1]["id"]])
+        with self.assertRaises(question_bank.QuestionBankError):
+            question_bank._validate_durable_skill_allocation(request, 29)  # noqa: SLF001
+
+        inventory = []
+        for _ in range(6):
+            allocation = question_bank._worker_skill_allocation(  # noqa: SLF001
+                request, inventory, desired_count=40, low_watermark=10, target_count=7,
+            )
+            objectives = question_bank._worker_objective_allocation(  # noqa: SLF001
+                request, inventory, desired_count=40, low_watermark=10,
+                requested_skill_allocation=allocation,
+            )
+            self.assertEqual(sum(allocation.values()), sum(item["count"] for item in objectives))
+            for item in objectives:
+                inventory.extend({
+                    "state": {"S": "ready"},
+                    "questionJSON": {"S": json.dumps({
+                        "skillID": item["skillID"], "objectiveID": item["objectiveID"],
+                    })},
+                } for _ in range(item["count"]))
+        self.assertEqual(len(inventory), 40)
+        expected_pairs = {
+            (skill["id"], objective["id"])
+            for skill in skills for objective in skill["objectives"]
+        }
+        observed_pairs = {
+            (question["skillID"], question["objectiveID"])
+            for item in inventory for question in [json.loads(item["questionJSON"]["S"])]
+        }
+        self.assertEqual(observed_pairs, expected_pairs)
+
+        # Consuming a maintenance question must create a refill slot for that
+        # exact focus point even when the learner strongly emphasizes another skill.
+        removed = next(item for item in inventory if json.loads(item["questionJSON"]["S"])["skillID"] == skills[1]["id"])
+        inventory.remove(removed)
+        allocation = question_bank._worker_skill_allocation(  # noqa: SLF001
+            request, inventory, desired_count=40, low_watermark=10, target_count=7,
+        )
+        objectives = question_bank._worker_objective_allocation(  # noqa: SLF001
+            request, inventory, desired_count=40, low_watermark=10,
+            requested_skill_allocation=allocation,
+        )
+        self.assertEqual(objectives, [{**json.loads(removed["questionJSON"]["S"]), "count": 1}])
 
     def test_prepared_questions_retain_skill_and_objective_tags(self):
         question = {

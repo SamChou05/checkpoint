@@ -45,11 +45,7 @@ def _validate_durable_skill_allocation(
         if allocation
         else {skill_id: 1 for skill_id in skill_ids}
     )
-    apportioned_targets = _facade()._apportion_skill_counts(
-        skill_ids,
-        weights,
-        desired_count,
-    )
+    apportioned_targets = _facade()._whole_bank_skill_targets(normalized_request, desired_count)
     requires_full_objective_coverage = (
         normalized_request.get("requiresFullObjectiveCoverage") is True
     )
