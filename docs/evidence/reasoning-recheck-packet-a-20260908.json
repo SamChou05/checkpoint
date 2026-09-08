@@ -1,0 +1,221 @@
+{
+  "scope": "Treatment-masked assistant assessment, not new answer-key blindness; assessors know earlier findings. Missing teaching is unobserved, not accurate.",
+  "capture_file_sha256": "604a8ec64ac3fa0e3c12643f2878f3639cf378810238783d8cd400074e091214",
+  "plan_sha256": "addd6a7b7bb3b8372dd11cd9da32c9d22f2f96f8938c9b4aa9f723627814e34b",
+  "minimum_difficulty": 3,
+  "items": [
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 0,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+      "choices": [
+        "Small Hospital",
+        "Large Hospital",
+        "Both about equally",
+        "Cannot be determined from the information given"
+      ],
+      "status": "not_returned_after_completed_operation",
+      "returned_teaching": null,
+      "content_sha256": "fbd90c9cdda571736778cd70657e8dae28f8b7be7a44c25f9c66bc277b483a4c"
+    },
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 1,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+      "choices": [
+        "About 9%",
+        "About 99%",
+        "About 50%",
+        "About 1%"
+      ],
+      "status": "not_returned_after_completed_operation",
+      "returned_teaching": null,
+      "content_sha256": "9f68a44f6e41e86cab07bd94168f8f7d41dd5d94e6af51e9668aa26783f51863"
+    },
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 2,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+      "choices": [
+        "A third factor (like hot weather) likely explains both patterns",
+        "Ice cream consumption causes drowning",
+        "Drowning causes people to buy more ice cream",
+        "The correlation is probably a statistical fluke"
+      ],
+      "status": "not_returned_after_completed_operation",
+      "returned_teaching": null,
+      "content_sha256": "65b2228630f50e21a0001f2483c0582977f2072f850562b734f59f7964f8eea3"
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 0,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+      "choices": [
+        "Small Hospital",
+        "Large Hospital",
+        "Both about equally",
+        "Cannot be determined from the information given"
+      ],
+      "status": "returned",
+      "returned_teaching": {
+        "expectedAnswer": "Small Hospital",
+        "explanation": "Sampling variability decreases as sample size grows, so smaller daily samples produce more extreme deviations from the true proportion. With only 15 births per day, exceeding 60% boys occurs far more often than with 45 births per day.",
+        "choiceExplanations": {
+          "Large Hospital": "Larger samples cluster closer to the population proportion (~50%), producing fewer extreme-deviation days, not more.",
+          "Both about equally": "Sample size directly determines variability; a threefold difference in daily births produces substantially different frequencies of extreme outcomes.",
+          "Cannot be determined from the information given": "Statistical theory unambiguously predicts more extreme daily proportions in the smaller-sample hospital; no additional empirical data is required.",
+          "Small Hospital": "With only 15 births per day, random fluctuation routinely pushes the daily proportion past 60%, a threshold far harder to reach with 45 births per day."
+        }
+      },
+      "content_sha256": "94fe35013524839a7154c2667aa05dacb53ba723b7a0c6cd0b88540e79f12dc2"
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 1,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+      "choices": [
+        "About 9%",
+        "About 99%",
+        "About 50%",
+        "About 1%"
+      ],
+      "status": "returned",
+      "returned_teaching": {
+        "expectedAnswer": "About 9%",
+        "explanation": "Bayes' theorem gives P(disease|+) = (0.99×0.001)/(0.99×0.001+0.01×0.999) = 0.00099/0.01098 ≈ 9%. The rare base rate (1/1000) means false positives vastly outnumber true positives among all positive results.",
+        "choiceExplanations": {
+          "About 99%": "Equating test accuracy with posterior probability ignores the base rate; at 1/1000 prevalence, false positives dominate positive results.",
+          "About 50%": "50% would require equal numbers of true and false positives, but the low base rate makes false positives roughly ten times more numerous.",
+          "About 1%": "1% is near the prior probability, not the posterior; the Bayesian calculation yields 0.00099/0.01098 ≈ 9%.",
+          "About 9%": "Applying Bayes' theorem with sensitivity = 0.99, false-positive rate = 0.01, and prevalence = 0.001 gives a posterior of approximately 9%."
+        }
+      },
+      "content_sha256": "9492a9895dbfb91204d42b8f05ff11f72ef5c4c679a281159534a888fd7e11e6"
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 2,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+      "choices": [
+        "A third factor (like hot weather) likely explains both patterns",
+        "Ice cream consumption causes drowning",
+        "Drowning causes people to buy more ice cream",
+        "The correlation is probably a statistical fluke"
+      ],
+      "status": "returned",
+      "returned_teaching": {
+        "expectedAnswer": "A third factor (like hot weather) likely explains both patterns",
+        "explanation": "Correlation does not establish causation. Hot weather independently raises both ice cream demand and swimming activity (and thus drownings), producing a spurious association between the two measured variables.",
+        "choiceExplanations": {
+          "Ice cream consumption causes drowning": "No plausible mechanism links eating ice cream to drowning, and the pattern is fully accounted for by a well-known confound.",
+          "Drowning causes people to buy more ice cream": "Reverse causation is mechanistically implausible and unnecessary when a clear seasonal confound already explains the correlation.",
+          "The correlation is probably a statistical fluke": "The pattern is consistent and fully explained by seasonal weather variation, not random noise.",
+          "A third factor (like hot weather) likely explains both patterns": "Hot weather independently drives both increased swimming/drowning rates and higher ice cream sales, creating a spurious correlation between the two."
+        }
+      },
+      "content_sha256": "100396bb2010981e4da7f401cb0e067ab97500c0daa6135642189a8961ab0adc"
+    }
+  ]
+}

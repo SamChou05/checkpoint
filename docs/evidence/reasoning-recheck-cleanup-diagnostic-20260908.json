@@ -1,0 +1,155 @@
+{
+  "scope": "Three local repetitions of unchanged app-owned inert fake_orphan, no model/provider calls. Group checks instrumented with ps observations; process listing overhead can affect scheduler timing. No production edits or timeout changes.",
+  "source_revision": "a1f4d209c3539fee6f839e296c361a80d084930f",
+  "probe_sha256": "6440f32333a3f2a813bcbd38ab6c731ebd5dfaa464c459f0101f06a5c8136f50",
+  "test_sha256": "f27024a59e747cd34a1b117df8f5e1dbb2027289b05e00c50eece10923348c68",
+  "repetitions": [
+    {
+      "repetition": 1,
+      "result": {
+        "status": "operational_failure",
+        "error_type": "ProcessDeadline",
+        "provider_dispatch_attempted": null,
+        "usage_known": false,
+        "local_process_group_id": 92238,
+        "local_worker_reaped": true,
+        "worker_exitcode": -14,
+        "local_process_group_cleanup_confirmed": true,
+        "termination_attempted": true,
+        "process_elapsed_seconds": 0.3102181670255959,
+        "remote_completion": "unknown"
+      },
+      "group_check_transitions": [
+        {
+          "elapsed": 0.3103830000036396,
+          "exists": false,
+          "group_id": 92238
+        }
+      ],
+      "post_return_checks": [
+        {
+          "seconds_after_return": 6.208021659404039e-06,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.10081837500911206,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.31003158300882205,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.6507485409965739,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        }
+      ]
+    },
+    {
+      "repetition": 2,
+      "result": {
+        "status": "operational_failure",
+        "error_type": "ProcessDeadline",
+        "provider_dispatch_attempted": null,
+        "usage_known": false,
+        "local_process_group_id": 92256,
+        "local_worker_reaped": true,
+        "worker_exitcode": -14,
+        "local_process_group_cleanup_confirmed": true,
+        "termination_attempted": true,
+        "process_elapsed_seconds": 0.3037048329715617,
+        "remote_completion": "unknown"
+      },
+      "group_check_transitions": [
+        {
+          "elapsed": 0.3038983750157058,
+          "exists": false,
+          "group_id": 92256
+        }
+      ],
+      "post_return_checks": [
+        {
+          "seconds_after_return": 8.66700429469347e-06,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.10102908400585875,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.304864291974809,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.6599861250142567,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        }
+      ]
+    },
+    {
+      "repetition": 3,
+      "result": {
+        "status": "operational_failure",
+        "error_type": "ProcessDeadline",
+        "provider_dispatch_attempted": null,
+        "usage_known": false,
+        "local_process_group_id": 92264,
+        "local_worker_reaped": true,
+        "worker_exitcode": -14,
+        "local_process_group_cleanup_confirmed": true,
+        "termination_attempted": true,
+        "process_elapsed_seconds": 0.30442066700197756,
+        "remote_completion": "unknown"
+      },
+      "group_check_transitions": [
+        {
+          "elapsed": 0.30458145804004744,
+          "exists": false,
+          "group_id": 92264
+        }
+      ],
+      "post_return_checks": [
+        {
+          "seconds_after_return": 2.3208034690469503e-05,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.10917800001334399,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.30872899998212233,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        },
+        {
+          "seconds_after_return": 0.6600637080264278,
+          "group_exists": false,
+          "members": [],
+          "marker_exists": false
+        }
+      ]
+    }
+  ]
+}

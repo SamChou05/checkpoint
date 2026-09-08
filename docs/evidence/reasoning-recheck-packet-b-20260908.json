@@ -1,0 +1,150 @@
+{
+  "scope": "Treatment-masked assistant assessment, not new answer-key blindness; assessors know earlier findings. Missing teaching is unobserved, not accurate.",
+  "capture_file_sha256": "604a8ec64ac3fa0e3c12643f2878f3639cf378810238783d8cd400074e091214",
+  "plan_sha256": "addd6a7b7bb3b8372dd11cd9da32c9d22f2f96f8938c9b4aa9f723627814e34b",
+  "minimum_difficulty": 3,
+  "items": [
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 3,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A bag contains 30 red and 70 blue marbles. You draw one marble, note its color, return it, and draw again. Given that at least one draw was red, what is the probability both draws were red?",
+      "choices": [
+        "About 18%",
+        "About 9%",
+        "About 30%",
+        "About 51%"
+      ],
+      "status": "not_returned_after_completed_operation",
+      "returned_teaching": null,
+      "content_sha256": "b0496bf5c7875decaf3008ea34885e76664ae6a456559ef98640677c0d377540"
+    },
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 4,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A company reports that 80% of surveyed customers are 'satisfied.' The survey was sent by email to 10,000 recent purchasers; 2,000 responded. Which concern most warrants skepticism about the 80% figure?",
+      "choices": [
+        "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "The sample size of 2,000 is too small",
+        "Email surveys are inherently unreliable",
+        "80% is mathematically impossible with 10,000 customers"
+      ],
+      "status": "not_returned_after_completed_operation",
+      "returned_teaching": null,
+      "content_sha256": "845bdf26c0262eee528795340b5068b9333974968b89281b9ed6cc0135184713"
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 3,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A bag contains 30 red and 70 blue marbles. You draw one marble, note its color, return it, and draw again. Given that at least one draw was red, what is the probability both draws were red?",
+      "choices": [
+        "About 18%",
+        "About 9%",
+        "About 30%",
+        "About 51%"
+      ],
+      "status": "returned",
+      "returned_teaching": {
+        "expectedAnswer": "About 18%",
+        "explanation": "P(both red | at least one red) = P(both red) / P(at least one red) = 0.09 / 0.51 ≈ 18%. Conditioning on the event restricts the sample space, raising the probability above the unconditional 9%.",
+        "choiceExplanations": {
+          "About 51%": "51% is P(at least one red), which is the denominator of the conditional probability formula, not the final answer.",
+          "About 18%": "P(both red) = 0.3² = 0.09; P(at least one red) = 1 − 0.7² = 0.51; dividing gives 0.09/0.51 ≈ 17.6%, rounded to 18%.",
+          "About 9%": "9% is the unconditional probability of two red draws and ignores the restriction imposed by the condition 'at least one red.'",
+          "About 30%": "30% is the single-draw probability of red and does not correspond to any relevant probability for two draws under this conditioning event."
+        }
+      },
+      "content_sha256": "6a58ab7ffe486481039e0fb9a22b132bc0f03910d8703c536016d793ab824da3"
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 4,
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A company reports that 80% of surveyed customers are 'satisfied.' The survey was sent by email to 10,000 recent purchasers; 2,000 responded. Which concern most warrants skepticism about the 80% figure?",
+      "choices": [
+        "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "The sample size of 2,000 is too small",
+        "Email surveys are inherently unreliable",
+        "80% is mathematically impossible with 10,000 customers"
+      ],
+      "status": "returned",
+      "returned_teaching": {
+        "expectedAnswer": "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "explanation": "An 80% response rate among only 20% of recipients creates strong non-response bias: respondents systematically differ from non-respondents, inflating the reported satisfaction figure beyond the true population value.",
+        "choiceExplanations": {
+          "The sample size of 2,000 is too small": "2,000 respondents yields a margin of error under ±2%, which is statistically adequate for estimating a proportion.",
+          "Email surveys are inherently unreliable": "Email surveys are not inherently unreliable; this is too broad and fails to identify the specific, traceable bias present in this scenario.",
+          "80% is mathematically impossible with 10,000 customers": "80% of 2,000 respondents equals 1,600 satisfied customers, which is entirely mathematically possible.",
+          "Satisfied customers may be more likely to respond than dissatisfied ones": "Self-selection among the 20% who replied likely skews results upward, making the 80% figure unrepresentative of all 10,000 customers."
+        }
+      },
+      "content_sha256": "e67233fd0e982458efb2d8edc560b0f56118d5e0a4ba67a4733e721cc3ef3f3c"
+    }
+  ]
+}

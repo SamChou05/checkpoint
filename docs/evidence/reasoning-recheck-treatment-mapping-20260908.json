@@ -1,0 +1,18 @@
+{
+  "scope": "Treatment-masked assistant assessment, not new answer-key blindness; assessors know earlier findings. Missing teaching is unobserved, not accurate.",
+  "capture_file_sha256": "604a8ec64ac3fa0e3c12643f2878f3639cf378810238783d8cd400074e091214",
+  "plan_sha256": "addd6a7b7bb3b8372dd11cd9da32c9d22f2f96f8938c9b4aa9f723627814e34b",
+  "minimum_difficulty": 3,
+  "mapping": [
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "operation_index": 0,
+      "mode": "disabled"
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "operation_index": 1,
+      "mode": "adaptive"
+    }
+  ]
+}

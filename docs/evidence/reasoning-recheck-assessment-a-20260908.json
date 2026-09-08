@@ -1,0 +1,899 @@
+{
+  "assessment_type": "Treatment-masked assistant teaching assessment; not new answer-key blindness, educator consensus or calibrated psychometrics.",
+  "input_path": "/tmp/checkpoint-reasoning-assessment-20260908/packet-a.json",
+  "input_file_sha256": "903a26df0e4ccf49389c078c1b2f8733ba6d9eadc61d0e32f3c91703794a85bd",
+  "protocol_path": "/Users/samchou/Documents/Checkpoint/docs/QUESTION_REASONING_RECHECK.md",
+  "protocol_file_sha256": "bf4f7b2f90dd236f22618cbe481bc7d5d7a4fa1b4e85b8dcd6ed3008c006f81e",
+  "supplied_capture_file_sha256": "604a8ec64ac3fa0e3c12643f2878f3639cf378810238783d8cd400074e091214",
+  "supplied_plan_sha256": "addd6a7b7bb3b8372dd11cd9da32c9d22f2f96f8938c9b4aa9f723627814e34b",
+  "scope": {
+    "read_inputs": [
+      "/tmp/checkpoint-reasoning-assessment-20260908/packet-a.json",
+      "/Users/samchou/Documents/Checkpoint/docs/QUESTION_REASONING_RECHECK.md"
+    ],
+    "treatment_mapping_read": false,
+    "raw_capture_read": false,
+    "packet_b_read": false,
+    "model_or_network_calls": 0,
+    "prior_case_knowledge": true,
+    "assessment_source": "Frozen prospective anchors, exact displayed packet and elementary reasoning. No outside factual-source claims are newly verified.",
+    "unavailable_policy": "Non-returned fields are unobserved, not accurate. Item non-return does not establish why the checker excluded it.",
+    "item_hash_contract": "SHA256 of compact sorted ensure_ascii=False UTF8 JSON of the entire packet item except content_sha256. All six verified.",
+    "exact_text_policy": "Every input item and all returned field strings are preserved literally; no corrections are substituted."
+  },
+  "mathematical_anchors": {
+    "posterior_given_positive": "11/122",
+    "prior_probability": "1/1000 = 0.1%, not1%",
+    "false_positive_to_true_positive_count_ratio": "999/99 = 111/11, approximately10.0909",
+    "prior_for_half_posterior": "Solve0.99p=0.01(1-p), yieldingp=0.01=1%.",
+    "marble_reference_scope": "The prospective3/17 anchor is outside packetA; no marble outcome was inspected or graded."
+  },
+  "items": [
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 0,
+      "input_item": {
+        "masked_arm": "1128ac9f4f8fd54b",
+        "original_item_index": 0,
+        "goal": {
+          "title": "Understand probability and evidence in everyday decisions",
+          "category": "",
+          "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+          "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+          "learningTarget": "Understand probability and evidence in everyday decisions",
+          "contentTopics": [
+            "Conditional probability",
+            "sampling",
+            "causal claims",
+            "base rates and distinguishing a possible conclusion from a warranted one."
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "sourceDocuments": [],
+        "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+        "choices": [
+          "Small Hospital",
+          "Large Hospital",
+          "Both about equally",
+          "Cannot be determined from the information given"
+        ],
+        "status": "not_returned_after_completed_operation",
+        "returned_teaching": null,
+        "content_sha256": "fbd90c9cdda571736778cd70657e8dae28f8b7be7a44c25f9c66bc277b483a4c"
+      },
+      "input_content_sha256_verified": true,
+      "question_context_sha256": "128a1f2c3ab5c8f1db0650db5ec500d0fa4edc4c658e7a9adc85face5b4b6f7b",
+      "key_assessment": {
+        "disposition": "assumption_sensitive",
+        "conventional_answer": "Small Hospital",
+        "literal_information_limit_choice": "Cannot be determined from the information given",
+        "reason": "The small-hospital conclusion follows under a common approximately-half male-birth probability with independent daily sampling. These common probability-task assumptions are unstated, and the offered information-limit answer is defensible without them. This is an underqualified task, not a proved false claim about an actual city. Different underlying hospital probabilities, or a common probability above the threshold, can change the comparison."
+      },
+      "returned_key_matches_warranted_answer": null,
+      "goal_fit": {
+        "fits": true,
+        "reason": "Directly concerns probability, evidence or causal inference in everyday decisions; goal fit does not cure the separate completeness, feedback or challenge concerns."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "confidence": "high",
+        "rationale": "Recognizes and directly applies the familiar smaller-sample variability rule. The numerical sample sizes instantiate the rule without requiring a multistep calculation. The unstated model does not itself make the intended task level3."
+      },
+      "distractors": [
+        {
+          "choice": "Large Hospital",
+          "distinct": true,
+          "plausibility": "plausible_under_intended_model",
+          "reason": "Confuses a larger absolute number of male births with a greater frequency of days above a proportion threshold."
+        },
+        {
+          "choice": "Both about equally",
+          "distinct": true,
+          "plausibility": "plausible_under_intended_model",
+          "reason": "Treats equal underlying sex probability as implying identical sampling distributions at different daily sample sizes."
+        },
+        {
+          "choice": "Cannot be determined from the information given",
+          "distinct": true,
+          "plausibility": "defensible_information_limit_not_safely_refuted",
+          "reason": "The common approximately-half independent sampling model is not explicit. This option cannot be dismissed unconditionally."
+        }
+      ],
+      "all_three_distractors_plausible_and_refutable": false,
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Small Hospital",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Large Hospital",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Both about equally",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Cannot be determined from the information given",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        }
+      ],
+      "main_explanation_alone": {
+        "availability": "unobserved",
+        "sound_under_intended_model": null,
+        "complete_under_intended_model": null,
+        "complete_from_stated_premises_without_added_model": null,
+        "overall": "unobserved"
+      },
+      "all_five_observed_fields_materially_sound": null,
+      "observed_useful_complete_item_at_floor3": false,
+      "floor3_result_reason": "No item was returned; teaching is unobserved. The unchanged content assessment remains separate and no detection or false-rejection cause is inferred."
+    },
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 1,
+      "input_item": {
+        "masked_arm": "1128ac9f4f8fd54b",
+        "original_item_index": 1,
+        "goal": {
+          "title": "Understand probability and evidence in everyday decisions",
+          "category": "",
+          "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+          "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+          "learningTarget": "Understand probability and evidence in everyday decisions",
+          "contentTopics": [
+            "Conditional probability",
+            "sampling",
+            "causal claims",
+            "base rates and distinguishing a possible conclusion from a warranted one."
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "sourceDocuments": [],
+        "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+        "choices": [
+          "About 9%",
+          "About 99%",
+          "About 50%",
+          "About 1%"
+        ],
+        "status": "not_returned_after_completed_operation",
+        "returned_teaching": null,
+        "content_sha256": "9f68a44f6e41e86cab07bd94168f8f7d41dd5d94e6af51e9668aa26783f51863"
+      },
+      "input_content_sha256_verified": true,
+      "question_context_sha256": "e3af47fd43da664388c82a03c1a237ae6075e30f33b3916b9e713fd6afca2eb8",
+      "key_assessment": {
+        "disposition": "unique_warranted_answer",
+        "warranted_choices": [
+          "About 9%"
+        ],
+        "reason": "The stem explicitly specifies prevalence, sensitivity and specificity. Bayes gives0.00099/(0.00099+0.00999)=11/122, approximately9.016%. The generic phrase99% accurate is disambiguated by the immediately following conditional rates; it is not an additional defect."
+      },
+      "returned_key_matches_warranted_answer": null,
+      "goal_fit": {
+        "fits": true,
+        "reason": "Directly concerns probability, evidence or causal inference in everyday decisions; goal fit does not cure the separate completeness, feedback or challenge concerns."
+      },
+      "independent_difficulty": {
+        "level": 3,
+        "confidence": "high",
+        "rationale": "The learner must combine the base rate with true-positive and false-positive evidence and distinguish posterior probability from familiar marginal rates. These numerical details change the answer. This is level3 evidence interpretation, not level4 complexity."
+      },
+      "distractors": [
+        {
+          "choice": "About 99%",
+          "distinct": true,
+          "plausibility": "plausible",
+          "reason": "Confuses sensitivity or specificity with the probability of disease conditional on a positive result."
+        },
+        {
+          "choice": "About 50%",
+          "distinct": true,
+          "plausibility": "plausible",
+          "reason": "Treats the two disease states as equally likely after a positive result or assumes equal positive counts without incorporating the base rate."
+        },
+        {
+          "choice": "About 1%",
+          "distinct": true,
+          "plausibility": "plausible",
+          "reason": "Confuses the1% false-positive rate with the requested posterior. It is not the actual prior, which is0.1%."
+        }
+      ],
+      "all_three_distractors_plausible_and_refutable": true,
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 9%",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 99%",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 50%",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 1%",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        }
+      ],
+      "main_explanation_alone": {
+        "availability": "unobserved",
+        "sound_under_intended_model": null,
+        "complete_under_intended_model": null,
+        "complete_from_stated_premises_without_added_model": null,
+        "overall": "unobserved"
+      },
+      "all_five_observed_fields_materially_sound": null,
+      "observed_useful_complete_item_at_floor3": false,
+      "floor3_result_reason": "No item was returned; teaching is unobserved. The unchanged content assessment remains separate and no detection or false-rejection cause is inferred."
+    },
+    {
+      "masked_arm": "1128ac9f4f8fd54b",
+      "original_item_index": 2,
+      "input_item": {
+        "masked_arm": "1128ac9f4f8fd54b",
+        "original_item_index": 2,
+        "goal": {
+          "title": "Understand probability and evidence in everyday decisions",
+          "category": "",
+          "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+          "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+          "learningTarget": "Understand probability and evidence in everyday decisions",
+          "contentTopics": [
+            "Conditional probability",
+            "sampling",
+            "causal claims",
+            "base rates and distinguishing a possible conclusion from a warranted one."
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "sourceDocuments": [],
+        "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+        "choices": [
+          "A third factor (like hot weather) likely explains both patterns",
+          "Ice cream consumption causes drowning",
+          "Drowning causes people to buy more ice cream",
+          "The correlation is probably a statistical fluke"
+        ],
+        "status": "not_returned_after_completed_operation",
+        "returned_teaching": null,
+        "content_sha256": "65b2228630f50e21a0001f2483c0582977f2072f850562b734f59f7964f8eea3"
+      },
+      "input_content_sha256_verified": true,
+      "question_context_sha256": "88212a1311c70b5ca7411c71c0b335f5f574e38a914a6384b9912fdb1aadc810",
+      "key_assessment": {
+        "disposition": "no_fully_warranted_literal_choice",
+        "warranted_choices": [],
+        "best_listed_intended_choice": "A third factor (like hot weather) likely explains both patterns",
+        "reason": "A third-factor hypothesis is a reasonable conventional interpretation to consider, but the observed association alone does not establish that this hypothesis likely explains this study. It also does not establish either causal direction or a probable statistical fluke. The task lacks an option limited to correlation not establishing causation."
+      },
+      "returned_key_matches_warranted_answer": null,
+      "goal_fit": {
+        "fits": true,
+        "reason": "Directly concerns probability, evidence or causal inference in everyday decisions; goal fit does not cure the separate completeness, feedback or challenge concerns."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "confidence": "high",
+        "rationale": "The intended work is direct application of the familiar correlation-versus-causation rule. No study details discriminate between causal hypotheses. Unsupported wording and weak alternatives do not establish level3 challenge."
+      },
+      "distractors": [
+        {
+          "choice": "Ice cream consumption causes drowning",
+          "distinct": true,
+          "plausibility": "plausible_inference_error",
+          "reason": "The headline makes the familiar error of treating association as a causal result. Its lack of support does not prove there is no possible causal pathway."
+        },
+        {
+          "choice": "Drowning causes people to buy more ice cream",
+          "distinct": true,
+          "plausibility": "weak",
+          "reason": "Reverse causation is conceptually distinct but an implausible rival in the ordinary scenario. The stem supplies no evidence for it; no universal impossibility need be asserted."
+        },
+        {
+          "choice": "The correlation is probably a statistical fluke",
+          "distinct": true,
+          "plausibility": "plausible_but_not_established",
+          "reason": "Chance is a distinct possible explanation, but no sample size, significance, replication or study design supports probably. Neither this probability claim nor its categorical rejection is warranted."
+        }
+      ],
+      "all_three_distractors_plausible_and_refutable": false,
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "A third factor (like hot weather) likely explains both patterns",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Ice cream consumption causes drowning",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Drowning causes people to buy more ice cream",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "The correlation is probably a statistical fluke",
+          "exact_text": null,
+          "availability": "unobserved",
+          "disposition": "unobserved",
+          "material_issue": null,
+          "reason": "No learner teaching field was returned for this item. Its correctness and the reason for non-return cannot be inferred from this packet."
+        }
+      ],
+      "main_explanation_alone": {
+        "availability": "unobserved",
+        "sound_under_intended_model": null,
+        "complete_under_intended_model": null,
+        "complete_from_stated_premises_without_added_model": null,
+        "overall": "unobserved"
+      },
+      "all_five_observed_fields_materially_sound": null,
+      "observed_useful_complete_item_at_floor3": false,
+      "floor3_result_reason": "No item was returned; teaching is unobserved. The unchanged content assessment remains separate and no detection or false-rejection cause is inferred."
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 0,
+      "input_item": {
+        "masked_arm": "67206d65ae642311",
+        "original_item_index": 0,
+        "goal": {
+          "title": "Understand probability and evidence in everyday decisions",
+          "category": "",
+          "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+          "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+          "learningTarget": "Understand probability and evidence in everyday decisions",
+          "contentTopics": [
+            "Conditional probability",
+            "sampling",
+            "causal claims",
+            "base rates and distinguishing a possible conclusion from a warranted one."
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "sourceDocuments": [],
+        "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+        "choices": [
+          "Small Hospital",
+          "Large Hospital",
+          "Both about equally",
+          "Cannot be determined from the information given"
+        ],
+        "status": "returned",
+        "returned_teaching": {
+          "expectedAnswer": "Small Hospital",
+          "explanation": "Sampling variability decreases as sample size grows, so smaller daily samples produce more extreme deviations from the true proportion. With only 15 births per day, exceeding 60% boys occurs far more often than with 45 births per day.",
+          "choiceExplanations": {
+            "Large Hospital": "Larger samples cluster closer to the population proportion (~50%), producing fewer extreme-deviation days, not more.",
+            "Both about equally": "Sample size directly determines variability; a threefold difference in daily births produces substantially different frequencies of extreme outcomes.",
+            "Cannot be determined from the information given": "Statistical theory unambiguously predicts more extreme daily proportions in the smaller-sample hospital; no additional empirical data is required.",
+            "Small Hospital": "With only 15 births per day, random fluctuation routinely pushes the daily proportion past 60%, a threshold far harder to reach with 45 births per day."
+          }
+        },
+        "content_sha256": "94fe35013524839a7154c2667aa05dacb53ba723b7a0c6cd0b88540e79f12dc2"
+      },
+      "input_content_sha256_verified": true,
+      "question_context_sha256": "128a1f2c3ab5c8f1db0650db5ec500d0fa4edc4c658e7a9adc85face5b4b6f7b",
+      "key_assessment": {
+        "disposition": "assumption_sensitive",
+        "conventional_answer": "Small Hospital",
+        "literal_information_limit_choice": "Cannot be determined from the information given",
+        "reason": "The small-hospital conclusion follows under a common approximately-half male-birth probability with independent daily sampling. These common probability-task assumptions are unstated, and the offered information-limit answer is defensible without them. This is an underqualified task, not a proved false claim about an actual city. Different underlying hospital probabilities, or a common probability above the threshold, can change the comparison."
+      },
+      "returned_key_matches_warranted_answer": "conditional_on_unstated_sampling_model",
+      "goal_fit": {
+        "fits": true,
+        "reason": "Directly concerns probability, evidence or causal inference in everyday decisions; goal fit does not cure the separate completeness, feedback or challenge concerns."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "confidence": "high",
+        "rationale": "Recognizes and directly applies the familiar smaller-sample variability rule. The numerical sample sizes instantiate the rule without requiring a multistep calculation. The unstated model does not itself make the intended task level3."
+      },
+      "distractors": [
+        {
+          "choice": "Large Hospital",
+          "distinct": true,
+          "plausibility": "plausible_under_intended_model",
+          "reason": "Confuses a larger absolute number of male births with a greater frequency of days above a proportion threshold."
+        },
+        {
+          "choice": "Both about equally",
+          "distinct": true,
+          "plausibility": "plausible_under_intended_model",
+          "reason": "Treats equal underlying sex probability as implying identical sampling distributions at different daily sample sizes."
+        },
+        {
+          "choice": "Cannot be determined from the information given",
+          "distinct": true,
+          "plausibility": "defensible_information_limit_not_safely_refuted",
+          "reason": "The common approximately-half independent sampling model is not explicit. This option cannot be dismissed unconditionally."
+        }
+      ],
+      "all_three_distractors_plausible_and_refutable": false,
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": "Sampling variability decreases as sample size grows, so smaller daily samples produce more extreme deviations from the true proportion. With only 15 births per day, exceeding 60% boys occurs far more often than with 45 births per day.",
+          "availability": "observed",
+          "disposition": "conditionally_supported",
+          "material_issue": false,
+          "reason": "Sound explanation of the intended sampling model, but incomplete as an unqualified justification of this unchanged stem. The common population probability and independence assumptions are not stated. The general variance observation alone does not warrant this particular threshold comparison for arbitrary birth probabilities."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Small Hospital",
+          "exact_text": "With only 15 births per day, random fluctuation routinely pushes the daily proportion past 60%, a threshold far harder to reach with 45 births per day.",
+          "availability": "observed",
+          "disposition": "conditionally_supported",
+          "material_issue": false,
+          "reason": "Under common independent p approximately0.5, the15-birth day more often exceeds60% boys than the45-birth day. The informal frequency wording is reasonable in that conventional model; the required model remains unstated."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Large Hospital",
+          "exact_text": "Larger samples cluster closer to the population proportion (~50%), producing fewer extreme-deviation days, not more.",
+          "availability": "observed",
+          "disposition": "conditionally_supported",
+          "material_issue": false,
+          "reason": "Correct under the common independent approximately-half model. The feedback explicitly mentions approximately50%, but the stem does not supply that shared model; no material arithmetic error is established."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Both about equally",
+          "exact_text": "Sample size directly determines variability; a threefold difference in daily births produces substantially different frequencies of extreme outcomes.",
+          "availability": "observed",
+          "disposition": "conditionally_supported",
+          "material_issue": false,
+          "reason": "Different sample sizes imply different variances and, for the intended approximately-half model and this threshold, different tail probabilities. Read this as conditional on that shared model, not a universal theorem for all underlying distributions."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Cannot be determined from the information given",
+          "exact_text": "Statistical theory unambiguously predicts more extreme daily proportions in the smaller-sample hospital; no additional empirical data is required.",
+          "availability": "observed",
+          "disposition": "unsupported_strengthening",
+          "material_issue": true,
+          "reason": "The claim of an unambiguous prediction with no additional information suppresses the required sampling assumptions. Probability theory gives the stated comparison only after specifying an appropriate model. This overstates what follows from the displayed data; it is not evidence that the conventional small-hospital answer is factually false."
+        }
+      ],
+      "main_explanation_alone": {
+        "availability": "observed",
+        "sound_under_intended_model": true,
+        "complete_under_intended_model": true,
+        "complete_from_stated_premises_without_added_model": false,
+        "overall": "conditional_main_with_missing_model"
+      },
+      "all_five_observed_fields_materially_sound": false,
+      "observed_useful_complete_item_at_floor3": false,
+      "floor3_result_reason": "Below independent level3 and contains a defensible information-limit alternative; returned feedback also overstates the absence of needed assumptions."
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 1,
+      "input_item": {
+        "masked_arm": "67206d65ae642311",
+        "original_item_index": 1,
+        "goal": {
+          "title": "Understand probability and evidence in everyday decisions",
+          "category": "",
+          "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+          "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+          "learningTarget": "Understand probability and evidence in everyday decisions",
+          "contentTopics": [
+            "Conditional probability",
+            "sampling",
+            "causal claims",
+            "base rates and distinguishing a possible conclusion from a warranted one."
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "sourceDocuments": [],
+        "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+        "choices": [
+          "About 9%",
+          "About 99%",
+          "About 50%",
+          "About 1%"
+        ],
+        "status": "returned",
+        "returned_teaching": {
+          "expectedAnswer": "About 9%",
+          "explanation": "Bayes' theorem gives P(disease|+) = (0.99×0.001)/(0.99×0.001+0.01×0.999) = 0.00099/0.01098 ≈ 9%. The rare base rate (1/1000) means false positives vastly outnumber true positives among all positive results.",
+          "choiceExplanations": {
+            "About 99%": "Equating test accuracy with posterior probability ignores the base rate; at 1/1000 prevalence, false positives dominate positive results.",
+            "About 50%": "50% would require equal numbers of true and false positives, but the low base rate makes false positives roughly ten times more numerous.",
+            "About 1%": "1% is near the prior probability, not the posterior; the Bayesian calculation yields 0.00099/0.01098 ≈ 9%.",
+            "About 9%": "Applying Bayes' theorem with sensitivity = 0.99, false-positive rate = 0.01, and prevalence = 0.001 gives a posterior of approximately 9%."
+          }
+        },
+        "content_sha256": "9492a9895dbfb91204d42b8f05ff11f72ef5c4c679a281159534a888fd7e11e6"
+      },
+      "input_content_sha256_verified": true,
+      "question_context_sha256": "e3af47fd43da664388c82a03c1a237ae6075e30f33b3916b9e713fd6afca2eb8",
+      "key_assessment": {
+        "disposition": "unique_warranted_answer",
+        "warranted_choices": [
+          "About 9%"
+        ],
+        "reason": "The stem explicitly specifies prevalence, sensitivity and specificity. Bayes gives0.00099/(0.00099+0.00999)=11/122, approximately9.016%. The generic phrase99% accurate is disambiguated by the immediately following conditional rates; it is not an additional defect."
+      },
+      "returned_key_matches_warranted_answer": true,
+      "goal_fit": {
+        "fits": true,
+        "reason": "Directly concerns probability, evidence or causal inference in everyday decisions; goal fit does not cure the separate completeness, feedback or challenge concerns."
+      },
+      "independent_difficulty": {
+        "level": 3,
+        "confidence": "high",
+        "rationale": "The learner must combine the base rate with true-positive and false-positive evidence and distinguish posterior probability from familiar marginal rates. These numerical details change the answer. This is level3 evidence interpretation, not level4 complexity."
+      },
+      "distractors": [
+        {
+          "choice": "About 99%",
+          "distinct": true,
+          "plausibility": "plausible",
+          "reason": "Confuses sensitivity or specificity with the probability of disease conditional on a positive result."
+        },
+        {
+          "choice": "About 50%",
+          "distinct": true,
+          "plausibility": "plausible",
+          "reason": "Treats the two disease states as equally likely after a positive result or assumes equal positive counts without incorporating the base rate."
+        },
+        {
+          "choice": "About 1%",
+          "distinct": true,
+          "plausibility": "plausible",
+          "reason": "Confuses the1% false-positive rate with the requested posterior. It is not the actual prior, which is0.1%."
+        }
+      ],
+      "all_three_distractors_plausible_and_refutable": true,
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": "Bayes' theorem gives P(disease|+) = (0.99×0.001)/(0.99×0.001+0.01×0.999) = 0.00099/0.01098 ≈ 9%. The rare base rate (1/1000) means false positives vastly outnumber true positives among all positive results.",
+          "availability": "observed",
+          "disposition": "supported",
+          "material_issue": false,
+          "reason": "The numerator, denominator and rounded result are correct. In a hypothetical100000-person population there are99true positives and999false positives, a ratio of about10.09false positives per true positive. No material condition or calculation is missing for the stated school-level model."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 9%",
+          "exact_text": "Applying Bayes' theorem with sensitivity = 0.99, false-positive rate = 0.01, and prevalence = 0.001 gives a posterior of approximately 9%.",
+          "availability": "observed",
+          "disposition": "supported",
+          "material_issue": false,
+          "reason": "Uses the correct sensitivity0.99, false-positive rate0.01 and prevalence0.001 and reports the correct rounded posterior."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 99%",
+          "exact_text": "Equating test accuracy with posterior probability ignores the base rate; at 1/1000 prevalence, false positives dominate positive results.",
+          "availability": "observed",
+          "disposition": "supported",
+          "material_issue": false,
+          "reason": "Correctly identifies base-rate neglect and the excess of false positives among all positive results. It does not confuse sensitivity with posterior probability."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 50%",
+          "exact_text": "50% would require equal numbers of true and false positives, but the low base rate makes false positives roughly ten times more numerous.",
+          "availability": "observed",
+          "disposition": "supported",
+          "material_issue": false,
+          "reason": "A50% posterior requires equal true-positive and false-positive counts. At the given prior their ratio is999/99, approximately10.09, so roughly ten times is accurate. This field does not repeat the historical false assertion that a50% posterior requires50% prevalence; solving that counterfactual gives1% prevalence."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 1%",
+          "exact_text": "1% is near the prior probability, not the posterior; the Bayesian calculation yields 0.00099/0.01098 ≈ 9%.",
+          "availability": "observed",
+          "disposition": "misleading_prior_characterization",
+          "material_issue": true,
+          "reason": "The actual prior is1/1000=0.1%;1% is ten times that prior and is the stated false-positive rate. Calling1% near the prior gives a misleading numerical diagnosis for this distractor. Near is qualitative, so this is not an explicit false equality. The subsequent posterior calculation is correct, but it does not cure the incorrect teaching association."
+        }
+      ],
+      "main_explanation_alone": {
+        "availability": "observed",
+        "sound_under_intended_model": true,
+        "complete_under_intended_model": true,
+        "complete_from_stated_premises_without_added_model": true,
+        "overall": "sound_complete_main"
+      },
+      "all_five_observed_fields_materially_sound": false,
+      "observed_useful_complete_item_at_floor3": false,
+      "floor3_result_reason": "The question, unique key and main explanation meet level3, but one returned choice explanation materially mischaracterizes the prior. Therefore the complete teaching item does not pass the all-five-fields criterion."
+    },
+    {
+      "masked_arm": "67206d65ae642311",
+      "original_item_index": 2,
+      "input_item": {
+        "masked_arm": "67206d65ae642311",
+        "original_item_index": 2,
+        "goal": {
+          "title": "Understand probability and evidence in everyday decisions",
+          "category": "",
+          "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+          "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+          "learningTarget": "Understand probability and evidence in everyday decisions",
+          "contentTopics": [
+            "Conditional probability",
+            "sampling",
+            "causal claims",
+            "base rates and distinguishing a possible conclusion from a warranted one."
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "sourceDocuments": [],
+        "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+        "choices": [
+          "A third factor (like hot weather) likely explains both patterns",
+          "Ice cream consumption causes drowning",
+          "Drowning causes people to buy more ice cream",
+          "The correlation is probably a statistical fluke"
+        ],
+        "status": "returned",
+        "returned_teaching": {
+          "expectedAnswer": "A third factor (like hot weather) likely explains both patterns",
+          "explanation": "Correlation does not establish causation. Hot weather independently raises both ice cream demand and swimming activity (and thus drownings), producing a spurious association between the two measured variables.",
+          "choiceExplanations": {
+            "Ice cream consumption causes drowning": "No plausible mechanism links eating ice cream to drowning, and the pattern is fully accounted for by a well-known confound.",
+            "Drowning causes people to buy more ice cream": "Reverse causation is mechanistically implausible and unnecessary when a clear seasonal confound already explains the correlation.",
+            "The correlation is probably a statistical fluke": "The pattern is consistent and fully explained by seasonal weather variation, not random noise.",
+            "A third factor (like hot weather) likely explains both patterns": "Hot weather independently drives both increased swimming/drowning rates and higher ice cream sales, creating a spurious correlation between the two."
+          }
+        },
+        "content_sha256": "100396bb2010981e4da7f401cb0e067ab97500c0daa6135642189a8961ab0adc"
+      },
+      "input_content_sha256_verified": true,
+      "question_context_sha256": "88212a1311c70b5ca7411c71c0b335f5f574e38a914a6384b9912fdb1aadc810",
+      "key_assessment": {
+        "disposition": "no_fully_warranted_literal_choice",
+        "warranted_choices": [],
+        "best_listed_intended_choice": "A third factor (like hot weather) likely explains both patterns",
+        "reason": "A third-factor hypothesis is a reasonable conventional interpretation to consider, but the observed association alone does not establish that this hypothesis likely explains this study. It also does not establish either causal direction or a probable statistical fluke. The task lacks an option limited to correlation not establishing causation."
+      },
+      "returned_key_matches_warranted_answer": false,
+      "goal_fit": {
+        "fits": true,
+        "reason": "Directly concerns probability, evidence or causal inference in everyday decisions; goal fit does not cure the separate completeness, feedback or challenge concerns."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "confidence": "high",
+        "rationale": "The intended work is direct application of the familiar correlation-versus-causation rule. No study details discriminate between causal hypotheses. Unsupported wording and weak alternatives do not establish level3 challenge."
+      },
+      "distractors": [
+        {
+          "choice": "Ice cream consumption causes drowning",
+          "distinct": true,
+          "plausibility": "plausible_inference_error",
+          "reason": "The headline makes the familiar error of treating association as a causal result. Its lack of support does not prove there is no possible causal pathway."
+        },
+        {
+          "choice": "Drowning causes people to buy more ice cream",
+          "distinct": true,
+          "plausibility": "weak",
+          "reason": "Reverse causation is conceptually distinct but an implausible rival in the ordinary scenario. The stem supplies no evidence for it; no universal impossibility need be asserted."
+        },
+        {
+          "choice": "The correlation is probably a statistical fluke",
+          "distinct": true,
+          "plausibility": "plausible_but_not_established",
+          "reason": "Chance is a distinct possible explanation, but no sample size, significance, replication or study design supports probably. Neither this probability claim nor its categorical rejection is warranted."
+        }
+      ],
+      "all_three_distractors_plausible_and_refutable": false,
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": "Correlation does not establish causation. Hot weather independently raises both ice cream demand and swimming activity (and thus drownings), producing a spurious association between the two measured variables.",
+          "availability": "observed",
+          "disposition": "unsupported_causal_attribution",
+          "material_issue": true,
+          "reason": "The opening correlation-causation statement is sound. The rest treats hot weather as the actual common cause producing this association and calls it spurious without evidence about weather, swimming exposure or causal adjustment in the stated study. It is a plausible illustrative mechanism presented as an established explanation, not a proved factual account of these cities."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "A third factor (like hot weather) likely explains both patterns",
+          "exact_text": "Hot weather independently drives both increased swimming/drowning rates and higher ice cream sales, creating a spurious correlation between the two.",
+          "availability": "observed",
+          "disposition": "unsupported_causal_attribution",
+          "material_issue": true,
+          "reason": "Asserts that weather actually drives both measured patterns and creates the spurious correlation. The unchanged stem provides an association only; the plausible confounding account needs conditional wording or supporting study evidence."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Ice cream consumption causes drowning",
+          "exact_text": "No plausible mechanism links eating ice cream to drowning, and the pattern is fully accounted for by a well-known confound.",
+          "availability": "observed",
+          "disposition": "unsupported_exclusion_and_explanation",
+          "material_issue": true,
+          "reason": "The correct criticism is that the correlation does not establish causation. Instead the feedback asserts no plausible mechanism and that a known confound fully accounts for the pattern. Neither exclusion nor complete accounting is shown; a weak choice cannot justify those stronger claims."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Drowning causes people to buy more ice cream",
+          "exact_text": "Reverse causation is mechanistically implausible and unnecessary when a clear seasonal confound already explains the correlation.",
+          "availability": "observed",
+          "disposition": "unsupported_established_confound",
+          "material_issue": true,
+          "reason": "Describing reverse causation as implausible is reasonable ordinary judgment, but the additional statement that a clear seasonal confound already explains the correlation is unsupported. This field turns a possible rival explanation into established evidence."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "The correlation is probably a statistical fluke",
+          "exact_text": "The pattern is consistent and fully explained by seasonal weather variation, not random noise.",
+          "availability": "observed",
+          "disposition": "unsupported_strengthening",
+          "material_issue": true,
+          "reason": "Consistent, fully explained and not random noise add findings absent from the stem. The observed association does not establish its replication, weather attribution or exclusion of chance. This refutes the claimed warrant, not the possibility that seasonal confounding is actually true."
+        }
+      ],
+      "main_explanation_alone": {
+        "availability": "observed",
+        "sound_under_intended_model": false,
+        "complete_under_intended_model": false,
+        "complete_from_stated_premises_without_added_model": false,
+        "overall": "sound_opening_then_unsupported_actual_cause"
+      },
+      "all_five_observed_fields_materially_sound": false,
+      "observed_useful_complete_item_at_floor3": false,
+      "floor3_result_reason": "Below independent level3, lacks a fully warranted literal option, has a weak reverse-causation distractor and returns unsupported causal teaching in all five fields."
+    }
+  ],
+  "masked_arm_summaries_packet_a_only": {
+    "1128ac9f4f8fd54b": {
+      "starting_items_in_packet_a": 3,
+      "original_item_indexes": [
+        0,
+        1,
+        2
+      ],
+      "returned_items": 0,
+      "not_returned_items": 3,
+      "teaching_field_slots": 15,
+      "observed_teaching_fields": 0,
+      "unobserved_teaching_fields": 15,
+      "observed_supported_fields": 0,
+      "observed_conditionally_supported_fields": 0,
+      "observed_fields_with_material_issues": 0,
+      "all_five_fields_sound_items": 0,
+      "sound_complete_main_from_stated_premises_items": 0,
+      "conditional_main_items": 0,
+      "observed_useful_complete_items_at_floor3": 0,
+      "limits": "PacketA only; no inference about original items3/4, treatment identity, rejection stage/reason, latency, token use or overall arm performance."
+    },
+    "67206d65ae642311": {
+      "starting_items_in_packet_a": 3,
+      "original_item_indexes": [
+        0,
+        1,
+        2
+      ],
+      "returned_items": 3,
+      "not_returned_items": 0,
+      "teaching_field_slots": 15,
+      "observed_teaching_fields": 15,
+      "unobserved_teaching_fields": 0,
+      "observed_supported_fields": 4,
+      "observed_conditionally_supported_fields": 4,
+      "observed_fields_with_material_issues": 7,
+      "all_five_fields_sound_items": 0,
+      "sound_complete_main_from_stated_premises_items": 1,
+      "conditional_main_items": 1,
+      "observed_useful_complete_items_at_floor3": 0,
+      "limits": "PacketA only; no inference about original items3/4, treatment identity, rejection stage/reason, latency, token use or overall arm performance."
+    }
+  },
+  "conclusions": [
+    "The masked1128ac9f4f8fd54b arm has no returned teaching for these three items; all15fields are unobserved and no correctness credit is assigned.",
+    "The masked67206d65ae642311 arm returns all three items. Bayes main and50% feedback are sound, while1% feedback still misleadingly characterizes the0.1% prior. The old50%-prevalence error is absent from this returned text.",
+    "Hospital main and three choice fields are sound under the intended common approximately-half independent sampling model. Its information-limit feedback improperly calls the result unambiguous without additional information.",
+    "Ice-cream main and all four choice fields promote possible seasonal confounding into an established explanation or unsupported exclusion. These are unjustified inference claims, not evidence that the proposed real-world mechanism is factually impossible.",
+    "Independent intended difficulties remain2,3,2. Neither masked arm supplies a complete sound floor3 teaching item among these three. No treatment effect or all-five-item conclusion can be inferred from packetA alone."
+  ]
+}

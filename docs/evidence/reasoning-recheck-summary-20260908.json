@@ -1,0 +1,110 @@
+{
+  "experiment": "policy-two-frozen-recheck-v1",
+  "source_revision": "518df3e174654935e3b463f5962e752277da1bce",
+  "plan_sha256": "addd6a7b7bb3b8372dd11cd9da32c9d22f2f96f8938c9b4aa9f723627814e34b",
+  "capture_file_sha256": "604a8ec64ac3fa0e3c12643f2878f3639cf378810238783d8cd400074e091214",
+  "prospective_protocol_file_sha256": "bf4f7b2f90dd236f22618cbe481bc7d5d7a4fa1b4e85b8dcd6ed3008c006f81e",
+  "prospective_protocol_source": "518df3e174654935e3b463f5962e752277da1bce:docs/QUESTION_REASONING_RECHECK.md",
+  "offline_replay": {
+    "matched_entire_capture": true,
+    "independent_no_client_replay": "reasoning-recheck-operational-audit-20260908.json"
+  },
+  "accounting": {
+    "prepared_calls": 4,
+    "observed_dispatch_attempts": 4,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 8953,
+      "outputTokens": 10535
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 39212
+  },
+  "arms": [
+    {
+      "mode": "disabled",
+      "starting_items": 5,
+      "retained_items": 0,
+      "runtime_review_counters": {
+        "invalid_json": 5
+      },
+      "input_tokens": 4506,
+      "output_tokens": 2385,
+      "sum_process_seconds": 33.957470041001216
+    },
+    {
+      "mode": "adaptive",
+      "starting_items": 5,
+      "retained_items": 5,
+      "runtime_review_counters": {
+        "accepted": 5
+      },
+      "input_tokens": 4447,
+      "output_tokens": 8150,
+      "sum_process_seconds": 91.93981241603615
+    }
+  ],
+  "content_result": {
+    "disabled": "No returned teaching: entire reviewer JSON rejected for a missing colon; this is not successful defect detection. Raw text retains the prior false50%-prevalence claim.",
+    "adaptive": "Five retained; no corrected keys relative to disabled solver. Old false counterfactual removed, but misleading prior wording, missing assumptions, causal overclaims, and new survey feedback errors remain. Only marbles qualifies as a complete supported level3 item under ordinary sampling; this selected set is not a production rate.",
+    "prospective_favorable_followup_criterion_met": false
+  },
+  "validation": {
+    "backend_tests": 864,
+    "full_repeat_run_passed": true,
+    "initial_full_run": "One unchanged orphan-cleanup Boolean assertion failed;3targeted diagnostics and subsequent full run passed. Original cause unproven; no timeout/check weakened.",
+    "test_log_sha256": "c9283f26085e26d66674f18e432d3acf35b6ec5bac1f9efd572b62c9ca2929f1",
+    "initial_test_log_sha256": "c0b07fea1f70a1cd6719b480faad91e122bb7c70f6a14d772ea6327455947d73",
+    "new_focused_tests": 7
+  },
+  "no_deployment": true,
+  "no_production_model_or_prompt_change": true,
+  "evidence": [
+    {
+      "file": "reasoning-recheck-capture-20260908.json",
+      "bytes": 117931,
+      "sha256": "604a8ec64ac3fa0e3c12643f2878f3639cf378810238783d8cd400074e091214"
+    },
+    {
+      "file": "reasoning-recheck-operational-audit-20260908.json",
+      "bytes": 42699,
+      "sha256": "94ade077e4514a2fd42425acc754b9579b42a94063b2d180f78911d82c4d01e0"
+    },
+    {
+      "file": "reasoning-recheck-packet-a-20260908.json",
+      "bytes": 12505,
+      "sha256": "903a26df0e4ccf49389c078c1b2f8733ba6d9eadc61d0e32f3c91703794a85bd"
+    },
+    {
+      "file": "reasoning-recheck-packet-b-20260908.json",
+      "bytes": 8390,
+      "sha256": "d0fc2fc7877c84415114227e6cc73461e59d37dccedf3531d1f00f8358f699c3"
+    },
+    {
+      "file": "reasoning-recheck-treatment-mapping-20260908.json",
+      "bytes": 601,
+      "sha256": "c1b4828f79433351f62c2e7c4a2f5c8211d4b812d515779d9ac242af5795e91e"
+    },
+    {
+      "file": "reasoning-recheck-assessment-a-20260908.json",
+      "bytes": 52707,
+      "sha256": "03693f8590dd5cf88e82d530f4f0a999c5bec31f8acb59c5bcc2757c438156ea"
+    },
+    {
+      "file": "reasoning-recheck-assessment-b-20260908.json",
+      "bytes": 27925,
+      "sha256": "cc997f37e91f9b23a3b45c5110e78a6d3fe3d37b1793a64f1c02d4e9da506f24"
+    },
+    {
+      "file": "reasoning-recheck-native-checks-20260908.json",
+      "bytes": 5595,
+      "sha256": "4cbc328b50ded14d5dbdf538ccf8ab237d0e10cf4c7d8bb08ec904dfc1334653"
+    },
+    {
+      "file": "reasoning-recheck-cleanup-diagnostic-20260908.json",
+      "bytes": 4661,
+      "sha256": "dff8f321d1c1f1678e69c856addcc193b04dac00d68b4b6d5c06b3193c5b324e"
+    }
+  ]
+}

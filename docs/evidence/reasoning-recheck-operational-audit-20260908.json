@@ -1,0 +1,747 @@
+{
+  "kind": "Independent no-client replay, operational/source binding audit and solver-reason assessment of one selected five-question paired diagnostic.",
+  "capture": {
+    "path": "/tmp/checkpoint-reasoning-recheck-live-20260908/capture.json",
+    "sha256": "604a8ec64ac3fa0e3c12643f2878f3639cf378810238783d8cd400074e091214",
+    "bytes": 117931,
+    "status": "completed"
+  },
+  "plan": {
+    "canonical_sha256": "addd6a7b7bb3b8372dd11cd9da32c9d22f2f96f8938c9b4aa9f723627814e34b",
+    "source_revision": "518df3e174654935e3b463f5962e752277da1bce",
+    "all_frozen_sources_and_dependencies_rebuilt_exactly": true,
+    "origin_capture_sha256": "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d",
+    "normalized_request_sha256": "5fdb47e37dcfd4cfcfac7c856c0f6a1381ec756bc4e77cafda179de41eb12f70",
+    "sanitized_candidates_sha256": "aeebc3eed3f190a4c440a6979ca84895a9670e5265e6b0e234c80f71f177346b",
+    "runtime_unchanged_from_origin": true,
+    "same_five_questions_and_normalized_request_in_both_arms": true,
+    "first_solver_model_system_messages_identical": true,
+    "first_solver_settings": {
+      "disabled": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "adaptive": {
+        "maxTokens": 6000
+      }
+    },
+    "dynamic_reviewer_requests_exactly_replayed_with_actual_solvers_and_survivors": true
+  },
+  "replay": {
+    "exact_full_report_equality": true,
+    "new_client_and_observer_blocked": true,
+    "scope": "No provider, repair, rewrite, new model response or production change. Root reported terminal exit0; this audit independently establishes captured terminal consistency, not ownership of the prior process handle."
+  },
+  "operations": {
+    "calls_per_arm": [
+      2,
+      2
+    ],
+    "maximum_total_calls": 4,
+    "observed_calls": 4,
+    "unattempted_arms": 0,
+    "unknown_usage_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 8953,
+      "outputTokens": 10535
+    },
+    "input_utf8_bytes": 39212,
+    "sdk_interval_sum_seconds": 122.53360758302733,
+    "worker_interval_sum_seconds": 125.89728245703736,
+    "timing_scope": "Sums of recorded individual intervals, not an independently measured whole-run wall clock.75s read/3s connect/SDK1, separate240s arm clocks,32KiB per call and128KiB total. All four ended end_turn within6000 output tokens; no retry, provider failure or cleanup uncertainty observed.",
+    "runtime_content_outcomes": [
+      {
+        "arm": "disabled",
+        "returned": 0,
+        "quality": {
+          "review": {
+            "invalid_json": 5
+          }
+        }
+      },
+      {
+        "arm": "adaptive",
+        "returned": 5,
+        "quality": {
+          "review": {
+            "accepted": 5
+          }
+        }
+      }
+    ]
+  },
+  "calls": [
+    {
+      "call_index": 0,
+      "arm": "disabled",
+      "role": "solver",
+      "request_sha256": "a57caa8b57174c5694d4ee91a287d012107ef2c95777ebcd8d43d315636bba11",
+      "input_utf8_bytes": 6427,
+      "inferenceConfig": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additionalModelRequestFields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "timeout_seconds": 239.997,
+      "prepared_remaining_milliseconds": 239999,
+      "response_text_sha256": "9567076c31fb3c053fa688a60186090588d92a9d834ad9b98264615408dbe093",
+      "response_text_characters": 5030,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1405,
+        "outputTokens": 1304,
+        "totalTokens": 2709
+      },
+      "reasoning_content_block_count": 0,
+      "sdk_interval_seconds": 18.619258749997243,
+      "worker_interval_seconds": 19.338125625043176,
+      "cleanup": {
+        "local_worker_reaped": true,
+        "worker_exitcode": 0,
+        "local_process_group_cleanup_confirmed": true,
+        "termination_attempted": false
+      }
+    },
+    {
+      "call_index": 1,
+      "arm": "disabled",
+      "role": "reviewer",
+      "request_sha256": "2453b44ef017d79def2206d0091509910ee81756848622879027faebda4c0f9b",
+      "input_utf8_bytes": 13260,
+      "inferenceConfig": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additionalModelRequestFields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "timeout_seconds": 220.655,
+      "prepared_remaining_milliseconds": 220657,
+      "response_text_sha256": "e0ae4c9b23f4f9a7ef22a94dfdbfab15cca15c60bec942514c5a5bd748f1b045",
+      "response_text_characters": 4351,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3101,
+        "outputTokens": 1081,
+        "totalTokens": 4182
+      },
+      "reasoning_content_block_count": 0,
+      "sdk_interval_seconds": 13.397941624978557,
+      "worker_interval_seconds": 14.61934441595804,
+      "cleanup": {
+        "local_worker_reaped": true,
+        "worker_exitcode": 0,
+        "local_process_group_cleanup_confirmed": true,
+        "termination_attempted": false
+      }
+    },
+    {
+      "call_index": 2,
+      "arm": "adaptive",
+      "role": "solver",
+      "request_sha256": "5f74e1a64b1c32524d8abcfc82206729c4cfa24b302b0ee2eabf83f0530e97e6",
+      "input_utf8_bytes": 6443,
+      "inferenceConfig": {
+        "maxTokens": 6000
+      },
+      "additionalModelRequestFields": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "timeout_seconds": 239.996,
+      "prepared_remaining_milliseconds": 239998,
+      "response_text_sha256": "a6bf44db26d3491d5c0f50fc2e0518db301b675ac3d016d4b000cba1cb1735cd",
+      "response_text_characters": 4847,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1405,
+        "outputTokens": 2307,
+        "totalTokens": 3712
+      },
+      "reasoning_content_block_count": 1,
+      "sdk_interval_seconds": 27.578421292011626,
+      "worker_interval_seconds": 28.27345062501263,
+      "cleanup": {
+        "local_worker_reaped": true,
+        "worker_exitcode": 0,
+        "local_process_group_cleanup_confirmed": true,
+        "termination_attempted": false
+      }
+    },
+    {
+      "call_index": 3,
+      "arm": "adaptive",
+      "role": "reviewer",
+      "request_sha256": "d0f251bdc3253a72758f23368bfa5d0a39e8a0cf88f717d58cce3d0a32479a66",
+      "input_utf8_bytes": 13082,
+      "inferenceConfig": {
+        "maxTokens": 6000
+      },
+      "additionalModelRequestFields": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "timeout_seconds": 211.717,
+      "prepared_remaining_milliseconds": 211720,
+      "response_text_sha256": "4efbeb5515956cf702e7b5b78a8101b635c7ff7c4ececf24a39871b6fad718ac",
+      "response_text_characters": 5333,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3042,
+        "outputTokens": 5843,
+        "totalTokens": 8885
+      },
+      "reasoning_content_block_count": 1,
+      "sdk_interval_seconds": 62.937985916039906,
+      "worker_interval_seconds": 63.66636179102352,
+      "cleanup": {
+        "local_worker_reaped": true,
+        "worker_exitcode": 0,
+        "local_process_group_cleanup_confirmed": true,
+        "termination_attempted": false
+      }
+    }
+  ],
+  "disabled_review_parse_failure": {
+    "response_text_sha256": "e0ae4c9b23f4f9a7ef22a94dfdbfab15cca15c60bec942514c5a5bd748f1b045",
+    "exception": "JSONDecodeError",
+    "message": "Expecting ':' delimiter",
+    "character_offset_zero_based": 1387,
+    "line_one_based": 1,
+    "column_one_based": 1388,
+    "exact_excerpt": " come from the healthy population, not the rare sick one.\",\"About 50%\",\"50% would require roughly equal true and false positives, which needs ~50% prevalence, not 1 in 1000.\",\"About 1%\":\"Closer to the prior base rate but still und",
+    "runtime_exception": "ProviderError",
+    "runtime_message": "Provider response was not valid JSON.",
+    "classification": "JSON syntax error: comma instead of required colon after About50% property in item1 choiceExplanations. Not a detected duplicate-key error or wrong top-level schema. Transport supplied complete end_turn final text at1081tokens, so no evidence of output-cap truncation.",
+    "unmodified_standalone_subobjects": [
+      {
+        "index": 0,
+        "standalone_object_parse": "valid",
+        "start": 12,
+        "end": 968,
+        "exact_span_sha256": "30cd4a7d39ab76cc4242113de972308482945e50401c952546c62971099c97b9"
+      },
+      {
+        "index": 1,
+        "standalone_object_parse": "invalid",
+        "error": "Expecting ':' delimiter",
+        "character_offset": 1387
+      },
+      {
+        "index": 2,
+        "standalone_object_parse": "valid",
+        "start": 1706,
+        "end": 2674,
+        "exact_span_sha256": "11145a4d569f9509bf8bcebcf09a8fc303ca3c3b81c7f060c70aaef235b48c6c"
+      },
+      {
+        "index": 3,
+        "standalone_object_parse": "valid",
+        "start": 2675,
+        "end": 3338,
+        "exact_span_sha256": "ffc71c90f308c2d8a4565b0dbd21d8c1a7034dd620f1e5ab76a3925bac5b8504"
+      },
+      {
+        "index": 4,
+        "standalone_object_parse": "valid",
+        "start": 3339,
+        "end": 4349,
+        "exact_span_sha256": "0866888f586a465c14d667fdfa761c2c2ae6d1055eded0c761f6c42c8c1cea93"
+      }
+    ],
+    "recovery_scope": "Four unaffected item objects can independently decode as diagnostic spans. The entire reviews envelope remains invalid and item1 cannot decode. These spans are not a complete batch and cannot safely be treated as five accepted reviews under the frozen runtime contract; no repaired or salvaged response was submitted or counted. No claim that a general recovery parser would be safe."
+  },
+  "solver_maps": {
+    "both_valid_complete_solution_schemas": true,
+    "identical_exact_judgment_maps": true,
+    "supported_per_arm": 5,
+    "refuted_per_arm": 15,
+    "uncertain_per_arm": 0,
+    "all_five_declared_supported_choices_match_authored_keys": true,
+    "scope": "Label agreement is not factual endorsement. No supported reason explicitly says its own supported choice is impossible in these outputs; the defects below are false counterfactuals, unjustified premises/strengthening and overly broad claims.",
+    "items": [
+      {
+        "index": 0,
+        "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+        "authored_key": "Small Hospital",
+        "premise_assessment": "Small Hospital is correct under the conventional common independent approximately-half boy probability. Sample counts alone do not establish that sampling model; the literal information-limit alternative remains defensible. Do not call the conventional key a numerical error.",
+        "arms": {
+          "disabled": {
+            "supported_choices": [
+              "Small Hospital"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "Large Hospital",
+                "judgment": "refuted",
+                "reason": "Larger samples produce proportions closer to the true mean (law of large numbers). Large Hospital's daily count of 45 makes extreme deviations (>60% boys) less likely than with 15 births, so it records fewer such days.",
+                "independent_reason_assessment": "assumption_sensitive",
+                "why": "Correct tail comparison under the conventional common-p≈0.5 model; overstated if claimed for all birth processes matching the stem."
+              },
+              {
+                "choice": "Both about equally",
+                "judgment": "refuted",
+                "reason": "Sample size directly affects variability. With different daily counts (45 vs 15), the probability of exceeding 60% boys differs substantially; they would not record roughly equal numbers of such days.",
+                "independent_reason_assessment": "assumption_sensitive",
+                "why": "Unequal tail probabilities under that model support the intended rejection; sample size alone does not guarantee a substantially different realized yearly count."
+              },
+              {
+                "choice": "Cannot be determined from the information given",
+                "judgment": "refuted",
+                "reason": "Statistical theory (sampling variability) clearly predicts that the smaller hospital will show more extreme proportions more often. The answer is determinable from the given information plus basic probability principles.",
+                "independent_reason_assessment": "unsupported_absolute_refutation",
+                "why": "The reason treats the missing sampling model as established and says no extra information is needed. A common IID p=0.8 reverses the ordering, so basic theory does not establish the asserted ordering from sample sizes alone."
+              },
+              {
+                "choice": "Small Hospital",
+                "judgment": "supported",
+                "reason": "With only 15 births per day, random variation is larger, making it much more likely that on any given day >60% are boys. This is a classic illustration of the law of small numbers/sampling variability; Small Hospital records more such extreme days.",
+                "independent_reason_assessment": "conditionally_supported",
+                "why": "Both reasons correctly describe greater tail frequency under a common IID probability near one-half, but do not preserve that condition."
+              }
+            ]
+          },
+          "adaptive": {
+            "supported_choices": [
+              "Small Hospital"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "Large Hospital",
+                "judgment": "refuted",
+                "reason": "Larger samples produce less variability around the true proportion. With 45 births/day the daily proportion is far less likely to stray above 60%, so Large Hospital records fewer such extreme days.",
+                "independent_reason_assessment": "assumption_sensitive",
+                "why": "Correct tail comparison under the conventional common-p≈0.5 model; overstated if claimed for all birth processes matching the stem."
+              },
+              {
+                "choice": "Both about equally",
+                "judgment": "refuted",
+                "reason": "The Law of Large Numbers means larger samples cluster closer to the population proportion (~50%). Sample size directly determines frequency of extreme outcomes, so the two hospitals will differ substantially.",
+                "independent_reason_assessment": "assumption_sensitive",
+                "why": "Unequal tail probabilities under that model support the intended rejection; sample size alone does not guarantee a substantially different realized yearly count."
+              },
+              {
+                "choice": "Cannot be determined from the information given",
+                "judgment": "refuted",
+                "reason": "Statistical theory unambiguously predicts that the smaller-sample hospital will show more extreme daily proportions; no additional empirical data is needed to reach this conclusion.",
+                "independent_reason_assessment": "unsupported_absolute_refutation",
+                "why": "The reason treats the missing sampling model as established and says no extra information is needed. A common IID p=0.8 reverses the ordering, so basic theory does not establish the asserted ordering from sample sizes alone."
+              },
+              {
+                "choice": "Small Hospital",
+                "judgment": "supported",
+                "reason": "With only 15 births/day, random variation is large enough that exceeding 60% boys (≥10 of 15) occurs far more often than with 45 births/day. This is a direct consequence of sampling variability decreasing with sample size.",
+                "independent_reason_assessment": "conditionally_supported",
+                "why": "Both reasons correctly describe greater tail frequency under a common IID probability near one-half, but do not preserve that condition."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "index": 1,
+        "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+        "authored_key": "About 9%",
+        "premise_assessment": "The stipulated prevalence, sensitivity and specificity establish posterior11/122≈9.016%; the unique offered key About9% is supported.",
+        "arms": {
+          "disabled": {
+            "supported_choices": [
+              "About 9%"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "About 99%",
+                "judgment": "refuted",
+                "reason": "This ignores the base rate. With 1/1000 prevalence, among 100,000 people: ~100 sick (99 true positives) and ~99,900 healthy (999 false positives). P(disease|positive)≈99/1098≈9%, not 99%.",
+                "independent_reason_assessment": "correct_rejection",
+                "why": "The population base rate makes the posterior much less than sensitivity/specificity."
+              },
+              {
+                "choice": "About 50%",
+                "judgment": "refuted",
+                "reason": "50% would require roughly equal numbers of true and false positives, which would need ~50% prevalence. With 1/1000 prevalence the false positives vastly outnumber true positives, giving ~9%.",
+                "independent_reason_assessment": "definite_false_counterfactual",
+                "why": "The reason says equal true/false positives need about50% prevalence. In fact0.99p=0.01(1-p) gives p=1%; prevalence50% gives posterior99%. The refuted label is correct but its counterfactual justification is false."
+              },
+              {
+                "choice": "About 1%",
+                "judgment": "refuted",
+                "reason": "1% would be close to the prior (base rate ~0.1%), but the calculation gives ~9%. 1% underestimates the posterior given a positive test result.",
+                "independent_reason_assessment": "correct_answer_rejection_with_weak_distractor_explanation",
+                "why": "About1% is not the posterior; calling1% close to the0.1% prior is imprecise and misses its exact role as the false-positive rate. The written prior0.1% and posterior≈9% are themselves correct."
+              },
+              {
+                "choice": "About 9%",
+                "judgment": "supported",
+                "reason": "Bayes' theorem: P(disease|+)= (0.99×0.001)/[(0.99×0.001)+(0.01×0.999)]= 0.00099/0.01098≈0.090, approximately 9%.",
+                "independent_reason_assessment": "supported_correct_calculation",
+                "why": "The exact displayed Bayesian calculation is correct."
+              }
+            ]
+          },
+          "adaptive": {
+            "supported_choices": [
+              "About 9%"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "About 99%",
+                "judgment": "refuted",
+                "reason": "Ignores base rate. With 1/1000 prevalence, true positives are vastly outnumbered by false positives from the 99% healthy majority, making 99% posterior probability wildly overstated.",
+                "independent_reason_assessment": "correct_rejection_minor_numeric_imprecision",
+                "why": "The reason calls the healthy share99%; stipulated prevalence1/1000 makes it99.9%. The correct0.999 factor appears in its supported-key calculation, so this is a local imprecision, not a wrong posterior or key."
+              },
+              {
+                "choice": "About 50%",
+                "judgment": "refuted",
+                "reason": "Bayesian calculation: P(disease|+)=0.00099/0.01098≈9%, far below 50%. The rare-disease base rate dominates.",
+                "independent_reason_assessment": "correct_rejection",
+                "why": "The actual posterior is about9%, so50% is not the answer."
+              },
+              {
+                "choice": "About 1%",
+                "judgment": "refuted",
+                "reason": "1% is close to the prior (~0.1%) but the correct Bayesian posterior is ~9%, not 1%. The calculation gives 0.00099/0.01098≈0.090.",
+                "independent_reason_assessment": "correct_answer_rejection_with_weak_distractor_explanation",
+                "why": "About1% is not the posterior; calling1% close to the0.1% prior is imprecise and misses its exact role as the false-positive rate. The written prior0.1% and posterior≈9% are themselves correct."
+              },
+              {
+                "choice": "About 9%",
+                "judgment": "supported",
+                "reason": "Bayes: P(+)=0.99×0.001+0.01×0.999=0.01098; P(disease|+)=0.00099/0.01098≈9%. The low base rate (1/1000) means false positives swamp true positives.",
+                "independent_reason_assessment": "supported_correct_calculation",
+                "why": "The exact displayed Bayesian calculation is correct."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "index": 2,
+        "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+        "authored_key": "A third factor (like hot weather) likely explains both patterns",
+        "premise_assessment": "No offered likelihood/causal conclusion is fully established by the displayed city association. Heat is a plausible common-cause hypothesis, not a demonstrated likely cause of this study. Both maps incorrectly declare that option supported on a strict premises-only reading.",
+        "arms": {
+          "disabled": {
+            "supported_choices": [
+              "A third factor (like hot weather) likely explains both patterns"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "Ice cream consumption causes drowning",
+                "judgment": "refuted",
+                "reason": "Correlation does not establish causation. No mechanism is established, and a confounding variable (hot weather) plausibly explains both, making a causal claim unwarranted.",
+                "independent_reason_assessment": "correct_rejection_with_unsupported_strengthening",
+                "why": "Association does not warrant the causal conclusion. The reason goes beyond that when it treats heat as established or fully explanatory; lack of an established mechanism is not proof no effect exists."
+              },
+              {
+                "choice": "Drowning causes people to buy more ice cream",
+                "judgment": "refuted",
+                "reason": "This reverses any plausible causal direction and is implausible; it is not a warranted conclusion from the observed correlation.",
+                "independent_reason_assessment": "correct_rejection_with_weak_mechanism_language",
+                "why": "The reverse-causal conclusion is not established. Calling its direction implausible does not prove it impossible, and an assumed obvious confound is not supplied evidence."
+              },
+              {
+                "choice": "The correlation is probably a statistical fluke",
+                "judgment": "refuted",
+                "reason": "The correlation between ice cream sales and drowning is well-known and consistent across many observations; it is not a fluke but is explained by a common cause (hot weather/summer).",
+                "independent_reason_assessment": "correct_rejection_with_invented_study_evidence",
+                "why": "The stem gives no basis to say probably a fluke; the reasons additionally invent consistency/repetition and an established common cause. They cannot import a textbook story as findings about this specific city study."
+              },
+              {
+                "choice": "A third factor (like hot weather) likely explains both patterns",
+                "judgment": "supported",
+                "reason": "Hot weather increases both ice cream consumption and swimming/drowning opportunities. This confounding variable is the standard, well-supported explanation for the observed correlation, making it the most warranted conclusion.",
+                "independent_reason_assessment": "unsupported_likelihood_strengthening",
+                "why": "The explanation changes a plausible confound into the actual well-supported/textbook warranted explanation. The association does not establish that likely conclusion; no fully warranted offered answer should be forced."
+              }
+            ]
+          },
+          "adaptive": {
+            "supported_choices": [
+              "A third factor (like hot weather) likely explains both patterns"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "Ice cream consumption causes drowning",
+                "judgment": "refuted",
+                "reason": "Correlation alone does not establish causation. No mechanism links ice cream to drowning, and a well-known confound (hot weather) fully explains the pattern.",
+                "independent_reason_assessment": "correct_rejection_with_unsupported_strengthening",
+                "why": "Association does not warrant the causal conclusion. The reason goes beyond that when it treats heat as established or fully explanatory; lack of an established mechanism is not proof no effect exists."
+              },
+              {
+                "choice": "Drowning causes people to buy more ice cream",
+                "judgment": "refuted",
+                "reason": "Reverse causation is both mechanistically implausible and unnecessary given the obvious confound of seasonal hot weather driving both variables.",
+                "independent_reason_assessment": "correct_rejection_with_weak_mechanism_language",
+                "why": "The reverse-causal conclusion is not established. Calling its direction implausible does not prove it impossible, and an assumed obvious confound is not supplied evidence."
+              },
+              {
+                "choice": "The correlation is probably a statistical fluke",
+                "judgment": "refuted",
+                "reason": "The correlation is consistent and well-explained by a confound (summer heat). Calling it a fluke is not the most warranted conclusion when a clear causal structure exists.",
+                "independent_reason_assessment": "correct_rejection_with_invented_study_evidence",
+                "why": "The stem gives no basis to say probably a fluke; the reasons additionally invent consistency/repetition and an established common cause. They cannot import a textbook story as findings about this specific city study."
+              },
+              {
+                "choice": "A third factor (like hot weather) likely explains both patterns",
+                "judgment": "supported",
+                "reason": "Hot weather independently raises ice cream sales and swimming/drowning rates, producing a spurious correlation. This confound explanation is the textbook warranted conclusion from such data.",
+                "independent_reason_assessment": "unsupported_likelihood_strengthening",
+                "why": "The explanation changes a plausible confound into the actual well-supported/textbook warranted explanation. The association does not establish that likely conclusion; no fully warranted offered answer should be forced."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "index": 3,
+        "prompt": "A bag contains 30 red and 70 blue marbles. You draw one marble, note its color, return it, and draw again. Given that at least one draw was red, what is the probability both draws were red?",
+        "authored_key": "About 18%",
+        "premise_assessment": "Under ordinary independent uniform replacement draws, posterior3/17≈17.647% uniquely supports About18%. Random uniform selection is conventional rather than explicitly stated; this is not a numerical error.",
+        "arms": {
+          "disabled": {
+            "supported_choices": [
+              "About 18%"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "About 51%",
+                "judgment": "refuted",
+                "reason": "P(both red)=0.09, P(at least one red)=1−0.49=0.51, so P(both red|at least one red)=0.09/0.51≈17.6%≈18%, not 51%.",
+                "independent_reason_assessment": "correct_under_ordinary_model",
+                "why": "51% is the conditioning-event probability, not the requested conditional result."
+              },
+              {
+                "choice": "About 18%",
+                "judgment": "supported",
+                "reason": "P(RR)=0.3²=0.09; P(at least one R)=1−0.7²=0.51; conditional probability=0.09/0.51≈0.176≈18%.",
+                "independent_reason_assessment": "supported_correct_under_ordinary_model",
+                "why": "0.09/0.51=3/17≈17.647%, so about18% is correct."
+              },
+              {
+                "choice": "About 9%",
+                "judgment": "refuted",
+                "reason": "9% is P(both red) unconditionally (0.3²=0.09), not conditioned on at least one being red. The conditional probability is ~18%.",
+                "independent_reason_assessment": "correct_under_ordinary_model",
+                "why": "9% is the unconditional both-red probability."
+              },
+              {
+                "choice": "About 30%",
+                "judgment": "refuted",
+                "reason": "30% is the probability of a single red draw, not the conditional probability that both draws were red given at least one was red (~18%).",
+                "independent_reason_assessment": "correct_task_specific_rejection",
+                "why": "30% is the marginal single-draw rate, not P(both red|at least one red)."
+              }
+            ]
+          },
+          "adaptive": {
+            "supported_choices": [
+              "About 18%"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "About 51%",
+                "judgment": "refuted",
+                "reason": "P(at least one red)=1−0.49=0.51, but this is the denominator, not the conditional probability requested. The answer is P(both red)/P(at least one red)=0.09/0.51≈17.6%.",
+                "independent_reason_assessment": "correct_under_ordinary_model",
+                "why": "51% is the conditioning-event probability, not the requested conditional result."
+              },
+              {
+                "choice": "About 18%",
+                "judgment": "supported",
+                "reason": "P(both red)=0.3²=0.09; P(at least one red)=1−0.7²=0.51; conditional probability=0.09/0.51≈0.176≈18%.",
+                "independent_reason_assessment": "supported_correct_under_ordinary_model",
+                "why": "0.09/0.51=3/17≈17.647%, so about18% is correct."
+              },
+              {
+                "choice": "About 9%",
+                "judgment": "refuted",
+                "reason": "9% is the unconditional P(both red)=0.09, ignoring the conditioning event 'at least one red.' The correct conditional probability is 0.09/0.51≈18%.",
+                "independent_reason_assessment": "correct_under_ordinary_model",
+                "why": "9% is the unconditional both-red probability."
+              },
+              {
+                "choice": "About 30%",
+                "judgment": "refuted",
+                "reason": "30% equals P(red) on a single draw. It does not correspond to either the conditional or unconditional probability for two draws.",
+                "independent_reason_assessment": "correct_task_specific_rejection_with_broad_wording",
+                "why": "The statement is sound if limited to the requested both-red event. Literally saying30% is neither a conditional nor unconditional probability for two draws is broader than justified: for example P(second red|first red)=30% under the same model. Do not count this as a wrong requested calculation."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "index": 4,
+        "prompt": "A company reports that 80% of surveyed customers are 'satisfied.' The survey was sent by email to 10,000 recent purchasers; 2,000 responded. Which concern most warrants skepticism about the 80% figure?",
+        "authored_key": "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "premise_assessment": "The selected may-be-more-likely option is the best-listed potential selection concern. It is not proof of motives, existing bias, its direction, or a false80% among actual respondents; it concerns extrapolation to all purchasers.",
+        "arms": {
+          "disabled": {
+            "supported_choices": [
+              "Satisfied customers may be more likely to respond than dissatisfied ones"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "The sample size of 2,000 is too small",
+                "judgment": "refuted",
+                "reason": "2,000 respondents is a large sample, more than sufficient for reliable estimates of a proportion. Sample size is not the primary concern here.",
+                "independent_reason_assessment": "reasonable_rejection_with_unqualified_precision_claim",
+                "why": "2000 is not inherently too small for the unspecified task. An adequate/reliable estimate needs a sampling design and precision target; count alone does not supply them."
+              },
+              {
+                "choice": "Email surveys are inherently unreliable",
+                "judgment": "refuted",
+                "reason": "Email surveys can be reliable; the medium itself is not the core problem. The specific bias from non-random response is the real issue, not the channel per se.",
+                "independent_reason_assessment": "correct_rejection_with_overstatement_of_existing_bias",
+                "why": "Email is not inherently unreliable. Calling response bias the specific real/identifiable problem is stronger than the evidence: it is a potential selection mechanism, not an observed satisfaction-response relationship."
+              },
+              {
+                "choice": "80% is mathematically impossible with 10,000 customers",
+                "judgment": "refuted",
+                "reason": "80% of 2,000 respondents = 1,600 satisfied. This is mathematically possible and says nothing about the other 8,000 non-respondents. There is no mathematical impossibility.",
+                "independent_reason_assessment": "correct_arithmetic_refutation",
+                "why": "80% of2000 is1600, possible within10000 purchasers. The descriptive respondent proportion may be completely accurate."
+              },
+              {
+                "choice": "Satisfied customers may be more likely to respond than dissatisfied ones",
+                "judgment": "supported",
+                "reason": "This is classic non-response/self-selection bias: dissatisfied customers are less motivated to complete a satisfaction survey, inflating the reported satisfaction rate. This is the most legitimate reason to doubt the 80% figure.",
+                "independent_reason_assessment": "unsupported_definite_direction_and_motive",
+                "why": "Both reasons assert dissatisfied customers are less motivated and therefore inflate the reported rate. These facts are unstated. A20% response rate permits both upward and downward population error;1600 satisfied respondents permit purchaser satisfaction16% through96%. This refutes the inference of guaranteed inflation, not the possibility that it occurs."
+              }
+            ]
+          },
+          "adaptive": {
+            "supported_choices": [
+              "Satisfied customers may be more likely to respond than dissatisfied ones"
+            ],
+            "matches_authored_key": true,
+            "rows": [
+              {
+                "choice": "The sample size of 2,000 is too small",
+                "judgment": "refuted",
+                "reason": "2,000 respondents yields a margin of error under ±2%, which is statistically adequate. Size is not the main validity threat here.",
+                "independent_reason_assessment": "unsupported_margin_of_error_guarantee",
+                "why": "Under ±2% needs unstated confidence/design/variance assumptions. For IID95% normal approximation, p=.8 gives ±1.753%, while worst-case p=.5 gives ±2.191%. Neither sampling independence nor a confidence level or tolerance is supplied. Thus the unconditional guarantee is unsupported; it is not an arithmetic error under the first stated illustrative model."
+              },
+              {
+                "choice": "Email surveys are inherently unreliable",
+                "judgment": "refuted",
+                "reason": "Email surveys are not inherently unreliable; reliability depends on design and response patterns. This is too broad and misses the specific, identifiable bias in this scenario.",
+                "independent_reason_assessment": "correct_rejection_with_overstatement_of_existing_bias",
+                "why": "Email is not inherently unreliable. Calling response bias the specific real/identifiable problem is stronger than the evidence: it is a potential selection mechanism, not an observed satisfaction-response relationship."
+              },
+              {
+                "choice": "80% is mathematically impossible with 10,000 customers",
+                "judgment": "refuted",
+                "reason": "80% of 2,000 respondents = 1,600 satisfied customers, which is entirely possible. There is no mathematical impossibility.",
+                "independent_reason_assessment": "correct_arithmetic_refutation",
+                "why": "80% of2000 is1600, possible within10000 purchasers. The descriptive respondent proportion may be completely accurate."
+              },
+              {
+                "choice": "Satisfied customers may be more likely to respond than dissatisfied ones",
+                "judgment": "supported",
+                "reason": "A 20% response rate creates strong potential for non-response bias: dissatisfied customers are less motivated to reply, inflating the reported satisfaction rate beyond the true population value.",
+                "independent_reason_assessment": "unsupported_definite_direction_and_motive",
+                "why": "Both reasons assert dissatisfied customers are less motivated and therefore inflate the reported rate. These facts are unstated. A20% response rate permits both upward and downward population error;1600 satisfied respondents permit purchaser satisfaction16% through96%. This refutes the inference of guaranteed inflation, not the possibility that it occurs."
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "independent_calculations": {
+    "method": "Assessor-written exact Fraction/binomial arithmetic only; no generated code or provider execution.",
+    "hospital_binomial_tail_P_more_than_60_percent": {
+      "1/2": {
+        "15": {
+          "exact": "309/2048",
+          "decimal": 0.15087890625
+        },
+        "45": {
+          "exact": "594424357095/8796093022208",
+          "decimal": 0.0675782254228352
+        }
+      },
+      "4/5": {
+        "15": {
+          "exact": "28654436352/30517578125",
+          "decimal": 0.938948570382336
+        },
+        "45": {
+          "exact": "28374803246936253563900239282176/28421709430404007434844970703125",
+          "decimal": 0.9983496353876036
+        }
+      }
+    },
+    "bayes_posterior": "11/122",
+    "bayes_posterior_decimal": 0.09016393442622951,
+    "prevalence_for_half_posterior": "1/100",
+    "marble_conditional": "3/17",
+    "survey_satisfied_respondents": 1600,
+    "survey_all_purchaser_possible_bounds": [
+      0.16,
+      0.96
+    ],
+    "illustrative_IID_normal_95pct_margin_n2000": {
+      "at_proportion_0_8": 0.017530772943598352,
+      "worst_case_0_5": 0.02191346617949794,
+      "scope": "Illustrative supplied models for auditing the precision claim, not evidence that the survey meets these models."
+    }
+  },
+  "prior_blind_assessment_references": [
+    {
+      "path": "/Users/samchou/Documents/Checkpoint/docs/evidence/runtime-fresh-blind-a-assessment-20260908.json",
+      "sha256": "1eeedfde706ed4e6580a53c1637573d361b5496c91a36b9a162fe57565f67418"
+    },
+    {
+      "path": "/Users/samchou/Documents/Checkpoint/docs/evidence/runtime-fresh-blind-b-assessment-20260908.json",
+      "sha256": "9ff4fdfeef01354f17a35c0bca1e93aa8082cf05f7e981fa570e5a1714c59075"
+    }
+  ],
+  "privacy": {
+    "private_reasoning_text_or_signatures_present": false,
+    "sdk_auth_credentials_or_authorization_headers_detected": false,
+    "scope": "Only final model text, token usage and reasoning-block counts recorded; exact-source inspection and credential-shaped field/value scan, not a universal secret detector."
+  },
+  "limits": [
+    "Post-hoc assistant assessment with prior evidence known, not a new blind expert panel or accuracy estimate.",
+    "Disabled invalid_json is a format rejection, not successful semantic detection of five defective questions.",
+    "Adaptive returned5 does not establish correctness; both solver maps force the same hospital/causal assumptions and survey direction claims.",
+    "All returned main/choice teaching fields are being independently assessed elsewhere; this record does not infer their quality from solver labels or reviewer acceptance."
+  ]
+}
