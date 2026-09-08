@@ -1,0 +1,48 @@
+{
+  "protocol": "checkpoint.solution_construction_evidence_manifest.v1",
+  "source_revision": "9826a98d1355c898ee2c952bfbc4eb81b4f58c31",
+  "plan_canonical_sha256": "b21c3b4981bcc86d53eb8e529ae183363b8c4506ef5d5cd7b799137f45a322f5",
+  "files": [
+    {
+      "path": "solution-construction-blind-assessment-20260908.json",
+      "bytes": 24095,
+      "sha256": "c261b88ebb6a69ad7ce62234668a89c0ae435a466cd6dcd38280c44e353e3ff1"
+    },
+    {
+      "path": "solution-construction-blind-packet-20260908.json",
+      "bytes": 8131,
+      "sha256": "f7acc213a0a83a0a76bd20ef32d3f8bf1f5da1f795ae27df392ba2d00ef36511"
+    },
+    {
+      "path": "solution-construction-capture-20260908.json",
+      "bytes": 85333,
+      "sha256": "610227616cd6b56d39df66b1053d07fdda3f26ab843e16106d50c6911c2354cd"
+    },
+    {
+      "path": "solution-construction-feedback-assessment-20260908.json",
+      "bytes": 47519,
+      "sha256": "dcf655df3bc18d0cb8213c008a50c94bb7f7cbd19f51a5460c6b0f2ea2dd4ad4"
+    },
+    {
+      "path": "solution-construction-operational-audit-20260908.json",
+      "bytes": 38692,
+      "sha256": "e2141a348cf94a58979ec679b63ec853d18edb16f161365655a863d3e9264be1"
+    },
+    {
+      "path": "solution-construction-plan-20260908.json",
+      "bytes": 34196,
+      "sha256": "8fd893765ef6574657bab355a48189c175b096f4c808f1e31d79aa5f00c929e7"
+    },
+    {
+      "path": "solution-construction-replay-20260908.json",
+      "bytes": 12494,
+      "sha256": "e52e4b189a6816154f3dbed1979494e80f4f7866a1109d2d9dda3c0670360608"
+    }
+  ],
+  "verification": [
+    "Exact frozen-source replay of archived capture and full plan reconstruction passed without provider or artifact execution.",
+    "All four blinded-display joins preserve exact original task and choice text.",
+    "All 10 assessed proposed feedback fields and 4 solver answer/support fields match raw capture paths and UTF-8 hashes.",
+    "Original archive file bytes preserved; temporary source paths inside records intentionally remain unchanged."
+  ]
+}

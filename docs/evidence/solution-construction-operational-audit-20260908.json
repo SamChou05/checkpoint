@@ -1,0 +1,1044 @@
+{
+  "audit": "solution-construction-operational-replay-v1",
+  "capture_path": "/tmp/checkpoint-solution-construction-capture-20260908/capture.json",
+  "capture_byte_sha256": "610227616cd6b56d39df66b1053d07fdda3f26ab843e16106d50c6911c2354cd",
+  "approved_plan_canonical_sha256": "b21c3b4981bcc86d53eb8e529ae183363b8c4506ef5d5cd7b799137f45a322f5",
+  "embedded_plan_canonical_sha256": "b21c3b4981bcc86d53eb8e529ae183363b8c4506ef5d5cd7b799137f45a322f5",
+  "fixture_canonical_sha256": "0071b4759daf8a5c2b113a529ca511c46392086c41dbb46a931d752a5536ce3a",
+  "source_revision": "9826a98d1355c898ee2c952bfbc4eb81b4f58c31",
+  "replay_checkout": "/private/tmp/checkpoint-solution-construction-live-20260908-9826a98",
+  "replay_interpreter": "/tmp/checkpoint-live-review-venv/bin/python",
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.89",
+    "botocore": "1.43.89"
+  },
+  "exact_full_plan_rebuilt": true,
+  "exact_dynamic_capture_replay": true,
+  "source_file_checks": [
+    {
+      "path": "execution_evidence.py",
+      "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "matches_plan": true
+    },
+    {
+      "path": "generation_diagnostics.py",
+      "sha256": "b01c760ffdc8c0e5b8d91151b23a984a051e7572d5d8f7ddad2650d4cfb57175",
+      "matches_plan": true
+    },
+    {
+      "path": "lambda_function.py",
+      "sha256": "c2192dc63eab7a7a220c4ace2c59b93ebd99a3cf979aae9c0255553ebd81aea2",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank.py",
+      "sha256": "8db970013ce17b0e24938f5d6e7ea67a5b615d962bddef86dae48f7ab33f121b",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_common.py",
+      "sha256": "f097cd99a65f783e5d624baad3f57c38dd94e603cc7c9f469fbada91551a84b1",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_inventory.py",
+      "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_store.py",
+      "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_worker.py",
+      "sha256": "18033f6cde877f624038f74979c8eb9cdf14bf844731b4721ee7aa751727aaac",
+      "matches_plan": true
+    },
+    {
+      "path": "question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "matches_plan": true
+    },
+    {
+      "path": "question_generation.py",
+      "sha256": "0a123227f9e9600a9a344246c090bbb7ac05cb10fb88d1f1a9e7772ed4bffd76",
+      "matches_plan": true
+    },
+    {
+      "path": "question_quality.py",
+      "sha256": "e2178e578b081c56c128876e4f29fb9e2ff9d78302a78aeae84daa170bc076c0",
+      "matches_plan": true
+    },
+    {
+      "path": "question_rule_construction.py",
+      "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "matches_plan": true
+    },
+    {
+      "path": "question_verification.py",
+      "sha256": "2f6be813a738544a076c2186943712175a976fca3cf2922a5bef7d3b53957798",
+      "matches_plan": true
+    },
+    {
+      "path": "request_contract.py",
+      "sha256": "70b8f2a7a5f233bdf5bf027a83f8871f7fab78f803eaf2070bec0b73ea1508f2",
+      "matches_plan": true
+    },
+    {
+      "path": "service_errors.py",
+      "sha256": "9c8d3bee6543290f8db804075dfbc4ca21821136614070cb323c1959980ea243",
+      "matches_plan": true
+    },
+    {
+      "path": "skill_maps.py",
+      "sha256": "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+      "matches_plan": true
+    },
+    {
+      "path": "smoke_test_backend.py",
+      "sha256": "acf5fe0b9b54d24d6f69216898fea80c76d442c1c54c91babde93fd9b0bf38a1",
+      "matches_plan": true
+    },
+    {
+      "path": "verification_policy.py",
+      "sha256": "fade0c88ff8721dba6da44a029ec90e7456f45574057c22f160dd449d6fdf397",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_source_authoring_eval.py",
+      "sha256": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_model_comparison.py",
+      "sha256": "cac5fd46efb2782fccd6b1bd19007d24109dd3caba0d3949d38f1de1c4a0322b",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_full_pipeline_smoke.py",
+      "sha256": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_learning_eval.py",
+      "sha256": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_prompt_ablation.py",
+      "sha256": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_solution_compatibility_eval.py",
+      "sha256": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_solution_construction_eval.py",
+      "sha256": "6609e43ebffede8365b2d008e44daae6eb723ff43ea48e11ee139f0bd3dcf38b",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/question_solution_construction.py",
+      "sha256": "31592bd38d744cd096680786787d5aa6e1ac58690023d97827eec8848a4ab771",
+      "matches_plan": true
+    }
+  ],
+  "model": "us.anthropic.claude-opus-4-6-v1",
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_MAX_TOKENS": "16000",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "100",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3"
+  },
+  "summary": {
+    "planned_case_denominator": 4,
+    "fresh_cases": 3,
+    "fixed_cases": 1,
+    "planned_call_ceiling": 15,
+    "observed_dispatch_intents": 7,
+    "observed_provider_calls": 7,
+    "unused_call_allowance": 8,
+    "calls_by_role": {
+      "author": 3,
+      "solver": 2,
+      "distractor": 2
+    },
+    "all_end_turn": true,
+    "known_usage_calls": 7,
+    "known_usage": {
+      "inputTokens": 4386,
+      "outputTokens": 5936
+    },
+    "known_total_tokens": 10322,
+    "largest_output_tokens": 1534,
+    "output_allowance_each": 16000,
+    "input_utf8_bytes": 19024,
+    "sum_call_elapsed_seconds": "112.418",
+    "sum_case_elapsed_seconds": "112.445",
+    "maximum_call_elapsed_seconds": 25.72,
+    "content_rejections": 4,
+    "operational_failures": 0,
+    "constructed_questions": 0,
+    "reviewer_calls": 0,
+    "all_bounded_text_fields_measured": 29,
+    "raw_length_violations": 6,
+    "operational_status": "completed",
+    "construction_feasibility": "failed; zero constructed questions among four planned cases"
+  },
+  "case_inventory": [
+    {
+      "case_id": "fresh_photography_motion",
+      "capture_locator": "$.results[0]",
+      "planned_roles": [
+        "author",
+        "solver",
+        "distractor",
+        "reviewer"
+      ],
+      "observed_roles": [
+        "author",
+        "solver",
+        "distractor"
+      ],
+      "skipped_roles": [
+        "reviewer"
+      ],
+      "status": "content_rejected",
+      "first_reported_rejection": {
+        "role": "distractor",
+        "reason": "explanation:length"
+      },
+      "all_observed_length_violations": [
+        {
+          "call_index": 2,
+          "parsed_path": "$.explanation",
+          "characters": 423,
+          "maximum_characters": 420
+        },
+        {
+          "call_index": 2,
+          "parsed_path": "$.answerExplanation",
+          "characters": 410,
+          "maximum_characters": 280
+        }
+      ],
+      "constructed_question_present": false,
+      "review_observation_present": false,
+      "provider_calls": 3,
+      "elapsed_seconds": 58.681
+    },
+    {
+      "case_id": "fresh_writing_modifiers",
+      "capture_locator": "$.results[1]",
+      "planned_roles": [
+        "author",
+        "solver",
+        "distractor",
+        "reviewer"
+      ],
+      "observed_roles": [
+        "author"
+      ],
+      "skipped_roles": [
+        "solver",
+        "distractor",
+        "reviewer"
+      ],
+      "status": "content_rejected",
+      "first_reported_rejection": {
+        "role": "author",
+        "reason": "prompt:length"
+      },
+      "all_observed_length_violations": [
+        {
+          "call_index": 3,
+          "parsed_path": "$.task.prompt",
+          "characters": 365,
+          "maximum_characters": 320
+        },
+        {
+          "call_index": 3,
+          "parsed_path": "$.task.objective",
+          "characters": 149,
+          "maximum_characters": 140
+        }
+      ],
+      "constructed_question_present": false,
+      "review_observation_present": false,
+      "provider_calls": 1,
+      "elapsed_seconds": 15.557
+    },
+    {
+      "case_id": "fresh_moon_observations",
+      "capture_locator": "$.results[2]",
+      "planned_roles": [
+        "author",
+        "solver",
+        "distractor",
+        "reviewer"
+      ],
+      "observed_roles": [
+        "author"
+      ],
+      "skipped_roles": [
+        "solver",
+        "distractor",
+        "reviewer"
+      ],
+      "status": "content_rejected",
+      "first_reported_rejection": {
+        "role": "author",
+        "reason": "prompt:length"
+      },
+      "all_observed_length_violations": [
+        {
+          "call_index": 4,
+          "parsed_path": "$.task.prompt",
+          "characters": 721,
+          "maximum_characters": 320
+        }
+      ],
+      "constructed_question_present": false,
+      "review_observation_present": false,
+      "provider_calls": 1,
+      "elapsed_seconds": 19.727
+    },
+    {
+      "case_id": "fixed_all_pairs_stem",
+      "capture_locator": "$.results[3]",
+      "planned_roles": [
+        "solver",
+        "distractor",
+        "reviewer"
+      ],
+      "observed_roles": [
+        "solver",
+        "distractor"
+      ],
+      "skipped_roles": [
+        "reviewer"
+      ],
+      "status": "content_rejected",
+      "first_reported_rejection": {
+        "role": "distractor",
+        "reason": "answerExplanation:length"
+      },
+      "all_observed_length_violations": [
+        {
+          "call_index": 6,
+          "parsed_path": "$.answerExplanation",
+          "characters": 307,
+          "maximum_characters": 280
+        }
+      ],
+      "constructed_question_present": false,
+      "review_observation_present": false,
+      "provider_calls": 2,
+      "elapsed_seconds": 18.48
+    }
+  ],
+  "calls": [
+    {
+      "call_index": 0,
+      "capture_locator": "$.calls[0]",
+      "case_id": "fresh_photography_motion",
+      "role": "author",
+      "request_canonical_sha256": "7ca97a6e886528f8edca5e37bda70e0a01a0c4fa98ad2a943b97ff24353aab2d",
+      "exact_request_replayed": true,
+      "bindings": {
+        "context_canonical_sha256": "ff9573305a6ae65e38cc1e35b08f399bedc66efda8624b6cde8f1d5a43200768"
+      },
+      "raw_final_text_sha256": "a5f3c3ffd3799080b819e4616ad382aaec0e3986e3d8e619c7ba1d9ba5ef9ec6",
+      "raw_final_text_array_canonical_sha256": "384c08f62107b08f73889caf7ba631ddaef7209ecafefed1b83e961b9f88bbe3",
+      "raw_to_saved_parsed_join": true,
+      "status": "response_received",
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 535,
+        "outputTokens": 1534,
+        "totalTokens": 2069,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 24.593,
+      "input_utf8_bytes": 2403,
+      "provider_dispatch_attempted": true
+    },
+    {
+      "call_index": 1,
+      "capture_locator": "$.calls[1]",
+      "case_id": "fresh_photography_motion",
+      "role": "solver",
+      "request_canonical_sha256": "2a48bd0023149db212b1b71f71c7a6bd2e0c1ac0fe05b77361b9a6f66d59d4b7",
+      "exact_request_replayed": true,
+      "bindings": {
+        "task_canonical_sha256": "21406a80d785ea12d300bdc54a48fac381e1d5a0cae2fa96af9f30cad283505e",
+        "context_canonical_sha256": "ff9573305a6ae65e38cc1e35b08f399bedc66efda8624b6cde8f1d5a43200768"
+      },
+      "raw_final_text_sha256": "35162f3edd24c04eef738ab9c9074c5f6a8183e62ad5b3e08c96922906b85b00",
+      "raw_final_text_array_canonical_sha256": "b46ae01630b9f1b5c5d3f9ca597c2306b7b9a80f3c767b69d5a2d88fea3cecb4",
+      "raw_to_saved_parsed_join": true,
+      "status": "response_received",
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 723,
+        "outputTokens": 351,
+        "totalTokens": 1074,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 8.357,
+      "input_utf8_bytes": 3220,
+      "provider_dispatch_attempted": true
+    },
+    {
+      "call_index": 2,
+      "capture_locator": "$.calls[2]",
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "request_canonical_sha256": "6b9a3b63072cfec17345038080094c97917b57fc4ab5a7cff9c60e1b382cff7f",
+      "exact_request_replayed": true,
+      "bindings": {
+        "task_canonical_sha256": "21406a80d785ea12d300bdc54a48fac381e1d5a0cae2fa96af9f30cad283505e",
+        "solution_canonical_sha256": "e7119216387d765bd0021653cf49af35d2c22d626d37dc4e39657b872c0a27f4",
+        "context_canonical_sha256": "ff9573305a6ae65e38cc1e35b08f399bedc66efda8624b6cde8f1d5a43200768"
+      },
+      "raw_final_text_sha256": "14002f305936c6481af55d9201b45c40b958f63d1e5e172098ed950d55c3d6a3",
+      "raw_final_text_array_canonical_sha256": "e9543eaaf442c9967817071acfad1b3aedec50e83b23820dea7be2ef81404996",
+      "raw_to_saved_parsed_join": true,
+      "status": "response_received",
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 776,
+        "outputTokens": 1449,
+        "totalTokens": 2225,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 25.72,
+      "input_utf8_bytes": 3388,
+      "provider_dispatch_attempted": true
+    },
+    {
+      "call_index": 3,
+      "capture_locator": "$.calls[3]",
+      "case_id": "fresh_writing_modifiers",
+      "role": "author",
+      "request_canonical_sha256": "b78c703abadbc802d21f0b74310c15e91c328bd186cf64010dc18b9de1089119",
+      "exact_request_replayed": true,
+      "bindings": {
+        "context_canonical_sha256": "3010c1f7f0c179e6cd7a8931a13e21372f799ee73f531db4dafcc1b711a08b70"
+      },
+      "raw_final_text_sha256": "b208a87ee9294147e1f0bcb5496cefd3c0268bd2863916e3cfdbc5c0a5dd0b38",
+      "raw_final_text_array_canonical_sha256": "002709cb9014d784e0c47483f6d227319eea31635b90e9403a1df8cbd7c1ba62",
+      "raw_to_saved_parsed_join": true,
+      "status": "response_received",
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 553,
+        "outputTokens": 770,
+        "totalTokens": 1323,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 15.549,
+      "input_utf8_bytes": 2476,
+      "provider_dispatch_attempted": true
+    },
+    {
+      "call_index": 4,
+      "capture_locator": "$.calls[4]",
+      "case_id": "fresh_moon_observations",
+      "role": "author",
+      "request_canonical_sha256": "06bffd00207b685a384a23439deac70644732afc4f4e1af15429d0d6a5aa1e9e",
+      "exact_request_replayed": true,
+      "bindings": {
+        "context_canonical_sha256": "55ab76c02595ba86e03f8cc2026741772964f60667796aa81a2534c47bcc504f"
+      },
+      "raw_final_text_sha256": "3bc7c7ad76435a5c5d78eda0508f9b40b05e4a887a79ced497f4abb29b24cd62",
+      "raw_final_text_array_canonical_sha256": "0f5ece2486d7c79cbf02fbfe75f4713a63d70cd366bfc58e35e5d6f15d21727b",
+      "raw_to_saved_parsed_join": true,
+      "status": "response_received",
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 701,
+        "outputTokens": 920,
+        "totalTokens": 1621,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 19.724,
+      "input_utf8_bytes": 3102,
+      "provider_dispatch_attempted": true
+    },
+    {
+      "call_index": 5,
+      "capture_locator": "$.calls[5]",
+      "case_id": "fixed_all_pairs_stem",
+      "role": "solver",
+      "request_canonical_sha256": "b4a9d9b77e5d3fea6e94afd888a45e4513c1a029a7590b272fc1389fb09d8a8f",
+      "exact_request_replayed": true,
+      "bindings": {
+        "task_canonical_sha256": "b48bd0ede9bc169f346fbcaf00aa024342b6cf89aa5209d564fa32284e52179e",
+        "context_canonical_sha256": "60eb6dc245b39c6247a84dc06b36d6afa1933cdeb555c1df2a2b25f44aa0b13d"
+      },
+      "raw_final_text_sha256": "cb44795a07c3293e347e4e85a09effce5a9dc58b8a287f5a4e189f3b850e74f8",
+      "raw_final_text_array_canonical_sha256": "01cb5da91bc50017df86cc26f412ff3acbb7dd8fa6b456a4c894d98fdb9644cf",
+      "raw_to_saved_parsed_join": true,
+      "status": "response_received",
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 499,
+        "outputTokens": 317,
+        "totalTokens": 816,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 6.226,
+      "input_utf8_bytes": 2147,
+      "provider_dispatch_attempted": true
+    },
+    {
+      "call_index": 6,
+      "capture_locator": "$.calls[6]",
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "request_canonical_sha256": "39e713a6b1a371588e3bec9160e0ec1894641ed9ff3fc6f22b99c316b003f109",
+      "exact_request_replayed": true,
+      "bindings": {
+        "task_canonical_sha256": "b48bd0ede9bc169f346fbcaf00aa024342b6cf89aa5209d564fa32284e52179e",
+        "solution_canonical_sha256": "53953d26a59a96056eb1d94bc79b3516182b82ac9f9f3f21d580ffe5ae83d731",
+        "context_canonical_sha256": "60eb6dc245b39c6247a84dc06b36d6afa1933cdeb555c1df2a2b25f44aa0b13d"
+      },
+      "raw_final_text_sha256": "f0109e71d22c9c3d55706d7d33045cb29a2787f0ce9133e4ea45a29eedf081ae",
+      "raw_final_text_array_canonical_sha256": "8ba9e96ac48aacb9745f299c6882dd88fa90faf0eba9958358361142300cdb0f",
+      "raw_to_saved_parsed_join": true,
+      "status": "response_received",
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 599,
+        "outputTokens": 595,
+        "totalTokens": 1194,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 12.249,
+      "input_utf8_bytes": 2288,
+      "provider_dispatch_attempted": true
+    }
+  ],
+  "all_text_bound_measurements": [
+    {
+      "call_index": 0,
+      "case_id": "fresh_photography_motion",
+      "role": "author",
+      "parsed_path": "$.task.prompt",
+      "characters": 287,
+      "trimmed_characters": 287,
+      "utf8_bytes": 287,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 320,
+      "sha256_utf8": "bf6652016a557955492383f95337275234fce8a43b8bf43abe51e861eefa2284",
+      "length_valid": true
+    },
+    {
+      "call_index": 0,
+      "case_id": "fresh_photography_motion",
+      "role": "author",
+      "parsed_path": "$.task.topic",
+      "characters": 37,
+      "trimmed_characters": 37,
+      "utf8_bytes": 37,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "5630f96ac7c2822fbb881c7b3f306b5832905aa4e304c9e27aca2b8c3788ed5e",
+      "length_valid": true
+    },
+    {
+      "call_index": 0,
+      "case_id": "fresh_photography_motion",
+      "role": "author",
+      "parsed_path": "$.task.objective",
+      "characters": 126,
+      "trimmed_characters": 126,
+      "utf8_bytes": 126,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "ca1d29b517ea566c77dae8e7ae165162fa6c73c9cb7619d32ea73cfbb356139c",
+      "length_valid": true
+    },
+    {
+      "call_index": 1,
+      "case_id": "fresh_photography_motion",
+      "role": "solver",
+      "parsed_path": "$.solution.answerText",
+      "characters": 84,
+      "trimmed_characters": 84,
+      "utf8_bytes": 84,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "e7d4d551e13d4c7ca6953cd0b5cd9d16721a8d183399a1702cee2d9872b952a2",
+      "length_valid": true
+    },
+    {
+      "call_index": 1,
+      "case_id": "fresh_photography_motion",
+      "role": "solver",
+      "parsed_path": "$.solution.support",
+      "characters": 485,
+      "trimmed_characters": 485,
+      "utf8_bytes": 489,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 600,
+      "sha256_utf8": "10b3ec1cfb5e196afd414420a71d60f90463fdc044eb70b7f99bba32f9dc2a3b",
+      "length_valid": true
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.distractors[0].text",
+      "characters": 84,
+      "trimmed_characters": 84,
+      "utf8_bytes": 84,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "5d01baa5c4446d771d79b31eee9c9f97e415d8a4c1e2a8a6eabeafde7655bc55",
+      "length_valid": true
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.distractors[0].explanation",
+      "characters": 258,
+      "trimmed_characters": 258,
+      "utf8_bytes": 258,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "f8b273dc1e2b9f4c927720ea78fb70ba7ff9e93ac94b1082c34ce3c4ee11392b",
+      "length_valid": true
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.distractors[1].text",
+      "characters": 94,
+      "trimmed_characters": 94,
+      "utf8_bytes": 94,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "28049f4b33de61282b3e6bdcaca99d8e6e3d6bf1f603ced90fb36b06c622dd13",
+      "length_valid": true
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.distractors[1].explanation",
+      "characters": 254,
+      "trimmed_characters": 254,
+      "utf8_bytes": 254,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "f8ae07cc010a9403eb8473315c2f10799796d254245c82775f19e6a7abe385f2",
+      "length_valid": true
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.distractors[2].text",
+      "characters": 94,
+      "trimmed_characters": 94,
+      "utf8_bytes": 94,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "8a06f10fe5127cd4d79cfaa7029530b6295fe062ebbf9a0436f346d933373612",
+      "length_valid": true
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.distractors[2].explanation",
+      "characters": 276,
+      "trimmed_characters": 276,
+      "utf8_bytes": 278,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "267ea0b416237891799549fef5a221cf9a5d359fe85f4d57206bcf19aa8d7ffb",
+      "length_valid": true
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.explanation",
+      "characters": 423,
+      "trimmed_characters": 423,
+      "utf8_bytes": 427,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 420,
+      "sha256_utf8": "5051c8b9fb5d182c2b0f1f1d834fc9b8306b84630507a970c220c2067442255c",
+      "length_valid": false
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.answerExplanation",
+      "characters": 410,
+      "trimmed_characters": 410,
+      "utf8_bytes": 412,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "380f308837f7bcb14e7eaa97b71c1781b0eb732b957280a0c72fb7faf38cc65e",
+      "length_valid": false
+    },
+    {
+      "call_index": 3,
+      "case_id": "fresh_writing_modifiers",
+      "role": "author",
+      "parsed_path": "$.task.prompt",
+      "characters": 365,
+      "trimmed_characters": 365,
+      "utf8_bytes": 365,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 320,
+      "sha256_utf8": "78e55e7fc2462ad6959787a26b4a55ab5f48ca3b860722785a0220903f38bff7",
+      "length_valid": false
+    },
+    {
+      "call_index": 3,
+      "case_id": "fresh_writing_modifiers",
+      "role": "author",
+      "parsed_path": "$.task.topic",
+      "characters": 53,
+      "trimmed_characters": 53,
+      "utf8_bytes": 53,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "55406ed4e8c18f998b2db6a3507d95cebd6e9b065da4f06cfc36c998f04e24ad",
+      "length_valid": true
+    },
+    {
+      "call_index": 3,
+      "case_id": "fresh_writing_modifiers",
+      "role": "author",
+      "parsed_path": "$.task.objective",
+      "characters": 149,
+      "trimmed_characters": 149,
+      "utf8_bytes": 149,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "39a990ebedd6be2ecad54164db25a3e549e26394aa817990f5b4f560467053a6",
+      "length_valid": false
+    },
+    {
+      "call_index": 4,
+      "case_id": "fresh_moon_observations",
+      "role": "author",
+      "parsed_path": "$.task.prompt",
+      "characters": 721,
+      "trimmed_characters": 721,
+      "utf8_bytes": 721,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 320,
+      "sha256_utf8": "024304f101aaf3136ffbab55ab6c9adf58dc96f6c9bc7445145d6342a22e56c0",
+      "length_valid": false
+    },
+    {
+      "call_index": 4,
+      "case_id": "fresh_moon_observations",
+      "role": "author",
+      "parsed_path": "$.task.topic",
+      "characters": 58,
+      "trimmed_characters": 58,
+      "utf8_bytes": 58,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "0b57398d3fc7816af875c21450b3e2993b1864cc1c56a8d453c843052c7c0364",
+      "length_valid": true
+    },
+    {
+      "call_index": 4,
+      "case_id": "fresh_moon_observations",
+      "role": "author",
+      "parsed_path": "$.task.objective",
+      "characters": 138,
+      "trimmed_characters": 138,
+      "utf8_bytes": 138,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "00a87828603377caed8ccfc441df3e64a5434d8feeca6054b0e488c42362983b",
+      "length_valid": true
+    },
+    {
+      "call_index": 5,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "solver",
+      "parsed_path": "$.solution.answerText",
+      "characters": 138,
+      "trimmed_characters": 138,
+      "utf8_bytes": 140,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "257ae5f10501f6821f52684f00a5c21c4c185cf77b78d96346ac76bdf12e47ea",
+      "length_valid": true
+    },
+    {
+      "call_index": 5,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "solver",
+      "parsed_path": "$.solution.support",
+      "characters": 401,
+      "trimmed_characters": 401,
+      "utf8_bytes": 406,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 600,
+      "sha256_utf8": "1fb1e3aebd0dc8ef861fa6145d595de95d8ce0847ef85ffa8a7d3492aab4c121",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.distractors[0].text",
+      "characters": 89,
+      "trimmed_characters": 89,
+      "utf8_bytes": 89,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "dd173de6c20617ef7eaf01f9267eccdcba37ed2459e6f232e4f300a9b72ccadf",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.distractors[0].explanation",
+      "characters": 170,
+      "trimmed_characters": 170,
+      "utf8_bytes": 170,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "7b43897224cfe8ea7ea707886ed374d037d8145b5705c087b86832cdd8e79314",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.distractors[1].text",
+      "characters": 100,
+      "trimmed_characters": 100,
+      "utf8_bytes": 102,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "6e39cbbee87eb9980e98b27d8f1ab90fcdcce9f4128e13d5e8d36088e79c1587",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.distractors[1].explanation",
+      "characters": 169,
+      "trimmed_characters": 169,
+      "utf8_bytes": 172,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "52f67395fb50ff9004d89d652a2e9bc803533df902366de12485910665caef5b",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.distractors[2].text",
+      "characters": 100,
+      "trimmed_characters": 100,
+      "utf8_bytes": 102,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "d75b5ecf5b1e6800df26ea3b8b018b3c3bdfd58ee6ee8a7f49d491699403285c",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.distractors[2].explanation",
+      "characters": 177,
+      "trimmed_characters": 177,
+      "utf8_bytes": 177,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "2b6c7b3de186eebe7b3cb1b2514f1fecc7d6c3977b455eb79859c674455754bf",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.explanation",
+      "characters": 285,
+      "trimmed_characters": 285,
+      "utf8_bytes": 285,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 420,
+      "sha256_utf8": "07b738606af9ef41614677c76dcd53df309e137656fb965f019895560354598f",
+      "length_valid": true
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.answerExplanation",
+      "characters": 307,
+      "trimmed_characters": 307,
+      "utf8_bytes": 311,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "ba14f0172b25160fc901c4a3686c49b40940cfcc7a8f259d4c13fe1a198c8013",
+      "length_valid": false
+    }
+  ],
+  "all_raw_length_violations": [
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.explanation",
+      "characters": 423,
+      "trimmed_characters": 423,
+      "utf8_bytes": 427,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 420,
+      "sha256_utf8": "5051c8b9fb5d182c2b0f1f1d834fc9b8306b84630507a970c220c2067442255c",
+      "length_valid": false,
+      "raw_exact_value": "A stationary wall cannot exhibit subject motion blur. The sole change affecting the wall between the two shots was switching from a tripod to handholding at a slower shutter speed. Camera shake during 1/60 s moved the entire image across the sensor, blurring every element—stationary and moving—uniformly. The decisive clue is that the object has no motion of its own, so the blur must originate from the camera's movement.",
+      "raw_response_locator": "$.calls[2].response.text",
+      "parsed_saved_locator": "$.results[0].stage_outputs.distractor.explanation"
+    },
+    {
+      "call_index": 2,
+      "case_id": "fresh_photography_motion",
+      "role": "distractor",
+      "parsed_path": "$.answerExplanation",
+      "characters": 410,
+      "trimmed_characters": 410,
+      "utf8_bytes": 412,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "380f308837f7bcb14e7eaa97b71c1781b0eb732b957280a0c72fb7faf38cc65e",
+      "length_valid": false,
+      "raw_exact_value": "Because the wall is motionless, its blur cannot come from subject motion. Removing the tripod introduced camera shake, and at 1/60 s the exposure lasted long enough for hand movement to shift the image across the sensor, producing blur on all scene elements—including the stationary wall. This matches the source principle that longer durations record more motion; here the relevant motion is the camera's own.",
+      "raw_response_locator": "$.calls[2].response.text",
+      "parsed_saved_locator": "$.results[0].stage_outputs.distractor.answerExplanation"
+    },
+    {
+      "call_index": 3,
+      "case_id": "fresh_writing_modifiers",
+      "role": "author",
+      "parsed_path": "$.task.prompt",
+      "characters": 365,
+      "trimmed_characters": 365,
+      "utf8_bytes": 365,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 320,
+      "sha256_utf8": "78e55e7fc2462ad6959787a26b4a55ab5f48ca3b860722785a0220903f38bff7",
+      "length_valid": false,
+      "raw_exact_value": "A school newsletter intends to credit parents for organizing a fundraiser. The draft reads: 'Organizing the bake sale over the weekend, the students raised $500 for new library books.' As written, who does the introductory participial modifier grammatically identify as having organized the bake sale, and why does this conflict with the newsletter's stated intent?",
+      "raw_response_locator": "$.calls[3].response.text",
+      "parsed_saved_locator": "$.results[1].stage_outputs.author.task.prompt"
+    },
+    {
+      "call_index": 3,
+      "case_id": "fresh_writing_modifiers",
+      "role": "author",
+      "parsed_path": "$.task.objective",
+      "characters": 149,
+      "trimmed_characters": 149,
+      "utf8_bytes": 149,
+      "minimum_trimmed_characters": 1,
+      "maximum_characters": 140,
+      "sha256_utf8": "39a990ebedd6be2ecad54164db25a3e549e26394aa817990f5b4f560467053a6",
+      "length_valid": false,
+      "raw_exact_value": "Interpret an original sentence in its stated context, diagnose modifier attachment, and distinguish the grammatical meaning from the intended meaning",
+      "raw_response_locator": "$.calls[3].response.text",
+      "parsed_saved_locator": "$.results[1].stage_outputs.author.task.objective"
+    },
+    {
+      "call_index": 4,
+      "case_id": "fresh_moon_observations",
+      "role": "author",
+      "parsed_path": "$.task.prompt",
+      "characters": 721,
+      "trimmed_characters": 721,
+      "utf8_bytes": 721,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 320,
+      "sha256_utf8": "024304f101aaf3136ffbab55ab6c9adf58dc96f6c9bc7445145d6342a22e56c0",
+      "length_valid": false,
+      "raw_exact_value": "An observer in Sydney, Australia sees the Moon high in the sky at 6 AM local time. The right half of the lunar disk (as the observer sees it) is illuminated. A friend claims this must be a first-quarter Moon because the right side is lit. Background facts: (1) At most latitudes a first-quarter Moon rises near midday and sets near midnight; a last-quarter Moon rises near midnight and sets near midday. (2) Observers in different hemispheres see the same phase at a given time, but its left-right orientation on the disk is reversed between Northern and Southern Hemispheres. Using both the time of observation and the observer's hemisphere, identify the actual phase and explain why the friend's reasoning is incorrect.",
+      "raw_response_locator": "$.calls[4].response.text",
+      "parsed_saved_locator": "$.results[2].stage_outputs.author.task.prompt"
+    },
+    {
+      "call_index": 6,
+      "case_id": "fixed_all_pairs_stem",
+      "role": "distractor",
+      "parsed_path": "$.answerExplanation",
+      "characters": 307,
+      "trimmed_characters": 307,
+      "utf8_bytes": 311,
+      "minimum_trimmed_characters": 12,
+      "maximum_characters": 280,
+      "sha256_utf8": "ba14f0172b25160fc901c4a3686c49b40940cfcc7a8f259d4c13fe1a198c8013",
+      "length_valid": false,
+      "raw_exact_value": "Iterating the array once while maintaining a hash set allows each complement lookup in O(1) average time. For every element x, checking whether k − x is already in the set and then inserting x ensures all pairs are found in a single O(n) pass, with the set using O(n) space—meeting both constraints exactly.",
+      "raw_response_locator": "$.calls[6].response.text",
+      "parsed_saved_locator": "$.results[3].stage_outputs.distractor.answerExplanation"
+    }
+  ],
+  "scope_and_limits": [
+    "Read-only local replay and exact length/accounting inspection; no provider/native calls, task repairs, retries or replacements.",
+    "Every bounded textual field in all seven raw parsed responses was checked, including fields after each validator first failure. Length uses Python len(raw string) and len(strip()) exactly as frozen contract.",
+    "Raw rejected values are preserved verbatim in JSON together with raw/parsed locators and UTF-8 hashes; no trimming or shortening was used for reconstruction.",
+    "Operational completed means the predeclared cases finished or content-rejected without a provider/envelope failure. It does not mean construction or factual feasibility succeeded.",
+    "All seven calls ended normally below 16000 output tokens. Returned overlong field contents, not an observed output-token truncation, triggered these rejections.",
+    "There are zero constructed MCQs and zero reviewer outputs. This audit does not assess solver correctness, hypothetical repaired questions, distractor quality, teaching accuracy or difficulty.",
+    "Call and case elapsed values are recorded wall times, not provider billing or a single independently measured end-to-end process duration.",
+    "Canonical replay and hashes establish consistency with preserved artifacts and this source checkout, not cryptographic provider authenticity or factual truth."
+  ]
+}

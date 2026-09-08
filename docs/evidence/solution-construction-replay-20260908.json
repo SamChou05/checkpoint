@@ -1,0 +1,184 @@
+{
+  "results": [
+    {
+      "case_id": "fresh_photography_motion",
+      "status": "content_rejected",
+      "stage_outputs": {
+        "author": {
+          "task": {
+            "prompt": "A tripod-mounted camera at 1/500 s captures a cyclist and a wall both sharp. The photographer then handholds at 1/60 s; both the cyclist and the stationary wall appear blurred. A stationary object cannot show subject motion blur. What primarily caused the wall's blur in the second shot?",
+            "topic": "Diagnosing motion blur in photography",
+            "objective": "Interpret a concrete photographic result and shooting constraints to distinguish subject motion blur from camera movement blur",
+            "difficulty": 3
+          }
+        },
+        "solver": {
+          "solution": {
+            "status": "answered",
+            "answerText": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+            "support": "A stationary wall has no motion of its own, so subject motion blur is impossible for it. The only change between the two shots affecting the wall is switching from a tripod to handholding at a slower shutter speed. Camera shake during the longer exposure moves the entire image across the sensor, blurring every element—stationary or moving—equally. The source confirms that longer durations record more motion; here the relevant motion is the camera's own movement, not the subject's.",
+            "assumptionsRequired": []
+          }
+        },
+        "distractor": {
+          "distractors": [
+            {
+              "text": "Overexposure from the slower shutter speed washed out and softened the wall's detail",
+              "explanation": "Overexposure clips highlights and raises brightness but does not cause the directional smearing of edges characteristic of motion blur. Exposure level and motion blur are distinct phenomena; the wall's blur shows displaced detail, not merely blown-out tones."
+            },
+            {
+              "text": "The wall experienced subtle subject motion blur from air vibrations during the longer exposure",
+              "explanation": "A solid wall does not move perceptibly from a passing cyclist's air currents. Subject motion blur requires the subject itself to shift significantly relative to the sensor during exposure. The wall is genuinely stationary, so this mechanism cannot apply."
+            },
+            {
+              "text": "A shallower depth of field in the second shot placed the wall outside the plane of sharp focus",
+              "explanation": "Depth of field is governed by aperture, focal length and subject distance—not shutter speed directly. The scenario does not state the aperture changed. Moreover, defocus blur would not depend on whether the camera was tripod-mounted or handheld, yet the tripod shot was sharp."
+            }
+          ],
+          "explanation": "A stationary wall cannot exhibit subject motion blur. The sole change affecting the wall between the two shots was switching from a tripod to handholding at a slower shutter speed. Camera shake during 1/60 s moved the entire image across the sensor, blurring every element—stationary and moving—uniformly. The decisive clue is that the object has no motion of its own, so the blur must originate from the camera's movement.",
+          "answerExplanation": "Because the wall is motionless, its blur cannot come from subject motion. Removing the tripod introduced camera shake, and at 1/60 s the exposure lasted long enough for hand movement to shift the image across the sensor, producing blur on all scene elements—including the stationary wall. This matches the source principle that longer durations record more motion; here the relevant motion is the camera's own."
+        }
+      },
+      "correctness_assessment": "unassessed",
+      "feedback_assessment": "unassessed",
+      "task": {
+        "prompt": "A tripod-mounted camera at 1/500 s captures a cyclist and a wall both sharp. The photographer then handholds at 1/60 s; both the cyclist and the stationary wall appear blurred. A stationary object cannot show subject motion blur. What primarily caused the wall's blur in the second shot?",
+        "topic": "Diagnosing motion blur in photography",
+        "objective": "Interpret a concrete photographic result and shooting constraints to distinguish subject motion blur from camera movement blur",
+        "difficulty": 3
+      },
+      "solution": {
+        "status": "answered",
+        "answerText": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+        "support": "A stationary wall has no motion of its own, so subject motion blur is impossible for it. The only change between the two shots affecting the wall is switching from a tripod to handholding at a slower shutter speed. Camera shake during the longer exposure moves the entire image across the sensor, blurring every element—stationary or moving—equally. The source confirms that longer durations record more motion; here the relevant motion is the camera's own movement, not the subject's.",
+        "assumptionsRequired": []
+      },
+      "rejection": {
+        "role": "distractor",
+        "reason": "explanation:length"
+      },
+      "dispatch_intents": 3,
+      "provider_calls": 3,
+      "usage_known": true,
+      "known_usage_subtotal": {
+        "inputTokens": 2034,
+        "outputTokens": 3334
+      }
+    },
+    {
+      "case_id": "fresh_writing_modifiers",
+      "status": "content_rejected",
+      "stage_outputs": {
+        "author": {
+          "task": {
+            "prompt": "A school newsletter intends to credit parents for organizing a fundraiser. The draft reads: 'Organizing the bake sale over the weekend, the students raised $500 for new library books.' As written, who does the introductory participial modifier grammatically identify as having organized the bake sale, and why does this conflict with the newsletter's stated intent?",
+            "topic": "Dangling and misplaced modifiers in English sentences",
+            "objective": "Interpret an original sentence in its stated context, diagnose modifier attachment, and distinguish the grammatical meaning from the intended meaning",
+            "difficulty": 3
+          }
+        }
+      },
+      "correctness_assessment": "unassessed",
+      "feedback_assessment": "unassessed",
+      "rejection": {
+        "role": "author",
+        "reason": "prompt:length"
+      },
+      "dispatch_intents": 1,
+      "provider_calls": 1,
+      "usage_known": true,
+      "known_usage_subtotal": {
+        "inputTokens": 553,
+        "outputTokens": 770
+      }
+    },
+    {
+      "case_id": "fresh_moon_observations",
+      "status": "content_rejected",
+      "stage_outputs": {
+        "author": {
+          "task": {
+            "prompt": "An observer in Sydney, Australia sees the Moon high in the sky at 6 AM local time. The right half of the lunar disk (as the observer sees it) is illuminated. A friend claims this must be a first-quarter Moon because the right side is lit. Background facts: (1) At most latitudes a first-quarter Moon rises near midday and sets near midnight; a last-quarter Moon rises near midnight and sets near midday. (2) Observers in different hemispheres see the same phase at a given time, but its left-right orientation on the disk is reversed between Northern and Southern Hemispheres. Using both the time of observation and the observer's hemisphere, identify the actual phase and explain why the friend's reasoning is incorrect.",
+            "topic": "Lunar phases, viewing geometry, and hemisphere orientation",
+            "objective": "Use concrete observations to distinguish lunar phases by connecting illumination orientation and observing time to Sun-Earth-Moon geometry",
+            "difficulty": 4
+          }
+        }
+      },
+      "correctness_assessment": "unassessed",
+      "feedback_assessment": "unassessed",
+      "rejection": {
+        "role": "author",
+        "reason": "prompt:length"
+      },
+      "dispatch_intents": 1,
+      "provider_calls": 1,
+      "usage_known": true,
+      "known_usage_subtotal": {
+        "inputTokens": 701,
+        "outputTokens": 920
+      }
+    },
+    {
+      "case_id": "fixed_all_pairs_stem",
+      "status": "content_rejected",
+      "stage_outputs": {
+        "solver": {
+          "solution": {
+            "status": "answered",
+            "answerText": "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+            "support": "Iterate the array once. For each element x, compute complement = k - x and look it up in a hash set (O(1) average). If found, (x, complement) is a valid pair. Then add x to the set. One pass → O(n) time. The hash set stores at most n elements → O(n) space. Sorting-based two-pointer is O(n log n) time; brute-force nested loops is O(n²). Only the hash-set approach meets both O(n) time and O(n) space.",
+            "assumptionsRequired": []
+          }
+        },
+        "distractor": {
+          "distractors": [
+            {
+              "text": "Sort the array, then use two pointers moving inward to find pairs. O(n) time, O(n) space.",
+              "explanation": "Sorting requires O(n log n) time at minimum (comparison-based), so the two-pointer technique after sorting cannot achieve O(n) time even though the scan itself is linear."
+            },
+            {
+              "text": "Use nested loops: for each element x, scan the rest of the array for (k − x). O(n) time, O(n) space.",
+              "explanation": "Nested loops check every pair, resulting in O(n²) time, not O(n). Each element is compared against up to n − 1 others, and no auxiliary structure reduces the inner scan."
+            },
+            {
+              "text": "For each element x, binary search for (k − x) in the original unsorted array. O(n) time, O(n) space.",
+              "explanation": "Binary search requires a sorted sequence. On an unsorted array it cannot be applied directly, and even on a sorted copy each search costs O(log n), giving O(n log n) total time."
+            }
+          ],
+          "explanation": "Finding pairs that sum to k in O(n) time demands O(1)-average lookups for each element's complement. A hash set provides exactly this: one pass through the array, one constant-time lookup per element, and at most n stored entries. Sorting-based or brute-force methods exceed O(n) time.",
+          "answerExplanation": "Iterating the array once while maintaining a hash set allows each complement lookup in O(1) average time. For every element x, checking whether k − x is already in the set and then inserting x ensures all pairs are found in a single O(n) pass, with the set using O(n) space—meeting both constraints exactly."
+        }
+      },
+      "correctness_assessment": "unassessed",
+      "feedback_assessment": "unassessed",
+      "task": {
+        "difficulty": 3,
+        "objective": "Analyze the requirements of finding all matching pairs",
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "topic": "hash maps"
+      },
+      "solution": {
+        "status": "answered",
+        "answerText": "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+        "support": "Iterate the array once. For each element x, compute complement = k - x and look it up in a hash set (O(1) average). If found, (x, complement) is a valid pair. Then add x to the set. One pass → O(n) time. The hash set stores at most n elements → O(n) space. Sorting-based two-pointer is O(n log n) time; brute-force nested loops is O(n²). Only the hash-set approach meets both O(n) time and O(n) space.",
+        "assumptionsRequired": []
+      },
+      "rejection": {
+        "role": "distractor",
+        "reason": "answerExplanation:length"
+      },
+      "dispatch_intents": 2,
+      "provider_calls": 2,
+      "usage_known": true,
+      "known_usage_subtotal": {
+        "inputTokens": 1098,
+        "outputTokens": 912
+      }
+    }
+  ],
+  "dispatch_intents": 7,
+  "provider_calls": 7,
+  "input_utf8_bytes": 19024,
+  "scope": "Exact recorded construction replay only; factual and teaching assessments remain separate."
+}

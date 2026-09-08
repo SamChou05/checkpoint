@@ -1,0 +1,600 @@
+{
+  "protocol": "checkpoint.solution_construction_feedback_assessment.v1",
+  "assessor": "review_design",
+  "assessment_kind": "Second unblinded assistant feedback review; not fully independent consensus, educator consensus or learner-calibrated evidence.",
+  "inputs": {
+    "capture_path": "/tmp/checkpoint-solution-construction-capture-20260908/capture.json",
+    "capture_byte_sha256": "610227616cd6b56d39df66b1053d07fdda3f26ab843e16106d50c6911c2354cd",
+    "capture_plan_canonical_sha256": "b21c3b4981bcc86d53eb8e529ae183363b8c4506ef5d5cd7b799137f45a322f5",
+    "blind_assessment_path": "/tmp/checkpoint-solution-construction-blind-assessment-20260908.json",
+    "blind_assessment_byte_sha256": "c261b88ebb6a69ad7ce62234668a89c0ae435a466cd6dcd38280c44e353e3ff1",
+    "blind_packet_path": "/tmp/checkpoint-solution-construction-blind-packet-20260908.json",
+    "blind_packet_byte_sha256": "f7acc213a0a83a0a76bd20ef32d3f8bf1f5da1f795ae27df392ba2d00ef36511"
+  },
+  "review_exposure": {
+    "earlier_blind_assessment_separately_frozen": true,
+    "feedback_assessor_read_frozen_blind_report": true,
+    "root_preliminary_findings_shared_before_this_record_froze": true,
+    "shared_root_findings": "Root agreed before this freeze that the all-pairs solution/key/support ignore index-pair output and ambiguity, and that photography has a best-listed shake diagnosis but unsupported causal certainty and invented directional smear in feedback. Root asked for worst-case comparison-model qualification on sorting.",
+    "consequence": "This record is a second unblinded assistant review, not an independent blind replication or independent consensus claim. The earlier blind content record is unchanged."
+  },
+  "method": {
+    "provider_calls": 0,
+    "native_operations": 0,
+    "new_external_research_calls": 0,
+    "source_prompt_or_feedback_repairs": 0,
+    "reference_basis": "Exact source summaries in the frozen case contexts; the prior frozen blind assessment and its primary-source links; direct mathematical and semantic reasoning. No new source execution or external research.",
+    "hash_convention": "Text hashes use exact UTF-8 bytes. Canonical JSON uses ensure_ascii=False, sorted keys, compact comma/colon separators and allow_nan=False. Input-file hashes use original bytes.",
+    "qualification_convention": "Supported core with qualifications does not count as unqualified full-field support. material_semantic_defect=null marks the sorting scope/notation qualification without forcing its severity into a proved-false category."
+  },
+  "summary": {
+    "planned_cases": 4,
+    "raw_solver_records_assessed": 2,
+    "raw_solver_answer_fields_assessed": 2,
+    "raw_solver_support_fields_assessed": 2,
+    "complete_supported_solver_records": 0,
+    "proposed_main_explanations_assessed": 2,
+    "proposed_correct_choice_explanations_assessed": 2,
+    "proposed_distractor_explanations_assessed": 6,
+    "total_proposed_explanation_fields_assessed": 10,
+    "proposed_fields_with_clear_material_semantic_defects": 6,
+    "proposed_fields_with_qualified_supported_core": 3,
+    "proposed_fields_supported_without_qualification": 1,
+    "over_limit_proposed_explanation_fields": 3,
+    "cases_with_complete_supported_proposed_feedback": 0,
+    "cases_without_solutions_choices_or_feedback": 2,
+    "final_review_outputs_available": 0,
+    "final_review_feedback_fields_available": 0,
+    "returned_questions": 0,
+    "changed_blind_judgments": 0,
+    "disagreements_with_blind_conclusions": 0,
+    "disagreements_with_root_preliminary_conclusions": 0,
+    "no_correctness_credit_for_length_rejections": true
+  },
+  "cases": [
+    {
+      "case_id": "fresh_photography_motion",
+      "source_case_index": 0,
+      "fixture_case_canonical_sha256": "73c40bbc2466ee478439a95fb614a27d9fbbd2b78b9dca76e37789228b3aee69",
+      "context_canonical_sha256": "ff9573305a6ae65e38cc1e35b08f399bedc66efda8624b6cde8f1d5a43200768",
+      "goal": {
+        "title": "Learn to diagnose motion blur and make deliberate shutter choices",
+        "focusAreas": "Interpret a concrete photographic result and stated shooting constraints to distinguish subject motion, camera movement and changes in light reaching the sensor.",
+        "currentLevel": "Intermediate"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Nikon: shutter duration, light and motion (inspected summary)",
+          "url": "https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-shutter-speed",
+          "text": "Shutter duration controls how long light reaches the sensor. With other conditions fixed, a shorter duration admits less light. Shorter durations tend to reduce recorded subject motion; longer durations show more motion blur. Whether a particular duration freezes a subject depends on the actual motion and shooting conditions. A source example's successful duration is not a universal threshold."
+        }
+      ],
+      "task": {
+        "prompt": "A tripod-mounted camera at 1/500 s captures a cyclist and a wall both sharp. The photographer then handholds at 1/60 s; both the cyclist and the stationary wall appear blurred. A stationary object cannot show subject motion blur. What primarily caused the wall's blur in the second shot?",
+        "topic": "Diagnosing motion blur in photography",
+        "objective": "Interpret a concrete photographic result and shooting constraints to distinguish subject motion blur from camera movement blur",
+        "difficulty": 3
+      },
+      "task_canonical_sha256": "21406a80d785ea12d300bdc54a48fac381e1d5a0cae2fa96af9f30cad283505e",
+      "prompt_sha256": "bf6652016a557955492383f95337275234fce8a43b8bf43abe51e861eefa2284",
+      "blind_case_canonical_sha256": "2bcac98bfcd7ccc256a3021807fdf20ad04bfff03b48d24111e6daec54379cb9",
+      "blind_packet_case_canonical_sha256": "cd46249b38659fb5f12a7caed699394cf74437106a891aab91766b786d4e833d",
+      "exact_task_goal_source_joins": true,
+      "call_joins": [
+        {
+          "call_index": 0,
+          "role": "author",
+          "request_canonical_sha256": "7ca97a6e886528f8edca5e37bda70e0a01a0c4fa98ad2a943b97ff24353aab2d",
+          "stage_output_canonical_sha256": "b0b276fc5f8e692175523cfa552b2ed3fdc2a56b64e4d370acd407b77fd8a64f",
+          "joined_final_text_sha256": "a5f3c3ffd3799080b819e4616ad382aaec0e3986e3d8e619c7ba1d9ba5ef9ec6",
+          "raw_to_stage_exact": true
+        },
+        {
+          "call_index": 1,
+          "role": "solver",
+          "request_canonical_sha256": "2a48bd0023149db212b1b71f71c7a6bd2e0c1ac0fe05b77361b9a6f66d59d4b7",
+          "stage_output_canonical_sha256": "cd950104d57351689f3e623a4beeb25e00d6d143ea1da1e5f8909bd67186b639",
+          "joined_final_text_sha256": "35162f3edd24c04eef738ab9c9074c5f6a8183e62ad5b3e08c96922906b85b00",
+          "raw_to_stage_exact": true
+        },
+        {
+          "call_index": 2,
+          "role": "distractor",
+          "request_canonical_sha256": "6b9a3b63072cfec17345038080094c97917b57fc4ab5a7cff9c60e1b382cff7f",
+          "stage_output_canonical_sha256": "d7c54203c6c117c3691e4ae41b6d1ccdc702b6b2eca013c96282505d91fe6670",
+          "joined_final_text_sha256": "14002f305936c6481af55d9201b45c40b958f63d1e5e172098ed950d55c3d6a3",
+          "raw_to_stage_exact": true
+        }
+      ],
+      "runtime_case_status": "content_rejected",
+      "runtime_rejection": {
+        "role": "distractor",
+        "reason": "explanation:length"
+      },
+      "final_review_output_available": false,
+      "final_review_main_feedback": null,
+      "final_review_choice_feedback": null,
+      "final_review_eligibility": null,
+      "returned_question": null,
+      "frozen_blind_difficulty": {
+        "rating": 2,
+        "basis": "For the expected classroom interpretation, this is a direct application of camera shake to a stationary blurred background after handholding. The prompt supplies the subject-motion exclusion itself. The original cyclist and 1/500-second image do little additional reasoning work; missing controls should not be counted as extra cognitive difficulty.",
+        "meets_fresh_level_3": false,
+        "valid_item_difficulty_certified": false
+      },
+      "frozen_blind_warranted_choices": [],
+      "prior_blind_judgments_changed": false,
+      "disagreements_with_frozen_blind_conclusions": [],
+      "solver_answer_available": true,
+      "solver_assessment": {
+        "raw_solution": {
+          "status": "answered",
+          "answerText": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+          "support": "A stationary wall has no motion of its own, so subject motion blur is impossible for it. The only change between the two shots affecting the wall is switching from a tripod to handholding at a slower shutter speed. Camera shake during the longer exposure moves the entire image across the sensor, blurring every element—stationary or moving—equally. The source confirms that longer durations record more motion; here the relevant motion is the camera's own movement, not the subject's.",
+          "assumptionsRequired": []
+        },
+        "solution_canonical_sha256": "e7119216387d765bd0021653cf49af35d2c22d626d37dc4e39657b872c0a27f4",
+        "fields": [
+          {
+            "field": "answerText",
+            "source_json_path": "$.results[0].stage_outputs.solver.solution.answerText",
+            "text": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+            "text_sha256": "e7d4d551e13d4c7ca6953cd0b5cd9d16721a8d183399a1702cee2d9872b952a2",
+            "characters": 84,
+            "disposition": "unsupported_definite_causal_claim",
+            "fully_supported": false,
+            "assessment": "Camera shake is the natural intended/best-listed diagnosis, consistent with the frozen blind assessment, but handholding at 1/60 s does not establish actual shake or that it primarily caused this blur. The task does not control focus, aperture, exposure and framing or report diagnostic blur morphology. This is not proof that shake was impossible or that another cause actually occurred."
+          },
+          {
+            "field": "support",
+            "source_json_path": "$.results[0].stage_outputs.solver.solution.support",
+            "text": "A stationary wall has no motion of its own, so subject motion blur is impossible for it. The only change between the two shots affecting the wall is switching from a tripod to handholding at a slower shutter speed. Camera shake during the longer exposure moves the entire image across the sensor, blurring every element—stationary or moving—equally. The source confirms that longer durations record more motion; here the relevant motion is the camera's own movement, not the subject's.",
+            "text_sha256": "10b3ec1cfb5e196afd414420a71d60f90463fdc044eb70b7f99bba32f9dc2a3b",
+            "characters": 485,
+            "disposition": "unsupported_conditions_and_uniformity",
+            "fully_supported": false,
+            "assessment": "The stationary-wall exclusion of subject motion is supported. The only-change assertion is not a stated premise. Equal blur of stationary and moving elements is overgeneralized; moving subjects can add motion, and camera displacement need not be spatially uniform. The source supports exposure-duration/motion relationships under relevant conditions, not this definite causal account."
+          }
+        ],
+        "complete_supported_solution": false,
+        "assumptions_observation": "The empty assumptionsRequired array is not evidence that the asserted conclusion needs no extra conditions. See the exact answer/support findings above."
+      },
+      "solver_frozen_key": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+      "solver_key_sha256": "e7d4d551e13d4c7ca6953cd0b5cd9d16721a8d183399a1702cee2d9872b952a2",
+      "raw_choice_order": [
+        "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+        "Overexposure from the slower shutter speed washed out and softened the wall's detail",
+        "The wall experienced subtle subject motion blur from air vibrations during the longer exposure",
+        "A shallower depth of field in the second shot placed the wall outside the plane of sharp focus"
+      ],
+      "blind_choice_order": [
+        "Overexposure from the slower shutter speed washed out and softened the wall's detail",
+        "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+        "The wall experienced subtle subject motion blur from air vibrations during the longer exposure",
+        "A shallower depth of field in the second shot placed the wall outside the plane of sharp focus"
+      ],
+      "choice_sets_join_exactly": true,
+      "raw_candidate_content_canonical_sha256": "e6bf8c3fe1d325df0ec5562cbf7c03feccda74fa423404c8ea5cb5bc4cea143d",
+      "proposed_explanation_fields": [
+        {
+          "field": "explanation",
+          "source_json_path": "$.results[0].stage_outputs.distractor.explanation",
+          "text": "A stationary wall cannot exhibit subject motion blur. The sole change affecting the wall between the two shots was switching from a tripod to handholding at a slower shutter speed. Camera shake during 1/60 s moved the entire image across the sensor, blurring every element—stationary and moving—uniformly. The decisive clue is that the object has no motion of its own, so the blur must originate from the camera's movement.",
+          "text_sha256": "5051c8b9fb5d182c2b0f1f1d834fc9b8306b84630507a970c220c2067442255c",
+          "characters": 423,
+          "hard_cap": 420,
+          "within_original_field_limit": false,
+          "associated_choice": null,
+          "associated_choice_sha256": null,
+          "disposition": "unsupported_causal_exclusivity_and_uniformity",
+          "material_semantic_defect": true,
+          "fully_supported_without_qualification": false,
+          "assessment": "The stationary-wall subject-motion exclusion is supported. The claimed sole change silently assumes unchanged focus, aperture, framing and exposure conditions. The conclusion that blur must come from camera movement is not established. Equal blur across moving and stationary scene elements is also unwarranted: subject motion can add blur, and camera-induced displacement is not necessarily uniform. This is an underqualified diagnosis, not proof of a different actual cause.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "answerExplanation",
+          "source_json_path": "$.results[0].stage_outputs.distractor.answerExplanation",
+          "text": "Because the wall is motionless, its blur cannot come from subject motion. Removing the tripod introduced camera shake, and at 1/60 s the exposure lasted long enough for hand movement to shift the image across the sensor, producing blur on all scene elements—including the stationary wall. This matches the source principle that longer durations record more motion; here the relevant motion is the camera's own.",
+          "text_sha256": "380f308837f7bcb14e7eaa97b71c1781b0eb732b957280a0c72fb7faf38cc65e",
+          "characters": 410,
+          "hard_cap": 280,
+          "within_original_field_limit": false,
+          "associated_choice": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+          "associated_choice_sha256": "e7d4d551e13d4c7ca6953cd0b5cd9d16721a8d183399a1702cee2d9872b952a2",
+          "disposition": "unsupported_definite_motion_attribution",
+          "material_semantic_defect": true,
+          "fully_supported_without_qualification": false,
+          "assessment": "The reason asserts that removing the tripod introduced actual shake and that hand movement shifted this image. Neither event nor its predominance is established by the stated observations. Longer exposure can record motion, but the source does not prove camera motion occurred here. Excluding subject motion of the wall does not exclude defocus or other loss of detail.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "distractors[0].explanation",
+          "source_json_path": "$.results[0].stage_outputs.distractor.distractors[0].explanation",
+          "text": "Overexposure clips highlights and raises brightness but does not cause the directional smearing of edges characteristic of motion blur. Exposure level and motion blur are distinct phenomena; the wall's blur shows displaced detail, not merely blown-out tones.",
+          "text_sha256": "f8b273dc1e2b9f4c927720ea78fb70ba7ff9e93ac94b1082c34ce3c4ee11392b",
+          "characters": 258,
+          "hard_cap": 280,
+          "within_original_field_limit": true,
+          "associated_choice": "Overexposure from the slower shutter speed washed out and softened the wall's detail",
+          "associated_choice_sha256": "5d01baa5c4446d771d79b31eee9c9f97e415d8a4c1e2a8a6eabeafde7655bc55",
+          "disposition": "invented_observed_blur_features",
+          "material_semantic_defect": true,
+          "fully_supported_without_qualification": false,
+          "assessment": "The distinction between clipping/brightness and motion smearing can be useful. However, the stem says only blurred: it does not report directional smearing, displaced edges or absence of blown-out tones. The reason invents these diagnostic observations to exclude the competing cause.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "distractors[1].explanation",
+          "source_json_path": "$.results[0].stage_outputs.distractor.distractors[1].explanation",
+          "text": "A solid wall does not move perceptibly from a passing cyclist's air currents. Subject motion blur requires the subject itself to shift significantly relative to the sensor during exposure. The wall is genuinely stationary, so this mechanism cannot apply.",
+          "text_sha256": "f8ae07cc010a9403eb8473315c2f10799796d254245c82775f19e6a7abe385f2",
+          "characters": 254,
+          "hard_cap": 280,
+          "within_original_field_limit": true,
+          "associated_choice": "The wall experienced subtle subject motion blur from air vibrations during the longer exposure",
+          "associated_choice_sha256": "28049f4b33de61282b3e6bdcaca99d8e6e3d6bf1f603ced90fb36b06c622dd13",
+          "disposition": "supported_core_with_nonessential_unestablished_detail",
+          "material_semantic_defect": false,
+          "fully_supported_without_qualification": false,
+          "assessment": "The explicitly stationary wall suffices to reject the proposed subject-motion mechanism. The passing-cyclist air-current/solid-wall story is not supplied evidence and is unnecessary. I do not classify that ordinary physical claim as demonstrated false; its core refutation is sound, but the extra scenario should not be presented as an observed fact.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "distractors[2].explanation",
+          "source_json_path": "$.results[0].stage_outputs.distractor.distractors[2].explanation",
+          "text": "Depth of field is governed by aperture, focal length and subject distance—not shutter speed directly. The scenario does not state the aperture changed. Moreover, defocus blur would not depend on whether the camera was tripod-mounted or handheld, yet the tripod shot was sharp.",
+          "text_sha256": "267ea0b416237891799549fef5a221cf9a5d359fe85f4d57206bcf19aa8d7ffb",
+          "characters": 276,
+          "hard_cap": 280,
+          "within_original_field_limit": true,
+          "associated_choice": "A shallower depth of field in the second shot placed the wall outside the plane of sharp focus",
+          "associated_choice_sha256": "8a06f10fe5127cd4d79cfaa7029530b6295fe062ebbf9a0436f346d933373612",
+          "disposition": "unsupported_exclusion_from_unstated_controls",
+          "material_semantic_defect": true,
+          "fully_supported_without_qualification": false,
+          "assessment": "Aperture, focal length and subject distance affect depth of field; shutter duration does not directly set it. That general rule is sound. Failure to mention aperture/focus changes does not establish their absence, and a sharp earlier tripod image does not exclude defocus in the later image. The conclusion that this alternative is definitely wrong therefore needs unprovided controls.",
+          "replacement_text_produced": false
+        }
+      ],
+      "feedback_assessment": "all_five_proposed_fields_assessed_offline",
+      "complete_supported_feedback": false,
+      "original_rejected_text_preserved": true,
+      "admission_interpretation": "The actual case was rejected for field length before final review. These semantic findings are offline assessment, not correctness successes of that runtime rejection. No repaired or hypothetical admission is counted."
+    },
+    {
+      "case_id": "fresh_writing_modifiers",
+      "source_case_index": 1,
+      "fixture_case_canonical_sha256": "446afd2f27ed86a2b47f0abbf31c860b77a7efab890519f48a6a0880e4170ce3",
+      "context_canonical_sha256": "3010c1f7f0c179e6cd7a8931a13e21372f799ee73f531db4dafcc1b711a08b70",
+      "goal": {
+        "title": "Write clear English sentences that preserve the intended actor and meaning",
+        "focusAreas": "Interpret an original sentence in its stated context, diagnose modifier attachment, and distinguish a revision that preserves the intended meaning from one that merely sounds grammatical.",
+        "currentLevel": "Intermediate"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Purdue OWL: dangling modifiers (inspected summary)",
+          "url": "https://owl.purdue.edu/owl/general_writing/mechanics/dangling_modifiers_and_how_to_correct_them.html",
+          "text": "An introductory participial modifier needs a clearly identified logical actor. In the ordinary construction discussed here, that actor is the subject of the following main clause. A repair can name that actor as the main subject or give the introductory clause its own subject and finite verb. Several grammatical rewrites may exist, so any additional requirement about intended meaning or allowed changes must be stated in the exercise."
+        }
+      ],
+      "task": {
+        "prompt": "A school newsletter intends to credit parents for organizing a fundraiser. The draft reads: 'Organizing the bake sale over the weekend, the students raised $500 for new library books.' As written, who does the introductory participial modifier grammatically identify as having organized the bake sale, and why does this conflict with the newsletter's stated intent?",
+        "topic": "Dangling and misplaced modifiers in English sentences",
+        "objective": "Interpret an original sentence in its stated context, diagnose modifier attachment, and distinguish the grammatical meaning from the intended meaning",
+        "difficulty": 3
+      },
+      "task_canonical_sha256": "126f5c96a483b81fc39a0c5017587f3db66d1e674c752748618d4afb5a684323",
+      "prompt_sha256": "78e55e7fc2462ad6959787a26b4a55ab5f48ca3b860722785a0220903f38bff7",
+      "blind_case_canonical_sha256": "daba28f36654eb0abd5371ab7a295f2874d0aae4a7bafae5b6e17ef8e5838b98",
+      "blind_packet_case_canonical_sha256": "0b9e7cf66ae28892f5af6851c79e3f686a3669650df5f6fc6d5551a5e087feff",
+      "exact_task_goal_source_joins": true,
+      "call_joins": [
+        {
+          "call_index": 3,
+          "role": "author",
+          "request_canonical_sha256": "b78c703abadbc802d21f0b74310c15e91c328bd186cf64010dc18b9de1089119",
+          "stage_output_canonical_sha256": "317de71700891e26c835e58d7cd12d607bf4ebb72f8a82fb2be0346d9709fd98",
+          "joined_final_text_sha256": "b208a87ee9294147e1f0bcb5496cefd3c0268bd2863916e3cfdbc5c0a5dd0b38",
+          "raw_to_stage_exact": true
+        }
+      ],
+      "runtime_case_status": "content_rejected",
+      "runtime_rejection": {
+        "role": "author",
+        "reason": "prompt:length"
+      },
+      "final_review_output_available": false,
+      "final_review_main_feedback": null,
+      "final_review_choice_feedback": null,
+      "final_review_eligibility": null,
+      "returned_question": null,
+      "frozen_blind_difficulty": {
+        "rating": null,
+        "task_only_reasoning_estimate": 2,
+        "basis": "Apply the familiar introductory-participial-modifier attachment rule to the explicitly named main-clause subject and compare it with the stated intended actor. The sentence and context are concrete, but this does not yet require evaluating competing revisions or interacting constraints.",
+        "final_mcq_difficulty_unknown": true
+      },
+      "frozen_blind_warranted_choices": null,
+      "prior_blind_judgments_changed": false,
+      "disagreements_with_frozen_blind_conclusions": [],
+      "solver_answer_available": false,
+      "solver_assessment": null,
+      "proposed_explanation_fields": [],
+      "feedback_assessment": "unavailable",
+      "complete_supported_feedback": null,
+      "availability_reason": "Only an overlong raw author task exists. No solver, choices, distractor feedback or final reviewer was generated. Manual possible answers in the blind report are not model outputs."
+    },
+    {
+      "case_id": "fresh_moon_observations",
+      "source_case_index": 2,
+      "fixture_case_canonical_sha256": "c5f429161f758a88498af3c1c8187533d2824fa0934ac7b4dfcfd9b1bc90b330",
+      "context_canonical_sha256": "55ab76c02595ba86e03f8cc2026741772964f60667796aa81a2534c47bcc504f",
+      "goal": {
+        "title": "Understand lunar phases from observations and Sun-Earth-Moon geometry",
+        "focusAreas": "Use concrete observations to distinguish changing phase, viewing orientation and an eclipse; connect the observation to the geometry instead of merely naming a phase.",
+        "currentLevel": "Intermediate"
+      },
+      "sourceDocuments": [
+        {
+          "name": "NASA: lunar phases and viewing geometry (inspected summaries)",
+          "url": "https://science.nasa.gov/moon/top-moon-questions/",
+          "text": "Outside lunar eclipses, sunlight illuminates roughly half of the Moon. Ordinary phases reflect how much of that illuminated half faces Earth, not Earth's shadow covering the Moon. Observers in different hemispheres see the same phase at a given time, though its orientation differs. Full Moon places the illuminated near side toward Earth; at new Moon the illuminated far side faces away from Earth. The far side is not permanently dark."
+        },
+        {
+          "name": "NASA: phase sequence and approximate observing times (inspected summary)",
+          "url": "https://science.nasa.gov/moon/moon-phases/",
+          "text": "The phase sequence runs from new through waxing crescent, first quarter, waxing gibbous, full, waning gibbous, last quarter and waning crescent. At most latitudes, a first-quarter Moon rises roughly near midday and sets near midnight; a last-quarter Moon rises roughly near midnight and sets near midday. These are approximate phase relationships, not precise local schedules; season and location affect rise and set. A new Moon usually passes near the Sun in Earth's sky, rather than directly across it, because the lunar orbit is inclined."
+        }
+      ],
+      "task": {
+        "prompt": "An observer in Sydney, Australia sees the Moon high in the sky at 6 AM local time. The right half of the lunar disk (as the observer sees it) is illuminated. A friend claims this must be a first-quarter Moon because the right side is lit. Background facts: (1) At most latitudes a first-quarter Moon rises near midday and sets near midnight; a last-quarter Moon rises near midnight and sets near midday. (2) Observers in different hemispheres see the same phase at a given time, but its left-right orientation on the disk is reversed between Northern and Southern Hemispheres. Using both the time of observation and the observer's hemisphere, identify the actual phase and explain why the friend's reasoning is incorrect.",
+        "topic": "Lunar phases, viewing geometry, and hemisphere orientation",
+        "objective": "Use concrete observations to distinguish lunar phases by connecting illumination orientation and observing time to Sun-Earth-Moon geometry",
+        "difficulty": 4
+      },
+      "task_canonical_sha256": "af972b3f2d36597bdf7615af4ee2d0eab73219b65e73c203980dc215cd0df478",
+      "prompt_sha256": "024304f101aaf3136ffbab55ab6c9adf58dc96f6c9bc7445145d6342a22e56c0",
+      "blind_case_canonical_sha256": "8e6c4154b00cde33a1874dab938c26076213d4fabec34ffbbb9b09e1a88e8d77",
+      "blind_packet_case_canonical_sha256": "8b95f440b969c6421a80d003ae18a17029cde074fd4f11c6d5d79e15268418bc",
+      "exact_task_goal_source_joins": true,
+      "call_joins": [
+        {
+          "call_index": 4,
+          "role": "author",
+          "request_canonical_sha256": "06bffd00207b685a384a23439deac70644732afc4f4e1af15429d0d6a5aa1e9e",
+          "stage_output_canonical_sha256": "2193e4275b6575c0b80d09510c2488d0e0ca58f2e1f340b38a4911637fdd9f2e",
+          "joined_final_text_sha256": "3bc7c7ad76435a5c5d78eda0508f9b40b05e4a887a79ced497f4abb29b24cd62",
+          "raw_to_stage_exact": true
+        }
+      ],
+      "runtime_case_status": "content_rejected",
+      "runtime_rejection": {
+        "role": "author",
+        "reason": "prompt:length"
+      },
+      "final_review_output_available": false,
+      "final_review_main_feedback": null,
+      "final_review_choice_feedback": null,
+      "final_review_eligibility": null,
+      "returned_question": null,
+      "frozen_blind_difficulty": {
+        "rating": null,
+        "task_only_reasoning_estimate": 2,
+        "basis": "Match morning visibility to the supplied last-quarter schedule, then reject the universal right-lit shortcut using the supplied hemisphere distinction. These are direct applications of supplied relationships; the timing alone identifies the intended phase, so the second cue is not an interacting constraint needed to solve it.",
+        "final_mcq_difficulty_unknown": true
+      },
+      "frozen_blind_warranted_choices": null,
+      "prior_blind_judgments_changed": false,
+      "disagreements_with_frozen_blind_conclusions": [],
+      "solver_answer_available": false,
+      "solver_assessment": null,
+      "proposed_explanation_fields": [],
+      "feedback_assessment": "unavailable",
+      "complete_supported_feedback": null,
+      "availability_reason": "Only an overlong raw author task exists. No solver, choices, distractor feedback or final reviewer was generated. Manual possible answers in the blind report are not model outputs."
+    },
+    {
+      "case_id": "fixed_all_pairs_stem",
+      "source_case_index": 3,
+      "fixture_case_canonical_sha256": "cd348d4b4bb34b2bcd9365756f0e1b6d172067c7570d90ba711548ab29d21dec",
+      "context_canonical_sha256": "60eb6dc245b39c6247a84dc06b36d6afa1933cdeb555c1df2a2b25f44aa0b13d",
+      "goal": {
+        "title": "Prepare for LeetCode interviews",
+        "focusAreas": "hash maps"
+      },
+      "sourceDocuments": [],
+      "task": {
+        "difficulty": 3,
+        "objective": "Analyze the requirements of finding all matching pairs",
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "topic": "hash maps"
+      },
+      "task_canonical_sha256": "b48bd0ede9bc169f346fbcaf00aa024342b6cf89aa5209d564fa32284e52179e",
+      "prompt_sha256": "48e90221cb373693a0fafeffbd8f78c2af541b7f298029b22db56713ee03efd3",
+      "blind_case_canonical_sha256": "40faf4ef195cfe1aa84b15eaf01344b05d80c0803f5e19b41e885c2456d355be",
+      "blind_packet_case_canonical_sha256": "56c0ef5433fadd11da801e3159e1393110a926d8f19b26f94bb4dfedea0ae29b",
+      "exact_task_goal_source_joins": true,
+      "call_joins": [
+        {
+          "call_index": 5,
+          "role": "solver",
+          "request_canonical_sha256": "b4a9d9b77e5d3fea6e94afd888a45e4513c1a029a7590b272fc1389fb09d8a8f",
+          "stage_output_canonical_sha256": "f4557bb7aad67e716099f155596851c7091288afca6547df0d629f45e24194ef",
+          "joined_final_text_sha256": "cb44795a07c3293e347e4e85a09effce5a9dc58b8a287f5a4e189f3b850e74f8",
+          "raw_to_stage_exact": true
+        },
+        {
+          "call_index": 6,
+          "role": "distractor",
+          "request_canonical_sha256": "39e713a6b1a371588e3bec9160e0ec1894641ed9ff3fc6f22b99c316b003f109",
+          "stage_output_canonical_sha256": "a0c054d1c41df88e2a349cce8bd359076a4c5dd749dc16d18c4dd8f8540ccf23",
+          "joined_final_text_sha256": "f0109e71d22c9c3d55706d7d33045cb29a2787f0ce9133e4ea45a29eedf081ae",
+          "raw_to_stage_exact": true
+        }
+      ],
+      "runtime_case_status": "content_rejected",
+      "runtime_rejection": {
+        "role": "distractor",
+        "reason": "answerExplanation:length"
+      },
+      "final_review_output_available": false,
+      "final_review_main_feedback": null,
+      "final_review_choice_feedback": null,
+      "final_review_eligibility": null,
+      "returned_question": null,
+      "frozen_blind_difficulty": {
+        "rating": 3,
+        "basis": "Diagnosing the item requires interpreting the all-pairs output requirement and distinguishing relevant algorithms from their invalid complexity labels. This is a diagnostic reasoning estimate for an invalid MCQ, not a usable question difficulty or evidence of successful level-3 teaching.",
+        "valid_item_difficulty_certified": false
+      },
+      "frozen_blind_warranted_choices": [],
+      "prior_blind_judgments_changed": false,
+      "disagreements_with_frozen_blind_conclusions": [],
+      "solver_answer_available": true,
+      "solver_assessment": {
+        "raw_solution": {
+          "status": "answered",
+          "answerText": "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+          "support": "Iterate the array once. For each element x, compute complement = k - x and look it up in a hash set (O(1) average). If found, (x, complement) is a valid pair. Then add x to the set. One pass → O(n) time. The hash set stores at most n elements → O(n) space. Sorting-based two-pointer is O(n log n) time; brute-force nested loops is O(n²). Only the hash-set approach meets both O(n) time and O(n) space.",
+          "assumptionsRequired": []
+        },
+        "solution_canonical_sha256": "53953d26a59a96056eb1d94bc79b3516182b82ac9f9f3f21d580ffe5ae83d731",
+        "fields": [
+          {
+            "field": "answerText",
+            "source_json_path": "$.results[3].stage_outputs.solver.solution.answerText",
+            "text": "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+            "text_sha256": "257ae5f10501f6821f52684f00a5c21c4c185cf77b78d96346ac76bdf12e47ea",
+            "characters": 138,
+            "disposition": "incorrect_unconditional_all_pairs_guarantee",
+            "fully_supported": false,
+            "assessment": "For n zeroes with target zero, there are n(n-1)/2 distinct matching index pairs. Explicitly emitting them can require quadratic work regardless of lookup speed. A set can discard needed index multiplicity; emitting every stored match instead incurs output-proportional work. The stem does not authorize Boolean existence, only distinct value pairs, or excluded output cost. Expected hashing also does not yield an unconditional worst-case bound."
+          },
+          {
+            "field": "support",
+            "source_json_path": "$.results[3].stage_outputs.solver.solution.support",
+            "text": "Iterate the array once. For each element x, compute complement = k - x and look it up in a hash set (O(1) average). If found, (x, complement) is a valid pair. Then add x to the set. One pass → O(n) time. The hash set stores at most n elements → O(n) space. Sorting-based two-pointer is O(n log n) time; brute-force nested loops is O(n²). Only the hash-set approach meets both O(n) time and O(n) space.",
+            "text_sha256": "1fb1e3aebd0dc8ef861fa6145d595de95d8ce0847ef85ffa8a7d3492aab4c121",
+            "characters": 401,
+            "disposition": "incorrect_output_bound_and_missing_cost_conditions",
+            "fully_supported": false,
+            "assessment": "The one-pass set calculation describes lookup/storage work for a narrower task, not complete all-pairs reporting. Only the hash-set approach meets both constraints is unsupported. The support acknowledges O(1) average lookup but drops its conditions/expected scope from the answer. An unspecified sorting-based method also need not have an O(n log n) upper bound."
+          }
+        ],
+        "complete_supported_solution": false,
+        "assumptions_observation": "The empty assumptionsRequired array is not evidence that the asserted conclusion needs no extra conditions. See the exact answer/support findings above."
+      },
+      "solver_frozen_key": "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+      "solver_key_sha256": "257ae5f10501f6821f52684f00a5c21c4c185cf77b78d96346ac76bdf12e47ea",
+      "raw_choice_order": [
+        "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+        "Sort the array, then use two pointers moving inward to find pairs. O(n) time, O(n) space.",
+        "Use nested loops: for each element x, scan the rest of the array for (k − x). O(n) time, O(n) space.",
+        "For each element x, binary search for (k − x) in the original unsorted array. O(n) time, O(n) space."
+      ],
+      "blind_choice_order": [
+        "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+        "Sort the array, then use two pointers moving inward to find pairs. O(n) time, O(n) space.",
+        "Use nested loops: for each element x, scan the rest of the array for (k − x). O(n) time, O(n) space.",
+        "For each element x, binary search for (k − x) in the original unsorted array. O(n) time, O(n) space."
+      ],
+      "choice_sets_join_exactly": true,
+      "raw_candidate_content_canonical_sha256": "6e63db408e11b59b1c8958bf161de0543907a4aeddf7bcd3a477bb56562e32e4",
+      "proposed_explanation_fields": [
+        {
+          "field": "explanation",
+          "source_json_path": "$.results[3].stage_outputs.distractor.explanation",
+          "text": "Finding pairs that sum to k in O(n) time demands O(1)-average lookups for each element's complement. A hash set provides exactly this: one pass through the array, one constant-time lookup per element, and at most n stored entries. Sorting-based or brute-force methods exceed O(n) time.",
+          "text_sha256": "07b738606af9ef41614677c76dcd53df309e137656fb965f019895560354598f",
+          "characters": 285,
+          "hard_cap": 420,
+          "within_original_field_limit": true,
+          "associated_choice": null,
+          "associated_choice_sha256": null,
+          "disposition": "incorrect_all_pairs_cost_and_necessity_claim",
+          "material_semantic_defect": true,
+          "fully_supported_without_qualification": false,
+          "assessment": "Constant-average-time complement lookup does not enumerate a potentially quadratic output in linear total time. The explanation again teaches membership/search work as a complete all-pairs enumeration bound. Its opening demands statement is not an established necessity theorem and cannot rescue the unsupported output bound.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "answerExplanation",
+          "source_json_path": "$.results[3].stage_outputs.distractor.answerExplanation",
+          "text": "Iterating the array once while maintaining a hash set allows each complement lookup in O(1) average time. For every element x, checking whether k − x is already in the set and then inserting x ensures all pairs are found in a single O(n) pass, with the set using O(n) space—meeting both constraints exactly.",
+          "text_sha256": "ba14f0172b25160fc901c4a3686c49b40940cfcc7a8f259d4c13fe1a198c8013",
+          "characters": 307,
+          "hard_cap": 280,
+          "within_original_field_limit": false,
+          "associated_choice": "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+          "associated_choice_sha256": "257ae5f10501f6821f52684f00a5c21c4c185cf77b78d96346ac76bdf12e47ea",
+          "disposition": "incorrect_complete_enumeration_guarantee",
+          "material_semantic_defect": true,
+          "fully_supported_without_qualification": false,
+          "assessment": "A value set does not retain all distinct matching indices. A map that emits every matching prior index pays output-proportional work. Thus the claim that all pairs are found in one O(n) total-time pass is false for permitted arrays with quadratic index-pair output. Average hash lookup is also not an unconditional worst-case guarantee.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "distractors[0].explanation",
+          "source_json_path": "$.results[3].stage_outputs.distractor.distractors[0].explanation",
+          "text": "Sorting requires O(n log n) time at minimum (comparison-based), so the two-pointer technique after sorting cannot achieve O(n) time even though the scan itself is linear.",
+          "text_sha256": "7b43897224cfe8ea7ea707886ed374d037d8145b5705c087b86832cdd8e79314",
+          "characters": 170,
+          "hard_cap": 280,
+          "within_original_field_limit": true,
+          "associated_choice": "Sort the array, then use two pointers moving inward to find pairs. O(n) time, O(n) space.",
+          "associated_choice_sha256": "dd173de6c20617ef7eaf01f9267eccdcba37ed2459e6f232e4f300a9b72ccadf",
+          "disposition": "supported_sorting_objection_requires_cost_qualifications",
+          "material_semantic_defect": null,
+          "fully_supported_without_qualification": false,
+          "assessment": "The core comparison-sorting objection is sound for worst-case comparison sorting of arbitrary comparable keys. The lower bound is Omega(n log n), not O(n log n) at minimum. The original option does not specify the sorting model, so that qualification must remain explicit. Linear pointer movement also does not establish linear output-inclusive scanning when every matching index pair must be emitted. This is a scope/notation qualification beside a wrong option, not evidence the option becomes correct.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "distractors[1].explanation",
+          "source_json_path": "$.results[3].stage_outputs.distractor.distractors[1].explanation",
+          "text": "Nested loops check every pair, resulting in O(n²) time, not O(n). Each element is compared against up to n − 1 others, and no auxiliary structure reduces the inner scan.",
+          "text_sha256": "52f67395fb50ff9004d89d652a2e9bc803533df902366de12485910665caef5b",
+          "characters": 169,
+          "hard_cap": 280,
+          "within_original_field_limit": true,
+          "associated_choice": "Use nested loops: for each element x, scan the rest of the array for (k − x). O(n) time, O(n) space.",
+          "associated_choice_sha256": "6e39cbbee87eb9980e98b27d8f1ab90fcdcce9f4128e13d5e8d36088e79c1587",
+          "disposition": "supported",
+          "material_semantic_defect": false,
+          "fully_supported_without_qualification": true,
+          "assessment": "Scanning remaining elements for each element performs quadratically many candidate checks in the worst case, refuting the unconditional O(n) time label. The reason does not make the separate error of rejecting an O(n) space upper bound merely because an implementation may use constant auxiliary space.",
+          "replacement_text_produced": false
+        },
+        {
+          "field": "distractors[2].explanation",
+          "source_json_path": "$.results[3].stage_outputs.distractor.distractors[2].explanation",
+          "text": "Binary search requires a sorted sequence. On an unsorted array it cannot be applied directly, and even on a sorted copy each search costs O(log n), giving O(n log n) total time.",
+          "text_sha256": "2b6c7b3de186eebe7b3cb1b2514f1fecc7d6c3977b455eb79859c674455754bf",
+          "characters": 177,
+          "hard_cap": 280,
+          "within_original_field_limit": true,
+          "associated_choice": "For each element x, binary search for (k − x) in the original unsorted array. O(n) time, O(n) space.",
+          "associated_choice_sha256": "d75b5ecf5b1e6800df26ea3b8b018b3c3bdfd58ee6ee8a7f49d491699403285c",
+          "disposition": "supported_primary_refutation_with_output_scope_caveat",
+          "material_semantic_defect": false,
+          "fully_supported_without_qualification": false,
+          "assessment": "Binary search has no general correctness guarantee on the original unsorted array: that is a sufficient refutation. In the hypothetical sorted copy, n ordinary binary searches require O(n log n) search work. The phrase total time must not be interpreted as bounding complete all-pairs output; emitting all duplicate-index matches may require additional quadratic work. The primary objection is sound, with that scope caveat on the extra hypothetical claim.",
+          "replacement_text_produced": false
+        }
+      ],
+      "feedback_assessment": "all_five_proposed_fields_assessed_offline",
+      "complete_supported_feedback": false,
+      "original_rejected_text_preserved": true,
+      "admission_interpretation": "The actual case was rejected for field length before final review. These semantic findings are offline assessment, not correctness successes of that runtime rejection. No repaired or hypothetical admission is counted."
+    }
+  ],
+  "conclusion": "Neither solved case supplies a fully supported answer/support record or complete unqualified proposed feedback. The stronger causal claim in photography and the wrong output-inclusive bound in all-pairs are already in the solver answer, then repeated or extended by feedback. The two other cases have task drafts only. Every case stopped for content length before final review; no final-review success, factual catch from a length rejection, repaired admission or production improvement is inferred.",
+  "limits": [
+    "Photography remains a plausible best-listed diagnosis, not a proved impossible answer or proof of another actual cause.",
+    "The output-size contradiction concerns unrestricted explicit index-pair output; different Boolean-existence or distinct-value tasks are not silently substituted.",
+    "The sorting lower-bound statement requires worst-case comparison-model scope; pointer/search work and full output cost remain separate.",
+    "Difficulty, distractor and task-only judgments stay exactly as frozen. No four-case final-review, generalized accuracy or learning-gain conclusion is available."
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "scope": "Two raw assembled MCQs and two task-only drafts, all content-rejected before final review. No keys, model difficulty or feedback. Choice order independently shuffled; do not infer key positions.",
+  "cases": [
+    {
+      "case_id": "fresh_photography_motion",
+      "goal": {
+        "title": "Learn to diagnose motion blur and make deliberate shutter choices",
+        "focusAreas": "Interpret a concrete photographic result and stated shooting constraints to distinguish subject motion, camera movement and changes in light reaching the sensor.",
+        "currentLevel": "Intermediate"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Nikon: shutter duration, light and motion (inspected summary)",
+          "url": "https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-shutter-speed",
+          "text": "Shutter duration controls how long light reaches the sensor. With other conditions fixed, a shorter duration admits less light. Shorter durations tend to reduce recorded subject motion; longer durations show more motion blur. Whether a particular duration freezes a subject depends on the actual motion and shooting conditions. A source example's successful duration is not a universal threshold."
+        }
+      ],
+      "prompt": "A tripod-mounted camera at 1/500 s captures a cyclist and a wall both sharp. The photographer then handholds at 1/60 s; both the cyclist and the stationary wall appear blurred. A stationary object cannot show subject motion blur. What primarily caused the wall's blur in the second shot?",
+      "topic": "Diagnosing motion blur in photography",
+      "objective": "Interpret a concrete photographic result and shooting constraints to distinguish subject motion blur from camera movement blur",
+      "scope": "Unchanged raw assembled task and choices for offline assessment only; no MCQ was admitted and no final review ran.",
+      "choices": [
+        "Overexposure from the slower shutter speed washed out and softened the wall's detail",
+        "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+        "The wall experienced subtle subject motion blur from air vibrations during the longer exposure",
+        "A shallower depth of field in the second shot placed the wall outside the plane of sharp focus"
+      ]
+    },
+    {
+      "case_id": "fresh_writing_modifiers",
+      "goal": {
+        "title": "Write clear English sentences that preserve the intended actor and meaning",
+        "focusAreas": "Interpret an original sentence in its stated context, diagnose modifier attachment, and distinguish a revision that preserves the intended meaning from one that merely sounds grammatical.",
+        "currentLevel": "Intermediate"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Purdue OWL: dangling modifiers (inspected summary)",
+          "url": "https://owl.purdue.edu/owl/general_writing/mechanics/dangling_modifiers_and_how_to_correct_them.html",
+          "text": "An introductory participial modifier needs a clearly identified logical actor. In the ordinary construction discussed here, that actor is the subject of the following main clause. A repair can name that actor as the main subject or give the introductory clause its own subject and finite verb. Several grammatical rewrites may exist, so any additional requirement about intended meaning or allowed changes must be stated in the exercise."
+        }
+      ],
+      "prompt": "A school newsletter intends to credit parents for organizing a fundraiser. The draft reads: 'Organizing the bake sale over the weekend, the students raised $500 for new library books.' As written, who does the introductory participial modifier grammatically identify as having organized the bake sale, and why does this conflict with the newsletter's stated intent?",
+      "topic": "Dangling and misplaced modifiers in English sentences",
+      "objective": "Interpret an original sentence in its stated context, diagnose modifier attachment, and distinguish the grammatical meaning from the intended meaning",
+      "scope": "Unchanged raw task; no complete MCQ was admitted."
+    },
+    {
+      "case_id": "fresh_moon_observations",
+      "goal": {
+        "title": "Understand lunar phases from observations and Sun-Earth-Moon geometry",
+        "focusAreas": "Use concrete observations to distinguish changing phase, viewing orientation and an eclipse; connect the observation to the geometry instead of merely naming a phase.",
+        "currentLevel": "Intermediate"
+      },
+      "sourceDocuments": [
+        {
+          "name": "NASA: lunar phases and viewing geometry (inspected summaries)",
+          "url": "https://science.nasa.gov/moon/top-moon-questions/",
+          "text": "Outside lunar eclipses, sunlight illuminates roughly half of the Moon. Ordinary phases reflect how much of that illuminated half faces Earth, not Earth's shadow covering the Moon. Observers in different hemispheres see the same phase at a given time, though its orientation differs. Full Moon places the illuminated near side toward Earth; at new Moon the illuminated far side faces away from Earth. The far side is not permanently dark."
+        },
+        {
+          "name": "NASA: phase sequence and approximate observing times (inspected summary)",
+          "url": "https://science.nasa.gov/moon/moon-phases/",
+          "text": "The phase sequence runs from new through waxing crescent, first quarter, waxing gibbous, full, waning gibbous, last quarter and waning crescent. At most latitudes, a first-quarter Moon rises roughly near midday and sets near midnight; a last-quarter Moon rises roughly near midnight and sets near midday. These are approximate phase relationships, not precise local schedules; season and location affect rise and set. A new Moon usually passes near the Sun in Earth's sky, rather than directly across it, because the lunar orbit is inclined."
+        }
+      ],
+      "prompt": "An observer in Sydney, Australia sees the Moon high in the sky at 6 AM local time. The right half of the lunar disk (as the observer sees it) is illuminated. A friend claims this must be a first-quarter Moon because the right side is lit. Background facts: (1) At most latitudes a first-quarter Moon rises near midday and sets near midnight; a last-quarter Moon rises near midnight and sets near midday. (2) Observers in different hemispheres see the same phase at a given time, but its left-right orientation on the disk is reversed between Northern and Southern Hemispheres. Using both the time of observation and the observer's hemisphere, identify the actual phase and explain why the friend's reasoning is incorrect.",
+      "topic": "Lunar phases, viewing geometry, and hemisphere orientation",
+      "objective": "Use concrete observations to distinguish lunar phases by connecting illumination orientation and observing time to Sun-Earth-Moon geometry",
+      "scope": "Unchanged raw task; no complete MCQ was admitted."
+    },
+    {
+      "case_id": "fixed_all_pairs_stem",
+      "goal": {
+        "title": "Prepare for LeetCode interviews",
+        "focusAreas": "hash maps"
+      },
+      "sourceDocuments": [],
+      "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+      "topic": "hash maps",
+      "objective": "Analyze the requirements of finding all matching pairs",
+      "scope": "Unchanged raw assembled task and choices for offline assessment only; no MCQ was admitted and no final review ran.",
+      "choices": [
+        "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+        "Sort the array, then use two pointers moving inward to find pairs. O(n) time, O(n) space.",
+        "Use nested loops: for each element x, scan the rest of the array for (k − x). O(n) time, O(n) space.",
+        "For each element x, binary search for (k − x) in the original unsorted array. O(n) time, O(n) space."
+      ]
+    }
+  ]
+}

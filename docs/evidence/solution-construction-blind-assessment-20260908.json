@@ -1,0 +1,375 @@
+{
+  "protocol": "checkpoint.solution_construction_blind_assessment.v1",
+  "input_packet_path": "/tmp/checkpoint-solution-construction-blind-packet-20260908.json",
+  "input_packet_sha256": "f7acc213a0a83a0a76bd20ef32d3f8bf1f5da1f795ae27df392ba2d00ef36511",
+  "assessor": "validation_filters",
+  "assessment_kind": "assistant independent literal-content review; not educator consensus or learner-calibrated difficulty",
+  "blinding": {
+    "read_only_inputs": [
+      "/tmp/checkpoint-solution-construction-blind-packet-20260908.json",
+      "question_difficulty.py",
+      "primary reference pages listed per case"
+    ],
+    "capture_solution_key_and_feedback_not_opened": true,
+    "prior_familiarity": "The historical all-pairs stem was known from earlier audits. The new solver key and teaching text were not seen; no claim of a naive historical-stem assessor is made.",
+    "raw_packet_scope_preserved": true
+  },
+  "rubric": {
+    "1": "Recognize or recall a fact or concept.",
+    "2": "Apply one familiar rule directly.",
+    "3": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+    "4": "Connect multiple reasoning steps or resolve interacting constraints.",
+    "5": "Integrate multiple concepts to analyze a novel problem or tradeoff."
+  },
+  "scoring_conventions": {
+    "warranted_exact_choices": "Unconditionally supported answers to the literal task. A natural intended/best-listed diagnosis is recorded separately when necessary causal controls are absent.",
+    "unknown_fields": "Task-only MCQ uniqueness, alternative quality, and final MCQ difficulty remain null rather than scored as failures or successes.",
+    "difficulty": "Missing premises, malformed output and verbosity are not cognitive challenge. A diagnostic estimate on an invalid MCQ does not qualify it for admission.",
+    "length": "Unicode code-point count of unchanged packet strings. This blind packet does not contain proposed explanations and cannot identify their field-limit failures."
+  },
+  "summary": {
+    "planned_cases": 4,
+    "raw_assembled_mcqs": 2,
+    "task_only_drafts": 2,
+    "raw_mcqs_with_one_unconditionally_warranted_offered_choice": 0,
+    "raw_mcqs_with_best_listed_but_causally_underqualified_choice": 1,
+    "raw_mcqs_with_no_valid_algorithm_choice": 1,
+    "fully_sound_raw_mcqs": 0,
+    "task_only_drafts_with_identifiable_substantive_answer": 2,
+    "task_only_drafts_with_premise_qualification": 1,
+    "stems_over_320": 2,
+    "raw_mcqs_with_choice_over_140": 0,
+    "fresh_complete_raw_mcqs_independently_meeting_level_3": 0,
+    "task_only_final_difficulty_unknown": 2,
+    "teaching_feedback_assessed": 0,
+    "rewrites_or_replacements_counted": 0,
+    "admitted_questions_claimed": 0
+  },
+  "cases": [
+    {
+      "case_id": "fresh_photography_motion",
+      "artifact_kind": "raw_assembled_mcq",
+      "prompt": "A tripod-mounted camera at 1/500 s captures a cyclist and a wall both sharp. The photographer then handholds at 1/60 s; both the cyclist and the stationary wall appear blurred. A stationary object cannot show subject motion blur. What primarily caused the wall's blur in the second shot?",
+      "prompt_sha256": "bf6652016a557955492383f95337275234fce8a43b8bf43abe51e861eefa2284",
+      "choices": [
+        "Overexposure from the slower shutter speed washed out and softened the wall's detail",
+        "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+        "The wall experienced subtle subject motion blur from air vibrations during the longer exposure",
+        "A shallower depth of field in the second shot placed the wall outside the plane of sharp focus"
+      ],
+      "lengths": {
+        "stem_characters": 287,
+        "stem_within_320": true,
+        "choice_characters": [
+          84,
+          84,
+          94,
+          94
+        ],
+        "choices_within_140": true
+      },
+      "generated_key_or_feedback_seen": false,
+      "admission_or_review_success_claimed": false,
+      "warranted_exact_choices": [],
+      "best_listed_choice_under_ordinary_diagnostic_reading": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+      "answer_assessment": "The camera-shake choice is the natural intended and best listed diagnosis, but the literal claim about what primarily caused this particular blur is stronger than the observations establish. No choice is warranted as an unconditional established cause.",
+      "completeness": {
+        "complete_for_unique_definite_answer": false,
+        "issues": [
+          "Handholding and a longer exposure increase the risk of camera shake; neither establishes that shake occurred or dominated the blur.",
+          "The stem does not hold focus, aperture, exposure compensation or framing constant and supplies no blur shape or focus/exposure diagnostic. This matters because it explicitly offers exposure loss of detail and shallower depth of field as competing causes.",
+          "Calling the wall stationary excludes subject motion of the wall; it does not exclude defocus or every other source of lost detail."
+        ],
+        "qualification": "This is an underqualified causal diagnosis, not evidence that the camera-shake option is factually impossible or that another offered cause actually occurred."
+      },
+      "unique_answer": false,
+      "alternatives": [
+        {
+          "choice": "Overexposure from the slower shutter speed washed out and softened the wall's detail",
+          "answer_status": "not_established",
+          "plausibility": "moderate_but_not_excluded",
+          "reason": "Longer exposure can admit more light if other settings stay fixed, and overexposure can erase detail. The task supplies neither those exposure controls nor a description distinguishing blown detail from motion blur; this is not an established diagnosis or a securely excluded alternative."
+        },
+        {
+          "choice": "Camera movement (shake) from handholding at 1/60 s primarily caused the wall's blur.",
+          "answer_status": "best_listed_but_requires_causal_qualification",
+          "plausibility": "high_as_a_diagnosis",
+          "reason": "Moving from a tripod to a handheld longer exposure makes shake a strong candidate. The supplied shutter value is not a universal handheld failure threshold, and the stem does not show the cause or exclude the other optical changes."
+        },
+        {
+          "choice": "The wall experienced subtle subject motion blur from air vibrations during the longer exposure",
+          "answer_status": "contradicted_as_described",
+          "plausibility": "low",
+          "reason": "The prompt expressly rules out subject motion of the stationary wall. Air-induced optical distortion would not make the wall itself undergo subject motion; the added air-vibration story is unsupported and makes this a weak, misleading distractor."
+        },
+        {
+          "choice": "A shallower depth of field in the second shot placed the wall outside the plane of sharp focus",
+          "answer_status": "not_established",
+          "plausibility": "moderate_but_not_excluded",
+          "reason": "Aperture and focus can affect whether background detail is sharp. No change to them is established, but the prompt also does not constrain them. Treating this as definitely wrong requires an unstated unchanged-settings assumption."
+        }
+      ],
+      "semantic_distinctness": "The four mechanisms differ. Distinct wording does not fix causal underdetermination.",
+      "three_plausible_definitely_wrong_distractors": false,
+      "objective_fit": {
+        "fits": true,
+        "scope": "It addresses camera-versus-subject motion diagnosis, a legitimate subset of the goal. It does not actually require choosing a shutter setting or balancing sensor light."
+      },
+      "difficulty": {
+        "rating": 2,
+        "basis": "For the expected classroom interpretation, this is a direct application of camera shake to a stationary blurred background after handholding. The prompt supplies the subject-motion exclusion itself. The original cyclist and 1/500-second image do little additional reasoning work; missing controls should not be counted as extra cognitive difficulty.",
+        "meets_fresh_level_3": false,
+        "valid_item_difficulty_certified": false
+      },
+      "stem_length_analysis": {
+        "over_limit": false,
+        "indispensable_content": [
+          "Stationary wall",
+          "Changed support and exposure duration",
+          "Observed loss of sharpness",
+          "Requested diagnosis"
+        ],
+        "avoidable_prose": [
+          "The cyclist and fully sharp first image are not needed for the intended simple stationary-background inference."
+        ],
+        "limit_is_established_cause_of_incomplete_premises": false,
+        "note": "The 287-character stem already fits. This assessment does not see the rejected teaching fields or infer which other field exceeded its limit. No rewrite was tested."
+      },
+      "sources": [
+        "https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-shutter-speed",
+        "https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-maximum-aperture",
+        "https://www.nikonusa.com/learn-and-explore/c/products-and-innovation/vibration-reduction"
+      ],
+      "fully_sound_raw_mcq": false
+    },
+    {
+      "case_id": "fresh_writing_modifiers",
+      "artifact_kind": "task_only",
+      "prompt": "A school newsletter intends to credit parents for organizing a fundraiser. The draft reads: 'Organizing the bake sale over the weekend, the students raised $500 for new library books.' As written, who does the introductory participial modifier grammatically identify as having organized the bake sale, and why does this conflict with the newsletter's stated intent?",
+      "prompt_sha256": "78e55e7fc2462ad6959787a26b4a55ab5f48ca3b860722785a0220903f38bff7",
+      "choices": null,
+      "lengths": {
+        "stem_characters": 365,
+        "stem_within_320": false,
+        "choice_characters": [],
+        "choices_within_140": null
+      },
+      "generated_key_or_feedback_seen": false,
+      "admission_or_review_success_claimed": false,
+      "possible_answer": "The students are grammatically identified as the organizers: they are the subject of the main clause following the introductory participial modifier. The sentence therefore credits the students with organizing, contrary to the stated intent to credit parents.",
+      "task_coherence": {
+        "coherent": true,
+        "necessary_premises_present": true,
+        "issues": [],
+        "qualification": "The sentence is not syntactically dangling: its modifier has an explicit, plausible student actor. Its problem is the mismatch between that grammatical attribution and the newsletter intent. Do not teach that any such sentence is ungrammatical."
+      },
+      "warranted_exact_choices": null,
+      "unique_answer": null,
+      "alternatives": null,
+      "objective_fit": {
+        "fits": true,
+        "scope": "Identifying the actor and detecting the intended-meaning conflict directly serves the stated writing objective. No revision task or revision alternatives were actually produced."
+      },
+      "difficulty": {
+        "rating": null,
+        "task_only_reasoning_estimate": 2,
+        "basis": "Apply the familiar introductory-participial-modifier attachment rule to the explicitly named main-clause subject and compare it with the stated intended actor. The sentence and context are concrete, but this does not yet require evaluating competing revisions or interacting constraints.",
+        "final_mcq_difficulty_unknown": true
+      },
+      "stem_length_analysis": {
+        "over_limit": true,
+        "indispensable_content": [
+          "The intended parent credit",
+          "The exact draft sentence, particularly the opening modifier and main subject",
+          "A request to identify the actual actor and explain the conflict"
+        ],
+        "avoidable_prose": [
+          "Long metalinguistic phrasing in the final question can be condensed without deleting the actor contrast.",
+          "The introduction can be shortened while retaining the newsletter intent."
+        ],
+        "assessment": "The 45-character excess is not forced by indispensable premises. The sentence, parent credit and question can be expressed within 320 characters; the original remains rejected and unchanged.",
+        "optional_rewrite_produced": false
+      },
+      "sources": [
+        "https://owl.purdue.edu/owl/general_writing/mechanics/dangling_modifiers_and_how_to_correct_them.html"
+      ],
+      "fully_sound_raw_mcq": null
+    },
+    {
+      "case_id": "fresh_moon_observations",
+      "artifact_kind": "task_only",
+      "prompt": "An observer in Sydney, Australia sees the Moon high in the sky at 6 AM local time. The right half of the lunar disk (as the observer sees it) is illuminated. A friend claims this must be a first-quarter Moon because the right side is lit. Background facts: (1) At most latitudes a first-quarter Moon rises near midday and sets near midnight; a last-quarter Moon rises near midnight and sets near midday. (2) Observers in different hemispheres see the same phase at a given time, but its left-right orientation on the disk is reversed between Northern and Southern Hemispheres. Using both the time of observation and the observer's hemisphere, identify the actual phase and explain why the friend's reasoning is incorrect.",
+      "prompt_sha256": "024304f101aaf3136ffbab55ab6c9adf58dc96f6c9bc7445145d6342a22e56c0",
+      "choices": null,
+      "lengths": {
+        "stem_characters": 721,
+        "stem_within_320": false,
+        "choice_characters": [],
+        "choices_within_140": null
+      },
+      "generated_key_or_feedback_seen": false,
+      "admission_or_review_success_claimed": false,
+      "possible_answer": "Last (third) quarter is supported by a half-illuminated Moon high in the morning and the supplied approximate rise/set relationships. The friend treats a viewer-relative bright side as a universal phase label; orientation varies with viewpoint and cannot make a southern-hemisphere morning quarter Moon first quarter.",
+      "task_coherence": {
+        "coherent_with_qualification": true,
+        "necessary_premises_for_phase_inference_present": true,
+        "issues": [
+          "The background presents north/south left-right reversal as a blanket rule about the disk as an observer sees it. NASA describes different viewing angles and a changing apparent tilt; a fixed left/right rule needs a stated viewing convention.",
+          "The supplied timing pattern is approximate. It supports the intended quarter-phase identification in this Sydney scenario, but should not be promoted to a precise universal local schedule."
+        ],
+        "qualification": "These qualifications do not establish a different phase answer for the given morning half-Moon scenario. The timing evidence already supports the phase without treating literal left/right as an invariant."
+      },
+      "warranted_exact_choices": null,
+      "unique_answer": null,
+      "alternatives": null,
+      "objective_fit": {
+        "fits": true,
+        "scope": "The task concerns observation time and hemisphere orientation, within the goal. It mostly applies supplied phase schedules; it does not force a derivation from Sun-Earth-Moon geometry or consideration of an eclipse."
+      },
+      "difficulty": {
+        "rating": null,
+        "task_only_reasoning_estimate": 2,
+        "basis": "Match morning visibility to the supplied last-quarter schedule, then reject the universal right-lit shortcut using the supplied hemisphere distinction. These are direct applications of supplied relationships; the timing alone identifies the intended phase, so the second cue is not an interacting constraint needed to solve it.",
+        "final_mcq_difficulty_unknown": true
+      },
+      "stem_length_analysis": {
+        "over_limit": true,
+        "indispensable_content": [
+          "Sydney/southern-hemisphere viewpoint",
+          "Morning time, high position and half-illuminated observation",
+          "The friend's bright-side claim",
+          "Approximate phase-time relationship if the question is meant to supply rather than test that knowledge",
+          "A qualified orientation distinction"
+        ],
+        "avoidable_prose": [
+          "Lengthy repeated background sentences and repeated task instructions",
+          "Expanded explanations of both hemispheres rather than a concise stated viewing convention"
+        ],
+        "assessment": "The 721-character stem spends substantial space restating reference material. Some timing/orientation information supports self-containment, but this does not demonstrate an inherent need for a 721-character task. A compact version would need independent checking and must not silently drop the approximation or repair the orientation rule.",
+        "optional_rewrite_produced": false
+      },
+      "sources": [
+        "https://science.nasa.gov/moon/moon-phases/",
+        "https://science.nasa.gov/moon/top-moon-questions/"
+      ],
+      "fully_sound_raw_mcq": null
+    },
+    {
+      "case_id": "fixed_all_pairs_stem",
+      "artifact_kind": "raw_assembled_mcq",
+      "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+      "prompt_sha256": "48e90221cb373693a0fafeffbd8f78c2af541b7f298029b22db56713ee03efd3",
+      "choices": [
+        "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+        "Sort the array, then use two pointers moving inward to find pairs. O(n) time, O(n) space.",
+        "Use nested loops: for each element x, scan the rest of the array for (k − x). O(n) time, O(n) space.",
+        "For each element x, binary search for (k − x) in the original unsorted array. O(n) time, O(n) space."
+      ],
+      "lengths": {
+        "stem_characters": 116,
+        "stem_within_320": true,
+        "choice_characters": [
+          138,
+          89,
+          100,
+          100
+        ],
+        "choices_within_140": true
+      },
+      "generated_key_or_feedback_seen": false,
+      "admission_or_review_success_claimed": false,
+      "warranted_exact_choices": [],
+      "answer_assessment": "No offered approach meets the stated unconditional linear total time bound for explicitly reporting every matching pair on arbitrary arrays.",
+      "completeness": {
+        "complete_for_unique_definite_answer": false,
+        "issues": [
+          "The choices contain no answer acknowledging the output-size obstruction.",
+          "The stem does not specify index-pair versus distinct-value-pair output. Explicit all index-pairs can be quadratic; assuming only value pairs or a Boolean existence question would change the requested task."
+        ],
+        "qualification": "The mathematical no-linear-enumeration conclusion applies to unrestricted explicit index-pair output. This is not a claim that every alternative problem called Two Sum has the same output bound."
+      },
+      "unique_answer": false,
+      "independent_counterexample": {
+        "array": [
+          0,
+          0,
+          0
+        ],
+        "target": 0,
+        "matching_index_pairs": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "generalization": "For n zeroes and target zero, each pair of distinct indices matches: n(n-1)/2 outputs. Materializing them can require quadratic time irrespective of lookup speed."
+      },
+      "alternatives": [
+        {
+          "choice": "Use a hash set/map: for each element x, check if (k − x) exists in the set; if yes, record the pair; then insert x. O(n) time, O(n) space.",
+          "answer_status": "not_a_valid_answer",
+          "plausibility": "high_as_a_common_but_wrong_generalization",
+          "reason": "Expected constant-time membership tests do not make all output linear. A set with one recorded pair per new zero omits index pairs; a map that enumerates all matching prior indices pays output-proportional time. The unqualified O(n) claim fails either way."
+        },
+        {
+          "choice": "Sort the array, then use two pointers moving inward to find pairs. O(n) time, O(n) space.",
+          "answer_status": "not_a_valid_answer",
+          "plausibility": "moderate",
+          "reason": "Sorting an arbitrary array by comparisons is not generally O(n), and listing all index pairs still faces the output bound. Two pointers are a familiar relevant method, but this complexity claim is wrong. Its O(n) space upper bound is not independently refuted just because some implementations use less."
+        },
+        {
+          "choice": "Use nested loops: for each element x, scan the rest of the array for (k − x). O(n) time, O(n) space.",
+          "answer_status": "not_a_valid_answer",
+          "plausibility": "moderate",
+          "reason": "Scanning the remaining array for every element performs quadratically many candidate checks in the worst case. It is a relevant correct brute-force search strategy with a false linear-time label."
+        },
+        {
+          "choice": "For each element x, binary search for (k − x) in the original unsorted array. O(n) time, O(n) space.",
+          "answer_status": "not_a_valid_answer",
+          "plausibility": "low_to_moderate",
+          "reason": "Binary search does not generally locate a complement correctly in the original unsorted array. Even in a sorted array, n binary searches would generally give O(n log n), before accounting for complete output."
+        }
+      ],
+      "semantic_distinctness": "Distinct algorithm proposals; none is an adequate answer. Their shared wrong O(n) labels do not create a warranted key.",
+      "three_plausible_definitely_wrong_distractors": false,
+      "objective_fit": {
+        "fits": true,
+        "scope": "Complexity and output requirements are relevant to hash-map interview preparation. The response menu prevents a correct answer to those requirements."
+      },
+      "difficulty": {
+        "rating": 3,
+        "basis": "Diagnosing the item requires interpreting the all-pairs output requirement and distinguishing relevant algorithms from their invalid complexity labels. This is a diagnostic reasoning estimate for an invalid MCQ, not a usable question difficulty or evidence of successful level-3 teaching.",
+        "valid_item_difficulty_certified": false
+      },
+      "stem_length_analysis": {
+        "over_limit": false,
+        "indispensable_content": [
+          "All-pairs output requirement",
+          "Unsorted input",
+          "Target sum",
+          "Requested time and space bounds"
+        ],
+        "avoidable_prose": [],
+        "note": "The 116-character stem and all four displayed choices fit their limits. It needs semantic clarification or a different answer menu, not mere truncation; no such change is counted here."
+      },
+      "sources": [],
+      "fully_sound_raw_mcq": false
+    }
+  ],
+  "limits": [
+    "No generated key, solver support, proposed feedback or reviewer output has been assessed.",
+    "No inference/provider/native execution was performed for this assessment.",
+    "Raw assembled MCQs are inspection artifacts, not runtime-admitted questions.",
+    "No text was modified and no shortened version was constructed or counted as a successful candidate.",
+    "The photography item has a plausible intended answer; the stricter unique-answer count specifically reflects incomplete causal controls.",
+    "The two task-only drafts have no observable MCQ alternative set, so their eventual uniqueness/plausibility/final difficulty is unknown."
+  ]
+}

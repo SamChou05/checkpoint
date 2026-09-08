@@ -121,3 +121,13 @@ This is an unpaired feasibility trial. It cannot establish a causal accuracy gai
 production error rate, arbitrary-goal coverage, useful adaptation over time, or
 deployment readiness. A partial success remains evidence about its specific
 components. No old experiment criteria or results are rewritten.
+
+## Subsequent result
+
+The [completed bounded trial](QUESTION_SOLUTION_CONSTRUCTION_RESULTS.md) produced
+zero admissible questions from four cases. Seven calls completed normally; six
+raw field-length violations prevented final review. Inspection of the unchanged
+drafts also found the same incorrect all-pairs key and an underqualified
+photography diagnosis. No retry, repair, deployment or runtime promotion followed.
+The prospective protocol and criteria above remain the record of the original
+decision, not revised criteria for a successful trial.
