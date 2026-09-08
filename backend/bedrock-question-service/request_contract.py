@@ -31,6 +31,7 @@ MAX_SKILL_MAP_SKILLS = 6
 MAX_SKILL_OBJECTIVES = 5
 MAX_SKILL_NAME_CHARS = 48
 MAX_OBJECTIVE_NAME_CHARS = 80
+MAX_SKILL_DETAIL_CHARS = 500
 MAX_SKILL_ALLOCATION_WEIGHT = 100
 MAX_ARCHIVED_SKILLS = 48
 MAX_ARCHIVED_SKILL_NAME_FINGERPRINTS = 750
@@ -194,6 +195,8 @@ def _normalize_skill_map_evolution_request(payload: dict[str, Any]) -> dict[str,
     current_skill_map = _normalized_supplied_skill_map(payload.get("currentSkillMap"))
     if not current_skill_map:
         raise BadRequestError("Missing currentSkillMap object.")
+    if current_skill_map.get("growthMode") == "manual":
+        raise BadRequestError("Manual learning maps do not request automatic evolution.")
     if not 3 <= len(current_skill_map["skills"]) <= MAX_SKILL_MAP_SKILLS:
         raise BadRequestError("currentSkillMap must contain 3 to 6 active skills.")
     if current_skill_map["version"] >= 1_000_000:
@@ -213,7 +216,9 @@ def _normalize_skill_map_evolution_request(payload: dict[str, Any]) -> dict[str,
         raise BadRequestError("masteredSkillIDs must contain 1 or 2 skill IDs.")
 
     active_skill_ids = {
-        _uuid_key(skill["id"]): skill["id"] for skill in current_skill_map["skills"]
+        _uuid_key(skill["id"]): skill["id"]
+        for skill in current_skill_map["skills"]
+        if not skill.get("isPaused", False)
     }
     mastered_skill_ids: list[str] = []
     seen_mastered_ids: set[str] = set()
@@ -404,6 +409,36 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         payload.get("desiredSkillAllocation"),
         skill_map,
     )
+    if skill_map:
+        # Keep paused nodes in the persisted map and evolution contract, but
+        # remove them from every generation/verification/inventory input.
+        active_skills = [
+            skill for skill in skill_map["skills"] if not skill.get("isPaused", False)
+        ]
+        if not active_skills:
+            raise BadRequestError("Resume at least one skill before requesting practice.")
+        active_ids = {skill["id"] for skill in active_skills}
+        skill_map = {**skill_map, "skills": active_skills}
+        if desired_skill_allocation:
+            desired_skill_allocation = {
+                skill_id: count
+                for skill_id, count in desired_skill_allocation.items()
+                if skill_id in active_ids
+            }
+            if not any(desired_skill_allocation.values()):
+                raise BadRequestError("desiredSkillAllocation must include an unpaused skill.")
+        elif any(
+            skill.get("practiceEmphasis", "balanced") != "balanced"
+            for skill in active_skills
+        ):
+            # App allocations already combine learner evidence and emphasis.
+            # Apply preference weights only when an older/custom client omits
+            # allocation, so the preference is never applied twice.
+            weights = {"focus": 3, "balanced": 2, "maintain": 1}
+            desired_skill_allocation = {
+                skill["id"]: weights[skill.get("practiceEmphasis", "balanced")]
+                for skill in active_skills
+            }
     content_topics = goal.get("contentTopics") or []
     if not isinstance(content_topics, list):
         raise BadRequestError("goal.contentTopics must be an array.")
@@ -509,12 +544,14 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
 def _normalized_adaptive_skill_plans(
     value: Any, skill_map: dict[str, Any] | None, minimum_difficulty: int
 ) -> list[dict[str, Any]]:
-    if value is None or value == []:
-        return []
-    if not isinstance(value, list) or len(value) > 6 or not skill_map:
+    if value is None:
+        value = []
+    if not isinstance(value, list) or len(value) > 6 or (value and not skill_map):
         raise BadRequestError(
             "adaptiveSkillPlans requires a skill map and at most 6 plans."
         )
+    if not skill_map:
+        return []
     skills = {_uuid_key(skill["id"]): skill for skill in skill_map["skills"]}
     seen: set[str] = set()
     plans = []
@@ -585,7 +622,30 @@ def _normalized_adaptive_skill_plans(
             plan["recentAccuracyPercent"] = _strict_int(
                 raw["recentAccuracyPercent"], "recentAccuracyPercent", 0, 100
             )
+        challenge = skill.get("challenge", "adaptive")
+        if challenge == "foundations":
+            plan["targetDifficulty"] = minimum_difficulty
+        elif challenge == "stretch":
+            # The app has already applied its +1 to the evidence-based target.
+            # Enforce the minimum here without adding that increment twice.
+            plan["targetDifficulty"] = max(
+                plan["targetDifficulty"], min(5, minimum_difficulty + 1)
+            )
         plans.append(plan)
+    for key, skill in skills.items():
+        challenge = skill.get("challenge", "adaptive")
+        if key in seen or challenge == "adaptive":
+            continue
+        plans.append({
+            "skillID": skill["id"],
+            "targetDifficulty": (
+                min(5, minimum_difficulty + 1)
+                if challenge == "stretch" else minimum_difficulty
+            ),
+            "evidenceCount": 0,
+            "focusObjectiveIDs": [],
+            "recentMistakes": [],
+        })
     return plans
 
 
@@ -673,13 +733,48 @@ def _normalized_supplied_skill_map(value: Any) -> dict[str, Any] | None:
                 )
             seen_objective_ids.add(objective_id_key)
             seen_names_for_skill.add(objective_name_key)
-            objectives.append({"id": objective_id, "name": objective_name})
+            objective = {"id": objective_id, "name": objective_name}
+            if "detail" in raw_objective:
+                objective["detail"] = _validated_text(
+                    raw_objective["detail"], f"{field}.detail", MAX_SKILL_DETAIL_CHARS,
+                    preserve_subject_content=True,
+                )
+            objectives.append(objective)
 
         seen_skill_ids.add(skill_id_key)
         seen_skill_names.add(name_key)
-        skills.append({"id": skill_id, "name": name, "objectives": objectives})
+        skill = {"id": skill_id, "name": name, "objectives": objectives}
+        field = f"skillMap.skills[{skill_index}]"
+        if "detail" in raw_skill:
+            skill["detail"] = _validated_text(
+                raw_skill["detail"], f"{field}.detail", MAX_SKILL_DETAIL_CHARS,
+                preserve_subject_content=True,
+            )
+        if "isPaused" in raw_skill:
+            if not isinstance(raw_skill["isPaused"], bool):
+                raise BadRequestError(f"{field}.isPaused must be a boolean.")
+            skill["isPaused"] = raw_skill["isPaused"]
+        for name, choices in (
+            ("practiceEmphasis", {"balanced", "focus", "maintain"}),
+            ("challenge", {"adaptive", "foundations", "stretch"}),
+        ):
+            if name in raw_skill:
+                skill[name] = _validated_choice(raw_skill[name], f"{field}.{name}", choices)
+        skills.append(skill)
 
-    return {"version": version, "skills": skills}
+    result = {"version": version, "skills": skills}
+    if "growthMode" in value:
+        result["growthMode"] = _validated_choice(
+            value["growthMode"], "skillMap.growthMode",
+            {"automatic", "reviewSuggestions", "manual"},
+        )
+    return result
+
+
+def _validated_choice(value: Any, field: str, choices: set[str]) -> str:
+    if not isinstance(value, str) or value not in choices:
+        raise BadRequestError(f"{field} must be one of: {', '.join(sorted(choices))}.")
+    return value
 
 
 def _normalized_desired_skill_allocation(
