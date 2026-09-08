@@ -1,0 +1,229 @@
+{
+  "assessment": "author-latency-blind-first-assessment-v1",
+  "created_at_utc": "2026-09-08T07:36:00.016357+00:00",
+  "input_path": "/tmp/checkpoint-author-latency-capture-20260908/blind-assessment-input.json",
+  "input_sha256": "01096e77b3aed28d5e55a3ac7c21ce444bdf0bd054fea6b4f82db4ee2a8ec527",
+  "capture_sha256_as_declared_in_blind_packet": "bd987c3d17d501c21e723a13ce100084b0faee7a60fcfa88039c699509577bb9",
+  "blinding": {
+    "generated_keys_viewed": false,
+    "author_difficulty_viewed": false,
+    "generated_feedback_viewed": false,
+    "provider_capture_opened": false,
+    "prior_exposure": "Assessor helped prepare the goal/source packet and implemented the latency transport probe. This is a blinded output assessment, not a naive subject-matter expert or independent human panel. No generated author outputs were seen before this packet.",
+    "immutability": "First assessment saved before unblinding; any later feedback/key assessment belongs in a separate artifact."
+  },
+  "rubric": {
+    "source": "/Users/samchou/Documents/Checkpoint/backend/bedrock-question-service/question_difficulty.py",
+    "source_sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "levels": {
+      "1": "Recognize or recall a fact or concept.",
+      "2": "Apply one familiar rule directly.",
+      "3": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+      "4": "Connect multiple reasoning steps or resolve interacting constraints.",
+      "5": "Integrate multiple concepts to analyze a novel problem or tradeoff."
+    }
+  },
+  "cases": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "exact_display": {
+        "prompt": "A grid has grid-template-columns: repeat(3, 1fr) and grid-auto-flow: row (default sparse packing). Three children in document order: A (grid-column: span 2), B (grid-column: span 2), C (no placement rules). Which cell is left empty after all items are placed?",
+        "choices": [
+          "No cell is left empty",
+          "Row 1, column 1",
+          "Row 1, column 3",
+          "Row 2, column 3"
+        ],
+        "topic": "CSS Grid auto-placement",
+        "objective": "Predict which cells remain empty when column spans force gaps under sparse row auto-flow."
+      },
+      "display_canonical_sha256": "6e60f9f321a634e1863b13e471bbe3813770f3e92a6aea72bebd3abefb8a3492",
+      "prompt_characters": 259,
+      "choice_characters": [
+        21,
+        15,
+        15,
+        15
+      ],
+      "warranted_exact_choices": [
+        "Row 1, column 3"
+      ],
+      "warranted_choice_count": 1,
+      "unique_answer": true,
+      "completeness": {
+        "status": "sufficient_under_ordinary_declared_grid_defaults",
+        "missing_necessary_conditions": [],
+        "ambiguity": "No material ambiguity. Column numbers identify logical grid columns, so a physical left-to-right assumption is unnecessary. The compact exercise naturally treats the listed three children as ordinary grid items with other placement/order properties at their defaults; no unrelated CSS overrides are invented."
+      },
+      "independent_reasoning": [
+        "A occupies row 1, columns 1 and 2.",
+        "B needs two consecutive columns; the one remaining first-row cell cannot fit it, so B occupies row 2, columns 1 and 2.",
+        "Sparse placement continues forward: C occupies row 2, column 3 instead of backfilling the first-row gap."
+      ],
+      "choice_assessments": [
+        {
+          "choice": "No cell is left empty",
+          "warranted": false,
+          "reason": "The resulting two-by-three grid contains five occupied cells and one gap.",
+          "distractor_plausibility": "moderate",
+          "plausibility_reason": "A recognizable overgeneralization that automatic placement must eliminate gaps, although counting the occupied cells rules it out."
+        },
+        {
+          "choice": "Row 1, column 1",
+          "warranted": false,
+          "reason": "A occupies this first cell.",
+          "distractor_plausibility": "weak",
+          "plausibility_reason": "This requires missing the initial placement itself, such as confusing a span with a starting line. It is substantially easier to eliminate than the sparse-versus-dense alternative."
+        },
+        {
+          "choice": "Row 1, column 3",
+          "warranted": true,
+          "reason": "B does not fit here and sparse placement does not return C to the gap.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "choice": "Row 2, column 3",
+          "warranted": false,
+          "reason": "C occupies this cell.",
+          "distractor_plausibility": "strong",
+          "plausibility_reason": "This would be the remaining gap if C backfilled row 1 under dense packing; the displayed sparse qualifier decides between these positions."
+        }
+      ],
+      "distractors": {
+        "count": 3,
+        "distinct_in_meaning": true,
+        "all_nonwarranted": true,
+        "plausible_count_by_this_assessor": 2,
+        "weak_count": 1,
+        "scope": "Qualitative judgments for the stated learner, not observed learner error rates or calibrated item statistics."
+      },
+      "goal_fit": {
+        "substantive": true,
+        "reason": "Directly exercises the requested interaction between column spans, item order and sparse automatic placement."
+      },
+      "difficulty": {
+        "independent_level": 3,
+        "requested_minimum": 3,
+        "meets_requested_minimum": true,
+        "reason": "The learner interprets a compact declaration and tracks three items; the two-column spans and sparse qualifier change the result. This is a short representation/application trace, without enough additional interacting constraints or novelty to justify level 4 or 5.",
+        "calibrated": false
+      },
+      "full_teaching_item_assessment": "Unassessed: generated key, main explanation and all choice feedback remain hidden.",
+      "primary_references": [
+        "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo",
+        "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#grid-auto-flow-property"
+      ],
+      "verification_method": "Manual application of the W3C placement algorithm to the unchanged displayed declarations; no browser or code execution."
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "exact_display": {
+        "prompt": "A community center posts this rule: \"Only residents may reserve the picnic shelter on weekends.\" Which conclusion is warranted by this rule alone?",
+        "choices": [
+          "Every resident may reserve the picnic shelter on weekends",
+          "Non-residents may not reserve the picnic shelter at any time",
+          "A non-resident may not reserve the picnic shelter on a weekend",
+          "Residents may not reserve the picnic shelter on weekdays"
+        ],
+        "topic": "Necessary vs. sufficient conditions and quantifier scope",
+        "objective": "Distinguish a necessary condition from a sufficient one when interpreting 'only' in an everyday rule."
+      },
+      "display_canonical_sha256": "d396e2ca445c2441061dc0e1a18223c1df9c0680befcf15d8738da8fe4e3bbb0",
+      "prompt_characters": 146,
+      "choice_characters": [
+        57,
+        60,
+        62,
+        56
+      ],
+      "warranted_exact_choices": [
+        "A non-resident may not reserve the picnic shelter on a weekend"
+      ],
+      "warranted_choice_count": 1,
+      "unique_answer": true,
+      "completeness": {
+        "status": "sufficient",
+        "missing_necessary_conditions": [],
+        "ambiguity": "The rule-alone wording makes this a necessary-condition inference. Everyday pragmatic suggestions that residents are generally eligible do not establish universal permission for every resident. No weekday policy or additional reservation entitlement is stated."
+      },
+      "independent_reasoning": [
+        "For weekend reservation permission, residency is necessary. A non-resident therefore lacks weekend reservation permission under the displayed rule.",
+        "The converse permission for every resident and restrictions outside weekends are not established by this rule alone."
+      ],
+      "choice_assessments": [
+        {
+          "choice": "Every resident may reserve the picnic shelter on weekends",
+          "warranted": false,
+          "reason": "Residency is required; this does not guarantee permission for every resident. Other restrictions remain compatible with the rule.",
+          "distractor_plausibility": "strong",
+          "plausibility_reason": "Directly tests the requested necessary-versus-sufficient confusion."
+        },
+        {
+          "choice": "Non-residents may not reserve the picnic shelter at any time",
+          "warranted": false,
+          "reason": "The stated restriction applies to weekends, not all times.",
+          "distractor_plausibility": "moderate",
+          "plausibility_reason": "Extends the exclusion beyond its displayed temporal scope."
+        },
+        {
+          "choice": "A non-resident may not reserve the picnic shelter on a weekend",
+          "warranted": true,
+          "reason": "It is the exclusion expressed by only residents, retaining the weekend scope.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "choice": "Residents may not reserve the picnic shelter on weekdays",
+          "warranted": false,
+          "reason": "No restriction on residents during weekdays is stated.",
+          "distractor_plausibility": "moderate",
+          "plausibility_reason": "Moves the restriction from who may reserve to when residents may reserve; easier than the converse alternative, but relevant to scope reading."
+        }
+      ],
+      "distractors": {
+        "count": 3,
+        "distinct_in_meaning": true,
+        "all_nonwarranted": true,
+        "plausible_count_by_this_assessor": 3,
+        "weak_count": 0,
+        "scope": "Nonwarranted does not mean impossible: the other policies could hold independently, but are not conclusions of this rule. Plausibility is qualitative, not learner-tested."
+      },
+      "goal_fit": {
+        "substantive": true,
+        "reason": "Addresses the stated weakness in necessary conditions and overly strong readings of only. It is useful introductory practice for that goal."
+      },
+      "difficulty": {
+        "independent_level": 2,
+        "requested_minimum": 3,
+        "meets_requested_minimum": false,
+        "reason": "The correct choice directly restates one familiar only-condition as an exclusion while preserving weekends. There is no second statement or substantive interaction to integrate. Everyday names and the reservation setting do not raise the cognitive work to level 3.",
+        "calibrated": false
+      },
+      "full_teaching_item_assessment": "Unassessed: generated key, main explanation and all choice feedback remain hidden.",
+      "primary_references": [
+        "https://dictionary.cambridge.org/dictionary/english/only"
+      ],
+      "verification_method": "Direct scope/conditional reasoning on the supplied sentence; Cambridge Dictionary provides the ordinary restrictive meaning of only. No invented real-world community-center rules."
+    }
+  ],
+  "summary": {
+    "raw_mcqs_assessed": 2,
+    "unique_warranted_answer_items": 2,
+    "materially_ambiguous_or_missing_premise_items": 0,
+    "substantive_goal_fit_items": 2,
+    "independent_difficulty_counts": {
+      "2": 1,
+      "3": 1
+    },
+    "meets_minimum_difficulty_3": 1,
+    "items_with_all_three_qualitatively_plausible_distractors": 1,
+    "items_with_one_weaker_distractor": 1,
+    "complete_teaching_items_assessed": 0
+  },
+  "limits": [
+    "No provider/model call, native/browser execution, source repair or question edit was performed.",
+    "The two raw stems and choice sets are assessed literally; generated answer keys and all feedback remain unassessed.",
+    "A unique warranted choice does not qualify complete feedback, adaptive progression, deployment or generalized model accuracy.",
+    "One question per goal and qualitative difficulty/distractor judgments cannot establish learning gains or calibrated challenge."
+  ],
+  "source_access_note": "W3C primary specification and Cambridge Dictionary primary lexical entry inspected via browser retrieval. The Cambridge grammar landing URL failed; the dictionary entry was available. The question-specific deductions are the assessor's reasoning, not quotations from those sources."
+}

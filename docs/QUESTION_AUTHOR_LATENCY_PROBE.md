@@ -1,5 +1,8 @@
 # Observe author completion with a longer offline window
 
+Completed observation: [timing and exact-content findings](QUESTION_AUTHOR_LATENCY_RESULTS.md).
+The prospective protocol below is retained unchanged apart from this result link.
+
 Prospective diagnostic, September 8, 2026 UTC. The
 [first complete-authoring trial](QUESTION_COMPLETE_AUTHORING_RESULTS.md)
 returned no content before its first call reached a 100-second read timeout.

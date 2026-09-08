@@ -1,0 +1,51 @@
+{
+  "capture_sha256": "bd987c3d17d501c21e723a13ce100084b0faee7a60fcfa88039c699509577bb9",
+  "scope": "Keys, difficulty and all proposed feedback withheld for first subject assessment. Exact choices reordered by deterministic content hashes; no model inference, source repair or acceptance claim.",
+  "cases": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "goal": {
+        "currentLevel": "I can create a simple grid and read CSS declarations, but I struggle to predict placement when item spans and automatic flow interact.",
+        "focusAreas": "Interpret compact grid declarations and item order to predict occupied cells; distinguish line ranges, spans and sparse or dense row placement.",
+        "title": "Understand CSS Grid placement in small page layouts"
+      },
+      "sourceDocuments": [
+        {
+          "name": "W3C CSS Grid Level 1: placement and automatic flow (inspected summary)",
+          "text": "Grid tracks lie between grid lines. Positive line numbers count from the explicit grid's start edge and negative numbers from its end edge. A span states the number of tracks occupied. Row auto-flow places items across rows and adds rows when needed. Items explicitly positioned in both axes are placed before the remaining auto-positioned items. Auto-placement uses order-modified document order. Without dense, packing moves forward without revisiting earlier holes. Dense packing can fill earlier holes with later fitting items, changing visual order. Grid placement affects visual presentation, not document source order. Physical left/right interpretation depends on writing direction."
+        }
+      ],
+      "question": {
+        "prompt": "A grid has grid-template-columns: repeat(3, 1fr) and grid-auto-flow: row (default sparse packing). Three children in document order: A (grid-column: span 2), B (grid-column: span 2), C (no placement rules). Which cell is left empty after all items are placed?",
+        "choices": [
+          "No cell is left empty",
+          "Row 1, column 1",
+          "Row 1, column 3",
+          "Row 2, column 3"
+        ],
+        "topic": "CSS Grid auto-placement",
+        "objective": "Predict which cells remain empty when column spans force gaps under sparse row auto-flow."
+      }
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "goal": {
+        "currentLevel": "I understand ordinary sentences, but I sometimes confuse a requirement with a guarantee or read all, some and only as stronger claims than they make.",
+        "focusAreas": "Interpret short everyday instructions and claims; use the actual wording of necessary or sufficient conditions and quantifiers to distinguish warranted conclusions.",
+        "title": "Read English conditions and quantifiers precisely"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "A community center posts this rule: \"Only residents may reserve the picnic shelter on weekends.\" Which conclusion is warranted by this rule alone?",
+        "choices": [
+          "Every resident may reserve the picnic shelter on weekends",
+          "Non-residents may not reserve the picnic shelter at any time",
+          "A non-resident may not reserve the picnic shelter on a weekend",
+          "Residents may not reserve the picnic shelter on weekdays"
+        ],
+        "topic": "Necessary vs. sufficient conditions and quantifier scope",
+        "objective": "Distinguish a necessary condition from a sufficient one when interpreting 'only' in an everyday rule."
+      }
+    }
+  ]
+}

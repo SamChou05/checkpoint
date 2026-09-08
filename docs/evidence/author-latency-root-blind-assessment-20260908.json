@@ -1,0 +1,32 @@
+{
+  "scope": "Root assessment from exact displayed stem/choices and supplied goal/source summaries before seeing author keys, difficulty or explanations. Root knows the intended experiment and requested target, so only authored-output fields are withheld; no blind educator consensus or measured learner difficulty is claimed. No model or native calls.",
+  "input_sha256": "01096e77b3aed28d5e55a3ac7c21ce444bdf0bd054fea6b4f82db4ee2a8ec527",
+  "cases": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "warranted_choices": [
+        "Row 1, column 3"
+      ],
+      "unique_answer": true,
+      "missing_required_premises": [],
+      "reason": "Under the given ordinary grid declarations, A occupies row1 columns1–2. B spans2 and cannot fit the remaining single cell, so it starts row2 columns1–2. Sparse row flow does not backfill the earlier hole; C takes row2 column3. The unoccupied cell is row1 column3.",
+      "distractors": "Distinct cell outcomes; row2 column3 reflects dense/backfill confusion, and row1 column1 can reflect reading span2 as a line start. No-cell-empty is weaker but fits ignoring span widths. No second warranted offered choice under the stated grid setup.",
+      "difficulty_estimate": 3,
+      "difficulty_reason": "Tracing the interaction of two column spans, row wrap and sparse packing changes the result; the concrete widths and order matter. This is a modest representation/constraint application, not evidence of advanced long-term progression.",
+      "goal_fit": true
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "warranted_choices": [
+        "A non-resident may not reserve the picnic shelter on a weekend"
+      ],
+      "unique_answer": true,
+      "missing_required_premises": [],
+      "reason": "The rule makes resident status necessary for weekend reservation permission. A non-resident is therefore excluded on weekends. It neither guarantees permission to all residents nor regulates weekday access.",
+      "distractors": "Parallel conclusions with recognizable sufficiency and time-scope errors; all are distinct and the intended conclusion is uniquely warranted.",
+      "difficulty_estimate": 2,
+      "difficulty_reason": "A direct application of the familiar only/necessary-condition rule, with simple scope distractors. No additional evidence or interacting condition needs resolution. Useful instruction, but not the requested level3.",
+      "goal_fit": true
+    }
+  ]
+}

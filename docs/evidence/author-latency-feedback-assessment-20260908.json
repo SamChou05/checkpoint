@@ -1,0 +1,344 @@
+{
+  "assessment": "author-latency-unblinded-feedback-assessment-v1",
+  "created_at_utc": "2026-09-08T07:39:36.181300+00:00",
+  "capture_path": "/tmp/checkpoint-author-latency-capture-20260908/capture.json",
+  "capture_sha256": "bd987c3d17d501c21e723a13ce100084b0faee7a60fcfa88039c699509577bb9",
+  "frozen_blind_assessment_path": "/tmp/checkpoint-author-latency-blind-assessment-20260908.json",
+  "frozen_blind_assessment_sha256": "dc8045a9f729f001a8249b2ed63447280f4282b3816e56cba27526880c4713f0",
+  "blind_input_sha256": "01096e77b3aed28d5e55a3ac7c21ce444bdf0bd054fea6b4f82db4ee2a8ec527",
+  "method": "Read exact author output after first assessment was frozen; join unchanged stem/choice sets, then assess every teaching field independently. No generated key or feedback was used to revise the blind answer, difficulty or distractor judgments.",
+  "assessment_terms": {
+    "supported": "The field's teaching claims are warranted within the displayed task and ordinary stated-rule interpretation.",
+    "qualified": "The result is correct but a non-decisive technical explanation needs qualification; not a claim that the exact text is fully precise.",
+    "unsupported": "At least one material claim in the field is false or lacks required support."
+  },
+  "cases": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "exact_authored_question": {
+        "prompt": "A grid has grid-template-columns: repeat(3, 1fr) and grid-auto-flow: row (default sparse packing). Three children in document order: A (grid-column: span 2), B (grid-column: span 2), C (no placement rules). Which cell is left empty after all items are placed?",
+        "choices": [
+          "Row 1, column 3",
+          "Row 2, column 3",
+          "Row 1, column 1",
+          "No cell is left empty"
+        ],
+        "expectedAnswer": "Row 1, column 3",
+        "explanation": "With sparse row auto-flow, the placement cursor never revisits earlier gaps. A occupies row 1, cols 1–2. B needs 2 columns but only col 3 remains in row 1, so B wraps to row 2, cols 1–2. The cursor advances to row 2, col 3, where C is placed. Row 1, col 3 is never filled—only dense packing would revisit that gap.",
+        "choiceExplanations": {
+          "Row 1, column 3": "Correct. A fills row 1, cols 1–2. B cannot fit in the remaining single column, so it wraps to row 2, cols 1–2. Sparse packing advances the cursor past the gap, placing C at row 2, col 3 and leaving row 1, col 3 empty.",
+          "Row 2, column 3": "This cell is occupied by C. After B is placed at row 2, cols 1–2, the cursor is at row 2, col 3, so C (needing only 1 column) is placed there.",
+          "Row 1, column 1": "This cell is occupied by A, whose span 2 covers columns 1 and 2 of row 1.",
+          "No cell is left empty": "This would be true with grid-auto-flow: row dense, which allows the cursor to revisit earlier gaps. Default sparse packing skips the gap at row 1, col 3."
+        },
+        "topic": "CSS Grid auto-placement",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Predict which cells remain empty when column spans force gaps under sparse row auto-flow."
+      },
+      "question_canonical_sha256": "52d4616595086a1ed564fa74e74c3421793a272d110f09b0569c369e28796ede",
+      "blind_display_binding": "Exact prompt/topic/objective and exact UTF-8 choice membership agree; only display ordering differed.",
+      "key": {
+        "exact_authored_key": "Row 1, column 3",
+        "frozen_warranted_exact_choices": [
+          "Row 1, column 3"
+        ],
+        "matches_unique_blind_answer": true,
+        "assessment": "supported"
+      },
+      "difficulty": {
+        "requested_minimum": 3,
+        "author_reported": 3,
+        "frozen_independent_level": 3,
+        "meets_requested_minimum": true,
+        "author_rating_agrees_with_independent_rating": true,
+        "reason": "The learner interprets a compact declaration and tracks three items; the two-column spans and sparse qualifier change the result. This is a short representation/application trace, without enough additional interacting constraints or novelty to justify level 4 or 5.",
+        "calibrated": false
+      },
+      "feedback_fields": [
+        {
+          "field": "explanation",
+          "exact_text": "With sparse row auto-flow, the placement cursor never revisits earlier gaps. A occupies row 1, cols 1–2. B needs 2 columns but only col 3 remains in row 1, so B wraps to row 2, cols 1–2. The cursor advances to row 2, col 3, where C is placed. Row 1, col 3 is never filled—only dense packing would revisit that gap.",
+          "characters": 314,
+          "assessment": "supported",
+          "reason": "The actual sparse placement and surviving first-row gap are correct. The dense comparison is scoped to the displayed automatic-placement setup; it says that this particular gap would be revisited, not that every cell would be filled.",
+          "issues": []
+        },
+        {
+          "field": "choiceExplanations[Row 1, column 3]",
+          "exact_text": "Correct. A fills row 1, cols 1–2. B cannot fit in the remaining single column, so it wraps to row 2, cols 1–2. Sparse packing advances the cursor past the gap, placing C at row 2, col 3 and leaving row 1, col 3 empty.",
+          "characters": 217,
+          "assessment": "supported",
+          "reason": "Correctly explains both two-column placements and why C does not backfill the earlier gap.",
+          "issues": []
+        },
+        {
+          "field": "choiceExplanations[Row 2, column 3]",
+          "exact_text": "This cell is occupied by C. After B is placed at row 2, cols 1–2, the cursor is at row 2, col 3, so C (needing only 1 column) is placed there.",
+          "characters": 142,
+          "assessment": "qualified",
+          "reason": "The cell occupancy and placement of C are correct. The intermediate cursor timing is compressed inaccurately if read as the exact specification algorithm.",
+          "issues": [
+            {
+              "exact_text": "After B is placed at row 2, cols 1–2, the cursor is at row 2, col 3",
+              "severity": "minor_algorithm_trace_imprecision",
+              "why": "In the W3C algorithm the cursor remains at B's start position after placing B. While processing C, it advances past occupied columns 1 and 2 to column 3. Treating the next available cell as the already-advanced cursor yields the right result here, but is not the literal intermediate algorithm state.",
+              "changes_key_or_final_placement": false
+            }
+          ]
+        },
+        {
+          "field": "choiceExplanations[Row 1, column 1]",
+          "exact_text": "This cell is occupied by A, whose span 2 covers columns 1 and 2 of row 1.",
+          "characters": 73,
+          "assessment": "supported",
+          "reason": "A really occupies columns 1 and 2 in the first row.",
+          "issues": []
+        },
+        {
+          "field": "choiceExplanations[No cell is left empty]",
+          "exact_text": "This would be true with grid-auto-flow: row dense, which allows the cursor to revisit earlier gaps. Default sparse packing skips the gap at row 1, col 3.",
+          "characters": 153,
+          "assessment": "unsupported",
+          "reason": "The second sentence correctly identifies the sparse gap. The opening dense-packing counterfactual is false and teaches an incorrect result for the unchanged item spans.",
+          "issues": [
+            {
+              "exact_text": "This would be true with grid-auto-flow: row dense, which allows the cursor to revisit earlier gaps.",
+              "severity": "material_false_counterfactual",
+              "why": "With row dense, A still covers row 1 columns 1–2 and B row 2 columns 1–2; C backfills row 1 column 3. Row 2 column 3 remains empty. There are five occupied cells in a two-row, three-column grid. Dense packing changes which cell is empty; it does not make No cell is left empty true.",
+              "wrong_choice_remains_wrong_under_stated_counterfactual": true
+            }
+          ]
+        }
+      ],
+      "feedback_counts": {
+        "supported": 3,
+        "qualified": 1,
+        "unsupported": 1
+      },
+      "pedagogy": {
+        "goal_fit": {
+          "substantive": true,
+          "reason": "Directly exercises the requested interaction between column spans, item order and sparse automatic placement."
+        },
+        "distractor_assessment_preserved_from_blind_record": {
+          "count": 3,
+          "distinct_in_meaning": true,
+          "all_nonwarranted": true,
+          "plausible_count_by_this_assessor": 2,
+          "weak_count": 1,
+          "scope": "Qualitative judgments for the stated learner, not observed learner error rates or calibrated item statistics."
+        },
+        "summary": "Substantive span/sparse-placement application with one weaker distractor. Correct key is insufficient because the proposed feedback teaches a false dense-packing counterfactual."
+      },
+      "display_bounds": {
+        "prompt_characters": 259,
+        "choice_characters": {
+          "Row 1, column 3": 15,
+          "Row 2, column 3": 15,
+          "Row 1, column 1": 15,
+          "No cell is left empty": 21
+        },
+        "main_characters": 314,
+        "choice_feedback_characters": {
+          "Row 1, column 3": 217,
+          "Row 2, column 3": 142,
+          "Row 1, column 1": 73,
+          "No cell is left empty": 153
+        },
+        "all_current_bounds_met": true
+      },
+      "complete_content_supported": false,
+      "complete_content_supported_and_at_requested_minimum": false,
+      "runtime_or_teaching_admission": "Not performed; this author-only diagnostic produced raw items without a solver or final auditor."
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "exact_authored_question": {
+        "prompt": "A community center posts this rule: \"Only residents may reserve the picnic shelter on weekends.\" Which conclusion is warranted by this rule alone?",
+        "choices": [
+          "Every resident may reserve the picnic shelter on weekends",
+          "A non-resident may not reserve the picnic shelter on a weekend",
+          "Residents may not reserve the picnic shelter on weekdays",
+          "Non-residents may not reserve the picnic shelter at any time"
+        ],
+        "expectedAnswer": "A non-resident may not reserve the picnic shelter on a weekend",
+        "explanation": "\"Only residents may … on weekends\" makes residence a necessary condition for weekend reservations: if someone reserves on a weekend, that person must be a resident. Equivalently, non-residents may not reserve on a weekend. It does not make residence sufficient (other requirements may exist), and it says nothing about weekdays.",
+        "choiceExplanations": {
+          "Every resident may reserve the picnic shelter on weekends": "This reads 'only' as 'all,' treating a necessary condition as sufficient. The rule says residence is required, not that it is enough; other restrictions could still apply.",
+          "A non-resident may not reserve the picnic shelter on a weekend": "Correct. 'Only residents may … on weekends' directly entails that non-residents may not reserve on weekends. This is the straightforward contrapositive of the stated necessary condition.",
+          "Residents may not reserve the picnic shelter on weekdays": "The rule restricts weekend reservations to residents. It says nothing about weekdays, so no weekday restriction on residents can be inferred.",
+          "Non-residents may not reserve the picnic shelter at any time": "This extends the restriction beyond its stated scope. The rule applies only to weekends; non-residents might still be permitted to reserve on weekdays."
+        },
+        "topic": "Necessary vs. sufficient conditions and quantifier scope",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Distinguish a necessary condition from a sufficient one when interpreting 'only' in an everyday rule."
+      },
+      "question_canonical_sha256": "53c90b7af90b350d42e5f42a5b72c45d19ed1b6ed69f06a03f2f3044c1e93f57",
+      "blind_display_binding": "Exact prompt/topic/objective and exact UTF-8 choice membership agree; only display ordering differed.",
+      "key": {
+        "exact_authored_key": "A non-resident may not reserve the picnic shelter on a weekend",
+        "frozen_warranted_exact_choices": [
+          "A non-resident may not reserve the picnic shelter on a weekend"
+        ],
+        "matches_unique_blind_answer": true,
+        "assessment": "supported"
+      },
+      "difficulty": {
+        "requested_minimum": 3,
+        "author_reported": 3,
+        "frozen_independent_level": 2,
+        "meets_requested_minimum": false,
+        "author_rating_agrees_with_independent_rating": false,
+        "reason": "The correct choice directly restates one familiar only-condition as an exclusion while preserving weekends. There is no second statement or substantive interaction to integrate. Everyday names and the reservation setting do not raise the cognitive work to level 3.",
+        "calibrated": false
+      },
+      "feedback_fields": [
+        {
+          "field": "explanation",
+          "exact_text": "\"Only residents may … on weekends\" makes residence a necessary condition for weekend reservations: if someone reserves on a weekend, that person must be a resident. Equivalently, non-residents may not reserve on a weekend. It does not make residence sufficient (other requirements may exist), and it says nothing about weekdays.",
+          "characters": 328,
+          "assessment": "supported",
+          "reason": "Correctly identifies residency as necessary for permission to reserve on weekends, without guaranteeing that all residents are eligible or imposing a weekday policy. The word must is read normatively in this posted-rule context: this is a rule about permitted reservations, not a claim that nobody can violate it.",
+          "issues": []
+        },
+        {
+          "field": "choiceExplanations[Every resident may reserve the picnic shelter on weekends]",
+          "exact_text": "This reads 'only' as 'all,' treating a necessary condition as sufficient. The rule says residence is required, not that it is enough; other restrictions could still apply.",
+          "characters": 171,
+          "assessment": "supported",
+          "reason": "Correctly distinguishes a residency requirement from universal permission. Other restrictions are offered as possible compatible conditions, not invented facts about this center.",
+          "issues": []
+        },
+        {
+          "field": "choiceExplanations[A non-resident may not reserve the picnic shelter on a weekend]",
+          "exact_text": "Correct. 'Only residents may … on weekends' directly entails that non-residents may not reserve on weekends. This is the straightforward contrapositive of the stated necessary condition.",
+          "characters": 186,
+          "assessment": "supported",
+          "reason": "Correctly preserves weekend scope and the necessary-condition direction: permitted weekend reservation implies residency, so non-residency excludes that permission.",
+          "issues": []
+        },
+        {
+          "field": "choiceExplanations[Residents may not reserve the picnic shelter on weekdays]",
+          "exact_text": "The rule restricts weekend reservations to residents. It says nothing about weekdays, so no weekday restriction on residents can be inferred.",
+          "characters": 141,
+          "assessment": "supported",
+          "reason": "Correctly says the weekday restriction is not inferable; it does not claim that such a separate restriction is impossible.",
+          "issues": []
+        },
+        {
+          "field": "choiceExplanations[Non-residents may not reserve the picnic shelter at any time]",
+          "exact_text": "This extends the restriction beyond its stated scope. The rule applies only to weekends; non-residents might still be permitted to reserve on weekdays.",
+          "characters": 151,
+          "assessment": "supported",
+          "reason": "Correctly rejects extension from weekends to every time. Might still be permitted is a possibility consistent with the supplied rule, not an assertion that weekday permission actually exists.",
+          "issues": []
+        }
+      ],
+      "feedback_counts": {
+        "supported": 5,
+        "qualified": 0,
+        "unsupported": 0
+      },
+      "pedagogy": {
+        "goal_fit": {
+          "substantive": true,
+          "reason": "Addresses the stated weakness in necessary conditions and overly strong readings of only. It is useful introductory practice for that goal."
+        },
+        "distractor_assessment_preserved_from_blind_record": {
+          "count": 3,
+          "distinct_in_meaning": true,
+          "all_nonwarranted": true,
+          "plausible_count_by_this_assessor": 3,
+          "weak_count": 0,
+          "scope": "Nonwarranted does not mean impossible: the other policies could hold independently, but are not conclusions of this rule. Plausibility is qualitative, not learner-tested."
+        },
+        "summary": "A sound introductory necessary-condition item with relevant distractors and complete supported feedback, but it directly applies one rule and does not meet the requested level-3 challenge."
+      },
+      "display_bounds": {
+        "prompt_characters": 146,
+        "choice_characters": {
+          "Every resident may reserve the picnic shelter on weekends": 57,
+          "A non-resident may not reserve the picnic shelter on a weekend": 62,
+          "Residents may not reserve the picnic shelter on weekdays": 56,
+          "Non-residents may not reserve the picnic shelter at any time": 60
+        },
+        "main_characters": 328,
+        "choice_feedback_characters": {
+          "Every resident may reserve the picnic shelter on weekends": 171,
+          "A non-resident may not reserve the picnic shelter on a weekend": 186,
+          "Residents may not reserve the picnic shelter on weekdays": 141,
+          "Non-residents may not reserve the picnic shelter at any time": 151
+        },
+        "all_current_bounds_met": true
+      },
+      "complete_content_supported": true,
+      "complete_content_supported_and_at_requested_minimum": false,
+      "runtime_or_teaching_admission": "Not performed; this author-only diagnostic produced raw items without a solver or final auditor."
+    }
+  ],
+  "independent_css_counterfactual_check": {
+    "method": "Manual application of W3C CSS Grid Level 1 section 8.5; no native browser run.",
+    "original_sparse_rows": [
+      [
+        "A",
+        "A",
+        null
+      ],
+      [
+        "B",
+        "B",
+        "C"
+      ]
+    ],
+    "same_inputs_except_row_dense_rows": [
+      [
+        "A",
+        "A",
+        "C"
+      ],
+      [
+        "B",
+        "B",
+        null
+      ]
+    ],
+    "conclusion": "Both modes leave one empty cell. Dense changes its location, not the count.",
+    "native_execution_performed": false
+  },
+  "references": [
+    {
+      "url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo",
+      "supports": "Sparse and dense cursor traversal; displayed-case placements and the contrary dense example are manual deductions."
+    },
+    {
+      "url": "https://dictionary.cambridge.org/dictionary/english/only",
+      "supports": "Ordinary restrictive meaning of only; conditional and temporal-scope analysis is the assessor's reasoning on the supplied rule."
+    }
+  ],
+  "summary": {
+    "raw_complete_items": 2,
+    "authored_keys_matching_unique_frozen_answer": 2,
+    "author_reported_difficulty_3_items": 2,
+    "independent_difficulty_3_items": 1,
+    "independent_difficulty_2_items": 1,
+    "feedback_fields_assessed": 10,
+    "feedback_fields_supported": 8,
+    "feedback_fields_qualified": 1,
+    "feedback_fields_unsupported": 1,
+    "items_with_material_false_feedback": 1,
+    "complete_content_supported_items": 1,
+    "complete_content_supported_at_requested_minimum_3": 0,
+    "items_with_all_three_qualitatively_plausible_distractors": 1,
+    "items_with_one_weaker_distractor": 1,
+    "runtime_admitted_or_served_items": 0
+  },
+  "limits": [
+    "This is an assistant assessment of two exact raw author responses, not a model accuracy estimate, independent human panel or difficulty calibration.",
+    "The CSS key is correct while its dense-packing feedback is materially false; key agreement is not counted as complete feedback accuracy.",
+    "The English item is supported introductory content but does not qualify the requested level-3 authoring objective.",
+    "No source or generated text was repaired, no model/provider/native call was made, and the first blind artifact remains unchanged.",
+    "No claim about the first timed-out request's unseen content or what a different timeout would have produced follows from this assessment."
+  ]
+}

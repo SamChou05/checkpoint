@@ -1,0 +1,164 @@
+{
+  "audit": "author-latency-operational-binding-review-v1",
+  "assessor": "review_design; independent offline assistant operational review",
+  "inputs": {
+    "/tmp/checkpoint-author-latency-capture-20260908/capture.json": "bd987c3d17d501c21e723a13ce100084b0faee7a60fcfa88039c699509577bb9",
+    "/Users/samchou/Documents/Checkpoint/docs/evidence/author-latency-plan-20260908.json": "b1503c325c9363623c3c506e482209c8b3633079180adf7f1b165f0850712221",
+    "/private/tmp/checkpoint-author-latency-live-20260908/docs/evidence/complete-authoring-plan-20260908.json": "c15d48b270b9c710a96123ba4da334dd25aaf79c28fe05153beba3291bb5626a"
+  },
+  "frozen_plan_canonical_sha256": "bb93d78d945178507b36deec2cdfb7c8fe593c21f098d172c58b18f424c89a77",
+  "clean_source_path": "/private/tmp/checkpoint-author-latency-live-20260908/backend/bedrock-question-service",
+  "source_revision": "7e6b7ed348884f90dfa58c566b5ae884ce272340",
+  "source_hashes_checked": 28,
+  "all_source_hashes_match": true,
+  "exact_frozen_plan_rebuild_and_dependency_match": true,
+  "exact_original_request_bodies_and_selected_order_match": true,
+  "sdk_config_checked_with_client_factory_mock": {
+    "connect_timeout": 3,
+    "read_timeout": 300,
+    "retries": {
+      "mode": "standard",
+      "total_max_attempts": 1
+    }
+  },
+  "actual_provider_or_native_artifact_calls_during_audit": 0,
+  "read_only_process_state_scope": "Signal-zero existence checks only for captured owned leader/group IDs54998 and55450; no signal causing state change or process termination.",
+  "capture_code_inspection": "One parent persists exact request before launch, persists ready/group ownership before GO, and then admits SDK work. Workers project only final text, selected usage, stop reason and reasoning block count. Terminal capture alone is not an independent filesystem timeline or cryptographic evidence authentication.",
+  "calls": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "parent_case_index": 0,
+      "request_canonical_sha256": "febc8327b493180f6021963f987210a5d23dd3a5c7820593cbb0c398df7e5511",
+      "request_input_utf8_bytes": 5687,
+      "sdk_elapsed_seconds": 37.37313041696325,
+      "process_elapsed_seconds": 38.28586204198655,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1233,
+        "outputTokens": 2415,
+        "totalTokens": 3648
+      },
+      "reasoning_content_block_count_only": 1,
+      "stop_reason": "end_turn",
+      "raw_final_text_sha256": "586c03eb0ea39068b9d0c681f3f0277218b33a6a08f5475a575987881bf47587",
+      "raw_final_text_characters": 1763,
+      "raw_final_text_utf8_bytes": 1775,
+      "reconstructed_sanitized_frame_bytes": [
+        126,
+        104,
+        2217,
+        104
+      ],
+      "structural_author_contract": "valid; semantic assessment intentionally not performed",
+      "field_characters": {
+        "prompt": 259,
+        "choices": [
+          15,
+          15,
+          15,
+          21
+        ],
+        "expectedAnswer": 15,
+        "main_explanation": 314,
+        "choice_explanations_in_choice_order": [
+          217,
+          142,
+          73,
+          153
+        ],
+        "topic": 23,
+        "objective": 89
+      },
+      "cleanup": {
+        "captured_worker_reaped": true,
+        "captured_group_cleanup_confirmed": true,
+        "worker_exitcode": 0,
+        "termination_attempted": false,
+        "group_id": 54998,
+        "specific_id_read_only_postcheck": {
+          "leader_present": false,
+          "group_present": false
+        }
+      }
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "parent_case_index": 2,
+      "request_canonical_sha256": "7e19075eaf3a09873b7557ba14abac67e85eba9fff36194ed920ad5b4844225d",
+      "request_input_utf8_bytes": 4937,
+      "sdk_elapsed_seconds": 25.607346042001154,
+      "process_elapsed_seconds": 26.564880457997788,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1084,
+        "outputTokens": 1413,
+        "totalTokens": 2497
+      },
+      "reasoning_content_block_count_only": 1,
+      "stop_reason": "end_turn",
+      "raw_final_text_sha256": "bb6a0603830c5d984ae6130bdaca59fcdbaa99d29c476b14eda973bc33126c3c",
+      "raw_final_text_characters": 2162,
+      "raw_final_text_utf8_bytes": 2166,
+      "reconstructed_sanitized_frame_bytes": [
+        126,
+        104,
+        2617,
+        104
+      ],
+      "structural_author_contract": "valid; semantic assessment intentionally not performed",
+      "field_characters": {
+        "prompt": 146,
+        "choices": [
+          57,
+          62,
+          56,
+          60
+        ],
+        "expectedAnswer": 62,
+        "main_explanation": 328,
+        "choice_explanations_in_choice_order": [
+          171,
+          186,
+          141,
+          151
+        ],
+        "topic": 56,
+        "objective": 101
+      },
+      "cleanup": {
+        "captured_worker_reaped": true,
+        "captured_group_cleanup_confirmed": true,
+        "worker_exitcode": 0,
+        "termination_attempted": false,
+        "group_id": 55450,
+        "specific_id_read_only_postcheck": {
+          "leader_present": false,
+          "group_present": false
+        }
+      }
+    }
+  ],
+  "totals": {
+    "provider_dispatch_attempts": 2,
+    "known_input_tokens": 2317,
+    "known_output_tokens": 3828,
+    "known_total_tokens": 6145,
+    "request_input_utf8_bytes": 10624,
+    "sdk_interval_sum_seconds": 62.980476458964404,
+    "worker_interval_sum_seconds": 64.85074249998434,
+    "unknown_usage_calls": 0,
+    "author_outputs_available": 2,
+    "solver_outputs_available": 0,
+    "auditor_outputs_available": 0
+  },
+  "conclusion": "The separate author-only probe completed both requested calls normally and locally cleaned up both workers and groups. Both SDK intervals were below100seconds, so this probe does not explain the original timeout or show a benefit from the larger read window.",
+  "limits": [
+    "No key, factual support, explanation quality, distractor quality, actual difficulty or learning-value judgment is made here. Two structurally valid author responses are not verified inventory.",
+    "The CSS request repeats a request in a new diagnostic; it is not a recovered original response or a matched correctness comparison.",
+    "SDK elapsed time is not socket inactivity; interval sums are not a whole-run or production latency measurement.",
+    "Current absence of the specific process/group IDs supports the captured cleanup state but cannot reconstruct the historical cleanup sequence.",
+    "Original capture, frozen plan, committed source and blind-assessment files were not modified."
+  ]
+}

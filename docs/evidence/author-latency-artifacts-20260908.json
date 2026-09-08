@@ -1,0 +1,35 @@
+{
+  "scope": "Byte-preserved author-only observation and independently frozen assessments; no verified inventory or deployment. Original paths inside artifacts describe their assessment-time location.",
+  "files": [
+    {
+      "archive": "author-latency-capture-20260908.json",
+      "source": "/tmp/checkpoint-author-latency-capture-20260908/capture.json",
+      "byte_sha256": "bd987c3d17d501c21e723a13ce100084b0faee7a60fcfa88039c699509577bb9"
+    },
+    {
+      "archive": "author-latency-binding-audit-20260908.json",
+      "source": "/tmp/checkpoint-author-latency-binding-audit-20260908.json",
+      "byte_sha256": "c20426fd11312b7c09528af9035e5062be0bdbfc804d17f221c13ab1e63418ed"
+    },
+    {
+      "archive": "author-latency-blind-input-20260908.json",
+      "source": "/tmp/checkpoint-author-latency-capture-20260908/blind-assessment-input.json",
+      "byte_sha256": "01096e77b3aed28d5e55a3ac7c21ce444bdf0bd054fea6b4f82db4ee2a8ec527"
+    },
+    {
+      "archive": "author-latency-root-blind-assessment-20260908.json",
+      "source": "/tmp/checkpoint-author-latency-capture-20260908/root-blind-assessment.json",
+      "byte_sha256": "a7ab9e171de38a48730b2647e8e0f55ccbc731852512fef386f9b228a79f2ef8"
+    },
+    {
+      "archive": "author-latency-blind-assessment-20260908.json",
+      "source": "/tmp/checkpoint-author-latency-blind-assessment-20260908.json",
+      "byte_sha256": "dc8045a9f729f001a8249b2ed63447280f4282b3816e56cba27526880c4713f0"
+    },
+    {
+      "archive": "author-latency-feedback-assessment-20260908.json",
+      "source": "/tmp/checkpoint-author-latency-feedback-assessment-20260908.json",
+      "byte_sha256": "9cfb23cfc33e88647690033edd831702891fc1233f86d9cf1dc42777dc016f36"
+    }
+  ]
+}
