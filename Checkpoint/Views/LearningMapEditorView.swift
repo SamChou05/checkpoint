@@ -37,11 +37,16 @@ struct LearningMapDraft: Equatable {
         let proposedIDs = Set(topics.map(\.id))
         let additions = topics.filter { originalByID[$0.id] == nil }
         let removals = original.topics.filter { !proposedIDs.contains($0.id) }
-        if !additions.isEmpty {
-            changes.append("\(additions.count) new \(additions.count == 1 ? "skill starts" : "skills start") with fresh practice evidence.")
+        for addition in additions {
+            if let predecessorID = addition.predecessorIDs.first, let earlier = originalByID[predecessorID] {
+                changes.append("Replace “\(earlier.name)” with “\(addition.name)”. The new branch starts with fresh practice evidence; the earlier skill stays in history.")
+            } else {
+                changes.append("Add “\(addition.name)” with fresh practice evidence.")
+            }
         }
-        if !removals.isEmpty {
-            changes.append("\(removals.count) earlier \(removals.count == 1 ? "skill moves" : "skills move") to history with its existing evidence.")
+        let replacedIDs = Set(additions.flatMap(\.predecessorIDs))
+        for removal in removals where !replacedIDs.contains(removal.id) {
+            changes.append("Move “\(removal.name)” to history with its existing evidence.")
         }
         for topic in topics {
             guard let earlier = originalByID[topic.id] else { continue }
@@ -49,16 +54,26 @@ struct LearningMapDraft: Equatable {
                 changes.append("Rename “\(earlier.name)” to “\(topic.name)”; keep its progress.")
             }
             if topic.objectives != earlier.objectives {
-                changes.append("Update focus points for “\(topic.name)”. Earlier answers stay in practice history.")
+                changes.append("Update focus points for “\(topic.name)”. Future questions follow this scope; earlier answers stay in practice history.")
+                let priorObjectiveIDs = Set(earlier.objectives.map(\.id))
+                let newObjectives = topic.objectives.filter { !priorObjectiveIDs.contains($0.id) }
+                if !newObjectives.isEmpty {
+                    changes.append("New focus points in “\(topic.name)” start with fresh evidence: \(newObjectives.map(\.name).joined(separator: ", ")).")
+                }
             }
             if topic.isPaused != earlier.isPaused {
                 changes.append(topic.isPaused
                     ? "Pause “\(topic.name)” in upcoming practice. Its progress stays visible."
                     : "Resume “\(topic.name)” in upcoming practice.")
             }
-            if topic.detail != earlier.detail || topic.practiceEmphasis != earlier.practiceEmphasis
-                || topic.challenge != earlier.challenge {
-                changes.append("Update the practice direction for “\(topic.name)”. Future questions use these preferences.")
+            if topic.detail != earlier.detail {
+                changes.append("Update the description of “\(topic.name)”. Future questions follow this scope.")
+            }
+            if topic.practiceEmphasis != earlier.practiceEmphasis {
+                changes.append("Set practice emphasis for “\(topic.name)” to \(topic.practiceEmphasis.label.lowercased()). This changes how often it appears.")
+            }
+            if topic.challenge != earlier.challenge {
+                changes.append("Set the challenge for “\(topic.name)” to \(topic.challenge.label.lowercased()). This adjusts the level of upcoming questions.")
             }
         }
         let sharedIDs = Set(originalByID.keys).intersection(proposedIDs)

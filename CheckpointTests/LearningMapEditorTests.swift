@@ -19,6 +19,7 @@ final class LearningMapEditorTests: CheckpointWorkflowTestCase {
         XCTAssertNil(draft.validationError)
         XCTAssertTrue(draft.changeSummary.contains { $0.contains("keep its progress") })
         XCTAssertTrue(draft.changeSummary.contains { $0.contains("Future questions") })
+        XCTAssertTrue(draft.changeSummary.contains { $0.contains("focus more") && $0.contains("how often") })
     }
 
     @MainActor
