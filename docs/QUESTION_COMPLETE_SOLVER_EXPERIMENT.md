@@ -2,6 +2,8 @@
 
 Status: prospective, September 8, 2026 UTC. This isolated sixteen-call experiment has not run. It does not change runtime or qualify a replacement verifier.
 
+The exact [dispatch plan](evidence/complete-solver-plan-20260908.json) is prepared from source `e0f8d86eda1e48a89333c6b8e61a5db4c2083a5b` with canonical SHA-256 `50b9018d13841bad53ff7d337e47cc228db5aa97519467daf5c62fc7a71640a6`. Its byte SHA-256 is `0579474d33c84fa8efc2b544e54a2e985a6c9cb7261fab5b354eb280648ca69a`. The sixteen requests total 68,179 UTF-8 input text bytes, with a largest request of 5,017 bytes. A detached checkout at that source and Python 3.12.11/boto3 1.43.89/botocore 1.43.89 bind execution independently of concurrent app work.
+
 The current independent solver receives the stem, goal, skill metadata and supplied sources, but no choices. Some ordinary MCQs put necessary task information in their choices. Two versions of “Which sentence is not in the past tense?” can require different answers while producing identical solver requests. Local capture tests demonstrate the same information loss for comparisons among listed integers. This is an input limitation; it does not prove the final reviewer necessarily fails.
 
 The candidate gives a fresh first solver the complete MCQ while hiding the author's key, feedback, difficulty, existing answer coverage and independent assessments. It also replaces the free solution/outcome contract with one answer-adequacy judgment per exact choice. These two changes are tested together; this is not a causal isolation of input exposure from output-contract changes.
@@ -57,4 +59,4 @@ The [runner](../backend/bedrock-question-service/evals/checkpoint_complete_solve
 
 Settings are `us.anthropic.claude-opus-4-6-v1`, adaptive thinking/high effort, at most 16,000 output tokens per call, three-second connect and 100-second read timeouts, and one SDK attempt. There are at most sixteen calls, two per case, with 32,000 UTF-8 input text bytes per call and 512,000 total. These byte/token ceilings are not a dollar cap or a guaranteed whole-run deadline. No authoring, retries, repairs, replacements or top-ups are allowed. A provider or required-format failure stops further dispatch.
 
-Preparation freezes source revision and file hashes, Python/provider dependency versions, exact requests, case order and limits. Execution requires the exact canonical plan hash and an unchanged rebuild before creating the provider client. A fresh output directory is required. The committed plan and detached source worktree will be recorded before the first call.
+Preparation freezes source revision and file hashes, Python/provider dependency versions, exact requests, case order and limits. Execution requires the exact canonical plan hash and an unchanged rebuild before creating the provider client. A fresh output directory is required. The committed plan above and detached source worktree are recorded before the first call.
