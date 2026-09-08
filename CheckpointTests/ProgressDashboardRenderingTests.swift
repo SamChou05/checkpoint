@@ -2478,6 +2478,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 expectedAnswer: "A clear decision with a stated tradeoff.",
                 explanation: "Connect the decision to the system constraint.",
                 verificationVersion: 1,
+                verificationPolicyRevision: QuestionVerificationPolicy.currentRevision,
                 topic: topic.name,
                 skillID: topic.id,
                 difficulty: 3,

@@ -3387,7 +3387,7 @@ final class CheckpointStore {
             adaptiveDifficultyBySkillID: Dictionary(uniqueKeysWithValues:
                 targetGoal.map { adaptiveSkillPlans(for: $0).map { ($0.skillID, $0.targetDifficulty) } } ?? []
             ),
-            requiresVerifiedQuestions: targetGoal.map { usesVerifiedLearning(for: $0) } ?? false
+            requiresVerifiedQuestions: isMember
         )
     }
 
@@ -6251,7 +6251,8 @@ final class CheckpointStore {
                     limit: claimLimit,
                     for: claimRequest
                 )
-            } catch let error as QuestionBankAPIError where error == .bankNotFound || error == .contextConflict {
+            } catch let error as QuestionBankAPIError
+                where error == .bankNotFound || error == .contextConflict || error == .claimConflict {
                 guard hasQuestionGenerationMutationAuthority(
                     lifecycleID: lifecycleID,
                     requiredActiveGoalID: requiredActiveGoalID
@@ -6261,7 +6262,12 @@ final class CheckpointStore {
                         addedQuestionCount: totalAdded
                     )
                 }
-                intent.bankID = nil
+                // An incompatible stored claim needs a new idempotency key,
+                // but its bank can still supply eligible questions. Ambiguous
+                // transport failures below retain the original key for replay.
+                if error != .claimConflict {
+                    intent.bankID = nil
+                }
                 intent.claimID = UUID().uuidString
                 intent.lastAttemptAt = Date()
                 replaceQuestionBankSyncIntent(intent)
@@ -6735,7 +6741,9 @@ final class CheckpointStore {
         let revisionPlans = isMember && currentPlans.isEmpty
             ? AdaptiveLearningPolicy.plans(for: goal, attempts: []) : currentPlans
         let components = [
-            isMember ? "verified-learning-v1" : "starter",
+            isMember
+                ? "verified-learning-v1:policy-\(QuestionVerificationPolicy.currentRevision)"
+                : "starter",
             goal.title,
             goal.currentLevel,
             goal.focusAreas,
@@ -6793,7 +6801,7 @@ final class CheckpointStore {
                 competencies: generationCompetencies
             ),
             adaptiveSkillPlans: adaptiveSkillPlans(for: goal),
-            requiresVerifiedQuestions: usesVerifiedLearning(for: goal),
+            requiresVerifiedQuestions: isMember,
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken
         )

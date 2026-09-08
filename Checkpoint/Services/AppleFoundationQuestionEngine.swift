@@ -68,7 +68,7 @@ private struct AppleFoundationQuestionEngineImpl: QuestionGenerating {
         let response = try await session.respond(to: Prompt(sourcePrompt), options: options)
         let payload = try extractResponse(from: response.content)
         let questions = payload.questions.map {
-            $0.makeQuestion(
+            $0.makeLocallyAuthoredQuestion(
                 goalID: providerRequest.goal.id,
                 sourcePrompt: sourcePrompt
             )

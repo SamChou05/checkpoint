@@ -8,21 +8,26 @@ final class ScriptedQuestionBankClient: QuestionBankSyncing, @unchecked Sendable
         var contextRevision: String
         var desiredCount: Int
         var lowWatermark: Int
+        var requiresVerifiedQuestions: Bool
     }
 
     private let preparation: QuestionBankPreparationReceipt
     private let defaultClaim: QuestionBankClaimReceipt
     private let ensureError: (any Error)?
+    private let claimError: (any Error)?
     private(set) var ensureRequests: [EnsureRequest] = []
     private(set) var claimIDs: [String] = []
+    private(set) var claimRequests: [QuestionGenerationRequest] = []
 
     init(
         preparation: QuestionBankPreparationReceipt,
         defaultClaim: QuestionBankClaimReceipt? = nil,
-        ensureError: (any Error)? = nil
+        ensureError: (any Error)? = nil,
+        claimError: (any Error)? = nil
     ) {
         self.preparation = preparation
         self.ensureError = ensureError
+        self.claimError = claimError
         self.defaultClaim = defaultClaim ?? QuestionBankClaimReceipt(
             questions: [],
             status: .empty,
@@ -42,7 +47,8 @@ final class ScriptedQuestionBankClient: QuestionBankSyncing, @unchecked Sendable
                 goalID: request.goal.id,
                 contextRevision: contextRevision,
                 desiredCount: desiredCount,
-                lowWatermark: lowWatermark
+                lowWatermark: lowWatermark,
+                requiresVerifiedQuestions: request.requiresVerifiedQuestions
             )
         )
         if let ensureError {
@@ -58,6 +64,10 @@ final class ScriptedQuestionBankClient: QuestionBankSyncing, @unchecked Sendable
         for request: QuestionGenerationRequest
     ) async throws -> QuestionBankClaimReceipt {
         claimIDs.append(claimID)
+        claimRequests.append(request)
+        if let claimError {
+            throw claimError
+        }
         return defaultClaim
     }
 }

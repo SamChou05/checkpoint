@@ -78,7 +78,8 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
                 "A too-broad answer"
             ],
             explanation: explanation,
-            verificationVersion: 0
+            verificationVersion: 0,
+            verificationPolicyRevision: 0
         )
         let store = CheckpointStore(defaults: defaults)
         store.goal = goal
@@ -119,7 +120,8 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
                 expectedAnswer: "B",
                 choices: choices,
                 explanation: "A stack removes the most recently added element.",
-                verificationVersion: 0
+                verificationVersion: 0,
+                verificationPolicyRevision: 0
             )
             store.questions.append(question)
 

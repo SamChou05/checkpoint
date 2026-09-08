@@ -245,14 +245,17 @@ final class QuestionValidationTests: XCTestCase {
         let payload = try JSONDecoder().decode(GeneratedQuestionPayload.self, from: encoded)
         let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed service")
         XCTAssertEqual(received.verificationVersion, 1)
+        XCTAssertEqual(received.verificationPolicyRevision, QuestionVerificationPolicy.currentRevision)
         XCTAssertEqual(received.choiceExplanations, question.choiceExplanations)
         let restored = try JSONDecoder().decode(CheckpointQuestion.self, from: encoded)
         XCTAssertEqual(restored.choiceExplanations, question.choiceExplanations)
         var oldJSON = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
         oldJSON.removeValue(forKey: "verificationVersion")
+        oldJSON.removeValue(forKey: "verificationPolicyRevision")
         oldJSON.removeValue(forKey: "choiceExplanations")
         let legacy = try JSONDecoder().decode(CheckpointQuestion.self, from: JSONSerialization.data(withJSONObject: oldJSON))
         XCTAssertEqual(legacy.verificationVersion, 0)
+        XCTAssertEqual(legacy.verificationPolicyRevision, 0)
         XCTAssertTrue(legacy.choiceExplanations.isEmpty)
     }
 
@@ -1227,6 +1230,180 @@ final class QuestionContentPreservationTests: XCTestCase {
     }
 }
 
+final class VerificationPolicyFreshnessTests: XCTestCase {
+    private func historicalQuestion(goal: Goal) -> CheckpointQuestion {
+        CheckpointQuestion(
+            goalID: goal.id,
+            prompt: "In Python 3, which call runs first in this straight-line script?\nprint('alpha')\nprint('beta')\nprint('gamma')\nprint('delta')",
+            expectedAnswer: "print('alpha')",
+            choices: ["print('alpha')", "print('beta')", "print('gamma')", "print('delta')"],
+            explanation: "Execution begins with the first call in this straight-line script.",
+            choiceExplanations: ["print('beta')": "The beta call appears after the alpha call."],
+            verificationVersion: 1,
+            topic: "Python execution",
+            difficulty: 1,
+            format: .multipleChoice,
+            status: .incorrect,
+            timesAsked: 1,
+            sourcePrompt: "historical reviewed service"
+        )
+    }
+
+    func testMissingPolicyRevisionRemainsZeroAcrossStoredSnapshotRoundTrip() throws {
+        let goal = makeGoal()
+        let oldQuestion = historicalQuestion(goal: goal)
+        XCTAssertEqual(oldQuestion.verificationPolicyRevision, 0, "The model initializer must not assume a current server review.")
+        var stored = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(oldQuestion)) as? [String: Any])
+        stored.removeValue(forKey: "verificationPolicyRevision")
+        let attempt = CheckpointAttempt(
+            questionID: oldQuestion.id, goalID: goal.id, questionVerificationVersion: 1,
+            prompt: oldQuestion.prompt, answer: oldQuestion.choices[1], result: .incorrect,
+            unlockMinutes: 0,
+            reviewSnapshot: CheckpointAttemptReviewSnapshot(topic: oldQuestion.topic, format: .multipleChoice,
+                referenceAnswer: oldQuestion.expectedAnswer, explanation: oldQuestion.explanation)
+        )
+        let attemptObject = try JSONSerialization.jsonObject(with: JSONEncoder().encode(attempt))
+        let snapshotData = try JSONSerialization.data(withJSONObject: [
+            "questions": [stored], "attempts": [attemptObject], "competencies": []
+        ])
+        let snapshot = try QuestionContentJSONDecoder.decode(AppSnapshot.self, from: snapshotData)
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent("policy-history-\(UUID().uuidString).json")
+        defer { try? FileManager.default.removeItem(at: file) }
+        try JSONEncoder().encode(snapshot).write(to: file, options: .atomic)
+        let restored = try QuestionContentJSONDecoder.decode(AppSnapshot.self, from: Data(contentsOf: file))
+        XCTAssertEqual(restored.questions, [oldQuestion])
+        XCTAssertEqual(restored.attempts, [attempt])
+        XCTAssertEqual(restored.questions[0].verificationVersion, 1)
+        XCTAssertEqual(restored.questions[0].verificationPolicyRevision, 0)
+        XCTAssertEqual(restored.questions[0].timesAsked, 1)
+        XCTAssertEqual(restored.questions[0].status, .incorrect)
+        XCTAssertEqual(restored.attempts[0].result, .incorrect, "A freshness requirement must not re-score history.")
+    }
+
+    func testWireAndPersistencePreserveExplicitPolicyWithoutDefaultingLegacy() throws {
+        let goal = makeGoal()
+        let oldQuestion = historicalQuestion(goal: goal)
+        for revision in [-1, 0, 1, 2] {
+            var question = oldQuestion
+            question.verificationPolicyRevision = revision
+            let encoded = try JSONEncoder().encode(question)
+            let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: encoded)
+            let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "wire")
+            let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(received))
+            XCTAssertEqual(restored.verificationPolicyRevision, revision)
+            XCTAssertEqual(Data(restored.prompt.utf8), Data(question.prompt.utf8))
+            XCTAssertEqual(restored.verificationVersion, 1)
+        }
+        var oldWire = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(oldQuestion)) as? [String: Any])
+        for value in [nil, NSNull()] as [Any?] {
+            oldWire["verificationPolicyRevision"] = value
+            let data = try JSONSerialization.data(withJSONObject: oldWire)
+            let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: data)
+            XCTAssertEqual(payload.makeQuestion(goalID: goal.id, sourcePrompt: "legacy wire").verificationPolicyRevision, 0)
+            XCTAssertEqual(try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: data).verificationPolicyRevision, 0)
+        }
+        for invalid in [true, "1", 1.5] as [Any] {
+            oldWire["verificationPolicyRevision"] = invalid
+            let data = try JSONSerialization.data(withJSONObject: oldWire)
+            XCTAssertThrowsError(try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: data))
+            XCTAssertThrowsError(try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: data))
+        }
+    }
+
+    func testFreshAdmissionRequiresCurrentPolicyAndStillRequiresWireVersionOne() {
+        let goal = makeGoal()
+        var request = makeRequest(goal: goal)
+        request.requiresVerifiedQuestions = true
+        for (version, revision, accepted) in [(1, -1, false), (1, 0, false), (1, 1, true), (1, 2, true), (0, 1, false), (2, 1, false)] {
+            let question = makeQuestion(goal: goal, index: 1, verificationVersion: version, verificationPolicyRevision: revision)
+            XCTAssertEqual(!QuestionBatchSanitizer.sanitize([question], for: request).isEmpty, accepted,
+                           "wire=\(version), policy=\(revision)")
+        }
+    }
+
+    func testLocallyAuthoredPayloadCannotMintBackendVerificationMetadata() throws {
+        let goal = makeGoal()
+        var claimed = historicalQuestion(goal: goal)
+        claimed.verificationPolicyRevision = QuestionVerificationPolicy.currentRevision
+        let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(claimed))
+        let backend = payload.makeQuestion(goalID: goal.id, sourcePrompt: "backend")
+        let local = payload.makeLocallyAuthoredQuestion(goalID: goal.id, sourcePrompt: "local model")
+        XCTAssertEqual(backend.verificationVersion, 1)
+        XCTAssertEqual(backend.verificationPolicyRevision, QuestionVerificationPolicy.currentRevision)
+        XCTAssertEqual(local.verificationVersion, 0)
+        XCTAssertEqual(local.verificationPolicyRevision, 0)
+        XCTAssertEqual(Data(local.prompt.utf8), Data(claimed.prompt.utf8))
+        XCTAssertEqual(local.choices, claimed.choices)
+        XCTAssertEqual(local.expectedAnswer, claimed.expectedAnswer)
+        var request = makeRequest(goal: goal)
+        request.requiresVerifiedQuestions = true
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([local], for: request).isEmpty)
+        XCTAssertEqual(QuestionBatchSanitizer.sanitize([backend], for: request).count, 1)
+    }
+
+    func testStaleCandidateDoesNotOccupyCurrentCandidateDuplicateSlot() throws {
+        let goal = makeGoal()
+        let stale = historicalQuestion(goal: goal)
+        var current = stale
+        current.id = UUID()
+        current.verificationPolicyRevision = QuestionVerificationPolicy.currentRevision
+        var request = makeRequest(goal: goal)
+        request.requiresVerifiedQuestions = true
+        let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([stale, current], for: request).first)
+        XCTAssertEqual(accepted.id, current.id)
+        XCTAssertEqual(accepted.verificationPolicyRevision, QuestionVerificationPolicy.currentRevision)
+        XCTAssertEqual(Data(accepted.prompt.utf8), Data(stale.prompt.utf8))
+        XCTAssertEqual(accepted.expectedAnswer, stale.prompt.components(separatedBy: "\n")[1])
+        for choice in accepted.choices {
+            XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: accepted).result,
+                           choice == accepted.expectedAnswer ? .correct : .incorrect)
+        }
+        request.existingQuestions = [stale]
+        XCTAssertTrue(QuestionBatchSanitizer.sanitize([current], for: request).isEmpty,
+                      "Historical content still blocks exact repetition even if its policy is stale.")
+    }
+
+    func testHistoricalV1StemFeedbackAndGradingDoNotDependOnPolicyFreshness() throws {
+        let goal = makeGoal()
+        let question = historicalQuestion(goal: goal)
+        XCTAssertNotEqual(QuestionBatchSanitizer.promptWithoutTrailingChoiceEcho(question.prompt, choices: question.choices), question.prompt)
+        let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(accepted.verificationPolicyRevision, 0)
+        XCTAssertEqual(Data(accepted.prompt.utf8), Data(question.prompt.utf8))
+        XCTAssertEqual(accepted.choiceExplanations, question.choiceExplanations)
+        for choice in question.choices {
+            XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: question).result,
+                           choice == question.expectedAnswer ? .correct : .incorrect)
+            XCTAssertEqual(question.feedbackExplanation(for: choice), accepted.feedbackExplanation(for: choice))
+        }
+        let legacy = makeQuestion(goal: goal, index: 1, verificationVersion: 0, verificationPolicyRevision: 0)
+        XCTAssertEqual(QuestionBatchSanitizer.sanitize([legacy], for: makeRequest(goal: goal)).count, 1)
+    }
+
+    @MainActor
+    func testSelectorExcludesStoredStaleInventoryOnlyWhenCurrentVerificationIsRequired() throws {
+        let goal = makeGoal()
+        let stale = historicalQuestion(goal: goal)
+        let encoded = try JSONEncoder().encode(stale)
+        let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: encoded)
+        let current = makeQuestion(goal: goal, index: 2, verificationPolicyRevision: QuestionVerificationPolicy.currentRevision)
+        let unverified = makeQuestion(goal: goal, index: 3, verificationVersion: 0, verificationPolicyRevision: 1)
+        let inventory = [restored, unverified, current]
+        let selector = CheckpointQuestionSelector(questions: inventory, goalProfiles: [goal], currentGoal: goal,
+            competencies: [], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2, requiresVerifiedQuestions: true)
+        XCTAssertFalse(selector.isSelectableQuestion(restored))
+        XCTAssertFalse(selector.isSelectableQuestion(unverified))
+        XCTAssertTrue(selector.isSelectableQuestion(current))
+        XCTAssertEqual(selector.nextQuestion()?.id, current.id)
+        XCTAssertEqual(selector.nextQuestions(limit: 3).map(\.id), [current.id])
+        let legacySelector = CheckpointQuestionSelector(questions: inventory, goalProfiles: [goal], currentGoal: goal,
+            competencies: [], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2, requiresVerifiedQuestions: false)
+        XCTAssertTrue(legacySelector.isSelectableQuestion(restored))
+        XCTAssertTrue(legacySelector.isSelectableQuestion(unverified))
+        XCTAssertEqual(restored, stale, "Selection must not rewrite retained questions.")
+    }
+}
+
 final class ReviewedStemPreservationTests: XCTestCase {
     private struct Fixture: Decodable {
         var raw_author_question: GeneratedQuestionPayload
@@ -1259,8 +1436,9 @@ final class ReviewedStemPreservationTests: XCTestCase {
             wireQuestion.choices = Array(reviewed.choices[offset...]) + Array(reviewed.choices[..<offset])
             let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(wireQuestion))
             let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "serialized service")
-            var request = makeRequest(goal: goal)
-            request.requiresVerifiedQuestions = true
+            // The archived v1 fixture predates policy revisions. It remains
+            // readable and graded exactly; it is not current fresh inventory.
+            let request = makeRequest(goal: goal)
             let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: request).first)
             let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(accepted))
             XCTAssertEqual(Data(restored.prompt.utf8), Data(reviewed.prompt.utf8))

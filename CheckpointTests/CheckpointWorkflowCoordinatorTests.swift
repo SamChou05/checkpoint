@@ -3038,6 +3038,7 @@ private func makeCoordinatorTestQuestion(
         choices: ["Answer \(index)", "A", "B", "C"],
         explanation: "Explanation \(index)",
         verificationVersion: 1,
+        verificationPolicyRevision: QuestionVerificationPolicy.currentRevision,
         topic: "arrays",
         difficulty: difficulty,
         format: .multipleChoice,

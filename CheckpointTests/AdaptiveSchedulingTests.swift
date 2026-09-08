@@ -340,7 +340,7 @@ extension AdaptiveSchedulingTests {
         }
         XCTAssertEqual(AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)[0].evidenceCount, 0)
         XCTAssertEqual(AdaptiveLearningPolicy.plans(for: goal, attempts: attempts)[0].targetDifficulty, 1)
-        let legacy = makeQuestion(goal: goal, index: 1, verificationVersion: 0, skillID: skill.id)
+        let legacy = makeQuestion(goal: goal, index: 1, verificationVersion: 0, verificationPolicyRevision: 0, skillID: skill.id)
         let checked = makeQuestion(goal: goal, index: 2, skillID: skill.id)
         let selector = CheckpointQuestionSelector(questions: [legacy, checked], goalProfiles: [goal], currentGoal: goal, competencies: [], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2, requiresVerifiedQuestions: true)
         XCTAssertFalse(selector.isSelectableQuestion(legacy))
@@ -348,20 +348,22 @@ extension AdaptiveSchedulingTests {
     }
 
     @MainActor
-    func testProRolloutKeepsLegacyServiceUsableUntilReviewedInventoryArrives() throws {
+    func testProPracticeRequiresCurrentPolicyBeforeFirstReviewedQuestion() throws {
         let goal = makeGoal()
         let store = CheckpointStore(defaults: defaults)
         store.membershipTier = .member
         store.goal = goal
         store.goalProfiles = [goal]
-        let legacy = makeQuestion(goal: goal, index: 1, verificationVersion: 0)
-        store.questions = [legacy]
-        XCTAssertEqual(store.nextQuestion()?.id, legacy.id)
+        XCTAssertNil(store.nextQuestion())
+        let legacy = makeQuestion(goal: goal, index: 1, verificationVersion: 0, verificationPolicyRevision: 0)
+        let oldReview = makeQuestion(goal: goal, index: 3, verificationPolicyRevision: 0)
+        store.questions = [legacy, oldReview]
+        XCTAssertNil(store.nextQuestion(), "A new Pro goal must not bootstrap through stale inventory.")
         let reviewed = makeQuestion(goal: goal, index: 2)
         store.questions.append(reviewed)
         XCTAssertEqual(store.nextQuestion()?.id, reviewed.id)
         _ = store.submitAnswer(question: reviewed, answer: reviewed.expectedAnswer, result: .correct, grantsUnlock: false)
-        store.questions = [legacy]
+        store.questions = [legacy, oldReview]
         XCTAssertNil(store.nextQuestion(), "Retained reviewed evidence must prevent reverting to unverified practice.")
     }
 }

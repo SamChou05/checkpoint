@@ -54,6 +54,17 @@ enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 }
 
+enum QuestionVerificationPolicy {
+    static let currentRevision = 1
+
+    /// Fresh practice requires the server's current acceptance policy. The
+    /// separate wire version still controls how historical content is graded.
+    static func meetsCurrentRequirement(_ question: CheckpointQuestion) -> Bool {
+        question.verificationVersion == 1
+            && question.verificationPolicyRevision >= currentRevision
+    }
+}
+
 struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var remoteID: String?
@@ -64,6 +75,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
     var explanation: String
     var choiceExplanations: [String: String]
     var verificationVersion: Int
+    var verificationPolicyRevision: Int
     var topic: String
     var skillID: SkillMapTopic.ID?
     var objectiveID: SkillMapObjective.ID?
@@ -87,6 +99,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         explanation: String,
         choiceExplanations: [String: String] = [:],
         verificationVersion: Int = 0,
+        verificationPolicyRevision: Int = 0,
         topic: String,
         skillID: SkillMapTopic.ID? = nil,
         objectiveID: SkillMapObjective.ID? = nil,
@@ -109,6 +122,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         self.explanation = explanation
         self.choiceExplanations = choiceExplanations
         self.verificationVersion = verificationVersion
+        self.verificationPolicyRevision = verificationPolicyRevision
         self.topic = topic
         self.skillID = skillID
         self.objectiveID = objectiveID
@@ -133,6 +147,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         case explanation
         case choiceExplanations
         case verificationVersion
+        case verificationPolicyRevision
         case topic
         case skillID
         case objectiveID
@@ -158,6 +173,7 @@ struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {
         explanation = try container.decode(String.self, forKey: .explanation)
         choiceExplanations = try container.decodeIfPresent([String: String].self, forKey: .choiceExplanations) ?? [:]
         verificationVersion = try container.decodeIfPresent(Int.self, forKey: .verificationVersion) ?? 0
+        verificationPolicyRevision = try container.decodeIfPresent(Int.self, forKey: .verificationPolicyRevision) ?? 0
         topic = try container.decode(String.self, forKey: .topic)
         skillID = try container.decodeIfPresent(SkillMapTopic.ID.self, forKey: .skillID)
         objectiveID = try container.decodeIfPresent(SkillMapObjective.ID.self, forKey: .objectiveID)

@@ -42,7 +42,7 @@ enum QuestionBatchSanitizer {
         var sanitizedQuestions: [CheckpointQuestion] = []
 
         for question in questions {
-            guard !request.requiresVerifiedQuestions || question.verificationVersion == 1 else { continue }
+            guard !request.requiresVerifiedQuestions || QuestionVerificationPolicy.meetsCurrentRequirement(question) else { continue }
             var sanitizedQuestion = question
             // Review binds to this exact stem. Reordered choices can make real
             // stimulus lines resemble an echo, so only legacy items may clean it.

@@ -42,8 +42,9 @@ Older clients omit the new claim minimum and retain legacy server behavior;
 their installed local caches are also unchanged. This compatibility does not
 mean they receive the new freshness guarantee. Starter behavior is unchanged.
 
-Backend validation: 625 offline tests passed, with one existing opt-in test
-skipped; these are protocol and regression checks, not 625 live model questions.
+Validation: all 985 iOS simulator tests passed. The 628-test offline backend suite
+completed with no failures and one existing optional-runtime test skipped. These
+are protocol and regression checks, not live model accuracy measurements.
 The explicit model-comparison source manifest includes the new policy module;
 the other current experiment runners include it through their shared source
 hashing. Existing frozen experiment snapshots and evidence remain unchanged.

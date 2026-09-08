@@ -270,6 +270,7 @@ final class AppSnapshotPersistenceTests: XCTestCase {
             ],
             explanation: explanation,
             verificationVersion: 0,
+            verificationPolicyRevision: 0,
             status: .retired,
             timesAsked: 2
         )

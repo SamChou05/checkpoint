@@ -139,6 +139,132 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         XCTAssertEqual(decoded.bankContextRevision ?? decoded.contextRevision, decoded.contextRevision)
     }
 
+    func testClaimPayloadRequiresCurrentPolicyOnlyForVerifiedRequests() throws {
+        for requiresVerification in [false, true] {
+            var request = makeRequest(goal: makeGoal())
+            request.requiresVerifiedQuestions = requiresVerification
+            let data = try JSONEncoder().encode(BackendQuestionBankClaimRequest(
+                bankID: "bank", claimID: "claim", limit: 1, request: request
+            ))
+            let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            XCTAssertEqual(payload["minimumVerificationVersion"] as? Int, requiresVerification ? 1 : 0)
+            XCTAssertEqual(
+                payload["minimumVerificationPolicyRevision"] as? Int,
+                requiresVerification ? QuestionVerificationPolicy.currentRevision : 0
+            )
+        }
+        let data = try JSONEncoder().encode(BackendQuestionBankClaimRequest(
+            bankID: "legacy-bank", claimID: "legacy-claim", limit: 1
+        ))
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(payload["minimumVerificationPolicyRevision"] as? Int, 0)
+    }
+
+    @MainActor
+    func testClaimConflictRotatesPersistedKeyWhileTransportFailurePreservesIt() async throws {
+        for error in [QuestionBankAPIError.claimConflict as any Error, URLError(.timedOut)] {
+            let suiteName = "QuestionBankClaimRecoveryTests.\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let client = ScriptedQuestionBankClient(
+                preparation: QuestionBankPreparationReceipt(
+                    bankID: "existing-bank", status: .ready, readyCount: 1,
+                    targetCount: ProductLimits.memberQuestionBankTargetCount
+                ),
+                claimError: error
+            )
+            let store = CheckpointStore(
+                questionBankClient: client, defaults: defaults,
+                questionBankPollingDelaysNanoseconds: [60_000_000_000]
+            )
+            store.updateMembershipTier(.member)
+            store.updateAIProviderPreference(.backend)
+            store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+            let goal = makeGoal()
+            store.goal = goal
+            store.goalProfiles = [goal]
+
+            await store.refreshQuestionBatch()
+
+            let sentClaimID = try XCTUnwrap(client.claimIDs.first)
+            let intent = try XCTUnwrap(store.questionBankSyncIntents.first)
+            XCTAssertEqual(client.claimIDs.count, 1)
+            XCTAssertEqual(intent.bankID, "existing-bank")
+            if error is QuestionBankAPIError {
+                XCTAssertNotEqual(intent.claimID, sentClaimID)
+            } else {
+                XCTAssertEqual(intent.claimID, sentClaimID)
+            }
+            XCTAssertEqual(client.ensureRequests.first?.requiresVerifiedQuestions, true)
+            XCTAssertEqual(client.claimRequests.first?.requiresVerifiedQuestions, true)
+            let data = try XCTUnwrap(defaults.data(forKey: AppSnapshotPersistence.primaryDefaultsKey))
+            let snapshot = try JSONDecoder().decode(AppSnapshotEnvelope.self, from: data).snapshot
+            XCTAssertEqual(snapshot.questionBankSyncIntents?.first, intent)
+        }
+    }
+
+    @MainActor
+    func testRestoredOldPolicyContextReplacesBlockedBankWithoutRelabelingHistory() async throws {
+        let suiteName = "QuestionBankPolicyMigrationTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let skill = SkillMapTopic(name: "arrays", objectives: [SkillMapObjective(name: "Traverse arrays")])
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: [skill], status: .reviewed, provenance: .userEdited)
+        let historicalQuestion = makeQuestion(
+            goal: goal, index: 1, topic: skill.name,
+            verificationPolicyRevision: 0, skillID: skill.id
+        )
+        let historicalAttempt = CheckpointAttempt(
+            questionID: historicalQuestion.id, goalID: goal.id,
+            questionVerificationVersion: 1, prompt: historicalQuestion.prompt,
+            answer: historicalQuestion.expectedAnswer, result: .correct, unlockMinutes: 0
+        )
+        var oldIntent = QuestionBankSyncIntent(
+            goalID: goal.id, contextRevision: "pre-policy-context",
+            desiredCount: ProductLimits.memberQuestionBankTargetCount, lowWatermark: 0
+        )
+        oldIntent.bankID = "legacy-bank"
+        oldIntent.bankContextRevision = "pre-policy-context:old-cycle"
+        oldIntent.generationBlockedReason = "provider_failure_limit"
+        oldIntent.emptyFillCycleRetryCount = 1
+        let snapshot = AppSnapshot(
+            goal: goal, goalProfiles: [goal], questions: [historicalQuestion],
+            attempts: [historicalAttempt], competencies: [],
+            aiProviderPreference: .backend,
+            backendEndpoint: "https://api.example.com/prod/v1/questions",
+            membershipTier: .member, questionBankSyncIntents: [oldIntent]
+        )
+        try AppSnapshotPersistence(defaults: defaults).save(snapshot)
+        let client = ScriptedQuestionBankClient(preparation: QuestionBankPreparationReceipt(
+            bankID: "current-bank", status: .queued, readyCount: 0,
+            targetCount: ProductLimits.memberQuestionBankTargetCount
+        ))
+        let store = CheckpointStore(
+            questionBankClient: client, defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [60_000_000_000]
+        )
+        for _ in 0..<100 where store.questionBankSyncIntents.first?.bankID != "current-bank" {
+            await Task.yield()
+        }
+        let intent = try XCTUnwrap(store.questionBankSyncIntents.first)
+        XCTAssertFalse(client.ensureRequests.isEmpty, "An old blocked context must resume with current policy.")
+        XCTAssertNotEqual(intent.contextRevision, oldIntent.contextRevision)
+        XCTAssertNotEqual(intent.bankContextRevision, oldIntent.bankContextRevision)
+        XCTAssertNotEqual(intent.claimID, oldIntent.claimID)
+        XCTAssertEqual(intent.bankID, "current-bank")
+        XCTAssertNil(intent.generationBlockedReason)
+        XCTAssertEqual(intent.emptyFillCycleRetryCount, 0)
+        XCTAssertEqual(client.ensureRequests.first?.requiresVerifiedQuestions, true)
+        XCTAssertNil(store.nextQuestion())
+        XCTAssertEqual(store.questions.first?.id, historicalQuestion.id)
+        XCTAssertEqual(store.questions.first?.verificationVersion, 1)
+        XCTAssertEqual(store.questions.first?.verificationPolicyRevision, 0)
+        XCTAssertEqual(store.questions.first?.expectedAnswer, historicalQuestion.expectedAnswer)
+        XCTAssertEqual(store.attempts.first?.id, historicalAttempt.id)
+        XCTAssertEqual(store.attempts.first?.result, .correct)
+    }
+
     @MainActor
     func testBlockedBankStaysDormantAcrossRelaunchUntilExplicitRetry() async throws {
         let suiteName = "QuestionBankBlockedCycleTests.\(UUID().uuidString)"

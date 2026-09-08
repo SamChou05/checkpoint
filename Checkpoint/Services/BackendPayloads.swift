@@ -449,6 +449,7 @@ struct GeneratedQuestionPayload: Decodable {
     var explanation: String
     var choiceExplanations: [String: String]
     var verificationVersion: Int
+    var verificationPolicyRevision: Int
     var topic: String
     var skillID: SkillMapTopic.ID?
     var objectiveID: SkillMapObjective.ID?
@@ -466,6 +467,7 @@ struct GeneratedQuestionPayload: Decodable {
         case explanation
         case choiceExplanations
         case verificationVersion
+        case verificationPolicyRevision
         case topic
         case skillID
         case objectiveID
@@ -486,6 +488,7 @@ struct GeneratedQuestionPayload: Decodable {
         explanation = try container.decodeIfPresent(String.self, forKey: .explanation) ?? ""
         choiceExplanations = try container.decodeIfPresent([String: String].self, forKey: .choiceExplanations) ?? [:]
         verificationVersion = try container.decodeIfPresent(Int.self, forKey: .verificationVersion) ?? 0
+        verificationPolicyRevision = try container.decodeIfPresent(Int.self, forKey: .verificationPolicyRevision) ?? 0
         topic = try container.decodeIfPresent(String.self, forKey: .topic) ?? ""
         skillID = try container.decodeIfPresent(String.self, forKey: .skillID)
             .flatMap(SkillMapTopic.ID.init(uuidString:))
@@ -510,6 +513,7 @@ struct GeneratedQuestionPayload: Decodable {
             explanation: explanation,
             choiceExplanations: choiceExplanations,
             verificationVersion: verificationVersion,
+            verificationPolicyRevision: verificationPolicyRevision,
             topic: topic,
             skillID: skillID,
             objectiveID: objectiveID,
@@ -518,6 +522,14 @@ struct GeneratedQuestionPayload: Decodable {
             format: .multipleChoice,
             sourcePrompt: sourcePrompt
         )
+    }
+
+    /// Local model output cannot assert that the backend acceptance policy ran.
+    func makeLocallyAuthoredQuestion(goalID: Goal.ID, sourcePrompt: String) -> CheckpointQuestion {
+        var question = makeQuestion(goalID: goalID, sourcePrompt: sourcePrompt)
+        question.verificationVersion = 0
+        question.verificationPolicyRevision = 0
+        return question
     }
 }
 
