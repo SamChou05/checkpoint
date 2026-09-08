@@ -1,15 +1,18 @@
 """Server policy provenance, separate from the existing client wire contract.
 
-Revision 1 means the current independent-solver gate and final review ran. It is
-not a factual-correctness certificate. Missing revisions remain legacy/unknown;
-inventory must never acquire a revision merely by being read or claimed.
+Revision 1 identifies the historical stem-only solver gate and final review.
+Revision 2 requires complete-choice judgments, unique exact key agreement, and
+final review. Neither certifies factual correctness. Missing revisions remain
+legacy/unknown; reading or claiming inventory must never assign a new revision.
 """
 
 from typing import Any
 
 
 VERIFICATION_VERSION = 1
-VERIFICATION_POLICY_REVISION = 1
+LEGACY_VERIFICATION_POLICY_REVISION = 1
+COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION = 2
+VERIFICATION_POLICY_REVISION = COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION
 
 
 def meets_verification_policy(question: dict[str, Any], minimum: int) -> bool:

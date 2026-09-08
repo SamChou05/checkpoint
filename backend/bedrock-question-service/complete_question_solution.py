@@ -1,4 +1,4 @@
-"""Pure complete-MCQ solver boundary; not yet connected to generation.
+"""Pure complete-MCQ solver boundary used by generation's policy-2 path.
 
 Exact choice coverage and declared key agreement are enforceable. The reasons
 and judgments remain fallible model statements, not factual certificates or

@@ -4,6 +4,21 @@ import unittest
 import uuid
 
 
+def _complete_solution(item, expected_answer):
+    """Trusted synthetic mapping for provider plumbing tests, not a solver."""
+    return {
+        "index": item["index"],
+        "choices": [
+            {
+                "choice": choice,
+                "judgment": "supported" if choice == expected_answer else "refuted",
+                "reason": "Independent fixture reasoning evaluates this exact choice.",
+            }
+            for choice in item["choices"]
+        ],
+    }
+
+
 class FakeBedrockClient:
     def __init__(self, text, *, auto_review=True):
         self.texts = text if isinstance(text, list) else [text]
@@ -23,7 +38,14 @@ class FakeBedrockClient:
                 )[0]
             )
             solutions = [
-                {
+                _complete_solution(
+                    item,
+                    next(
+                        q["expectedAnswer"]
+                        for q in self.last_questions
+                        if q["prompt"].strip() == item["prompt"]
+                    ),
+                ) if "choices" in item else {
                     "index": item["index"],
                     "answer": "Independent fixture solution of the stated problem.",
                     "limitations": "",

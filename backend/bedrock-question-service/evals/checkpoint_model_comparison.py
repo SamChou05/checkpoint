@@ -107,6 +107,7 @@ def make_plan(packet):
                 "Each case needs its full normalized request and unchanged reviewable question."
             )
     source_files = [
+        "complete_question_solution.py",
         "question_generation.py",
         "question_verification.py",
         "verification_policy.py",

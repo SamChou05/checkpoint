@@ -27,6 +27,8 @@ QUALITY_REASONS = {
         "invalid_solution",
         "unsupported_solution",
         "solver_uncertain",
+        "solver_zero_supported",
+        "solver_multiple_supported",
         "solver_unresolved_limitations",
         "solver_outcome_mismatch",
         "invalid_choices",

@@ -3,14 +3,24 @@
 import hashlib
 import json
 import re
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
+from complete_question_solution import (
+    CompleteSolutionFormatError,
+    build_solver_prompt,
+    rejection_reason as complete_solution_rejection_reason,
+    validate_batch,
+)
 from generation_diagnostics import record_quality
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _extract_json_object
 from service_errors import ProviderError
 from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
-from verification_policy import VERIFICATION_POLICY_REVISION, VERIFICATION_VERSION
+from verification_policy import (
+    COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
+    LEGACY_VERIFICATION_POLICY_REVISION,
+    VERIFICATION_VERSION,
+)
 
 SOLVER_NEGATIVE_ANSWERS = {
     "no_solution": "No solution exists under the stated conditions.",
@@ -29,7 +39,7 @@ Do not add synonymous negative choices or use a negative answer to rescue a
 broken question. A question asking for a count can still have the ordinary answer
 0; a question asking to identify a false statement can name that statement.
 """.strip()
-REVIEW_SYSTEM_PROMPT = (
+_REVIEW_CORE_PROMPT = (
     """
 You are the release gate for educational multiple-choice questions on any subject.
 Your task is to find defective items before learners see them. An item can have
@@ -75,7 +85,10 @@ from the supposedly correct choice. The difficulty rating is independent of the
 author's intention. Assess the actual cognitive work using this shared rubric:
 """
     + DIFFICULTY_RUBRIC
-    + """
+).strip()
+
+# Preserve the historical stem-only prompt for existing eval imports/replays.
+REVIEW_SYSTEM_PROMPT = _REVIEW_CORE_PROMPT + """
 
 An independent solver saw only the stems, without choices. Check its solution
 and limitations against the stem. Reject an option that contradicts the result
@@ -87,8 +100,24 @@ the item, but must not replace that conclusion with a positive method or value.
 For a resolved outcome, any reported unresolved limitation blocks the item
 before this review. Conditions justified by the stem remain in its answer;
 do not erase those conditions when checking a choice or writing feedback.
-"""
-).strip()
+""".rstrip()
+
+COMPLETE_REVIEW_SYSTEM_PROMPT = _REVIEW_CORE_PROMPT + """
+
+An independent solver assessed every exact offered choice against the complete
+question. Its independentSolutions records contain a judgment and concise reason
+for each choice. The application admitted only items with one declared supported
+choice, three refuted choices, and exact key agreement; excluded items cannot be
+rescued by this review. These declarations are fallible evidence, not proof.
+Check every reason against the unchanged stem, choices and relevant facts. Reject
+if a supported judgment contradicts its reason, ignores a missing condition or
+output cost, or otherwise lacks sound support. Do not erase valid qualifications
+or assume correctness because the solver declared it. A natural negative answer
+can be correct without a canonical phrase; uncertainty is not proof of it.
+You may reject any admitted item. You must not change its key or repair its stem
+or choices. Final teaching feedback must be independently sound and preserve all
+necessary qualifications. Solver reasons are not approved learner feedback.
+""".rstrip()
 
 SOLUTION_SYSTEM_PROMPT = """
 Solve educational questions as written, without seeing proposed answer choices.
@@ -160,7 +189,17 @@ def verify_questions(
     request_metrics: dict[str, Any] | None = None,
     *,
     solve: Callable[[str, str], str] | None = None,
+    solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
 ) -> list[dict[str, Any]]:
+    """Review with an explicit solver contract; legacy remains the eval default.
+
+    Complete-choice agreement is an enforced declaration, not semantic proof.
+    Confidently wrong judgments or contradictions in their reasons can still
+    reach a fallible final reviewer. Neither path authorizes factual certainty.
+    """
+    if solver_contract not in ("stem_only", "complete_choices"):
+        raise ValueError("Unknown independent-solver contract.")
+    complete_choices = solver_contract == "complete_choices"
     original_count = len(questions)
     questions = [
         question for question in questions if _has_reviewable_choices(question)
@@ -169,6 +208,9 @@ def verify_questions(
         request_metrics, "review", "invalid_choices", original_count - len(questions)
     )
     if not questions:
+        return []
+    if complete_choices and solve is None:
+        record_quality(request_metrics, "review", "invalid_solution", len(questions))
         return []
     items = []
     for index, question in enumerate(questions):
@@ -190,28 +232,43 @@ def verify_questions(
     data["existingQuestions"] = request.get("existingQuestionCoverage", [])[-30:]
     data["items"] = items
     if solve is not None:
-        # Keep existing answer coverage out as well: even another question's key
-        # could anchor this independent solution to the wrong interpretation.
-        solution_data = {
-            key: request.get(key) for key in ("goal", "skillMap", "sourceDocuments")
-        }
-        solution_data["items"] = [
-            {key: value for key, value in item.items() if key != "choices"}
-            for item in items
-        ]
-        solution_raw = solve(
-            SOLUTION_SYSTEM_PROMPT,
-            "<question_solution_json>\n"
-            + json.dumps(solution_data, ensure_ascii=False)
-            + "\n</question_solution_json>",
-        )
-        solutions = _validated_solutions(solution_raw, len(items))
+        if complete_choices:
+            try:
+                solution_system, solution_prompt = build_solver_prompt(items, request)
+            except CompleteSolutionFormatError:
+                record_quality(request_metrics, "review", "invalid_solution", len(items))
+                return []
+            solution_raw = solve(solution_system, solution_prompt)
+            try:
+                solutions = validate_batch(solution_raw, items)
+            except CompleteSolutionFormatError:
+                solutions = None
+        else:
+            # Historical stem-only input/parser/gates remain explicit. Never
+            # fall back here after a malformed complete-choice response.
+            solution_data = {
+                key: request.get(key) for key in ("goal", "skillMap", "sourceDocuments")
+            }
+            solution_data["items"] = [
+                {key: value for key, value in item.items() if key != "choices"}
+                for item in items
+            ]
+            solution_raw = solve(
+                SOLUTION_SYSTEM_PROMPT,
+                "<question_solution_json>\n"
+                + json.dumps(solution_data, ensure_ascii=False)
+                + "\n</question_solution_json>",
+            )
+            solutions = _validated_solutions(solution_raw, len(items))
         if solutions is None:
             record_quality(request_metrics, "review", "invalid_solution", len(items))
             return []
         supported = []
         for solution in solutions:
-            reason = _solver_rejection_reason(solution, questions[solution["index"]])
+            reason = (
+                complete_solution_rejection_reason if complete_choices
+                else _solver_rejection_reason
+            )(solution, questions[solution["index"]])
             if reason is None:
                 supported.append(solution)
             else:
@@ -239,7 +296,10 @@ def verify_questions(
         + json.dumps(data, ensure_ascii=False)
         + "\n</question_review_json>"
     )
-    raw = review(REVIEW_SYSTEM_PROMPT, prompt)
+    raw = review(
+        COMPLETE_REVIEW_SYSTEM_PROMPT if complete_choices else REVIEW_SYSTEM_PROMPT,
+        prompt,
+    )
     try:
         reviews = _extract_json_object(raw).get("reviews")
     except ProviderError:
@@ -326,10 +386,11 @@ def verify_questions(
             "verificationVersion": VERIFICATION_VERSION,
         }
         if solve is not None:
-            # All surviving items passed the independent solver gate above and
-            # this final review. Review-only helpers cannot mint this stamp.
+            # Each path owns its revision. A legacy solver must never acquire
+            # the current complete-choice policy by a constant/version bump.
             verified_question["verificationPolicyRevision"] = (
-                VERIFICATION_POLICY_REVISION
+                COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
+                else LEGACY_VERIFICATION_POLICY_REVISION
             )
         accepted.append(verified_question)
         record_quality(request_metrics, "review", "accepted")

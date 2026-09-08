@@ -212,7 +212,7 @@ def _generate_sanitized_questions(
         }
 
     for _ in range(attempts):
-        # A question needs an author, an option-blind solution, and a final
+        # A question needs an author, an answer-key-blind solution, and a final
         # audit. Do not start a pass whose full verification cannot be afforded.
         if (
             call_budget is not None
@@ -256,6 +256,7 @@ def _generate_sanitized_questions(
                     call_budget=call_budget,
                     request_metrics=request_metrics,
                 ),
+                solver_contract="complete_choices",
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -811,6 +812,11 @@ rejected_by_model means rebuild the
 facts and choices from a fresh solution. Length or feedback failures require
 concise complete wording. Never relax the requested target or repeat a rejected
 stem just to fill the batch.
+solver_zero_supported means no listed choice answered the actual complete
+question; rebuild its premises and choices without inventing missing conditions.
+solver_multiple_supported means more than one listed choice answered it; make
+the task and alternatives establish exactly one answer. These are declared
+solver judgments, not permission to assume their reasons are factually correct.
 
 """
         + NEGATIVE_ANSWER_GUIDANCE

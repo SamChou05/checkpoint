@@ -202,7 +202,7 @@ class AsyncProviderBudgetTests(QuestionBankTestCase):
         )
         self.assertEqual((ledger.reservations, ledger.daily), (6, 6))
         self.assertEqual(len(commit.call_args.args[8]), 1)
-        self.assertEqual(commit.call_args.args[8][0]["verificationPolicyRevision"], 1)
+        self.assertEqual(commit.call_args.args[8][0]["verificationPolicyRevision"], 2)
         retry.assert_not_called()
         terminal.assert_not_called()
 

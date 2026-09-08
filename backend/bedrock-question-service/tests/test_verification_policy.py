@@ -52,7 +52,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
             **changes,
         }
 
-    def test_current_full_path_owns_stamp_regardless_of_authored_or_model_metadata(
+    def test_legacy_full_path_owns_revision_one_regardless_of_authored_or_model_metadata(
         self,
     ):
         for forged in (True, 0, 1, 99, "1"):
@@ -112,7 +112,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
             self.request, client, ProviderCallBudget(3)
         )
         self.assertEqual(len(accepted), 1)
-        self.assertEqual(accepted[0]["verificationPolicyRevision"], 1)
+        self.assertEqual(accepted[0]["verificationPolicyRevision"], 2)
         self.assertEqual(len(client.calls), 1)
         self.assertEqual(len(client.solution_calls), 1)
         self.assertEqual(len(client.review_calls), 1)
@@ -175,7 +175,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
             payload, _event(), dynamodb_client=dynamo, sqs_client=FakeQueue()
         )
 
-    def test_v1_without_current_policy_is_retired_and_refilled_without_relabeling(self):
+    def test_v1_without_revision_one_is_retired_and_refilled_without_relabeling(self):
         for revision in (None, 0, True, False, 1.0, "1", -1):
             with self.subTest(revision=revision):
                 bank_id, dynamo, item, _ = self.bank(revision=revision)
@@ -188,7 +188,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
                 self.assertEqual(dynamo.meta["generatedCount"], {"N": "0"})
                 refill.assert_called_once()
 
-    def test_current_policy_survives_claim_and_idempotent_replay_exactly(self):
+    def test_revision_one_survives_compatible_claim_and_idempotent_replay_exactly(self):
         bank_id, dynamo, item, question = self.bank(revision=1)
         original_json = item["questionJSON"]["S"]
         with mock.patch.object(question_bank, "_ensure_refill"):
@@ -245,7 +245,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
         self.assertEqual(raised.exception.code, "claim_conflict")
 
     def test_minimum_policy_is_strict_integer_and_known_request_bound(self):
-        for invalid in (True, False, "1", 1.0, -1, 2, None, [], {}):
+        for invalid in (True, False, "1", 1.0, -1, 3, None, [], {}):
             with self.subTest(invalid=invalid):
                 bank_id, dynamo, _, _ = self.bank(revision=1)
                 with mock.patch.object(
@@ -266,6 +266,69 @@ class VerificationPolicyTests(QuestionBankTestCase):
                             sqs_client=FakeQueue(),
                         )
                 self.assertEqual(raised.exception.code, "invalid_request")
+
+    def test_revision_two_claim_floor_filters_one_without_relabeling_inventory(self):
+        bank_id, dynamo, item, _ = self.bank(revision=1)
+        original_json = item["questionJSON"]["S"]
+        with mock.patch.object(question_bank, "_ensure_refill") as refill:
+            response = self.claim(bank_id, dynamo, minimum=2)
+        self.assertEqual(response["questions"], [])
+        self.assertEqual(item["state"], {"S": "discarded"})
+        self.assertEqual(item["questionJSON"]["S"], original_json)
+        self.assertEqual(dynamo.meta["generatedCount"], {"N": "0"})
+        refill.assert_called_once()
+
+    def test_revision_one_and_two_respect_compatible_claim_and_replay_floors(self):
+        for revision, minimum in ((1, None), (1, 0), (1, 1), (2, None), (2, 0), (2, 1), (2, 2)):
+            with self.subTest(revision=revision, minimum=minimum):
+                bank_id, dynamo, item, question = self.bank(revision=revision)
+                original_json = item["questionJSON"]["S"]
+                with mock.patch.object(question_bank, "_ensure_refill"):
+                    first = self.claim(bank_id, dynamo, minimum=minimum)
+                    stored = copy.deepcopy(dynamo.claims)
+                    replay = self.claim(bank_id, dynamo, minimum=minimum)
+                self.assertEqual(first, replay)
+                self.assertEqual(first["questions"], [question])
+                self.assertEqual(item["questionJSON"]["S"], original_json)
+                self.assertEqual(dynamo.claims, stored)
+
+    def test_revision_two_refuses_a_stored_revision_one_claim_without_rewriting_it(self):
+        bank_id, dynamo, item, question = self.bank(revision=1)
+        original_json = item["questionJSON"]["S"]
+        with mock.patch.object(question_bank, "_ensure_refill"):
+            previous = self.claim(bank_id, dynamo, minimum=1)
+            stored = copy.deepcopy(dynamo.claims)
+            with self.assertRaises(question_bank.QuestionBankError) as raised:
+                self.claim(bank_id, dynamo, minimum=2)
+        self.assertEqual(previous["questions"], [question])
+        self.assertEqual(raised.exception.code, "claim_conflict")
+        self.assertEqual(dynamo.claims, stored)
+        self.assertEqual(item["questionJSON"]["S"], original_json)
+
+    def test_revision_two_refuses_a_racing_revision_one_claim_without_rewriting_it(self):
+        bank_id, dynamo, _, _ = self.bank(revision=2)
+        race_winner = {}
+
+        def legacy_claim_wins(**kwargs):
+            claim_item = next(
+                operation["Put"]["Item"]
+                for operation in kwargs["TransactItems"]
+                if "Put" in operation
+                and operation["Put"]["Item"]["itemType"] == {"S": "claim"}
+            )
+            stored = copy.deepcopy(claim_item)
+            response = json.loads(stored["responseJSON"]["S"])
+            response["questions"][0]["verificationPolicyRevision"] = 1
+            stored["responseJSON"] = {"S": json.dumps(response)}
+            dynamo.claims[stored["sk"]["S"]] = stored
+            race_winner.update(copy.deepcopy(dynamo.claims))
+            raise ConditionalFailure()
+
+        with mock.patch.object(dynamo, "transact_write_items", side_effect=legacy_claim_wins):
+            with self.assertRaises(question_bank.QuestionBankError) as raised:
+                self.claim(bank_id, dynamo, minimum=2)
+        self.assertEqual(raised.exception.code, "claim_conflict")
+        self.assertEqual(dynamo.claims, race_winner)
 
     def test_policy_alone_requires_typed_v1_wire_stamp_for_inventory_and_replay(self):
         for wire in (0, True, 1.0, "1", 2):

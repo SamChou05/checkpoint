@@ -3,7 +3,12 @@ import json
 import unittest
 from unittest import mock
 
-from lambda_test_support import FakeBedrockClient, _raw_question, _request_payload
+from lambda_test_support import (
+    FakeBedrockClient,
+    _complete_solution,
+    _raw_question,
+    _request_payload,
+)
 from question_generation import ProviderCallBudget, _generate_sanitized_questions
 from question_generation import _verification_model_id
 from question_verification import verify_questions
@@ -230,13 +235,10 @@ class QuestionVerificationTests(unittest.TestCase):
                 json.dumps(
                     {
                         "solutions": [
-                            {
-                                "index": 0,
-                                "answer": "The stated conclusion is not supported.",
-                                "limitations": "",
-                                "outcome": "resolved",
-                                "assumptionsRequired": [],
-                            }
+                            _complete_solution(
+                                {**self.question, "index": 0},
+                                self.question["expectedAnswer"],
+                            )
                         ]
                     }
                 ),
@@ -245,13 +247,9 @@ class QuestionVerificationTests(unittest.TestCase):
                 json.dumps(
                     {
                         "solutions": [
-                            {
-                                "index": 0,
-                                "answer": "The stated conclusion follows from the assumptions.",
-                                "limitations": "",
-                                "outcome": "resolved",
-                                "assumptionsRequired": [],
-                            }
+                            _complete_solution(
+                                {**replacement, "index": 0}, replacement["expectedAnswer"]
+                            )
                         ]
                     }
                 ),
