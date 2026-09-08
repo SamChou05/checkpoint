@@ -30,5 +30,10 @@
     "Snapshot is exact JSONEncoder output from AppSnapshotEnvelope.snapshot saved by the actual old Store after mock ensure receipt installed policy-one-bank. No JSON fields were modified after capture.",
     "The historical question is a synthetic known-answer fixture at policy1; this is provenance/migration evidence, not a production content-correctness trial.",
     "Only the detached checkout Swift test file was changed; backend and evaluation sources were not changed."
-  ]
+  ],
+  "repository_export_test_archive": {
+    "path": "docs/evidence/policy-one-context-export-test-20260908.swift",
+    "sha256": "537d18228ed07dd949acf3618cd2d7826cc0705c70d22197f0117c36ddccb104",
+    "difference_from_original_capture": "One empty line at EOF removed for repository whitespace checks. Append one newline byte to recover the exact original export-test source and its recorded export_test_sha256. No code or runtime behavior changed."
+  }
 }

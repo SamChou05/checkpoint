@@ -75,4 +75,3 @@
         print("POLICY_ONE_CONTEXT=\(intent.contextRevision)")
         print("POLICY_ONE_BANK_CONTEXT=\(intent.bankContextRevision ?? "nil")")
     }
-
