@@ -88,3 +88,14 @@ deadline cleanup of an inert descendant after its parent exits, and preserving
 an observed response when later cleanup fails. Independent review found no
 remaining blocker. Ruff and whitespace checks pass. No provider call has been
 made at this protocol stage.
+
+## Frozen observation plan
+
+The [exact plan](evidence/author-latency-plan-20260908.json) was prepared from clean detached source `7e6b7ed348884f90dfa58c566b5ae884ce272340` before worker launch.
+
+- Canonical plan SHA-256: `bb93d78d945178507b36deec2cdfb7c8fe593c21f098d172c58b18f424c89a77`.
+- Archived file SHA-256: `b1503c325c9363623c3c506e482209c8b3633079180adf7f1b165f0850712221`.
+- Exact input text: 10624 UTF-8 bytes across two preselected calls.
+- Runtime: `{"boto3": "1.43.89", "botocore": "1.43.89", "python": "3.12.11"}`.
+
+The original plan/capture hashes, both exact bodies, unchanged inference settings, new transport/deadline settings and source/dependency bindings reconstruct exactly. No worker has launched at this freeze point.
