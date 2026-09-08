@@ -134,7 +134,8 @@ def _send(connection, message):
     connection.sendall(encoded)
 
 
-def _sdk_exchange(connection, request, settings, cli_credentials):
+def _sdk_exchange(connection, request, settings, cli_credentials, *,
+                  response_projector=recorded._response):
     """App-owned worker logic; injectable client factory permits offline tests."""
     client, dispatched = None, False
     binding = _hash(request)
@@ -143,7 +144,7 @@ def _sdk_exchange(connection, request, settings, cli_credentials):
         _send(connection, {"kind": "dispatch", "request_sha256": binding})
         dispatched = True
         started = time.monotonic()
-        response = recorded._response(client.converse(**request))
+        response = response_projector(client.converse(**request))
         elapsed = time.monotonic() - started
         # The shared projection removes reasoning content. Restrict the remaining
         # provider metadata as well; never serialize headers or exception text.
@@ -174,7 +175,8 @@ def _sdk_exchange(connection, request, settings, cli_credentials):
             client.close()
 
 
-def _worker(connection, request, settings, cli_credentials, deadline):
+def _worker(connection, request, settings, cli_credentials, deadline, *,
+            response_projector=recorded._response):
     # A worker-local alarm backs up the parent's watchdog even if a parent disk
     # write stalls. Its default action terminates this process, not remote work.
     os.setsid()
@@ -187,7 +189,8 @@ def _worker(connection, request, settings, cli_credentials, deadline):
         # durably knows which isolated group it owns and permits admission.
         if connection.recv(1) != b"G":
             raise ValueError("Worker admission missing.")
-        _sdk_exchange(connection, request, settings, cli_credentials)
+        _sdk_exchange(connection, request, settings, cli_credentials,
+                      response_projector=response_projector)
     finally:
         connection.close()
 
