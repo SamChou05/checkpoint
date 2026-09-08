@@ -70,6 +70,96 @@ final class LearningMapExplorerTests: XCTestCase {
         XCTAssertFalse(withoutHistory.nodes.contains { if case .history = $0.id { return true }; return false })
     }
 
+    func testFiftyArchivedBranchesStayBoundedAndTheirRealLineageRemainsTraversable() throws {
+        let archivedSkills = (0..<50).map { SkillMapTopic(name: "Earlier reasoning skill \($0)") }
+        let archives = archivedSkills.enumerated().map { index, original in
+            var topic = original
+            topic.predecessorIDs = index > 0 ? [archivedSkills[index - 1].id] : []
+            return ArchivedSkillMapTopic(
+                topic: topic, reason: index.isMultiple(of: 2) ? .mastered : .userReplaced,
+                archivedAt: Date(timeIntervalSince1970: Double(index)),
+                successorSkillIDs: [], mastery: nil
+            )
+        }
+        let current = SkillMapTopic(name: "Current reasoning", objectives: [SkillMapObjective(name: "Linked evidence")],
+                                    predecessorIDs: [archivedSkills[49].id])
+        let map = GoalSkillMap(topics: [current], archivedTopics: archives)
+        let overview = LearningMapGraphLayout(map: map, showsHistory: true)
+        XCTAssertEqual(Set(overview.nodes.map(\.id)), [.goal, .history(archivedSkills[49].id), .history(archivedSkills[48].id)])
+        XCTAssertEqual(overview.hiddenHistoryCount, 48)
+        XCTAssertEqual(overview.edges.filter { $0.relationship == .membership }.count, 2)
+
+        var selected = LearningMapNodeID.skill(current.id)
+        for expectedPredecessor in archivedSkills.reversed() {
+            let branch = LearningMapGraphLayout(map: map, selected: selected, showsHistory: true)
+            XCTAssertLessThanOrEqual(branch.nodes.count, 4)
+            XCTAssertFalse(branch.nodes.contains { if case .objective = $0.id { return true }; return false })
+            let earlierEdge = try XCTUnwrap(branch.edges.first { $0.to == selected && $0.relationship == .progression })
+            XCTAssertEqual(earlierEdge.from, .history(expectedPredecessor.id))
+            XCTAssertEqual(branch.edges.filter { $0.relationship == .progression }.count, 1,
+                           "An ancestry window must not invent a shortcut to an older milestone.")
+            selected = earlierEdge.from
+        }
+        let beginning = LearningMapGraphLayout(map: map, selected: selected, showsHistory: true)
+        XCTAssertEqual(Set(beginning.nodes.map(\.id)), [.goal, .history(archivedSkills[0].id)])
+        XCTAssertFalse(beginning.edges.contains { $0.relationship == .progression })
+        XCTAssertEqual(map.archivedTopics.count, 50, "A bounded canvas must preserve the complete archive for the list.")
+    }
+
+    func testLargeHistoryWindowFitsReadableTargetsAndLimitsMultipleDirectParents() {
+        let archives = (0..<50).map { index in
+            ArchivedSkillMapTopic(
+                topic: SkillMapTopic(name: "A retained milestone with a long descriptive name \(index)"),
+                reason: .mastered, archivedAt: Date(timeIntervalSince1970: Double(index)),
+                successorSkillIDs: [], mastery: nil
+            )
+        }
+        let current = SkillMapTopic(name: "Current branch", predecessorIDs: Array(archives.suffix(3).map(\.id)))
+        let map = GoalSkillMap(topics: [current], archivedTopics: archives)
+        for compact in [true, false] {
+            let viewport = compact ? CGSize(width: 320, height: 364) : CGSize(width: 393, height: 470)
+            for selection in [LearningMapNodeID.goal, .skill(current.id)] {
+                let graph = LearningMapGraphLayout(map: map, selected: selection, showsHistory: true, compact: compact)
+                XCTAssertEqual(Set(graph.nodes.compactMap { node -> UUID? in
+                    if case let .history(id) = node.id { return id }
+                    return nil
+                }), Set(archives.suffix(2).map(\.id)))
+                XCTAssertEqual(graph.hiddenHistoryCount, 48)
+                let frames = Dictionary(uniqueKeysWithValues: graph.nodes.map {
+                    ($0.id, LearningMapNodeGeometry(id: $0.id, compact: compact, focused: selection != .goal).hitBounds)
+                })
+                let camera = LearningMapCamera.fitted(nodes: graph.nodes, frames: frames, viewport: viewport)
+                let projected = graph.nodes.map { node -> CGRect in
+                    let point = camera.project(node.position, viewport: viewport)
+                    return frames[node.id]!.offsetBy(dx: point.x, dy: point.y)
+                }
+                for (index, frame) in projected.enumerated() {
+                    XCTAssertTrue(CGRect(origin: .zero, size: viewport).contains(frame))
+                    XCTAssertGreaterThanOrEqual(frame.width, 44)
+                    XCTAssertGreaterThanOrEqual(frame.height, 44)
+                    for other in projected.indices where other > index {
+                        XCTAssertFalse(frame.insetBy(dx: 1, dy: 1).intersects(projected[other].insetBy(dx: 1, dy: 1)),
+                                       "Growing history must not collapse readable labels into overlapping targets.")
+                    }
+                }
+            }
+        }
+    }
+
+    func testZoomOutKeepsItsDirectionAfterFittingBelowFormerMinimumZoom() {
+        let nodes = [LearningMapGraphNode(id: .goal, position: .zero),
+                     LearningMapGraphNode(id: .history(UUID()), position: CGPoint(x: 0, y: 4_000))]
+        let viewport = CGSize(width: 320, height: 364)
+        let frames = Dictionary(uniqueKeysWithValues: nodes.map {
+            ($0.id, LearningMapNodeGeometry(id: $0.id, compact: true, focused: false).hitBounds)
+        })
+        let fitted = LearningMapCamera.fitted(nodes: nodes, frames: frames, viewport: viewport)
+        XCTAssertLessThan(fitted.zoom, 0.18)
+        let zoomedOut = fitted.magnified(by: 0.8, anchor: CGPoint(x: 160, y: 182), viewport: viewport)
+        XCTAssertLessThan(zoomedOut.zoom, fitted.zoom, "Zooming out from a fitted view must never jump inward.")
+        XCTAssertGreaterThanOrEqual(zoomedOut.zoom, LearningMapCamera.zoomRange.lowerBound)
+    }
+
     func testCameraKeepsPinchAnchorFixedAndBoundsExtremeZoom() {
         let viewport = CGSize(width: 393, height: 450)
         let start = LearningMapCamera(center: CGPoint(x: 80, y: -40), zoom: 0.7)

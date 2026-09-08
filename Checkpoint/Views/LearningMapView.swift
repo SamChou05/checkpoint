@@ -23,6 +23,7 @@ struct LearningMapView: View {
     @State private var pendingEditSkillID: SkillMapTopic.ID?
     @State private var suggestionError: String?
     @State private var suggestionMap: GoalSkillMap?
+    @State private var scrollToHistory = false
 
     private enum PresentationMode: String, CaseIterable, Identifiable {
         case map = "Map"
@@ -50,7 +51,7 @@ struct LearningMapView: View {
 
     private var map: GoalSkillMap? { goal?.derivedSkillMap }
     private var effectiveMode: PresentationMode {
-        mode ?? ((voiceOverEnabled || switchControlEnabled || dynamicTypeSize.isAccessibilitySize) ? .list : .map)
+        mode ?? ((voiceOverEnabled || switchControlEnabled || dynamicTypeSize >= .xxLarge) ? .list : .map)
     }
     private var motion: Animation? {
         reduceMotion || voiceOverEnabled || switchControlEnabled ? nil : .spring(response: 0.48, dampingFraction: 0.86)
@@ -81,6 +82,7 @@ struct LearningMapView: View {
                 VStack(spacing: 0) {
                     header(goal: goal, map: map)
                     if effectiveMode == .map {
+                        if showsHistory { historyNavigation(map: map) }
                         mapCanvas(map: map)
                         if compactWindow { compactSelectionPreview(map: map) }
                         else { selectionPreview(map: map) }
@@ -235,6 +237,31 @@ struct LearningMapView: View {
         .pickerStyle(.segmented)
     }
 
+    private func historyNavigation(map: GoalSkillMap) -> some View {
+        let visibleCount = graph?.nodes.filter { if case .history = $0.id { return true }; return false }.count ?? 0
+        return Button {
+            scrollToHistory = true
+            mode = .list
+        } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("View all \(map.archivedTopics.count) earlier skills")
+                        .font(.footnote.weight(.semibold))
+                    Text("\(visibleCount) shown here · Select a branch to trace further back")
+                        .font(.caption)
+                        .foregroundStyle(CheckpointTheme.muted)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "list.bullet").font(.subheadline)
+            }
+            .foregroundStyle(CheckpointTheme.teal)
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 8)
+        }
+        .buttonStyle(.plain)
+    }
+
     private func mapCanvas(map: GoalSkillMap) -> some View {
         GeometryReader { proxy in
             let layout = LearningMapGraphLayout(map: map, selected: selected, showsHistory: showsHistory, compact: compactNodes)
@@ -255,8 +282,7 @@ struct LearningMapView: View {
                 .frame(width: canvasSize.width, height: canvasSize.height)
                 .contentShape(Rectangle())
                 .clipped()
-                .gesture(panGesture)
-                .simultaneousGesture(magnificationGesture(size: canvasSize))
+                .gesture(explorationGesture(size: canvasSize))
                 .frame(maxHeight: .infinity, alignment: .top)
 
                 canvasControls(map: map)
@@ -265,8 +291,10 @@ struct LearningMapView: View {
             }
             .onAppear { updateViewport(canvasSize) }
             .onChange(of: canvasSize) { _, size in updateViewport(size) }
-            .accessibilityIdentifier("learning-map-canvas")
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(showsHistory ? "Historical skill connections" : "Interactive learning map")
         }
+        .animation(motion, value: map)
     }
 
     private var dotGrid: some View {
@@ -323,7 +351,7 @@ struct LearningMapView: View {
                             .font(.system(size: id == .goal ? 26 : 18, weight: .semibold))
                             .foregroundStyle(visual.tint)
                     } else {
-                        Circle().fill(visual.tint.opacity(visual.progress > 0 ? 0.9 : 0.35)).padding(5)
+                        Circle().fill(visual.tint.opacity(visual.evidenceAvailable ? 0.9 : 0.35)).padding(5)
                     }
                 }
                 .frame(width: visual.diameter, height: visual.diameter)
@@ -361,7 +389,7 @@ struct LearningMapView: View {
         .accessibilityHint(isSelected ? "Opens details and evidence." : "Explores this branch. Tap again for details.")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityIdentifier("learning-map-node-\(id)")
-        .dynamicTypeSize(.small ... .xxxLarge)
+        .dynamicTypeSize(.small ... .large)
     }
 
     private func canvasControls(map: GoalSkillMap) -> some View {
@@ -370,7 +398,13 @@ struct LearningMapView: View {
                 .accessibilityLabel("How to read this map")
             if !map.archivedTopics.isEmpty {
                 Button {
-                    withAnimation(motion) { showsHistory.toggle(); fitMap() }
+                    withAnimation(motion) {
+                        if !showsHistory, case let .objective(skillID, _) = selected {
+                            selected = map.topics.contains(where: { $0.id == skillID }) ? .skill(skillID) : .history(skillID)
+                        }
+                        showsHistory.toggle()
+                        fitMap()
+                    }
                 } label: {
                     Image(systemName: showsHistory ? "clock.fill" : "clock").frame(width: 44, height: 44)
                 }
@@ -408,11 +442,11 @@ struct LearningMapView: View {
             Button { modal = .details } label: {
                 HStack(spacing: 10) {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(selected == .goal ? "\(map.topics.count) skills · Your learning journey" : visual.title)
+                        Text(selected == .goal ? (showsHistory ? "Earlier branches, kept for you" : "\(map.topics.count) skills · Your learning journey") : visual.title)
                             .font(.subheadline.weight(.semibold))
                             .lineLimit(1)
                             .foregroundStyle(CheckpointTheme.text)
-                        Text(selected == .goal ? "Tap to unfold · Drag or pinch to explore" : accessibilityValue(for: selected, map: map))
+                        Text(selected == .goal ? (showsHistory ? "Select an earlier skill to see its story" : "Tap to unfold · Drag or pinch to explore") : accessibilityValue(for: selected, map: map))
                             .font(.caption)
                             .lineLimit(1)
                             .foregroundStyle(CheckpointTheme.muted)
@@ -443,12 +477,12 @@ struct LearningMapView: View {
                             .font(.system(size: 10, weight: .bold, design: .rounded))
                             .tracking(1.4)
                             .foregroundStyle(CheckpointTheme.muted)
-                        Text(selected == .goal ? "\(map.topics.count) skills. Room to grow." : visual.title)
+                        Text(selected == .goal ? (showsHistory ? "Earlier branches, kept for you" : "\(map.topics.count) skills. Room to grow.") : visual.title)
                             .font(.headline)
                             .foregroundStyle(CheckpointTheme.text)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
-                        Text(selected == .goal ? "Tap a skill to unfold its focus points. Drag or pinch to explore." : accessibilityValue(for: selected, map: map))
+                        Text(selected == .goal ? (showsHistory ? "Select a branch to follow its story. Your full history is always available in List." : "Tap a skill to unfold its focus points. Drag or pinch to explore.") : accessibilityValue(for: selected, map: map))
                             .font(.caption)
                             .foregroundStyle(CheckpointTheme.muted)
                             .lineLimit(2)
@@ -466,7 +500,7 @@ struct LearningMapView: View {
             }
             .buttonStyle(.plain)
             .accessibilityHint("Opens learning details and evidence.")
-            if selected == .goal, let nextFocus, let skillID = nextFocus.skillID,
+            if selected == .goal, !showsHistory, let nextFocus, let skillID = nextFocus.skillID,
                map.topics.contains(where: { $0.id == skillID }) {
                 Button { select(.skill(skillID)) } label: {
                     Label("Next: \(nextFocus.skillName)", systemImage: "scope")
@@ -493,19 +527,25 @@ struct LearningMapView: View {
     }
 
     private func listContents(map: GoalSkillMap) -> some View {
+        ScrollViewReader { reader in
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            LazyVStack(alignment: .leading, spacing: 18) {
                 Text("\(map.topics.count) skills · \(map.topics.reduce(0) { $0 + $1.objectives.count }) focus points")
                     .font(.footnote).foregroundStyle(CheckpointTheme.muted)
                 ForEach(map.topics) { skill in
                     VStack(alignment: .leading, spacing: 4) {
                         listNode(.skill(skill.id), map: map)
                         ForEach(skill.objectives) { objective in
+                            if dynamicTypeSize.isAccessibilitySize {
+                                Divider().padding(.vertical, 6)
+                                listNode(.objective(skillID: skill.id, objectiveID: objective.id), map: map)
+                            } else {
                             HStack(alignment: .top, spacing: 10) {
                                 Image(systemName: "arrow.turn.down.right").foregroundStyle(CheckpointTheme.hairline).padding(.top, 16)
                                 listNode(.objective(skillID: skill.id, objectiveID: objective.id), map: map)
                             }
                             .padding(.leading, 13)
+                            }
                         }
                     }
                     .padding(15)
@@ -513,6 +553,7 @@ struct LearningMapView: View {
                 }
                 if !map.archivedTopics.isEmpty {
                     Text("Your earlier branches").font(.headline).foregroundStyle(CheckpointTheme.text)
+                        .id("learning-map-history")
                     Text("Earned milestones and previous choices stay part of your story.")
                         .font(.footnote).foregroundStyle(CheckpointTheme.muted)
                     ForEach(map.archivedTopics) { archived in
@@ -525,6 +566,13 @@ struct LearningMapView: View {
             .padding(20)
         }
         .accessibilityIdentifier("learning-map-list")
+        .task(id: scrollToHistory) {
+            guard scrollToHistory else { return }
+            await Task.yield()
+            reader.scrollTo("learning-map-history", anchor: .top)
+            scrollToHistory = false
+        }
+        }
     }
 
     private func listNode(_ id: LearningMapNodeID, map: GoalSkillMap) -> some View {
@@ -534,16 +582,20 @@ struct LearningMapView: View {
             modal = .details
         } label: {
             HStack(alignment: .center, spacing: 12) {
-                Image(systemName: visual.symbol ?? "circle.dotted")
-                    .foregroundStyle(visual.tint)
-                    .frame(width: 26)
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Image(systemName: visual.symbol ?? "circle.dotted")
+                        .foregroundStyle(visual.tint)
+                        .frame(width: 26)
+                }
                 VStack(alignment: .leading, spacing: 5) {
                     Text(visual.title).font(.subheadline.weight(.semibold)).foregroundStyle(CheckpointTheme.text)
                     Text(accessibilityValue(for: id, map: map)).font(.caption).foregroundStyle(CheckpointTheme.muted)
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(CheckpointTheme.muted)
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(CheckpointTheme.muted)
+                }
             }
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .padding(.vertical, 6)
@@ -635,6 +687,15 @@ struct LearningMapView: View {
                  ? "This earned milestone stays in your history as you work on the next challenge."
                  : "Your previous work is preserved. This branch was changed by you; it is not an earned mastery milestone.")
                 .font(.subheadline).foregroundStyle(CheckpointTheme.muted)
+            if !archived.topic.detail.isEmpty {
+                Text(archived.topic.detail).font(.subheadline).foregroundStyle(CheckpointTheme.muted)
+            }
+            if !archived.topic.objectives.isEmpty {
+                Text("Earlier focus points").font(.headline).foregroundStyle(CheckpointTheme.text)
+                ForEach(archived.topic.objectives) { objective in
+                    listNode(.objective(skillID: archived.id, objectiveID: objective.id), map: map)
+                }
+            }
             let successorIDs = Set(archived.successorSkillIDs + (map.topics + map.archivedTopics.map(\.topic)).filter {
                 $0.predecessorIDs.contains(archived.id)
             }.map(\.id))
@@ -772,6 +833,7 @@ struct LearningMapView: View {
         var height: CGFloat
         var progress: Double
         var showsTitle = true
+        var evidenceAvailable = false
 
         var frame: CGRect {
             CGRect(x: -width / 2, y: -diameter / 2, width: width, height: height)
@@ -815,7 +877,7 @@ struct LearningMapView: View {
             let evidence = objectiveEvidence(skillID: skillID, objectiveID: objectiveID)
             return NodeVisual(title: topic?.objectives.first { $0.id == objectiveID }?.name ?? "Focus point", subtitle: nil,
                               symbol: nil, tint: CheckpointTheme.teal, diameter: 18, width: compactNodes ? 88 : 108, height: 64,
-                              progress: evidence.answerCount > 0 ? 1 : 0)
+                              progress: 0, evidenceAvailable: evidence.answerCount > 0)
         case let .history(skillID):
             guard let archived = map.archivedTopics.first(where: { $0.id == skillID }) else { return missingNode }
             return NodeVisual(title: archived.topic.name, subtitle: historyLabel(archived),
@@ -874,9 +936,12 @@ struct LearningMapView: View {
         guard let map else { return }
         let resolved = LearningMapGraphLayout.resolvedSelection(requested, in: map)
         let branchChanged = selected.skillID != resolved.skillID || selected == .goal || resolved == .goal
+        let previousHistory = showsHistory
         withAnimation(motion) {
             selected = resolved
-            if branchChanged { fitMap() }
+            if case .history = resolved { showsHistory = true }
+            else { showsHistory = false }
+            if branchChanged || previousHistory != showsHistory { fitMap() }
         }
     }
 
@@ -896,7 +961,6 @@ struct LearningMapView: View {
 
     private func fitMap() {
         guard let graph, viewport.width > 0, viewport.height > 0 else { return }
-        guard let map else { return }
         let frames = Dictionary(uniqueKeysWithValues: graph.nodes.map {
             ($0.id, LearningMapNodeGeometry(id: $0.id, compact: compactNodes, focused: selected != .goal).hitBounds)
         })
@@ -910,26 +974,23 @@ struct LearningMapView: View {
         }
     }
 
-    private var panGesture: some Gesture {
+    private func explorationGesture(size: CGSize) -> some Gesture {
         DragGesture(minimumDistance: 12)
+            .simultaneously(with: MagnifyGesture(minimumScaleDelta: 0.015))
             .onChanged { value in
                 if gestureCamera == nil { gestureCamera = camera }
-                if let gestureCamera { camera = gestureCamera.panned(by: value.translation) }
+                guard let baseline = gestureCamera else { return }
+                var next = baseline
+                if let drag = value.first { next = next.panned(by: drag.translation) }
+                if let magnify = value.second {
+                    next = next.magnified(by: magnify.magnification,
+                        anchor: CGPoint(x: magnify.startAnchor.x * size.width, y: magnify.startAnchor.y * size.height), viewport: size)
+                }
+                camera = next
             }
             .onEnded { _ in gestureCamera = nil }
     }
 
-    private func magnificationGesture(size: CGSize) -> some Gesture {
-        MagnifyGesture(minimumScaleDelta: 0.015)
-            .onChanged { value in
-                if gestureCamera == nil { gestureCamera = camera }
-                if let gestureCamera {
-                    camera = gestureCamera.magnified(by: value.magnification,
-                        anchor: CGPoint(x: value.startAnchor.x * size.width, y: value.startAnchor.y * size.height), viewport: size)
-                }
-            }
-            .onEnded { _ in gestureCamera = nil }
-    }
 }
 
 private struct LearningMapConnection: Shape {

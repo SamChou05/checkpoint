@@ -40,9 +40,56 @@ struct LearningMapGraphEdge: Identifiable, Equatable {
 struct LearningMapGraphLayout {
     let nodes: [LearningMapGraphNode]
     let edges: [LearningMapGraphEdge]
+    let hiddenHistoryCount: Int
 
     init(map: GoalSkillMap, selected: LearningMapNodeID = .goal, showsHistory: Bool = false, compact: Bool = false) {
         let resolved = Self.resolvedSelection(selected, in: map)
+        if showsHistory {
+            // A bounded window keeps historical labels and targets readable as the
+            // map grows. Selecting an earlier skill walks back through its lineage;
+            // the complete archive remains available in the list presentation.
+            let progression = Self.progressionEdges(in: map)
+            let mostRecent = map.archivedTopics.sorted {
+                if $0.archivedAt != $1.archivedAt { return $0.archivedAt > $1.archivedAt }
+                return $0.id.uuidString < $1.id.uuidString
+            }
+            var nodes: [LearningMapGraphNode]
+            var edges: [LearningMapGraphEdge]
+            let earlierSkills: [ArchivedSkillMapTopic]
+            if let skillID = resolved.skillID {
+                let skillNode: LearningMapNodeID = map.topics.contains { $0.id == skillID }
+                    ? .skill(skillID) : .history(skillID)
+                let predecessorIDs = Set(progression.filter { $0.to == skillNode }.compactMap { $0.from.skillID })
+                earlierSkills = Array(mostRecent.filter { predecessorIDs.contains($0.id) }.prefix(2))
+                nodes = [
+                    LearningMapGraphNode(id: .goal, position: CGPoint(x: 0, y: -230)),
+                    LearningMapGraphNode(id: skillNode, position: .zero)
+                ]
+                edges = [LearningMapGraphEdge(from: .goal, to: skillNode, relationship: .membership)]
+            } else {
+                earlierSkills = Array(mostRecent.prefix(2))
+                nodes = [LearningMapGraphNode(id: .goal, position: .zero)]
+                edges = earlierSkills.map {
+                    LearningMapGraphEdge(from: .goal, to: .history($0.id), relationship: .membership)
+                }
+            }
+            for (index, archived) in earlierSkills.enumerated() {
+                nodes.append(LearningMapGraphNode(
+                    id: .history(archived.id),
+                    position: CGPoint(x: earlierSkills.count == 1 ? 0 : (index == 0 ? -145 : 145), y: 280)
+                ))
+            }
+            let visibleIDs = Set(nodes.map(\.id))
+            edges += progression.filter { visibleIDs.contains($0.from) && visibleIDs.contains($0.to) }
+            self.nodes = nodes
+            self.edges = edges
+            self.hiddenHistoryCount = map.archivedTopics.count - nodes.filter {
+                if case .history = $0.id { return true }
+                return false
+            }.count
+            return
+        }
+        self.hiddenHistoryCount = map.archivedTopics.count
         if let skillID = resolved.skillID,
            let skill = map.topics.first(where: { $0.id == skillID })
                 ?? map.archivedTopics.first(where: { $0.id == skillID })?.topic {
@@ -67,21 +114,6 @@ struct LearningMapGraphLayout {
                 nodes.append(LearningMapGraphNode(id: id, position: point))
                 edges.append(LearningMapGraphEdge(from: skillNode, to: id, relationship: .focusPoint))
             }
-            if showsHistory {
-                // Place the complete ancestry beside the branch. Current membership and
-                // advancement are separate edges, so an archived skill cannot imply mastery.
-                let ancestors = Self.ancestors(of: skillID, in: map)
-                for (index, ancestor) in ancestors.enumerated() {
-                    nodes.append(LearningMapGraphNode(
-                        id: .history(ancestor.id),
-                        position: CGPoint(x: -390, y: CGFloat(index) * 180)
-                    ))
-                }
-                let visibleIDs = Set(nodes.map(\.id))
-                edges += Self.progressionEdges(in: map).filter {
-                    visibleIDs.contains($0.from) && visibleIDs.contains($0.to)
-                }
-            }
             self.nodes = nodes
             self.edges = edges
         } else {
@@ -98,22 +130,6 @@ struct LearningMapGraphLayout {
                     position: CGPoint(x: CGFloat(cos(angle)) * radius, y: CGFloat(sin(angle)) * radius * (compact ? 1.1 : 1))
                 ))
                 edges.append(LearningMapGraphEdge(from: .goal, to: id, relationship: .membership))
-            }
-            if showsHistory {
-                for (index, archived) in map.archivedTopics.enumerated() {
-                    nodes.append(LearningMapGraphNode(
-                        id: .history(archived.id),
-                        position: CGPoint(x: CGFloat(index % 3 - 1) * 280, y: 600 + CGFloat(index / 3) * 190)
-                    ))
-                    // Removed skills without successors remain part of the goal's history.
-                    if archived.successorSkillIDs.isEmpty {
-                        edges.append(LearningMapGraphEdge(from: .goal, to: .history(archived.id), relationship: .membership))
-                    }
-                }
-                let visibleIDs = Set(nodes.map(\.id))
-                edges += Self.progressionEdges(in: map).filter {
-                    visibleIDs.contains($0.from) && visibleIDs.contains($0.to)
-                }
             }
             self.nodes = nodes
             self.edges = edges
@@ -222,7 +238,7 @@ struct LearningMapCamera: Equatable {
     var center: CGPoint = .zero
     var zoom: CGFloat = 1
 
-    static let zoomRange: ClosedRange<CGFloat> = 0.18...2.5
+    static let zoomRange: ClosedRange<CGFloat> = 0.01...2.5
 
     static func fitted(to bounds: CGRect, viewport: CGSize) -> Self {
         guard !bounds.isNull, viewport.width > 0, viewport.height > 0 else { return Self() }
@@ -240,7 +256,7 @@ struct LearningMapCamera: Equatable {
         }
         // Labels and targets retain their readable size while the camera moves.
         // Fit their actual screen bounds, not a scaled approximation of the text.
-        var lower: CGFloat = 0.01
+        var lower = zoomRange.lowerBound
         var upper: CGFloat = 1
         for _ in 0..<40 {
             let candidate = (lower + upper) / 2
