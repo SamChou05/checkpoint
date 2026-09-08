@@ -94,3 +94,14 @@ arbitrary-goal correctness, production throughput, adaptive learning gains or
 release readiness. A failure should identify the mechanism actually observed,
 including repeated length loss, false agreement, missed feedback defects or
 unwarranted difficulty ratings, before choosing another change.
+
+## Frozen plan and local verification
+
+The [exact plan](evidence/complete-authoring-plan-20260908.json) was prepared from clean detached source `d06a7bfdf08853b8644a00c6df2e0a8aa46726c9` before inference.
+
+- Canonical plan SHA-256: `5605a3b97b0ad407bee7cac1aa9466a16fc090e9e666824903fa5179ff93f2de`.
+- Archived file SHA-256: `c15d48b270b9c710a96123ba4da334dd25aaf79c28fe05153beba3291bb5626a`.
+- Initial author request UTF-8 bytes: 5687, 5644, 4937, 4964.
+- Runtime dependencies: `{"boto3": "1.43.89", "botocore": "1.43.89", "python": "3.12.11"}`.
+
+The19focused author/runner tests and716-test backend suite pass, with one existing optional-runtime skip. Independent reviews checked the fixture, context isolation, dynamic bindings, budget rejection and malformed-output classification. Ruff and diff checks pass. The original clean-source plan reconstructs exactly; no provider calls have occurred at this freeze point.
