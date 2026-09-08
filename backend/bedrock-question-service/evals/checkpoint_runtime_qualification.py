@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Local policy-two runtime qualification; dry by default, no Lambda invocation.
+"""Local runtime qualification; dry by default, no Lambda invocation.
 
 Original mode: one fixed batch (two calls), then fresh generation (six).
 Frozen-recheck mode: the same archived five candidates in two two-call arms.
 Authored-solution mode: three fresh two-item goals, at most three calls each.
+Author comparison: repeat those inputs with two author models, eighteen calls.
 The unchanged runtime owns parsing, filtering, top-offs and JSON repair. The
 existing isolated caller owns transport/deadlines; this file adds no supervisor.
 Operational completion and policy stamps are not factual correctness scores.
@@ -43,6 +44,9 @@ _hash, _same = recorded._hash, recorded._same
 EXPERIMENT = "policy-two-runtime-qualification-v1"
 RECHECK_EXPERIMENT = "policy-two-frozen-recheck-v1"
 AUTHORED_EXPERIMENT = "authored-solution-fresh-v1"
+AUTHOR_COMPARISON_EXPERIMENT = "authored-solution-author-comparison-v1"
+AUTHOR_COMPARISON_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/authored-solution-fresh-fixture-20260908.json"
+AUTHOR_COMPARISON_ORIGIN_SHA256 = "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d"
 RECHECK_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/runtime-qualification-capture-20260908.json"
 RECHECK_ORIGIN_SHA256 = "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d"
 MAX_CALLS, MAX_INPUT_BYTES = 8, 32 * 1024
@@ -74,6 +78,7 @@ class _RequestCaptured(BaseException):
 
 
 def _first_request(request, questions=None, *, settings=None):
+    settings = SETTINGS if settings is None else settings
     captured = []
 
     class Client:
@@ -88,7 +93,7 @@ def _first_request(request, questions=None, *, settings=None):
 
     try:
         if questions is None:
-            generation._generate_with_bedrock(request, Client(), SETTINGS["BEDROCK_MODEL_ID"])
+            generation._generate_with_bedrock(request, Client(), settings["BEDROCK_MODEL_ID"])
         else:
             verify_questions(copy.deepcopy(questions), request, invoke, solve=invoke,
                              solver_contract="complete_choices")
@@ -101,12 +106,10 @@ def _first_request(request, questions=None, *, settings=None):
 
 
 def _role(request):
-    if request.get("modelId") == SETTINGS["BEDROCK_MODEL_ID"]:
-        if request.get("system") != [{"text": generation._system_prompt()}]:
-            raise ValueError("Unexpected author instructions.")
+    system = request.get("system")
+    if system == [{"text": generation._system_prompt()}]:
         user = request["messages"][0]["content"][0]["text"]
         return "author_json_repair" if user.startswith("Your previous response could not be parsed") else "author"
-    system = request.get("system")
     if system == [{"text": COMPLETE_SOLUTION_SYSTEM_PROMPT}]:
         return "solver"
     if system == [{"text": COMPLETE_REVIEW_SYSTEM_PROMPT}]:
@@ -138,6 +141,8 @@ def _guard_request(request, settings=None):
 
 
 def make_plan(packet, *, source_revision=None):
+    if type(packet) is dict and packet.get("experiment") == AUTHOR_COMPARISON_EXPERIMENT:
+        return _make_author_comparison_plan(packet, source_revision=source_revision)
     if type(packet) is dict and packet.get("experiment") == AUTHORED_EXPERIMENT:
         return _make_authored_plan(packet, source_revision=source_revision)
     if type(packet) is dict and packet.get("experiment") == RECHECK_EXPERIMENT:
@@ -249,6 +254,44 @@ def _make_authored_plan(packet, *, source_revision):
         "failure_policy": "At most three calls per goal and nine total. One generation attempt; no added repair, top-up, fallback, retry, resume or replacement operation. Existing runtime author JSON repair remains visible and consumes the same three-call allowance, disqualifying a full unrepaired result. Operational/unfinished-response/cleanup/persistence failure stops all later goals. Ordinary content rejection remains separate.",
         "scope": "Fresh authoring through actual production functions with the authored_solution server opt-in, not deployed Lambda or bank writes. Kimi authors; Sonnet complete-choice solver and immutable main-teaching auditor use explicit disabled thinking and6000tokens. Only case payloads enter normalization; external assessment/provenance remains outside provider inputs. All raw final outputs are retained. Full unrepaired batch is a path/yield observation, not correctness, plausible-distractor or difficulty certification. Author main guidance remains320characters while immutable runtime admission permits420; no text is clipped to make it pass.",
         "timing_scope": "Three separate240-second operation clocks, bounded existing workers with read75/connect3/SDK1 and at most32KiB per serialized request. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Fixed75 transport admission is conservative versus deployed late-operation read shortening. No response means unknown usage/content/remote completion.",
+    }
+
+
+def _make_author_comparison_plan(packet, *, source_revision):
+    if packet != {"experiment": AUTHOR_COMPARISON_EXPERIMENT}:
+        raise ValueError("The author comparison has no configurable inputs or profiles.")
+    raw = AUTHOR_COMPARISON_ORIGIN.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != AUTHOR_COMPARISON_ORIGIN_SHA256:
+        raise ValueError("The exact original three-goal fixture is required.")
+    origin = json.loads(raw)
+    base = _make_authored_plan(origin, source_revision=source_revision)
+    operations = []
+    for index, job in enumerate(base["operations"]):
+        profiles = [("kimi", "moonshotai.kimi-k2.5"),
+                    ("opus", "us.anthropic.claude-opus-4-6-v1")]
+        if index == 1:
+            profiles.reverse()
+        for arm, model in profiles:
+            settings = {**base["settings"], "BEDROCK_MODEL_ID": model}
+            with patch.dict(os.environ, settings):
+                first = _first_request(job["request"], settings=settings)
+            if not _same({k: v for k, v in first.items() if k != "modelId"},
+                         {k: v for k, v in job["first_request"].items() if k != "modelId"}):
+                raise ValueError("Paired author requests may differ only in modelId.")
+            operations.append({**copy.deepcopy(job), "arm": arm, "settings": settings,
+                               "first_request": first})
+    return {
+        **base, "experiment": AUTHOR_COMPARISON_EXPERIMENT,
+        "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
+        "origin": {"path": str(AUTHOR_COMPARISON_ORIGIN.relative_to(SERVICE_DIR.parents[1])),
+                   "fixture_byte_sha256": AUTHOR_COMPARISON_ORIGIN_SHA256,
+                   "fixture_canonical_sha256": _hash(origin), "fixture": origin,
+                   "scope": "Original fixture and its original trial limits are provenance. This new paired plan freezes its own six-operation, eighteen-call limits. No previous questions, answers or error notes are inputs."},
+        "operations": operations, "maximum_calls": 18,
+        "maximum_input_utf8_bytes_total": 18 * MAX_INPUT_BYTES,
+        "failure_policy": "At most three calls per operation and eighteen total. One generation attempt; no added repair, top-up, fallback, retry, resume or replacement. Existing author JSON repair consumes the same three-call allowance and disqualifies a full unrepaired batch. Operational, unfinished-response, cleanup or persistence failure stops all later operations.",
+        "scope": "New contemporaneous author comparison on three selected original goal/source payloads: Kimi then Opus, Opus then Kimi, Kimi then Opus. Only author modelId changes in paired initial requests. Both use Sonnet complete-choice solving and immutable main-teaching audit, disabled thinking, 6000 tokens and temperature 0.2. Downstream requests depend on each arm's new candidates and solver survivors. No previous generated content or external assessment is sent. This is not a randomized general accuracy estimate, matched candidate comparison, deployment or default promotion. Author main guidance remains 320 characters; runtime admission permits 420 without clipping.",
+        "timing_scope": "Six separate 240-second operation clocks; unchanged workers use read 75 seconds, connect 3 seconds and one SDK attempt. Each serialized request is bounded to 32 KiB. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Missing responses leave usage and remote completion unknown.",
     }
 
 
@@ -545,7 +588,7 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
                           questions=questions, runtime_error_type=error_type,
                           budget_reservations=budget.calls,
                           metrics=_metrics_without_runtime_intervals(metrics))
-            if plan["experiment"] == AUTHORED_EXPERIMENT:
+            if plan["experiment"] in {AUTHORED_EXPERIMENT, AUTHOR_COMPARISON_EXPERIMENT}:
                 repairs = sum(c["operation_index"] == index and c["role"] == "author_json_repair"
                               for c in report["calls"])
                 result["authored_solution_observation"] = {
@@ -586,6 +629,8 @@ def _accounting(calls):
 def _empty_report(plan):
     return {"plan": copy.deepcopy(plan), "plan_sha256": _hash(plan), "status": "running", "calls": [],
             "operations": [{"kind": j["kind"], "maximum_calls": j["maximum_calls"],
+                            **({key: copy.deepcopy(j[key]) for key in ("arm", "case_id", "settings")}
+                               if plan["experiment"] == AUTHOR_COMPARISON_EXPERIMENT else {}),
                             "status": "unattempted", "remaining_milliseconds": [], "questions": []}
                            for j in plan["operations"]]}
 

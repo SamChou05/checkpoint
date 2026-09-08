@@ -629,7 +629,8 @@ class FreshAuthoredSolutionTests(unittest.TestCase):
         call = saved["calls"][-1]
         operation = call["operation_index"]
         self.assertEqual(call["request"], request)
-        self.assertEqual(trial.caller.SETTINGS, self.plan["settings"])
+        self.assertEqual(trial.caller.SETTINGS,
+                         self.plan["operations"][operation].get("settings", self.plan["settings"]))
         self.assertNotIn("EXTERNAL ASSESSMENT MUST NOT BE SENT", json.dumps(request))
         self.assertEqual(request["inferenceConfig"], {"maxTokens": 6000, "temperature": 0.2})
         if call["role"].startswith("author"):
@@ -779,6 +780,104 @@ class FreshAuthoredSolutionTests(unittest.TestCase):
         ):
             self.assertEqual(trial.main(["--fixture", str(fixture), "--output", str(self.output)]), 0)
         self.assertEqual(json.loads((self.output / "plan.json").read_text()), self.plan)
+
+
+class AuthoredAuthorComparisonTests(unittest.TestCase):
+    # Reuse the existing scripted author/solver/auditor seam, not live workers.
+    observer = FreshAuthoredSolutionTests.observer
+    run_trial = FreshAuthoredSolutionTests.run_trial
+
+    def setUp(self):
+        FreshAuthoredSolutionTests.setUp(self)
+        self.packet = {"experiment": trial.AUTHOR_COMPARISON_EXPERIMENT}
+        self.plan = trial.make_plan(self.packet)
+        trial.shared.write_json(self.plan_path, self.plan)
+        self.questions = [copy.deepcopy(batch) for batch in self.questions for _ in range(2)]
+
+    def test_six_operations_preserve_paired_inputs_mains_and_eighteen_call_replay(self):
+        self.assertEqual(self.plan["maximum_calls"], 18)
+        self.assertEqual(self.plan["maximum_input_utf8_bytes_total"], 18 * 32768)
+        self.assertEqual([j["arm"] for j in self.plan["operations"]],
+                         ["kimi", "opus", "opus", "kimi", "kimi", "opus"])
+        for left, right in zip(self.plan["operations"][::2], self.plan["operations"][1::2], strict=True):
+            self.assertEqual(left["case_id"], right["case_id"])
+            self.assertEqual(left["request"], right["request"])
+            self.assertEqual({k: v for k, v in left["first_request"].items() if k != "modelId"},
+                             {k: v for k, v in right["first_request"].items() if k != "modelId"})
+            self.assertNotEqual(left["first_request"]["modelId"], right["first_request"]["modelId"])
+        with patch.object(trial.shared, "new_client", side_effect=AssertionError("No SDK")):
+            report = self.run_trial()
+            self.assertEqual(trial.replay_capture(report), report)
+        self.assertEqual(report["status"], "completed")
+        self.assertEqual(len(report["calls"]), 18)
+        self.assertEqual([c["role"] for c in report["calls"]], ["author", "solver", "teaching_auditor"] * 6)
+        for index, (job, result) in enumerate(zip(self.plan["operations"], report["operations"], strict=True)):
+            for key in ("arm", "case_id", "settings"):
+                self.assertEqual(result[key], job[key])
+            self.assertEqual(result["budget_reservations"], 3)
+            self.assertTrue(result["authored_solution_observation"]["full_unrepaired_batch"])
+            calls = report["calls"][index * 3:index * 3 + 3]
+            self.assertEqual(calls[0]["request"], job["first_request"])
+            self.assertEqual([c["request"]["modelId"] for c in calls],
+                             [job["settings"]["BEDROCK_MODEL_ID"], "us.anthropic.claude-sonnet-4-6",
+                              "us.anthropic.claude-sonnet-4-6"])
+            for original, returned in zip(self.questions[index], result["questions"], strict=True):
+                self.assertEqual(original["explanation"].encode(), returned["explanation"].encode())
+                self.assertEqual(returned["choiceExplanations"], {})
+                self.assertEqual(returned["verificationPolicyRevision"], 3)
+
+    def test_fixed_origin_profiles_and_model_roles_reject_drift_before_dispatch(self):
+        with self.assertRaises(ValueError):
+            trial.make_plan({**self.packet, "payload": {}})
+        altered_origin = Mock(wraps=trial.AUTHOR_COMPARISON_ORIGIN)
+        altered_origin.read_bytes.return_value = b'{"modified":true}'
+        with patch.object(trial, "AUTHOR_COMPARISON_ORIGIN", altered_origin), self.assertRaises(ValueError):
+            trial.make_plan(self.packet)
+        self.assertEqual(self.plan["origin"]["fixture_byte_sha256"], trial.AUTHOR_COMPARISON_ORIGIN_SHA256)
+        origin = json.loads(trial.AUTHOR_COMPARISON_ORIGIN.read_text())
+        self.assertEqual(self.plan["origin"]["fixture"], origin)
+        for index, case in enumerate(origin["cases"]):
+            self.assertEqual(self.plan["operations"][index * 2]["request"],
+                             trial._normalize_request(copy.deepcopy(case["payload"])))
+        for job in self.plan["operations"][:2]:
+            with patch.dict(os.environ, job["settings"]):
+                wrong_model = copy.deepcopy(job["first_request"])
+                wrong_model["modelId"] = job["settings"]["BEDROCK_VERIFICATION_MODEL_ID"]
+                self.assertEqual(trial._role(wrong_model), "author")
+                with self.assertRaises(ValueError):
+                    trial._guard_request(wrong_model, job["settings"])
+        observer = Mock()
+        for path, value in ((("maximum_calls",), 19), (("operations", 1, "maximum_calls"), 4),
+                            (("operations", 1, "settings", "BEDROCK_MAX_TOKENS"), "16000"),
+                            (("operations", 1, "settings", "BEDROCK_VERIFICATION_MODEL_ID"), "us.anthropic.claude-opus-4-6-v1")):
+            changed = copy.deepcopy(self.plan)
+            target = changed
+            for key in path[:-1]:
+                target = target[key]
+            target[path[-1]] = value
+            trial.shared.write_json(self.plan_path, changed)
+            with self.assertRaises(ValueError):
+                trial.run_trial(self.plan_path, trial._hash(changed), self.output, observer=observer)
+        observer.assert_not_called()
+        self.assertFalse(self.output.exists())
+
+    def test_comparison_dry_run_does_not_change_existing_modes_or_start_workers(self):
+        old_packet = json.loads(FIXTURE.read_text())
+        old_plan = trial.make_plan(old_packet)
+        fresh_packet = json.loads(trial.AUTHOR_COMPARISON_ORIGIN.read_text())
+        fresh_plan = trial.make_plan(fresh_packet)
+        fixture = self.directory / "comparison.json"
+        trial.shared.write_json(fixture, self.packet)
+        with patch.object(trial.shared, "new_client", side_effect=AssertionError("No SDK")), patch.object(
+            trial.caller, "observe_request", side_effect=AssertionError("No worker"),
+        ), patch.dict(os.environ, self.plan["operations"][1]["settings"]):
+            self.assertEqual(trial.main(["--fixture", str(fixture), "--output", str(self.output)]), 0)
+            self.assertEqual(trial.make_plan(old_packet), old_plan)
+            self.assertEqual(trial.make_plan(fresh_packet), fresh_plan)
+        self.assertEqual(json.loads((self.output / "plan.json").read_text()), self.plan)
+        self.assertEqual(old_plan["settings"]["QUESTION_FEEDBACK_CONTRACT"], "reviewer_written")
+        self.assertEqual([j["first_request"]["modelId"] for j in fresh_plan["operations"]],
+                         ["moonshotai.kimi-k2.5"] * 3)
 
 
 if __name__ == "__main__":
