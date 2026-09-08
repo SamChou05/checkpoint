@@ -1,5 +1,7 @@
 # Interactive learning map
 
+**Release update:** The user approved deployment and needed model calls. The reviewed TestFlight update is deployed and its eight live contract checks pass. Direct generation exposed a deadline guard problem; that correction and real generation checks are in progress. The earlier preparation notes below describe the pre-deployment audit. See [the current release record](LEARNING_MAP_RELEASE.md) for authoritative live status.
+
 ## Goal and scope
 
 Shorten Progress to a compact Learning map entry and keep Next Focus accessible. The destination is a native, interactive goal → skill → focus-point map, with evidence and earned history, safe configuration, and real effects on learning. This work follows the goal brief supplied on September 8, 2026 and the design discussion that prioritizes accumulated growth, relationships, and learner control.
