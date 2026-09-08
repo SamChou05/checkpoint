@@ -3,10 +3,12 @@
 import copy
 import json
 import unittest
+from unittest.mock import patch
 
 from evals.question_immutable_review import (
     ImmutableReviewContentError,
     ImmutableReviewFormatError,
+    MAX_RAW_REVIEW_CHARACTERS,
     freeze_question,
     observe_review,
     review_prompt,
@@ -339,7 +341,7 @@ class ImmutableReviewTests(unittest.TestCase):
             {"issues": "none"},
             {"issues": [""]},
             {"issues": [" " * 20]},
-            {"issues": ["x" * 281]},
+            {"issues": ["x" * 2401]},
             {"issues": ["issue"] * 9},
         ]
         for change in changes:
@@ -362,6 +364,50 @@ class ImmutableReviewTests(unittest.TestCase):
             observe_review("```json\n" + raw(review(self.item)) + "\n```", self.item)[
                 "eligible"
             ]
+        )
+
+    def test_long_diagnostic_is_rejection_not_malformed_or_replacement_permission(self):
+        issue = "The claim needs an unstated condition. " + "x" * 244
+        self.assertEqual(len(issue), 283)
+        value = review(
+            self.item, valid=False, mainExplanation="unsupported", issues=[issue]
+        )
+        observed = self.observe(value)
+        self.assertEqual(
+            observed,
+            {"eligible": False, "reason": "unsupported_feedback", "question": None},
+        )
+        for length in (283, 2400):
+            value = review(self.item, valid=True, issues=["x" * length])
+            self.assertEqual(
+                self.observe(value),
+                {"eligible": False, "reason": "reported_issues", "question": None},
+            )
+            value["review"]["explanation"] = (
+                "Replacement teaching text is still forbidden."
+            )
+            self.assertEqual(self.observe(value)["reason"], "invalid_review")
+        for invalid in ("x" * 2401, " " * 283, 283, None):
+            self.assertEqual(
+                self.observe(review(self.item, issues=[invalid]))["reason"],
+                "invalid_review",
+            )
+        # Raising diagnostic capacity does not raise any displayed feedback cap.
+        item = question()
+        item["choiceExplanations"][item["choices"][0]] = issue
+        with self.assertRaises(ImmutableReviewContentError):
+            freeze_question(item)
+
+    def test_raw_envelope_limit_is_enforced_before_json_parsing(self):
+        valid = raw(review(self.item))
+        at_limit = valid + " " * (MAX_RAW_REVIEW_CHARACTERS - len(valid))
+        self.assertEqual(len(at_limit), MAX_RAW_REVIEW_CHARACTERS)
+        self.assertTrue(observe_review(at_limit, self.item)["eligible"])
+        with patch("evals.question_immutable_review._extract_json_object") as parser:
+            observed = observe_review(at_limit + " ", self.item)
+            parser.assert_not_called()
+        self.assertEqual(
+            observed, {"eligible": False, "reason": "invalid_review", "question": None}
         )
 
     def test_caller_types_optional_objective_and_safe_representation(self):

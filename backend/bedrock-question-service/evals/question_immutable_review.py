@@ -44,6 +44,8 @@ REVIEW_FIELDS = {
     "issues",
 }
 DISPOSITIONS = frozenset({"supported", "unsupported", "uncertain"})
+MAX_DIAGNOSTIC_ISSUE_CHARACTERS = 2400
+MAX_RAW_REVIEW_CHARACTERS = 24000
 _ANSWER_LABEL = re.compile(r"\b(?:choice|option|answer)\s+[A-D]\b", re.I)
 
 SYSTEM_PROMPT = (
@@ -88,8 +90,10 @@ Use exactly these fields. Every disposition is supported, unsupported or uncerta
 Cover every exact choice once, even for invalid items. answer is the unique
 warranted exact choice, or "" if none is established; an invalid explanation can
 coexist with a warranted answer. valid is Boolean; difficulty is integer 1..5.
-issues contains at most eight concise nonblank strings, at most 280 characters
-each. Include a specific issue for any defect or uncertainty. Any nonempty issues
+issues contains at most eight concise nonblank diagnostic strings. Aim for at
+most 280 characters each; the hard maximum is 2400 characters per issue. These
+diagnostics are not learner feedback. Keep the entire JSON within 24000 characters.
+Include a specific issue for any defect or uncertainty. Any nonempty issues
 or nonsupported disposition blocks acceptance, regardless of valid. Do not return
 new explanations, corrected choices, a rewritten question or verification metadata.
 
@@ -223,6 +227,8 @@ def review_prompt(frozen_question, context):
 def _validated_review(raw, choices):
     if type(raw) is not str:
         raise ImmutableReviewFormatError("review:raw_type")
+    if len(raw) > MAX_RAW_REVIEW_CHARACTERS:
+        raise ImmutableReviewFormatError("review:raw_length")
     parsed = _object(_extract_json_object(raw), {"review"}, "review_envelope")
     review = _object(parsed["review"], REVIEW_FIELDS, "review")
     if type(review["valid"]) is not bool:
@@ -240,7 +246,7 @@ def _validated_review(raw, choices):
     if type(issues) is not list or len(issues) > 8:
         raise ImmutableReviewFormatError("review:issues")
     for issue in issues:
-        _text(issue, "issue", 1, 280)
+        _text(issue, "issue", 1, MAX_DIAGNOSTIC_ISSUE_CHARACTERS)
     return review
 
 

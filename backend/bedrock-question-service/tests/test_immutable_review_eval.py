@@ -280,6 +280,27 @@ class ImmutableReviewEvalTests(unittest.TestCase):
         self.assertEqual(client.requests, [])
         self.assertEqual(json.loads((self.output / "capture.json").read_text()), report)
 
+    def test_subset_is_a_new_exact_plan_with_no_unlisted_dispatch(self):
+        self.packet["cases"] = self.packet["cases"][1:]
+        self.plan = runner.make_plan(self.packet)
+        self.plan_hash = runner._hash(self.plan)
+        runner.shared.write_json(self.path, self.plan)
+        client = self.client()
+        report = self.run_trial(client)
+        self.assertEqual(self.plan["maximum_calls"], 5)
+        self.assertEqual(len(client.requests), 5)
+        self.assertEqual(
+            runner.replay_capture(report, self.plan_hash)["provider_calls"], 5
+        )
+        self.assertEqual(report["calls"][0]["case_id"], "case_1")
+        for size in (0, 7):
+            invalid = packet()
+            invalid["cases"] = [copy.deepcopy(invalid["cases"][0]) for _ in range(size)]
+            for i, case in enumerate(invalid["cases"]):
+                case["case_id"] = str(i)
+            with self.assertRaises(ValueError):
+                runner.make_plan(invalid)
+
 
 if __name__ == "__main__":
     unittest.main()

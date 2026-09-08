@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Six fixed complete teaching items, one immutable audit each; dry by default.
+"""Up to six fixed complete items, one immutable audit each; dry by default.
 
 No generation, solving, repair, deployment or production admission is performed.
 Final teaching text is frozen before review and is never written by the auditor.
@@ -25,7 +25,7 @@ from evals.question_immutable_review import (  # noqa: E402
     review_prompt,
 )
 
-EXPERIMENT = "immutable-teaching-audit-v1"
+EXPERIMENT = "immutable-teaching-audit-v2"
 MAX_CALLS, MAX_INPUT_BYTES = 6, 32000
 
 
@@ -43,14 +43,14 @@ def make_plan(packet):
         type(packet) is not dict
         or packet.get("experiment") != EXPERIMENT
         or type(cases) is not list
-        or len(cases) != MAX_CALLS
+        or not 1 <= len(cases) <= MAX_CALLS
         or any(
             type(c) is not dict or type(c.get("case_id")) is not str or not c["case_id"]
             for c in cases
         )
-        or len({c["case_id"] for c in cases}) != MAX_CALLS
+        or len({c["case_id"] for c in cases}) != len(cases)
     ):
-        raise ValueError("Exactly six distinct fixed cases are required.")
+        raise ValueError("One to six distinct fixed cases are required.")
     jobs = []
     for case in cases:
         question = freeze_question(case["question"])
@@ -92,10 +92,10 @@ def make_plan(packet):
         "model": shared.MODEL,
         "settings": copy.deepcopy(shared.SETTINGS),
         "jobs": jobs,
-        "maximum_calls": MAX_CALLS,
+        "maximum_calls": len(jobs),
         "maximum_calls_per_case": 1,
         "maximum_input_utf8_bytes_per_call": MAX_INPUT_BYTES,
-        "maximum_input_utf8_bytes_total": MAX_CALLS * MAX_INPUT_BYTES,
+        "maximum_input_utf8_bytes_total": len(jobs) * MAX_INPUT_BYTES,
         "planned_input_utf8_bytes": sum(j["input_utf8_bytes"] for j in jobs),
         "sdk_total_max_attempts": 1,
         "failure_policy": "Any provider, malformed-review, persistence or correlation failure stops later calls. No retries, repairs, replacement items or resume.",
@@ -204,7 +204,7 @@ def run_experiment(
             else shared.new_client(shared.SETTINGS, cli_credentials)
         )
         for index, job in enumerate(plan["jobs"]):
-            # The prevalidated list has exactly six entries; a case is never retried.
+            # Only prevalidated fixed jobs are dispatched; a case is never retried.
             call = {
                 "case_index": index,
                 "case_id": job["case_id"],
@@ -269,7 +269,7 @@ def replay_capture(report, approved_hash):
     ):
         raise ValueError("A terminal capture for this plan is required.")
     calls = report["calls"]
-    if type(calls) is not list or len(calls) > MAX_CALLS:
+    if type(calls) is not list or len(calls) > len(plan["jobs"]):
         raise ValueError("Invalid call count.")
     rebuilt = []
     failure = False
@@ -312,7 +312,7 @@ def replay_capture(report, approved_hash):
         )
     if not _same(rebuilt, report["results"]):
         raise ValueError("Recorded decisions or returned content changed.")
-    complete = len(calls) == MAX_CALLS and not failure
+    complete = len(calls) == len(plan["jobs"]) and not failure
     persisted_prefix_failure = (
         report["status"] == "operational_failure"
         and report.get("error_phase") == "call_persist"
@@ -363,7 +363,11 @@ def main(argv=None):
     shared.write_json(args.output / "plan.json", plan)
     print(
         json.dumps(
-            {"plan_sha256": _hash(plan), "maximum_calls": MAX_CALLS, "execute": False}
+            {
+                "plan_sha256": _hash(plan),
+                "maximum_calls": plan["maximum_calls"],
+                "execute": False,
+            }
         )
     )
     return 0
