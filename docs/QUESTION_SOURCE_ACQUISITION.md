@@ -50,3 +50,28 @@ quality, question correctness, difficulty, production throughput or learning.
 Subsequent model evaluations must bind exact selected spans and all teaching
 fields to the capture, preserve omissions, and assess factual results separately
 from citation integrity.
+
+## Observed results and a general parser fix
+
+The first four-source capture completed with three acquired documents and one
+extraction failure. CPython retained 41,300 characters, the Archives page 14,854,
+and NASA 5,782. None was truncated. The CPython decoded UTF-8 text hashes to the
+same value as the response body, preserving its literal whitespace. Individual
+fetches took approximately 0.29–0.41 seconds in this small run; this is not a
+latency guarantee. [Capture summary](evidence/public-source-acquisition-20260908.json)
+retains all four outcomes and the hash/location of the full local capture.
+
+The W3C failure exposed a general HTML handling bug: HTML permits an omitted
+closing head tag, but the text parser kept treating the subsequent body as head
+content. One separately recorded diagnostic fetch returned the exact same
+957,488-byte body hash as the failed capture. It was the specification itself,
+not an access challenge. The fix recognizes ordinary body boundaries while
+continuing to omit nested inert content; no domain-specific branch was added.
+
+Offline reprocessing of those same bytes with the fixed parser now retains
+120,000 characters and correctly marks the extraction truncated. This is a
+reparse, **not** another successful live fetch or a replacement for the original
+failure. [Reparse record](evidence/public-source-head-reparse-20260908.json).
+The 19 focused source tests and four capture tests pass. The earlier full backend
+run passed 811 tests with one existing optional-runtime skip before this two-test
+HTML fix. Production generation remains unchanged.

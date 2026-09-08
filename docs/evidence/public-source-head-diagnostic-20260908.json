@@ -1,0 +1,61 @@
+{
+  "purpose": "Separate single-fetch extraction diagnostic; does not retry or replace original capture",
+  "original_capture": "/tmp/checkpoint-public-source-capture-20260908.local.json",
+  "url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo",
+  "limits": {
+    "body_bytes": 1048576,
+    "text_characters": 120000,
+    "redirects": 0,
+    "socket_seconds": 10.0,
+    "io_seconds": 30.0
+  },
+  "source_sha256": "539a703c610b0428b7f2ad70803e35e18813f93f9d93ad593bfef052b290b1d1",
+  "dispatches": 1,
+  "status": "observed",
+  "acquisition": {
+    "status": "failed",
+    "requested_url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo",
+    "request_fragment": "auto-placement-algo",
+    "final_url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/",
+    "retrieved_at_utc": "2026-09-08T08:37:20.884139+00:00",
+    "source_text": null,
+    "raw_content_sha256": "53a47980a217f0b976e1ab8fa0b56944421f7e6311deef96a6aa591ddc693317",
+    "text_sha256": null,
+    "trace": [
+      {
+        "url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/",
+        "resolved_public_addresses": [
+          "104.18.23.19",
+          "104.18.22.19"
+        ],
+        "pinned_address": "104.18.23.19",
+        "connected_address": "104.18.23.19",
+        "http_status": 200
+      }
+    ],
+    "limits": {
+      "body_bytes": 1048576,
+      "text_characters": 120000,
+      "redirects": 0,
+      "socket_seconds": 10.0,
+      "io_seconds": 30.0
+    },
+    "truncated": false,
+    "verification": "unverified_source_material",
+    "deadline_scope": "Network reads/connect/TLS use remaining total time; blocking system DNS cannot be interrupted. An overdue DNS return fails before connect. Local extraction/persistence is not a hard real-time operation.",
+    "representation_limits": [
+      "HTTPS port 443 only; no proxy, credentials, cookies or active content execution.",
+      "HTTP transfer framing is removed before the raw-content hash; content encoding must be identity. Per-hop HTTP bytes including headers/chunk framing are capped at body_bytes + 65536 (excluding TLS framing).",
+      "Only UTF-8, ASCII, Latin-1, Windows-1252 and explicit UTF-16 variants are decoded strictly; HTML legacy ASCII/Latin-1 labels map to Windows-1252. Absent charset defaults to UTF-8, not full browser charset sniffing.",
+      "HTML text-node extraction, not browser rendering: entities decoded; block/pre/line/table separators retained or inserted; scripts, styles, head, templates, noscript and hidden attributes omitted. CSS visibility, layout, link targets, media/OCR and generated content are not represented; malformed markup may differ from browser DOM repair."
+    ],
+    "media_type": "text/html",
+    "declared_charset": "utf-8",
+    "raw_content_bytes": 957488,
+    "failure_reason": "no_extracted_text",
+    "elapsed_seconds": 0.24638937501003966
+  },
+  "raw_body_path": "/tmp/checkpoint-w3c-source-diagnostic-20260908.body.html",
+  "captured_bytes": 957488,
+  "captured_sha256": "53a47980a217f0b976e1ab8fa0b56944421f7e6311deef96a6aa591ddc693317"
+}

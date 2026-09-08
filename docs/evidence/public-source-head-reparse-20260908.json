@@ -1,0 +1,17 @@
+{
+  "kind": "offline_reparse_of_exact_diagnostic_body",
+  "network_dispatches": 0,
+  "original_capture_unchanged": true,
+  "body_sha256": "53a47980a217f0b976e1ab8fa0b56944421f7e6311deef96a6aa591ddc693317",
+  "source_acquisition_after_sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+  "text_characters": 120000,
+  "text_sha256": "a3f4a477ce33bb9aec81e3c8592d8a1922d8ec5000354f5d2cea46b7ca095a95",
+  "truncated": true,
+  "text_path": "/tmp/checkpoint-w3c-source-diagnostic-20260908.offline-text.txt",
+  "omitted_head_end": true,
+  "explicit_body_tag_offset": 23088,
+  "requested_fragment_anchor_offset_in_raw_html": 316926,
+  "text_prefix_before_anchor_reached_limit": false,
+  "bug": "Ignored head persisted across an optional end tag and ordinary body start.",
+  "fix_scope": "Generic optional-head boundary recognition; nested inert elements remain ignored. No full browser DOM or factual verification."
+}

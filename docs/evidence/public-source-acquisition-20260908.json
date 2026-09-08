@@ -1,0 +1,236 @@
+{
+  "experiment": "public-source-acquisition-v1",
+  "created_at_utc": "2026-09-08T08:35:24.068372+00:00",
+  "status": "completed",
+  "source_acquisition_sha256": "539a703c610b0428b7f2ad70803e35e18813f93f9d93ad593bfef052b290b1d1",
+  "maximum_acquisitions": 4,
+  "limits_per_acquisition": {
+    "body_bytes": 1048576,
+    "text_characters": 120000,
+    "redirects": 4,
+    "socket_seconds": 10.0,
+    "io_seconds": 30.0
+  },
+  "model_calls": 0,
+  "scope": "Explicit URLs selected by caller; no automated discovery or correctness certification.",
+  "records": [
+    {
+      "url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo",
+      "status": "observed",
+      "dispatched_at_utc": "2026-09-08T08:35:24.070030+00:00",
+      "observed_at_utc": "2026-09-08T08:35:24.484025+00:00",
+      "acquisition": {
+        "status": "failed",
+        "requested_url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo",
+        "request_fragment": "auto-placement-algo",
+        "final_url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/",
+        "retrieved_at_utc": "2026-09-08T08:35:24.435039+00:00",
+        "raw_content_sha256": "53a47980a217f0b976e1ab8fa0b56944421f7e6311deef96a6aa591ddc693317",
+        "text_sha256": null,
+        "trace": [
+          {
+            "url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/",
+            "resolved_public_addresses": [
+              "104.18.23.19",
+              "104.18.22.19"
+            ],
+            "pinned_address": "104.18.23.19",
+            "connected_address": "104.18.23.19",
+            "http_status": 200
+          }
+        ],
+        "limits": {
+          "body_bytes": 1048576,
+          "text_characters": 120000,
+          "redirects": 4,
+          "socket_seconds": 10.0,
+          "io_seconds": 30.0
+        },
+        "truncated": false,
+        "verification": "unverified_source_material",
+        "deadline_scope": "Network reads/connect/TLS use remaining total time; blocking system DNS cannot be interrupted. An overdue DNS return fails before connect. Local extraction/persistence is not a hard real-time operation.",
+        "representation_limits": [
+          "HTTPS port 443 only; no proxy, credentials, cookies or active content execution.",
+          "HTTP transfer framing is removed before the raw-content hash; content encoding must be identity. Per-hop HTTP bytes including headers/chunk framing are capped at body_bytes + 65536 (excluding TLS framing).",
+          "Only UTF-8, ASCII, Latin-1, Windows-1252 and explicit UTF-16 variants are decoded strictly; HTML legacy ASCII/Latin-1 labels map to Windows-1252. Absent charset defaults to UTF-8, not full browser charset sniffing.",
+          "HTML text-node extraction, not browser rendering: entities decoded; block/pre/line/table separators retained or inserted; scripts, styles, head, templates, noscript and hidden attributes omitted. CSS visibility, layout, link targets, media/OCR and generated content are not represented; malformed markup may differ from browser DOM repair."
+        ],
+        "media_type": "text/html",
+        "declared_charset": "utf-8",
+        "raw_content_bytes": 957488,
+        "failure_reason": "no_extracted_text",
+        "elapsed_seconds": 0.41265070904046297
+      },
+      "source_text_omitted_from_committed_summary": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.14.0/Doc/tutorial/controlflow.rst",
+      "status": "observed",
+      "dispatched_at_utc": "2026-09-08T08:35:24.485469+00:00",
+      "observed_at_utc": "2026-09-08T08:35:24.784749+00:00",
+      "acquisition": {
+        "status": "acquired",
+        "requested_url": "https://raw.githubusercontent.com/python/cpython/v3.14.0/Doc/tutorial/controlflow.rst",
+        "request_fragment": "",
+        "final_url": "https://raw.githubusercontent.com/python/cpython/v3.14.0/Doc/tutorial/controlflow.rst",
+        "retrieved_at_utc": "2026-09-08T08:35:24.782078+00:00",
+        "raw_content_sha256": "4c6ec199adf8c583337c45216d9244aba4b68566b12491edc48068b10cbe0089",
+        "text_sha256": "4c6ec199adf8c583337c45216d9244aba4b68566b12491edc48068b10cbe0089",
+        "trace": [
+          {
+            "url": "https://raw.githubusercontent.com/python/cpython/v3.14.0/Doc/tutorial/controlflow.rst",
+            "resolved_public_addresses": [
+              "185.199.111.133",
+              "185.199.108.133",
+              "185.199.109.133",
+              "185.199.110.133"
+            ],
+            "pinned_address": "185.199.111.133",
+            "connected_address": "185.199.111.133",
+            "http_status": 200
+          }
+        ],
+        "limits": {
+          "body_bytes": 1048576,
+          "text_characters": 120000,
+          "redirects": 4,
+          "socket_seconds": 10.0,
+          "io_seconds": 30.0
+        },
+        "truncated": false,
+        "verification": "unverified_source_material",
+        "deadline_scope": "Network reads/connect/TLS use remaining total time; blocking system DNS cannot be interrupted. An overdue DNS return fails before connect. Local extraction/persistence is not a hard real-time operation.",
+        "representation_limits": [
+          "HTTPS port 443 only; no proxy, credentials, cookies or active content execution.",
+          "HTTP transfer framing is removed before the raw-content hash; content encoding must be identity. Per-hop HTTP bytes including headers/chunk framing are capped at body_bytes + 65536 (excluding TLS framing).",
+          "Only UTF-8, ASCII, Latin-1, Windows-1252 and explicit UTF-16 variants are decoded strictly; HTML legacy ASCII/Latin-1 labels map to Windows-1252. Absent charset defaults to UTF-8, not full browser charset sniffing."
+        ],
+        "media_type": "text/plain",
+        "declared_charset": "utf-8",
+        "raw_content_bytes": 41308,
+        "charset": "utf-8",
+        "charset_origin": "http_header",
+        "text_characters": 41300,
+        "source_text_complete": true,
+        "elapsed_seconds": 0.29651320801349357
+      },
+      "source_text_omitted_from_committed_summary": true,
+      "retained_text_hash_verified_locally": true,
+      "decoded_utf8_roundtrip_matches_body_hash": true
+    },
+    {
+      "url": "https://www.archives.gov/founding-docs/declaration-transcript",
+      "status": "observed",
+      "dispatched_at_utc": "2026-09-08T08:35:24.786421+00:00",
+      "observed_at_utc": "2026-09-08T08:35:25.152312+00:00",
+      "acquisition": {
+        "status": "acquired",
+        "requested_url": "https://www.archives.gov/founding-docs/declaration-transcript",
+        "request_fragment": "",
+        "final_url": "https://www.archives.gov/founding-docs/declaration-transcript",
+        "retrieved_at_utc": "2026-09-08T08:35:25.143756+00:00",
+        "raw_content_sha256": "3a55687b4d582a5c7ab8a89b6956b57ba7f428c2c53bc48a612ea80cfd37e52a",
+        "text_sha256": "5591ac23e7a9ab5fed528803ad587fd882851c6ebdfa15ed639df92094af24cd",
+        "trace": [
+          {
+            "url": "https://www.archives.gov/founding-docs/declaration-transcript",
+            "resolved_public_addresses": [
+              "13.249.74.93",
+              "13.249.74.73",
+              "13.249.74.88",
+              "13.249.74.91"
+            ],
+            "pinned_address": "13.249.74.93",
+            "connected_address": "13.249.74.93",
+            "http_status": 200
+          }
+        ],
+        "limits": {
+          "body_bytes": 1048576,
+          "text_characters": 120000,
+          "redirects": 4,
+          "socket_seconds": 10.0,
+          "io_seconds": 30.0
+        },
+        "truncated": false,
+        "verification": "unverified_source_material",
+        "deadline_scope": "Network reads/connect/TLS use remaining total time; blocking system DNS cannot be interrupted. An overdue DNS return fails before connect. Local extraction/persistence is not a hard real-time operation.",
+        "representation_limits": [
+          "HTTPS port 443 only; no proxy, credentials, cookies or active content execution.",
+          "HTTP transfer framing is removed before the raw-content hash; content encoding must be identity. Per-hop HTTP bytes including headers/chunk framing are capped at body_bytes + 65536 (excluding TLS framing).",
+          "Only UTF-8, ASCII, Latin-1, Windows-1252 and explicit UTF-16 variants are decoded strictly; HTML legacy ASCII/Latin-1 labels map to Windows-1252. Absent charset defaults to UTF-8, not full browser charset sniffing.",
+          "HTML text-node extraction, not browser rendering: entities decoded; block/pre/line/table separators retained or inserted; scripts, styles, head, templates, noscript and hidden attributes omitted. CSS visibility, layout, link targets, media/OCR and generated content are not represented; malformed markup may differ from browser DOM repair."
+        ],
+        "media_type": "text/html",
+        "declared_charset": "utf-8",
+        "raw_content_bytes": 48690,
+        "charset": "utf-8",
+        "charset_origin": "http_header",
+        "text_characters": 14854,
+        "source_text_complete": true,
+        "elapsed_seconds": 0.36365245800698176
+      },
+      "source_text_omitted_from_committed_summary": true,
+      "retained_text_hash_verified_locally": true
+    },
+    {
+      "url": "https://spaceplace.nasa.gov/seasons/en/",
+      "status": "observed",
+      "dispatched_at_utc": "2026-09-08T08:35:25.153784+00:00",
+      "observed_at_utc": "2026-09-08T08:35:25.446307+00:00",
+      "acquisition": {
+        "status": "acquired",
+        "requested_url": "https://spaceplace.nasa.gov/seasons/en/",
+        "request_fragment": "",
+        "final_url": "https://spaceplace.nasa.gov/seasons/en/",
+        "retrieved_at_utc": "2026-09-08T08:35:25.437795+00:00",
+        "raw_content_sha256": "1c9788d7c6383e910bca11dc9b22263623c00bdd7329857e76abce903732bbfe",
+        "text_sha256": "fdbbc2b32991c45ef8b3ce2a93eb918821c7124e0fd0a08b91145ba4a105db61",
+        "trace": [
+          {
+            "url": "https://spaceplace.nasa.gov/seasons/en/",
+            "resolved_public_addresses": [
+              "137.78.99.26"
+            ],
+            "pinned_address": "137.78.99.26",
+            "connected_address": "137.78.99.26",
+            "http_status": 200
+          }
+        ],
+        "limits": {
+          "body_bytes": 1048576,
+          "text_characters": 120000,
+          "redirects": 4,
+          "socket_seconds": 10.0,
+          "io_seconds": 30.0
+        },
+        "truncated": false,
+        "verification": "unverified_source_material",
+        "deadline_scope": "Network reads/connect/TLS use remaining total time; blocking system DNS cannot be interrupted. An overdue DNS return fails before connect. Local extraction/persistence is not a hard real-time operation.",
+        "representation_limits": [
+          "HTTPS port 443 only; no proxy, credentials, cookies or active content execution.",
+          "HTTP transfer framing is removed before the raw-content hash; content encoding must be identity. Per-hop HTTP bytes including headers/chunk framing are capped at body_bytes + 65536 (excluding TLS framing).",
+          "Only UTF-8, ASCII, Latin-1, Windows-1252 and explicit UTF-16 variants are decoded strictly; HTML legacy ASCII/Latin-1 labels map to Windows-1252. Absent charset defaults to UTF-8, not full browser charset sniffing.",
+          "HTML text-node extraction, not browser rendering: entities decoded; block/pre/line/table separators retained or inserted; scripts, styles, head, templates, noscript and hidden attributes omitted. CSS visibility, layout, link targets, media/OCR and generated content are not represented; malformed markup may differ from browser DOM repair."
+        ],
+        "media_type": "text/html",
+        "declared_charset": "utf-8",
+        "raw_content_bytes": 21156,
+        "charset": "utf-8",
+        "charset_origin": "http_header",
+        "text_characters": 5782,
+        "source_text_complete": true,
+        "elapsed_seconds": 0.28929874999448657
+      },
+      "source_text_omitted_from_committed_summary": true,
+      "retained_text_hash_verified_locally": true
+    }
+  ],
+  "finished_at_utc": "2026-09-08T08:35:25.449018+00:00",
+  "full_capture": {
+    "path": "docs/evidence/public-source-acquisition-20260908.local.json",
+    "sha256": "e7caf18acdaa8f7ea91b9950a1376ca42cd65b49e40a3d5f118c74a6e396ed4c",
+    "storage": "Local ignored evidence file; original remains in /tmp. Full retrieved texts are not redistributed in this summary."
+  },
+  "qualified_scope": "One request per four caller-selected URLs. Three acquisitions and one recorded extraction failure; no automatic search, model question evaluation or correctness claim."
+}

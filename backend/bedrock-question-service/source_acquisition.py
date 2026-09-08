@@ -200,6 +200,8 @@ class _PinnedHTTPSConnection(http.client.HTTPSConnection):
 _BLOCKS = frozenset("address article aside blockquote dd div dl dt fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 header hr li main nav ol p pre section table ul".split())
 _OMIT = frozenset({"head", "script", "style", "template", "noscript"})
 _VOID = frozenset("area base br col embed hr img input link meta param source track wbr".split())
+_HEAD_CONTENT = frozenset({"base", "link", "meta", "title", "noscript", "noframes",
+                           "script", "style", "template"})
 
 
 class _HTMLText(HTMLParser):
@@ -225,6 +227,12 @@ class _HTMLText(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         tag = tag.rsplit(":", 1)[-1]
+        # HTML permits </head> and <body> to be omitted. HTMLParser reports
+        # tokens rather than repairing the DOM, so recognize the ordinary body
+        # boundary ourselves. Do not escape nested inert head content: a body
+        # tag inside a template/noscript element is still ignored.
+        if self.ignored == ["head"] and tag not in _HEAD_CONTENT:
+            self.ignored.clear()
         if self.ignored or tag in _OMIT or any(k == "hidden" for k, _ in attrs):
             if tag not in _VOID:
                 self.ignored.append(tag)
@@ -253,6 +261,8 @@ class _HTMLText(HTMLParser):
             self.rows.pop()
 
     def handle_data(self, data):
+        if self.ignored == ["head"] and data.strip():
+            self.ignored.clear()
         if not self.ignored:
             self.append(data)
 

@@ -208,6 +208,29 @@ class SourceAcquisitionTests(unittest.TestCase):
         self.assertEqual(result["raw_content_sha256"], hashlib.sha256(html.encode()).hexdigest())
         self.assertEqual(result["text_sha256"], hashlib.sha256(result["source_text"].encode()).hexdigest())
 
+    def test_optional_head_end_and_body_start_do_not_hide_visible_text(self):
+        head = '<!doctype html><html><head><meta charset="utf-8"><title>OMIT title</title><style>OMIT style</style>'
+        for body in ('<body><p>Visible rule.</p><pre>    x = "a  b"\n</pre>',
+                     '<p>Visible rule.</p><pre>    x = "a  b"\n</pre>'):
+            with self.subTest(body=body):
+                original = (head + body).encode()
+                result, _, _, _, _ = self.fetch([reply(original, mime="text/html")])
+                self.assertEqual(result["status"], "acquired")
+                self.assertEqual(result["source_text"], 'Visible rule.\n    x = "a  b"\n')
+                self.assertEqual(result["raw_content_sha256"], hashlib.sha256(original).hexdigest())
+        result, _, _, _, _ = self.fetch([reply((head + 'Visible text without a body tag.').encode(), mime="text/html")])
+        self.assertEqual(result["source_text"], 'Visible text without a body tag.')
+
+    def test_optional_head_boundary_cannot_escape_nested_omitted_content(self):
+        html = ('<head><title>OMIT title</title><template><body><p>OMIT template</p></body></template>'
+                '<noscript><body><p>OMIT noscript</p></body></noscript>'
+                '<script>"<body>OMIT script</body>"</script>'
+                '<body><p hidden>OMIT hidden</p><p>Visible rule.</p>')
+        result, _, _, _, _ = self.fetch([reply(html.encode(), mime="text/html")])
+        self.assertEqual(result["status"], "acquired")
+        self.assertEqual(result["source_text"], 'Visible rule.\n')
+        self.assertNotIn('OMIT', result["source_text"])
+
     def test_extracted_prefix_truncation_is_explicit_and_raw_hash_is_complete(self):
         for mime, body in (("text/plain", 'é e\u0301  spaced\n'.encode()), ("text/html", b"<p>first</p><pre>  second\n</pre>")):
             with self.subTest(mime=mime):
