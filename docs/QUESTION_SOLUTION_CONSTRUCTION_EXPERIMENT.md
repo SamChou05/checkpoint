@@ -15,6 +15,16 @@ responses, not fresh correctness observations. Independent review verified the
 reference summaries and exact historical stem; AWS's read-only identity check
 also succeeded before preparation.
 
+The [exact executable plan](evidence/solution-construction-plan-20260908.json)
+is bound to source `9826a98d1355c898ee2c952bfbc4eb81b4f58c31`, Python 3.12.11,
+and boto3/botocore 1.43.89. Its canonical SHA-256 is
+`b21c3b4981bcc86d53eb8e529ae183363b8c4506ef5d5cd7b799137f45a322f5`;
+the archive byte SHA-256 is
+`8fd893765ef6574657bab355a48189c175b096f4c808f1e31d79aa5f00c929e7`.
+The four initial requests use 2,403, 2,476, 3,102 and 2,147 UTF-8 input-text bytes.
+Later requests depend on saved stage outputs and the frozen builders. Dispatch
+runs from an isolated checkout of the exact source, with no modified local code.
+
 ## Why test this change
 
 The earlier author prompts already asked a model to solve before writing choices.
