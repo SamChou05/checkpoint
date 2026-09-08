@@ -9,7 +9,7 @@ rewrites a question. Caller-side admission and provider budgets remain separate.
 import json
 from typing import Any, Literal
 
-from question_quality import _extract_json_object
+from question_quality import _strict_json_object
 from request_contract import _has_unambiguous_choices
 from service_errors import ProviderError
 
@@ -247,7 +247,7 @@ def validate_batch(raw: str, items: list[dict[str, Any]]) -> list[dict[str, Any]
     if type(raw) is not str:
         raise CompleteSolutionFormatError("Solver response must be text.")
     try:
-        parsed = _extract_json_object(raw)
+        parsed = _strict_json_object(raw)
     except ProviderError as error:
         raise CompleteSolutionFormatError("Malformed solution JSON.") from error
     if (

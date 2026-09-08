@@ -10,7 +10,7 @@ from typing import Any, Literal
 
 from complete_question_solution import CompleteSolutionFormatError, _items_by_index
 from question_difficulty import DIFFICULTY_RUBRIC
-from question_quality import _extract_json_object
+from question_quality import _strict_json_object
 from request_contract import _has_unambiguous_choices
 from service_errors import ProviderError
 
@@ -144,7 +144,7 @@ def validate_authored_reviews(raw: str, items: list[dict[str, Any]]) -> list[dic
     if type(raw) is not str:
         raise AuthoredTeachingFormatError("Review response must be text.")
     try:
-        parsed = _extract_json_object(raw)
+        parsed = _strict_json_object(raw)
     except ProviderError as error:
         raise AuthoredTeachingFormatError("Malformed review JSON.") from error
     if (type(parsed) is not dict or set(parsed) != {"reviews"}

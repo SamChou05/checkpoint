@@ -1,6 +1,7 @@
 """Question-response parsing, sanitization, and quality checks."""
 
 import json
+import math
 import re
 from typing import Any
 
@@ -56,6 +57,44 @@ GENERIC_META_SCENARIOS = (
     "scaling decision",
     "evidence interpretation",
 )
+
+
+def _strict_json_object(text: str) -> dict[str, Any]:
+    """Parse a whole semantic response, optionally in one sole JSON/plain fence.
+
+    Never discard surrounding prose: it may contradict the structured verdict.
+    This enforces response format, not agreement between claims inside the JSON.
+    Decoded strings are preserved exactly; author recovery remains separate.
+    """
+    if type(text) is not str:
+        raise ProviderError("Provider response must be text.")
+    candidate = text.strip(" \t\r\n")
+    if candidate.startswith("```"):
+        fenced = re.fullmatch(r"```(?:json)?[ \t]*\r?\n(.*?)\r?\n```", candidate, re.S)
+        if fenced is None:
+            raise ProviderError("Provider response must contain only one JSON object.")
+        candidate = fenced.group(1)
+    try:
+        parsed = json.loads(
+            candidate, object_pairs_hook=_unique_json_object,
+            parse_constant=_reject_json_constant, parse_float=_finite_json_float,
+        )
+    except ValueError as error:
+        raise ProviderError("Provider response was not a complete JSON object.") from error
+    if type(parsed) is not dict:
+        raise ProviderError("Provider response must contain one JSON object.")
+    return parsed
+
+
+def _reject_json_constant(value: str) -> Any:
+    raise ValueError("Nonfinite JSON constant.")
+
+
+def _finite_json_float(value: str) -> float:
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError("Nonfinite JSON number.")
+    return number
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:

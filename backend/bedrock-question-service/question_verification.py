@@ -13,7 +13,7 @@ from complete_question_solution import (
 )
 from generation_diagnostics import record_quality
 from question_difficulty import DIFFICULTY_RUBRIC
-from question_quality import _extract_json_object
+from question_quality import _strict_json_object
 from question_teaching import (
     AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT,
     AuthoredTeachingFormatError,
@@ -343,7 +343,7 @@ def verify_questions(
             return []
     else:
         try:
-            reviews = _extract_json_object(raw).get("reviews")
+            reviews = _strict_json_object(raw).get("reviews")
         except ProviderError:
             record_quality(request_metrics, "review", "invalid_json", len(questions))
             return []
@@ -451,7 +451,7 @@ def verify_questions(
 
 def _validated_solutions(raw: str, count: int) -> list[dict[str, Any]] | None:
     try:
-        solutions = _extract_json_object(raw).get("solutions")
+        solutions = _strict_json_object(raw).get("solutions")
     except ProviderError:
         return None
     if not isinstance(solutions, list) or len(solutions) != count:
