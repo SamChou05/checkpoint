@@ -82,3 +82,14 @@ byte for byte against the working files. Ruff and `git diff --check` pass.
 An independent review confirmed that every follow-up case is identical to the
 corresponding original case and that the first dispatched case is excluded.
 No follow-up provider calls have been made at this point.
+
+## Frozen dispatch plan
+
+The [exact plan](evidence/immutable-review-followup-plan-20260908.json) was prepared from clean detached source `0529a717e6e7274f837c51a4672ba526747b3804` with the live Python environment before any provider dispatch.
+
+- Canonical plan SHA-256: `00a8a5bef211fec48f4cebcf30c7e2c3a1e7345a8f02cf9bb958f1b0993b1dbf`.
+- Archived file SHA-256: `1e75a3e9e9f023782e4ab1cf50cc25cd0c9047a5abe744094a1a64d4b8e92005`.
+- Exact planned input: 27453 UTF-8 bytes over five calls.
+- Runtime dependencies: `{"boto3": "1.43.89", "botocore": "1.43.89", "python": "3.12.11"}`.
+
+Plan rebuilding, source/dependency binding, request limits and the five unchanged case identities were checked before dispatch. The original terminal capture is excluded.
