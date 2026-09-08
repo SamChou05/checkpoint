@@ -108,6 +108,16 @@ key and context. Primary Canon, Yamaha and music-theory sources were inspected
 before freeze, and the read-only AWS identity check succeeds. These are
 preparation checks, not fresh semantic results.
 
+The [exact frozen plan](evidence/immutable-review-plan-20260908.json) binds source
+`976060f3068084deb87c24f3f545697ed142a3b7`, Python 3.12.11 and boto3/botocore
+1.43.89. Its canonical SHA-256 is
+`d65404c2f43007828de336095de74ae3bad0ca1e5cef97473cefb8da17d76b05`;
+the archived file SHA-256 is
+`4a0a378b9bf0a6629d79a9f0026cbcc4f035be35ac7b945f77c6770c859f349d`.
+The requests use 5,522, 5,720, 5,394, 5,554, 4,870 and 5,135 input-text UTF-8
+bytes respectively, totaling 32,195. Execution must use the isolated checkout
+of this exact revision. Preparation dispatched no provider calls.
+
 ## Decision and limits
 
 Report every verdict against its frozen expected outcome. For each bad-feedback
