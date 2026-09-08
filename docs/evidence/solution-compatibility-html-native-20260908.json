@@ -1,0 +1,11 @@
+{
+  "kind": "Independent native observation of the exact prospective HTML stem artifact; not model context",
+  "html": "<input id=\"x\" disabled required value=\"\">",
+  "browserVersion": "151.0.7922.34",
+  "actual": {
+    "outerHTML": "<input id=\"x\" disabled=\"\" required=\"\" value=\"\">",
+    "disabled": true,
+    "willValidate": false,
+    "checkValidity": true
+  }
+}

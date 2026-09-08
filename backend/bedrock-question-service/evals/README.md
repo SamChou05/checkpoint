@@ -150,3 +150,23 @@ python evals/checkpoint_source_authoring_eval.py --execute \
 ```
 
 At most twelve calls run, three per arm, with no retries, repairs or top-ups. The first operational or malformed-output failure stops the entire run. Preserve the resulting capture instead of rerunning until favorable output appears. Freeze independent answer and difficulty judgments from `blinded.json` before inspecting keys, arm labels, or reviewer feedback in `capture.json`. Audit raw and displayed candidates, including rejected questions; key agreement and inventory counts alone are not correctness measures.
+
+## Compatibility with fixed solver records
+
+`checkpoint_solution_compatibility_eval.py` compares the current reviewer with a separate decision-focused mapper on eight fixed question/solver records. It makes no author or solver call and never serves its output. The [prospective protocol](../../../docs/QUESTION_SOLUTION_COMPATIBILITY_EXPERIMENT.md) separates internal compatibility from factual correctness and preserves both strict eligibility and weaker selected-answer agreement.
+
+```sh
+python evals/checkpoint_solution_compatibility_eval.py \
+  --fixture evals/fixtures/question_solution_compatibility.json \
+  --output /tmp/solution-compatibility-plan
+```
+
+Execute from the exact source snapshot and Python environment used to prepare the plan:
+
+```sh
+python evals/checkpoint_solution_compatibility_eval.py --execute \
+  --plan /tmp/solution-compatibility-plan/plan.json --plan-sha256 HASH_FROM_PREPARATION \
+  --output /tmp/solution-compatibility-capture --aws-cli-credentials
+```
+
+The sixteen exact planned requests have one SDK attempt each. A provider or required-format failure stops the run; existing output directories cannot be replaced or resumed. Assess reasons against the frozen external controls, and preserve failures and unknown timeout usage. Agreement with a factually wrong solver is not a successful factual check.

@@ -1,0 +1,726 @@
+{
+  "experiment": "frozen-solution-compatibility-v1",
+  "prepared_on_utc": "2026-09-08",
+  "scope": "Eight selected fixed solver-record controls, not fresh generation or a production error rate. External assessments never enter provider prompts.",
+  "draft_source_sha256": "2560a90356efaa2218d43f36fa2c08a8d0f7b4f91996d7622466b291053ee69f",
+  "cases": [
+    {
+      "case_id": "resolved_impossibility_in_answer",
+      "request": {
+        "goal": {
+          "title": "Real-number equations",
+          "category": "",
+          "focusAreas": "Real-number equations",
+          "currentLevel": "",
+          "learningTarget": "Real-number equations",
+          "contentTopics": [
+            "Real-number equations"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which real number x satisfies x² = -1?",
+        "choices": [
+          "0",
+          "1",
+          "-1",
+          "2"
+        ],
+        "expectedAnswer": "0",
+        "topic": "Real-number equations",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "No real number satisfies x² = -1 because a real square is nonnegative.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "external_assessment": {
+        "proposed_author_key": "0",
+        "record": "Contradicts declared resolved outcome.",
+        "proposed_key_relation": "Contradicted by solution.",
+        "warranted_choices": [],
+        "independent_justification": "For any real x, x² >= 0. Every offered numeric answer fails the equation.",
+        "expected_mapper_decision": "reject_record",
+        "expected_mapped_choice": null,
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "0",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "1",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "-1",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "2",
+            "relation": "contradicted"
+          }
+        ],
+        "factual_question_key_status": "incorrect",
+        "complete_correction": "No offered key is warranted. For any real x, x² >= 0. Every offered numeric answer fails the equation.",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call",
+        "relation_scoring_boundary": "Per-choice labels are not exact-match scored after an inconsistent or uncertain record finding. No choice may gain acceptance by treating conflicting prose as a proof. Assess the stated reason and final gate disposition separately."
+      }
+    },
+    {
+      "case_id": "omitted_speed_condition",
+      "request": {
+        "goal": {
+          "title": "Distance, speed and time",
+          "category": "",
+          "focusAreas": "Distance, speed and time",
+          "currentLevel": "",
+          "learningTarget": "Distance, speed and time",
+          "contentTopics": [
+            "Distance",
+            "speed and time"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A nonstop journey covers 10 km. How long does it take?",
+        "choices": [
+          "1 hour",
+          "2 hours",
+          "30 minutes",
+          "Cannot be determined from the information given."
+        ],
+        "expectedAnswer": "1 hour",
+        "topic": "Distance, speed and time",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "It takes 1 hour if the constant speed is 10 km/h.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "external_assessment": {
+        "proposed_author_key": "1 hour",
+        "record": "Conditional statement may be true, but resolved is not justified without the missing speed.",
+        "proposed_key_relation": "Not entailed unconditionally.",
+        "warranted_choices": [
+          "Cannot be determined from the information given."
+        ],
+        "independent_justification": "Constant speeds 10 and 20 km/h both satisfy the stem and give 1 hour and 30 minutes respectively; neither is stated.",
+        "expected_mapper_decision": "reject_record",
+        "expected_mapped_choice": null,
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "1 hour",
+            "relation": "not_established"
+          },
+          {
+            "choice": "2 hours",
+            "relation": "not_established"
+          },
+          {
+            "choice": "30 minutes",
+            "relation": "not_established"
+          },
+          {
+            "choice": "Cannot be determined from the information given.",
+            "relation": "not_established"
+          }
+        ],
+        "factual_question_key_status": "incorrect",
+        "complete_correction": "Correct key is 'Cannot be determined from the information given.'. Constant speeds 10 and 20 km/h both satisfy the stem and give 1 hour and 30 minutes respectively; neither is stated.",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call",
+        "relation_scoring_boundary": "Per-choice labels are not exact-match scored after an inconsistent or uncertain record finding. No choice may gain acceptance by treating conflicting prose as a proof. Assess the stated reason and final gate disposition separately."
+      }
+    },
+    {
+      "case_id": "valid_zero_count",
+      "request": {
+        "goal": {
+          "title": "Python list filtering",
+          "category": "",
+          "focusAreas": "Python list filtering",
+          "currentLevel": "",
+          "learningTarget": "Python list filtering",
+          "contentTopics": [
+            "Python list filtering"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "In Python 3, what is len([x for x in [1, 3, 5] if x % 2 == 0])?",
+        "choices": [
+          "0",
+          "1",
+          "3",
+          "Raises TypeError"
+        ],
+        "expectedAnswer": "0",
+        "topic": "Python list filtering",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "0: no element is even, so the filtered list is empty.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "external_assessment": {
+        "proposed_author_key": "0",
+        "record": "Consistent resolved count of zero.",
+        "proposed_key_relation": "Entailed.",
+        "warranted_choices": [
+          "0"
+        ],
+        "independent_justification": "Executed the exact expression locally; result 0. A zero count and the word no do not imply no_solution.",
+        "expected_mapper_decision": "mapped",
+        "expected_mapped_choice": "0",
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "0",
+            "relation": "entailed"
+          },
+          {
+            "choice": "1",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "3",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "Raises TypeError",
+            "relation": "contradicted"
+          }
+        ],
+        "factual_question_key_status": "correct",
+        "complete_correction": "Correct key is '0'. Executed the exact expression locally; result 0. A zero count and the word no do not imply no_solution.",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call"
+      }
+    },
+    {
+      "case_id": "canonical_no_solution",
+      "request": {
+        "goal": {
+          "title": "Real-number equations",
+          "category": "",
+          "focusAreas": "Real-number equations",
+          "currentLevel": "",
+          "learningTarget": "Real-number equations",
+          "contentTopics": [
+            "Real-number equations"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which real number x satisfies x² = -1?",
+        "choices": [
+          "No solution exists under the stated conditions.",
+          "0",
+          "1",
+          "-1"
+        ],
+        "expectedAnswer": "No solution exists under the stated conditions.",
+        "topic": "Real-number equations",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "no_solution",
+        "answer": "No real number satisfies x² = -1 because a real square is nonnegative.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "external_assessment": {
+        "proposed_author_key": "No solution exists under the stated conditions.",
+        "record": "Consistent no_solution.",
+        "proposed_key_relation": "Canonical negative is entailed.",
+        "warranted_choices": [
+          "No solution exists under the stated conditions."
+        ],
+        "independent_justification": "The same nonnegative-square proof now has one exact offered negative answer. It must remain eligible for final review.",
+        "expected_mapper_decision": "mapped",
+        "expected_mapped_choice": "No solution exists under the stated conditions.",
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "No solution exists under the stated conditions.",
+            "relation": "entailed"
+          },
+          {
+            "choice": "0",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "1",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "-1",
+            "relation": "contradicted"
+          }
+        ],
+        "factual_question_key_status": "correct",
+        "complete_correction": "Correct key is 'No solution exists under the stated conditions.'. The same nonnegative-square proof now has one exact offered negative answer. It must remain eligible for final review.",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call"
+      }
+    },
+    {
+      "case_id": "negative_wording_ordinary_answer",
+      "request": {
+        "goal": {
+          "title": "English verb tense",
+          "category": "",
+          "focusAreas": "English verb tense",
+          "currentLevel": "",
+          "learningTarget": "English verb tense",
+          "contentTopics": [
+            "English verb tense"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which sentence is not in the simple past tense?",
+        "choices": [
+          "She walks home.",
+          "She walked home.",
+          "She ate breakfast.",
+          "She went home."
+        ],
+        "expectedAnswer": "She walks home.",
+        "topic": "English verb tense",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "She walks home. It uses present tense, not past tense.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "external_assessment": {
+        "proposed_author_key": "She walks home.",
+        "record": "Consistent resolved identification of a negative property.",
+        "proposed_key_relation": "Entailed.",
+        "warranted_choices": [
+          "She walks home."
+        ],
+        "independent_justification": "Walks is simple present; walked, ate and went are simple past forms. The stem asks for the exception, not proof of an impossible task.",
+        "expected_mapper_decision": "mapped",
+        "expected_mapped_choice": "She walks home.",
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "She walks home.",
+            "relation": "entailed"
+          },
+          {
+            "choice": "She walked home.",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "She ate breakfast.",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "She went home.",
+            "relation": "contradicted"
+          }
+        ],
+        "factual_question_key_status": "correct",
+        "complete_correction": "Correct key is 'She walks home.'. Walks is simple present; walked, ate and went are simple past forms. The stem asks for the exception, not proof of an impossible task.",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call"
+      }
+    },
+    {
+      "case_id": "stated_speed_condition",
+      "request": {
+        "goal": {
+          "title": "Distance, speed and time",
+          "category": "",
+          "focusAreas": "Distance, speed and time",
+          "currentLevel": "",
+          "learningTarget": "Distance, speed and time",
+          "contentTopics": [
+            "Distance",
+            "speed and time"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A nonstop journey covers 10 km at a constant speed of 10 km/h. How long does it take?",
+        "choices": [
+          "1 hour",
+          "2 hours",
+          "30 minutes",
+          "Cannot be determined from the information given."
+        ],
+        "expectedAnswer": "1 hour",
+        "topic": "Distance, speed and time",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "It takes 1 hour, given the stated constant speed of 10 km/h.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "external_assessment": {
+        "proposed_author_key": "1 hour",
+        "record": "Consistent resolution with an explicitly supported condition.",
+        "proposed_key_relation": "Entailed.",
+        "warranted_choices": [
+          "1 hour"
+        ],
+        "independent_justification": "Time = distance/speed = 10/10 hours = 1 hour. Retaining a justified condition must not trigger an impossibility veto.",
+        "expected_mapper_decision": "mapped",
+        "expected_mapped_choice": "1 hour",
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "1 hour",
+            "relation": "entailed"
+          },
+          {
+            "choice": "2 hours",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "30 minutes",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "Cannot be determined from the information given.",
+            "relation": "contradicted"
+          }
+        ],
+        "factual_question_key_status": "correct",
+        "complete_correction": "Correct key is '1 hour'. Time = distance/speed = 10/10 hours = 1 hour. Retaining a justified condition must not trigger an impossibility veto.",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call"
+      }
+    },
+    {
+      "case_id": "historical_caveat_relocated_into_answer",
+      "request": {
+        "goal": {
+          "title": "Prepare for LeetCode interviews",
+          "category": "Custom",
+          "focusAreas": "hash maps",
+          "currentLevel": "",
+          "learningTarget": "Prepare for LeetCode interviews",
+          "contentTopics": [
+            "hash maps"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "choices": [
+          "Hash map storing complements seen so far",
+          "Sort then two-pointer scan",
+          "Nested loop checking all pairs",
+          "Binary search for each element's complement"
+        ],
+        "expectedAnswer": "Hash map storing complements seen so far",
+        "topic": "hash maps",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "answer": "Use a hash map. In one pass, for each element x check whether the map already contains (k − x); if so, record/count the pair. Then insert x (or increment its frequency) in the map. Each lookup and insert is O(1) expected, so the scan is O(n) time with O(n) space for the map. Important caveat: O(n) time covers detecting that pairs exist and finding distinct-value pairs. If you must enumerate every (i,j) pair, the output itself can be Θ(n²) (e.g., n zeros, target 0 yields n(n−1)/2 pairs), so total work is O(n + number of output pairs). The O(n) guarantee applies only when the output size is O(n) or you just need existence/count per distinct complement.\nThe O(n) time bound assumes average-case O(1) hash operations; worst-case hash collisions can degrade to O(n) per operation. Additionally, enumerating all index pairs is output-sensitive and can exceed O(n).",
+        "limitations": "",
+        "assumptionsRequired": [],
+        "outcome": "resolved"
+      },
+      "external_assessment": {
+        "proposed_author_key": "Hash map storing complements seen so far",
+        "record": "The apparent positive recommendation is conditional; the full answer explicitly states output-size and expected-hash limits absent from the stem. Resolved does not establish the unconditional requested bound.",
+        "proposed_key_relation": "Not entailed without weakening all pairs or adding output-size/expected-time qualifications.",
+        "warranted_choices": [],
+        "independent_justification": "For n zeroes and target0, listing distinct index pairs requires n(n-1)/2 outputs. A universal linear total-time claim fails on that permitted interpretation. The original wording also leaves index-pair versus distinct-value-pair interpretation unsettled; do not silently select the narrower interpretation.",
+        "complete_correction": "No unconditional offered method is justified. A valid replacement could explicitly request all index pairs and offer the canonical no-solution answer for O(n) total time, or change the task to Boolean existence with expected O(1) hash operations. Those are different questions and are not repairs made in this input.",
+        "provenance": {
+          "type": "SYNTHETIC field-relocation variant of a historical real solver record; not a newly observed model response",
+          "archive_path": "docs/evidence/evidence-review-feasibility-20260906.json",
+          "archive_sha256": "d93465d39ab8f5a5b29b3895fe2ac25295469363b39e0657aff7cee73a335c73",
+          "question_locator": "$.fixture.cases[0].question",
+          "solver_text_locator": "$.results[4].reviews[0]",
+          "decoded_solver_locator": "$.solutions[0]",
+          "original_question": {
+            "choices": [
+              "Hash map storing complements seen so far",
+              "Sort then two-pointer scan",
+              "Nested loop checking all pairs",
+              "Binary search for each element's complement"
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Hash map storing complements seen so far",
+            "explanation": "A hash map lets you check in O(1) if (k - current) was already seen, achieving single-pass O(n) time with O(n) space for the map. Sorting takes O(n log n), nested loops are O(n²), and binary search per element is O(n log n).",
+            "format": "Multiple Choice",
+            "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+            "topic": "hash maps"
+          },
+          "original_solver_record": {
+            "index": 0,
+            "answer": "Use a hash map. In one pass, for each element x check whether the map already contains (k − x); if so, record/count the pair. Then insert x (or increment its frequency) in the map. Each lookup and insert is O(1) expected, so the scan is O(n) time with O(n) space for the map. Important caveat: O(n) time covers detecting that pairs exist and finding distinct-value pairs. If you must enumerate every (i,j) pair, the output itself can be Θ(n²) (e.g., n zeros, target 0 yields n(n−1)/2 pairs), so total work is O(n + number of output pairs). The O(n) guarantee applies only when the output size is O(n) or you just need existence/count per distinct complement.",
+            "limitations": "The O(n) time bound assumes average-case O(1) hash operations; worst-case hash collisions can degrade to O(n) per operation. Additionally, enumerating all index pairs is output-sensitive and can exceed O(n).",
+            "assumptionsRequired": []
+          },
+          "original_solver_record_canonical_sha256": "418c878bf1c908adabe961851ef7f61bbc1a10eb35908033827243c6a43c96fb",
+          "original_raw_solver_response_sha256": "3a6bec0289de2c56d6b5adff865ceae62921bb5f02572c6c4641d7979b33e731",
+          "transformation": "Preserve original stem/choices and assumptions. Set outcome=resolved; answer=original.answer + newline + original.limitations, preserving both strings exactly; limitations=empty. Outcome was absent in the original schema."
+        },
+        "expected_mapper_decision": "reject_record",
+        "expected_mapped_choice": null,
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "Hash map storing complements seen so far",
+            "relation": "not_established"
+          },
+          {
+            "choice": "Sort then two-pointer scan",
+            "relation": "not_established"
+          },
+          {
+            "choice": "Nested loop checking all pairs",
+            "relation": "not_established"
+          },
+          {
+            "choice": "Binary search for each element's complement",
+            "relation": "not_established"
+          }
+        ],
+        "factual_question_key_status": "incorrect",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call",
+        "relation_scoring_boundary": "Per-choice labels are not exact-match scored after an inconsistent or uncertain record finding. No choice may gain acceptance by treating conflicting prose as a proof. Assess the stated reason and final gate disposition separately."
+      }
+    },
+    {
+      "case_id": "coherent_but_factually_wrong_html",
+      "request": {
+        "goal": {
+          "title": "HTML constraint validation",
+          "category": "",
+          "focusAreas": "HTML constraint validation",
+          "currentLevel": "",
+          "learningTarget": "HTML constraint validation",
+          "contentTopics": [
+            "HTML constraint validation"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "For the input <input id=\"x\" disabled required value=\"\">, what is the value of its willValidate property?",
+        "choices": [
+          "true",
+          "false",
+          "null",
+          "Throws TypeError"
+        ],
+        "expectedAnswer": "true",
+        "topic": "HTML constraint validation",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "solution": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "true: the disabled input remains a candidate for constraint validation.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "external_assessment": {
+        "proposed_author_key": "true",
+        "record": "Internally coherent assertion, but contradicted by supplied subject evidence.",
+        "proposed_key_relation": "Entailed by the solver claim, which is wrong.",
+        "warranted_choices": [
+          "false"
+        ],
+        "required_scoring_boundary": "Provider sourceDocuments is empty. The scoped consistency mapper should report the solver claim entails true; independent subject truth is false. The baseline reviewer may independently reject the false key; that is a factual success, not a compatibility-mapping failure.",
+        "independent_justification": "The disabled attribute bars this input from constraint validation, so it is not a candidate and willValidate is false. This case distinguishes agreement with the solver from correctness.",
+        "expected_mapper_decision": "mapped",
+        "expected_mapped_choice": "true",
+        "expected_relations_to_solution_as_complete_answer": [
+          {
+            "choice": "true",
+            "relation": "entailed"
+          },
+          {
+            "choice": "false",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "null",
+            "relation": "contradicted"
+          },
+          {
+            "choice": "Throws TypeError",
+            "relation": "contradicted"
+          }
+        ],
+        "factual_question_key_status": "incorrect",
+        "complete_correction": "Correct key is 'false'. The disabled attribute bars this input from constraint validation, so it is not a candidate and willValidate is false. This case distinguishes agreement with the solver from correctness.",
+        "current_pre_review_gate_observation": "passes current _validated_solutions, _has_reviewable_choices, and _solver_rejection_reason; no provider call",
+        "independent_primary_sources": [
+          {
+            "name": "WHATWG HTML Living Standard, form-control infrastructure",
+            "text": "An input with its disabled attribute present is disabled. Disabled controls are barred from constraint validation. willValidate is true exactly when the element is a candidate for constraint validation. Source: https://html.spec.whatwg.org/multipage/form-control-infrastructure.html (sections 4.10.19.5 and 4.10.21.3)."
+          }
+        ],
+        "independent_native_observation": {
+          "artifact_path": "/tmp/checkpoint-consistency-html-native-20260908.json",
+          "sha256": "49aecb8c523e9af8e11cb3c005db91b5a02105f2f7e7b38edb1c9b48c622ca28",
+          "observation": {
+            "kind": "Independent native observation of the exact prospective HTML stem artifact; not model context",
+            "html": "<input id=\"x\" disabled required value=\"\">",
+            "browserVersion": "151.0.7922.34",
+            "actual": {
+              "outerHTML": "<input id=\"x\" disabled=\"\" required=\"\" value=\"\">",
+              "disabled": true,
+              "willValidate": false,
+              "checkValidity": true
+            }
+          }
+        }
+      }
+    }
+  ]
+}
