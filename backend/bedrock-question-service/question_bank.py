@@ -14,6 +14,8 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
+from verification_policy import VERIFICATION_POLICY_REVISION, meets_verification_policy
+
 from question_bank_common import (
     DEFAULT_BANK_TTL_SECONDS,
     DEFAULT_FAILURE_COOLDOWN_SECONDS,
@@ -224,6 +226,18 @@ def claim_questions(
     minimum_verification = _required_int(
         payload.get("minimumVerificationVersion", 0), "minimumVerificationVersion", 0, 1
     )
+    # Optional for older clients: omission preserves their existing claim
+    # behavior, including possible reuse of old local/server v1 inventory.
+    minimum_policy = payload.get("minimumVerificationPolicyRevision", 0)
+    if (
+        type(minimum_policy) is not int
+        or not 0 <= minimum_policy <= VERIFICATION_POLICY_REVISION
+    ):
+        raise QuestionBankError(
+            400,
+            f"minimumVerificationPolicyRevision must be an integer between 0 and {VERIFICATION_POLICY_REVISION}.",
+            "invalid_request",
+        )
     bank_key = _bank_key(owner_digest, bank_id)
     claim_key = {"pk": bank_key["pk"], "sk": _s(f"CLAIM#{_plain_digest(claim_id)}")}
 
@@ -235,7 +249,7 @@ def claim_questions(
     existing_claim = _get_item(client, table_name, claim_key, consistent=True)
     if existing_claim:
         response = _stored_claim(existing_claim)
-        _require_claim_verification(response, minimum_verification)
+        _require_claim_verification(response, minimum_verification, minimum_policy)
         _recover_refill_after_claim(
             client,
             queue,
@@ -299,7 +313,7 @@ def claim_questions(
             if (
                 minimum_verification
                 and question.get("verificationVersion") != minimum_verification
-            ):
+            ) or not meets_verification_policy(question, minimum_policy):
                 discard_items.append(item)
                 continue
             stem_identity = _normalized_stem_identity(question.get("prompt"))
@@ -470,7 +484,9 @@ def claim_questions(
             existing_claim = _get_item(client, table_name, claim_key, consistent=True)
             if existing_claim:
                 response = _stored_claim(existing_claim)
-                _require_claim_verification(response, minimum_verification)
+                _require_claim_verification(
+                    response, minimum_verification, minimum_policy
+                )
                 _recover_refill_after_claim(
                     client,
                     queue,
@@ -501,9 +517,13 @@ def claim_questions(
     )
 
 
-def _require_claim_verification(response: dict[str, Any], minimum: int) -> None:
-    if minimum and any(
-        not isinstance(question, dict) or question.get("verificationVersion") != minimum
+def _require_claim_verification(
+    response: dict[str, Any], minimum: int, minimum_policy: int = 0
+) -> None:
+    if (minimum or minimum_policy) and any(
+        not isinstance(question, dict)
+        or (minimum and question.get("verificationVersion") != minimum)
+        or not meets_verification_policy(question, minimum_policy)
         for question in response.get("questions", [])
     ):
         raise QuestionBankError(

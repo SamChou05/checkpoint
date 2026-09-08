@@ -52,11 +52,19 @@ class EmbeddedOptionsTests(unittest.TestCase):
             sanitized,
             request,
             lambda _, prompt: response("review", prompt, "fixed_reviewer_response"),
-            solve=lambda _, prompt: response("solution", prompt, "fixed_solver_response"),
+            solve=lambda _, prompt: response(
+                "solution", prompt, "fixed_solver_response"
+            ),
         )
         self.assertEqual(seen_stages, ["solution", "review"])
+        # The historical shared display fixture remains unversioned for policy;
+        # this replay just ran the current full gate with fixed model responses.
+        self.assertNotIn(
+            "verificationPolicyRevision", REVIEWED_STEM["verified_response"]
+        )
         self.assertEqual(
-            json.loads(json.dumps(verified)), [REVIEWED_STEM["verified_response"]]
+            json.loads(json.dumps(verified)),
+            [{**REVIEWED_STEM["verified_response"], "verificationPolicyRevision": 1}],
         )
 
     def test_real_python_question_and_empty_syntax_variants_survive(self):

@@ -10,8 +10,8 @@ from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _extract_json_object
 from service_errors import ProviderError
 from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
+from verification_policy import VERIFICATION_POLICY_REVISION, VERIFICATION_VERSION
 
-VERIFICATION_VERSION = 1
 SOLVER_NEGATIVE_ANSWERS = {
     "no_solution": "No solution exists under the stated conditions.",
     "underdetermined": "Cannot be determined from the information given.",
@@ -311,17 +311,27 @@ def verify_questions(
             # Choices are shuffled on the phone; feedback must name the concept.
             record_quality(request_metrics, "review", "answer_labels")
             continue
-        accepted.append(
-            {
-                **question,
-                "difficulty": difficulty,
-                "explanation": explanation.strip(),
-                "choiceExplanations": {
-                    key: value.strip() for key, value in choices.items()
-                },
-                "verificationVersion": VERIFICATION_VERSION,
-            }
-        )
+        verified_question = {
+            # Caller/author metadata cannot establish policy provenance.
+            **{
+                key: value
+                for key, value in question.items()
+                if key != "verificationPolicyRevision"
+            },
+            "difficulty": difficulty,
+            "explanation": explanation.strip(),
+            "choiceExplanations": {
+                key: value.strip() for key, value in choices.items()
+            },
+            "verificationVersion": VERIFICATION_VERSION,
+        }
+        if solve is not None:
+            # All surviving items passed the independent solver gate above and
+            # this final review. Review-only helpers cannot mint this stamp.
+            verified_question["verificationPolicyRevision"] = (
+                VERIFICATION_POLICY_REVISION
+            )
+        accepted.append(verified_question)
         record_quality(request_metrics, "review", "accepted")
     return accepted
 
@@ -387,7 +397,10 @@ def _solver_rejection_reason(
     # Only application-owned text may authorize an exceptional answer. Letting
     # free solver prose authorize a key would permit a contradictory record such
     # as outcome=no_solution, answer="Use a hash set" to reopen this bypass.
-    if question["expectedAnswer"] != required or question["choices"].count(required) != 1:
+    if (
+        question["expectedAnswer"] != required
+        or question["choices"].count(required) != 1
+    ):
         return "solver_outcome_mismatch"
     # A separately offered exact restatement of the independent result would
     # supply a second answer. Free solver prose can veto, never expand eligibility.

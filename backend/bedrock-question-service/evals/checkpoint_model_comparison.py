@@ -109,6 +109,7 @@ def make_plan(packet):
     source_files = [
         "question_generation.py",
         "question_verification.py",
+        "verification_policy.py",
         "question_quality.py",
         "request_contract.py",
         "question_difficulty.py",
