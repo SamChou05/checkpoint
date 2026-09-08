@@ -1,6 +1,6 @@
 # Complete-question first-solver comparison
 
-Status: prospective, September 8, 2026 UTC. This isolated sixteen-call experiment has not run. It does not change runtime or qualify a replacement verifier.
+Protocol frozen before dispatch, September 8, 2026 UTC. All sixteen calls subsequently completed. The [results](QUESTION_COMPLETE_SOLVER_RESULTS.md) showed improved valid coverage but a persistent wrong all-pairs answer, so the predeclared follow-up criteria were not met. The prospective design below is retained unchanged. This isolated evaluation does not change runtime or qualify a replacement verifier.
 
 The exact [dispatch plan](evidence/complete-solver-plan-20260908.json) is prepared from source `e0f8d86eda1e48a89333c6b8e61a5db4c2083a5b` with canonical SHA-256 `50b9018d13841bad53ff7d337e47cc228db5aa97519467daf5c62fc7a71640a6`. Its byte SHA-256 is `0579474d33c84fa8efc2b544e54a2e985a6c9cb7261fab5b354eb280648ca69a`. The sixteen requests total 68,179 UTF-8 input text bytes, with a largest request of 5,017 bytes. A detached checkout at that source and Python 3.12.11/boto3 1.43.89/botocore 1.43.89 bind execution independently of concurrent app work.
 
