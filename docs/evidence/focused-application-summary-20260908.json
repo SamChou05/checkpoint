@@ -1,0 +1,550 @@
+{
+  "date": "2026-09-08",
+  "source_revision": "a4623610ab883c5feaeacd9212ff799257576f1d",
+  "protocol": "docs/QUESTION_FOCUSED_APPLICATION_PROTOCOL.md",
+  "capture_canonical_sha256": "a3f3421e477ff72e07cd459e90286fa0f72f39e67ffd6f28376d481002543e36",
+  "plan_canonical_sha256": "cc0be630f596ec88d6054674e8e46c35eea2fb73187ff95e2d00622b94ee0b84",
+  "files": {
+    "capture": {
+      "path": "docs/evidence/focused-application-capture-20260908.json",
+      "sha256": "b8375f724b5829145eec110c026d2cdc302005181abb9300341ced44aec003ae",
+      "bytes": 362629
+    },
+    "stems": {
+      "path": "docs/evidence/focused-application-stems-20260908.json",
+      "sha256": "1d6390c8a35b776dc701726653cd5438b3f3d4afa3a76c1c249802e60382d8f1",
+      "bytes": 60507
+    },
+    "teaching": {
+      "path": "docs/evidence/focused-application-teaching-20260908.json",
+      "sha256": "71cb0272a75e5809247d595b92bd73bc5d546ab81302b74a21e9d20f869d32a8",
+      "bytes": 19712
+    },
+    "mapping": {
+      "path": "docs/evidence/focused-application-mapping-20260908.json",
+      "sha256": "d5a376f8028c46743b82ee19e474a5f0597efd22022d528dd84f4fa2ef360a54",
+      "bytes": 3698
+    },
+    "operational-audit": {
+      "path": "docs/evidence/focused-application-operational-audit-20260908.json",
+      "sha256": "54a42035aaa0a21938458338b936e43658ea7effa175a101c0aec85e297a977d",
+      "bytes": 47689
+    },
+    "native-checks": {
+      "path": "docs/evidence/focused-application-native-checks-20260908.json",
+      "sha256": "73937efa01fac39c88f76ff4c0ec03b41e870111c6e4c2a54f8def6a750f269c",
+      "bytes": 1834
+    },
+    "stem-assessment-a": {
+      "path": "docs/evidence/focused-application-stem-assessment-a-20260908.json",
+      "sha256": "6ceec68df43bcd6cff02afead4d2db851882c6f3ca935ebadc5783feaf49438a",
+      "bytes": 53226
+    },
+    "stem-assessment-b": {
+      "path": "docs/evidence/focused-application-stem-assessment-b-20260908.json",
+      "sha256": "b7346014eac340f99991ef3025db00f583efbd15e3766e00ef1b0ffae319759f",
+      "bytes": 44915
+    },
+    "teaching-assessment-a": {
+      "path": "docs/evidence/focused-application-teaching-assessment-a-20260908.json",
+      "sha256": "cefa8e7399a474509f3270c820e4dfea842ece82fb508f909bc3697e4ac18471",
+      "bytes": 24765
+    },
+    "teaching-assessment-b": {
+      "path": "docs/evidence/focused-application-teaching-assessment-b-20260908.json",
+      "sha256": "a5b5249fab401492d2d079d0bbc70f1689f228d37afbe4b1b36c937439219c59",
+      "bytes": 36213
+    }
+  },
+  "masking": {
+    "both_first_passes_saved_before_teaching_opened": true,
+    "both_teaching_passes_saved_before_root_opened_mapping": true,
+    "assessors_did_not_read_mapping_capture_runtime_or_each_other": true,
+    "hypothesis_known_and_style_may_reveal_variant": true,
+    "assistant_judgments_not_learner_or_human_expert_calibration": true
+  },
+  "rows": [
+    {
+      "candidate_id": "q01",
+      "arm": "focused_application",
+      "case_id": "topographic_contour_profiles",
+      "raw_question_sha256": "9183c3a52fcf546a2f61b5e41776dcf29eaa59cf447a92ff358878c20511ffb2",
+      "returned": true,
+      "prompt_characters": 191,
+      "main_characters": 355,
+      "key_supported_unique_a": true,
+      "key_supported_unique_b": true,
+      "key_disposition_a": "supported_unique",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": true,
+      "main_a": "correct_comparison_with_unjustified_line_count_confirmation",
+      "main_b": "supported_case_average_calculation_with_counting_shorthand",
+      "construction_a": {
+        "requested_outcome": "Compare the two routes' stated elevation gains and overall slope.",
+        "choice_dimensions": "All four choices answer the same legitimate joint dimensions: relative gain and relative slope.",
+        "extra_answer_claims": "No gratuitous dimension in the choices. Exact constant/local slopes would be additional claims, but are not required by the chosen ordinary comparative reading."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_joint_comparison",
+        "answer_dimensions": "same elevation-gain and slope dimensions in all4 choices",
+        "extra_answer_claims": "none: joint gain/slope comparison is legitimate",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "Case-bound calculations carry the explanation. The final interval/distance rule needs this route-average scope; no extra causal story.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q02",
+      "arm": "focused_application",
+      "case_id": "english_articles_in_context",
+      "raw_question_sha256": "1d005b642ea36dd8de37f3a4f64e7b75c1a0e1bb7a525c6c427523ca833223cb",
+      "returned": true,
+      "prompt_characters": 264,
+      "main_characters": 357,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": false,
+      "key_disposition_a": "conditional_intention_only",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": false,
+      "main_a": "unsupported_generic_meaning_claim",
+      "main_b": "unsupported_generic_reference_requirement",
+      "construction_a": {
+        "requested_outcome": "Supply three articles that express introduction, shared reference and a general class, in that order.",
+        "choice_dimensions": "All options are the same three-slot article tuple; the joint request is legitimate.",
+        "extra_answer_claims": "No extra claims in the choices. The unnecessary/unsupported generic-class demand is in the task framing, not caused by tuple answers."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_article_sequence_with_requested_meanings",
+        "answer_dimensions": "same3article slots across all choices",
+        "extra_answer_claims": "none: requested reference meanings are legitimate; the problem is that the text does not realize one meaning",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "Two valid steps are followed by a stronger unsupported semantic claim. The exact task asks for that meaning, so this is not merely an optional side fact.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q03",
+      "arm": "focused_application",
+      "case_id": "houseplant_propagation_decisions",
+      "raw_question_sha256": "ffa7d30f4fb6086f481bec3a3f5f74d99e5448aaf01afccede1fbcdc18f75924",
+      "returned": false,
+      "prompt_characters": 257,
+      "main_characters": 518,
+      "key_supported_unique_a": true,
+      "key_supported_unique_b": true,
+      "key_disposition_a": "supported_unique",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": true,
+      "three_plausible_distractors_b": true,
+      "complete_teaching_a": true,
+      "complete_teaching_b": false,
+      "main_a": "supported_initial_guidance_with_treatment_scope_qualifications",
+      "main_b": "defensible_core_advice_with_underqualified_cause_and_management",
+      "construction_a": {
+        "requested_outcome": "Choose the first appropriate propagation-management step before a proposed long-term soil transplant.",
+        "choice_dimensions": "All choices offer actions, though the first three include later timing criteria. This is acceptable for the practical next-step question.",
+        "extra_answer_claims": "A three-week guarantee and a longer-roots readiness rule are erroneous substantive reasons; these are not penalties merely for giving a reason. The supported choice gives an endpoint to postponement, not a guaranteed recovery."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_next_step_decision",
+        "answer_dimensions": "all choices propose next actions, though lengths and timing detail differ",
+        "extra_answer_claims": "three weeks sufficient is part of a wrong decision rationale; not an unrelated extra answer axis",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "The key is still the frozen best-listed advice. Added management/cause details increase claim burden; they are not needed to refute the arbitrary three-week readiness rule.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q04",
+      "arm": "balanced",
+      "case_id": "topographic_contour_profiles",
+      "raw_question_sha256": "f419a03602302617b2d1a18fc801b5b98ddc0a8b713c331dcd071195fb7fbaff",
+      "returned": false,
+      "prompt_characters": 263,
+      "main_characters": 485,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": true,
+      "key_disposition_a": "conditional_intention_only",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": true,
+      "main_a": "unsupported_trail_gradient_and_direction_strengthening",
+      "main_b": "supported_interval_and_scale_calculation",
+      "construction_a": {
+        "requested_outcome": "Infer terrain or trail-slope comparison from two contour spacings at the same interval and scale.",
+        "choice_dimensions": "Options mix slope comparisons and absolute-elevation inferences. That is legitimate under the broad what-does-this-indicate request, but the actual route-versus-terrain observable is not pinned down.",
+        "extra_answer_claims": "Regardless of which is higher is a relevant distinction between height and slope, not an inherently unnecessary joint claim. The unsupported above1000 threshold is a distractor, not extra teaching."
+      },
+      "construction_b": {
+        "requested_outcome": "broad_comparison_lead_in",
+        "answer_dimensions": "mixed: correct slope comparison versus absolute-height claims and equal-slope claim",
+        "extra_answer_claims": "absolute1000m is an ungrounded dimension; the correct option's altitude-independence clause is relevant to the learning comparison",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "A complete case calculation, with an appropriate absolute-altitude limit. Only relative steepness is contrasted with unknown altitude; this should not mean that the numerical gradients could never be calculated.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q05",
+      "arm": "balanced",
+      "case_id": "houseplant_propagation_decisions",
+      "raw_question_sha256": "edf14bc4c778e68fdaf05a64682a399b5d08b426ebac2c2566012f54a2dac7aa",
+      "returned": true,
+      "prompt_characters": 227,
+      "main_characters": 331,
+      "key_supported_unique_a": true,
+      "key_supported_unique_b": true,
+      "key_disposition_a": "supported_unique",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": true,
+      "complete_teaching_b": true,
+      "main_a": "supported_in_ordinary_new_plant_scope",
+      "main_b": "supported_species_tissue_reasoning",
+      "construction_a": {
+        "requested_outcome": "Predict propagation outcomes for the two specified plant pieces, using their structural requirements.",
+        "choice_dimensions": "All options compare the pair, but mix root formation with establishment of a new plant. That distinction matters and the supported option properly distinguishes it.",
+        "extra_answer_claims": "The pairwise outcome is expressly requested. No defect merely because the answer contains two plant outcomes; unqualified success guarantees would be a distinct strengthening."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_joint_propagation_outcomes",
+        "answer_dimensions": "mostly both plants, but root-only outcomes mix with new-plant outcomes",
+        "extra_answer_claims": "root-versus-new-plant shift is a material mismatch in outcome dimensions",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "Concise relevant species distinction. The broad medium/hormone clause remains scoped to the missing growth node, not a general ban on root formation.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q06",
+      "arm": "balanced",
+      "case_id": "houseplant_propagation_decisions",
+      "raw_question_sha256": "4c00b6518ca6fafb3078ea2f0fc83bdcede59182b6dfe94806843cb1f3d9caa8",
+      "returned": false,
+      "prompt_characters": 254,
+      "main_characters": 429,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": true,
+      "key_disposition_a": "conditional_intention_only",
+      "difficulty_a": 2,
+      "difficulty_b": 3,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": false,
+      "main_a": "unsupported_recovery_action",
+      "main_b": "supported_readiness_contrast_with_unresolved_recovery_scope",
+      "construction_a": {
+        "requested_outcome": "Choose one management decision covering both the healthy and unhealthy nodal cuttings.",
+        "choice_dimensions": "All choices act on both plants, but disposal/hormone in option4 adds a different management dimension. The paired action is requested and is not itself a flaw.",
+        "extra_answer_claims": "Hormone for already-rooted A is unnecessary to the supported readiness inference. Keeping B unchanged is an unsupported action, rather than a generic objection to two-part answers."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_joint_next_step_decision",
+        "answer_dimensions": "mostly A/B management, though the last introduces hormone as a different action",
+        "extra_answer_claims": "no unrelated factual explanation clause; all are proposed management actions",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "The contrast is case-bound, but the recovery connection is stronger than the specified observations support. Frozen practical key and provisional3 rating remain unchanged.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q07",
+      "arm": "focused_application",
+      "case_id": "english_articles_in_context",
+      "raw_question_sha256": "5af5fac51c7d480910980e5f8550a78e554a6910b926738574ee622314578325",
+      "returned": true,
+      "prompt_characters": 168,
+      "main_characters": 366,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": false,
+      "key_disposition_a": "conditional_intention_only",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": false,
+      "main_a": "unsupported_generic_meaning_claim",
+      "main_b": "misleading_generic_versus_unspecified_reference",
+      "construction_a": {
+        "requested_outcome": "Explain why the first honey has zero article and the later contextually identified honey takes the.",
+        "choice_dimensions": "All choices give paired explanations for the two positions. Some mix countability and discourse reference; these are legitimate rival explanations to assess rather than an automatic construction failure.",
+        "extra_answer_claims": "Generic-class meaning is an unnecessary strengthening beyond indefinite mass introduction. It makes the intended answer less precise."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_reference_comparison_but_missing_completed_articles",
+        "answer_dimensions": "same first/second explanatory slots",
+        "extra_answer_claims": "none structurally; the unnecessary stronger generic interpretation is inside the requested explanation",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "Correct later-reference reasoning is mixed with an unnecessary generic/any-quantity claim. Repetition alone not determining the is a sound final principle.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q08",
+      "arm": "focused_application",
+      "case_id": "houseplant_propagation_decisions",
+      "raw_question_sha256": "cfb2f7672f96a07ba09c5f4dfd96d60f9948ff9b841970f57f0052b891434b36",
+      "returned": false,
+      "prompt_characters": 259,
+      "main_characters": 479,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": false,
+      "key_disposition_a": "supported_option_uniqueness_unresolved",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": true,
+      "complete_teaching_b": true,
+      "main_a": "supported_key_explanation_uniqueness_unresolved",
+      "main_b": "supported_selected_biological_conclusion_but_uniqueness_unresolved",
+      "construction_a": {
+        "requested_outcome": "State which propagation approach/outcome should succeed for each supplied plant piece.",
+        "choice_dimensions": "Options combine methods with rooting and new-leaf/new-plant outcomes. Those are not interchangeable, and a root-only rival can coexist with the supported new-plant conclusion.",
+        "extra_answer_claims": "Petiole root formation is an additional biological claim not needed to establish failure of new-plant propagation. This increases unresolved answer overlap; do not infer its falsity from source omission."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_joint_propagation_question",
+        "answer_dimensions": "mixed process/medium, roots, leaf growth and new-plant outcomes",
+        "extra_answer_claims": "different biological outcomes create overlap rather than clean parallel alternatives",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "Mostly case-bound source application. The new-plant context limits cannot succeed and regardless of medium; do not read either as universal impossibility of root formation.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q09",
+      "arm": "balanced",
+      "case_id": "topographic_contour_profiles",
+      "raw_question_sha256": "55ef047f0a36cbe53238d85cfe29c8400b4ec9210c24bfe24ffcbfd48264f1a4",
+      "returned": false,
+      "prompt_characters": 321,
+      "main_characters": 404,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": false,
+      "key_disposition_a": "not_warranted_or_disagrees",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": false,
+      "main_a": "unsupported_numeric_and_profile_inferences",
+      "main_b": "unsupported_count_to_net_gain_and_profile_inference",
+      "construction_a": {
+        "requested_outcome": "Compare route height, steepness and/or elevation change based on the stated contour information.",
+        "choice_dimensions": "Options mix height/slope/gain dimensions, permitted by the broad comparison request. The intended compound answer needs multiple independent facts that the stem does not establish.",
+        "extra_answer_claims": "Less total elevation change is not supported merely by B remaining within a40-ft band; total accumulated ascent and net/range are different. It is material, not redundant wording."
+      },
+      "construction_b": {
+        "requested_outcome": "broad_route_comparison",
+        "answer_dimensions": "mixed altitude, slope and total-change dimensions",
+        "extra_answer_claims": "correct-looking option adds total-change and terrain-profile claims not established by the stem",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "Worked-looking arithmetic rationalizes an underdetermined question. The general steepness-versus-altitude distinction is true but does not supply missing premises.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q10",
+      "arm": "balanced",
+      "case_id": "english_articles_in_context",
+      "raw_question_sha256": "0836ff403238f2383f536541a111d15ef293addc1d45872fb9e7c28617e4ac3d",
+      "returned": true,
+      "prompt_characters": 195,
+      "main_characters": 411,
+      "key_supported_unique_a": true,
+      "key_supported_unique_b": true,
+      "key_disposition_a": "supported_unique",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": true,
+      "main_a": "supported_bridging_with_misleading_article_history",
+      "main_b": "supported_contextual_association_with_wording_precision",
+      "construction_a": {
+        "requested_outcome": "Explain the definite article for both room and view in the continued hotel narrative.",
+        "choice_dimensions": "Every option offers a common explanation for both noun phrases. The joint explanation is requested and sensible.",
+        "extra_answer_claims": "Specificity is relevant, but claiming either noun was explicitly mentioned earlier would be false; the option does not explicitly say that."
+      },
+      "construction_b": {
+        "requested_outcome": "precise_explanation_of_two_article_uses",
+        "answer_dimensions": "same explanatory role across choices",
+        "extra_answer_claims": "none: requested reasons are legitimate; false reasons are distractors, not automatically extra answer claims",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "The specific association carries the answer. The article-shift wording adds avoidable ambiguity but does not erase the correctly identified referents.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q11",
+      "arm": "focused_application",
+      "case_id": "topographic_contour_profiles",
+      "raw_question_sha256": "0426ab1438c9dda9b531bf3e7b228ed03a7b72219468c75542bec03fdffadfd9",
+      "returned": false,
+      "prompt_characters": 193,
+      "main_characters": 390,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": false,
+      "key_disposition_a": "conditional_intention_only",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": false,
+      "main_a": "unsupported_elevation_direction",
+      "main_b": "unsupported_elevation_direction",
+      "construction_a": {
+        "requested_outcome": "Describe change in elevation direction and slope steepness along the route, as specified by the offered conclusions.",
+        "choice_dimensions": "All choices are joint direction/height-trend plus slope-trend statements. Joint outcomes are legitimate, but one component is missing from the evidence.",
+        "extra_answer_claims": "Ascending versus descending is unnecessary for the warranted conclusion of increasing slope magnitude, yet every plausible option requires that unsupported direction."
+      },
+      "construction_b": {
+        "requested_outcome": "terrain_change_request_has_unspecified_direction_scope",
+        "answer_dimensions": "all choices combine elevation trend and slope trend",
+        "extra_answer_claims": "the added rise/fall axis is not determined by the facts; joint outcomes are valid only with sufficient premises",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "Valid ratio calculations are coupled to an invented direction. The directional claim is necessary to the chosen answer, so it cannot be excused as harmless surplus wording.",
+      "exact_joins_passed": true
+    },
+    {
+      "candidate_id": "q12",
+      "arm": "balanced",
+      "case_id": "english_articles_in_context",
+      "raw_question_sha256": "f6da874b8353a008d9d3400ebffcb33179fcbf8ed8e541c738f7197433ed5a18",
+      "returned": false,
+      "prompt_characters": 177,
+      "main_characters": 405,
+      "key_supported_unique_a": false,
+      "key_supported_unique_b": false,
+      "key_disposition_a": "not_warranted_or_disagrees",
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "three_plausible_distractors_a": false,
+      "three_plausible_distractors_b": false,
+      "complete_teaching_a": false,
+      "complete_teaching_b": false,
+      "main_a": "wrong_occurrence_explained_and_key_disagreement",
+      "main_b": "explains_first_dough_introduction_instead_of_second_occurrence",
+      "construction_a": {
+        "requested_outcome": "Explain the definite mixture versus the second indefinite dough; a offered correction can legitimately challenge the task's presupposition.",
+        "choice_dimensions": "Three options explain the articles and one corrects the second. This is a legitimate option-dependent error-diagnosis task, not a mismatch to penalize automatically.",
+        "extra_answer_claims": "A new conceptual state is relevant to the first dough occurrence but misplaced as an explanation of the second."
+      },
+      "construction_b": {
+        "requested_outcome": "focused_article_explanation_with_presupposed_shift",
+        "answer_dimensions": "mostly explanations, but one option instead diagnoses/corrects the displayed text",
+        "extra_answer_claims": "a correction can legitimately answer a false-presupposition question; do not exclude it merely for its role",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "teaching_construction_b": "The purported conceptual-state justification does not follow the actual text sequence. Frozen preference for the same-batch the dough correction remains conditional, not a claim that a dough is universally ungrammatical.",
+      "exact_joins_passed": true
+    }
+  ],
+  "arms": {
+    "balanced": {
+      "raw": 6,
+      "returned": 2,
+      "supported_unique_keys_a": 2,
+      "supported_unique_keys_b": 4,
+      "complete_teaching_a": 1,
+      "complete_teaching_b": 3,
+      "main_over320": 6,
+      "main_over420": 2,
+      "stem_over320": 1,
+      "all_criteria_including_difficulty_and_instruction": 0,
+      "operational": {
+        "requested_slots": 6,
+        "raw": 6,
+        "returned": 2,
+        "calls": 7,
+        "input_tokens": 13358,
+        "output_tokens": 3604
+      }
+    },
+    "focused_application": {
+      "raw": 6,
+      "returned": 3,
+      "supported_unique_keys_a": 2,
+      "supported_unique_keys_b": 2,
+      "complete_teaching_a": 2,
+      "complete_teaching_b": 2,
+      "main_over320": 6,
+      "main_over420": 2,
+      "stem_over320": 0,
+      "all_criteria_including_difficulty_and_instruction": 0,
+      "operational": {
+        "requested_slots": 6,
+        "raw": 6,
+        "returned": 3,
+        "calls": 7,
+        "input_tokens": 13393,
+        "output_tokens": 3671
+      }
+    }
+  },
+  "denominators": {
+    "planned_operations": 6,
+    "attempted_operations": 6,
+    "unattempted_operations": 0,
+    "requested_slots": 12,
+    "raw_candidates": 12,
+    "parseable_author_responses": 6,
+    "malformed_author_responses": 0,
+    "repair_calls": 0,
+    "pre_solver_sanitizer_exclusions": 5,
+    "solver_candidates": 7,
+    "audited_candidates": 6,
+    "returned": 5,
+    "reported_runtime_exclusion_counts": {
+      "invalid_content": 4,
+      "unsupported_authored_explanation": 1,
+      "prompt_length": 1,
+      "solver_uncertain": 1
+    },
+    "author_main320_violations": 12,
+    "runtime_main420_violations": 4,
+    "runtime_stem320_violations": 1
+  },
+  "provider_accounting": {
+    "prepared_calls": 14,
+    "observed_dispatch_attempts": 14,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 26751,
+      "outputTokens": 7275
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 136035
+  },
+  "validation": {
+    "source_milestone_backend_tests": 895,
+    "exact_source_and_offline_replay": "See operational audit; all33 current and committed source files verified, no-client rebuild/replay equal.",
+    "all12_exact_raw_packet_four_assessment_and_retention_joins": true,
+    "all5_returns_preserve_main_and_policy3": true,
+    "source_changes_since_freeze": false,
+    "native_check": "Independently rechecked q11 counterexample shows either direction with the same increasing absolute grade; illustrative profiles only."
+  },
+  "decision": "Do not promote focused_application. It did not meet the prospective favorable criterion; extra runtime yield includes two returned items with disputed generic-reference keys and materially misleading explanations. No default, deployment or bank change. Separate observed mechanism uptake from truth; no general causal effect established."
+}

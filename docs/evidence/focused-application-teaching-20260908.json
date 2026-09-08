@@ -1,0 +1,248 @@
+{
+  "capture_byte_sha256": "b8375f724b5829145eec110c026d2cdc302005181abb9300341ced44aec003ae",
+  "planned_slots": 12,
+  "raw_candidate_count": 12,
+  "phase": "Open only after first-pass judgments are frozen; arm and runtime verdict remain withheld.",
+  "candidates": [
+    {
+      "candidate_id": "q01",
+      "raw_question": {
+        "prompt": "Two trails each gain 100 m in elevation. Trail A crosses 5 contour lines over 1 km; Trail B crosses 5 contour lines over 2 km. The map's contour interval is 20 m. Which comparison is correct?",
+        "explanation": "Each trail crosses 5 intervals × 20 m = 100 m total elevation gain, confirming the stated gain. Trail A's slope: 100 m / 1,000 m = 1:10. Trail B's slope: 100 m / 2,000 m = 1:20. Trail B is gentler despite identical elevation gain. The number of contour crossings alone does not indicate steepness—horizontal distance and interval together determine slope.",
+        "expectedAnswer": "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+        "choices": [
+          "Trail A has greater elevation gain and a steeper slope.",
+          "Both trails have equal total elevation gain, but Trail A has a gentler slope.",
+          "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+          "Trail B has greater elevation gain and a gentler slope."
+        ],
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Use a fully stated contour description to explain changes in elevation and slope along a route.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q02",
+      "raw_question": {
+        "prompt": "A travel blog opens: \"We arrived in Lisbon and checked into ___ hotel near the river. ___ staff were welcoming, and ___ breakfast included fresh pastries.\" Which articles complete the passage to show first introduction, then shared reference, then a general class?",
+        "explanation": "The first blank needs \"a\" because the hotel is newly introduced and not yet identifiable. The second blank needs \"The\" because \"staff\" now refers to the specific people at that hotel, recoverable from context. The third blank needs no article (bare \"breakfast\") because it names a general class of meal included, not a particular instance being singled out.",
+        "expectedAnswer": "a / The / (no article)",
+        "choices": [
+          "a / The / (no article)",
+          "the / A / the",
+          "an / The / a",
+          "the / The / the"
+        ],
+        "topic": "Use shared reference",
+        "skillID": "Use shared reference",
+        "objectiveID": "specific versus general meaning and countability to interpret article choices ac",
+        "objective": "specific versus general meaning and countability to interpret article choices across a short context",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q03",
+      "raw_question": {
+        "prompt": "A gardener has a Monstera deliciosa cutting that has been rooting in water for three weeks. The roots are soft and brown, and the stem shows no new leaf growth. The gardener wants to move it to a pot with standard houseplant soil. What should they do first?",
+        "explanation": "Soft brown roots indicate excessive moisture or poor drainage, not healthy root development. The source states that healthy roots are firm and creamy white, and that a piece with few or no roots should remain in its rooting medium. Since the roots are unhealthy and there is no active growth, the cutting is not ready for transplant. The gardener should first address the root condition by improving drainage or starting fresh with a better-draining medium rather than moving to soil, which could worsen the situation.",
+        "expectedAnswer": "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+        "choices": [
+          "Move it to soil immediately since three weeks is sufficient rooting time.",
+          "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+          "Add rooting hormone to the water and transplant once roots appear longer.",
+          "Switch to a larger water container to give roots more room to develop."
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "root_condition_assessment",
+        "objectiveID": "monstera_root_health_transplant",
+        "objective": "Use root appearance and growth stage to determine Monstera transplant readiness",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q04",
+      "raw_question": {
+        "prompt": "On a 20-meter contour interval map, a trail follows a ridge where contours are spaced 5 mm apart on the map. The map scale is 1:50,000 (1 cm = 500 m). Another trail in a valley has contours spaced 10 mm apart at the same scale. What does this comparison indicate?",
+        "explanation": "Contour spacing indicates slope steepness: closer spacing means steeper terrain. The ridge trail has 5 mm spacing versus 10 mm in the valley—half the horizontal distance per contour. With the same 20-meter vertical interval, the ridge rises 20 m in (5 mm × 500 m/cm × 0.1 cm/mm) = 250 m horizontal, while the valley trail rises 20 m in 500 m horizontal. The ridge is steeper. Elevation itself is unknown without labeled contours; only relative steepness can be determined from spacing.",
+        "expectedAnswer": "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation.",
+        "choices": [
+          "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation.",
+          "The valley trail is higher in elevation because wider spacing indicates higher ground.",
+          "The ridge trail must be above 1000 meters due to the close contour spacing.",
+          "Both trails have identical slope steepness because they share the same contour interval."
+        ],
+        "topic": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "skillID": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "objectiveID": "steepness",
+        "objective": "distinguish elevation from steepness",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q05",
+      "raw_question": {
+        "prompt": "A friend offers you a detached Monstera deliciosa leaf with petiole but no stem tissue, and a pothos stem cutting with multiple nodes. Based on plant structure requirements, which propagation outcome can you reasonably predict?",
+        "explanation": "Monstera deliciosa requires a node with an axillary bud on stem tissue to develop into a new plant; a detached leaf or petiole alone cannot grow. Pothos readily roots from stem cuttings with nodes. Therefore, the pothos cutting can propagate successfully while the Monstera leaf cannot, regardless of rooting medium or hormone use.",
+        "expectedAnswer": "The pothos will root; the Monstera leaf will not develop into a new plant",
+        "choices": [
+          "Both will root successfully in water or solid media",
+          "The pothos will root; the Monstera leaf will not develop into a new plant",
+          "The Monstera leaf will root if given rooting hormone; the pothos will not",
+          "Neither will propagate without additional stem tissue from another plant"
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q06",
+      "raw_question": {
+        "prompt": "A gardener has two Monstera deliciosa cuttings. Cutting A has firm, creamy-white roots and shows new leaf growth. Cutting B has soft, brown roots and no new growth. Both have nodes with axillary buds. Which propagation decision best matches the evidence?",
+        "explanation": "Firm, creamy-white roots indicate healthy root development, and active growth signals readiness for transplant to a longer-term pot. Soft, brown roots suggest excessive moisture or poor drainage, so Cutting B should remain in its rooting medium to recover. The presence of nodes with axillary buds in both cuttings means each has propagation potential, but the root condition and growth stage determine the appropriate next step.",
+        "expectedAnswer": "Move Cutting A to a pot; keep Cutting B in its rooting medium",
+        "choices": [
+          "Move Cutting A to a pot; keep Cutting B in its rooting medium",
+          "Move both cuttings to pots immediately",
+          "Keep both cuttings in rooting medium until roots turn brown",
+          "Discard Cutting B and apply rooting hormone to Cutting A"
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q07",
+      "raw_question": {
+        "prompt": "In a recipe comment, someone writes: \"I substituted ___ honey for sugar, but ___ honey I used was too strong.\" What explains the article shift between the two mentions?",
+        "explanation": "The first \"honey\" has no article because it names the general substance (any honey, uncountable class). The second takes \"the\" because it refers to the particular honey the commenter actually used, now identifiable from the shared context of their specific substitution. The shift tracks when the referent becomes contextually recoverable, not when the noun repeats.",
+        "expectedAnswer": "First: general substance; second: specific instance now known from context",
+        "choices": [
+          "First: general substance; second: specific instance now known from context",
+          "First: countable singular; second: plural noun",
+          "First: shared reference; second: first introduction",
+          "First: any amount; second: uncountable prohibition"
+        ],
+        "topic": "specific versus general meaning and countability to interpret article choices ac",
+        "skillID": "specific versus general meaning and countability to interpret article choices ac",
+        "objectiveID": "specific versus general meaning and countability to interpret article choices ac",
+        "objective": "specific versus general meaning and countability to interpret article choices across a short context",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q08",
+      "raw_question": {
+        "prompt": "A friend offers you two plant pieces for propagation: a Monstera deliciosa leaf with petiole but no stem node, and a pothos stem with several nodes and axillary buds. Based on their structures, which propagation approach should you expect to succeed for each?",
+        "explanation": "The source specifies that Monstera deliciosa requires a node with an axillary bud to develop into a new growing plant—a detached leaf or petiole alone cannot succeed. For pothos, stem cuttings are recommended, implying nodes are available. Therefore, the Monstera leaf will not propagate successfully regardless of medium, while the pothos stem with nodes can root and grow. This matches the structural requirements described: axillary buds at nodes enable new plant development.",
+        "expectedAnswer": "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant.",
+        "choices": [
+          "Both can root in water, but only the pothos will grow leaves.",
+          "The Monstera leaf will root if given rooting hormone, while the pothos needs soil to root.",
+          "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant.",
+          "The Monstera leaf can produce roots from the petiole base, while the pothos requires layering to succeed."
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "tissue_structure_propagation",
+        "objectiveID": "node_requirement_by_species",
+        "objective": "Distinguish propagation viability based on presence of nodes and axillary buds",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q09",
+      "raw_question": {
+        "prompt": "A hiker compares two routes on the same 40-foot contour interval map. Route A crosses 8 ordinary contour lines over 2 miles horizontal distance. Route B stays between the 800-foot and 840-foot index contours for its entire 2-mile length, crossing only intermediate contours. Which statement correctly compares the routes?",
+        "explanation": "Route A crosses 8 contours × 40 ft = 320 ft elevation change over 2 miles. Route B stays within one index contour interval (840 − 800 = 40 ft), so it has gentler terrain. Steepness depends on elevation change relative to horizontal distance, not absolute elevation. Route A has greater elevation change and steeper average slope; Route B has minimal elevation change regardless of its absolute elevation.",
+        "expectedAnswer": "Route A has steeper terrain; Route B has gentler terrain with less total elevation change.",
+        "choices": [
+          "Route A is higher in elevation; Route B is lower and steeper.",
+          "Route A has steeper terrain; Route B has gentler terrain with less total elevation change.",
+          "Route B is higher in elevation and therefore steeper than Route A.",
+          "Both routes have equal steepness because they share the same horizontal distance."
+        ],
+        "topic": "Combine contour elevations",
+        "skillID": "Combine contour elevations",
+        "objectiveID": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "objective": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q10",
+      "raw_question": {
+        "prompt": "A travel blog opens with: \"We arrived in Paris and checked into a hotel near the river. The view from the room was spectacular.\" Why does the second sentence use \"the\" for both \"view\" and \"room\"?",
+        "explanation": "The first sentence introduces \"a hotel\" as new information, making it identifiable. \"The room\" refers specifically to the room in that hotel—now shared, identifiable context. \"The view\" is similarly tied to that specific room's perspective. Both nouns shift from indefinite to definite because the preceding sentence established shared reference; the reader can now identify which room and which view are meant.",
+        "expectedAnswer": "Both nouns refer back to specific items established in the previous sentence.",
+        "choices": [
+          "Both nouns refer back to specific items established in the previous sentence.",
+          "The writer uses \"the\" for any noun following a proper noun like \"Paris.\"",
+          "\"View\" and \"room\" are uncountable nouns that require \"the.\"",
+          "The article \"the\" indicates these are generic statements about all hotel rooms."
+        ],
+        "topic": "Use shared reference",
+        "skillID": "shared-reference",
+        "objectiveID": "recoverable-reference",
+        "objective": "Identify when a referent becomes recoverable from context and warrants definite article use",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q11",
+      "raw_question": {
+        "prompt": "A map uses a 20-meter contour interval. Along a straight 2 km hiking route, contours are spaced 400 m apart at the start, then 200 m apart, then 100 m apart. Which describes the terrain change?",
+        "explanation": "Slope equals vertical change over horizontal distance. With a 20 m interval, 400 m spacing means 20 m rise per 400 m = 1:20 (gentle). 200 m spacing gives 20 m per 200 m = 1:10 (steeper). 100 m spacing gives 20 m per 100 m = 1:5 (steepest). The elevation increases throughout, but the rate of elevation change increases—terrain becomes progressively steeper, not gentler or uniformly sloped.",
+        "expectedAnswer": "Elevation increases and the slope becomes progressively steeper.",
+        "choices": [
+          "Elevation increases and the slope becomes progressively gentler.",
+          "Elevation decreases and the slope becomes progressively steeper.",
+          "Elevation increases and the slope becomes progressively steeper.",
+          "Elevation stays constant while the slope varies."
+        ],
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Use a fully stated contour description to explain changes in elevation and slope along a route.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q12",
+      "raw_question": {
+        "prompt": "In a recipe: \"Start with flour. Add butter and mix until the mixture forms a dough. Shape a dough into balls.\" Why is \"the mixture\" definite but the second \"a dough\" indefinite?",
+        "explanation": "\"The mixture\" is definite because it refers to the specific combination of flour and butter just created—shared, identifiable context from the previous steps. \"A dough\" is indefinite because it introduces the dough as a new, resulting state; the reader hasn't yet conceptualized this specific dough entity, and the indefinite article marks this new conceptual introduction despite the physical continuity.",
+        "expectedAnswer": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+        "choices": [
+          "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+          "\"Dough\" is countable, so it must use \"a\" while \"mixture\" is uncountable.",
+          "The second \"a\" is an error; it should be \"the dough\" for consistency.",
+          "\"The\" indicates a process step, while \"a\" indicates the final product."
+        ],
+        "topic": "specific versus general meaning and countability to interpret article choices ac",
+        "skillID": "specificity-countability",
+        "objectiveID": "conceptual-introduction",
+        "objective": "Distinguish between physically continuous but conceptually distinct referents in procedural contexts",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    }
+  ]
+}

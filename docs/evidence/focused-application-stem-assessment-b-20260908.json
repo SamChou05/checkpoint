@@ -1,0 +1,831 @@
+{
+  "assessment_type": "arm_key_main_and_runtime_verdict_hidden_assistant_stem_assessment_B",
+  "input_path": "/tmp/checkpoint-focused-application-stems-20260908.json",
+  "input_byte_sha256": "1d6390c8a35b776dc701726653cd5438b3f3d4afa3a76c1c249802e60382d8f1",
+  "capture_sha256_supplied_not_opened": "b8375f724b5829145eec110c026d2cdc302005181abb9300341ced44aec003ae",
+  "scope": {
+    "input_files_read": [
+      "/tmp/checkpoint-focused-application-stems-20260908.json"
+    ],
+    "model_calls": 0,
+    "network_calls": 0,
+    "calculation_scope": "Only exact arithmetic and labeled counterexamples; no native/browser source execution.",
+    "masking": "Prior goals/sources/intervention design are known. No mapping, capture, operational audit, other assessment or teaching packet has been read in this phase. Stylistic clues may exist but no arm assignment is made.",
+    "source_scope": "Uses supplied selective paraphrases and previously read primary sources; uncertain rooting/reference details are not falsely credited as externally settled.",
+    "rubric": "Previously read current shared1–5 rubric plus the packet's frozen goal criteria.",
+    "recording": "All12raw items and48exact choices; full prompts remain bound by packet/object hashes rather than duplicated here.",
+    "hash_contract": "SHA256 of exact file bytes; compact sorted ensure_ascii=False UTF8 JSON for object hashes.",
+    "limits": "Assistant judgments, not human consensus or calibrated learning outcomes. Best-listed practical readings and conditional answers are explicitly distinguished."
+  },
+  "items": [
+    {
+      "candidate_id": "q01",
+      "packet_candidate_sha256": "5b416c3a6aef6924865420d35a076cfa69b59d3f68e9e342d6f5a9b64bc37035",
+      "question_sha256": "4d97a22a5944cb36f7336bf8dc16cbeaf0dee074040e840c93d241c42a989914",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "warranted_exact_choices": [
+        "Both trails have equal total elevation gain, but Trail B has a gentler slope."
+      ],
+      "conditional_best_exact_choices": [],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": true,
+      "answer_scope": "ordinary_average_slope_reading",
+      "decisive_reasoning": "Both100m gains are explicit; spread over1km versus2km they give average grades10% and5% if distances are horizontal. B is gentler on average. No claim about every local segment is warranted.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Trail A has greater elevation gain and a steeper slope.",
+          "reason": "Wrong: gains are explicitly equal, even though A has the greater mean grade."
+        },
+        {
+          "exact_choice": "Both trails have equal total elevation gain, but Trail A has a gentler slope.",
+          "reason": "Wrong: equal gain is correct but the mean-grade comparison is reversed."
+        },
+        {
+          "exact_choice": "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+          "reason": "Supported in the ordinary route-average comparison; it does not prove uniform slopes throughout."
+        },
+        {
+          "exact_choice": "Trail B has greater elevation gain and a gentler slope.",
+          "reason": "Wrong: B has no greater stated gain."
+        }
+      ],
+      "premise_concerns": "Adequate for mean slope, not a full profile. Do not infer100m from five crossed lines; it is given.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Two rivals contradict the explicitly equal gains; the reversed-slope choice is plausible, but three genuinely challenging distinct errors are not established.",
+      "difficulty": {
+        "level": 2,
+        "reason": "One direct equal-rise/different-distance application. Contour count is unnecessary because gain is supplied; level2."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_joint_comparison",
+        "answer_dimensions": "same elevation-gain and slope dimensions in all4 choices",
+        "extra_answer_claims": "none: joint gain/slope comparison is legitimate",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 191,
+        "choice_characters": [
+          55,
+          77,
+          77,
+          55
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q02",
+      "packet_candidate_sha256": "9f1252b66027a5d8d19b4bb1f9044b062dcbd7d7d62b46d17c675122d62f4fa5",
+      "question_sha256": "7086597d479003d31ab8f4e26fa7f95f136eddecd36a1024cc4eb7a69ce3b049",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "warranted_exact_choices": [],
+      "conditional_best_exact_choices": [
+        "a / The / (no article)"
+      ],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": false,
+      "answer_scope": "intended_article_sequence_but_generic_meaning_not_established",
+      "decisive_reasoning": "A hotel introduces the referent; The staff is recoverable through the hotel. Bare breakfast can fit the narrative, but this past hotel-breakfast report does not thereby express the requested general class. Article absence alone is not generic meaning.",
+      "choice_reasons": [
+        {
+          "exact_choice": "a / The / (no article)",
+          "reason": "Grammatical intended sequence, but the third slot does not establish the demanded general-class reading in this hotel narrative."
+        },
+        {
+          "exact_choice": "the / A / the",
+          "reason": "Fails the stated first-introduction task; A staff were is also inappropriate in this ordinary plural/collective use."
+        },
+        {
+          "exact_choice": "an / The / a",
+          "reason": "An hotel is not the ordinary shared pronunciation-based form; a breakfast also does not supply the requested generic reading."
+        },
+        {
+          "exact_choice": "the / The / the",
+          "reason": "Can be grammatical with shared context, but does not provide the explicitly requested first introduction then generic third use."
+        }
+      ],
+      "premise_concerns": "No unqualified answer meets all stated semantic requirements. This does not make the first completion ungrammatical.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Only one option even begins with the requested ordinary a hotel; an hotel and A staff were are conspicuous distractor weaknesses.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Three slots do not force three interacting inferences: the first introduction eliminates every rival. Level2, with a material semantic mismatch in the third target."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_article_sequence_with_requested_meanings",
+        "answer_dimensions": "same3article slots across all choices",
+        "extra_answer_claims": "none: requested reference meanings are legitimate; the problem is that the text does not realize one meaning",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 264,
+        "choice_characters": [
+          22,
+          13,
+          12,
+          15
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    },
+    {
+      "candidate_id": "q03",
+      "packet_candidate_sha256": "b848d928fa7786e140f57f2b3695a54d3f43dd0320d24c227ed507736f7f7ffa",
+      "question_sha256": "7245883f95f489c9e0ec9ee4b4a50992235b02c91d5a8a74e93dcff74abe4e94",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "warranted_exact_choices": [
+        "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting."
+      ],
+      "conditional_best_exact_choices": [],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": true,
+      "answer_scope": "best_listed_readiness_advice_with_care_scope",
+      "decisive_reasoning": "Soft brown roots and no growth do not establish readiness; elapsed weeks alone are insufficient. A suitable rooting environment and healthy-root/growth indicators are the best-listed guide before moving to a longer-term pot.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Move it to soil immediately since three weeks is sufficient rooting time.",
+          "reason": "Wrong: three weeks does not guarantee healthy roots or readiness."
+        },
+        {
+          "exact_choice": "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+          "reason": "Best-listed: corrects attention to suitable conditions and healthy-root/growth evidence. It is not a complete treatment plan or a guarantee that damaged roots recover."
+        },
+        {
+          "exact_choice": "Add rooting hormone to the water and transplant once roots appear longer.",
+          "reason": "Not warranted: hormone and greater length do not establish root health or readiness."
+        },
+        {
+          "exact_choice": "Switch to a larger water container to give roots more room to develop.",
+          "reason": "Not warranted: crowding is not established; larger water volume alone does not address the observed unhealthy roots."
+        }
+      ],
+      "premise_concerns": "Accept as comparative advice, not diagnosis of a unique cause or an exhaustive damaged-root recovery protocol. Source does not promise that waiting alone repairs rot.",
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "Distinct timing-only, hormone/length-only and container-space diagnoses are plausible beginner errors; the last is weaker but relevant rather than absurd.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Directly applies the healthy-root readiness rule and rejects calendar time as sufficient. No independent interacting constraint makes it more than2."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_next_step_decision",
+        "answer_dimensions": "all choices propose next actions, though lengths and timing detail differ",
+        "extra_answer_claims": "three weeks sufficient is part of a wrong decision rationale; not an unrelated extra answer axis",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 257,
+        "choice_characters": [
+          73,
+          116,
+          73,
+          70
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q04",
+      "packet_candidate_sha256": "05d246d8c63981686d73a3e168442fb6acb12daa21a76370f910e77e70027628",
+      "question_sha256": "ccabde480519d3519ce7a3331bc55254325142d4526acd135ca8f7acfdb02f62",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "warranted_exact_choices": [
+        "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation."
+      ],
+      "conditional_best_exact_choices": [],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": true,
+      "answer_scope": "complete_same_map_comparison",
+      "decisive_reasoning": "At1:50000,5mm and10mm correspond to250m and500m. The same20m interval gives mean cross-contour grades8% and4%. The ridge is steeper; absolute elevations remain unknown.",
+      "choice_reasons": [
+        {
+          "exact_choice": "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation.",
+          "reason": "Supported: smaller spacing at the same interval/scale means greater gradient, independent of absolute altitude."
+        },
+        {
+          "exact_choice": "The valley trail is higher in elevation because wider spacing indicates higher ground.",
+          "reason": "Wrong: horizontal contour spacing indicates gradient, not absolute elevation."
+        },
+        {
+          "exact_choice": "The ridge trail must be above 1000 meters due to the close contour spacing.",
+          "reason": "Wrong: no1000m label or elevation datum is supplied."
+        },
+        {
+          "exact_choice": "Both trails have identical slope steepness because they share the same contour interval.",
+          "reason": "Wrong: identical vertical interval does not make differing horizontal spacing equal in gradient."
+        }
+      ],
+      "premise_concerns": "No local uniformity or safety inference. The same-map interval and scale are explicit.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Altitude-versus-gradient and equal-interval confusions are plausible; the arbitrary1000m assertion is weak.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Closer contours indicate steeper terrain is the single decisive rule; scale arithmetic is optional. The frozen criteria classify this as1–2; rate2."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "broad_comparison_lead_in",
+        "answer_dimensions": "mixed: correct slope comparison versus absolute-height claims and equal-slope claim",
+        "extra_answer_claims": "absolute1000m is an ungrounded dimension; the correct option's altitude-independence clause is relevant to the learning comparison",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 263,
+        "choice_characters": [
+          100,
+          86,
+          75,
+          88
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q05",
+      "packet_candidate_sha256": "d8f09fb7aec7a0efe0c557d8a4dc26dd0657e9429b9e591573c69bb50a3ee43d",
+      "question_sha256": "98b2b9d5ea4f0e03b4d1f5c0a7b1cab30dd57ffad033ab6aa1a7af0a62000f10",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "warranted_exact_choices": [
+        "The pothos will root; the Monstera leaf will not develop into a new plant"
+      ],
+      "conditional_best_exact_choices": [],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": true,
+      "answer_scope": "best_listed_new_plant_prediction",
+      "decisive_reasoning": "The pothos has usable stem nodes; a Monstera leaf/petiole without stem tissue cannot form a new plant. Will root is read as the requested ordinary reasonable expectation, not a universal guarantee.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Both will root successfully in water or solid media",
+          "reason": "Not a warranted successful-propagation prediction for both: roots alone would not establish a new Monstera plant. Do not claim detached leaves can never form roots."
+        },
+        {
+          "exact_choice": "The pothos will root; the Monstera leaf will not develop into a new plant",
+          "reason": "Best complete outcome: viable pothos stem versus node-free Monstera inability to become a new plant. Ordinary reasonable-prediction scope matters for will."
+        },
+        {
+          "exact_choice": "The Monstera leaf will root if given rooting hormone; the pothos will not",
+          "reason": "Wrong compound claim: no supplied basis for pothos not rooting; hormone cannot supply a missing Monstera growth node."
+        },
+        {
+          "exact_choice": "Neither will propagate without additional stem tissue from another plant",
+          "reason": "Wrong: the pothos already contains usable stem nodes and does not require donor tissue from another plant."
+        }
+      ],
+      "premise_concerns": "Treat will as an ordinary expectation under the task wording; no unconditional success or proven impossibility of Monstera leaf root formation is asserted.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Rivals largely repeat tissue/hormone confusion; the no-rooting pothos and extra-donor-tissue claims are weak. Root-only language is not interchangeable with new-plant growth.",
+      "difficulty": {
+        "level": 2,
+        "reason": "One familiar species/tissue requirement eliminates rivals. Level2."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_joint_propagation_outcomes",
+        "answer_dimensions": "mostly both plants, but root-only outcomes mix with new-plant outcomes",
+        "extra_answer_claims": "root-versus-new-plant shift is a material mismatch in outcome dimensions",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 227,
+        "choice_characters": [
+          51,
+          73,
+          73,
+          72
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q06",
+      "packet_candidate_sha256": "86fbbfc607db5107cc0c8d9d9b042ebc05e6e98ec66c60c4a9c79bcf57a62060",
+      "question_sha256": "e2392b145f8d2e9f65fb515bc2d9933b29f60edecfc85f437ba615e9e3d04752",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "warranted_exact_choices": [
+        "Move Cutting A to a pot; keep Cutting B in its rooting medium"
+      ],
+      "conditional_best_exact_choices": [],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": true,
+      "answer_scope": "best_listed_stage_decision_with_recovery_limit",
+      "decisive_reasoning": "A has healthy roots and active growth, supporting transfer. B has viable-node material but lacks healthy-root/growth readiness; deferring potting is preferable to immediate transfer or automatic disposal.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Move Cutting A to a pot; keep Cutting B in its rooting medium",
+          "reason": "Best-listed: distinguish readiness from retained propagation potential. Keeping B in rooting medium does not imply leaving harmful conditions unchanged."
+        },
+        {
+          "exact_choice": "Move both cuttings to pots immediately",
+          "reason": "Wrong: B has no demonstrated readiness for a longer-term pot."
+        },
+        {
+          "exact_choice": "Keep both cuttings in rooting medium until roots turn brown",
+          "reason": "Wrong: roots need not turn brown; unhealthy brown softness is a concern."
+        },
+        {
+          "exact_choice": "Discard Cutting B and apply rooting hormone to Cutting A",
+          "reason": "Not warranted: no evidence requires disposal of all B's viable tissue; hormone is not required for ready A."
+        }
+      ],
+      "premise_concerns": "Best practical comparison, not a complete treatment plan or proof that passive waiting is sufficient. Source support for the exact recovery method remains limited.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Pot-both and discard-B/hormone-A are plausible mismatches, but waiting specifically for brown roots is a conspicuous weak alternative.",
+      "difficulty": {
+        "level": 3,
+        "reason": "Requires using contrasting root/growth observations while recognizing that B still has growth nodes;3 is plausible. It is a2/3-sensitive direct comparison, not evidence of multiple complex steps."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_joint_next_step_decision",
+        "answer_dimensions": "mostly A/B management, though the last introduces hormone as a different action",
+        "extra_answer_claims": "no unrelated factual explanation clause; all are proposed management actions",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 254,
+        "choice_characters": [
+          61,
+          38,
+          59,
+          56
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q07",
+      "packet_candidate_sha256": "f42f9e42fb75b03c28aa5b6be63877fbea8399c45d1338dcfe49baf08ec0943b",
+      "question_sha256": "ecb211e5a254d344c1f350aeab197ce45ece8b280358f07a3e81c1318e21ac98",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "warranted_exact_choices": [],
+      "conditional_best_exact_choices": [
+        "First: general substance; second: specific instance now known from context"
+      ],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": false,
+      "answer_scope": "reference_explanation_underqualified_and_articles_unfilled",
+      "decisive_reasoning": "The first honey introduces an unspecified substance/quantity in this cooking event; the honey I used identifies it later. General substance is a loose pedagogical reading, not necessarily a generic reference. The displayed blanks do not themselves show the claimed article shift.",
+      "choice_reasons": [
+        {
+          "exact_choice": "First: general substance; second: specific instance now known from context",
+          "reason": "Intended best explanation under a loose ingredient-versus-identified-amount reading; generic technical meaning is not established."
+        },
+        {
+          "exact_choice": "First: countable singular; second: plural noun",
+          "reason": "Wrong: honey is not changed from countable singular into a plural noun here."
+        },
+        {
+          "exact_choice": "First: shared reference; second: first introduction",
+          "reason": "Wrong: reverses the natural introduction and later identification."
+        },
+        {
+          "exact_choice": "First: any amount; second: uncountable prohibition",
+          "reason": "Wrong: mass nouns are not prohibited from taking the; any amount alone does not explain that later phrase."
+        }
+      ],
+      "premise_concerns": "No unqualified fully precise key. Option1 can be accepted as loose classroom wording; preserve that interpretation separately from precise generic-versus-indefinite semantics.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Several explanations are linguistically incoherent or conspicuously false; no three plausible distinct rival interpretations.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Direct first/second reference pattern, with confusing missing completed articles. Level2."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_reference_comparison_but_missing_completed_articles",
+        "answer_dimensions": "same first/second explanatory slots",
+        "extra_answer_claims": "none structurally; the unnecessary stronger generic interpretation is inside the requested explanation",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 168,
+        "choice_characters": [
+          74,
+          46,
+          51,
+          50
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    },
+    {
+      "candidate_id": "q08",
+      "packet_candidate_sha256": "f189d67b3c067227dfc852f447e534df557af4705fa249a4e43ca9fb01856850",
+      "question_sha256": "f5b75fbc7f24df32d07c846a3d31fcede55f1e97b88cb7bf311f103faa63a9ec",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "warranted_exact_choices": [
+        "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant."
+      ],
+      "conditional_best_exact_choices": [],
+      "unresolved_potential_additional_choices": [
+        "Both can root in water, but only the pothos will grow leaves."
+      ],
+      "unique_answer_established": false,
+      "answer_scope": "supported_key_with_unresolved_potentially_equivalent_rival",
+      "decisive_reasoning": "Pothos stem propagation and node-free Monstera failure to develop a new plant are supported. If the detached Monstera petiole can form roots without shoots, choice1 states a compatible outcome rather than an error. The supplied summary establishes no new plant, not no roots.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Both can root in water, but only the pothos will grow leaves.",
+          "reason": "Potential second answer: rooting without new leaves can coexist with choice3. Actual detached-petiole root formation is not settled by the selected source; do not refute it by equating roots with a new plant."
+        },
+        {
+          "exact_choice": "The Monstera leaf will root if given rooting hormone, while the pothos needs soil to root.",
+          "reason": "Wrong: pothos does not have a soil-only rooting requirement; hormone cannot create the missing Monstera growth node."
+        },
+        {
+          "exact_choice": "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant.",
+          "reason": "Supported: both the positive pothos and negative Monstera new-plant statement match the sources."
+        },
+        {
+          "exact_choice": "The Monstera leaf can produce roots from the petiole base, while the pothos requires layering to succeed.",
+          "reason": "Wrong: pothos stem propagation is supported; layering is not required. Possible Monstera root formation alone does not validate the compound option."
+        }
+      ],
+      "premise_concerns": "One source-supported answer identified, but exactly-one-answer is not independently established because choice1 remains unresolved. No new external research performed.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Choice1 may overlap the nominal key rather than function as a distractor; the other two rely on medium/layering requirements not supported by the source.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Direct tissue requirement, level2; resolving an accidentally overlapping option is not added learning difficulty."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_joint_propagation_question",
+        "answer_dimensions": "mixed process/medium, roots, leaf growth and new-plant outcomes",
+        "extra_answer_claims": "different biological outcomes create overlap rather than clean parallel alternatives",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 259,
+        "choice_characters": [
+          61,
+          90,
+          91,
+          105
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q09",
+      "packet_candidate_sha256": "d9e5c14a9704642626e09bd6292703a109289703a5e4a675defaef2db1417478",
+      "question_sha256": "aa43f9007b4fad5008926c4a2d36e5683c5083a93f771a5071ec1f3a47a30c77",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "warranted_exact_choices": [],
+      "conditional_best_exact_choices": [
+        "Route A has steeper terrain; Route B has gentler terrain with less total elevation change."
+      ],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": false,
+      "answer_scope": "missing_route_profile_and_internal_contour_description_problem",
+      "decisive_reasoning": "A's crossings do not establish a monotonic net rise or full slope profile. B's40ft band bounds net elevation range, not every local slope or total ascent. At an ordinary40ft interval there is no strictly intermediate ordinary elevation level between800 and840; the stated intermediate-crossing description needs clarification.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Route A is higher in elevation; Route B is lower and steeper.",
+          "reason": "Not established: A's absolute elevations and both local profiles are missing."
+        },
+        {
+          "exact_choice": "Route A has steeper terrain; Route B has gentler terrain with less total elevation change.",
+          "reason": "Conditional intended comparison under extra successive-ascent/mean-slope assumptions; total ascent and local terrain are not determined."
+        },
+        {
+          "exact_choice": "Route B is higher in elevation and therefore steeper than Route A.",
+          "reason": "Not established: A's height is absent, and greater altitude would not imply steeper terrain."
+        },
+        {
+          "exact_choice": "Both routes have equal steepness because they share the same horizontal distance.",
+          "reason": "Wrong: equal horizontal length alone does not establish equal gradient."
+        }
+      ],
+      "premise_concerns": "Only supplementary contours could add finer levels under a different convention, but the text says intermediate and no such legend is supplied. No unseen map is repaired.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Two rivals conflate altitude and steepness; the intended answer bundles unsupported total change and terrain claims. Clear plausible independent rivals are not established.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Intended direct count/spacing comparison is2; missing information and problematic contour wording are defects, not difficulty credit."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "broad_route_comparison",
+        "answer_dimensions": "mixed altitude, slope and total-change dimensions",
+        "extra_answer_claims": "correct-looking option adds total-change and terrain-profile claims not established by the stem",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 321,
+        "choice_characters": [
+          61,
+          90,
+          66,
+          81
+        ],
+        "stem_choices_fit": false
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q10",
+      "packet_candidate_sha256": "710fd884cc59e28d6bf5cbf0fb9ee83344d1deef537b241ac5ac22cf89377831",
+      "question_sha256": "126c971185a7117ea5482304deeb29b818b33a8507fb576927944cc6e94a5081",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "warranted_exact_choices": [
+        "Both nouns refer back to specific items established in the previous sentence."
+      ],
+      "conditional_best_exact_choices": [],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": true,
+      "answer_scope": "ordinary_contextual_association",
+      "decisive_reasoning": "Checking into the hotel supplies a recoverable room and its view in the ordinary narrative. Those nouns need not have been directly mentioned before; established through context is the appropriate reading.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Both nouns refer back to specific items established in the previous sentence.",
+          "reason": "Supported when established includes implicit contextual association, not a claim of direct noun repetition."
+        },
+        {
+          "exact_choice": "The writer uses \"the\" for any noun following a proper noun like \"Paris.\"",
+          "reason": "Wrong: Paris or another proper noun does not require the for all following nouns."
+        },
+        {
+          "exact_choice": "\"View\" and \"room\" are uncountable nouns that require \"the.\"",
+          "reason": "Wrong: room and view are countable in these uses, and mass countability would not force the anyway."
+        },
+        {
+          "exact_choice": "The article \"the\" indicates these are generic statements about all hotel rooms.",
+          "reason": "Wrong: the sentences describe the travelers' particular experience, not all rooms generically."
+        }
+      ],
+      "premise_concerns": "Do not strengthen refer back into already directly mentioned. Ordinary hotel association is sufficient; unusual room/view scenarios are not imposed.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "All three rivals are obvious invented grammar rules or category mistakes; they are textually distinct but weak.",
+      "difficulty": {
+        "level": 2,
+        "reason": "One bridging-reference principle applied to two associated objects;2, with a possible2/3 boundary for novices. Weak rivals limit challenge."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "precise_explanation_of_two_article_uses",
+        "answer_dimensions": "same explanatory role across choices",
+        "extra_answer_claims": "none: requested reasons are legitimate; false reasons are distractors, not automatically extra answer claims",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 195,
+        "choice_characters": [
+          77,
+          72,
+          59,
+          79
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    },
+    {
+      "candidate_id": "q11",
+      "packet_candidate_sha256": "d35e2ea9d4739e547a63b4edb82f92eba644c7181bc4bf92cf67461fa879532c",
+      "question_sha256": "9bf614aae53ca22fc6f3ae438180d7862f22bb6d044dcf349a064c9834ded956",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "warranted_exact_choices": [],
+      "conditional_best_exact_choices": [
+        "Elevation decreases and the slope becomes progressively steeper.",
+        "Elevation increases and the slope becomes progressively steeper."
+      ],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": false,
+      "answer_scope": "elevation_direction_missing",
+      "decisive_reasoning": "Successively smaller horizontal spacing for the same20m interval means increasing gradient magnitude. It does not say whether the route rises or descends. Both an ascending and descending route can have spacings400/200/100m.",
+      "choice_reasons": [
+        {
+          "exact_choice": "Elevation increases and the slope becomes progressively gentler.",
+          "reason": "Wrong gradient trend: spacing decreases, so slope magnitude increases rather than becoming gentler."
+        },
+        {
+          "exact_choice": "Elevation decreases and the slope becomes progressively steeper.",
+          "reason": "Conditional on descending elevations; direction is not supplied."
+        },
+        {
+          "exact_choice": "Elevation increases and the slope becomes progressively steeper.",
+          "reason": "Conditional on ascending elevations; direction is not supplied."
+        },
+        {
+          "exact_choice": "Elevation stays constant while the slope varies.",
+          "reason": "Not supported: crossing contours at different elevations is not a constant-elevation route."
+        }
+      ],
+      "premise_concerns": "A sign-reversed elevation profile preserves every supplied spacing while reversing elevation direction. Do not infer uphill from increasing density.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Two directional alternatives remain unresolved; a complete key is absent, so three refuted distractors cannot be established.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Identifying denser contours as steeper is a direct rule, level2. Detecting absent direction does not make the unrepaired item a valid advanced task."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "terrain_change_request_has_unspecified_direction_scope",
+        "answer_dimensions": "all choices combine elevation trend and slope trend",
+        "extra_answer_claims": "the added rise/fall axis is not determined by the facts; joint outcomes are valid only with sufficient premises",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 193,
+        "choice_characters": [
+          64,
+          64,
+          64,
+          48
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q12",
+      "packet_candidate_sha256": "a3ef7652ab1cb354a1a223fda077cf67972dc2a378a940b1b46721978b68df60",
+      "question_sha256": "26bd7a4567370bf1bf11f3d7818860b68b50afdc795525341c7b17b634c2cd5d",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "warranted_exact_choices": [],
+      "conditional_best_exact_choices": [
+        "The second \"a\" is an error; it should be \"the dough\" for consistency."
+      ],
+      "unresolved_potential_additional_choices": [],
+      "unique_answer_established": false,
+      "answer_scope": "same_batch_reference_preference_not_absolute_grammar_rule",
+      "decisive_reasoning": "The mixture is recoverable from combining ingredients. On the ordinary continuous-recipe reading, the next action concerns the already formed dough, so the dough is the coherent choice. But a dough is grammatically possible for an arbitrary/new dough; the stem does not explicitly exclude that change of reference.",
+      "choice_reasons": [
+        {
+          "exact_choice": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+          "reason": "Not warranted for the second a: dough was already introduced as dough; its repetition does not itself introduce a new conceptual state."
+        },
+        {
+          "exact_choice": "\"Dough\" is countable, so it must use \"a\" while \"mixture\" is uncountable.",
+          "reason": "Wrong: both countability labels/necessity claims are overbroad; a mixture is grammatical and dough can take the."
+        },
+        {
+          "exact_choice": "The second \"a\" is an error; it should be \"the dough\" for consistency.",
+          "reason": "Natural best correction for continuity of the same recipe batch, but error must mean reference/coherence mismatch, not universal ungrammaticality."
+        },
+        {
+          "exact_choice": "\"The\" indicates a process step, while \"a\" indicates the final product.",
+          "reason": "Wrong: these articles do not encode process-step versus final-product categories."
+        }
+      ],
+      "premise_concerns": "No unqualified proof of grammatical error. Conditional best is choice3 under the ordinary intended same-dough continuity; preserve possible alternate discourse readings.",
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "The conceptual-state rival is plausible, but the remaining invented countability/process rules are weak. The intended correction needs an explicit same-batch scope.",
+      "difficulty": {
+        "level": 2,
+        "reason": "Direct reference continuity and a first/second mention correction, level2. Awkward wording and an implicit error diagnosis do not establish3."
+      },
+      "goal_fit": true,
+      "construction_uptake": {
+        "requested_outcome": "focused_article_explanation_with_presupposed_shift",
+        "answer_dimensions": "mostly explanations, but one option instead diagnoses/corrects the displayed text",
+        "extra_answer_claims": "a correction can legitimately answer a false-presupposition question; do not exclude it merely for its role",
+        "note": "Descriptive construction evidence, not treatment identity or correctness credit."
+      },
+      "bounds": {
+        "prompt_characters": 177,
+        "choice_characters": [
+          101,
+          72,
+          69,
+          70
+        ],
+        "stem_choices_fit": true
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    }
+  ],
+  "deterministic_calculations": {
+    "q01": {
+      "type": "ordinary_average_grade_calculation",
+      "gains_m": [
+        100,
+        100
+      ],
+      "horizontal_distances_m_if_intended": [
+        1000,
+        2000
+      ],
+      "grades": [
+        0.1,
+        0.05
+      ]
+    },
+    "q04": {
+      "scale": 50000,
+      "horizontal_metres": [
+        250.0,
+        500.0
+      ],
+      "grades": [
+        0.08,
+        0.04
+      ]
+    },
+    "q09": {
+      "type": "ordinary_contour_level_check_not_an_observed_map",
+      "strictly_intermediate_40ft_levels_between800and840": []
+    },
+    "q11": {
+      "gradient_magnitudes": [
+        0.05,
+        0.1,
+        0.2
+      ],
+      "possible_uphill_vertical_steps_m": [
+        20,
+        20,
+        20
+      ],
+      "possible_downhill_vertical_steps_m": [
+        -20,
+        -20,
+        -20
+      ],
+      "type": "sign_reversal_counterexample_to_determined_direction"
+    }
+  },
+  "summary": {
+    "raw_candidates": 12,
+    "choices_assessed": 48,
+    "unique_answer_established": 6,
+    "conditional_ids": [
+      "q02",
+      "q07",
+      "q09",
+      "q11",
+      "q12"
+    ],
+    "unresolved_rival_ids": [
+      "q08"
+    ],
+    "difficulty_by_id": {
+      "q01": 2,
+      "q02": 2,
+      "q03": 2,
+      "q04": 2,
+      "q05": 2,
+      "q06": 3,
+      "q07": 2,
+      "q08": 2,
+      "q09": 2,
+      "q10": 2,
+      "q11": 2,
+      "q12": 2
+    },
+    "over_stem_choice_limits": [
+      "q09"
+    ]
+  }
+}

@@ -1,0 +1,885 @@
+{
+  "assessment": "focused application independent content A phase1",
+  "input_path": "/tmp/checkpoint-focused-application-stems-20260908.json",
+  "input_byte_sha256": "1d6390c8a35b776dc701726653cd5438b3f3d4afa3a76c1c249802e60382d8f1",
+  "capture_hash_as_supplied_unopened": "b8375f724b5829145eec110c026d2cdc302005181abb9300341ced44aec003ae",
+  "candidate_hash_convention": "SHA256 UTF-8 compact sorted ensure_ascii=False JSON of the complete candidate object in the stem packet.",
+  "masking": "Only the specified stem packet read. No mapping, capture, operational audit, repository question artifacts, teaching packet, model keys/difficulty, runtime verdicts or other assessor file opened in this phase. Prior domains and earlier experiments are known; stylistic clues were not used to infer arms.",
+  "scope": "Assistant independent qualitative judgments, not human-expert or learner calibration. Only packet source summaries and previously established ordinary subject knowledge used; no source or model calls. All12 raw occurrences and48 exact choices assessed.",
+  "interpretive_policy": "Preserve ordinary intended context where the words support it. Do not invent data to repair a numeric or directional claim. A supported option plus an unresolved compatible rival does not establish uniqueness. Joint outcomes/reasons and correcting a false presupposition are allowed. Difficulty of an invalid item describes its intended work, not a bonus for repairing defects.",
+  "summary": {
+    "raw_candidates": 12,
+    "choice_assessments": 48,
+    "unique_supported_keys": 5,
+    "supported_option_but_unresolved_uniqueness": [
+      "q08"
+    ],
+    "unique_key_ids": [
+      "q01",
+      "q03",
+      "q05",
+      "q10",
+      "q12"
+    ],
+    "no_fully_warranted_unique_key_ids": [
+      "q02",
+      "q04",
+      "q06",
+      "q07",
+      "q08",
+      "q09",
+      "q11"
+    ],
+    "independent_level_counts": {
+      "1": 0,
+      "2": 12,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    "three_plausible_distinct_distractor_ids": [
+      "q03"
+    ],
+    "overlong_stem_ids": [
+      "q09"
+    ],
+    "all_choices_within140": true,
+    "unique_key_plus_depth3_plus_plausible_distractors_ids": []
+  },
+  "candidates": [
+    {
+      "candidate_id": "q01",
+      "candidate_sha256": "5b416c3a6aef6924865420d35a076cfa69b59d3f68e9e342d6f5a9b64bc37035",
+      "exact_prompt": "Two trails each gain 100 m in elevation. Trail A crosses 5 contour lines over 1 km; Trail B crosses 5 contour lines over 2 km. The map's contour interval is 20 m. Which comparison is correct?",
+      "exact_choices": [
+        "Trail A has greater elevation gain and a steeper slope.",
+        "Both trails have equal total elevation gain, but Trail A has a gentler slope.",
+        "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+        "Trail B has greater elevation gain and a gentler slope."
+      ],
+      "warranted_exact_keys": [
+        "Both trails have equal total elevation gain, but Trail B has a gentler slope."
+      ],
+      "conditional_only_choices": [],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+      "uniqueness_established": true,
+      "premise_assessment": "sufficient_for_ordinary_route_average_comparison",
+      "choice_assessments": [
+        {
+          "choice": "Trail A has greater elevation gain and a steeper slope.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "A having greater gain contradicts the explicit equal100-m gains, although its shorter route supports a steeper route-average comparison.",
+          "plausibility": "weak: conflicts with directly supplied gain"
+        },
+        {
+          "choice": "Both trails have equal total elevation gain, but Trail A has a gentler slope.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Equal gain is correct, but the gentler route-average ordering is reversed.",
+          "plausibility": "plausible slope reversal"
+        },
+        {
+          "choice": "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+          "answer_adequacy": "supported",
+          "decisive_reason": "Supported on the ordinary route-average interpretation: equal100-m rise spread over2 km is gentler than over1 km. This does not assert every point of B has smaller local slope.",
+          "plausibility": "key"
+        },
+        {
+          "choice": "Trail B has greater elevation gain and a gentler slope.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "B having greater gain contradicts the first sentence; the gentler portion alone does not rescue the whole option.",
+          "plausibility": "weak: conflicts with directly supplied gain"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Both100-m gains are already stated; applying the familiar same-rise/longer-run relationship selects B as gentler. The unused contour count adds no genuine depth.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Compare the two routes' stated elevation gains and overall slope.",
+      "choice_dimension_alignment": "All four choices answer the same legitimate joint dimensions: relative gain and relative slope.",
+      "unnecessary_or_extra_answer_claims": "No gratuitous dimension in the choices. Exact constant/local slopes would be additional claims, but are not required by the chosen ordinary comparative reading.",
+      "material_concerns": [
+        "The distances are naturally read as the mapped route runs; this is a scoped average comparison, not a reconstructed detailed profile.",
+        "Do not derive100 m merely from five line crossings; here that gain is supplied separately."
+      ],
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "stem": 191,
+        "choices": [
+          55,
+          77,
+          77,
+          55
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q02",
+      "candidate_sha256": "9f1252b66027a5d8d19b4bb1f9044b062dcbd7d7d62b46d17c675122d62f4fa5",
+      "exact_prompt": "A travel blog opens: \"We arrived in Lisbon and checked into ___ hotel near the river. ___ staff were welcoming, and ___ breakfast included fresh pastries.\" Which articles complete the passage to show first introduction, then shared reference, then a general class?",
+      "exact_choices": [
+        "a / The / (no article)",
+        "the / A / the",
+        "an / The / a",
+        "the / The / the"
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "a / The / (no article)"
+      ],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": null,
+      "uniqueness_established": false,
+      "premise_assessment": "requested_generic_reading_not_established",
+      "choice_assessments": [
+        {
+          "choice": "a / The / (no article)",
+          "answer_adequacy": "conditional_only",
+          "decisive_reason": "This is the natural completion, but breakfast included fresh pastries in this hotel visit refers to the relevant meal/offering, not necessarily a general class. Zero article does not establish the full requested meaning. Conditional intended key if the unsupported general-class requirement is relaxed.",
+          "plausibility": "conditional intended key"
+        },
+        {
+          "choice": "the / A / the",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "The hotel does not enact the intended introduction of an unidentified establishment, and a staff does not enact the requested shared reference. The breakfast could be natural for this particular offering but not the demanded general-class reading.",
+          "plausibility": "weak: multiple mismatches"
+        },
+        {
+          "choice": "an / The / a",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "An hotel is not warranted under ordinary pronounced-h English; no alternative pronunciation is specified. A breakfast supplies a countable meal reading rather than the requested general class.",
+          "plausibility": "weak: easily eliminated sound mismatch"
+        },
+        {
+          "choice": "the / The / the",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "The first definite article fails the intended unidentified introduction. The other definite references could be grammatical in a suitable narrative, which does not make this match the requested three meanings.",
+          "plausibility": "plausible specificity alternative but fails stated introduction"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Only the first option begins with ordinary a hotel; the first familiar article rule eliminates all rivals, so the three blanks do not force three-step reasoning.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Supply three articles that express introduction, shared reference and a general class, in that order.",
+      "choice_dimension_alignment": "All options are the same three-slot article tuple; the joint request is legitimate.",
+      "unnecessary_or_extra_answer_claims": "No extra claims in the choices. The unnecessary/unsupported generic-class demand is in the task framing, not caused by tuple answers.",
+      "material_concerns": [
+        "An ordinary grammatical completion is not proof that it expresses every stated semantic category.",
+        "Not a claim that all first mentions forbid the or every breakfast use must be definite."
+      ],
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "stem": 264,
+        "choices": [
+          22,
+          13,
+          12,
+          15
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q03",
+      "candidate_sha256": "b848d928fa7786e140f57f2b3695a54d3f43dd0320d24c227ed507736f7f7ffa",
+      "exact_prompt": "A gardener has a Monstera deliciosa cutting that has been rooting in water for three weeks. The roots are soft and brown, and the stem shows no new leaf growth. The gardener wants to move it to a pot with standard houseplant soil. What should they do first?",
+      "exact_choices": [
+        "Move it to soil immediately since three weeks is sufficient rooting time.",
+        "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+        "Add rooting hormone to the water and transplant once roots appear longer.",
+        "Switch to a larger water container to give roots more room to develop."
+      ],
+      "warranted_exact_keys": [
+        "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting."
+      ],
+      "conditional_only_choices": [],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+      "uniqueness_established": true,
+      "premise_assessment": "adequate_for_initial_care_guidance_not_complete_rot_treatment",
+      "choice_assessments": [
+        {
+          "choice": "Move it to soil immediately since three weeks is sufficient rooting time.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Three weeks alone does not establish healthy functioning roots, and the displayed condition contradicts readiness based merely on elapsed time.",
+          "plausibility": "plausible calendar-based readiness error"
+        },
+        {
+          "choice": "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+          "answer_adequacy": "supported",
+          "decisive_reason": "Best supported initial guidance: defer the long-term transplant, use an appropriate well-draining rooting environment and seek healthy roots/growth. Read as correction of rooting conditions, not leaving decayed roots untouched or guaranteeing recovery.",
+          "plausibility": "key with scope"
+        },
+        {
+          "choice": "Add rooting hormone to the water and transplant once roots appear longer.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Hormone and length do not correct or establish root health; longer soft-brown roots are not the readiness criterion.",
+          "plausibility": "plausible hormone/length substitution"
+        },
+        {
+          "choice": "Switch to a larger water container to give roots more room to develop.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Nothing identifies inadequate container volume as the problem. A larger water vessel alone does not address the observed unhealthy condition.",
+          "plausibility": "plausible space-as-cure misconception"
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "independent_difficulty": 2,
+      "difficulty_reason": "The visible unhealthy roots rule out a calendar-only transplant; this is one familiar readiness/care application.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Choose the first appropriate propagation-management step before a proposed long-term soil transplant.",
+      "choice_dimension_alignment": "All choices offer actions, though the first three include later timing criteria. This is acceptable for the practical next-step question.",
+      "unnecessary_or_extra_answer_claims": "A three-week guarantee and a longer-roots readiness rule are erroneous substantive reasons; these are not penalties merely for giving a reason. The supported choice gives an endpoint to postponement, not a guaranteed recovery.",
+      "material_concerns": [
+        "The item does not diagnose a pathogen or provide a complete salvage procedure.",
+        "If keep is interpreted as literally retaining the current harmful water conditions unchanged, choice2 is inadequate; the reasonable well-draining-medium wording supports a corrective initial action."
+      ],
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "stem": 257,
+        "choices": [
+          73,
+          116,
+          73,
+          70
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q04",
+      "candidate_sha256": "05d246d8c63981686d73a3e168442fb6acb12daa21a76370f910e77e70027628",
+      "exact_prompt": "On a 20-meter contour interval map, a trail follows a ridge where contours are spaced 5 mm apart on the map. The map scale is 1:50,000 (1 cm = 500 m). Another trail in a valley has contours spaced 10 mm apart at the same scale. What does this comparison indicate?",
+      "exact_choices": [
+        "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation.",
+        "The valley trail is higher in elevation because wider spacing indicates higher ground.",
+        "The ridge trail must be above 1000 meters due to the close contour spacing.",
+        "Both trails have identical slope steepness because they share the same contour interval."
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation."
+      ],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": null,
+      "uniqueness_established": false,
+      "premise_assessment": "trail_direction_relative_to_spatial_spacing_unspecified",
+      "choice_assessments": [
+        {
+          "choice": "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation.",
+          "answer_adequacy": "conditional_only",
+          "decisive_reason": "It is supported for local terrain gradients measured across these contours, or if spacing is along both trails. But a trail can follow a nearly level ridge while nearby contours are close on its flanks; the display does not give the route's crossing direction. Conditional as a claim about trail gradients.",
+          "plausibility": "conditional intended key"
+        },
+        {
+          "choice": "The valley trail is higher in elevation because wider spacing indicates higher ground.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Wider spacing does not establish higher absolute elevation; no elevation labels are supplied.",
+          "plausibility": "plausible height/spacing confusion"
+        },
+        {
+          "choice": "The ridge trail must be above 1000 meters due to the close contour spacing.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Close contours indicate a spatial rate of change, not an absolute1000-m elevation.",
+          "plausibility": "weak: invented threshold"
+        },
+        {
+          "choice": "Both trails have identical slope steepness because they share the same contour interval.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Equal vertical intervals do not cancel a difference in relevant horizontal spacing.",
+          "plausibility": "plausible interval-only comparison"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Intended answer follows the single closer-contours rule; the numerical map scale is not needed to choose the comparison.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Infer terrain or trail-slope comparison from two contour spacings at the same interval and scale.",
+      "choice_dimension_alignment": "Options mix slope comparisons and absolute-elevation inferences. That is legitimate under the broad what-does-this-indicate request, but the actual route-versus-terrain observable is not pinned down.",
+      "unnecessary_or_extra_answer_claims": "Regardless of which is higher is a relevant distinction between height and slope, not an inherently unnecessary joint claim. The unsupported above1000 threshold is a distractor, not extra teaching.",
+      "material_concerns": [
+        "Conditional intended answer, not an impossible map.",
+        "A same-map spacing comparison is sound for the direction measured; no perpendicular/along-trail crossing may be silently supplied."
+      ],
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "stem": 263,
+        "choices": [
+          100,
+          86,
+          75,
+          88
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q05",
+      "candidate_sha256": "d8f09fb7aec7a0efe0c557d8a4dc26dd0657e9429b9e591573c69bb50a3ee43d",
+      "exact_prompt": "A friend offers you a detached Monstera deliciosa leaf with petiole but no stem tissue, and a pothos stem cutting with multiple nodes. Based on plant structure requirements, which propagation outcome can you reasonably predict?",
+      "exact_choices": [
+        "Both will root successfully in water or solid media",
+        "The pothos will root; the Monstera leaf will not develop into a new plant",
+        "The Monstera leaf will root if given rooting hormone; the pothos will not",
+        "Neither will propagate without additional stem tissue from another plant"
+      ],
+      "warranted_exact_keys": [
+        "The pothos will root; the Monstera leaf will not develop into a new plant"
+      ],
+      "conditional_only_choices": [],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": "The pothos will root; the Monstera leaf will not develop into a new plant",
+      "uniqueness_established": true,
+      "premise_assessment": "adequate_for_species_structure_prediction",
+      "choice_assessments": [
+        {
+          "choice": "Both will root successfully in water or solid media",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Successful rooting of both is not a supported structural expectation, and rooting alone is not successful new-plant propagation.",
+          "plausibility": "plausible rooting/new-plant conflation"
+        },
+        {
+          "choice": "The pothos will root; the Monstera leaf will not develop into a new plant",
+          "answer_adequacy": "supported",
+          "decisive_reason": "The nodal pothos stem is suitable for rooting; a Monstera leaf lacking stem/node cannot develop into a new growing plant. Will root is reasonable prediction language here, not a guarantee under any care conditions.",
+          "plausibility": "key"
+        },
+        {
+          "choice": "The Monstera leaf will root if given rooting hormone; the pothos will not",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Hormone does not provide a missing Monstera node/bud; denying rooting of the suitable pothos is unsupported.",
+          "plausibility": "weak: arbitrary denial of pothos combined with rescue claim"
+        },
+        {
+          "choice": "Neither will propagate without additional stem tissue from another plant",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "The pothos already has its own nodes and does not need stem tissue from another plant.",
+          "plausibility": "weak: extra tissue from another plant is implausible"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Direct node-eligibility plus species-method application; no competing condition or growth evidence.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Predict propagation outcomes for the two specified plant pieces, using their structural requirements.",
+      "choice_dimension_alignment": "All options compare the pair, but mix root formation with establishment of a new plant. That distinction matters and the supported option properly distinguishes it.",
+      "unnecessary_or_extra_answer_claims": "The pairwise outcome is expressly requested. No defect merely because the answer contains two plant outcomes; unqualified success guarantees would be a distinct strengthening.",
+      "material_concerns": [
+        "No absolute inference that a detached leaf can never form any transient root is needed to select the new-plant outcome.",
+        "Reasonable success predictions assume ordinary viable material and suitable care; the item is not an empirical survival guarantee."
+      ],
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "stem": 227,
+        "choices": [
+          51,
+          73,
+          73,
+          72
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q06",
+      "candidate_sha256": "86fbbfc607db5107cc0c8d9d9b042ebc05e6e98ec66c60c4a9c79bcf57a62060",
+      "exact_prompt": "A gardener has two Monstera deliciosa cuttings. Cutting A has firm, creamy-white roots and shows new leaf growth. Cutting B has soft, brown roots and no new growth. Both have nodes with axillary buds. Which propagation decision best matches the evidence?",
+      "exact_choices": [
+        "Move Cutting A to a pot; keep Cutting B in its rooting medium",
+        "Move both cuttings to pots immediately",
+        "Keep both cuttings in rooting medium until roots turn brown",
+        "Discard Cutting B and apply rooting hormone to Cutting A"
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "Move Cutting A to a pot; keep Cutting B in its rooting medium"
+      ],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": null,
+      "uniqueness_established": false,
+      "premise_assessment": "unhealthy_cutting_management_underqualified",
+      "choice_assessments": [
+        {
+          "choice": "Move Cutting A to a pot; keep Cutting B in its rooting medium",
+          "answer_adequacy": "conditional_only",
+          "decisive_reason": "A is ready for long-term potting. Keeping B in its unspecified existing medium is not a fully supported corrective step: that medium or moisture regime may itself be causing damage. Best-listed only if it means continue rooting with inspection and correction.",
+          "plausibility": "conditional intended key"
+        },
+        {
+          "choice": "Move both cuttings to pots immediately",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "B lacks healthy-root/growth evidence for an immediate routine transplant.",
+          "plausibility": "plausible readiness overgeneralization"
+        },
+        {
+          "choice": "Keep both cuttings in rooting medium until roots turn brown",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Brown roots are not a readiness target; the supplied unhealthy signs are not what both cuttings should wait to achieve.",
+          "plausibility": "weak: explicit unhealthy target"
+        },
+        {
+          "choice": "Discard Cutting B and apply rooting hormone to Cutting A",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "B may or may not be salvageable; discarding it is not compelled. A already has roots and growth, so an extra hormone step does not address the requested evidence.",
+          "plausibility": "weak: two unrelated actions"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Contrasts directly stated healthy/active versus unhealthy/inactive signs; there is no nontrivial weighing of conflicting evidence.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Choose one management decision covering both the healthy and unhealthy nodal cuttings.",
+      "choice_dimension_alignment": "All choices act on both plants, but disposal/hormone in option4 adds a different management dimension. The paired action is requested and is not itself a flaw.",
+      "unnecessary_or_extra_answer_claims": "Hormone for already-rooted A is unnecessary to the supported readiness inference. Keeping B unchanged is an unsupported action, rather than a generic objection to two-part answers.",
+      "material_concerns": [
+        "Node presence fixes one eligibility issue but does not certify root health or make the current medium safe.",
+        "Do not label continued propagation categorically impossible; appropriate remediation could make it reasonable."
+      ],
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "stem": 254,
+        "choices": [
+          61,
+          38,
+          59,
+          56
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q07",
+      "candidate_sha256": "f42f9e42fb75b03c28aa5b6be63877fbea8399c45d1338dcfe49baf08ec0943b",
+      "exact_prompt": "In a recipe comment, someone writes: \"I substituted ___ honey for sugar, but ___ honey I used was too strong.\" What explains the article shift between the two mentions?",
+      "exact_choices": [
+        "First: general substance; second: specific instance now known from context",
+        "First: countable singular; second: plural noun",
+        "First: shared reference; second: first introduction",
+        "First: any amount; second: uncountable prohibition"
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "First: general substance; second: specific instance now known from context"
+      ],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": null,
+      "uniqueness_established": false,
+      "premise_assessment": "generic_vs_indefinite_reading_conflated",
+      "choice_assessments": [
+        {
+          "choice": "First: general substance; second: specific instance now known from context",
+          "answer_adequacy": "conditional_only",
+          "decisive_reason": "The later honey is identifiable as the amount used. But I substituted honey reports a particular substitution event with an unspecified mass amount; articlelessness does not entail a generic substance/class reference. Conditional intended key if general only means not yet identified.",
+          "plausibility": "conditional intended key"
+        },
+        {
+          "choice": "First: countable singular; second: plural noun",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Honey is used as mass in both positions, not a countable singular followed by a plural.",
+          "plausibility": "weak: obvious number mismatch"
+        },
+        {
+          "choice": "First: shared reference; second: first introduction",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "The order of reference is reversed; the restrictive I used makes the second identifiable.",
+          "plausibility": "plausible reference reversal"
+        },
+        {
+          "choice": "First: any amount; second: uncountable prohibition",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "The first may describe an unspecified amount, but uncountability does not prohibit the in the second. The whole paired explanation fails.",
+          "plausibility": "plausible mass/article overgeneralization"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "A familiar bare-mass introduction followed by specific anaphora; the extra generic claim is an error/ambiguity rather than higher-order work.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Explain why the first honey has zero article and the later contextually identified honey takes the.",
+      "choice_dimension_alignment": "All choices give paired explanations for the two positions. Some mix countability and discourse reference; these are legitimate rival explanations to assess rather than an automatic construction failure.",
+      "unnecessary_or_extra_answer_claims": "Generic-class meaning is an unnecessary strengthening beyond indefinite mass introduction. It makes the intended answer less precise.",
+      "material_concerns": [
+        "The blanks do not make the article choices explicit, but the requested shift and honey I used support ordinary zero/the completion.",
+        "A contextual mass amount is not synonymous with a generic class statement."
+      ],
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "stem": 168,
+        "choices": [
+          74,
+          46,
+          51,
+          50
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q08",
+      "candidate_sha256": "f189d67b3c067227dfc852f447e534df557af4705fa249a4e43ca9fb01856850",
+      "exact_prompt": "A friend offers you two plant pieces for propagation: a Monstera deliciosa leaf with petiole but no stem node, and a pothos stem with several nodes and axillary buds. Based on their structures, which propagation approach should you expect to succeed for each?",
+      "exact_choices": [
+        "Both can root in water, but only the pothos will grow leaves.",
+        "The Monstera leaf will root if given rooting hormone, while the pothos needs soil to root.",
+        "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant.",
+        "The Monstera leaf can produce roots from the petiole base, while the pothos requires layering to succeed."
+      ],
+      "warranted_exact_keys": [
+        "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant."
+      ],
+      "conditional_only_choices": [],
+      "unresolved_potentially_adequate_choices": [
+        "Both can root in water, but only the pothos will grow leaves."
+      ],
+      "fully_warranted_unique_key": null,
+      "uniqueness_established": false,
+      "premise_assessment": "structure_sufficient_for_new_plant_result_but_root_only_rival_unresolved",
+      "choice_assessments": [
+        {
+          "choice": "Both can root in water, but only the pothos will grow leaves.",
+          "answer_adequacy": "undetermined",
+          "decisive_reason": "This potentially compatible root-only statement is not refuted by evidence that the Monstera cannot make a new plant. The supplied sources do not establish whether a node-free petiole can ever root in water; no new source call is authorized. Its roots-versus-leaves distinction overlaps the supported option, so uniqueness remains unresolved.",
+          "plausibility": "unresolved potentially compatible answer, not certified distractor"
+        },
+        {
+          "choice": "The Monstera leaf will root if given rooting hormone, while the pothos needs soil to root.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Pothos does not require soil to root; hormone does not supply the missing Monstera stem node.",
+          "plausibility": "plausible medium/hormone misconceptions"
+        },
+        {
+          "choice": "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant.",
+          "answer_adequacy": "supported",
+          "decisive_reason": "The nodal pothos can root and grow, whereas the node-free Monstera leaf cannot establish a new plant in the ordinary propagation task. This exact outcome is supported.",
+          "plausibility": "supported answer"
+        },
+        {
+          "choice": "The Monstera leaf can produce roots from the petiole base, while the pothos requires layering to succeed.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Pothos stem cuttings are suitable; layering is not a required exclusive method. A possible petiole-root claim cannot rescue the false necessity claim.",
+          "plausibility": "plausible but overstrong method requirement"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Direct species/node distinction; the task does not require interpreting a new growth history.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "State which propagation approach/outcome should succeed for each supplied plant piece.",
+      "choice_dimension_alignment": "Options combine methods with rooting and new-leaf/new-plant outcomes. Those are not interchangeable, and a root-only rival can coexist with the supported new-plant conclusion.",
+      "unnecessary_or_extra_answer_claims": "Petiole root formation is an additional biological claim not needed to establish failure of new-plant propagation. This increases unresolved answer overlap; do not infer its falsity from source omission.",
+      "material_concerns": [
+        "One exact option is supported but a unique-answer item is not established while choice1 remains unresolved.",
+        "No assertion that choice1 is definitely true or that there are definitely two correct answers."
+      ],
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "stem": 259,
+        "choices": [
+          61,
+          90,
+          91,
+          105
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q09",
+      "candidate_sha256": "d9e5c14a9704642626e09bd6292703a109289703a5e4a675defaef2db1417478",
+      "exact_prompt": "A hiker compares two routes on the same 40-foot contour interval map. Route A crosses 8 ordinary contour lines over 2 miles horizontal distance. Route B stays between the 800-foot and 840-foot index contours for its entire 2-mile length, crossing only intermediate contours. Which statement correctly compares the routes?",
+      "exact_choices": [
+        "Route A is higher in elevation; Route B is lower and steeper.",
+        "Route A has steeper terrain; Route B has gentler terrain with less total elevation change.",
+        "Route B is higher in elevation and therefore steeper than Route A.",
+        "Both routes have equal steepness because they share the same horizontal distance."
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": null,
+      "uniqueness_established": false,
+      "premise_assessment": "inconsistent_ordinary_contour_description_plus_missing_crossing_sequence",
+      "choice_assessments": [
+        {
+          "choice": "Route A is higher in elevation; Route B is lower and steeper.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "A has no height labels, so relative height is unknown; the slope order is also not established.",
+          "plausibility": "weak: invented height comparison"
+        },
+        {
+          "choice": "Route A has steeper terrain; Route B has gentler terrain with less total elevation change.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "A's eight crossings lack a level sequence and endpoints. B's narrow elevation band does not bound accumulated ascent or every local slope. The description also claims intermediate crossings within one40-ft interval, where no intermediate ordinary level exists.",
+          "plausibility": "unwarranted intended multi-claim answer"
+        },
+        {
+          "choice": "Route B is higher in elevation and therefore steeper than Route A.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "B's labels do not establish that it is higher than unlabeled A, and height does not imply slope.",
+          "plausibility": "plausible height/slope confusion"
+        },
+        {
+          "choice": "Both routes have equal steepness because they share the same horizontal distance.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Equal horizontal length alone does not make gradients equal.",
+          "plausibility": "plausible length-only comparison"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Intended count/range comparison is simple; identifying the malformed description does not provide valid intended learning depth.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Compare route height, steepness and/or elevation change based on the stated contour information.",
+      "choice_dimension_alignment": "Options mix height/slope/gain dimensions, permitted by the broad comparison request. The intended compound answer needs multiple independent facts that the stem does not establish.",
+      "unnecessary_or_extra_answer_claims": "Less total elevation change is not supported merely by B remaining within a40-ft band; total accumulated ascent and net/range are different. It is material, not redundant wording.",
+      "material_concerns": [
+        "321-character stem exceeds320.",
+        "With a40-ft ordinary interval, there are no ordinary intermediate contour elevations strictly between800 and840 ft. The text says B crosses such contours, not supplementary lines.",
+        "No ex-falso choice credit from inconsistent premises; no key is warranted.",
+        "Even relaxing the malformed B description leaves A's crossing sequence and whole slope profiles unspecified."
+      ],
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "stem": 321,
+        "choices": [
+          61,
+          90,
+          66,
+          81
+        ]
+      },
+      "stem320_choices140_compliant": false
+    },
+    {
+      "candidate_id": "q10",
+      "candidate_sha256": "710fd884cc59e28d6bf5cbf0fb9ee83344d1deef537b241ac5ac22cf89377831",
+      "exact_prompt": "A travel blog opens with: \"We arrived in Paris and checked into a hotel near the river. The view from the room was spectacular.\" Why does the second sentence use \"the\" for both \"view\" and \"room\"?",
+      "exact_choices": [
+        "Both nouns refer back to specific items established in the previous sentence.",
+        "The writer uses \"the\" for any noun following a proper noun like \"Paris.\"",
+        "\"View\" and \"room\" are uncountable nouns that require \"the.\"",
+        "The article \"the\" indicates these are generic statements about all hotel rooms."
+      ],
+      "warranted_exact_keys": [
+        "Both nouns refer back to specific items established in the previous sentence."
+      ],
+      "conditional_only_choices": [],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": "Both nouns refer back to specific items established in the previous sentence.",
+      "uniqueness_established": true,
+      "premise_assessment": "adequate_under_ordinary_indirect_shared_reference",
+      "choice_assessments": [
+        {
+          "choice": "Both nouns refer back to specific items established in the previous sentence.",
+          "answer_adequacy": "supported",
+          "decisive_reason": "Supported if established means contextually implied, not explicitly named: checking into a hotel makes the occupied room recoverable, and its view is associated with that room.",
+          "plausibility": "key with implicit-reference scope"
+        },
+        {
+          "choice": "The writer uses \"the\" for any noun following a proper noun like \"Paris.\"",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "A preceding proper noun does not mechanically require the before later nouns.",
+          "plausibility": "weak: invented proper-noun rule"
+        },
+        {
+          "choice": "\"View\" and \"room\" are uncountable nouns that require \"the.\"",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Room and view are countable in these uses; neither universally requires the.",
+          "plausibility": "weak: obvious countability assertion"
+        },
+        {
+          "choice": "The article \"the\" indicates these are generic statements about all hotel rooms.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "The sentences describe the travelers' particular room/view, not all hotel rooms.",
+          "plausibility": "plausible generic/specific confusion"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Familiar contextual bridging from checking into a hotel to its room and the view from that room; the alternatives do not require resolving competing referents.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Explain the definite article for both room and view in the continued hotel narrative.",
+      "choice_dimension_alignment": "Every option offers a common explanation for both noun phrases. The joint explanation is requested and sensible.",
+      "unnecessary_or_extra_answer_claims": "Specificity is relevant, but claiming either noun was explicitly mentioned earlier would be false; the option does not explicitly say that.",
+      "material_concerns": [
+        "The supporting link is indirect contextual association. Do not overread refer back as requiring verbatim earlier occurrence."
+      ],
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "stem": 195,
+        "choices": [
+          77,
+          72,
+          59,
+          79
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q11",
+      "candidate_sha256": "d35e2ea9d4739e547a63b4edb82f92eba644c7181bc4bf92cf67461fa879532c",
+      "exact_prompt": "A map uses a 20-meter contour interval. Along a straight 2 km hiking route, contours are spaced 400 m apart at the start, then 200 m apart, then 100 m apart. Which describes the terrain change?",
+      "exact_choices": [
+        "Elevation increases and the slope becomes progressively gentler.",
+        "Elevation decreases and the slope becomes progressively steeper.",
+        "Elevation increases and the slope becomes progressively steeper.",
+        "Elevation stays constant while the slope varies."
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "Elevation decreases and the slope becomes progressively steeper.",
+        "Elevation increases and the slope becomes progressively steeper."
+      ],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": null,
+      "uniqueness_established": false,
+      "premise_assessment": "missing_elevation_direction",
+      "choice_assessments": [
+        {
+          "choice": "Elevation increases and the slope becomes progressively gentler.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Gentler contradicts the decreasing horizontal spacing at the same vertical interval; ascent is also not specified.",
+          "plausibility": "plausible reversal but partly unsupported"
+        },
+        {
+          "choice": "Elevation decreases and the slope becomes progressively steeper.",
+          "answer_adequacy": "conditional_only",
+          "decisive_reason": "The steeper magnitude is supported, but descent is not. Conditional only for a descending route.",
+          "plausibility": "conditional rival"
+        },
+        {
+          "choice": "Elevation increases and the slope becomes progressively steeper.",
+          "answer_adequacy": "conditional_only",
+          "decisive_reason": "The steeper magnitude is supported, but ascent is not. Conditional only for an ascending route.",
+          "plausibility": "conditional rival"
+        },
+        {
+          "choice": "Elevation stays constant while the slope varies.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Constant elevation along the described successive contour crossings is not established and conflicts with a nonzero ordinary contour interval.",
+          "plausibility": "weak: incompatible constant height claim"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "Closer contours imply larger slope magnitude by one familiar rule; the missing direction cannot be supplied by skill.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Describe change in elevation direction and slope steepness along the route, as specified by the offered conclusions.",
+      "choice_dimension_alignment": "All choices are joint direction/height-trend plus slope-trend statements. Joint outcomes are legitimate, but one component is missing from the evidence.",
+      "unnecessary_or_extra_answer_claims": "Ascending versus descending is unnecessary for the warranted conclusion of increasing slope magnitude, yet every plausible option requires that unsupported direction.",
+      "material_concerns": [
+        "This is missing information, not an impossible terrain profile.",
+        "A reflected elevation profile preserves every spacing while reversing ascent/descent."
+      ],
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "stem": 193,
+        "choices": [
+          64,
+          64,
+          64,
+          48
+        ]
+      },
+      "stem320_choices140_compliant": true
+    },
+    {
+      "candidate_id": "q12",
+      "candidate_sha256": "a3ef7652ab1cb354a1a223fda077cf67972dc2a378a940b1b46721978b68df60",
+      "exact_prompt": "In a recipe: \"Start with flour. Add butter and mix until the mixture forms a dough. Shape a dough into balls.\" Why is \"the mixture\" definite but the second \"a dough\" indefinite?",
+      "exact_choices": [
+        "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+        "\"Dough\" is countable, so it must use \"a\" while \"mixture\" is uncountable.",
+        "The second \"a\" is an error; it should be \"the dough\" for consistency.",
+        "\"The\" indicates a process step, while \"a\" indicates the final product."
+      ],
+      "warranted_exact_keys": [
+        "The second \"a\" is an error; it should be \"the dough\" for consistency."
+      ],
+      "conditional_only_choices": [],
+      "unresolved_potentially_adequate_choices": [],
+      "fully_warranted_unique_key": "The second \"a\" is an error; it should be \"the dough\" for consistency.",
+      "uniqueness_established": true,
+      "premise_assessment": "adequate_for_contextual_correction",
+      "choice_assessments": [
+        {
+          "choice": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "A dough at forms a dough can present the resulting state, but the question explicitly asks about the second a dough at shaping. That step normally acts on the same already-created dough rather than a newly introduced conceptual state.",
+          "plausibility": "plausible misattachment to the first a dough"
+        },
+        {
+          "choice": "\"Dough\" is countable, so it must use \"a\" while \"mixture\" is uncountable.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Neither countability claim forces those articles: mixture is countable in a mixture, and dough may have mass or countable batch/type uses.",
+          "plausibility": "plausible countability/necessity confusion"
+        },
+        {
+          "choice": "The second \"a\" is an error; it should be \"the dough\" for consistency.",
+          "answer_adequacy": "supported",
+          "decisive_reason": "Supported for the ordinary continuous-recipe interpretation: Shape the dough maintains reference to the dough just produced. This corrects the context, not a universal ban on a dough.",
+          "plausibility": "key"
+        },
+        {
+          "choice": "\"The\" indicates a process step, while \"a\" indicates the final product.",
+          "answer_adequacy": "not_warranted",
+          "decisive_reason": "Articles do not grammatically encode process step versus final product.",
+          "plausibility": "weak: invented process/product rule"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "independent_difficulty": 2,
+      "difficulty_reason": "The second dough refers to the dough just formed; this is familiar anaphoric continuity, despite the question's misleading why framing.",
+      "substantive_goal_fit": true,
+      "requested_outcome": "Explain the definite mixture versus the second indefinite dough; a offered correction can legitimately challenge the task's presupposition.",
+      "choice_dimension_alignment": "Three options explain the articles and one corrects the second. This is a legitimate option-dependent error-diagnosis task, not a mismatch to penalize automatically.",
+      "unnecessary_or_extra_answer_claims": "A new conceptual state is relevant to the first dough occurrence but misplaced as an explanation of the second.",
+      "material_concerns": [
+        "A dough is not inherently ungrammatical in every context; the correction depends on ordinary recipe continuity.",
+        "Do not transfer the first a dough's function to the occurrence the question actually asks about."
+      ],
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "stem": 177,
+        "choices": [
+          101,
+          72,
+          69,
+          70
+        ]
+      },
+      "stem320_choices140_compliant": true
+    }
+  ]
+}

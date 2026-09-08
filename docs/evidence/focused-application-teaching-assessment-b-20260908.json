@@ -1,0 +1,617 @@
+{
+  "assessment_type": "arm_and_runtime_verdict_masked_assistant_main_assessment_B_after_frozen_stem_pass",
+  "teaching_packet": {
+    "path": "/tmp/checkpoint-focused-application-teaching-20260908.json",
+    "byte_sha256": "71cb0272a75e5809247d595b92bd73bc5d546ab81302b74a21e9d20f869d32a8"
+  },
+  "stem_assessment": {
+    "path": "/tmp/checkpoint-focused-application-stem-assessment-b-20260908.json",
+    "byte_sha256": "b7346014eac340f99991ef3025db00f583efbd15e3766e00ef1b0ffae319759f"
+  },
+  "stem_packet": {
+    "path": "/tmp/checkpoint-focused-application-stems-20260908.json",
+    "byte_sha256": "1d6390c8a35b776dc701726653cd5438b3f3d4afa3a76c1c249802e60382d8f1"
+  },
+  "capture_sha256_supplied_not_opened": "b8375f724b5829145eec110c026d2cdc302005181abb9300341ced44aec003ae",
+  "scope": {
+    "model_calls": 0,
+    "research_network_calls": 0,
+    "native_calls": 0,
+    "first_pass_preserved": true,
+    "mapping_capture_operational_audit_other_assessments_runtime_verdicts_read": false,
+    "phase_order": "Stem assessment written and SHA reported before teaching packet read. Both phases finish before arm/outcome exposure.",
+    "prior_context": "Assessor knows source topics and intervention design; wording may offer clues. No arm identity inferred or assigned. Assistant assessment, not human expert consensus.",
+    "evidence": "Selected source paraphrases and earlier primary-page knowledge, plus the first-pass exact arithmetic. No new source fidelity or botanical-rooting certification claimed.",
+    "content_binding": "Full raw objects are in the bound input packet; no duplicate or edited versions are created here. Every main is checked whole, with exact issue excerpts and hashes.",
+    "hash_contract": "Exact file bytes; compact sorted ensure_ascii=False UTF8 JSON for object hashes.",
+    "main_scope": "A sound selected conclusion does not establish unique-answer adequacy or requested challenge. Practical advice and minor wording scope are separated from proved false rules and missing necessary premises.",
+    "denominator": "12raw candidates,12keys,12whole main explanations; zero supplied or required choice-feedback fields. No runtime acceptance conclusion is inferred."
+  },
+  "items": [
+    {
+      "candidate_id": "q01",
+      "teaching_candidate_sha256": "af82bab422d650f337327e0a17b070fc4fcea4e14fe4df0fba00a3b64fe33ec8",
+      "raw_question_sha256": "9183c3a52fcf546a2f61b5e41776dcf29eaa59cf447a92ff358878c20511ffb2",
+      "main_utf8_sha256": "7003325c13af1f5392cd6f54fa50f90e2e872576dcd58e744e70c158854914b5",
+      "stem_candidate_sha256": "5b416c3a6aef6924865420d35a076cfa69b59d3f68e9e342d6f5a9b64bc37035",
+      "stem_question_sha256": "4d97a22a5944cb36f7336bf8dc16cbeaf0dee074040e840c93d241c42a989914",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "exact_join": true,
+      "authored_key": "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+      "key_agrees_with_frozen_established_unique_answer": true,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "supported_case_average_calculation_with_counting_shorthand",
+        "supported_under_recorded_case_scope": true,
+        "material_error_or_invalid_inference_identified": false,
+        "reason": "Both100m gains are explicitly supplied, and the1:10 versus1:20 mean-grade calculation is correct under the ordinary horizontal-distance reading. The main connects gain and distance and does not claim uniform local slopes. Calling five crossed lines five intervals is imprecise shorthand; the stated100m gain independently establishes the number used.",
+        "issues": [
+          {
+            "kind": "minor_counting_scope",
+            "exact_quote": "Each trail crosses 5 intervals × 20 m = 100 m total elevation gain",
+            "reason": "The stem says five lines, not five complete endpoint intervals. Here100m is separately given, so the main's result is supported; do not export count×interval as a universal rule."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "Case-bound calculations carry the explanation. The final interval/distance rule needs this route-average scope; no extra causal story.",
+      "main_bounds": {
+        "characters": 355,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "One direct equal-rise/different-distance application. Contour count is unnecessary because gain is supplied; level2."
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q02",
+      "teaching_candidate_sha256": "49c5844a772d884afd92510f58d091b5cfa59107e5792c5236c66d58a7b8041f",
+      "raw_question_sha256": "1d005b642ea36dd8de37f3a4f64e7b75c1a0e1bb7a525c6c427523ca833223cb",
+      "main_utf8_sha256": "3668ff3903599e0110c8b26a9452dd7018b734f06cd3a3cbf4d436e07f594488",
+      "stem_candidate_sha256": "9f1252b66027a5d8d19b4bb1f9044b062dcbd7d7d62b46d17c675122d62f4fa5",
+      "stem_question_sha256": "7086597d479003d31ab8f4e26fa7f95f136eddecd36a1024cc4eb7a69ce3b049",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "exact_join": true,
+      "authored_key": "a / The / (no article)",
+      "key_agrees_with_frozen_established_unique_answer": false,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": true,
+      "main_assessment": {
+        "disposition": "unsupported_generic_reference_requirement",
+        "supported_under_recorded_case_scope": false,
+        "material_error_or_invalid_inference_identified": true,
+        "reason": "The first hotel introduction and contextually recovered staff are explained correctly. The third claim is not established: bare breakfast in this report can refer to the hotel's meal/service, not a general class. The main presents the requested interpretation as a necessary effect of zero article, ignoring the passage's contextual reference.",
+        "issues": [
+          {
+            "kind": "material_reference_overclaim",
+            "exact_quote": "because it names a general class of meal included, not a particular instance being singled out.",
+            "reason": "The article choice alone does not establish that generic-versus-particular distinction; the report concerns what breakfast included in this hotel experience."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "Two valid steps are followed by a stronger unsupported semantic claim. The exact task asks for that meaning, so this is not merely an optional side fact.",
+      "main_bounds": {
+        "characters": 357,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Three slots do not force three interacting inferences: the first introduction eliminates every rival. Level2, with a material semantic mismatch in the third target."
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    },
+    {
+      "candidate_id": "q03",
+      "teaching_candidate_sha256": "56d0ec363a4c3d471c4eb2a0646df5948ecb01a50806069dfa1ba117b3e09dbd",
+      "raw_question_sha256": "ffa7d30f4fb6086f481bec3a3f5f74d99e5448aaf01afccede1fbcdc18f75924",
+      "main_utf8_sha256": "a7647f290da76ef321f7561c2e5028cdde196e62ed6fe75ea54bf7d89e163560",
+      "stem_candidate_sha256": "b848d928fa7786e140f57f2b3695a54d3f43dd0320d24c227ed507736f7f7ffa",
+      "stem_question_sha256": "7245883f95f489c9e0ec9ee4b4a50992235b02c91d5a8a74e93dcff74abe4e94",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "exact_join": true,
+      "authored_key": "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+      "key_agrees_with_frozen_established_unique_answer": true,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "defensible_core_advice_with_underqualified_cause_and_management",
+        "supported_under_recorded_case_scope": false,
+        "material_error_or_invalid_inference_identified": false,
+        "reason": "The main appropriately treats unhealthy roots and absent growth as reasons not to transplant solely on elapsed time, and explicitly calls for addressing conditions. It gives stronger cause/management advice than the selected source establishes. This is not proof that improved drainage or a suitable medium is wrong, nor a proof that the stated soil would harm the plant.",
+        "issues": [
+          {
+            "kind": "source_strengthening",
+            "exact_quote": "Soft brown roots indicate excessive moisture or poor drainage",
+            "reason": "The source says suggest; the symptoms do not identify an exclusive cause."
+          },
+          {
+            "kind": "conditional_management_extension",
+            "exact_quote": "rather than moving to soil, which could worsen the situation.",
+            "reason": "Could is a possibility claim, not a certain outcome. The exact soil/condition contrast and recovery procedure are not supplied, so complete source-backed support remains qualified."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "The key is still the frozen best-listed advice. Added management/cause details increase claim burden; they are not needed to refute the arbitrary three-week readiness rule.",
+      "main_bounds": {
+        "characters": 518,
+        "within_author320": false,
+        "within_validator420": false
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Directly applies the healthy-root readiness rule and rejects calendar time as sufficient. No independent interacting constraint makes it more than2."
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q04",
+      "teaching_candidate_sha256": "8076ea754931562e10937e9c563ddb189da7bd2ce793d4ab0c021e82200cf025",
+      "raw_question_sha256": "f419a03602302617b2d1a18fc801b5b98ddc0a8b713c331dcd071195fb7fbaff",
+      "main_utf8_sha256": "a95fb0252749c2950f2ed468145cf52305c06525f304e027c925643c1fbe0e10",
+      "stem_candidate_sha256": "05d246d8c63981686d73a3e168442fb6acb12daa21a76370f910e77e70027628",
+      "stem_question_sha256": "ccabde480519d3519ce7a3331bc55254325142d4526acd135ca8f7acfdb02f62",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "exact_join": true,
+      "authored_key": "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation.",
+      "key_agrees_with_frozen_established_unique_answer": true,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "supported_interval_and_scale_calculation",
+        "supported_under_recorded_case_scope": true,
+        "material_error_or_invalid_inference_identified": false,
+        "reason": "The scale conversions5mm→250m and10mm→500m are correct. Equal20m vertical intervals give the ridge the greater gradient magnitude, while absolute altitude is unavailable. Describing20m rise is a conventional magnitude calculation here, not a claim about a specified traveler's direction.",
+        "issues": []
+      },
+      "teaching_construction_uptake": "A complete case calculation, with an appropriate absolute-altitude limit. Only relative steepness is contrasted with unknown altitude; this should not mean that the numerical gradients could never be calculated.",
+      "main_bounds": {
+        "characters": 485,
+        "within_author320": false,
+        "within_validator420": false
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Closer contours indicate steeper terrain is the single decisive rule; scale arithmetic is optional. The frozen criteria classify this as1–2; rate2."
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q05",
+      "teaching_candidate_sha256": "6d4a77a3367083581f2183f37dfd43fab61f6488223ffb83565fe2a4c18304c0",
+      "raw_question_sha256": "edf14bc4c778e68fdaf05a64682a399b5d08b426ebac2c2566012f54a2dac7aa",
+      "main_utf8_sha256": "57fef86f1a6bb15cfd5bfbaf0ff5f31d37e7bbe3c76e304632b032ef155941d6",
+      "stem_candidate_sha256": "d8f09fb7aec7a0efe0c557d8a4dc26dd0657e9429b9e591573c69bb50a3ee43d",
+      "stem_question_sha256": "98b2b9d5ea4f0e03b4d1f5c0a7b1cab30dd57ffad033ab6aa1a7af0a62000f10",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "exact_join": true,
+      "authored_key": "The pothos will root; the Monstera leaf will not develop into a new plant",
+      "key_agrees_with_frozen_established_unique_answer": true,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "supported_species_tissue_reasoning",
+        "supported_under_recorded_case_scope": true,
+        "material_error_or_invalid_inference_identified": false,
+        "reason": "The explanation correctly connects node/axillary-bud material to Monstera new-plant growth and pothos stem propagation. In context, cannot grow/cannot propagate refers to developing a new plant, not a claim that detached petiole tissue can never form any roots. The main uses can rather than promising successful rooting in all conditions.",
+        "issues": []
+      },
+      "teaching_construction_uptake": "Concise relevant species distinction. The broad medium/hormone clause remains scoped to the missing growth node, not a general ban on root formation.",
+      "main_bounds": {
+        "characters": 331,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "One familiar species/tissue requirement eliminates rivals. Level2."
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q06",
+      "teaching_candidate_sha256": "887c22d7985c539189631f5a655437896951c5c1130b1c4e6b4f97bf63fc12d8",
+      "raw_question_sha256": "4c00b6518ca6fafb3078ea2f0fc83bdcede59182b6dfe94806843cb1f3d9caa8",
+      "main_utf8_sha256": "4f74c385e482732fd97c09113a68f246aa2a6a40abd1a52387d43b9ce1309468",
+      "stem_candidate_sha256": "86fbbfc607db5107cc0c8d9d9b042ebc05e6e98ec66c60c4a9c79bcf57a62060",
+      "stem_question_sha256": "e2392b145f8d2e9f65fb515bc2d9933b29f60edecfc85f437ba615e9e3d04752",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "exact_join": true,
+      "authored_key": "Move Cutting A to a pot; keep Cutting B in its rooting medium",
+      "key_agrees_with_frozen_established_unique_answer": true,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "supported_readiness_contrast_with_unresolved_recovery_scope",
+        "supported_under_recorded_case_scope": false,
+        "material_error_or_invalid_inference_identified": false,
+        "reason": "A's readiness and both cuttings' remaining propagation potential are supported. B's soft brown roots justify concern; its continued time in rooting medium is the best-listed deferral, not a demonstrated complete recovery plan. The main leaves the needed improvement of unhealthy conditions unstated.",
+        "issues": [
+          {
+            "kind": "underqualified_recovery_inference",
+            "exact_quote": "so Cutting B should remain in its rooting medium to recover.",
+            "reason": "Root-stage deferral can be reasonable, but recovery is not established merely by staying in a possibly unsuitable setup. No definite harmful treatment or certain failure is proved here."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "The contrast is case-bound, but the recovery connection is stronger than the specified observations support. Frozen practical key and provisional3 rating remain unchanged.",
+      "main_bounds": {
+        "characters": 429,
+        "within_author320": false,
+        "within_validator420": false
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 3,
+        "reason": "Requires using contrasting root/growth observations while recognizing that B still has growth nodes;3 is plausible. It is a2/3-sensitive direct comparison, not evidence of multiple complex steps."
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q07",
+      "teaching_candidate_sha256": "b57b7f862f92d2bc8d1fc53621823a777c9892c39e5c7bc9754f39549875ebd7",
+      "raw_question_sha256": "5af5fac51c7d480910980e5f8550a78e554a6910b926738574ee622314578325",
+      "main_utf8_sha256": "74023937b692e183acb359b9b68588c42d04b8157d927301d65d078dc169147b",
+      "stem_candidate_sha256": "f42f9e42fb75b03c28aa5b6be63877fbea8399c45d1338dcfe49baf08ec0943b",
+      "stem_question_sha256": "ecb211e5a254d344c1f350aeab197ce45ece8b280358f07a3e81c1318e21ac98",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "exact_join": true,
+      "authored_key": "First: general substance; second: specific instance now known from context",
+      "key_agrees_with_frozen_established_unique_answer": false,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": true,
+      "main_assessment": {
+        "disposition": "misleading_generic_versus_unspecified_reference",
+        "supported_under_recorded_case_scope": false,
+        "material_error_or_invalid_inference_identified": true,
+        "reason": "The later honey is correctly identified as the amount actually used. The first past-event mass reference introduces that ingredient/quantity without identifying it yet; no article does not prove any honey or a generic class reading. The main also assumes particular completions of blanks that the literal passage did not display.",
+        "issues": [
+          {
+            "kind": "material_reference_strengthening",
+            "exact_quote": "the general substance (any honey, uncountable class)",
+            "reason": "A nonspecific quantity in this event is not thereby any honey or a generic class. The loose ingredient-type reading remains a phase1 qualification, not evidence for the stronger assertion."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "Correct later-reference reasoning is mixed with an unnecessary generic/any-quantity claim. Repetition alone not determining the is a sound final principle.",
+      "main_bounds": {
+        "characters": 366,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Direct first/second reference pattern, with confusing missing completed articles. Level2."
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    },
+    {
+      "candidate_id": "q08",
+      "teaching_candidate_sha256": "6085691329bcf7e18df736336b94f4434ca6307defc72080950db677908e0c90",
+      "raw_question_sha256": "cfb2f7672f96a07ba09c5f4dfd96d60f9948ff9b841970f57f0052b891434b36",
+      "main_utf8_sha256": "0d60f99cd89442284ecc28ea146a2bf0e25680394403d972282c95d3fc841d21",
+      "stem_candidate_sha256": "f189d67b3c067227dfc852f447e534df557af4705fa249a4e43ca9fb01856850",
+      "stem_question_sha256": "f5b75fbc7f24df32d07c846a3d31fcede55f1e97b88cb7bf311f103faa63a9ec",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "exact_join": true,
+      "authored_key": "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant.",
+      "key_agrees_with_frozen_established_unique_answer": false,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": true,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "supported_selected_biological_conclusion_but_uniqueness_unresolved",
+        "supported_under_recorded_case_scope": true,
+        "material_error_or_invalid_inference_identified": false,
+        "reason": "The source-backed Monstera new-plant limitation and pothos stem possibility are explained accurately. The source's stem-cutting recommendation need not imply the actual nodes: the stem already states them. This sound selected conclusion does not refute the possible root-without-new-leaves outcome in choice1.",
+        "issues": [
+          {
+            "kind": "unresolved_alternative_not_main_falsehood",
+            "exact_quote": "the pothos stem with nodes can root and grow.",
+            "reason": "Supported. However, the main leaves the potentially compatible root-only rival unresolved; it cannot establish that the complete MCQ has one answer."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "Mostly case-bound source application. The new-plant context limits cannot succeed and regardless of medium; do not read either as universal impossibility of root formation.",
+      "main_bounds": {
+        "characters": 479,
+        "within_author320": false,
+        "within_validator420": false
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Direct tissue requirement, level2; resolving an accidentally overlapping option is not added learning difficulty."
+      },
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ]
+    },
+    {
+      "candidate_id": "q09",
+      "teaching_candidate_sha256": "e958b1ac9487146fae78fa7295da126170f17d3f6898766674d50ad99b6b3661",
+      "raw_question_sha256": "55ef047f0a36cbe53238d85cfe29c8400b4ec9210c24bfe24ffcbfd48264f1a4",
+      "main_utf8_sha256": "08be0b5bec41b21e7c8b1fc5d1b4611ce49c3e783ea407cc21ac49be76850adf",
+      "stem_candidate_sha256": "d9e5c14a9704642626e09bd6292703a109289703a5e4a675defaef2db1417478",
+      "stem_question_sha256": "aa43f9007b4fad5008926c4a2d36e5683c5083a93f771a5071ec1f3a47a30c77",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "exact_join": true,
+      "authored_key": "Route A has steeper terrain; Route B has gentler terrain with less total elevation change.",
+      "key_agrees_with_frozen_established_unique_answer": false,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": true,
+      "main_assessment": {
+        "disposition": "unsupported_count_to_net_gain_and_profile_inference",
+        "supported_under_recorded_case_scope": false,
+        "material_error_or_invalid_inference_identified": true,
+        "reason": "Multiplying eight crossings by40ft invents320ft net gain without endpoint or crossing-order information. B's40ft elevation band does not establish all local terrain or total ascent. The main also leaves the stem's intermediate-contour problem unresolved. Its average-slope conclusion requires extra assumptions.",
+        "issues": [
+          {
+            "kind": "invalid_general_inference",
+            "exact_quote": "Route A crosses 8 contours × 40 ft = 320 ft elevation change over 2 miles.",
+            "reason": "Crossed lines are not necessarily full net endpoint intervals; the path may rise and fall."
+          },
+          {
+            "kind": "unsupported_terrain_conclusion",
+            "exact_quote": "so it has gentler terrain.",
+            "reason": "A bounded elevation band alone does not establish every local slope; mean comparisons still require A's actual gain."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "Worked-looking arithmetic rationalizes an underdetermined question. The general steepness-versus-altitude distinction is true but does not supply missing premises.",
+      "main_bounds": {
+        "characters": 404,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Intended direct count/spacing comparison is2; missing information and problematic contour wording are defects, not difficulty credit."
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q10",
+      "teaching_candidate_sha256": "243d26b55342a1f7a99659ffde255cefcad86945aa66523dd708c5d1e4c9ef64",
+      "raw_question_sha256": "0836ff403238f2383f536541a111d15ef293addc1d45872fb9e7c28617e4ac3d",
+      "main_utf8_sha256": "b59c738f1266d1cb21b9464cd2b29c85234b70c2dab5a2af9c12bf37fd65e2e6",
+      "stem_candidate_sha256": "710fd884cc59e28d6bf5cbf0fb9ee83344d1deef537b241ac5ac22cf89377831",
+      "stem_question_sha256": "126c971185a7117ea5482304deeb29b818b33a8507fb576927944cc6e94a5081",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "exact_join": true,
+      "authored_key": "Both nouns refer back to specific items established in the previous sentence.",
+      "key_agrees_with_frozen_established_unique_answer": true,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "supported_contextual_association_with_wording_precision",
+        "supported_under_recorded_case_scope": true,
+        "material_error_or_invalid_inference_identified": false,
+        "reason": "The hotel provides a room and its view as contextually recoverable referents; the main correctly explains this association. Calling both nouns a shift from indefinite to definite is imprecise, since neither noun was explicitly used earlier. The ordinary explanation remains sound if shift describes becoming contextually identifiable, not an actual earlier article change.",
+        "issues": [
+          {
+            "kind": "nonmaterial_precision",
+            "exact_quote": "Both nouns shift from indefinite to definite",
+            "reason": "Neither view nor room had an explicit indefinite noun phrase in the first sentence. Do not generalize this wording into a requirement for direct earlier mention."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "The specific association carries the answer. The article-shift wording adds avoidable ambiguity but does not erase the correctly identified referents.",
+      "main_bounds": {
+        "characters": 411,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "One bridging-reference principle applied to two associated objects;2, with a possible2/3 boundary for novices. Weak rivals limit challenge."
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    },
+    {
+      "candidate_id": "q11",
+      "teaching_candidate_sha256": "5fc4fdce3dd1fb1a388cf06f93910cacf9fcee11015c00fbff53aa9e23986638",
+      "raw_question_sha256": "0426ab1438c9dda9b531bf3e7b228ed03a7b72219468c75542bec03fdffadfd9",
+      "main_utf8_sha256": "091a1270a4e1216f375d1340cfc9723f21563443fa621b845e09fbedfcecb818",
+      "stem_candidate_sha256": "d35e2ea9d4739e547a63b4edb82f92eba644c7181bc4bf92cf67461fa879532c",
+      "stem_question_sha256": "9bf614aae53ca22fc6f3ae438180d7862f22bb6d044dcf349a064c9834ded956",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "exact_join": true,
+      "authored_key": "Elevation increases and the slope becomes progressively steeper.",
+      "key_agrees_with_frozen_established_unique_answer": false,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": true,
+      "main_assessment": {
+        "disposition": "unsupported_elevation_direction",
+        "supported_under_recorded_case_scope": false,
+        "material_error_or_invalid_inference_identified": true,
+        "reason": "The magnitude ratios1:20,1:10 and1:5 are correct. The main assumes ascent; no elevation labels or direction of increasing elevations are supplied. A descending route has the same contour spacings and increasing steepness magnitude, so the authored increase-and-steepen key is not determined.",
+        "issues": [
+          {
+            "kind": "material_unstated_premise",
+            "exact_quote": "The elevation increases throughout",
+            "reason": "This sign is not provided. The frozen sign-reversal counterexample preserves all supplied spacings while making the elevation decrease."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "Valid ratio calculations are coupled to an invented direction. The directional claim is necessary to the chosen answer, so it cannot be excused as harmless surplus wording.",
+      "main_bounds": {
+        "characters": 390,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Identifying denser contours as steeper is a direct rule, level2. Detecting absent direction does not make the unrepaired item a valid advanced task."
+      },
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ]
+    },
+    {
+      "candidate_id": "q12",
+      "teaching_candidate_sha256": "4398260c7fcb4071759ac1536252bdb24be4cfa16869eb77e51151ea470353a2",
+      "raw_question_sha256": "f6da874b8353a008d9d3400ebffcb33179fcbf8ed8e541c738f7197433ed5a18",
+      "main_utf8_sha256": "7f68279431ba5e6fe8c622b0d868202f0f7d75f201e07e1f2a760dd67d6a21e7",
+      "stem_candidate_sha256": "a3ef7652ab1cb354a1a223fda077cf67972dc2a378a940b1b46721978b68df60",
+      "stem_question_sha256": "26bd7a4567370bf1bf11f3d7818860b68b50afdc795525341c7b17b634c2cd5d",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "exact_join": true,
+      "authored_key": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+      "key_agrees_with_frozen_established_unique_answer": false,
+      "key_in_frozen_supported_but_nonunique_or_unresolved_set": false,
+      "key_matches_frozen_conditional_answer": false,
+      "main_assessment": {
+        "disposition": "explains_first_dough_introduction_instead_of_second_occurrence",
+        "supported_under_recorded_case_scope": false,
+        "material_error_or_invalid_inference_identified": true,
+        "reason": "The mixture's contextual definiteness is supported. The explanation for a dough fits the earlier forms a dough phrase more naturally; the question explicitly asks about the later Shape a dough occurrence after dough has already been introduced. A possible new/arbitrary-dough reading would need a different reference account, not an invented first conceptual introduction.",
+        "issues": [
+          {
+            "kind": "material_occurrence_mismatch",
+            "exact_quote": "the reader hasn't yet conceptualized this specific dough entity",
+            "reason": "The immediately preceding sentence explicitly forms a dough. The main ignores the occurrence named in the question and invents the reader's state."
+          }
+        ]
+      },
+      "teaching_construction_uptake": "The purported conceptual-state justification does not follow the actual text sequence. Frozen preference for the same-batch the dough correction remains conditional, not a claim that a dough is universally ungrammatical.",
+      "main_bounds": {
+        "characters": 405,
+        "within_author320": false,
+        "within_validator420": true
+      },
+      "choice_feedback": {
+        "present": false,
+        "fields_assessed": 0,
+        "absence_allowed": true
+      },
+      "frozen_difficulty": {
+        "level": 2,
+        "reason": "Direct reference continuity and a first/second mention correction, level2. Awkward wording and an implicit error diagnosis do not establish3."
+      },
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ]
+    }
+  ],
+  "summary": {
+    "raw_candidates": 12,
+    "exact_joins": 12,
+    "keys_matching_frozen_established_unique_answer": 6,
+    "keys_with_unresolved_rival": 1,
+    "keys_matching_only_conditional_answer": 4,
+    "main_character_counts": {
+      "q01": 355,
+      "q02": 357,
+      "q03": 518,
+      "q04": 485,
+      "q05": 331,
+      "q06": 429,
+      "q07": 366,
+      "q08": 479,
+      "q09": 404,
+      "q10": 411,
+      "q11": 390,
+      "q12": 405
+    },
+    "author320_compliant": 0,
+    "validator420_compliant": 8,
+    "mains_supported_in_recorded_scope": [
+      "q01",
+      "q04",
+      "q05",
+      "q08",
+      "q10"
+    ],
+    "material_reference_or_contour_inference_errors": [
+      "q02",
+      "q07",
+      "q09",
+      "q11",
+      "q12"
+    ],
+    "additional_care_qualification_ids": [
+      "q03",
+      "q06"
+    ],
+    "arm_comparison": "Unavailable until mapping is authorized; no attribution made.",
+    "qualification": "All12mains exceed the320-character author instruction, independently preventing the frozen all-six favorable criterion. Raw semantic assessments, runtime admission and causal intervention effects remain distinct."
+  }
+}

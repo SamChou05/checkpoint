@@ -1,0 +1,116 @@
+{
+  "capture_byte_sha256": "b8375f724b5829145eec110c026d2cdc302005181abb9300341ced44aec003ae",
+  "planned_slots": 12,
+  "raw_candidate_count": 12,
+  "unparsed_author_calls": [],
+  "items": [
+    {
+      "candidate_id": "q01",
+      "arm": "focused_application",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 5,
+      "call_index": 11,
+      "raw_index": 1,
+      "raw_question_sha256": "9183c3a52fcf546a2f61b5e41776dcf29eaa59cf447a92ff358878c20511ffb2"
+    },
+    {
+      "candidate_id": "q02",
+      "arm": "focused_application",
+      "case_id": "english_articles_in_context",
+      "operation_index": 2,
+      "call_index": 4,
+      "raw_index": 0,
+      "raw_question_sha256": "1d005b642ea36dd8de37f3a4f64e7b75c1a0e1bb7a525c6c427523ca833223cb"
+    },
+    {
+      "candidate_id": "q03",
+      "arm": "focused_application",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 1,
+      "call_index": 3,
+      "raw_index": 0,
+      "raw_question_sha256": "ffa7d30f4fb6086f481bec3a3f5f74d99e5448aaf01afccede1fbcdc18f75924"
+    },
+    {
+      "candidate_id": "q04",
+      "arm": "balanced",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 4,
+      "call_index": 10,
+      "raw_index": 1,
+      "raw_question_sha256": "f419a03602302617b2d1a18fc801b5b98ddc0a8b713c331dcd071195fb7fbaff"
+    },
+    {
+      "candidate_id": "q05",
+      "arm": "balanced",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "call_index": 0,
+      "raw_index": 1,
+      "raw_question_sha256": "edf14bc4c778e68fdaf05a64682a399b5d08b426ebac2c2566012f54a2dac7aa"
+    },
+    {
+      "candidate_id": "q06",
+      "arm": "balanced",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "call_index": 0,
+      "raw_index": 0,
+      "raw_question_sha256": "4c00b6518ca6fafb3078ea2f0fc83bdcede59182b6dfe94806843cb1f3d9caa8"
+    },
+    {
+      "candidate_id": "q07",
+      "arm": "focused_application",
+      "case_id": "english_articles_in_context",
+      "operation_index": 2,
+      "call_index": 4,
+      "raw_index": 1,
+      "raw_question_sha256": "5af5fac51c7d480910980e5f8550a78e554a6910b926738574ee622314578325"
+    },
+    {
+      "candidate_id": "q08",
+      "arm": "focused_application",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 1,
+      "call_index": 3,
+      "raw_index": 1,
+      "raw_question_sha256": "cfb2f7672f96a07ba09c5f4dfd96d60f9948ff9b841970f57f0052b891434b36"
+    },
+    {
+      "candidate_id": "q09",
+      "arm": "balanced",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 4,
+      "call_index": 10,
+      "raw_index": 0,
+      "raw_question_sha256": "55ef047f0a36cbe53238d85cfe29c8400b4ec9210c24bfe24ffcbfd48264f1a4"
+    },
+    {
+      "candidate_id": "q10",
+      "arm": "balanced",
+      "case_id": "english_articles_in_context",
+      "operation_index": 3,
+      "call_index": 7,
+      "raw_index": 0,
+      "raw_question_sha256": "0836ff403238f2383f536541a111d15ef293addc1d45872fb9e7c28617e4ac3d"
+    },
+    {
+      "candidate_id": "q11",
+      "arm": "focused_application",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 5,
+      "call_index": 11,
+      "raw_index": 0,
+      "raw_question_sha256": "0426ab1438c9dda9b531bf3e7b228ed03a7b72219468c75542bec03fdffadfd9"
+    },
+    {
+      "candidate_id": "q12",
+      "arm": "balanced",
+      "case_id": "english_articles_in_context",
+      "operation_index": 3,
+      "call_index": 7,
+      "raw_index": 1,
+      "raw_question_sha256": "f6da874b8353a008d9d3400ebffcb33179fcbf8ed8e541c738f7197433ed5a18"
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "assessment": "focused application independent content A phase2",
+  "input_path": "/tmp/checkpoint-focused-application-teaching-20260908.json",
+  "input_byte_sha256": "71cb0272a75e5809247d595b92bd73bc5d546ab81302b74a21e9d20f869d32a8",
+  "frozen_phase1_path": "/tmp/checkpoint-focused-application-stem-assessment-a-20260908.json",
+  "frozen_phase1_byte_sha256": "6ceec68df43bcd6cff02afead4d2db851882c6f3ca935ebadc5783feaf49438a",
+  "phase1_input_byte_sha256": "1d6390c8a35b776dc701726653cd5438b3f3d4afa3a76c1c249802e60382d8f1",
+  "capture_hash_as_supplied_unopened": "b8375f724b5829145eec110c026d2cdc302005181abb9300341ced44aec003ae",
+  "masking": "Only the specified teaching packet opened after phase1 was saved and its hash reported. No mapping/capture/operational audit/runtime verdict or other assessor judgments read. Phase1 is unchanged.",
+  "hash_convention": "raw_question_sha256 hashes the complete exact raw_question with UTF-8 compact sorted ensure_ascii=False JSON; main_sha256 hashes exact main UTF-8 bytes. Raw text is retained in the input packet; only decisive excerpts are repeated here.",
+  "scope": "Assistant qualitative assessment, not human/learner calibration. No source/model calls or repository edits. All12 raw items assessed, regardless of unknown retention. Correctness, adequacy, article-meaning nuances and useful worked teaching remain distinct from length admission.",
+  "summary": {
+    "raw_items": 12,
+    "all_mains_over320": true,
+    "over420_ids": [
+      "q03",
+      "q04",
+      "q06",
+      "q08"
+    ],
+    "supported_unique_authored_key_ids": [
+      "q01",
+      "q03",
+      "q05",
+      "q10"
+    ],
+    "supported_option_uniqueness_unresolved_ids": [
+      "q08"
+    ],
+    "conditional_key_ids": [
+      "q02",
+      "q04",
+      "q06",
+      "q07",
+      "q11"
+    ],
+    "unwarranted_or_disagreeing_key_ids": [
+      "q09",
+      "q12"
+    ],
+    "corrected_key_disagreement_id": "q12",
+    "complete_useful_main_with_recorded_scope_ids": [
+      "q03",
+      "q05",
+      "q08"
+    ],
+    "all12_independent_difficulty2": true,
+    "full_favorable_items": 0,
+    "choice_feedback_fields_observed": 0,
+    "retention_and_arm_results": "not read/not inferred"
+  },
+  "candidates": [
+    {
+      "candidate_id": "q01",
+      "raw_question_sha256": "9183c3a52fcf546a2f61b5e41776dcf29eaa59cf447a92ff358878c20511ffb2",
+      "question_locator": "$.candidates[candidate_id='q01'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+      "key_agreement_with_frozen_phase1": "supported_unique",
+      "frozen_selected_key": "Both trails have equal total elevation gain, but Trail B has a gentler slope.",
+      "main_sha256": "7003325c13af1f5392cd6f54fa50f90e2e872576dcd58e744e70c158854914b5",
+      "main_characters": 355,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "correct_comparison_with_unjustified_line_count_confirmation",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "Each trail crosses 5 intervals × 20 m = 100 m total elevation gain, confirming the stated gain.",
+          "judgment": "The stem says five contour lines, not five complete intervals. The100-m gain is explicitly given and supports the answer, but line crossings alone are not a general confirmation without endpoint alignment."
+        },
+        {
+          "text": "Trail A's slope: 100 m / 1,000 m = 1:10. Trail B's slope: 100 m / 2,000 m = 1:20.",
+          "judgment": "Correct route-average ratios on the ordinary mapped-run interpretation retained in phase1, not every local slope. This is useful working."
+        }
+      ],
+      "conclusion": "Supported key and useful average-gradient working. The initial line/interval inference needs correction before blanket all-claims teaching approval; no wrong result is attributed to the final comparison.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q02",
+      "raw_question_sha256": "1d005b642ea36dd8de37f3a4f64e7b75c1a0e1bb7a525c6c427523ca833223cb",
+      "question_locator": "$.candidates[candidate_id='q02'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "a / The / (no article)",
+      "key_agreement_with_frozen_phase1": "conditional_intention_only",
+      "frozen_selected_key": null,
+      "main_sha256": "3668ff3903599e0110c8b26a9452dd7018b734f06cd3a3cbf4d436e07f594488",
+      "main_characters": 357,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "unsupported_generic_meaning_claim",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "The third blank needs no article (bare \"breakfast\") because it names a general class of meal included, not a particular instance being singled out.",
+          "judgment": "Bare breakfast is natural here but refers to the relevant hotel meal/offering in the past narrative. No article does not establish the task's demanded generic-class meaning. The causal explanation repeats the semantic defect."
+        }
+      ],
+      "conclusion": "Hotel introduction and staff bridging are supported; the breakfast explanation makes a stronger semantic claim than the completion warrants. The authored key matches only the conditional intended tuple.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q03",
+      "raw_question_sha256": "ffa7d30f4fb6086f481bec3a3f5f74d99e5448aaf01afccede1fbcdc18f75924",
+      "question_locator": "$.candidates[candidate_id='q03'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+      "key_agreement_with_frozen_phase1": "supported_unique",
+      "frozen_selected_key": "Keep it in a well-draining rooting medium and wait for firm, creamy white roots and new growth before transplanting.",
+      "main_sha256": "a7647f290da76ef321f7561c2e5028cdde196e62ed6fe75ea54bf7d89e163560",
+      "main_characters": 518,
+      "author320_compliant": false,
+      "validator420_compliant": false,
+      "main_status": "supported_initial_guidance_with_treatment_scope_qualifications",
+      "complete_useful_main_under_stated_scope": true,
+      "material_claims_and_qualifications": [
+        {
+          "text": "The source states that healthy roots are firm and creamy white, and that a piece with few or no roots should remain in its rooting medium.",
+          "judgment": "Faithful source facts, but few/no roots is not identical to unhealthy roots. That clause alone would not justify leaving decay untouched."
+        },
+        {
+          "text": "The gardener should first address the root condition by improving drainage or starting fresh with a better-draining medium rather than moving to soil, which could worsen the situation.",
+          "judgment": "The explicit corrective action supports the reasonable first-step reading frozen in phase1. Soil is not inherently an unsuitable rooting medium; the contrast should be routine long-term transplant without addressing root condition, not a universal soil prohibition. Could worsen is a possibility, not a certainty."
+        }
+      ],
+      "conclusion": "A useful worked connection from unhealthy observations to postponed routine transplant and corrective conditions. It supplies no guaranteed recovery or complete disease diagnosis. Qualified supported initial guidance, not exhaustive rot treatment.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": true,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q04",
+      "raw_question_sha256": "f419a03602302617b2d1a18fc801b5b98ddc0a8b713c331dcd071195fb7fbaff",
+      "question_locator": "$.candidates[candidate_id='q04'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "The ridge trail is steeper; the valley trail is gentler, regardless of which is higher in elevation.",
+      "key_agreement_with_frozen_phase1": "conditional_intention_only",
+      "frozen_selected_key": null,
+      "main_sha256": "a95fb0252749c2950f2ed468145cf52305c06525f304e027c925643c1fbe0e10",
+      "main_characters": 485,
+      "author320_compliant": false,
+      "validator420_compliant": false,
+      "main_status": "unsupported_trail_gradient_and_direction_strengthening",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "the ridge rises 20 m in (5 mm × 500 m/cm × 0.1 cm/mm) = 250 m horizontal, while the valley trail rises 20 m in 500 m horizontal",
+          "judgment": "The unit conversions are correct. Assigning these distances to the trails and saying they rise assumes crossing direction and elevation direction absent from the stem. They measure the supplied contour spacing, not automatically the path's run."
+        },
+        {
+          "text": "The ridge is steeper.",
+          "judgment": "Supported for terrain change measured across the supplied contour spacing, conditional for the ridge trail. The main does not resolve the trail-versus-local-terrain ambiguity frozen in phase1."
+        }
+      ],
+      "conclusion": "It teaches the correct interval/spacing principle but strengthens that into particular trail rises and slope comparison without the requisite direction geometry. No actual absolute elevation is inferred, correctly.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q05",
+      "raw_question_sha256": "edf14bc4c778e68fdaf05a64682a399b5d08b426ebac2c2566012f54a2dac7aa",
+      "question_locator": "$.candidates[candidate_id='q05'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "The pothos will root; the Monstera leaf will not develop into a new plant",
+      "key_agreement_with_frozen_phase1": "supported_unique",
+      "frozen_selected_key": "The pothos will root; the Monstera leaf will not develop into a new plant",
+      "main_sha256": "57fef86f1a6bb15cfd5bfbaf0ff5f31d37e7bbe3c76e304632b032ef155941d6",
+      "main_characters": 331,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "supported_in_ordinary_new_plant_scope",
+      "complete_useful_main_under_stated_scope": true,
+      "material_claims_and_qualifications": [],
+      "conclusion": "Faithful species/node distinction and useful explanation of why a nodal pothos stem can establish while node-free Monstera material cannot form a new plant. Regardless of medium or hormone is scoped to the missing-tissue problem; it does not guarantee pothos survival under arbitrary conditions.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q06",
+      "raw_question_sha256": "4c00b6518ca6fafb3078ea2f0fc83bdcede59182b6dfe94806843cb1f3d9caa8",
+      "question_locator": "$.candidates[candidate_id='q06'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "Move Cutting A to a pot; keep Cutting B in its rooting medium",
+      "key_agreement_with_frozen_phase1": "conditional_intention_only",
+      "frozen_selected_key": null,
+      "main_sha256": "4f74c385e482732fd97c09113a68f246aa2a6a40abd1a52387d43b9ce1309468",
+      "main_characters": 429,
+      "author320_compliant": false,
+      "validator420_compliant": false,
+      "main_status": "unsupported_recovery_action",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "Soft, brown roots suggest excessive moisture or poor drainage, so Cutting B should remain in its rooting medium to recover.",
+          "judgment": "The concern is supported, but the action does not follow: the unspecified current medium or water regime may be contributing to damage. The main adds a recovery rationale without inspection/remediation. Continuing propagation after appropriate correction may be reasonable; unchanged retention is not established."
+        }
+      ],
+      "conclusion": "The A readiness evidence and nodal propagation potential are relevant. The B recovery rationale repeats and strengthens the conditional best-listed action, rather than making the full key warranted.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q07",
+      "raw_question_sha256": "5af5fac51c7d480910980e5f8550a78e554a6910b926738574ee622314578325",
+      "question_locator": "$.candidates[candidate_id='q07'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "First: general substance; second: specific instance now known from context",
+      "key_agreement_with_frozen_phase1": "conditional_intention_only",
+      "frozen_selected_key": null,
+      "main_sha256": "74023937b692e183acb359b9b68588c42d04b8157d927301d65d078dc169147b",
+      "main_characters": 366,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "unsupported_generic_meaning_claim",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "The first \"honey\" has no article because it names the general substance (any honey, uncountable class).",
+          "judgment": "The past substitution event involves an unspecified mass amount; a bare mass noun does not require generic class reference. That distinction was frozen before the main was seen."
+        }
+      ],
+      "conclusion": "The second definite honey is accurately tied to the amount used; the first-half class explanation is overbroad. Tracking contextual recoverability is helpful, but does not cure that claim.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q08",
+      "raw_question_sha256": "cfb2f7672f96a07ba09c5f4dfd96d60f9948ff9b841970f57f0052b891434b36",
+      "question_locator": "$.candidates[candidate_id='q08'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "The pothos stem can root and grow; the Monstera leaf alone cannot develop into a new plant.",
+      "key_agreement_with_frozen_phase1": "supported_option_uniqueness_unresolved",
+      "frozen_selected_key": null,
+      "main_sha256": "0d60f99cd89442284ecc28ea146a2bf0e25680394403d972282c95d3fc841d21",
+      "main_characters": 479,
+      "author320_compliant": false,
+      "validator420_compliant": false,
+      "main_status": "supported_key_explanation_uniqueness_unresolved",
+      "complete_useful_main_under_stated_scope": true,
+      "material_claims_and_qualifications": [
+        {
+          "text": "For pothos, stem cuttings are recommended, implying nodes are available.",
+          "judgment": "The actual stem explicitly provides nodes and buds; no implication from recommendation is needed. This is redundant rather than a false fact about the given cutting."
+        }
+      ],
+      "conclusion": "The main accurately explains the supported new-plant outcome. It neither establishes nor refutes the root-only rival, so the phase1 uniqueness concern remains. A supported main for one option is not a complete valid MCQ if another option remains potentially compatible.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q09",
+      "raw_question_sha256": "55ef047f0a36cbe53238d85cfe29c8400b4ec9210c24bfe24ffcbfd48264f1a4",
+      "question_locator": "$.candidates[candidate_id='q09'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "Route A has steeper terrain; Route B has gentler terrain with less total elevation change.",
+      "key_agreement_with_frozen_phase1": "not_warranted_or_disagrees",
+      "frozen_selected_key": null,
+      "main_sha256": "08be0b5bec41b21e7c8b1fc5d1b4611ce49c3e783ea407cc21ac49be76850adf",
+      "main_characters": 404,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "unsupported_numeric_and_profile_inferences",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "Route A crosses 8 contours × 40 ft = 320 ft elevation change over 2 miles.",
+          "judgment": "Counts alone omit the elevation sequence and endpoint offsets;320-ft change does not follow."
+        },
+        {
+          "text": "Route B stays within one index contour interval (840 − 800 = 40 ft), so it has gentler terrain.",
+          "judgment": "A40-ft elevation band bounds range/net difference, not every local slope or accumulated ascent. It does not supply the comparison with A, and the main ignores the impossible ordinary intermediate crossings stated inside that single interval."
+        },
+        {
+          "text": "Route A has greater elevation change and steeper average slope; Route B has minimal elevation change regardless of its absolute elevation.",
+          "judgment": "The compound comparison inherits the missing premises. Minimal has no quantitative support beyond the bounded range; net/range and total change are not interchangeable."
+        }
+      ],
+      "conclusion": "The general height-versus-steepness distinction is true; the numerical and relative-route conclusions are not supported by this exact display. The explanation does not repair or acknowledge its malformed contour premises.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q10",
+      "raw_question_sha256": "0836ff403238f2383f536541a111d15ef293addc1d45872fb9e7c28617e4ac3d",
+      "question_locator": "$.candidates[candidate_id='q10'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "Both nouns refer back to specific items established in the previous sentence.",
+      "key_agreement_with_frozen_phase1": "supported_unique",
+      "frozen_selected_key": "Both nouns refer back to specific items established in the previous sentence.",
+      "main_sha256": "b59c738f1266d1cb21b9464cd2b29c85234b70c2dab5a2af9c12bf37fd65e2e6",
+      "main_characters": 411,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "supported_bridging_with_misleading_article_history",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "Both nouns shift from indefinite to definite because the preceding sentence established shared reference",
+          "judgment": "Room and view first appear with the; neither appeared previously as an indefinite noun phrase. The earlier sentences of the main correctly explain indirect association. If shift means referents becoming recoverable rather than an actual article change, it needs that qualification; literal noun/article-history wording is misleading for this teaching objective."
+        }
+      ],
+      "conclusion": "The key and contextual bridging explanation remain supported. The final shift wording conflates first-mention definite association with an explicit indefinite-to-definite transition; preserve this as a teaching qualification rather than a wrong key.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q11",
+      "raw_question_sha256": "0426ab1438c9dda9b531bf3e7b228ed03a7b72219468c75542bec03fdffadfd9",
+      "question_locator": "$.candidates[candidate_id='q11'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "Elevation increases and the slope becomes progressively steeper.",
+      "key_agreement_with_frozen_phase1": "conditional_intention_only",
+      "frozen_selected_key": null,
+      "main_sha256": "091a1270a4e1216f375d1340cfc9723f21563443fa621b845e09fbedfcecb818",
+      "main_characters": 390,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "unsupported_elevation_direction",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "400 m spacing means 20 m rise per 400 m = 1:20",
+          "judgment": "The magnitude calculation is correct; rise assumes ascending contour labels not supplied."
+        },
+        {
+          "text": "The elevation increases throughout",
+          "judgment": "Not determined. A descending reflected profile preserves the same20-m interval and400/200/100-m spacings. Only increasing slope magnitude is warranted."
+        }
+      ],
+      "conclusion": "Correct arithmetic for slope magnitudes supports progressively steeper terrain. It cannot select ascent rather than descent, so the complete authored key is not warranted.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q12",
+      "raw_question_sha256": "f6da874b8353a008d9d3400ebffcb33179fcbf8ed8e541c738f7197433ed5a18",
+      "question_locator": "$.candidates[candidate_id='q12'].raw_question",
+      "exact_prompt_choices_join": true,
+      "authored_key": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+      "key_agreement_with_frozen_phase1": "not_warranted_or_disagrees",
+      "frozen_selected_key": "The second \"a\" is an error; it should be \"the dough\" for consistency.",
+      "main_sha256": "7f68279431ba5e6fe8c622b0d868202f0f7d75f201e07e1f2a760dd67d6a21e7",
+      "main_characters": 405,
+      "author320_compliant": false,
+      "validator420_compliant": true,
+      "main_status": "wrong_occurrence_explained_and_key_disagreement",
+      "complete_useful_main_under_stated_scope": false,
+      "material_claims_and_qualifications": [
+        {
+          "text": "\"A dough\" is indefinite because it introduces the dough as a new, resulting state; the reader hasn't yet conceptualized this specific dough entity",
+          "judgment": "This could explain the first forms a dough. The question explicitly asks about the second a dough in Shape a dough, after the dough has already been introduced. The main explains the wrong occurrence and contradicts the literal prior context for the second."
+        }
+      ],
+      "conclusion": "The mixture explanation is supported. For the second dough in an ordinary continuous recipe, the offered correction to the dough is the frozen supported answer. The authored main/key instead justifies a first occurrence the question was not asking about; no universal ban on a dough is asserted by this assessment.",
+      "choice_explanations": "absent",
+      "independent_difficulty_frozen": 2,
+      "three_plausible_distinct_distractors_frozen": false,
+      "fully_favorable": false,
+      "arm_and_retention": "withheld/unassessed"
+    }
+  ]
+}
