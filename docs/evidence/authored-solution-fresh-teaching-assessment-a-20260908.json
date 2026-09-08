@@ -1,0 +1,358 @@
+{
+  "assessment_type": "Independent assistant authored-main assessment after immutable stem/choice freeze; model/runtime verdicts remain unseen.",
+  "input_path": "/tmp/checkpoint-authored-solution-fresh-teaching-20260908.json",
+  "input_byte_sha256": "3ae86047665bfbd274cb4c5e4bba8137f4f1e6b733ff282cad51fc6609b2f357",
+  "frozen_stem_assessment_path": "/tmp/checkpoint-authored-solution-fresh-stem-assessment-a-20260908.json",
+  "frozen_stem_assessment_byte_sha256": "1aaa47c2af33a321aca0b83330805c3bda02ffbc322546c71d67a571f1c35a04",
+  "capture_sha256_as_supplied_unopened": "13b7b082a9b77303d67e5ebab1a5d690b35133e2318c9c8e7aad63567b39a432",
+  "scope": "Only the authorized teaching packet was opened after the stem freeze. Author difficulty is present in that packet but does not change frozen ratings. No runtime capture/verdict/retention records, provider calls or product edits. Earlier primary-source checks are referenced, not model judgments.",
+  "hash_contract": "raw_question_sha256 hashes the exact complete raw question; main_utf8_sha256 hashes exact main UTF8. No normalization is used for binding.",
+  "sources": {
+    "umn_monstera": {
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+      "locator": "Propagation; Rooting media; Caring for your cuttings; When to transplant your rooted cutting",
+      "support": "Species-specific node/bud requirement, several media, optional hormone, healthy roots plus active growth as transplant cues; not a guarantee or exhaustive disease diagnosis."
+    },
+    "iowa_methods": {
+      "url": "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants",
+      "locator": "Which Method do you Use?; Best Propagation Method by Species",
+      "support": "Pothos stem cuttings; methods vary by species. Table recommendations do not prove unlisted methods impossible."
+    },
+    "maryland_repotting": {
+      "url": "https://www.extension.umd.edu/resource/potting-and-repotting-indoor-plants",
+      "locator": "Steps for potting or repotting an indoor plant, step2; About potting medium",
+      "support": "Remove dead brown roots during repotting; use a porous draining medium. General indoor-plant guidance, not an observation of this cutting or proof that trimming cures every cause."
+    },
+    "illinois_cuttings": {
+      "url": "https://extension.illinois.edu/blogs/good-growing/2025-02-21-winter-gardening-propagating-houseplants-beat-winter-blues",
+      "locator": "Propagate with Cuttings; Sticking (Planting) Your Cuttings",
+      "support": "Lists pothos stem cuttings, perlite as a propagation medium, optional hormone treatment, and successful rooting of pothos in water. Supports ordinary method availability, not guaranteed success or every hormone concentration."
+    },
+    "cambridge_articles": {
+      "url": "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the",
+      "locator": "A/an and the: meaning; Countable nouns; Uncountable nouns; General nouns",
+      "support": "Definite reference recoverable from context; bare mass nouns and plural nouns can occur without the; a/an restricted to singular countable uses. Reference and noun use matter, not mechanical mention counts."
+    },
+    "usgs_symbols": {
+      "url": "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf",
+      "locator": "Page1 Reading Topographic Maps; page2 contour legend",
+      "support": "Contours encode equal elevation, interval is vertical difference, and spacing informs local steepness. No supplied route geometry or terrain interpolation model."
+    },
+    "usgs_index": {
+      "url": "https://www.usgs.gov/ngp-standards-and-specifications/100k-ondemand-topo-cartographic-specifications-elevation",
+      "locator": "Contours: Index and Intermediate",
+      "support": "This USGS specification uses every fifth ordinary contour as an index; intermediate contours occur at the stated interval. Used as an explicitly conventional illustration, not an invented map-specific labeling premise."
+    }
+  },
+  "items": [
+    {
+      "candidate_id": "houseplant_propagation_decisions:0",
+      "frozen_candidate_input_sha256": "6e077346b55ef8a153c8d863bca51107d06560bab6d9f8bc37fe206a81f44991",
+      "raw_question_sha256": "db9dbe59cf45652eadd09efc1d0d9a3c5df5d8469f70c8066fd5557f9885434b",
+      "exact_main": "Firm, creamy white roots indicate healthy development, and active new leaf growth confirms the cutting is metabolically active and ready for transition. Soft brown tips suggest minor localized issue (possibly brief waterlogging or old tissue) but do not override the overall healthy root mass. The cutting meets criteria for transplant: healthy roots plus active growth. Keeping it in water risks further decline of those compromised tips, while waiting for more roots is unnecessary given existing readiness. Discarding would waste a viable plant.",
+      "main_utf8_sha256": "06d46e61f902df1a57baf97bd69f7fe08eb20acd256cf6c0283e327d722d808e",
+      "main_characters": 548,
+      "author_main320_pass": false,
+      "runtime_main420_pass": false,
+      "choice_feedback_status": "absent",
+      "exact_authored_key": "Transplant to well-draining potting mix now, trimming only the soft brown tips.",
+      "frozen_warranted_exact_choices": [
+        "Transplant to well-draining potting mix now, trimming only the soft brown tips."
+      ],
+      "frozen_conditional_exact_choices": [],
+      "authored_key_matches_frozen_warranted_choice": true,
+      "authored_key_matches_only_conditional_choice": false,
+      "frozen_independent_difficulty": {
+        "level": 3,
+        "reason": "Weighs predominantly healthy roots and active growth against localized damage to choose an intervention, rather than treating any brown root as fatal. This is evidence integration; the weak division distractor limits the item quality."
+      },
+      "assessment": {
+        "assessment": "supported_core_with_unverified_ancillary_hypotheses",
+        "material_factual_error_identified": false,
+        "entire_main_independently_supported": false,
+        "worked_reasoning": "Connects healthy roots and growth to transplant readiness and distinguishes localized damage from discarding the cutting. It is a worked core explanation, but adds speculative causes and repetitive advocacy.",
+        "issues": [
+          {
+            "type": "unverified_possible_cause_not_established_fact",
+            "exact_assertion": "possibly brief waterlogging or old tissue",
+            "reason": "The source supports concern about excess moisture/poor drainage; no evidence here identifies a brief episode or old tissue. The word possibly preserves uncertainty, so this is not a definite false diagnosis. It is unnecessary, unverified explanatory material."
+          },
+          {
+            "type": "scope_qualification",
+            "exact_assertion": "Soft brown tips suggest minor localized issue",
+            "reason": "The visible damage is limited to a few tips, but its underlying severity/cause is not fully diagnosed. Read this as a description of observed extent, not a guarantee that the problem is harmless or trimming alone cures it."
+          }
+        ],
+        "references": [
+          "umn_monstera",
+          "maryland_repotting"
+        ],
+        "conclusion": "Authored key matches the frozen best-listed recommendation. Core care reasoning is defensible, with the recorded qualifications;548-character main fails both author320 and runtime420. Do not count format rejection as detection of the unverified causal aside."
+      },
+      "full_favorable_item": false,
+      "full_favorable_item_reason": "Main exceeds the prospective author320-character bound; original stem/choice/difficulty/distractor findings are preserved independently of this necessary failure."
+    },
+    {
+      "candidate_id": "houseplant_propagation_decisions:1",
+      "frozen_candidate_input_sha256": "bdee0eba96f867731558d6b09925290a307884e0737a206471097983d2d6dede",
+      "raw_question_sha256": "09ac5c5e866348deb5f81b9d99de579aa6a137b821e2e22716028db3ba5cabd9",
+      "exact_main": "Pothos roots readily from stem cuttings with nodes, so either water or perlite works; rooting hormone is optional but acceptable. However, the Monstera leaf with petiole lacks the essential node with axillary bud required for new plant development—this material cannot produce a viable plant regardless of medium or hormone. The plan must recognize this biological limitation and allocate the usable pothos cutting to propagation while acknowledging the Monstera leaf cannot be propagated. Treating the Monstera leaf as viable would waste effort; discarding the pothos would waste usable material; applying hormone to the Monstera leaf cannot compensate for missing nodal tissue.",
+      "main_utf8_sha256": "73832a1186e44e8f465c954c8688f9974b560502f8520a4faf8aba77406f82bb",
+      "main_characters": 679,
+      "author_main320_pass": false,
+      "runtime_main420_pass": false,
+      "choice_feedback_status": "absent",
+      "exact_authored_key": "Root the pothos cutting in water or perlite with optional hormone; the Monstera leaf cannot develop into a plant and should not be used for propagation.",
+      "frozen_warranted_exact_choices": [
+        "Root the pothos cutting in water or perlite with optional hormone; the Monstera leaf cannot develop into a plant and should not be used for propagation."
+      ],
+      "frozen_conditional_exact_choices": [],
+      "authored_key_matches_frozen_warranted_choice": true,
+      "authored_key_matches_only_conditional_choice": false,
+      "frozen_independent_difficulty": {
+        "level": 2,
+        "reason": "One decisive node-viability rule eliminates every wrong plan. Length, two species and extra supplies do not create additional inferential depth."
+      },
+      "assessment": {
+        "assessment": "supported_with_ordinary_propagation_scope",
+        "material_factual_error_identified": false,
+        "entire_main_independently_supported": true,
+        "worked_reasoning": "Explains the decisive tissue distinction and why medium/hormone do not replace a Monstera node, while preserving a viable use of the pothos cutting.",
+        "issues": [
+          {
+            "type": "scope_qualification",
+            "exact_assertion": "regardless of medium or hormone",
+            "reason": "Supported for the ordinary water/perlite/hormone propagation methods in this task; it is not assessed as an assertion about every experimental tissue-culture technology or as a guarantee that the pothos will survive."
+          }
+        ],
+        "references": [
+          "umn_monstera",
+          "iowa_methods",
+          "illinois_cuttings"
+        ],
+        "conclusion": "Key and core explanation match the frozen reasoning. Main679, stem358 and key-choice152 violate the declared bounds. Repetition does not raise the frozen level2 difficulty."
+      },
+      "full_favorable_item": false,
+      "full_favorable_item_reason": "Main exceeds the prospective author320-character bound; original stem/choice/difficulty/distractor findings are preserved independently of this necessary failure."
+    },
+    {
+      "candidate_id": "english_articles_in_context:0",
+      "frozen_candidate_input_sha256": "a85353667710543005951d6bb0cfef738216505fea6aaa79136613721cd6fa95",
+      "raw_question_sha256": "071e0fc4752923e559f335e03a3e9cf59203de041f08fac424d228700178f53a",
+      "exact_main": "The first sentence introduces 'a café'—new to the reader. Once mentioned, the café becomes shared reference, so items uniquely associated with it ('coffee' and 'pastries' from that café) are identifiable to the reader. 'The' signals this recoverable reference. This contrasts with 'a café,' which introduces an unknown singular countable noun.",
+      "main_utf8_sha256": "528c9474e64d391061b7cb30334c1718e60a1b16952d1682021c820842b4cf16",
+      "main_characters": 343,
+      "author_main320_pass": false,
+      "runtime_main420_pass": true,
+      "choice_feedback_status": "absent",
+      "exact_authored_key": "The writer assumes readers can identify which coffee and pastries are meant because they belong to the café just mentioned.",
+      "frozen_warranted_exact_choices": [
+        "The writer assumes readers can identify which coffee and pastries are meant because they belong to the café just mentioned."
+      ],
+      "frozen_conditional_exact_choices": [],
+      "authored_key_matches_frozen_warranted_choice": true,
+      "authored_key_matches_only_conditional_choice": false,
+      "frozen_independent_difficulty": {
+        "level": 2,
+        "reason": "Directly applies contextual definite reference; no competing café or referent must be resolved. The universal and city-wide alternatives weaken the discrimination task."
+      },
+      "assessment": {
+        "assessment": "supported_in_stated_discourse",
+        "material_factual_error_identified": false,
+        "entire_main_independently_supported": true,
+        "worked_reasoning": "Identifies the café as the newly introduced shared context and explains why the later food/drink references can be recovered without earlier mention of those nouns.",
+        "issues": [
+          {
+            "type": "minor_wording_scope",
+            "exact_assertion": "items uniquely associated with it",
+            "reason": "Read as the food/drink referents in this café episode, not as claiming that coffee/pastries occur at only one café or that every individual cup/item is globally unique. The parenthetical from that café supplies this contextual scope."
+          }
+        ],
+        "references": [
+          "cambridge_articles"
+        ],
+        "conclusion": "Key and worked explanation agree with frozen discourse interpretation.343 characters is inside validator420 but exceeds author320. Actual difficulty remains2 and the distractor weaknesses remain."
+      },
+      "full_favorable_item": false,
+      "full_favorable_item_reason": "Main exceeds the prospective author320-character bound; original stem/choice/difficulty/distractor findings are preserved independently of this necessary failure."
+    },
+    {
+      "candidate_id": "english_articles_in_context:1",
+      "frozen_candidate_input_sha256": "9a6c5b6ef0d1433a37a486276bd25791cebb3db4dc3e1838bebff582b241e550",
+      "raw_question_sha256": "ff7ce4e3427e47f6cdec27a0d60ae4702da9f73987ad9f7e570f96d87dd1fa75",
+      "exact_main": "The first sentence introduces 'butter' as an uncountable substance in general (no article). Once the instruction specifies 'butter in a pan,' that particular butter becomes identifiable to the reader. 'The butter' in the third sentence refers back to this specific, shared amount, not butter in general. The shift marks a change from introducing a substance to referring to a particular instance.",
+      "main_utf8_sha256": "fd2e081a83b27252ad9ac6d63d14b3bba2b4b8daaf8cca15eaf060e613a77585",
+      "main_characters": 396,
+      "author_main320_pass": false,
+      "runtime_main420_pass": true,
+      "choice_feedback_status": "absent",
+      "exact_authored_key": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+      "frozen_warranted_exact_choices": [
+        "The butter has become a specific, identifiable amount that was introduced in the previous instruction."
+      ],
+      "frozen_conditional_exact_choices": [],
+      "authored_key_matches_frozen_warranted_choice": true,
+      "authored_key_matches_only_conditional_choice": false,
+      "frozen_independent_difficulty": {
+        "level": 2,
+        "reason": "This is the familiar prior-mention/contextual-identification application explicitly excluded as sufficient level3 depth by the frozen criteria."
+      },
+      "assessment": {
+        "assessment": "materially_incorrect_generic_reference_explanation",
+        "material_factual_error_identified": true,
+        "entire_main_independently_supported": false,
+        "worked_reasoning": "Correctly explains later anaphoric the butter, but gives the bare noun in the first recipe instruction an unwarranted generic interpretation.",
+        "issues": [
+          {
+            "type": "semantic_overstatement",
+            "exact_assertion": "The first sentence introduces 'butter' as an uncountable substance in general (no article).",
+            "reason": "Melt butter in a pan is an instruction to use an unspecified amount in this recipe, not a generic claim about butter as a class/substance in general. Bare mass nouns can have a specific-situation, indefinite-quantity interpretation. Cambridge’s request examples for rice illustrate that lack of an article does not require a generic reading."
+          },
+          {
+            "type": "supported_part_preserved",
+            "exact_assertion": "'The butter' in the third sentence refers back to this specific, shared amount",
+            "reason": "This contextual/anaphoric account is correct; it does not rescue the misleading account of the first occurrence."
+          }
+        ],
+        "references": [
+          "cambridge_articles"
+        ],
+        "conclusion": "Key matches the frozen answer, but the main teaches an incorrect generic-versus-indefinite distinction.396 characters passes420 but violates320; frozen difficulty remains2."
+      },
+      "full_favorable_item": false,
+      "full_favorable_item_reason": "Main exceeds the prospective author320-character bound; original stem/choice/difficulty/distractor findings are preserved independently of this necessary failure."
+    },
+    {
+      "candidate_id": "topographic_contour_profiles:0",
+      "frozen_candidate_input_sha256": "f1224fe83c1577ba14c280a7b34bdadc91258b26f57d7b54abcbe445ec6495bc",
+      "raw_question_sha256": "58f2652a988d8c732249c7b74db9b93754ddd1882fa894fa7f7c021635feee4d",
+      "exact_main": "First, determine total elevation change: from 400 m to 500 m is a 100 m gain. The trail crosses five intermediate contours. With a 20 m interval, each intermediate represents 20 m. However, the hiker starts and ends on index contours (400 m and 500 m), so the five crossed intermediates plus the starting elevation give: 400 → 420 → 440 → 460 → 480 → 500 m. This confirms 100 m total gain. The key distinction is that five intermediate crossings in 2 km with 100 m total rise means average slope is moderate (5% grade). The scenario requires combining contour count, interval, and horizontal distance to assess slope, not just elevation change.",
+      "main_utf8_sha256": "b7f2d10d55b2fce2736fa5146ccaa9aedd7180957fb6a1552b2015af785d4321",
+      "main_characters": 644,
+      "author_main320_pass": false,
+      "runtime_main420_pass": false,
+      "choice_feedback_status": "absent",
+      "exact_authored_key": "The trail gains 100 m in elevation with a moderate, fairly consistent slope.",
+      "frozen_warranted_exact_choices": [],
+      "frozen_conditional_exact_choices": [
+        "The slope cannot be determined without knowing the contour spacing pattern."
+      ],
+      "authored_key_matches_frozen_warranted_choice": false,
+      "authored_key_matches_only_conditional_choice": false,
+      "frozen_independent_difficulty": {
+        "level": 2,
+        "reason": "The plausible intended response applies the familiar missing-spacing rule directly. Diagnosing an author’s contour-count error is not credited as intended level3 learning value."
+      },
+      "assessment": {
+        "assessment": "incorrect_contour_count_and_unsupported_profile",
+        "material_factual_error_identified": true,
+        "entire_main_independently_supported": false,
+        "worked_reasoning": "Displays calculations, but conflates intervals with intermediate contour lines and substitutes an average for the unsupported claim of consistent local slope.",
+        "issues": [
+          {
+            "type": "definite_count_classification_error",
+            "exact_assertion": "the five crossed intermediates plus the starting elevation give: 400 → 420 → 440 → 460 → 480 → 500 m",
+            "reason": "The displayed sequence contains four intermediate elevations420/440/460/480.500 is the explicitly named destination index contour, not a fifth intermediate. Five20m intervals are not five intermediate contour lines."
+          },
+          {
+            "type": "unsupported_uniformity_and_average_scope",
+            "exact_assertion": "average slope is moderate (5% grade)",
+            "reason": "100m over2000m horizontal run would give5% average grade, but the stem says trail length, not expressly horizontal run. More importantly, an average cannot establish the keyed fairly consistent slope; no crossing spacings or elevation profile are given. Total accumulated ascent also need not equal net endpoint difference."
+          }
+        ],
+        "references": [
+          "usgs_symbols",
+          "usgs_index"
+        ],
+        "conclusion": "Authored key is not among the frozen warranted choices; its consistency claim was already rejected before seeing teaching. The alternative missing-spacing answer remained conditional on scope/count concerns.644-character main exceeds both bounds."
+      },
+      "full_favorable_item": false,
+      "full_favorable_item_reason": "Main exceeds the prospective author320-character bound; original stem/choice/difficulty/distractor findings are preserved independently of this necessary failure."
+    },
+    {
+      "candidate_id": "topographic_contour_profiles:1",
+      "frozen_candidate_input_sha256": "c8be36bacccfc4d9a10342fd9288ccdfd0b18c3752030ed3a4399211d7c7cb80",
+      "raw_question_sha256": "8dbc8f90ccfc0adccca379673362c8a33ec30f4f18a4c2205059ea2c85c0fbb4",
+      "exact_main": "First, establish total elevation gain for each. Map A: six index contours at 10 m intervals between them means 5 intervals × 10 m = 50 m per index-to-index span, but six crossed index contours from start to summit with 10 m interval means elevation spans from 800 m to 800 m + (6 × 10 m) = 860 m if counting properly, or more carefully: crossing six index lines with 10 m interval implies 60 m gain to 860 m. Map B: three index contours with 25 m interval implies 2 spans × 25 m = 50 m gain to 850 m, or three crossed lines means 75 m gain to 875 m. Actually, re-analyzing: crossing N index contours with interval I means elevation change of N × I if starting below the first and ending above the last. So Map A: 6 × 10 m = 60 m gain. Map B: 3 × 25 m = 75 m gain. These cannot both be correct for the same physical terrain. The contradiction reveals that the maps use different intervals for the same terrain, so the same physical slope appears differently. Map B's wider spacing (25 m vs 10 m) means contours are farther apart horizontally for the same slope, making the terrain appear gentler in contour density. The valid conclusion recognizes that contour spacing interpretation depends on the interval, and the same slope can show different contour densities.",
+      "main_utf8_sha256": "6402b6822fd7769da5e15fef27b027d7e2ba971510404d66487358e5d2b9a744",
+      "main_characters": 1264,
+      "author_main320_pass": false,
+      "runtime_main420_pass": false,
+      "choice_feedback_status": "absent",
+      "exact_authored_key": "The same physical slope appears less steep on Map B due to its larger contour interval.",
+      "frozen_warranted_exact_choices": [
+        "Both maps depict identical terrain with identical slope steepness."
+      ],
+      "frozen_conditional_exact_choices": [],
+      "authored_key_matches_frozen_warranted_choice": false,
+      "authored_key_matches_only_conditional_choice": false,
+      "frozen_independent_difficulty": {
+        "level": 2,
+        "reason": "The stem directly says the same route; applying that identity defeats the choices without combining the supplied numerical counts or reconstructing a profile. Extra numbers do not raise challenge."
+      },
+      "assessment": {
+        "assessment": "multiple_wrong_calculations_and_unsupported_appearance_key",
+        "material_factual_error_identified": true,
+        "entire_main_independently_supported": false,
+        "worked_reasoning": "Unresolved alternative calculations and an explicit re-analysis remain in the learner text; the resulting rule and keyed conclusion are not supported.",
+        "issues": [
+          {
+            "type": "index_interval_confusion",
+            "exact_assertion": "crossing six index lines with10m interval implies60m gain to860m",
+            "exact_assertion_note": "Whitespace compacted only in this diagnostic label; the complete exact main is preserved below.",
+            "reason": "A10m ordinary contour interval is not generally the distance between index contours. Under conventional every-fifth indexing those index levels differ by50m. Crossing counts also do not fix endpoint elevations when the endpoints need not coincide with those lines."
+          },
+          {
+            "type": "unsupported_general_formula",
+            "exact_assertion": "crossing N index contours with interval I means elevation change of N × I if starting below the first and ending above the last",
+            "reason": "False as a general rule: the offsets below/above the first/last line are unknown, and I conflates ordinary interval with index spacing. The main alternates incompatible50/60/75m calculations rather than resolving them."
+          },
+          {
+            "type": "invented_contradiction_and_presentation_inference",
+            "exact_assertion": "These cannot both be correct for the same physical terrain.",
+            "reason": "The contradiction follows from wrong arithmetic, not from the two map descriptions. The frozen existence example800→1130m fits six50m-index crossings and three125m-index crossings. Different map scales/geometry are also unstated, so a guaranteed less-steep appearance does not follow. The physical-terrain identity choice remains supported."
+          }
+        ],
+        "references": [
+          "usgs_symbols",
+          "usgs_index"
+        ],
+        "conclusion": "Authored key conflicts with the frozen same-physical-terrain answer.1264-character main far exceeds both limits and includes erroneous drafting/re-analysis. Frozen difficulty remains2; this is not made harder educationally by erroneous calculations."
+      },
+      "full_favorable_item": false,
+      "full_favorable_item_reason": "Main exceeds the prospective author320-character bound; original stem/choice/difficulty/distractor findings are preserved independently of this necessary failure."
+    }
+  ],
+  "summary": {
+    "raw_candidates_assessed": 6,
+    "exact_main_fields_assessed": 6,
+    "keys_matching_frozen_warranted_choices": 4,
+    "keys_disagreeing_with_frozen_warranted_choices": 2,
+    "author_main320_failures": 6,
+    "runtime_main420_failures": 4,
+    "main321_to420_count": 2,
+    "nonempty_or_malformed_choice_feedback_objects": 0,
+    "material_main_error_cases": [
+      "english_articles_in_context:1",
+      "topographic_contour_profiles:0",
+      "topographic_contour_profiles:1"
+    ],
+    "supported_core_with_unverified_ancillary_hypotheses": [
+      "houseplant_propagation_decisions:0"
+    ],
+    "main_supported_under_recorded_scope": [
+      "houseplant_propagation_decisions:1",
+      "english_articles_in_context:0"
+    ],
+    "frozen_difficulty_levels": [
+      3,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "full_favorable_items": 0,
+    "limits": "These are authored raw-content findings. Whether runtime returned or rejected any item, and why, remain unobserved. Do not count a length rejection as a semantic defect detection, or an empty feedback map as missing required teaching under this declared main-only mode. Ordinary-care and contextual-language qualifications are distinct from proved numerical/count errors."
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "experiment": "authored-solution-fresh-v1",
+  "source_revision": "a6b6b2815816148a8dd2245b576db61221c95fd2",
+  "plan_canonical_sha256": "337ce1adc57a201f22d29bc059504c9e8ce2ba6fcb470a825e33b81013fc158c",
+  "capture_byte_sha256": "13b7b082a9b77303d67e5ebab1a5d690b35133e2318c9c8e7aad63567b39a432",
+  "status": "completed selected trial; prospective favorable criterion failed",
+  "counts": {
+    "requested_slots": 6,
+    "raw_candidates": 6,
+    "provider_calls": 5,
+    "pre_solver_length_exclusions": 4,
+    "returned_items": 2,
+    "returned_mains_preserved_exactly": 2,
+    "raw_main_author320_compliant": 0,
+    "raw_main_runtime420_compliant": 2,
+    "raw_keys_agreeing_with_both_independent_assessments": 4,
+    "returned_items_independently_below_requested_difficulty": 2,
+    "returned_items_with_identified_material_main_error": 1
+  },
+  "returned_candidate_ids": [
+    "english_articles_in_context:0",
+    "english_articles_in_context:1"
+  ],
+  "independent_difficulty_levels_both_assessors": [
+    3,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "qualifications": [
+    "The cafe item has an explicit difficulty2/3 boundary sensitivity, and plant0 has borderline source/distractor quality.",
+    "Plant0 causal aside is unestablished, not proved false. Plant1 medium/hormone source coverage is qualified differently by assessors.",
+    "The two defective contour keys were never semantically reviewed by the runtime; length exclusions do not earn semantic detection credit.",
+    "All6 authored mains violate the320-character instruction, but the runtime permits420; both limits are reported separately.",
+    "Two returned English keys are correct; one returned main mischaracterizes the initial recipe mass noun as generic.",
+    "A one-attempt2-item trial is not ordinary five-item worker yield or a production accuracy estimate."
+  ],
+  "accounting": {
+    "prepared_calls": 5,
+    "observed_dispatch_attempts": 5,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 10314,
+      "outputTokens": 3084
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 53332
+  },
+  "decision": {
+    "six_item_favorable_criterion_met": false,
+    "default_promotion": false,
+    "deployment_performed": false,
+    "runtime_feedback_default": "reviewer_written",
+    "claim_policy_revision": 2,
+    "opt_in_generated_policy_revision": 3
+  },
+  "validation": {
+    "backend_tests_passed_before_run": 889,
+    "runtime_source_changed_after_freeze": false,
+    "independent_no_provider_runtime_replay": "exact match",
+    "raw_to_packet_joins": 6,
+    "stem_assessment_joins": 12,
+    "teaching_assessment_joins": 12,
+    "returned_main_joins": 2,
+    "native_arithmetic_checks": "passed with recorded counterexample assumptions"
+  },
+  "files": {
+    "docs/evidence/authored-solution-fresh-fixture-20260908.json": {
+      "sha256": "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d",
+      "bytes": 24743
+    },
+    "docs/evidence/authored-solution-fresh-capture-20260908.json": {
+      "sha256": "13b7b082a9b77303d67e5ebab1a5d690b35133e2318c9c8e7aad63567b39a432",
+      "bytes": 167084
+    },
+    "docs/evidence/authored-solution-fresh-stems-20260908.json": {
+      "sha256": "5d16bb651d084364524ba6c4d26c9be51634c9f0ff11dd64758253382be4aad0",
+      "bytes": 29535
+    },
+    "docs/evidence/authored-solution-fresh-teaching-20260908.json": {
+      "sha256": "3ae86047665bfbd274cb4c5e4bba8137f4f1e6b733ff282cad51fc6609b2f357",
+      "bytes": 13045
+    },
+    "docs/evidence/authored-solution-fresh-operational-audit-20260908.json": {
+      "sha256": "774fa4973bb0d5e2e7e9c6f320bb7751fa8ba1bbf8a0ce46a41d2ce26ac90950",
+      "bytes": 31981
+    },
+    "docs/evidence/authored-solution-fresh-native-checks-20260908.json": {
+      "sha256": "ad8142daa5535f3df0fef4edfa50aa8f44d22a5b271d4ff0dc877810f32613dd",
+      "bytes": 2207
+    },
+    "docs/evidence/authored-solution-fresh-stem-assessment-a-20260908.json": {
+      "sha256": "1aaa47c2af33a321aca0b83330805c3bda02ffbc322546c71d67a571f1c35a04",
+      "bytes": 36086
+    },
+    "docs/evidence/authored-solution-fresh-stem-assessment-b-20260908.json": {
+      "sha256": "922f5964b3f3839cfe01926067c971a4fb48d5495943b22bcbe66b108a79c41b",
+      "bytes": 42326
+    },
+    "docs/evidence/authored-solution-fresh-teaching-assessment-a-20260908.json": {
+      "sha256": "6087eb37207e35fedd74c6558c67079256c6ab618ccff805ac660e61d8cdb680",
+      "bytes": 28015
+    },
+    "docs/evidence/authored-solution-fresh-teaching-assessment-b-20260908.json": {
+      "sha256": "77c312506858b87f114d3b3bcb1340fed48f815b4bdb67a0e00e01379af90a93",
+      "bytes": 50035
+    },
+    "docs/QUESTION_AUTHORED_SOLUTION_FRESH_PROTOCOL.md": {
+      "sha256": "5a7d605fe3b197da38d4d29c910f48cd44aef834d23d1aa1d5fc5418089eb74c",
+      "bytes": 5052
+    }
+  }
+}

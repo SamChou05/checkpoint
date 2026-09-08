@@ -1,0 +1,257 @@
+{
+  "capture_sha256": "13b7b082a9b77303d67e5ebab1a5d690b35133e2318c9c8e7aad63567b39a432",
+  "stage": "independent stem and choice assessment before author key/teaching/model verdict exposure",
+  "candidates": [
+    {
+      "candidate_id": "houseplant_propagation_decisions:0",
+      "call_index": 0,
+      "raw_index": 0,
+      "case_id": "houseplant_propagation_decisions",
+      "goal": {
+        "title": "Make better houseplant propagation decisions",
+        "category": "Gardening",
+        "currentLevel": "I can identify common houseplant parts and have tried simple cuttings.",
+        "focusAreas": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "learningTarget": "Use plant structure and observations to choose and explain appropriate propagation steps."
+      },
+      "sourceDocuments": [
+        {
+          "name": "UMN Extension: Monstera deliciosa — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of UMN Extension: Monstera deliciosa. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa\n\nFor Monstera deliciosa, a propagating stem piece needs a node with an axillary bud; a detached leaf or petiole alone cannot develop into a new growing plant. Rooting medium should provide moisture and physical support while draining well. Monstera can root in plain water or suitable solid media. Additional rooting hormone is optional; it can speed rooting but is not required. Inspect roots before moving a cutting: a piece with few or no roots should remain in its rooting medium. Healthy roots are firm and creamy white; soft brown roots suggest excessive moisture or poor drainage. Healthy roots together with active growth indicate readiness for a longer-term pot. These recommendations concern Monstera cuttings, not every plant species. The page describes several propagation and care methods rather than one universally necessary method.",
+          "truncated": true
+        },
+        {
+          "name": "Iowa State Extension: Propagating Houseplants — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of Iowa State Extension: Propagating Houseplants. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants\n\nPropagation methods differ with a plant’s structure and growth habit. Stem cuttings suit pothos, whereas leaf propagation suits African violets. Iowa State lists leaf cuttings and division for snake plant, and stem cuttings and layering for Monstera deliciosa. These are recommended methods, not a proof that every unlisted approach is biologically impossible.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A gardener has a Monstera deliciosa cutting that has been rooting in water for three weeks. The cutting shows new leaf unfurling and the roots appear numerous, firm, and creamy white. However, the gardener also notices a few soft, brown root tips at the bottom. Which propagation decision best fits these observations?",
+        "choices": [
+          "Transplant to well-draining potting mix now, trimming only the soft brown tips.",
+          "Return to plain water for another 2–3 weeks to strengthen roots further.",
+          "Discard the cutting due to root discoloration indicating rot.",
+          "Divide the cutting into smaller sections to propagate multiple plants."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions."
+      },
+      "assessment_criteria": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable in a short practical case when tissue viability, rooting observations and the proposed next step interact. The source supports interpreting evidence rather than simply naming a method; actual authored items must demonstrate that depth.",
+        "depth_failure": "A species-to-method lookup, identifying a node, or repeating that wet roots can rot is only recall or one familiar application and does not by itself meet3.",
+        "complete_premises": "Species, material retained and any decisive root/growth observations must be displayed. A leaf, petiole, stem node, root and axillary bud are not interchangeable. Do not infer that a named rooting medium alone establishes root health.",
+        "key_and_distractors": "Determine every warranted action under the exact circumstances. Several propagation methods may be legitimate; a recommended method is not automatically uniquely necessary. Require three distinct plausible errors, not categorical impossibilities invented from omissions in a methods table.",
+        "teaching": "Main explanation must connect displayed observations to the recommendation without guaranteeing propagation success, assigning an unproved disease cause, or treating hormone as a replacement for missing required tissue. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "generalization": "Preserve species-specific scope and distinguish evidence of roots from evidence of continued shoot growth. Do not impose one species’ requirements on all houseplants."
+      }
+    },
+    {
+      "candidate_id": "houseplant_propagation_decisions:1",
+      "call_index": 0,
+      "raw_index": 1,
+      "case_id": "houseplant_propagation_decisions",
+      "goal": {
+        "title": "Make better houseplant propagation decisions",
+        "category": "Gardening",
+        "currentLevel": "I can identify common houseplant parts and have tried simple cuttings.",
+        "focusAreas": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "learningTarget": "Use plant structure and observations to choose and explain appropriate propagation steps."
+      },
+      "sourceDocuments": [
+        {
+          "name": "UMN Extension: Monstera deliciosa — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of UMN Extension: Monstera deliciosa. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa\n\nFor Monstera deliciosa, a propagating stem piece needs a node with an axillary bud; a detached leaf or petiole alone cannot develop into a new growing plant. Rooting medium should provide moisture and physical support while draining well. Monstera can root in plain water or suitable solid media. Additional rooting hormone is optional; it can speed rooting but is not required. Inspect roots before moving a cutting: a piece with few or no roots should remain in its rooting medium. Healthy roots are firm and creamy white; soft brown roots suggest excessive moisture or poor drainage. Healthy roots together with active growth indicate readiness for a longer-term pot. These recommendations concern Monstera cuttings, not every plant species. The page describes several propagation and care methods rather than one universally necessary method.",
+          "truncated": true
+        },
+        {
+          "name": "Iowa State Extension: Propagating Houseplants — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of Iowa State Extension: Propagating Houseplants. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants\n\nPropagation methods differ with a plant’s structure and growth habit. Stem cuttings suit pothos, whereas leaf propagation suits African violets. Iowa State lists leaf cuttings and division for snake plant, and stem cuttings and layering for Monstera deliciosa. These are recommended methods, not a proof that every unlisted approach is biologically impossible.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A gardener wants to propagate their houseplant collection and has limited stem material available: one 15 cm stem cutting with visible nodes from a pothos, and one detached Monstera deliciosa leaf with petiole but no stem node. They have rooting hormone and both water and perlite available. Which propagation plan uses the available materials appropriately?",
+        "choices": [
+          "Root both the pothos and Monstera in water with rooting hormone to maximize success.",
+          "Root the pothos in perlite without hormone and the Monstera in water with hormone to compare methods.",
+          "Root the pothos cutting in water or perlite with optional hormone; the Monstera leaf cannot develop into a plant and should not be used for propagation.",
+          "Discard the pothos cutting and attempt to root only the Monstera leaf in perlite with concentrated hormone."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions."
+      },
+      "assessment_criteria": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable in a short practical case when tissue viability, rooting observations and the proposed next step interact. The source supports interpreting evidence rather than simply naming a method; actual authored items must demonstrate that depth.",
+        "depth_failure": "A species-to-method lookup, identifying a node, or repeating that wet roots can rot is only recall or one familiar application and does not by itself meet3.",
+        "complete_premises": "Species, material retained and any decisive root/growth observations must be displayed. A leaf, petiole, stem node, root and axillary bud are not interchangeable. Do not infer that a named rooting medium alone establishes root health.",
+        "key_and_distractors": "Determine every warranted action under the exact circumstances. Several propagation methods may be legitimate; a recommended method is not automatically uniquely necessary. Require three distinct plausible errors, not categorical impossibilities invented from omissions in a methods table.",
+        "teaching": "Main explanation must connect displayed observations to the recommendation without guaranteeing propagation success, assigning an unproved disease cause, or treating hormone as a replacement for missing required tissue. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "generalization": "Preserve species-specific scope and distinguish evidence of roots from evidence of continued shoot growth. Do not impose one species’ requirements on all houseplants."
+      }
+    },
+    {
+      "candidate_id": "english_articles_in_context:0",
+      "call_index": 1,
+      "raw_index": 0,
+      "case_id": "english_articles_in_context",
+      "goal": {
+        "title": "Choose English articles from meaning and context",
+        "category": "Language",
+        "currentLevel": "I know a, an and the in simple sentences and want to use them accurately in connected writing.",
+        "focusAreas": "Use shared reference, specific versus general meaning and countability to interpret article choices across a short context.",
+        "learningTarget": "Explain how article choices express the intended reference in ordinary written English."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Cambridge English Grammar Today: A/an and the — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of Cambridge English Grammar Today: A/an and the. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the\n\nArticle choice depends on what the listener or reader can identify and on the noun’s use. A or an introduces a singular countable referent that is not already identifiable to that audience; the identifies a referent recoverable from shared knowledge or context. A previous mention is one way to establish reference, not the only one. A and an are limited to singular countable uses, and their form follows the next spoken sound rather than its written first letter. The can accompany singular, plural or uncountable nouns when a particular referent is intended. Bare plural and uncountable nouns commonly express general classes or substances; the can pick out a particular set or amount. Some singular generic uses also take the, so generic meaning is not a universal prohibition. Article use changes with context and intended reference, not just the noun’s spelling.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A travel blog reads: 'We stopped at a café near the station. The coffee was excellent, but the pastries were stale.' Why does the second sentence use 'the' before 'coffee' and 'pastries'?",
+        "choices": [
+          "The writer assumes readers can identify which coffee and pastries are meant because they belong to the café just mentioned.",
+          "The writer uses 'the' because coffee and pastries are uncountable nouns that always require it.",
+          "The writer uses 'the' to indicate these were the only coffee and pastries available anywhere in the city.",
+          "The writer uses 'the' because plural nouns and uncountable nouns can never use 'a' or 'an.'"
+        ],
+        "format": "Multiple Choice",
+        "topic": "Use shared reference"
+      },
+      "assessment_criteria": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable with two or three short connected sentences where what is mutually known and whether a class or particular member is intended changes the warranted completion. Contextual reference must matter to the answer.",
+        "depth_failure": "A/an sound recognition, an isolated countability label or automatic first-mention/second-mention substitution alone is level1–2.",
+        "complete_premises": "Display the relevant preceding context, audience knowledge and intended meaning. If multiple article choices give grammatical readings, do not claim only one is grammatical without the context that excludes its rival reading.",
+        "key_and_distractors": "Evaluate the whole completed expression in context. Distinct articles are not automatically distinct errors; alternatives must fail the stated intended reference or grammatical construction. Countability coercion and generic singular constructions cannot be dismissed with absolute rules.",
+        "teaching": "Explain the contextual referent and noun use, not merely recite an article rule. Do not assert that first mention always forbids the, that the always requires earlier mention, or that all generic references exclude the. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "dialect_scope": "Prefer ordinary shared conventions. Dialect-sensitive institutional expressions or pronunciation-dependent alternatives require an explicitly relevant variety or pronunciation; otherwise retain the ambiguity."
+      }
+    },
+    {
+      "candidate_id": "english_articles_in_context:1",
+      "call_index": 1,
+      "raw_index": 1,
+      "case_id": "english_articles_in_context",
+      "goal": {
+        "title": "Choose English articles from meaning and context",
+        "category": "Language",
+        "currentLevel": "I know a, an and the in simple sentences and want to use them accurately in connected writing.",
+        "focusAreas": "Use shared reference, specific versus general meaning and countability to interpret article choices across a short context.",
+        "learningTarget": "Explain how article choices express the intended reference in ordinary written English."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Cambridge English Grammar Today: A/an and the — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of Cambridge English Grammar Today: A/an and the. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the\n\nArticle choice depends on what the listener or reader can identify and on the noun’s use. A or an introduces a singular countable referent that is not already identifiable to that audience; the identifies a referent recoverable from shared knowledge or context. A previous mention is one way to establish reference, not the only one. A and an are limited to singular countable uses, and their form follows the next spoken sound rather than its written first letter. The can accompany singular, plural or uncountable nouns when a particular referent is intended. Bare plural and uncountable nouns commonly express general classes or substances; the can pick out a particular set or amount. Some singular generic uses also take the, so generic meaning is not a universal prohibition. Article use changes with context and intended reference, not just the noun’s spelling.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A recipe states: 'First, melt butter in a pan. Then add garlic. The butter should foam slightly before you add the eggs.' Why is 'the' used before 'butter' in the third sentence but not in the first?",
+        "choices": [
+          "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+          "Uncountable nouns like 'butter' always switch to 'the' after their first mention in any text.",
+          "The writer made an error and should have used 'a butter' to remain consistent.",
+          "The word 'the' indicates this is a different, new batch of butter from the one mentioned earlier."
+        ],
+        "format": "Multiple Choice",
+        "topic": "specific versus general meaning and countability to interpret article choices ac"
+      },
+      "assessment_criteria": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable with two or three short connected sentences where what is mutually known and whether a class or particular member is intended changes the warranted completion. Contextual reference must matter to the answer.",
+        "depth_failure": "A/an sound recognition, an isolated countability label or automatic first-mention/second-mention substitution alone is level1–2.",
+        "complete_premises": "Display the relevant preceding context, audience knowledge and intended meaning. If multiple article choices give grammatical readings, do not claim only one is grammatical without the context that excludes its rival reading.",
+        "key_and_distractors": "Evaluate the whole completed expression in context. Distinct articles are not automatically distinct errors; alternatives must fail the stated intended reference or grammatical construction. Countability coercion and generic singular constructions cannot be dismissed with absolute rules.",
+        "teaching": "Explain the contextual referent and noun use, not merely recite an article rule. Do not assert that first mention always forbids the, that the always requires earlier mention, or that all generic references exclude the. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "dialect_scope": "Prefer ordinary shared conventions. Dialect-sensitive institutional expressions or pronunciation-dependent alternatives require an explicitly relevant variety or pronunciation; otherwise retain the ambiguity."
+      }
+    },
+    {
+      "candidate_id": "topographic_contour_profiles:0",
+      "call_index": 4,
+      "raw_index": 0,
+      "case_id": "topographic_contour_profiles",
+      "goal": {
+        "title": "Interpret terrain from topographic contour information",
+        "category": "Geography",
+        "currentLevel": "I recognize contour lines and elevation labels but want to interpret terrain along a route.",
+        "focusAreas": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from steepness.",
+        "learningTarget": "Use a fully stated contour description to explain changes in elevation and slope along a route."
+      },
+      "sourceDocuments": [
+        {
+          "name": "USGS: Topographic Map Symbols — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of USGS: Topographic Map Symbols. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf\n\nTopographic contours connect locations at the same elevation relative to a reference surface. Labeled, heavier index contours help establish elevations; intermediate contours provide additional terrain detail. The contour interval describes a vertical elevation difference, not horizontal travel distance, and is given in the map margin. On the same map, tightly spaced ordinary contours represent steeper terrain, whereas wider spacing represents gentler terrain. A map’s chosen interval depends on its terrain, so maps can use different intervals. Labels identify elevation, while spacing helps describe how rapidly elevation changes over horizontal distance. Map legends distinguish ordinary, supplementary and depression contours and other symbols; their meaning must be read using the relevant legend. This summary concerns contour interpretation, not an assertion that a mapped route is safe or passable.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A hiker follows a straight 2 km trail from west to east. The western end sits on a 400 m index contour. The trail crosses five intermediate contours before reaching the eastern end on a 500 m index contour. The map's contour interval is 20 m. Which statement best describes the terrain along this route?",
+        "choices": [
+          "The trail gains 100 m in elevation with a moderate, fairly consistent slope.",
+          "The trail gains 200 m with steep sections near the eastern end.",
+          "The trail remains nearly flat with only minor elevation change.",
+          "The slope cannot be determined without knowing the contour spacing pattern."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Combine contour elevations"
+      },
+      "assessment_criteria": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable with a compact self-contained textual contour description in which several labels or spacings must be combined to distinguish plausible terrain profiles. This is representation interpretation, not calculator-only arithmetic.",
+        "depth_failure": "Simply naming the closer-contour slope as steeper, recalling a symbol, or subtracting two elevations without interpreting the route is level1–2.",
+        "complete_premises": "No unseen map may be required. State all needed contour labels, ordinary interval and relevant horizontal spacing/order or orientation. Distinguish same-map comparisons from different scales or intervals. If a map image is not supplied, its decisive geometry must be described completely.",
+        "key_and_distractors": "Check every proposed terrain inference. Elevation does not imply steepness; endpoint height change does not establish total ascent or the entire route profile. Do not assume omitted contours, a straight perpendicular crossing or constant slope unless the description establishes it.",
+        "teaching": "A worked explanation must connect the actual described labels and spacings to the conclusion, with units intact. A location between contours normally has a range, not an exact interpolated elevation absent an additional model. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "scope": "This trial concerns understanding a representation, not real-world route safety. No stream-V orientation, depression geometry or specialized symbol is supported unless supplied explicitly with a sufficient legend/source."
+      }
+    },
+    {
+      "candidate_id": "topographic_contour_profiles:1",
+      "call_index": 4,
+      "raw_index": 1,
+      "case_id": "topographic_contour_profiles",
+      "goal": {
+        "title": "Interpret terrain from topographic contour information",
+        "category": "Geography",
+        "currentLevel": "I recognize contour lines and elevation labels but want to interpret terrain along a route.",
+        "focusAreas": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from steepness.",
+        "learningTarget": "Use a fully stated contour description to explain changes in elevation and slope along a route."
+      },
+      "sourceDocuments": [
+        {
+          "name": "USGS: Topographic Map Symbols — selected paraphrase",
+          "text": "Assistant-written selective paraphrase of USGS: Topographic Map Symbols. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf\n\nTopographic contours connect locations at the same elevation relative to a reference surface. Labeled, heavier index contours help establish elevations; intermediate contours provide additional terrain detail. The contour interval describes a vertical elevation difference, not horizontal travel distance, and is given in the map margin. On the same map, tightly spaced ordinary contours represent steeper terrain, whereas wider spacing represents gentler terrain. A map’s chosen interval depends on its terrain, so maps can use different intervals. Labels identify elevation, while spacing helps describe how rapidly elevation changes over horizontal distance. Map legends distinguish ordinary, supplementary and depression contours and other symbols; their meaning must be read using the relevant legend. This summary concerns contour interpretation, not an assertion that a mapped route is safe or passable.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "Two maps show the same 3 km ridge route. Map A uses 10 m contours with six index contours crossed. Map B uses 25 m contours with three index contours crossed. Both routes start at 800 m and end at the summit. Which conclusion is valid?",
+        "choices": [
+          "Map A shows a steeper route because more contours are crossed.",
+          "The summit elevation is higher on Map B by 15 meters.",
+          "The same physical slope appears less steep on Map B due to its larger contour interval.",
+          "Both maps depict identical terrain with identical slope steepness."
+        ],
+        "format": "Multiple Choice",
+        "topic": "interval and spacing to compare terrain profiles and distinguish elevation from"
+      },
+      "assessment_criteria": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable with a compact self-contained textual contour description in which several labels or spacings must be combined to distinguish plausible terrain profiles. This is representation interpretation, not calculator-only arithmetic.",
+        "depth_failure": "Simply naming the closer-contour slope as steeper, recalling a symbol, or subtracting two elevations without interpreting the route is level1–2.",
+        "complete_premises": "No unseen map may be required. State all needed contour labels, ordinary interval and relevant horizontal spacing/order or orientation. Distinguish same-map comparisons from different scales or intervals. If a map image is not supplied, its decisive geometry must be described completely.",
+        "key_and_distractors": "Check every proposed terrain inference. Elevation does not imply steepness; endpoint height change does not establish total ascent or the entire route profile. Do not assume omitted contours, a straight perpendicular crossing or constant slope unless the description establishes it.",
+        "teaching": "A worked explanation must connect the actual described labels and spacings to the conclusion, with units intact. A location between contours normally has a range, not an exact interpolated elevation absent an additional model. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "scope": "This trial concerns understanding a representation, not real-world route safety. No stream-V orientation, depression geometry or specialized symbol is supported unless supplied explicitly with a sufficient legend/source."
+      }
+    }
+  ],
+  "unparsed_author_calls": []
+}

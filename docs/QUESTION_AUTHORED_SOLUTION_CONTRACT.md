@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-Implemented behind the server environment setting `QUESTION_FEEDBACK_CONTRACT=authored_solution`; the default remains `reviewer_written`. No deployment or live qualification of this path is claimed at this milestone. The [reasoning comparison](QUESTION_REASONING_RECHECK.md) showed that the final reviewer could introduce incorrect teaching while approving correct keys. This change removes that unchecked content-writing step, without assuming that author text or model agreement is necessarily true.
+Implemented behind the server environment setting `QUESTION_FEEDBACK_CONTRACT=authored_solution`; the default remains `reviewer_written`. A subsequent [fresh live trial](QUESTION_AUTHORED_SOLUTION_FRESH_RESULTS.md) returned two of six authored candidates and retained a misleading teaching claim. It did not qualify this path for default use, and no deployment occurred. The [reasoning comparison](QUESTION_REASONING_RECHECK.md) showed that the final reviewer could introduce incorrect teaching while approving correct keys. This change removes that unchecked content-writing step, without assuming that author text or model agreement is necessarily true.
 
 ## Runtime contract
 
@@ -21,7 +21,7 @@ Revision 3 identifies execution of this particular contract. It does not certify
 
 The application can enforce unchanged teaching and blocking review outcomes. It cannot establish that a model's `supported` label accurately describes its reasoning. Tests deliberately preserve an example where two falsely supportive model responses still admit incorrect teaching. Neither this path nor more output tokens replaces subject evidence or independent assessment.
 
-A fresh, prospective trial across non-math goals is required before considering a default change. Inspect every raw candidate as well as returned content, measure usable yield and difficulty, and retain malformed output and rejected questions in the denominator. Passing a small trial would establish feasibility, not arbitrary-subject accuracy or full-bank release readiness.
+The fresh prospective trial across non-math goals did not meet its criterion. Further qualification must inspect every raw candidate as well as returned content, measure usable yield and difficulty, and retain malformed output and rejected questions in the denominator. Passing a small trial would establish feasibility, not arbitrary-subject accuracy or full-bank release readiness.
 
 ## Verification
 

@@ -1,0 +1,896 @@
+{
+  "audit_kind": "independent operational/provenance audit; no content correctness grading",
+  "assessment_date": "2026-09-08",
+  "terminal_confirmation": {
+    "source": "Root message confirming write_stdin process25976 terminal exit0",
+    "process_exitcode": 0
+  },
+  "capture": {
+    "path": "/tmp/checkpoint-authored-solution-fresh-live-20260908/capture.json",
+    "bytes": 167084,
+    "byte_sha256": "13b7b082a9b77303d67e5ebab1a5d690b35133e2318c9c8e7aad63567b39a432",
+    "canonical_sha256": "8f370512d84121aee1863eca29ef3d0c7003a746761ecfd1c6c0e4d030943808",
+    "status": "completed"
+  },
+  "frozen_plan": {
+    "path": "/tmp/checkpoint-authored-solution-fresh-plan-20260908/plan.json",
+    "bytes": 80439,
+    "byte_sha256": "3208dd562a572922c9ec2a85a48ec0948a4d521e0a138e8b08fd28d034717aa7",
+    "canonical_sha256": "337ce1adc57a201f22d29bc059504c9e8ce2ba6fcb470a825e33b81013fc158c",
+    "exact_embedded_plan": true
+  },
+  "fixture": {
+    "path": "/Users/samchou/Documents/Checkpoint/docs/evidence/authored-solution-fresh-fixture-20260908.json",
+    "byte_sha256": "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d",
+    "canonical_sha256": "79c54c5ffaf96fab872193d352e30c22a1e1231d82a7d8f50bd92dc474c0ae95",
+    "embedded_exact": true
+  },
+  "source_revision": "a6b6b2815816148a8dd2245b576db61221c95fd2",
+  "source_checks": [
+    {
+      "path": "complete_question_solution.py",
+      "sha256": "adfc67f0c94e19bdc2771d99516bfc890457ad8fc7aa90f78a7efe23c9653535",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "execution_evidence.py",
+      "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "generation_diagnostics.py",
+      "sha256": "2e4353c07b5452acc538de56d643ff3a3f391c6aaa0005a48962955267da041a",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "lambda_function.py",
+      "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank.py",
+      "sha256": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_common.py",
+      "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_inventory.py",
+      "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_store.py",
+      "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_worker.py",
+      "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_generation.py",
+      "sha256": "26cd70631215c25ce53c0af3938a1775bf86250f27a3bd1d89abd0f00c630b80",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_quality.py",
+      "sha256": "b9f8fa7e9ba792c80110d0e3dde1af390014c0b386374fc51ec849958c8c28ec",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_rule_construction.py",
+      "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_teaching.py",
+      "sha256": "7b86a84f872357ab51aec2ab7b54e3c2fea8b9236d82814db8112a647ae60f61",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_verification.py",
+      "sha256": "199f53cc0b05db221656a1b6f31251e6cbcc0fb986c537bc580b103914d4e7e1",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "request_contract.py",
+      "sha256": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "service_errors.py",
+      "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "skill_maps.py",
+      "sha256": "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "smoke_test_backend.py",
+      "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "source_acquisition.py",
+      "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "verification_policy.py",
+      "sha256": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "web_source_search.py",
+      "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_source_authoring_eval.py",
+      "sha256": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_model_comparison.py",
+      "sha256": "04caeda857a7ddd942779a278acd309d8e690a5640e8db6856c516fee6984a01",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_full_pipeline_smoke.py",
+      "sha256": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_learning_eval.py",
+      "sha256": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_prompt_ablation.py",
+      "sha256": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_solution_compatibility_eval.py",
+      "sha256": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_runtime_qualification.py",
+      "sha256": "fc890f144ff6a28508180090c4256859a671fa9e2bf4c3751ae3670076cfd37b",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_author_latency_probe.py",
+      "sha256": "6440f32333a3f2a813bcbd38ab6c731ebd5dfaa464c459f0101f06a5c8136f50",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_immutable_review_eval.py",
+      "sha256": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/question_immutable_review.py",
+      "sha256": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/question_complete_author.py",
+      "sha256": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86",
+      "current_and_committed_revision_match": true
+    }
+  ],
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.89",
+    "botocore": "1.43.89"
+  },
+  "offline_replay": {
+    "client_creation_and_observer_patched_to_raise": true,
+    "full_frozen_plan_rebuild_equal": true,
+    "full_runtime_replay_canonical_equal": true,
+    "derived_capture_canonical_sha256": "8f370512d84121aee1863eca29ef3d0c7003a746761ecfd1c6c0e4d030943808"
+  },
+  "limits": {
+    "maximum_calls_total": 9,
+    "maximum_calls_each_operation": 3,
+    "maximum_input_bytes_each_call": 32768,
+    "maximum_input_bytes_total": 294912,
+    "operation_seconds_each": 240,
+    "read_timeout_seconds": 75,
+    "connect_timeout_seconds": 3,
+    "sdk_total_max_attempts": 1,
+    "generation_attempts": 1,
+    "feedback_contract": "authored_solution",
+    "max_tokens_each_call": 6000,
+    "temperature_each_call": 0.2,
+    "thinking_each_call": "disabled"
+  },
+  "calls": [
+    {
+      "capture_call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "moonshotai.kimi-k2.5",
+      "request_sha256": "beb4f6d0a64071ef7c07924912c6e8572f49ad18d4f5f7c468569e00a4a56a5e",
+      "input_utf8_bytes": 13262,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "7eb90453cb232872906f1ea688e1a22968419fbb95cc7b91d608a7cde4e45785",
+      "response_text_sha256": "9fb873cb196fa3a40a7ab42f5c003f3f210f5cc95cc1b6c787061a3ddb03a5f8",
+      "response_text_characters": 3876,
+      "response_text_utf8_bytes": 3880,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 2494,
+        "outputTokens": 763,
+        "totalTokens": 3257
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 35.92272587498883,
+      "local_worker_interval_seconds": 36.72773020801833,
+      "admitted_remaining_seconds": 239.997,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "capture_call_index": 1,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "moonshotai.kimi-k2.5",
+      "request_sha256": "a7de70b218fbd9e48cd9d575fe18dfa5f403f4fd132efaa268c3e23a602f59e9",
+      "input_utf8_bytes": 12540,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "64b351f3ddc3651187cc359528ed34b21f5721b52ed14337c73e6b4514b0c34c",
+      "response_text_sha256": "1569c402416de8b3cb9df53d125ff6fc8e2cd20efc95c169745718351bc95238",
+      "response_text_characters": 3016,
+      "response_text_utf8_bytes": 3025,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 2324,
+        "outputTokens": 617,
+        "totalTokens": 2941
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 4.901207707996946,
+      "local_worker_interval_seconds": 5.718773207976483,
+      "admitted_remaining_seconds": 239.995,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "capture_call_index": 2,
+      "operation_index": 1,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "a0433e902a127b2ccc7ee9bed5dbbd80a5d24ca751e447f9b39e2311acfc60ce",
+      "input_utf8_bytes": 6855,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+      "user_prompt_sha256": "043982dd4dbe48d2b1b35d83b718a3b8ecb081c1d5198ff8338bc13038d3d05b",
+      "response_text_sha256": "18c9854dbf2c5b1855df452ab30f62b26414229875e22be9b721b521c62393ee",
+      "response_text_characters": 3202,
+      "response_text_utf8_bytes": 3212,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1453,
+        "outputTokens": 752,
+        "totalTokens": 2205
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 11.669745374994818,
+      "local_worker_interval_seconds": 12.29078679200029,
+      "admitted_remaining_seconds": 234.267,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "capture_call_index": 3,
+      "operation_index": 1,
+      "operation_call_index": 2,
+      "role": "teaching_auditor",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "9d1b8aa8046adfd9316b2fdff2e1a03a726a0cce626d764b7fb44de20d155ac1",
+      "input_utf8_bytes": 8078,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "7f9cb8b65fcc52e684625e7f33139d7dfd15e254ff3937c48906f0e490f6fe3e",
+      "user_prompt_sha256": "b7e0933b97828dd2dbb9024f89e09ac878e96842dea8529b90f8b00b23334526",
+      "response_text_sha256": "cb0d085c2772d81823e0e6d3c83984a07e06a983c3a424874123175ea83e7ac5",
+      "response_text_characters": 432,
+      "response_text_utf8_bytes": 433,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1728,
+        "outputTokens": 102,
+        "totalTokens": 1830
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 2.913186374993529,
+      "local_worker_interval_seconds": 3.725222333043348,
+      "admitted_remaining_seconds": 221.97,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "capture_call_index": 4,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "moonshotai.kimi-k2.5",
+      "request_sha256": "cc6dcb21f669722af6b1be356e5f17d28fc9ee28f0cf4ba7c30b70106898eaec",
+      "input_utf8_bytes": 12597,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "665beebc9e89481961f7986cb1c91fc183be7182ddfcb41c0edff611b26c1c19",
+      "response_text_sha256": "54582c02e768b10f811afeb02f9080fffc7f3211313f5709aff8aeedd4e28f30",
+      "response_text_characters": 3884,
+      "response_text_utf8_bytes": 3900,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 2315,
+        "outputTokens": 850,
+        "totalTokens": 3165
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 14.095542500028387,
+      "local_worker_interval_seconds": 14.650747542036697,
+      "admitted_remaining_seconds": 239.994,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    }
+  ],
+  "operations": [
+    {
+      "operation_index": 0,
+      "case_id": "houseplant_propagation_decisions",
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 0,
+      "solver_candidates": 0,
+      "audited_candidates": 0,
+      "returned_candidates": 0,
+      "roles": [
+        "author"
+      ],
+      "budget_reservations": 1,
+      "quality_diagnostics": {
+        "sanitize": {
+          "invalid_content": 1,
+          "prompt_length": 1
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 0,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": false
+      }
+    },
+    {
+      "operation_index": 1,
+      "case_id": "english_articles_in_context",
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 2,
+      "solver_candidates": 2,
+      "audited_candidates": 2,
+      "returned_candidates": 2,
+      "roles": [
+        "author",
+        "solver",
+        "teaching_auditor"
+      ],
+      "budget_reservations": 3,
+      "quality_diagnostics": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 2,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": true
+      }
+    },
+    {
+      "operation_index": 2,
+      "case_id": "topographic_contour_profiles",
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 0,
+      "solver_candidates": 0,
+      "audited_candidates": 0,
+      "returned_candidates": 0,
+      "roles": [
+        "author"
+      ],
+      "budget_reservations": 1,
+      "quality_diagnostics": {
+        "sanitize": {
+          "invalid_content": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 0,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": false
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "raw_index": 0,
+      "author_call_index": 0,
+      "raw_question_canonical_sha256": "db9dbe59cf45652eadd09efc1d0d9a3c5df5d8469f70c8066fd5557f9885434b",
+      "raw_prompt_sha256": "0cf6dac69bfac0f6f77691cc0e74873e616cfe79cf41bf48f4f00b374c8e8daa",
+      "raw_field_characters": {
+        "prompt": 318,
+        "explanation": 548,
+        "expectedAnswer": 79,
+        "choices": [
+          79,
+          72,
+          61,
+          70
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 548,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "06d46e61f902df1a57baf97bd69f7fe08eb20acd256cf6c0283e327d722d808e",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "raw_index": 1,
+      "author_call_index": 0,
+      "raw_question_canonical_sha256": "09ac5c5e866348deb5f81b9d99de579aa6a137b821e2e22716028db3ba5cabd9",
+      "raw_prompt_sha256": "c0043fa13434321c61276db974ec28d26b887f26b3f8fbde6a52113640a0ae4a",
+      "raw_field_characters": {
+        "prompt": 358,
+        "explanation": 679,
+        "expectedAnswer": 152,
+        "choices": [
+          84,
+          101,
+          152,
+          107
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "prompt_length",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "prompt_length": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "prompt",
+          "characters": 358,
+          "runtime_maximum": 320
+        },
+        {
+          "field": "explanation",
+          "characters": 679,
+          "runtime_maximum": 420
+        },
+        {
+          "field": "choices[2]",
+          "characters": 152,
+          "runtime_maximum": 140
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "73832a1186e44e8f465c954c8688f9974b560502f8520a4faf8aba77406f82bb",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "case_id": "english_articles_in_context",
+      "operation_index": 1,
+      "raw_index": 0,
+      "author_call_index": 1,
+      "raw_question_canonical_sha256": "071e0fc4752923e559f335e03a3e9cf59203de041f08fac424d228700178f53a",
+      "raw_prompt_sha256": "8db537c1da9c7caf9f9693e0c9340f97fec904af2467b4d86e732b6efac948d5",
+      "raw_field_characters": {
+        "prompt": 187,
+        "explanation": 343,
+        "expectedAnswer": 123,
+        "choices": [
+          123,
+          95,
+          105,
+          91
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "528c9474e64d391061b7cb30334c1718e60a1b16952d1682021c820842b4cf16",
+        "sanitized": "528c9474e64d391061b7cb30334c1718e60a1b16952d1682021c820842b4cf16",
+        "audited": "528c9474e64d391061b7cb30334c1718e60a1b16952d1682021c820842b4cf16",
+        "returned": "528c9474e64d391061b7cb30334c1718e60a1b16952d1682021c820842b4cf16"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "case_id": "english_articles_in_context",
+      "operation_index": 1,
+      "raw_index": 1,
+      "author_call_index": 1,
+      "raw_question_canonical_sha256": "ff7ce4e3427e47f6cdec27a0d60ae4702da9f73987ad9f7e570f96d87dd1fa75",
+      "raw_prompt_sha256": "55523a0b9f7581b37df7b5efc9de16cf0ee955bb3bf182fca5a52bbdc2c2474c",
+      "raw_field_characters": {
+        "prompt": 199,
+        "explanation": 396,
+        "expectedAnswer": 102,
+        "choices": [
+          102,
+          93,
+          78,
+          97
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "fd2e081a83b27252ad9ac6d63d14b3bba2b4b8daaf8cca15eaf060e613a77585",
+        "sanitized": "fd2e081a83b27252ad9ac6d63d14b3bba2b4b8daaf8cca15eaf060e613a77585",
+        "audited": "fd2e081a83b27252ad9ac6d63d14b3bba2b4b8daaf8cca15eaf060e613a77585",
+        "returned": "fd2e081a83b27252ad9ac6d63d14b3bba2b4b8daaf8cca15eaf060e613a77585"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 2,
+      "raw_index": 0,
+      "author_call_index": 4,
+      "raw_question_canonical_sha256": "58f2652a988d8c732249c7b74db9b93754ddd1882fa894fa7f7c021635feee4d",
+      "raw_prompt_sha256": "56c728e836b5c03bdeeaa478f12b488f5b689b2c8a1f507459e2f156aea9702f",
+      "raw_field_characters": {
+        "prompt": 303,
+        "explanation": 644,
+        "expectedAnswer": 76,
+        "choices": [
+          76,
+          63,
+          63,
+          75
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 644,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "b7f2d10d55b2fce2736fa5146ccaa9aedd7180957fb6a1552b2015af785d4321",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 2,
+      "raw_index": 1,
+      "author_call_index": 4,
+      "raw_question_canonical_sha256": "8dbc8f90ccfc0adccca379673362c8a33ec30f4f18a4c2205059ea2c85c0fbb4",
+      "raw_prompt_sha256": "b15f6236f26b827d14d051446aaa3b7f991bd89cf3af78e46d49990889551fe4",
+      "raw_field_characters": {
+        "prompt": 235,
+        "explanation": 1264,
+        "expectedAnswer": 87,
+        "choices": [
+          62,
+          53,
+          87,
+          66
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 1264,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "6402b6822fd7769da5e15fef27b027d7e2ba971510404d66487358e5d2b9a744",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    }
+  ],
+  "accounting": {
+    "prepared_calls": 5,
+    "observed_dispatch_attempts": 5,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 10314,
+      "outputTokens": 3084
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 53332
+  },
+  "denominators": {
+    "planned_goals": 3,
+    "attempted_goals": 3,
+    "unattempted_goals": 0,
+    "requested_items": 6,
+    "raw_author_candidates": 6,
+    "parseable_author_responses": 3,
+    "malformed_author_responses": 0,
+    "author_repair_calls": 0,
+    "raw_candidates_rejected_before_solver": 4,
+    "solver_candidates": 2,
+    "audited_candidates": 2,
+    "returned_items": 2,
+    "remaining_call_capacity_unused": 4,
+    "exceeded_instructed_main_320": 6,
+    "exceeded_runtime_main_420": 4,
+    "full_runtime_unrepaired_batches": 1
+  },
+  "timing": {
+    "sum_recorded_sdk_call_intervals_seconds": 69.50240783300251,
+    "sum_recorded_local_worker_intervals_seconds": 73.11326008307515,
+    "scope": "Sums of recorded intervals, not independently measured end-to-end wall time. Parent persistence/scheduling and bounded cleanup may lie outside the intervals. Socket read timeout and operation deadline are separate constraints."
+  },
+  "bindings": {
+    "all_actual_requests_recorded_with_hashes_and_rebuilt_by_runtime_replay": true,
+    "first_author_requests_exact_frozen": true,
+    "only_normalized_payload_in_author_context": true,
+    "external_assessment_and_provenance_fields_absent_from_model_inputs": true,
+    "solver_item_keys_and_difficulty_and_all_teaching_absent": true,
+    "auditor_has_exact_main_but_no_author_key_difficulty_choice_feedback_or_solver_records": true,
+    "source_documents_exact_in_solver_and_auditor": true,
+    "two_returned_mains_exact_raw_sanitized_audited_returned_utf8": true,
+    "returned_policy_revision": 3,
+    "history_or_bank_writes_performed": false
+  },
+  "capture_privacy": {
+    "final_text_only_plus_usage_stop_reason_and_reasoning_block_counts": true,
+    "captured_reasoning_blocks": 0,
+    "sdk_headers_or_credential_records_present": false,
+    "credential_marker_scan_clear": true,
+    "scope": "Checked stored response/request shapes and common AWS credential markers; no credential exports or private reasoning were retained by this recorder."
+  },
+  "limits_of_conclusion": [
+    "Operational completion and runtime policy3 stamps do not establish factual accuracy, teaching support, plausible distractors or calibrated difficulty.",
+    "Four exclusions are deterministic admission/bound failures, not independent factual rejections.",
+    "Both admitted main explanations exceed the author instruction320 although fitting runtime420; full-unrepaired-batch is a runtime yield label, not instruction compliance.",
+    "No raw text was shortened, repaired, retried or resubmitted; this audit executed current pure parsing, sanitization and offline replay only.",
+    "No model/provider/native calls were made for this audit."
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "capture_sha256": "13b7b082a9b77303d67e5ebab1a5d690b35133e2318c9c8e7aad63567b39a432",
+  "stage": "authored teaching assessment; open only after stem/choice assessment is frozen",
+  "candidates": [
+    {
+      "candidate_id": "houseplant_propagation_decisions:0",
+      "call_index": 0,
+      "raw_index": 0,
+      "case_id": "houseplant_propagation_decisions",
+      "raw_question": {
+        "prompt": "A gardener has a Monstera deliciosa cutting that has been rooting in water for three weeks. The cutting shows new leaf unfurling and the roots appear numerous, firm, and creamy white. However, the gardener also notices a few soft, brown root tips at the bottom. Which propagation decision best fits these observations?",
+        "explanation": "Firm, creamy white roots indicate healthy development, and active new leaf growth confirms the cutting is metabolically active and ready for transition. Soft brown tips suggest minor localized issue (possibly brief waterlogging or old tissue) but do not override the overall healthy root mass. The cutting meets criteria for transplant: healthy roots plus active growth. Keeping it in water risks further decline of those compromised tips, while waiting for more roots is unnecessary given existing readiness. Discarding would waste a viable plant.",
+        "expectedAnswer": "Transplant to well-draining potting mix now, trimming only the soft brown tips.",
+        "choices": [
+          "Transplant to well-draining potting mix now, trimming only the soft brown tips.",
+          "Return to plain water for another 2–3 weeks to strengthen roots further.",
+          "Discard the cutting due to root discoloration indicating rot.",
+          "Divide the cutting into smaller sections to propagate multiple plants."
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "objectiveID": "",
+        "objective": "Use plant structure and observations to choose and explain appropriate propagation steps.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "houseplant_propagation_decisions:1",
+      "call_index": 0,
+      "raw_index": 1,
+      "case_id": "houseplant_propagation_decisions",
+      "raw_question": {
+        "prompt": "A gardener wants to propagate their houseplant collection and has limited stem material available: one 15 cm stem cutting with visible nodes from a pothos, and one detached Monstera deliciosa leaf with petiole but no stem node. They have rooting hormone and both water and perlite available. Which propagation plan uses the available materials appropriately?",
+        "explanation": "Pothos roots readily from stem cuttings with nodes, so either water or perlite works; rooting hormone is optional but acceptable. However, the Monstera leaf with petiole lacks the essential node with axillary bud required for new plant development—this material cannot produce a viable plant regardless of medium or hormone. The plan must recognize this biological limitation and allocate the usable pothos cutting to propagation while acknowledging the Monstera leaf cannot be propagated. Treating the Monstera leaf as viable would waste effort; discarding the pothos would waste usable material; applying hormone to the Monstera leaf cannot compensate for missing nodal tissue.",
+        "expectedAnswer": "Root the pothos cutting in water or perlite with optional hormone; the Monstera leaf cannot develop into a plant and should not be used for propagation.",
+        "choices": [
+          "Root both the pothos and Monstera in water with rooting hormone to maximize success.",
+          "Root the pothos in perlite without hormone and the Monstera in water with hormone to compare methods.",
+          "Root the pothos cutting in water or perlite with optional hormone; the Monstera leaf cannot develop into a plant and should not be used for propagation.",
+          "Discard the pothos cutting and attempt to root only the Monstera leaf in perlite with concentrated hormone."
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "objectiveID": "",
+        "objective": "Use plant structure and observations to choose and explain appropriate propagation steps.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "english_articles_in_context:0",
+      "call_index": 1,
+      "raw_index": 0,
+      "case_id": "english_articles_in_context",
+      "raw_question": {
+        "prompt": "A travel blog reads: 'We stopped at a café near the station. The coffee was excellent, but the pastries were stale.' Why does the second sentence use 'the' before 'coffee' and 'pastries'?",
+        "explanation": "The first sentence introduces 'a café'—new to the reader. Once mentioned, the café becomes shared reference, so items uniquely associated with it ('coffee' and 'pastries' from that café) are identifiable to the reader. 'The' signals this recoverable reference. This contrasts with 'a café,' which introduces an unknown singular countable noun.",
+        "expectedAnswer": "The writer assumes readers can identify which coffee and pastries are meant because they belong to the café just mentioned.",
+        "choices": [
+          "The writer assumes readers can identify which coffee and pastries are meant because they belong to the café just mentioned.",
+          "The writer uses 'the' because coffee and pastries are uncountable nouns that always require it.",
+          "The writer uses 'the' to indicate these were the only coffee and pastries available anywhere in the city.",
+          "The writer uses 'the' because plural nouns and uncountable nouns can never use 'a' or 'an.'"
+        ],
+        "topic": "Use shared reference",
+        "skillID": "Use shared reference",
+        "objectiveID": "specific versus general meaning and countability to interpret article choices ac",
+        "objective": "specific versus general meaning and countability to interpret article choices ac",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "english_articles_in_context:1",
+      "call_index": 1,
+      "raw_index": 1,
+      "case_id": "english_articles_in_context",
+      "raw_question": {
+        "prompt": "A recipe states: 'First, melt butter in a pan. Then add garlic. The butter should foam slightly before you add the eggs.' Why is 'the' used before 'butter' in the third sentence but not in the first?",
+        "explanation": "The first sentence introduces 'butter' as an uncountable substance in general (no article). Once the instruction specifies 'butter in a pan,' that particular butter becomes identifiable to the reader. 'The butter' in the third sentence refers back to this specific, shared amount, not butter in general. The shift marks a change from introducing a substance to referring to a particular instance.",
+        "expectedAnswer": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+        "choices": [
+          "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+          "Uncountable nouns like 'butter' always switch to 'the' after their first mention in any text.",
+          "The writer made an error and should have used 'a butter' to remain consistent.",
+          "The word 'the' indicates this is a different, new batch of butter from the one mentioned earlier."
+        ],
+        "topic": "specific versus general meaning and countability to interpret article choices ac",
+        "skillID": "specific versus general meaning and countability to interpret article choices ac",
+        "objectiveID": "specific versus general meaning and countability to interpret article choices ac",
+        "objective": "specific versus general meaning and countability to interpret article choices ac",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "topographic_contour_profiles:0",
+      "call_index": 4,
+      "raw_index": 0,
+      "case_id": "topographic_contour_profiles",
+      "raw_question": {
+        "prompt": "A hiker follows a straight 2 km trail from west to east. The western end sits on a 400 m index contour. The trail crosses five intermediate contours before reaching the eastern end on a 500 m index contour. The map's contour interval is 20 m. Which statement best describes the terrain along this route?",
+        "explanation": "First, determine total elevation change: from 400 m to 500 m is a 100 m gain. The trail crosses five intermediate contours. With a 20 m interval, each intermediate represents 20 m. However, the hiker starts and ends on index contours (400 m and 500 m), so the five crossed intermediates plus the starting elevation give: 400 → 420 → 440 → 460 → 480 → 500 m. This confirms 100 m total gain. The key distinction is that five intermediate crossings in 2 km with 100 m total rise means average slope is moderate (5% grade). The scenario requires combining contour count, interval, and horizontal distance to assess slope, not just elevation change.",
+        "expectedAnswer": "The trail gains 100 m in elevation with a moderate, fairly consistent slope.",
+        "choices": [
+          "The trail gains 100 m in elevation with a moderate, fairly consistent slope.",
+          "The trail gains 200 m with steep sections near the eastern end.",
+          "The trail remains nearly flat with only minor elevation change.",
+          "The slope cannot be determined without knowing the contour spacing pattern."
+        ],
+        "topic": "Combine contour elevations",
+        "skillID": "Combine contour elevations",
+        "objectiveID": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "objective": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "topographic_contour_profiles:1",
+      "call_index": 4,
+      "raw_index": 1,
+      "case_id": "topographic_contour_profiles",
+      "raw_question": {
+        "prompt": "Two maps show the same 3 km ridge route. Map A uses 10 m contours with six index contours crossed. Map B uses 25 m contours with three index contours crossed. Both routes start at 800 m and end at the summit. Which conclusion is valid?",
+        "explanation": "First, establish total elevation gain for each. Map A: six index contours at 10 m intervals between them means 5 intervals × 10 m = 50 m per index-to-index span, but six crossed index contours from start to summit with 10 m interval means elevation spans from 800 m to 800 m + (6 × 10 m) = 860 m if counting properly, or more carefully: crossing six index lines with 10 m interval implies 60 m gain to 860 m. Map B: three index contours with 25 m interval implies 2 spans × 25 m = 50 m gain to 850 m, or three crossed lines means 75 m gain to 875 m. Actually, re-analyzing: crossing N index contours with interval I means elevation change of N × I if starting below the first and ending above the last. So Map A: 6 × 10 m = 60 m gain. Map B: 3 × 25 m = 75 m gain. These cannot both be correct for the same physical terrain. The contradiction reveals that the maps use different intervals for the same terrain, so the same physical slope appears differently. Map B's wider spacing (25 m vs 10 m) means contours are farther apart horizontally for the same slope, making the terrain appear gentler in contour density. The valid conclusion recognizes that contour spacing interpretation depends on the interval, and the same slope can show different contour densities.",
+        "expectedAnswer": "The same physical slope appears less steep on Map B due to its larger contour interval.",
+        "choices": [
+          "Map A shows a steeper route because more contours are crossed.",
+          "The summit elevation is higher on Map B by 15 meters.",
+          "The same physical slope appears less steep on Map B due to its larger contour interval.",
+          "Both maps depict identical terrain with identical slope steepness."
+        ],
+        "topic": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "skillID": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "objectiveID": "",
+        "objective": "",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    }
+  ]
+}

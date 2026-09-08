@@ -1,0 +1,48 @@
+{
+  "kind": "independent arithmetic and constructive contour-count checks, not production subject-specific validation",
+  "scope": "The two raw contour candidates were rejected before any solver/auditor call. These checks do not credit the runtime with finding their semantic defects.",
+  "checks": [
+    {
+      "candidate_id": "topographic_contour_profiles:0",
+      "endpoints_m": [
+        400,
+        500
+      ],
+      "ordinary_interval_m": 20,
+      "net_elevation_change_m": 100,
+      "strictly_between_elevations_m": [
+        420,
+        440,
+        460,
+        480
+      ],
+      "intermediate_count": 4,
+      "finding": "Under the ordinary monotone reading there are four intermediate contours. The authored explanation calls the ending 500 m index contour a fifth intermediate, contradicting the stem classification. Endpoints and route length do not establish a fairly consistent local slope.",
+      "qualification": "The numerical range establishes the ordinary interval count, not a complete interpretation of an unspecified map or every possible crossing history."
+    },
+    {
+      "candidate_id": "topographic_contour_profiles:1",
+      "illustrative_assumptions": [
+        "Every fifth contour is indexed, with labels referenced to zero.",
+        "The route rises from 800 m to a summit at 1130 m; this summit is a counterexample witness, not a value derived from the question."
+      ],
+      "map_a_index_interval_m": 50,
+      "map_a_crossed_index_elevations_m": [
+        850,
+        900,
+        950,
+        1000,
+        1050,
+        1100
+      ],
+      "map_b_index_interval_m": 125,
+      "map_b_crossed_index_elevations_m": [
+        875,
+        1000,
+        1125
+      ],
+      "finding": "The same elevation range can cross six index contours on a 10 m-contour map and three on a 25 m-contour map. The author incorrectly multiplies index counts by the ordinary contour interval and treats the resulting discrepancy as a contradiction.",
+      "qualification": "The question does not give every-fifth indexing or map scale explicitly. This example refutes the claimed unavoidable contradiction without adding these assumptions to the original key."
+    }
+  ]
+}
