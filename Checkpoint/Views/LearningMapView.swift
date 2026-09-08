@@ -5,7 +5,9 @@ struct LearningMapView: View {
     let goalID: Goal.ID
     let initialSkillID: SkillMapTopic.ID?
     let onEdit: ((SkillMapTopic.ID?) -> Void)?
+    let isCovered: Bool
 
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
@@ -24,6 +26,7 @@ struct LearningMapView: View {
     @State private var suggestionError: String?
     @State private var suggestionMap: GoalSkillMap?
     @State private var scrollToHistory = false
+    @State private var motionPaused = false
 
     private enum PresentationMode: String, CaseIterable, Identifiable {
         case map = "Map"
@@ -37,11 +40,12 @@ struct LearningMapView: View {
     }
 
     init(store: CheckpointStore, goalID: Goal.ID, initialSkillID: SkillMapTopic.ID? = nil,
-         onEdit: ((SkillMapTopic.ID?) -> Void)? = nil) {
+         onEdit: ((SkillMapTopic.ID?) -> Void)? = nil, isCovered: Bool = false) {
         self.store = store
         self.goalID = goalID
         self.initialSkillID = initialSkillID
         self.onEdit = onEdit
+        self.isCovered = isCovered
         _selected = State(initialValue: initialSkillID.map(LearningMapNodeID.skill) ?? .goal)
     }
 
@@ -53,8 +57,30 @@ struct LearningMapView: View {
     private var effectiveMode: PresentationMode {
         mode ?? ((voiceOverEnabled || switchControlEnabled || dynamicTypeSize >= .xxLarge) ? .list : .map)
     }
+    private var motionPolicy: LearningMapMotionPolicy {
+        LearningMapMotionPolicy(
+            reduceMotion: reduceMotion, voiceOverEnabled: voiceOverEnabled,
+            switchControlEnabled: switchControlEnabled, isSceneActive: scenePhase == .active,
+            isInteracting: gestureCamera != nil, isMapVisible: effectiveMode == .map && modal == nil && !isCovered,
+            isPaused: motionPaused
+        )
+    }
     private var motion: Animation? {
-        reduceMotion || voiceOverEnabled || switchControlEnabled ? nil : .spring(response: 0.48, dampingFraction: 0.86)
+        motionPolicy.allowsSpatialMotion ? .spring(response: 0.58, dampingFraction: 0.84) : nil
+    }
+    private var fittedCamera: LearningMapCamera {
+        guard let graph else { return LearningMapCamera() }
+        return .fitted(nodes: graph.nodes, frames: nodeFrames(graph), viewport: viewport)
+    }
+    private var zoomPercent: Int {
+        Int((camera.zoom / max(0.01, fittedCamera.zoom) * 100).rounded())
+    }
+    private var hasCustomCamera: Bool {
+        abs(camera.zoom - fittedCamera.zoom) > 0.015
+            || hypot(camera.center.x - fittedCamera.center.x, camera.center.y - fittedCamera.center.y) > 12
+    }
+    private var editTitle: String {
+        editableSelectedSkillID == nil ? "Edit map" : selectedIsObjective ? "Edit focus" : "Edit skill"
     }
     private var compactWindow: Bool {
         (availableHeight > 0 && availableHeight < 620) || (viewport.width > 0 && viewport.width < 350)
@@ -116,9 +142,17 @@ struct LearningMapView: View {
                     Button {
                         onEdit(editableSelectedSkillID)
                     } label: {
-                        Label("Edit", systemImage: "slider.horizontal.3")
+                        HStack(spacing: 5) {
+                            Image(systemName: "pencil")
+                            Text("Edit")
+                        }
+                            .font(.subheadline.weight(.semibold))
+                            .padding(.horizontal, 11)
+                            .padding(.vertical, 7)
+                            .background(CheckpointTheme.teal.opacity(0.09), in: Capsule())
                     }
-                    .accessibilityLabel(selected == .goal ? "Edit learning map" : "Edit selected skill")
+                    .accessibilityLabel(editableSelectedSkillID == nil ? "Edit learning map" : selectedIsObjective ? "Edit selected focus points" : "Edit selected skill")
+                    .accessibilityIdentifier("learning-map-edit")
                 }
             }
         }
@@ -148,7 +182,11 @@ struct LearningMapView: View {
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
-        .onChange(of: compactNodes) { _, _ in fitMap() }
+        .sensoryFeedback(.selection, trigger: selected)
+        .onChange(of: compactNodes) { _, _ in
+            if selectedIsObjective && hasCustomCamera { focusCamera(on: selected) }
+            else { fitMap() }
+        }
         .onChange(of: map) { _, updated in
             guard let updated else { return }
             withAnimation(motion) {
@@ -182,6 +220,7 @@ struct LearningMapView: View {
                     modePicker.frame(width: 132)
                 }
             }
+            if selected != .goal, effectiveMode == .map { mapBreadcrumbs }
             if let suggestion = map.pendingEvolutionSuggestion {
                 Button {
                     suggestionError = nil
@@ -262,31 +301,69 @@ struct LearningMapView: View {
         .buttonStyle(.plain)
     }
 
+    private var mapBreadcrumbs: some View {
+        HStack(spacing: 7) {
+            Button { select(.goal) } label: {
+                Label("All skills", systemImage: "square.grid.2x2")
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityIdentifier("learning-map-overview")
+            Image(systemName: "chevron.right").font(.system(size: 8, weight: .bold))
+            if let topic = selectedTopic {
+                Button {
+                    select(selectedIsArchived ? .history(topic.id) : .skill(topic.id))
+                } label: {
+                    Text(topic.name).lineLimit(1).truncationMode(.middle)
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .accessibilityLabel("Fit branch: " + topic.name)
+                .accessibilityIdentifier("learning-map-branch")
+            }
+            if selectedIsObjective {
+                Image(systemName: "chevron.right").font(.system(size: 8, weight: .bold))
+                Image(systemName: "viewfinder").accessibilityLabel("Focus point")
+            }
+        }
+        .font(.caption.weight(.medium))
+        .foregroundStyle(CheckpointTheme.teal)
+        .frame(minHeight: 44, alignment: .leading)
+        .buttonStyle(CheckpointPressButtonStyle())
+    }
+
     private func mapCanvas(map: GoalSkillMap) -> some View {
         GeometryReader { proxy in
             let layout = LearningMapGraphLayout(map: map, selected: selected, showsHistory: showsHistory, compact: compactNodes)
             let canvasSize = CGSize(width: proxy.size.width, height: max(100, proxy.size.height - 58))
             ZStack(alignment: .bottom) {
                 ZStack {
-                    RadialGradient(colors: [CheckpointTheme.teal.opacity(0.09), .clear], center: .center,
-                                   startRadius: 10, endRadius: max(canvasSize.width, canvasSize.height) * 0.6)
-                    dotGrid
+                    LivingMapBackdrop(animationsEnabled: motionPolicy.allowsAmbientMotion, isInteracting: gestureCamera != nil)
                     connections(layout: layout, viewport: canvasSize)
                     ForEach(layout.nodes) { node in
                         let point = camera.project(node.position, viewport: canvasSize)
                         mapNode(node.id, map: map)
                             .position(x: point.x, y: point.y + labelOffset(for: node.id))
-                            .transition(reduceMotion ? .identity : .opacity.combined(with: .scale(scale: 0.8)))
+                            .transition(motionPolicy.allowsSpatialMotion ? .opacity.combined(with: .scale(scale: 0.78)) : .identity)
                     }
                 }
                 .frame(width: canvasSize.width, height: canvasSize.height)
                 .contentShape(Rectangle())
                 .clipped()
                 .gesture(explorationGesture(size: canvasSize))
+                .overlay(alignment: .topTrailing) {
+                    if hasCustomCamera {
+                        LearningMapNavigator(layout: layout, camera: camera, viewport: canvasSize, selection: selected,
+                                             onRecenter: { point in withAnimation(motion) { camera = camera.recentered(on: point) } },
+                                             onFit: { withAnimation(motion) { fitMap() } })
+                            .padding(10)
+                            .transition(motionPolicy.allowsSpatialMotion ? .opacity : .identity)
+                    }
+                }
                 .frame(maxHeight: .infinity, alignment: .top)
 
                 canvasControls(map: map)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 14)
                     .padding(.bottom, 7)
             }
             .onAppear { updateViewport(canvasSize) }
@@ -297,32 +374,18 @@ struct LearningMapView: View {
         .animation(motion, value: map)
     }
 
-    private var dotGrid: some View {
-        Canvas { context, size in
-            for x in stride(from: CGFloat(12), to: size.width, by: 24) {
-                for y in stride(from: CGFloat(12), to: size.height, by: 24) {
-                    context.fill(Path(ellipseIn: CGRect(x: x, y: y, width: 1.4, height: 1.4)),
-                                 with: .color(CheckpointTheme.muted.opacity(0.15)))
-                }
-            }
-        }
-        .accessibilityHidden(true)
-        .allowsHitTesting(false)
-    }
-
     private func connections(layout: LearningMapGraphLayout, viewport: CGSize) -> some View {
         let positions = Dictionary(uniqueKeysWithValues: layout.nodes.map { ($0.id, $0.position) })
         return ZStack {
             ForEach(layout.edges) { edge in
                 if let from = positions[edge.from], let to = positions[edge.to] {
-                    let start = camera.project(from, viewport: viewport)
-                    let end = camera.project(to, viewport: viewport)
-                    let highlighted = selected == .goal || edge.to == selected || edge.to.skillID == selected.skillID
-                    LearningMapConnection(start: start, end: end)
-                        .stroke(edge.relationship == .progression ? CheckpointTheme.amber : CheckpointTheme.teal,
-                                style: StrokeStyle(lineWidth: highlighted ? 1.7 : 1.1,
-                                                   lineCap: .round, dash: edge.relationship == .progression ? [5, 6] : []))
-                        .opacity(highlighted ? 0.58 : 0.24)
+                    LivingMapConnection(
+                        start: camera.project(from, viewport: viewport), end: camera.project(to, viewport: viewport),
+                        tint: edge.relationship == .progression ? CheckpointTheme.amber : CheckpointTheme.teal,
+                        highlighted: LearningMapGraphLayout.isHighlighted(edge: edge, selection: selected),
+                        isHistorical: edge.relationship == .progression,
+                        animationsEnabled: motionPolicy.allowsAmbientMotion
+                    )
                 }
             }
         }
@@ -337,28 +400,27 @@ struct LearningMapView: View {
             if selected == id { modal = .details } else { select(id) }
         } label: {
             VStack(spacing: id == .goal ? 10 : 7) {
-                ZStack {
-                    Circle().fill(CheckpointTheme.panel)
-                    Circle().fill(visual.tint.opacity(id == .goal ? 0.15 : 0.07))
-                    Circle().stroke(visual.tint.opacity(isSelected ? 0.8 : 0.4), lineWidth: 1)
-                    if visual.progress > 0 {
-                        Circle().trim(from: 0, to: visual.progress)
-                            .stroke(visual.tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                            .rotationEffect(.degrees(-90))
+                LivingMapNodeFace(
+                    diameter: visual.diameter, tint: visual.tint, progress: visual.progress,
+                    symbol: visual.symbol, isSelected: isSelected, isGoal: id == .goal,
+                    evidenceAvailable: visual.evidenceAvailable,
+                    animationsEnabled: motionPolicy.allowsAmbientMotion
+                )
+                .overlay(alignment: .bottomTrailing) {
+                    if case let .skill(skillID) = id, selected == .goal,
+                       let topic = map.topics.first(where: { $0.id == skillID }), !topic.objectives.isEmpty {
+                        HStack(spacing: 2) {
+                            Text("\(topic.objectives.count)")
+                            Image(systemName: "chevron.down").font(.system(size: 6, weight: .heavy))
+                        }
+                        .font(.system(size: 8, weight: .bold, design: .rounded))
+                        .foregroundStyle(visual.tint)
+                        .padding(.horizontal, 4).padding(.vertical, 3)
+                        .background(CheckpointTheme.panel, in: Capsule())
+                        .overlay(Capsule().stroke(visual.tint.opacity(0.25), lineWidth: 0.7))
+                        .offset(x: 5, y: 3)
+                        .accessibilityHidden(true)
                     }
-                    if let symbol = visual.symbol {
-                        Image(systemName: symbol)
-                            .font(.system(size: id == .goal ? 26 : 18, weight: .semibold))
-                            .foregroundStyle(visual.tint)
-                    } else {
-                        Circle().fill(visual.tint.opacity(visual.evidenceAvailable ? 0.9 : 0.35)).padding(5)
-                    }
-                }
-                .frame(width: visual.diameter, height: visual.diameter)
-                .shadow(color: CheckpointTheme.shadowElevated, radius: isSelected ? 14 : 7, y: 4)
-                .overlay {
-                    Circle().stroke(visual.tint.opacity(isSelected ? 0.40 : 0.15), lineWidth: 1)
-                        .padding(isSelected ? -8 : -5)
                 }
                 if visual.showsTitle {
                 Text(id == .goal ? "Your goal" : visual.title)
@@ -381,149 +443,186 @@ struct LearningMapView: View {
                 }
             }
             .frame(width: visual.width, height: visual.height, alignment: .top)
-            .contentShape(LearningMapNodeHitShape(geometry: LearningMapNodeGeometry(id: id, compact: compactNodes, focused: selected != .goal)))
+            .contentShape(LearningMapNodeHitShape(geometry: LearningMapNodeGeometry(id: id, compact: compactNodes, focused: selected != .goal, isSelected: selected == id)))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
         .accessibilityLabel(visual.title)
         .accessibilityValue(accessibilityValue(for: id, map: map))
-        .accessibilityHint(isSelected ? "Opens details and evidence." : "Explores this branch. Tap again for details.")
+        .accessibilityHint(isSelected ? "Opens details and evidence. More actions include editing." : "Zooms into this branch. Press and hold for details and editing.")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityIdentifier("learning-map-node-\(id)")
+        .contextMenu {
+            Button { select(id); modal = .details } label: { Label("View details", systemImage: "info.circle") }
+            Button { select(id); focusCamera(on: id) } label: { Label("Look closer", systemImage: "plus.magnifyingglass") }
+            if let onEdit {
+                Button {
+                    let activeID = id.skillID.flatMap { target in map.topics.first(where: { $0.id == target })?.id }
+                    onEdit(activeID)
+                } label: {
+                    Label(id == .goal || !map.topics.contains(where: { $0.id == id.skillID }) ? "Edit map" : "Edit skill & focus points", systemImage: "pencil")
+                }
+            }
+            Button { select(.goal) } label: { Label("All skills", systemImage: "square.grid.2x2") }
+        }
         .dynamicTypeSize(.small ... .large)
     }
 
     private func canvasControls(map: GoalSkillMap) -> some View {
-        HStack(spacing: 2) {
-            Button { modal = .legend } label: { Image(systemName: "info.circle").frame(width: 44, height: 44) }
-                .accessibilityLabel("How to read this map")
-            if !map.archivedTopics.isEmpty {
-                Button {
-                    withAnimation(motion) {
-                        if !showsHistory, case let .objective(skillID, _) = selected {
-                            selected = map.topics.contains(where: { $0.id == skillID }) ? .skill(skillID) : .history(skillID)
-                        }
-                        showsHistory.toggle()
-                        fitMap()
-                    }
-                } label: {
-                    Image(systemName: showsHistory ? "clock.fill" : "clock").frame(width: 44, height: 44)
+        HStack(spacing: 10) {
+            Menu {
+                Button { modal = .legend } label: { Label("Reading your map", systemImage: "info.circle") }
+                Button { motionPaused.toggle() } label: {
+                    Label(motionPaused ? "Resume map motion" : "Pause map motion", systemImage: motionPaused ? "play.circle" : "pause.circle")
                 }
-                .accessibilityLabel(showsHistory ? "Hide historical branches" : "Show historical branches")
-                .accessibilityAddTraits(showsHistory ? .isSelected : [])
+                .disabled(reduceMotion || voiceOverEnabled || switchControlEnabled)
+                if !map.archivedTopics.isEmpty {
+                    Button {
+                        withAnimation(motion) {
+                            if !showsHistory, case let .objective(skillID, _) = selected {
+                                selected = map.topics.contains { $0.id == skillID } ? .skill(skillID) : .history(skillID)
+                            }
+                            showsHistory.toggle()
+                            fitMap()
+                        }
+                    } label: {
+                        Label(showsHistory ? "Hide earlier branches" : "Show earlier branches", systemImage: "clock.arrow.circlepath")
+                    }
+                }
+                Button { select(.goal) } label: { Label("Return to all skills", systemImage: "square.grid.2x2") }
+            } label: {
+                Image(systemName: "ellipsis").frame(width: 44, height: 44)
+                    .background(CheckpointTheme.panel, in: Circle())
+                    .overlay(Circle().stroke(CheckpointTheme.hairline.opacity(0.6), lineWidth: 1))
             }
-            Spacer(minLength: 0)
+            .accessibilityLabel("Map options")
+            .accessibilityIdentifier("learning-map-options")
+            Text(selected == .goal ? "Tap a skill" : "Drag or pinch")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(CheckpointTheme.muted)
+                .lineLimit(2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityHidden(true)
             HStack(spacing: 0) {
                 Button { zoom(by: 0.8) } label: { Image(systemName: "minus").frame(width: 44, height: 44) }
                     .accessibilityLabel("Zoom out")
                 Button { withAnimation(motion) { fitMap() } } label: {
-                    Image(systemName: "arrow.up.left.and.arrow.down.right").frame(width: 44, height: 44)
+                    VStack(spacing: 1) {
+                        Text("\(zoomPercent)%").font(.system(size: 11, weight: .semibold, design: .rounded)).monospacedDigit()
+                        Text("Fit map").font(.system(size: 8, weight: .medium))
+                    }
+                    .frame(width: 56, height: 44)
                 }
                 .accessibilityLabel("Fit map to view")
+                .accessibilityValue("Zoom \(zoomPercent) percent")
+                .accessibilityIdentifier("learning-map-fit")
                 Button { zoom(by: 1.25) } label: { Image(systemName: "plus").frame(width: 44, height: 44) }
                     .accessibilityLabel("Zoom in")
             }
-            .background(CheckpointTheme.panel, in: RoundedRectangle(cornerRadius: 15))
-            .overlay(RoundedRectangle(cornerRadius: 15).stroke(CheckpointTheme.hairline.opacity(0.6), lineWidth: 1))
+            .background(CheckpointTheme.panel, in: Capsule())
+            .overlay(Capsule().stroke(CheckpointTheme.hairline.opacity(0.7), lineWidth: 1))
+            .shadow(color: CheckpointTheme.shadowElevated, radius: 10, y: 3)
         }
         .font(.subheadline.weight(.medium))
         .foregroundStyle(CheckpointTheme.teal)
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
     }
 
     private func compactSelectionPreview(map: GoalSkillMap) -> some View {
         let visual = nodeVisual(selected, map: map)
-        return HStack(spacing: 12) {
-            if selected != .goal {
-                Button { select(.goal) } label: {
-                    Image(systemName: "arrow.turn.up.left").frame(width: 44, height: 44)
-                }
-                .accessibilityLabel("Return to all skills")
-            }
+        return HStack(spacing: 8) {
             Button { modal = .details } label: {
-                HStack(spacing: 10) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(selected == .goal ? (showsHistory ? "Earlier branches, kept for you" : "\(map.topics.count) skills · Your learning journey") : visual.title)
-                            .font(.subheadline.weight(.semibold))
-                            .lineLimit(1)
-                            .foregroundStyle(CheckpointTheme.text)
-                        Text(selected == .goal ? (showsHistory ? "Select an earlier skill to see its story" : "Tap to unfold · Drag or pinch to explore") : accessibilityValue(for: selected, map: map))
-                            .font(.caption)
-                            .lineLimit(1)
-                            .foregroundStyle(CheckpointTheme.muted)
-                    }
-                    Spacer(minLength: 0)
-                    Image(systemName: "arrow.up.right").frame(width: 32, height: 44)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(selected == .goal ? "\(map.topics.count) skills, connected" : visual.title)
+                        .font(.subheadline.weight(.semibold)).lineLimit(1).foregroundStyle(CheckpointTheme.text)
+                    Text(selected == .goal ? "Tap a skill. See what unfolds." : accessibilityValue(for: selected, map: map))
+                        .font(.caption).lineLimit(1).foregroundStyle(CheckpointTheme.muted)
                 }
-                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                 .contentShape(Rectangle())
             }
             .accessibilityHint("Opens learning details and evidence.")
+            if let onEdit {
+                Button { onEdit(editableSelectedSkillID) } label: {
+                    VStack(spacing: 3) {
+                        Image(systemName: "pencil").font(.system(size: 14, weight: .semibold))
+                        Text("Edit").font(.system(size: 9, weight: .semibold))
+                    }
+                    .frame(width: 48, height: 48)
+                    .background(CheckpointTheme.teal.opacity(0.09), in: RoundedRectangle(cornerRadius: 14))
+                }
+                .accessibilityLabel(editTitle)
+                .accessibilityIdentifier("learning-map-preview-edit")
+            }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CheckpointPressButtonStyle())
         .foregroundStyle(CheckpointTheme.teal)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .background(CheckpointTheme.panel)
-        .overlay(alignment: .top) { Rectangle().fill(CheckpointTheme.hairline.opacity(0.5)).frame(height: 1) }
+        .padding(12)
+        .background(previewSurface)
+        .padding(.horizontal, 12).padding(.bottom, 10).padding(.top, 4)
     }
 
     private func selectionPreview(map: GoalSkillMap) -> some View {
         let visual = nodeVisual(selected, map: map)
-        return VStack(alignment: .leading, spacing: 9) {
-            Button { modal = .details } label: {
-                HStack(alignment: .center, spacing: 14) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(selected == .goal ? "YOUR LEARNING JOURNEY" : selectedIsObjective ? "FOCUS POINT" : selectedIsArchived ? "HISTORY" : "SELECTED SKILL")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .tracking(1.4)
-                            .foregroundStyle(CheckpointTheme.muted)
-                        Text(selected == .goal ? (showsHistory ? "Earlier branches, kept for you" : "\(map.topics.count) skills. Room to grow.") : visual.title)
-                            .font(.headline)
-                            .foregroundStyle(CheckpointTheme.text)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.leading)
-                        Text(selected == .goal ? (showsHistory ? "Select a branch to follow its story. Your full history is always available in List." : "Tap a skill to unfold its focus points. Drag or pinch to explore.") : accessibilityValue(for: selected, map: map))
-                            .font(.caption)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.leading)
-                    }
-                    Spacer(minLength: 0)
-                    Image(systemName: "arrow.up.right")
-                        .font(.subheadline.weight(.semibold))
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 10) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(selected == .goal ? "YOUR LEARNING JOURNEY" : selectedIsObjective ? "FOCUS POINT" : selectedIsArchived ? "EARLIER BRANCH" : "SELECTED SKILL")
+                        .font(.system(size: 9, weight: .bold, design: .rounded)).tracking(1.5)
                         .foregroundStyle(CheckpointTheme.teal)
-                        .frame(width: 44, height: 44)
-                        .background(CheckpointTheme.teal.opacity(0.08), in: Circle())
+                    Text(selected == .goal ? (showsHistory ? "Your progress stays with you" : "\(map.topics.count) skills, connected") : visual.title)
+                        .font(.headline).foregroundStyle(CheckpointTheme.text)
+                        .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                    Text(selected == .goal ? (showsHistory ? "Explore the branches that brought you here." : "Tap a skill to unfold its focus points. Make this map your own.") : accessibilityValue(for: selected, map: map))
+                        .font(.caption).foregroundStyle(CheckpointTheme.muted)
+                        .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                 }
-                .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
-                .contentShape(Rectangle())
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: selected == .goal ? "point.3.connected.trianglepath.dotted" : visual.symbol ?? "viewfinder")
+                    .font(.system(size: 20, weight: .medium)).foregroundStyle(visual.tint)
+                    .frame(width: 42, height: 42)
+                    .background(visual.tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 13))
+                    .accessibilityHidden(true)
             }
-            .buttonStyle(.plain)
-            .accessibilityHint("Opens learning details and evidence.")
-            if selected == .goal, !showsHistory, let nextFocus, let skillID = nextFocus.skillID,
-               map.topics.contains(where: { $0.id == skillID }) {
-                Button { select(.skill(skillID)) } label: {
-                    Label("Next: \(nextFocus.skillName)", systemImage: "scope")
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(CheckpointTheme.teal)
-                        .multilineTextAlignment(.leading)
-                        .frame(minHeight: 44)
+            HStack(spacing: 9) {
+                if selected == .goal, !showsHistory, let first = map.topics.first {
+                    let next = nextFocus?.skillID.flatMap { candidate in map.topics.first { $0.id == candidate } } ?? first
+                    previewAction(nextFocus?.skillID == next.id ? "Next skill" : "Explore a skill", symbol: "arrow.up.right", prominent: true) {
+                        select(.skill(next.id))
+                    }
+                } else {
+                    previewAction("View details", symbol: "arrow.up.right", prominent: true) { modal = .details }
                 }
-                .buttonStyle(.plain)
-            } else if selected != .goal {
-                Button { select(.goal) } label: {
-                    Label("All skills", systemImage: "arrow.turn.up.left")
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(CheckpointTheme.teal)
-                        .frame(minHeight: 44)
+                if let onEdit {
+                    previewAction(editTitle, symbol: "pencil", prominent: false) { onEdit(editableSelectedSkillID) }
+                        .accessibilityIdentifier("learning-map-preview-edit")
                 }
-                .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 22)
-        .padding(.vertical, 16)
-        .background(CheckpointTheme.panel)
-        .overlay(alignment: .top) { Rectangle().fill(CheckpointTheme.hairline.opacity(0.5)).frame(height: 1) }
+        .padding(16)
+        .background(previewSurface)
+        .padding(.horizontal, 14).padding(.bottom, 12).padding(.top, 4)
+    }
+
+    private var previewSurface: some View {
+        RoundedRectangle(cornerRadius: 24)
+            .fill(CheckpointTheme.panel)
+            .overlay {
+                RoundedRectangle(cornerRadius: 24)
+                    .strokeBorder(LinearGradient(colors: [CheckpointTheme.teal.opacity(0.23), CheckpointTheme.hairline.opacity(0.65)], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
+            }
+            .shadow(color: CheckpointTheme.shadowElevated.opacity(0.6), radius: 18, y: 5)
+    }
+
+    private func previewAction(_ title: String, symbol: String, prominent: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: symbol)
+                .font(.caption.weight(.semibold))
+                .lineLimit(1).minimumScaleFactor(0.85)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .foregroundStyle(prominent ? CheckpointTheme.paper : CheckpointTheme.teal)
+                .background(prominent ? CheckpointPalette.actionTeal.color : CheckpointTheme.teal.opacity(0.07), in: Capsule())
+        }
+        .buttonStyle(CheckpointPressButtonStyle())
     }
 
     private func listContents(map: GoalSkillMap) -> some View {
@@ -842,7 +941,7 @@ struct LearningMapView: View {
 
     private func nodeVisual(_ id: LearningMapNodeID, map: GoalSkillMap) -> NodeVisual {
         var visual = nodeContent(id, map: map)
-        let geometry = LearningMapNodeGeometry(id: id, compact: compactNodes, focused: selected != .goal)
+        let geometry = LearningMapNodeGeometry(id: id, compact: compactNodes, focused: selected != .goal, isSelected: selected == id)
         visual.width = geometry.width
         visual.height = geometry.height
         visual.diameter = geometry.diameter
@@ -935,13 +1034,12 @@ struct LearningMapView: View {
     private func select(_ requested: LearningMapNodeID) {
         guard let map else { return }
         let resolved = LearningMapGraphLayout.resolvedSelection(requested, in: map)
-        let branchChanged = selected.skillID != resolved.skillID || selected == .goal || resolved == .goal
-        let previousHistory = showsHistory
         withAnimation(motion) {
             selected = resolved
             if case .history = resolved { showsHistory = true }
             else { showsHistory = false }
-            if branchChanged || previousHistory != showsHistory { fitMap() }
+            if case .objective = resolved { focusCamera(on: resolved) }
+            else { fitMap() }
         }
     }
 
@@ -955,16 +1053,27 @@ struct LearningMapView: View {
 
     private func updateViewport(_ size: CGSize) {
         guard size != viewport else { return }
+        let shouldKeepFocus = selectedIsObjective && hasCustomCamera
         viewport = size
-        fitMap()
+        if shouldKeepFocus { focusCamera(on: selected) }
+        else { fitMap() }
+    }
+
+    private func nodeFrames(_ layout: LearningMapGraphLayout) -> [LearningMapNodeID: CGRect] {
+        Dictionary(uniqueKeysWithValues: layout.nodes.map {
+            ($0.id, LearningMapNodeGeometry(id: $0.id, compact: compactNodes, focused: selected != .goal, isSelected: selected == $0.id).hitBounds)
+        })
     }
 
     private func fitMap() {
         guard let graph, viewport.width > 0, viewport.height > 0 else { return }
-        let frames = Dictionary(uniqueKeysWithValues: graph.nodes.map {
-            ($0.id, LearningMapNodeGeometry(id: $0.id, compact: compactNodes, focused: selected != .goal).hitBounds)
-        })
-        camera = .fitted(nodes: graph.nodes, frames: frames, viewport: viewport)
+        camera = .fitted(nodes: graph.nodes, frames: nodeFrames(graph), viewport: viewport)
+        gestureCamera = nil
+    }
+
+    private func focusCamera(on id: LearningMapNodeID) {
+        guard let graph, let node = graph.nodes.first(where: { $0.id == id }), let frame = nodeFrames(graph)[id] else { return }
+        withAnimation(motion) { camera = camera.focused(on: node, frame: frame, viewport: viewport, minimumZoom: 1.05) }
         gestureCamera = nil
     }
 
@@ -991,30 +1100,6 @@ struct LearningMapView: View {
             .onEnded { _ in gestureCamera = nil }
     }
 
-}
-
-private struct LearningMapConnection: Shape {
-    var start: CGPoint
-    var end: CGPoint
-
-    var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<CGFloat, CGFloat>> {
-        get { AnimatablePair(AnimatablePair(start.x, start.y), AnimatablePair(end.x, end.y)) }
-        set {
-            start = CGPoint(x: newValue.first.first, y: newValue.first.second)
-            end = CGPoint(x: newValue.second.first, y: newValue.second.second)
-        }
-    }
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: start)
-        let dx = end.x - start.x
-        let dy = end.y - start.y
-        path.addCurve(to: end,
-                      control1: CGPoint(x: start.x + dx * 0.12, y: start.y + dy * 0.55),
-                      control2: CGPoint(x: end.x - dx * 0.12, y: end.y - dy * 0.4))
-        return path
-    }
 }
 
 private struct LearningMapNodeHitShape: Shape {

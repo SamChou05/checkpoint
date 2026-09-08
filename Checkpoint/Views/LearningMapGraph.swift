@@ -37,6 +37,24 @@ struct LearningMapGraphEdge: Identifiable, Equatable {
     var id: String { "\(from)-\(to)-\(relationship.rawValue)" }
 }
 
+struct LearningMapMotionPolicy: Equatable, Sendable {
+    let reduceMotion: Bool
+    let voiceOverEnabled: Bool
+    let switchControlEnabled: Bool
+    let isSceneActive: Bool
+    let isInteracting: Bool
+    let isMapVisible: Bool
+    let isPaused: Bool
+
+    var allowsSpatialMotion: Bool {
+        !reduceMotion && !voiceOverEnabled && !switchControlEnabled && isSceneActive && !isPaused
+    }
+
+    var allowsAmbientMotion: Bool {
+        allowsSpatialMotion && !isInteracting && isMapVisible
+    }
+}
+
 struct LearningMapGraphLayout {
     let nodes: [LearningMapGraphNode]
     let edges: [LearningMapGraphEdge]
@@ -155,6 +173,23 @@ struct LearningMapGraphLayout {
         return parent
     }
 
+    static func isHighlighted(edge: LearningMapGraphEdge, selection: LearningMapNodeID) -> Bool {
+        switch selection {
+        case .goal:
+            return edge.relationship == .membership
+        case .skill:
+            return (edge.relationship == .membership && edge.to == selection)
+                || (edge.relationship == .focusPoint && edge.from == selection)
+        case let .objective(skillID, _):
+            let parent: Bool = edge.to == .skill(skillID) || edge.to == .history(skillID)
+            return (edge.relationship == .membership && parent)
+                || (edge.relationship == .focusPoint && edge.to == selection && edge.from.skillID == skillID)
+        case .history:
+            return (edge.relationship == .membership && edge.to == selection)
+                || (edge.relationship == .progression && (edge.from == selection || edge.to == selection))
+        }
+    }
+
     static func ancestors(of skillID: SkillMapTopic.ID, in map: GoalSkillMap) -> [ArchivedSkillMapTopic] {
         var seen = Set<SkillMapTopic.ID>([skillID])
         var pending = [skillID]
@@ -201,7 +236,7 @@ struct LearningMapNodeGeometry {
     let diameter: CGFloat
     let showsTitle: Bool
 
-    init(id: LearningMapNodeID, compact: Bool, focused: Bool) {
+    init(id: LearningMapNodeID, compact: Bool, focused: Bool, isSelected: Bool = false) {
         switch id {
         case .goal where compact && focused:
             (width, height, diameter, showsTitle) = (56, 56, 52, false)
@@ -211,6 +246,8 @@ struct LearningMapNodeGeometry {
             (width, height, diameter, showsTitle) = (96, 112, 72, true)
         case .skill:
             (width, height, diameter, showsTitle) = (110, compact ? 100 : 112, compact ? 36 : 46, true)
+        case .objective where isSelected:
+            (width, height, diameter, showsTitle) = (compact ? 88 : 108, 76, 30, true)
         case .objective:
             (width, height, diameter, showsTitle) = (compact ? 88 : 108, 64, 18, true)
         case .history:
@@ -274,6 +311,39 @@ struct LearningMapCamera: Equatable {
     func project(_ point: CGPoint, viewport: CGSize) -> CGPoint {
         CGPoint(x: (point.x - center.x) * zoom + viewport.width / 2,
                 y: (point.y - center.y) * zoom + viewport.height / 2)
+    }
+
+    func unproject(_ point: CGPoint, viewport: CGSize) -> CGPoint {
+        guard zoom.isFinite, zoom > 0 else { return center }
+        return CGPoint(x: center.x + (point.x - viewport.width / 2) / zoom,
+                       y: center.y + (point.y - viewport.height / 2) / zoom)
+    }
+
+    func visibleWorldBounds(viewport: CGSize) -> CGRect {
+        guard zoom.isFinite, zoom > 0,
+              viewport.width.isFinite, viewport.height.isFinite,
+              viewport.width > 0, viewport.height > 0 else { return .null }
+        return CGRect(origin: unproject(.zero, viewport: viewport),
+                      size: CGSize(width: viewport.width / zoom, height: viewport.height / zoom))
+    }
+
+    /// The node's screen-sized label remains readable; only camera spacing changes.
+    func focused(on node: LearningMapGraphNode, frame: CGRect, viewport: CGSize,
+                 minimumZoom: CGFloat = 1) -> Self {
+        guard viewport.width.isFinite, viewport.height.isFinite,
+              viewport.width > 0, viewport.height > 0,
+              node.position.x.isFinite, node.position.y.isFinite,
+              !frame.isNull, !frame.isInfinite else { return self }
+        let preferredZoom = max(zoom.isFinite ? zoom : 1, minimumZoom.isFinite ? minimumZoom : 1)
+        let nextZoom = min(Self.zoomRange.upperBound, max(Self.zoomRange.lowerBound, preferredZoom))
+        // Account for the asymmetric label below the node when centering its target.
+        return Self(center: CGPoint(x: node.position.x + frame.midX / nextZoom,
+                                    y: node.position.y + frame.midY / nextZoom), zoom: nextZoom)
+    }
+
+    func recentered(on point: CGPoint) -> Self {
+        guard point.x.isFinite, point.y.isFinite else { return self }
+        return Self(center: point, zoom: zoom)
     }
 
     func panned(by translation: CGSize) -> Self {
