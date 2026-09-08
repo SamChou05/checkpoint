@@ -170,3 +170,18 @@ python evals/checkpoint_solution_compatibility_eval.py --execute \
 ```
 
 The sixteen exact planned requests have one SDK attempt each. A provider or required-format failure stops the run; existing output directories cannot be replaced or resumed. Assess reasons against the frozen external controls, and preserve failures and unknown timeout usage. Agreement with a factually wrong solver is not a successful factual check.
+
+## Complete-question first solver
+
+`checkpoint_complete_solver_eval.py` compares fresh stem-only and complete-MCQ first solvers on eight fixed questions. It reuses the bounded request recorder above and runs no author or final reviewer. The [prospective protocol](../../../docs/QUESTION_COMPLETE_SOLVER_EXPERIMENT.md) requires independently supported valid retention, zero/multiple-answer detection and preservation of the known invalid all-pairs boundary before any final-review follow-up. Neither first-stage eligibility nor a structured label is a correctness certificate.
+
+```sh
+python evals/checkpoint_complete_solver_eval.py \
+  --fixture evals/fixtures/question_complete_solver.json \
+  --output /tmp/complete-solver-plan
+python evals/checkpoint_complete_solver_eval.py --execute \
+  --plan /tmp/complete-solver-plan/plan.json --plan-sha256 HASH_FROM_PREPARATION \
+  --output /tmp/complete-solver-capture --aws-cli-credentials
+```
+
+Execution requires the same source snapshot and Python environment as preparation. The sixteen-call stage changes both input visibility and the solver's output contract; it does not isolate those effects or authorize a runtime switch on its own.

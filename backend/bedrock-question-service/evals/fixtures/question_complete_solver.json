@@ -1,0 +1,729 @@
+{
+  "experiment": "complete-mcq-first-solver-v1",
+  "prepared_on_utc": "2026-09-08",
+  "scope": "Eight fixed questions probe missing choice information and valid-negative retention in the first solver; input visibility and the output contract change together. Six are synthetic controls and two copy historical question objects. This is not fresh authoring, a production correctness rate, a difficulty-3 qualification, or evidence of generalized learning.",
+  "provider_boundary": "Only the whitelisted request context and exact prompt (stem-only arm), plus exact ordered choices (complete-MCQ arm), may enter first-solver input. No expectedAnswer, author explanation, external_assessment, provenance, sibling cases or expected labels enter either first-solver prompt. There is no supplied solution record.",
+  "prospective_assessment": {
+    "case_counts": {
+      "total": 8,
+      "unique_correct_questions": 5,
+      "no_uniquely_warranted_answer": 3,
+      "grammar_same_stem_variants": 4,
+      "ordinary_negative_answer_controls": 2,
+      "historical_algorithm_questions": 2
+    },
+    "correctness": "Judge the unchanged displayed stem and choices. A correct MCQ needs exactly one warranted answer. A key that is one of two correct choices is insufficient. For incomplete numeric premises, distinguish a possible numeric value from one warranted by the stem.",
+    "required_observations": [
+      "Keep all four grammar stems and goal/request contexts identical across variants; only choices and hidden authored key vary. Integer input-dependence is covered separately by local contract tests, not this fixed live suite.",
+      "Record first-solver semantic answer coverage separately from downstream gate eligibility and final returned feedback. Correct abstention on a stem-only input is not a factual error.",
+      "For zero and multiple correct choices, require supported recognition of the exact answer cardinality or a sound invalidity explanation; never reward choosing the authored key merely because it is listed.",
+      "The all-pairs sentinel must not be accepted by ignoring output size or supplying unstated narrower task conditions.",
+      "Both ordinary negative-answer controls are valid complete MCQs: nonexistence of a real root and insufficient information about flow. Assess their offered meanings without requiring canonical wording; report any canonical-only gate rejection separately from factual correctness.",
+      "Retain the valid Boolean pair-existence control with its explicit expected hash-operation condition while rejecting the historical all-pairs guarantee. Do not confuse a valid expected-time Boolean algorithm with unconditional enumeration of all matching pairs.",
+      "Review all generated solver reasons and any returned main and four-choice feedback against the per-choice grounds. Qualify complexity assumptions and preserve possible-versus-entailed distinctions."
+    ],
+    "limits": [
+      "The four grammar variants deliberately have low cognitive difficulty and are correlated cases, not four independent domains.",
+      "The future example is unambiguously future-directed and non-past; no theory-dependent claim that English has an inflected future tense is necessary.",
+      "Distractors are distinct grammatical sentences, numeric alternatives or concrete algorithm descriptions, but their learner plausibility is untested.",
+      "Invalid grammar and historical questions have no defensible unique key; stored expectedAnswer values are input artifacts, not assessment truth.",
+      "The same-stem grammar contrast demonstrates missing input information; the negative and algorithm controls test retention boundaries. This does not establish that a complete-input model reasons correctly in arbitrary subjects.",
+      "No replacement, paraphrase repair, automatic canonical rewrite or broader subject-mastery claim is authorized by this fixture."
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "grammar_unique_present",
+      "request": {
+        "goal": {
+          "title": "English verb tense",
+          "category": "",
+          "focusAreas": "English verb tense",
+          "currentLevel": "",
+          "learningTarget": "English verb tense",
+          "contentTopics": [
+            "English verb tense"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which sentence is not in the past tense?",
+        "choices": [
+          "She walked to work yesterday.",
+          "He cooked dinner last night.",
+          "She walks to work every day.",
+          "They visited the museum yesterday."
+        ],
+        "expectedAnswer": "She walks to work every day.",
+        "topic": "English verb tense",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "external_assessment": {
+        "contrast_group": "grammar_same_stem",
+        "warranted_choices": [
+          "She walks to work every day."
+        ],
+        "warranted_choice_count": 1,
+        "unique_correct_question": true,
+        "author_key_warranted": true,
+        "author_key_uniquely_correct": true,
+        "per_choice": [
+          {
+            "choice": "She walked to work yesterday.",
+            "warranted_as_answer": false,
+            "reason": "Walked is simple past, reinforced by yesterday. The stem asks for a sentence that is not past, so this past-tense sentence does not answer it."
+          },
+          {
+            "choice": "He cooked dinner last night.",
+            "warranted_as_answer": false,
+            "reason": "Cooked is simple past, reinforced by last night. It does not satisfy the requested non-past property."
+          },
+          {
+            "choice": "She walks to work every day.",
+            "warranted_as_answer": true,
+            "reason": "Walks is a simple present verb form. This sentence satisfies the requested property of not being in the past tense."
+          },
+          {
+            "choice": "They visited the museum yesterday.",
+            "warranted_as_answer": false,
+            "reason": "Visited is simple past, reinforced by yesterday. It does not satisfy the requested non-past property."
+          }
+        ],
+        "independent_justification": "Assess the exact displayed finite verb forms. Present walks and future-directed will walk are non-past; walked, cooked, visited and watched are past. Do not replace the singular-answer MCQ by a choose-all task or invent an unlisted answer.",
+        "independent_difficulty": 1,
+        "provenance": {
+          "kind": "Synthetic independently authored fixed diagnostic; not a generated question or learner observation.",
+          "basis": "Literal English verb forms or exact stated numeric conditions, adjudicated before any provider response."
+        }
+      }
+    },
+    {
+      "case_id": "grammar_unique_future",
+      "request": {
+        "goal": {
+          "title": "English verb tense",
+          "category": "",
+          "focusAreas": "English verb tense",
+          "currentLevel": "",
+          "learningTarget": "English verb tense",
+          "contentTopics": [
+            "English verb tense"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which sentence is not in the past tense?",
+        "choices": [
+          "She walked to work yesterday.",
+          "She will walk to work tomorrow.",
+          "He cooked dinner last night.",
+          "They visited the museum yesterday."
+        ],
+        "expectedAnswer": "She will walk to work tomorrow.",
+        "topic": "English verb tense",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "external_assessment": {
+        "contrast_group": "grammar_same_stem",
+        "warranted_choices": [
+          "She will walk to work tomorrow."
+        ],
+        "warranted_choice_count": 1,
+        "unique_correct_question": true,
+        "author_key_warranted": true,
+        "author_key_uniquely_correct": true,
+        "per_choice": [
+          {
+            "choice": "She walked to work yesterday.",
+            "warranted_as_answer": false,
+            "reason": "Walked is simple past, reinforced by yesterday. The stem asks for a sentence that is not past, so this past-tense sentence does not answer it."
+          },
+          {
+            "choice": "She will walk to work tomorrow.",
+            "warranted_as_answer": true,
+            "reason": "Will walk, with tomorrow, expresses a future event and is not a past-tense construction. It satisfies the requested non-past property; no claim that English must have a separate inflected future tense is needed."
+          },
+          {
+            "choice": "He cooked dinner last night.",
+            "warranted_as_answer": false,
+            "reason": "Cooked is simple past, reinforced by last night. It does not satisfy the requested non-past property."
+          },
+          {
+            "choice": "They visited the museum yesterday.",
+            "warranted_as_answer": false,
+            "reason": "Visited is simple past, reinforced by yesterday. It does not satisfy the requested non-past property."
+          }
+        ],
+        "independent_justification": "Assess the exact displayed finite verb forms. Present walks and future-directed will walk are non-past; walked, cooked, visited and watched are past. Do not replace the singular-answer MCQ by a choose-all task or invent an unlisted answer.",
+        "independent_difficulty": 1,
+        "provenance": {
+          "kind": "Synthetic independently authored fixed diagnostic; not a generated question or learner observation.",
+          "basis": "Literal English verb forms or exact stated numeric conditions, adjudicated before any provider response."
+        }
+      }
+    },
+    {
+      "case_id": "grammar_zero_correct",
+      "request": {
+        "goal": {
+          "title": "English verb tense",
+          "category": "",
+          "focusAreas": "English verb tense",
+          "currentLevel": "",
+          "learningTarget": "English verb tense",
+          "contentTopics": [
+            "English verb tense"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which sentence is not in the past tense?",
+        "choices": [
+          "She walked to work yesterday.",
+          "He cooked dinner last night.",
+          "They visited the museum yesterday.",
+          "We watched the match last night."
+        ],
+        "expectedAnswer": "She walked to work yesterday.",
+        "topic": "English verb tense",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "external_assessment": {
+        "contrast_group": "grammar_same_stem",
+        "warranted_choices": [],
+        "warranted_choice_count": 0,
+        "unique_correct_question": false,
+        "author_key_warranted": false,
+        "author_key_uniquely_correct": false,
+        "per_choice": [
+          {
+            "choice": "She walked to work yesterday.",
+            "warranted_as_answer": false,
+            "reason": "Walked is simple past, reinforced by yesterday. The stem asks for a sentence that is not past, so this past-tense sentence does not answer it."
+          },
+          {
+            "choice": "He cooked dinner last night.",
+            "warranted_as_answer": false,
+            "reason": "Cooked is simple past, reinforced by last night. It does not satisfy the requested non-past property."
+          },
+          {
+            "choice": "They visited the museum yesterday.",
+            "warranted_as_answer": false,
+            "reason": "Visited is simple past, reinforced by yesterday. It does not satisfy the requested non-past property."
+          },
+          {
+            "choice": "We watched the match last night.",
+            "warranted_as_answer": false,
+            "reason": "Watched is simple past, reinforced by last night. It does not satisfy the requested non-past property."
+          }
+        ],
+        "independent_justification": "Assess the exact displayed finite verb forms. Present walks and future-directed will walk are non-past; walked, cooked, visited and watched are past. Do not replace the singular-answer MCQ by a choose-all task or invent an unlisted answer.",
+        "independent_difficulty": 1,
+        "provenance": {
+          "kind": "Synthetic independently authored fixed diagnostic; not a generated question or learner observation.",
+          "basis": "Literal English verb forms or exact stated numeric conditions, adjudicated before any provider response."
+        }
+      }
+    },
+    {
+      "case_id": "grammar_two_correct",
+      "request": {
+        "goal": {
+          "title": "English verb tense",
+          "category": "",
+          "focusAreas": "English verb tense",
+          "currentLevel": "",
+          "learningTarget": "English verb tense",
+          "contentTopics": [
+            "English verb tense"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which sentence is not in the past tense?",
+        "choices": [
+          "She walks to work every day.",
+          "He cooked dinner last night.",
+          "She will walk to work tomorrow.",
+          "They visited the museum yesterday."
+        ],
+        "expectedAnswer": "She walks to work every day.",
+        "topic": "English verb tense",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "external_assessment": {
+        "contrast_group": "grammar_same_stem",
+        "warranted_choices": [
+          "She walks to work every day.",
+          "She will walk to work tomorrow."
+        ],
+        "warranted_choice_count": 2,
+        "unique_correct_question": false,
+        "author_key_warranted": true,
+        "author_key_uniquely_correct": false,
+        "per_choice": [
+          {
+            "choice": "She walks to work every day.",
+            "warranted_as_answer": true,
+            "reason": "Walks is a simple present verb form. This sentence satisfies the requested property of not being in the past tense."
+          },
+          {
+            "choice": "He cooked dinner last night.",
+            "warranted_as_answer": false,
+            "reason": "Cooked is simple past, reinforced by last night. It does not satisfy the requested non-past property."
+          },
+          {
+            "choice": "She will walk to work tomorrow.",
+            "warranted_as_answer": true,
+            "reason": "Will walk, with tomorrow, expresses a future event and is not a past-tense construction. It satisfies the requested non-past property; no claim that English must have a separate inflected future tense is needed."
+          },
+          {
+            "choice": "They visited the museum yesterday.",
+            "warranted_as_answer": false,
+            "reason": "Visited is simple past, reinforced by yesterday. It does not satisfy the requested non-past property."
+          }
+        ],
+        "independent_justification": "Assess the exact displayed finite verb forms. Present walks and future-directed will walk are non-past; walked, cooked, visited and watched are past. Do not replace the singular-answer MCQ by a choose-all task or invent an unlisted answer.",
+        "independent_difficulty": 1,
+        "provenance": {
+          "kind": "Synthetic independently authored fixed diagnostic; not a generated question or learner observation.",
+          "basis": "Literal English verb forms or exact stated numeric conditions, adjudicated before any provider response."
+        }
+      }
+    },
+    {
+      "case_id": "ordinary_no_real_solution",
+      "request": {
+        "goal": {
+          "title": "Real-number equations",
+          "category": "",
+          "focusAreas": "Real-number equations",
+          "currentLevel": "",
+          "learningTarget": "Real-number equations",
+          "contentTopics": [
+            "Real-number equations"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which real number x satisfies x² = -1?",
+        "choices": [
+          "0",
+          "No real number satisfies this equation.",
+          "1",
+          "-1"
+        ],
+        "expectedAnswer": "No real number satisfies this equation.",
+        "topic": "Real-number equations",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "external_assessment": {
+        "contrast_group": "ordinary_negative_answer",
+        "warranted_choices": [
+          "No real number satisfies this equation."
+        ],
+        "warranted_choice_count": 1,
+        "unique_correct_question": true,
+        "author_key_warranted": true,
+        "author_key_uniquely_correct": true,
+        "per_choice": [
+          {
+            "choice": "0",
+            "warranted_as_answer": false,
+            "reason": "0² = 0, so 0 does not satisfy x² = -1."
+          },
+          {
+            "choice": "No real number satisfies this equation.",
+            "warranted_as_answer": true,
+            "reason": "Every real square is nonnegative. Therefore no real x satisfies x² = -1; this ordinary negative statement is the unique warranted answer."
+          },
+          {
+            "choice": "1",
+            "warranted_as_answer": false,
+            "reason": "1² = 1, so 1 does not satisfy x² = -1."
+          },
+          {
+            "choice": "-1",
+            "warranted_as_answer": false,
+            "reason": "(-1)² = 1, so -1 does not satisfy x² = -1."
+          }
+        ],
+        "independent_justification": "For every real x, x² >= 0. The three numeric choices fail directly, while the offered ordinary statement accurately reports nonexistence. This complete MCQ has a unique answer even though the underlying real-number equation has no solution.",
+        "independent_difficulty": 1,
+        "negative_answer_contract": "The key deliberately differs from the canonical app-owned no-solution wording. Score substantive correctness separately from any current gate that requires canonical text. Do not require a numeric solution to classify the complete MCQ as answerable.",
+        "provenance": {
+          "kind": "Fresh synthetic choice variant using an elementary real-number identity; not a new model response.",
+          "basis": "Independent proof x² >= 0 for real x and direct substitution of each numeric option. The no-real-solution mathematical property also appears in earlier controls; the ordinary phrasing is deliberate."
+        }
+      }
+    },
+    {
+      "case_id": "valid_pair_existence",
+      "request": {
+        "goal": {
+          "title": "Prepare for LeetCode interviews",
+          "category": "Custom",
+          "focusAreas": "Hash sets",
+          "currentLevel": "",
+          "learningTarget": "Prepare for LeetCode interviews",
+          "contentTopics": [
+            "Hash sets"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "For an unsorted integer array of length n, return only whether two distinct indices sum to k. With expected O(1) hash-set operations, which method takes expected O(n) time?",
+        "choices": [
+          "Scan once, checking for k - x in a set of earlier values before inserting x.",
+          "Enumerate every pair of distinct indices.",
+          "Sort the array using comparison sort, then use two pointers.",
+          "Run a fresh linear scan for the complement at every index."
+        ],
+        "expectedAnswer": "Scan once, checking for k - x in a set of earlier values before inserting x.",
+        "explanation": "Each element performs one expected constant-time membership check and insertion, so the scan takes expected O(n) time.",
+        "topic": "Hash sets",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "external_assessment": {
+        "contrast_group": "pair_existence_retention_counterpart",
+        "warranted_choices": [
+          "Scan once, checking for k - x in a set of earlier values before inserting x."
+        ],
+        "warranted_choice_count": 1,
+        "unique_correct_question": true,
+        "author_key_warranted": true,
+        "author_key_uniquely_correct": true,
+        "per_choice": [
+          {
+            "choice": "Scan once, checking for k - x in a set of earlier values before inserting x.",
+            "warranted_as_answer": true,
+            "reason": "Before processing x, the set contains only values at earlier indices. Checking k - x before insertion therefore finds a different index, including repeated-value pairs. There are at most n membership checks and n insertions; the stated expected O(1) operation cost gives expected O(n) time. Only a Boolean result is requested."
+          },
+          {
+            "choice": "Enumerate every pair of distinct indices.",
+            "warranted_as_answer": false,
+            "reason": "Enumerating every distinct-index pair performs n(n-1)/2 pair checks, even though the output is only Boolean. It does not have the required linear-time guarantee."
+          },
+          {
+            "choice": "Sort the array using comparison sort, then use two pointers.",
+            "warranted_as_answer": false,
+            "reason": "Comparison sorting arbitrary permitted input orders has a superlinear comparison lower bound in the worst case (and cannot guarantee expected O(n) comparisons for every input under randomization). A later linear two-pointer scan does not remove the sorting cost. This claim is scoped to the expressly listed comparison-sort method."
+          },
+          {
+            "choice": "Run a fresh linear scan for the complement at every index.",
+            "warranted_as_answer": false,
+            "reason": "A fresh linear complement search at every index repeats up to n searches of linear length. Inputs with no matching pair require quadratic work, so this method cannot guarantee expected O(n) time."
+          }
+        ],
+        "independent_justification": "A prefix-set invariant gives distinct-index correctness; a constant number of stated expected O(1) set operations per element gives expected O(n) work. The Boolean output has constant size. The three alternatives have superlinear work on allowed input families.",
+        "complexity_scope": "This is the conventional element-operation analysis stated by the question, not an arbitrary-precision integer bit-complexity guarantee or a worst-case hash-operation claim. Keep the word expected in explanations.",
+        "independent_difficulty": 2,
+        "provenance": {
+          "kind": "Exact historical valid question object, with its unaided request reconstructed from the archived goal and the original evaluator recipe. No historical solution record is included.",
+          "archive_path": "docs/evidence/evidence-review-feasibility-20260906.json",
+          "archive_sha256": "d93465d39ab8f5a5b29b3895fe2ac25295469363b39e0657aff7cee73a335c73",
+          "question_locator": "$.fixture.cases[1].question",
+          "goal_locator": "$.fixture.cases[1].goal",
+          "source_case_id": "valid_pair_existence",
+          "question_canonical_sha256": "d87c1eb55e7dd3ae61b7b1df441e9152b4f0cdabe8f5046a9a82c9bdf32c8163",
+          "request_canonical_sha256": "8a98077ec1a74db4ee67ff252fefefc06d514924e226e126320f02eb3b23282f",
+          "request_reconstruction": "_normalize_request({goal: archived_case.goal, sourceDocuments: archived_case.get(sourceDocuments, []), targetCount: 1}), as in evals/checkpoint_learning_eval.py:evaluate_review. The unaided case has no sourceDocuments; no normalized request object was stored in that archive.",
+          "historical_observation_locator": "$.results[0] (unaided); historical acceptance is provenance only, not independent truth.",
+          "copy_scope": "Question fields including difficulty 2, expectedAnswer, choices and explanation are unchanged. SourceDocuments stays empty. The expected labels and historical response are not supplied to the model."
+        }
+      }
+    },
+    {
+      "case_id": "historical_all_pairs_invalid",
+      "request": {
+        "goal": {
+          "title": "Prepare for LeetCode interviews",
+          "category": "Custom",
+          "focusAreas": "hash maps",
+          "currentLevel": "",
+          "learningTarget": "Prepare for LeetCode interviews",
+          "contentTopics": [
+            "hash maps"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "choices": [
+          "Hash map storing complements seen so far",
+          "Sort then two-pointer scan",
+          "Nested loop checking all pairs",
+          "Binary search for each element's complement"
+        ],
+        "expectedAnswer": "Hash map storing complements seen so far",
+        "topic": "hash maps",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "external_assessment": {
+        "contrast_group": "historical_caveat_sentinel",
+        "warranted_choices": [],
+        "warranted_choice_count": 0,
+        "unique_correct_question": false,
+        "author_key_warranted": false,
+        "author_key_uniquely_correct": false,
+        "per_choice": [
+          {
+            "choice": "Hash map storing complements seen so far",
+            "warranted_as_answer": false,
+            "reason": "The one-pass hash lookup description does not guarantee O(n) total time for every permitted all-pairs task. For n zeroes and target 0, enumerating all distinct index pairs requires n(n-1)/2 outputs. Treating pairs as distinct values or excluding output work would add an unstated interpretation; expected hash-operation cost is also a qualification."
+          },
+          {
+            "choice": "Sort then two-pointer scan",
+            "warranted_as_answer": false,
+            "reason": "Sorting and a two-pointer scan do not remove the potentially quadratic obligation to enumerate all matching index pairs. The usual comparison-sort analysis also does not give a universal linear-time guarantee. Do not claim every sorting algorithm necessarily requires n log n without specifying its model."
+          },
+          {
+            "choice": "Nested loop checking all pairs",
+            "warranted_as_answer": false,
+            "reason": "Checking all pairs uses n(n-1)/2 index-pair checks in the ordinary nested-loop implementation, so it does not meet the requested linear total-time bound. The permitted all-zero input also has that many matching index-pair outputs."
+          },
+          {
+            "choice": "Binary search for each element's complement",
+            "warranted_as_answer": false,
+            "reason": "Searching for each complement does not remove potentially quadratic matching index-pair output. Usual binary search additionally needs a sorted representation and logarithmic search steps; no unconditional linear total-time guarantee follows from this description."
+          }
+        ],
+        "independent_justification": "For n zeroes and target0, listing distinct index pairs requires n(n-1)/2 outputs. A universal linear total-time claim fails on that permitted interpretation. The original wording also leaves index-pair versus distinct-value-pair interpretation unsettled; do not silently select the narrower interpretation.",
+        "ambiguity": "All pairs does not specify index-pair versus distinct-value-pair output, and the claimed time bound does not state an expected hashing model or exclude output work. No offered method is unconditionally justified. Do not silently narrow the stem to existence or unique value pairs.",
+        "independent_difficulty": null,
+        "provenance": {
+          "kind": "Exact copied request and question from the previous compatibility fixture; no historical or synthetic solution record is included.",
+          "source_path": "backend/bedrock-question-service/evals/fixtures/question_solution_compatibility.json",
+          "source_file_sha256": "c55a265eced4c9569d1e2d54eea89986f687d9e9354ee82839b0970508d8aca9",
+          "source_case_id": "historical_caveat_relocated_into_answer",
+          "source_case_locator": "$.cases[6]",
+          "request_canonical_sha256": "c3d939f9b47281827c94bf8dbff721a59ba96af58f391dad79a21b0b04fe6835",
+          "question_canonical_sha256": "be8efdc042d30567a3ed2e13a3935eb2d29c4c013ccca25f6e0bbc436cdf2b2f",
+          "earliest_archive_path": "docs/evidence/evidence-review-feasibility-20260906.json",
+          "earliest_archive_sha256": "d93465d39ab8f5a5b29b3895fe2ac25295469363b39e0657aff7cee73a335c73",
+          "earliest_question_locator": "$.fixture.cases[0].question",
+          "copy_scope": "The current compatibility request/question objects are copied exactly, including its diagnostic explanation and difficulty 1. This is not a fresh generation, a repair, or a claim that the earlier author difficulty was 1."
+        }
+      }
+    },
+    {
+      "case_id": "ordinary_cannot_determine",
+      "request": {
+        "goal": {
+          "title": "Relate amount, rate and time",
+          "category": "",
+          "focusAreas": "Relate amount, rate and time",
+          "currentLevel": "",
+          "learningTarget": "Relate amount, rate and time",
+          "contentTopics": [
+            "Relate amount",
+            "rate and time"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A pump adds 12 litres of water at a constant positive rate. How many minutes does this take?",
+        "choices": [
+          "2 minutes",
+          "The time cannot be calculated without the flow rate.",
+          "3 minutes",
+          "6 minutes"
+        ],
+        "expectedAnswer": "The time cannot be calculated without the flow rate.",
+        "topic": "Relate amount, rate and time",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "external_assessment": {
+        "contrast_group": "ordinary_negative_answer",
+        "warranted_choices": [
+          "The time cannot be calculated without the flow rate."
+        ],
+        "warranted_choice_count": 1,
+        "unique_correct_question": true,
+        "author_key_warranted": true,
+        "author_key_uniquely_correct": true,
+        "per_choice": [
+          {
+            "choice": "2 minutes",
+            "warranted_as_answer": false,
+            "reason": "Two minutes is possible at 6 litres per minute, but that rate is not given. It is not a warranted unique duration."
+          },
+          {
+            "choice": "The time cannot be calculated without the flow rate.",
+            "warranted_as_answer": true,
+            "reason": "The amount is 12 litres, but the constant positive rate is unspecified. Rates of 6 and 4 litres per minute both satisfy the stem and produce different durations, 2 and 3 minutes. This choice correctly reports the missing information."
+          },
+          {
+            "choice": "3 minutes",
+            "warranted_as_answer": false,
+            "reason": "Three minutes is possible at 4 litres per minute, but that rate is not given. It is not a warranted unique duration."
+          },
+          {
+            "choice": "6 minutes",
+            "warranted_as_answer": false,
+            "reason": "Six minutes is possible at 2 litres per minute, but that rate is not given. It is not a warranted unique duration."
+          }
+        ],
+        "independent_justification": "Time equals amount divided by rate. Several positive constant rates satisfy the exact stem and yield different durations. The ordinary negative choice is the unique warranted answer; the three numeric durations are possible rather than factually impossible.",
+        "independent_difficulty": 2,
+        "provenance": {
+          "kind": "Synthetic independently authored fixed diagnostic; not a generated question or learner observation.",
+          "basis": "Literal English verb forms or exact stated numeric conditions, adjudicated before any provider response.",
+          "local_check": {
+            "formula": "duration_minutes = 12 / rate_litres_per_minute",
+            "examples": [
+              {
+                "rate": 6,
+                "duration": 2.0
+              },
+              {
+                "rate": 4,
+                "duration": 3.0
+              },
+              {
+                "rate": 2,
+                "duration": 6.0
+              }
+            ]
+          }
+        },
+        "negative_answer_contract": "The key is ordinary grammatical text, deliberately outside the app-owned canonical cannot-determine wording. Score whether the complete MCQ has one warranted choice separately from any current gate that requires canonical text. Do not treat a valid negative answer as an invalid question or pretend a numeric duration is impossible."
+      }
+    }
+  ]
+}
