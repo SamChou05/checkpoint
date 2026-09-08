@@ -1,0 +1,347 @@
+{
+  "protocol": "checkpoint.learning_map_release_evidence.v1",
+  "status": "Native implementation and edited-map async generation/claim verified; known limitations retained",
+  "native": {
+    "tests_passed": 985,
+    "test_failures": 0,
+    "map_related_tests_passed": 161,
+    "limitations": [
+      "Physical pan/pinch not directly verified because available simulator drag input also failed on a standard iOS form.",
+      "Distribution build needs the existing CHECKPOINT_PRIVACY_POLICY_URL configuration."
+    ],
+    "screenshots": [
+      "progress-entry.png",
+      "map-overview-dark.png",
+      "editor-overview-light.png",
+      "accessible-list.png"
+    ]
+  },
+  "deployments": [
+    {
+      "source_revision": "9ce484f819c64694db9c3adb0142aa149ebe527d",
+      "runtime_sha256": "120dea9d0ffbf04b098dcd7d87bd5770b1c7a457fdfafd7b867b8bff62356769",
+      "runtime_modules": 18,
+      "live_contract_checks_passed": 8,
+      "state": "deployed"
+    },
+    {
+      "source_revision": "2a8d97ca7e2f8eebdc3799c3211bc55400d7089d",
+      "runtime_sha256": "43f01baf9214bed3b7c10384d5389f6958b6608a355e1b145c3c012b86f6a9c9",
+      "runtime_modules": 18,
+      "live_contract_checks_passed": 8,
+      "state": "deployed"
+    },
+    {
+      "source_revision": "e5818fcd059c1fd6d555d17347f9d325756b3eb7",
+      "runtime_sha256": "e19355d3f5092525df649b44f9d034a423b7b5adc0d8667f2caab19bb50c3022",
+      "runtime_modules": 18,
+      "live_contract_checks_passed": 8,
+      "state": "deployed"
+    },
+    {
+      "source_revision": "601d27312753864282d2215bd54eec3070a58672",
+      "runtime_sha256": "10b7e02a1d2c32e69c9bd7c526346e8122a09caff1fabcb44ad03b11652c1e8d",
+      "runtime_modules": 18,
+      "live_contract_checks_passed": 8,
+      "state": "deployed",
+      "only_change": "Author sample JSON explanation field precedes answer key and choices; all other runtime bytes and settings unchanged."
+    }
+  ],
+  "live_trials": [
+    {
+      "map_version": 7,
+      "scope": "Shopping receipt discounts and delivery",
+      "challenge": "stretch",
+      "provider_reservations": 3,
+      "questions_returned": 0,
+      "claim_attempts": 0,
+      "outcome": "superseded without extra calls"
+    },
+    {
+      "map_version": 8,
+      "scope": "Service-plan fees, included allowances and overage",
+      "challenge": "stretch",
+      "provider_reservations": 5,
+      "questions_returned": 0,
+      "claim_attempts": 0,
+      "outcome": "terminal failure"
+    },
+    {
+      "map_version": 9,
+      "scope": "Whole-unit service-plan comparisons",
+      "challenge": "stretch",
+      "provider_reservations": 6,
+      "questions_returned": 0,
+      "claim_attempts": 0,
+      "outcome": "terminal failure",
+      "worker_metrics": [
+        {
+          "RequestId": "eacad772-94d2-5481-be5f-b46b26933c7e",
+          "Outcome": "provider_failure",
+          "LatencyMilliseconds": 45279.91,
+          "ProviderCalls": 6,
+          "QuestionsRequested": 1,
+          "QuestionsReturned": 0,
+          "QuestionQuality": {
+            "review": {
+              "rejected_by_model": 2
+            },
+            "sanitize": {
+              "accepted": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "map_version": 10,
+      "scope": "Same whole-unit service-plan scope; challenge control changed to foundations",
+      "challenge": "foundations",
+      "provider_reservations": 6,
+      "questions_returned": 0,
+      "claim_attempts": 0,
+      "outcome": "terminal failure",
+      "worker_metrics": [
+        {
+          "RequestId": "91dda300-a85a-5c88-b1f7-c0191c37e0c0",
+          "Outcome": "provider_failure",
+          "LatencyMilliseconds": 47734.15,
+          "ProviderCalls": 6,
+          "QuestionsRequested": 1,
+          "QuestionsReturned": 0,
+          "QuestionQuality": {
+            "review": {
+              "rejected_by_model": 2
+            },
+            "sanitize": {
+              "accepted": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "map_version": 11,
+      "scope": "Same whole-unit service-plan comparisons; stretch restored after deployment of the explanation-first sample",
+      "challenge": "stretch",
+      "target_difficulty": 3,
+      "provider_reservations": 6,
+      "questions_returned": 1,
+      "claim_attempts": 1,
+      "outcome": "generated, manually reviewed, and successfully claimed",
+      "worker_metrics": [
+        {
+          "RequestId": "0406b5c8-c597-5d7e-a662-d6d1732aaecb",
+          "Outcome": "async_success",
+          "LatencyMilliseconds": 31994.5,
+          "ProviderCalls": 6,
+          "QuestionsRequested": 1,
+          "QuestionsReturned": 1,
+          "QuestionQuality": {
+            "review": {
+              "accepted": 1,
+              "difficulty_target": 1
+            },
+            "sanitize": {
+              "accepted": 2
+            }
+          }
+        }
+      ],
+      "question": {
+        "choiceExplanations": {
+          "Bundle plan: $43": "The bundle cost of $43 is calculated correctly ($35 + 2\u00d7$4), but the unlimited plan at $40 is still cheaper, so this choice misidentifies the winner.",
+          "Bundle plan: $48": "Incorrect cost for the bundle; charging $4 for all 12 visits ignores the 10-visit allowance already covered by the $35 fee, yielding $48 instead of $43.",
+          "Day-pass plan: $60": "The day-pass cost of $60 is calculated correctly (12\u00d7$5), but it is the most expensive option, not the cheapest.",
+          "Unlimited plan: $40": "Correct \u2014 $40 is both the accurate cost of the unlimited plan and the lowest of the three totals ($40, $43, $60)."
+        },
+        "choices": [
+          "Unlimited plan: $40",
+          "Day-pass plan: $60",
+          "Bundle plan: $43",
+          "Bundle plan: $48"
+        ],
+        "difficulty": 3,
+        "expectedAnswer": "Unlimited plan: $40",
+        "explanation": "Calculate each plan for 12 visits: unlimited = $40; day-pass = 12\u00d7$5 = $60; bundle = $35 + 2\u00d7$4 = $43. The unlimited plan is cheapest at $40.",
+        "format": "Multiple Choice",
+        "objective": "Compare service plan totals",
+        "objectiveID": "4ad69d26-8d67-465f-9561-bdc9e25fefd4",
+        "prompt": "A gym membership costs $40/month with unlimited visits. A day-pass plan charges $5 per visit with no monthly fee. A third option offers 10 visits for $35, with additional visits at $4 each. For exactly 12 visits in one month, which option is cheapest and what is the total cost?",
+        "remoteID": "3ebc5a99-3fb4-51f0-8a35-6e1a430e187d",
+        "skillID": "4b0260d3-e52f-407f-af08-2799f49492b1",
+        "topic": "Practical arithmetic",
+        "verificationPolicyRevision": 1,
+        "verificationVersion": 1
+      },
+      "root_manual_review": {
+        "question_sha256": "28510a1d99241f843486a10e32cbea1de21cd0be7bcb4ac6164399f30bac9c3c",
+        "literal_totals": {
+          "Unlimited plan": 40,
+          "Day-pass plan": 60,
+          "Bundle plan": 43
+        },
+        "unique_correct_choice": "Unlimited plan: $40",
+        "scope_fit": true,
+        "main_explanation_correct": true,
+        "choice_feedback_assessment": "All four explanations agree with the literal totals. The $48 distractor describes charging $4 for all visits; this also omits the fixed fee, which is clear from the correct $35+2\u00d7$4 calculation elsewhere. No learner misconception is inferred from an actual answer.",
+        "policy_revision": 1,
+        "current_active_skill_and_focus_ids_match": true,
+        "assessment": "PASS for this synthetic item; no population accuracy claim"
+      },
+      "claim_http_status": 200,
+      "claim_returns_exact_reviewed_question": true,
+      "final_observation": {
+        "at": 1788851626,
+        "v11_exists": true,
+        "bank_state": "empty",
+        "job_id": "de83e7c6-50ac-42c9-97f9-125621fd167a",
+        "job_status": "complete",
+        "v11_provider_reservations": 6,
+        "v10_provider_reservations": 6,
+        "v9_provider_reservations": 6,
+        "v8_provider_reservations": 5,
+        "v7_provider_reservations": 3,
+        "prior_worker_reservations_total": 20,
+        "all_trial_worker_reservations": 26,
+        "ready_count": 0,
+        "generated_count": 1,
+        "has_live_lease": false,
+        "claim_receipt_present": true,
+        "persisted_stretch_scope_matches": true
+      },
+      "independent_manual_review": {
+        "reviewed_at_utc": "2026-09-08T07:12:24.391120+00:00",
+        "reviewer": "Independent map-design-constraints agent",
+        "source_review_file": "/tmp/checkpoint-learning-map-rollout-20260908/smoke-v11-prompt-order/v11-ready-question-review.json",
+        "source_review_file_sha256": "ede14bb514e800a7b1475bf57ac28c30d82cd5a1ec21c0aaad12010822d233ca",
+        "question_sha256": "28510a1d99241f843486a10e32cbea1de21cd0be7bcb4ac6164399f30bac9c3c",
+        "remote_id": "3ebc5a99-3fb4-51f0-8a35-6e1a430e187d",
+        "blinded_assessment_before_key_or_feedback_read": {
+          "answer": "Unlimited plan: $40",
+          "totals": {
+            "unlimited": 40,
+            "day_pass": 60,
+            "bundle": 43
+          },
+          "unique_cheapest": true,
+          "scope_fit": "Comparing fixed fees, included allowances, and overage at one stated usage amount.",
+          "difficulty": "Level 3 is reasonable: interpret three pricing structures, apply different conditions, and compare totals; arithmetic is straightforward."
+        },
+        "unblinded_assessment": {
+          "answer_key": "Matches blinded unique answer.",
+          "main_explanation": "All three totals and the $40 cheapest-plan conclusion are correct; bundle fee and two overage visits are explicit.",
+          "choice_explanations": {
+            "Unlimited plan: $40": "Correct cost and uniquely lowest total.",
+            "Day-pass plan: $60": "Correct 12\u00d75 calculation and correctly identifies this as most expensive.",
+            "Bundle plan: $43": "Correct 35+2\u00d74 calculation; correctly explains that a correct total is insufficient because it is not cheapest.",
+            "Bundle plan: $48": "The stated incorrect calculation 4\u00d712=48 is arithmetically true. Its diagnosis is incomplete: this also omits the $35 fee, in addition to charging the per-unit rate for included visits. It does not assert that 35+12\u00d74=48 or teach that $48 is the correct bundle total."
+          },
+          "false_arithmetic_found": false,
+          "incorrect_answer_or_contradictory_main_teaching_found": false,
+          "feedback_precision_caveat": "The $48 distractor explanation names only part of the erroneous billing model. The correct 35+2\u00d74 formula is explicit in the main explanation and $43 feedback."
+        },
+        "verdict": "PASS with a minor feedback-precision caveat; valid unique answer, correct main teaching, all four choices addressed. The caveat is not a mathematical or answer-validity blocker.",
+        "scope_limit": "This reviews one live synthetic item; it does not establish general generation accuracy.",
+        "item_modified": false,
+        "model_calls": 0
+      },
+      "remaining_content_caveat": "The $48 distractor feedback names the allowance error but does not also explicitly name omission of the fixed fee. The correct formula and all totals are explicit elsewhere; both manual reviews found no answer-validity blocker."
+    }
+  ],
+  "local_author_diagnostics": [
+    {
+      "variant": "Original Kimi author, thinking disabled",
+      "provider_calls": 3,
+      "outcome": "Rejected incorrect key; stated totals imply a $14 difference, absent from options.",
+      "archive_directory_name": "edited-worker-diagnostic-once"
+    },
+    {
+      "variant": "Kimi thinking enabled",
+      "provider_calls": 3,
+      "outcome": "Rejected incorrect key; stated totals imply a $4 difference, absent from options.",
+      "archive_directory_name": "edited-worker-thinking-comparison-once"
+    },
+    {
+      "variant": "Sonnet author, thinking disabled",
+      "provider_calls": 3,
+      "outcome": "Rejected incorrect key; stated totals imply Plan B saves $3.20, absent from options.",
+      "archive_directory_name": "v9-sonnet-author-local-exploration-once"
+    },
+    {
+      "variant": "Original Kimi author; only sample field order changed to explanation before key/options",
+      "provider_calls": 3,
+      "outcome": "Accepted unchanged independent verification; both plans correctly total $65.",
+      "archive_directory_name": "v9-explanation-first-local-exploration-once",
+      "accepted_question": {
+        "prompt": "A gym offers two monthly membership plans. Plan A: $40 fixed fee includes 10 visits; additional visits cost $5 each. Plan B: $25 fixed fee includes 5 visits; additional visits cost $4 each. For someone who will visit exactly 15 times this month, which plan is cheaper and by how much?",
+        "expectedAnswer": "Both plans cost the same; $0 difference",
+        "choices": [
+          "Both plans cost the same; $0 difference",
+          "Plan A by $10",
+          "Plan B by $10",
+          "Plan A by $15"
+        ],
+        "explanation": "Plan A: $40 + 5\u00d7$5 = $65. Plan B: $25 + 10\u00d7$4 = $65. Overage units are only those above each plan's included allowance; both totals are identical.",
+        "topic": "Practical arithmetic",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "skillID": "4b0260d3-e52f-407f-af08-2799f49492b1",
+        "objectiveID": "4ad69d26-8d67-465f-9561-bdc9e25fefd4",
+        "objective": "Compare service plan totals",
+        "choiceExplanations": {
+          "Both plans cost the same; $0 difference": "Correct: both plans yield exactly $65 for 15 visits, so the difference is $0.",
+          "Plan A by $10": "Incorrect: this would require Plan B to cost $75, but 10 overage visits at $4 plus $25 gives $65.",
+          "Plan B by $10": "Incorrect: this would require Plan A to cost $75, but 5 overage visits at $5 plus $40 gives $65.",
+          "Plan A by $15": "Incorrect: this would require Plan B to cost $80; the $4 overage rate on 10 extra visits produces only $40 in overage, not $55."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 1
+      },
+      "manual_review": {
+        "classification": "Single sample-field-order local exploration; not deployed success or causal/population proof",
+        "completed_provider_calls": 3,
+        "author_model": "Original Kimi K2.5",
+        "solver_and_reviewer_model": "Unchanged Sonnet 4.6",
+        "all_thinking": "disabled",
+        "temperature": 0.2,
+        "request_scope": "Exact persisted synthetic v9 generation request with unchanged frozen allocation helpers",
+        "map_version": 9,
+        "target_difficulty": 3,
+        "skill_and_objective_identity_match": true,
+        "accepted_question_count": 1,
+        "quality_gate_outcome": "accepted",
+        "manual_verdict": "Mathematically valid, self-contained comparison with exactly one correct choice; explanation and key agree.",
+        "computed_totals": {
+          "Plan A": 65,
+          "Plan B": 65,
+          "correct_answer": "Both plans cost the same; $0 difference"
+        },
+        "single_author_system_prompt_line_changed": true,
+        "change": "Only JSON sample order changed from prompt\u2192expectedAnswer\u2192choices\u2192explanation to prompt\u2192explanation\u2192expectedAnswer\u2192choices",
+        "unchanged_solver_and_reviewer_prompt_hashes": true,
+        "combined_provider_transport_seconds": 19.858,
+        "input_tokens": 5220,
+        "output_tokens": 964,
+        "runtime_sha256": "e19355d3f5092525df649b44f9d034a423b7b5adc0d8667f2caab19bb50c3022",
+        "state_bytes_preserved": true,
+        "automatic_retries": 0,
+        "production_or_queue_mutations": 0,
+        "scope_note": "Uses two gym service plans, whole-unit usage, fixed fees, included allowances and exact overage arithmetic. The table is expressed compactly in prose; neither plan is cheaper because the totals tie.",
+        "limitations": "One newly generated sample after one prompt change. It supports this concrete remedy as a candidate for further evaluation; it cannot establish causality, population improvement, or deployed async success."
+      }
+    }
+  ],
+  "scope_limits": [
+    "These are bounded synthetic integration checks, not estimates of question accuracy.",
+    "Failed trials remain failures; fresh map versions and separate local prompt/model diagnostics are not retries under identical conditions.",
+    "Bank counters record durable provider reservations; local diagnostics are outside those counters. No account-wide usage or spend total is claimed."
+  ],
+  "backend_verification": {
+    "full_suite_tests_run": 716,
+    "full_suite_skipped": 1,
+    "full_suite_failures": 0,
+    "exact_package_tests_passed": 159,
+    "exact_package_skipped": 0
+  }
+}

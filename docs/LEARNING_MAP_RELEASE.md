@@ -2,7 +2,7 @@
 
 ## Current state
 
-The user approved the reviewed TestFlight deployment and the model calls needed for verification on September 8, 2026 UTC. The learning-map runtime, deadline correction (`2a8d97c`), and durable worker-budget correction (`e5818fc`) are deployed successfully. All eight live contract checks pass. A direct generation run now completes both full review passes within the HTTP deadline, but both drafts were rejected. The asynchronous path has demonstrated safe supersession after an edit; successful generation and claim remain unverified. The edited version-9 bank completed two full review passes and terminalized promptly at six calls, confirming the retry correction; its drafts were rejected and no question was returned.
+The native learning-map implementation and compatible TestFlight backend are verified. The user approved deployment and needed model calls. The final runtime (`601d273`) is deployed, all eight live contract checks pass, and a real asynchronous question generated from the edited map was manually reviewed and successfully claimed. Earlier failed generation trials are preserved below. This establishes the tested integration, not a general question-correctness rate.
 
 ## Initial deployed milestone
 
@@ -50,7 +50,23 @@ All eight live contract checks passed again. Verification also includes 159 test
 
 A separate version-9 edit retained all goal/skill/focus identities and narrowed the service-plan description to whole-unit usage without taxes, prorating, tiers, or rounding. This was an explicitly recorded new map-edit trial, not a reinterpretation of earlier failures. The normal ensure saved the new scope and target difficulty 3 and triggered one real SQS job. It completed six provider calls in 45.28 seconds, with two independently reviewed drafts rejected, zero questions returned, and immediate terminal failure. No 24-minute doomed retry was needed. Prior version-7 and version-8 call counters remain three and five. No terminal job or quota counter was reset.
 
-The map-to-generation contract and bounded failure behavior are verified. Successful edited-scope generation and claim remain unverified; model rejections are retained as failures.
+At this milestone the map-to-generation contract and bounded failure behavior were verified, while successful generation and claim remained unverified. The subsequent results below close that integration check; the earlier rejections remain failures.
+
+## Final prompt correction and successful live claim
+
+A separate Foundations control trial changed only the active challenge, map version, and context revision. The server correctly selected target difficulty 2, preserving all descriptions and identities. Both reviewed drafts were rejected; the version-10 job terminalized at six calls with zero questions. Switching the author to Sonnet in a separate three-call local diagnostic also produced a wrong key and no valid option. Neither result justified changing deployed models or thinking settings.
+
+A minimal local experiment changed only the author prompt's sample JSON field order: the finished explanation comes before the answer key and choices. The original Kimi author then produced a coherent question that passed the unchanged independent solver and reviewer. A manual check confirmed both plans cost $65. This fresh sample supported trying the concrete correction; it did not establish causality or a population accuracy improvement.
+
+The exact one-line correction was committed and pushed as `601d27312753864282d2215bd54eec3070a58672`. The full backend suite ran 716 tests with zero failures and one optional skip; all 159 tests against the exact ZIP passed. The deployed 18-module, 95,594-byte ZIP hashes to `10b7e02a1d2c32e69c9bd7c526346e8122a09caff1fabcb44ad03b11652c1e8d`. Independent post-deployment review confirmed the approved execution token `learning-map-explanation-first-601d273-approved-20260908`, both function hashes, exact templates, all 43 parameters, all 32 physical resource identities, unchanged model and environment settings, and the unchanged outbox. All eight live contract checks passed again.
+
+The version-11 smoke restored Stretch while preserving the same service-plan descriptions, goal, skill, and focus-point IDs. One normal ensure triggered a real SQS job. The first draft was rejected for difficulty; the second passed at the required difficulty 3. All six provider calls completed in 31.99 seconds, returning one question. The old version-7/8/9/10 counters stayed at 3/5/6/6. No counter was reset, no terminal job was replayed, and no extra inventory was requested.
+
+The returned item compares a $40 unlimited gym plan, $5 day passes, and a $35 ten-visit bundle with $4 overage. At twelve visits the totals are $40, $60, and $43, giving exactly one correct choice. Root and a second agent independently confirmed the literal answer; the second agent assessed the stem and choices before seeing the key or feedback. All main calculations are correct. The $48 distractor explanation describes charging for included visits but does not explicitly name the additional omission of the fixed fee; both reviews found this a minor precision caveat, with the correct formula clearly provided elsewhere.
+
+One claim request returned HTTP 200 and the exact manually reviewed question, with matching skill/focus IDs, difficulty 3, verification version 1, and policy revision 1. The durable receipt exists, the job is complete, generated inventory is exactly one, and ready inventory is zero after claim. This verifies the edited map's actual generation and retrieval path without weakening review.
+
+The [committed synthetic evidence](evidence/learning-map-live-release-20260908.json) retains successful and failed trials, source hashes, provider counters, exact accepted content, and the manual assessments. Continued question-quality work remains separate; one successful integration example does not qualify general accuracy or future model output.
 
 ## Evidence location
 
@@ -67,3 +83,5 @@ The reviewed package, rollback evidence, and separate live reports are under `/t
 The deadline package and its separate validation/generation reports are in the adjacent `candidate-deadline-fix/` directory. Original failures and both local diagnostic traces are retained, along with `async-both-trials-status-before-budget-release.json`.
 
 These are bounded synthetic checks. They do not establish a population question-correctness rate or close the separate semantic-correctness workstream.
+
+Final deployment and live-claim artifacts are in `candidate-explanation-first/` and `smoke-v11-prompt-order/` under the same rollout directory.
