@@ -1,0 +1,98 @@
+{
+  "assessment_kind": "Frozen answer-blind assistant content assessment; not a human panel or calibrated learning study.",
+  "input_path": "/tmp/checkpoint-acquired-source-seasons_mechanism-blind-20260908.json",
+  "input_sha256": "9c863c2555e3c4f0d20c866f63ac6c28b8f078e26a6698f1763289d0380f3c79",
+  "case_id": "seasons_mechanism",
+  "blinding": {
+    "read_only_input": "The one answer-free packet and its supplied source text.",
+    "author_key_seen": false,
+    "author_feedback_seen": false,
+    "auditor_verdict_seen": false,
+    "network_or_model_calls": 0,
+    "native_operations": 0
+  },
+  "prompt": "In January, Earth is at perihelion—its closest point to the Sun (~91.4 million miles). Yet the Northern Hemisphere experiences winter while the Southern Hemisphere experiences summer. What does this best demonstrate?",
+  "ordered_choices": [
+    "Axial tilt, not orbital distance, primarily determines the seasons",
+    "Orbital distance drives the seasons but affects each hemisphere differently",
+    "The Southern Hemisphere is significantly closer to the Sun than the Northern Hemisphere in January",
+    "Perihelion increases Earth's orbital speed, which shortens winter days in the north"
+  ],
+  "source_text_sha256": [
+    "eb10484eff2155154e96ec1a5dc591ace32fe245ebb7ed17dc337cd60b9c1434"
+  ],
+  "completeness": {
+    "status": "sufficient_for_best_listed_answer",
+    "material_missing_premises": [],
+    "rationale": "The dated orbital position and opposite hemispheric seasons are explicitly stated. Together with ordinary Earth-science knowledge and the supplied account of axial tilt, they support the first option. The stem asks for the best demonstration among listed explanations, not a formal proof identifying tilt from these observations alone.",
+    "qualification": "Opposite seasons and perihelion alone rule against a simple global distance-driven explanation; they do not, in isolation from subject knowledge, logically prove that axial tilt is the only conceivable cause. The correct choice says primarily, preserving the distinction from smaller orbital-distance effects."
+  },
+  "answer": {
+    "unique": true,
+    "warranted_exact_choices": [
+      "Axial tilt, not orbital distance, primarily determines the seasons"
+    ],
+    "warranted_choice_indices_zero_based": [
+      0
+    ],
+    "rationale": "Both hemispheres share essentially the same Earth-Sun orbital distance but have opposite seasons. The supplied source identifies the tilted axis and changing directness of sunlight as the seasonal mechanism, and explicitly places perihelion during northern winter. The first choice is the uniquely warranted answer among these alternatives."
+  },
+  "per_choice": [
+    {
+      "choice": "Axial tilt, not orbital distance, primarily determines the seasons",
+      "answers_stem": true,
+      "confidence": "high",
+      "reason": "It identifies axial tilt as the primary seasonal mechanism and rejects orbital distance as the main explanation, consistent with the supplied source and stated hemispheric contrast."
+    },
+    {
+      "choice": "Orbital distance drives the seasons but affects each hemisphere differently",
+      "answers_stem": false,
+      "confidence": "high",
+      "distractor_plausibility": "moderate_for_introductory_learners",
+      "reason": "It preserves the familiar distance-causes-seasons misconception by asserting different hemispheric effects without a stated mechanism. Shared orbital distance does not explain the opposite seasonal timing. It is plausible to someone holding that misconception but vague."
+    },
+    {
+      "choice": "The Southern Hemisphere is significantly closer to the Sun than the Northern Hemisphere in January",
+      "answers_stem": false,
+      "confidence": "high",
+      "distractor_plausibility": "moderate_for_introductory_learners",
+      "reason": "It confuses the orientation of a hemisphere toward the Sun with a significant orbital-distance advantage. That is a plausible tilt-versus-distance misconception, but the supplied explanation attributes seasons to sunlight incidence, not this distance difference."
+    },
+    {
+      "choice": "Perihelion increases Earth's orbital speed, which shortens winter days in the north",
+      "answers_stem": false,
+      "confidence": "high_for_answer_inadequacy",
+      "distractor_plausibility": "weaker_but_recognizable",
+      "reason": "It confuses orbital motion with the cause of northern daylight duration, and does not explain the opposite hemispheric seasons. The orbital-speed premise is consistent with the ordinary elliptic-orbit model, but the stated causal conclusion does not follow. Its speed premise is not independently verified by the supplied passage; rejection does not require treating that premise as false."
+    }
+  ],
+  "distractors": {
+    "literal_choices_distinct": true,
+    "meaningfully_different_proposals": true,
+    "all_three_have_recognizable_misconception_basis": true,
+    "quality": "adequate_for_introductory_diagnosis_with_a_weaker_third_distractor",
+    "qualification": "The first two wrong choices overlap substantially in the same distance misconception. The third adds a different speed/daylight confusion but is less competitive because it does not explain the southern summer. These weaknesses reduce diagnostic challenge rather than create a second correct answer."
+  },
+  "goal_fit": {
+    "status": "relevant",
+    "rationale": "Directly addresses opposite hemispheres and the distinction between axial tilt and orbital distance. It fits the subject, but requires less reasoning than the requested intermediate practice."
+  },
+  "difficulty": {
+    "level": 2,
+    "confidence": "high",
+    "meets_minimum_3": false,
+    "rationale": "The learner applies one familiar causal distinction to a stated example. The answer is nearly the source headline, the perihelion distance is not used quantitatively, and no prediction of sunlight angle/daylight or multi-condition comparison is required. The opposite-hemisphere observation makes this more than bare terminology, but not a substantial level-three inference. A recall-heavy rating of1 is also defensible; neither supports3."
+  },
+  "overall_blind_content": {
+    "unique_key_and_complete_best_listed_question": true,
+    "material_factual_defect_established": false,
+    "meets_requested_difficulty": false,
+    "full_target_pass": false,
+    "reason": "A sound introductory concept-application item, below the independently assessed intermediate floor."
+  },
+  "feedback_assessment": "Unavailable at this blind stage; no authored or reviewer explanation was inspected.",
+  "unresolved_issues": [
+    "Distractor plausibility is an assistant judgment without learner response data; the orbital-speed alternative is weaker than the two familiar distance misconceptions.",
+    "No external verification beyond the supplied source text was performed; the source supports the primary mechanism, not every individual assertion embedded in a distractor."
+  ]
+}

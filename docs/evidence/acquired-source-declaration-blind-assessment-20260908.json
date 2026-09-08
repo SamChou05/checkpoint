@@ -1,0 +1,97 @@
+{
+  "assessment_type": "Independent assistant answer-blind assessment; not a human panel",
+  "input_path": "/tmp/checkpoint-acquired-source-declaration_argument-blind-20260908.json",
+  "input_sha256": "ef4094667598c802d8889d4bb617f6f14e01e1f7e8f78e9fb1634acff6e25032",
+  "case_id": "declaration_argument",
+  "blinding": {
+    "read_inputs": [
+      "Only this packet: goal, exact prompt, four choices and supplied Declaration passage"
+    ],
+    "withheld": [
+      "Authored expectedAnswer",
+      "All authored feedback",
+      "Authored difficulty and optional metadata",
+      "Full trial capture"
+    ],
+    "prior_information": "Root disclosed a 144-character optional metadata field exceeded the 140-character limit and no auditor ran. This operational/content-contract fact was not used as evidence of semantic error. The assessor previously reviewed the generic trial harness."
+  },
+  "method": "Manual interpretation of the displayed passage only; no external retrieval, execution or model-provider call.",
+  "prompt": "According to the Declaration of Independence's stated reasoning, which scenario meets its conditions justifying revolution?",
+  "choices": [
+    "A ruler imposes one unpopular tax but otherwise protects citizens' rights",
+    "A long series of abuses by a ruler, all aimed at establishing absolute control over the people",
+    "A government citizens never consented to but that effectively secures their rights",
+    "Citizens suffer a single unjust law that the government refuses to repeal"
+  ],
+  "warranted_exact_choices": [
+    "A long series of abuses by a ruler, all aimed at establishing absolute control over the people"
+  ],
+  "unique_warranted_answer": true,
+  "material_item_defect": null,
+  "reasoning": "The passage expressly says that a long train of abuses and usurpations, directed toward absolute despotism, establishes a right and duty to overthrow the government. The long-series/absolute-control choice supplies that stated sufficient justification. The other descriptions do not establish the required destructive end or sustained despotic design from the facts supplied.",
+  "source_support": [
+    "Governments exist to secure rights and derive their just powers from the consent of the governed.",
+    "The text permits alteration or abolition when government becomes destructive of those ends.",
+    "Prudence counsels against changing established government for light and transient causes.",
+    "A long train of abuses directed toward absolute despotism explicitly warrants overthrow."
+  ],
+  "completeness_and_scope": {
+    "necessary_textual_frame_present": true,
+    "answer_ambiguity": "One choice explicitly meets the quoted justification. The rival scenarios are insufficiently specified to warrant revolution by this text alone, rather than demonstrably incapable of ever justifying it.",
+    "qualification_limits": [
+      "The passage does not make a long series of abuses the only conceivable justification: it separately permits change when government becomes destructive of rights-securing ends.",
+      "Do not equate every single unjust law with a light or transient cause. Its severity and effects are unstated here.",
+      "Lack of consent challenges the legitimacy of governmental powers. This choice does not by itself establish the specific destructive or despotic conditions used to justify revolution; that does not make consent irrelevant or nonconsensual government legitimate.",
+      "The correct choice states the relevant criterion in broad terms. No particular historical event or modern political prescription is established."
+    ]
+  },
+  "distractors": [
+    {
+      "choice": "A ruler imposes one unpopular tax but otherwise protects citizens' rights",
+      "distinct": true,
+      "plausibility": "moderate",
+      "why_not_warranted": "Unpopularity of one tax does not establish destruction of rights or a sustained design of despotism; the scenario also states rights are otherwise protected.",
+      "possible_confusion": "Treating discontent with a tax alone as the stated justification for revolution.",
+      "feedback_caution": "Do not invent details of the tax or claim any single tax could never violate rights."
+    },
+    {
+      "choice": "A government citizens never consented to but that effectively secures their rights",
+      "distinct": true,
+      "plausibility": "strong",
+      "why_not_warranted": "The scenario supplies lack of consent but affirmatively supplies effective protection of rights, and does not establish the passage's destructive-end or despotic-design condition.",
+      "possible_confusion": "Conflating a condition of legitimate powers with the full explicit justification for overthrow in this passage.",
+      "feedback_caution": "A correct explanation must preserve the passage's real consent requirement, not declare consent unnecessary or the government fully legitimate."
+    },
+    {
+      "choice": "Citizens suffer a single unjust law that the government refuses to repeal",
+      "distinct": true,
+      "plausibility": "strong",
+      "why_not_warranted": "One unspecified unjust law and refusal to repeal it do not establish a long train of abuses or destruction of the government's rights-securing ends.",
+      "possible_confusion": "Treating a persistent grievance as sufficient evidence of a systematic despotic design.",
+      "feedback_caution": "The passage does not categorically forbid revolution against every single grave law; severity and effects are missing here."
+    }
+  ],
+  "goal_fit": {
+    "substantive": true,
+    "reason": "Tests the stated justification for revolution and contrasts it with tax unpopularity, consent and an isolated injustice.",
+    "limitation": "The choices are abstract restatements of principles, not developed new scenarios requiring substantial interpretation. This only partially realizes the goal of applying the argument to a new case."
+  },
+  "difficulty": {
+    "independent_level": 2,
+    "confidence": "moderate",
+    "reason": "A short, familiar textual distinction selects an option closely paraphrasing the passage's explicit long-abuses/absolute-despotism criterion. The consent rival adds a meaningful distinction, but there are no concrete interacting facts requiring level-3 analysis. With the passage visible, much of the task is recognition of a close paraphrase.",
+    "meets_requested_minimum_three": false
+  },
+  "separate_contract_status": {
+    "reported_optional_metadata_length": 144,
+    "reported_limit": 140,
+    "metadata_field_not_inspected": true,
+    "no_auditor_ran_as_reported_by_root": true,
+    "interpretation": "The reported contract rejection does not make the displayed answer factually wrong. This assessment does not repair or admit the item."
+  },
+  "scope_limits": [
+    "All five teaching-feedback fields remain unassessed.",
+    "Plausibility and difficulty are assistant judgments, not measured learner performance.",
+    "This is interpretation of the supplied historical text, not endorsement of its political reasoning or a general criterion for real-world revolution."
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "checked_at_utc": "2026-09-08T08:49:08.375949+00:00",
+  "stack": "checkpoint-question-service-testflight",
+  "region": "us-east-1",
+  "local_revision": "204644a1a32d7eb7b9bb403e1322b8b5d97421da",
+  "operations": [
+    {
+      "operation": "DescribeStackResources",
+      "status": "success"
+    },
+    {
+      "operation": "GetFunction",
+      "logical_id": "CheckpointQuestionFunction",
+      "status": "success"
+    },
+    {
+      "operation": "GetFunction",
+      "logical_id": "QuestionBankWorkerFunction",
+      "status": "success"
+    }
+  ],
+  "functions": [
+    {
+      "logical_id": "CheckpointQuestionFunction",
+      "last_modified": "2026-09-08T07:07:54.000+0000",
+      "code_sha256_base64": "ELfgKh0sMuacm9fFJjRugSKgnK/x+ry0StA7EWUsHo0=",
+      "version": "$LATEST",
+      "runtime": "python3.12",
+      "timeout_seconds": 30,
+      "state": "Active",
+      "last_update_status": "Successful",
+      "environment": {
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_MODEL_ID": "amazon.nova-lite-v1:0",
+        "BEDROCK_THINKING_MAX_TOKENS": "16000",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6"
+      },
+      "source_files": {
+        "question_generation.py": {
+          "present": true,
+          "local_sha256": "30558216eef0783690366f061a643ad78d9e6321e227b4daa00b99749ff3dc06",
+          "deployed_sha256": "da4ed110565c78694716b7f74d7f3c849cc57da6c4f8fae8678f93f2b118c857",
+          "matches_local": false,
+          "facts": {
+            "constants": {},
+            "verify_questions_calls": [
+              {
+                "line": 237,
+                "solver_contract": "omitted/legacy-default"
+              }
+            ]
+          },
+          "matches_revision_601d273": true
+        },
+        "question_verification.py": {
+          "present": true,
+          "local_sha256": "8aba9fee5e037a369a74ffff47c16cf31373be4bec0ead790afa2159a5d0197e",
+          "deployed_sha256": "2f6be813a738544a076c2186943712175a976fca3cf2922a5bef7d3b53957798",
+          "matches_local": false,
+          "facts": {
+            "constants": {},
+            "verify_questions_calls": []
+          },
+          "matches_revision_601d273": true
+        },
+        "complete_question_solution.py": {
+          "present": false,
+          "local_sha256": "adfc67f0c94e19bdc2771d99516bfc890457ad8fc7aa90f78a7efe23c9653535"
+        },
+        "verification_policy.py": {
+          "present": true,
+          "local_sha256": "91cabb223248a6b20a59a5e9ba9d40bf5c333c974086302d9ec2a4f617bbe04a",
+          "deployed_sha256": "fade0c88ff8721dba6da44a029ec90e7456f45574057c22f160dd449d6fdf397",
+          "matches_local": false,
+          "facts": {
+            "constants": {
+              "VERIFICATION_VERSION": 1,
+              "VERIFICATION_POLICY_REVISION": 1
+            },
+            "verify_questions_calls": []
+          },
+          "matches_revision_601d273": true
+        }
+      },
+      "bundle_bytes": 95594,
+      "bundle_sha256": "10b7e02a1d2c32e69c9bd7c526346e8122a09caff1fabcb44ad03b11652c1e8d",
+      "bundle_matches_lambda_hash": true
+    },
+    {
+      "logical_id": "QuestionBankWorkerFunction",
+      "last_modified": "2026-09-08T07:07:54.000+0000",
+      "code_sha256_base64": "ELfgKh0sMuacm9fFJjRugSKgnK/x+ry0StA7EWUsHo0=",
+      "version": "$LATEST",
+      "runtime": "python3.12",
+      "timeout_seconds": 240,
+      "state": "Active",
+      "last_update_status": "Successful",
+      "environment": {
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+        "BEDROCK_THINKING_MAX_TOKENS": "16000",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6"
+      },
+      "source_files": {
+        "question_generation.py": {
+          "present": true,
+          "local_sha256": "30558216eef0783690366f061a643ad78d9e6321e227b4daa00b99749ff3dc06",
+          "deployed_sha256": "da4ed110565c78694716b7f74d7f3c849cc57da6c4f8fae8678f93f2b118c857",
+          "matches_local": false,
+          "facts": {
+            "constants": {},
+            "verify_questions_calls": [
+              {
+                "line": 237,
+                "solver_contract": "omitted/legacy-default"
+              }
+            ]
+          },
+          "matches_revision_601d273": true
+        },
+        "question_verification.py": {
+          "present": true,
+          "local_sha256": "8aba9fee5e037a369a74ffff47c16cf31373be4bec0ead790afa2159a5d0197e",
+          "deployed_sha256": "2f6be813a738544a076c2186943712175a976fca3cf2922a5bef7d3b53957798",
+          "matches_local": false,
+          "facts": {
+            "constants": {},
+            "verify_questions_calls": []
+          },
+          "matches_revision_601d273": true
+        },
+        "complete_question_solution.py": {
+          "present": false,
+          "local_sha256": "adfc67f0c94e19bdc2771d99516bfc890457ad8fc7aa90f78a7efe23c9653535"
+        },
+        "verification_policy.py": {
+          "present": true,
+          "local_sha256": "91cabb223248a6b20a59a5e9ba9d40bf5c333c974086302d9ec2a4f617bbe04a",
+          "deployed_sha256": "fade0c88ff8721dba6da44a029ec90e7456f45574057c22f160dd449d6fdf397",
+          "matches_local": false,
+          "facts": {
+            "constants": {
+              "VERIFICATION_VERSION": 1,
+              "VERIFICATION_POLICY_REVISION": 1
+            },
+            "verify_questions_calls": []
+          },
+          "matches_revision_601d273": true
+        }
+      },
+      "bundle_bytes": 95594,
+      "bundle_sha256": "10b7e02a1d2c32e69c9bd7c526346e8122a09caff1fabcb44ad03b11652c1e8d",
+      "bundle_matches_lambda_hash": true
+    }
+  ],
+  "status": "completed",
+  "original_local_report_sha256": "a44b04b82776aa2c1317bcd22de246f9ade191a634718c76b41963f915656fb2",
+  "scope": "Known TestFlight API and worker $LATEST functions only; 3 read-only management calls and 2 in-memory signed-code downloads. No invocation, mutation, secret or signed URL capture.",
+  "matched_deployed_source_revision": "601d27312753864282d2215bd54eec3070a58672",
+  "deployed_gate_findings": [
+    {
+      "gate": "strict_typed_outcome",
+      "enforced": true,
+      "source": "601d27312753864282d2215bd54eec3070a58672:backend/bedrock-question-service/question_verification.py:353",
+      "basis": "Missing/unknown/non-string outcome invalidates solver batch before review."
+    },
+    {
+      "gate": "uncertain_abstention",
+      "enforced": true,
+      "source": "601d27312753864282d2215bd54eec3070a58672:backend/bedrock-question-service/question_verification.py:385",
+      "basis": "outcome uncertain is excluded before review."
+    },
+    {
+      "gate": "nonempty_assumptions",
+      "enforced": true,
+      "source": "601d27312753864282d2215bd54eec3070a58672:backend/bedrock-question-service/question_verification.py:387",
+      "basis": "Any required extra assumptions exclude the item before review."
+    },
+    {
+      "gate": "resolved_nonempty_limitations",
+      "enforced": true,
+      "source": "601d27312753864282d2215bd54eec3070a58672:backend/bedrock-question-service/question_verification.py:389",
+      "basis": "After legacy string stripping, any nonempty limitations vetoes resolved records before review."
+    },
+    {
+      "gate": "resolved_exact_alternative_key",
+      "enforced": true,
+      "source": "601d27312753864282d2215bd54eec3070a58672:backend/bedrock-question-service/question_verification.py:399",
+      "basis": "Normalized solver answer exactly matching another offered choice vetoes the item; ordinary nonmatching prose is not forced to equal the key."
+    },
+    {
+      "gate": "exceptional_outcome_negative_authorization",
+      "enforced": true,
+      "source": "601d27312753864282d2215bd54eec3070a58672:backend/bedrock-question-service/question_verification.py:405",
+      "basis": "Exceptional outcomes require the exact unique application-owned negative answer as authored key; free prose cannot authorize a different key."
+    },
+    {
+      "gate": "answer_only_semantic_impossibility",
+      "enforced": false,
+      "source": "601d27312753864282d2215bd54eec3070a58672:backend/bedrock-question-service/question_verification.py:404",
+      "basis": "resolved with empty limitations and assumptions and non-choice answer prose returns no veto, even if that prose states impossibility. An approving reviewer can still accept."
+    },
+    {
+      "gate": "complete_choice_one_supported_three_refuted",
+      "enforced": false,
+      "basis": "complete_question_solution.py absent, production verify call has no complete-choice selection, deployed policy revision1. Current local generation selects policy2 complete-choice contract."
+    }
+  ],
+  "interpretation": "The quoted assumptions-only audit is stale even for deployed policy1: typed outcomes, limitations and exact-choice disagreement gates are live. The answer-only free-prose semantic gap remains. Current policy2 complete-choice integration is not deployed; this audit does not establish correctness of either model or general feedback."
+}

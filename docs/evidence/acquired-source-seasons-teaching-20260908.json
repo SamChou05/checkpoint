@@ -1,0 +1,118 @@
+{
+  "assessment_kind": "Second-stage assistant teaching assessment after own frozen answer-blind content review; model auditor verdict remains hidden. Not a human panel or independent empirical verification.",
+  "case_id": "seasons_mechanism",
+  "input_path": "/tmp/checkpoint-acquired-source-seasons_mechanism-teaching-20260908.json",
+  "input_sha256": "b2b58273558f7f22f9d0428741db1d2351bda193001bc1b1f0cf39dd98669d83",
+  "prior_blind_path": "/tmp/checkpoint-acquired-source-seasons-blind-assessment-20260908.json",
+  "prior_blind_sha256": "30f4cea8a1a8ba113b971c53be1699de2eebe6d7dbd6cfc41d8c66f2ab0f0ed5",
+  "blinding": {
+    "author_key_and_feedback_seen": true,
+    "model_auditor_verdict_seen": false,
+    "full_trial_seen": false,
+    "external_calls": 0,
+    "native_operations": 0,
+    "only_read_inputs": [
+      "/tmp/checkpoint-acquired-source-seasons_mechanism-teaching-20260908.json",
+      "/tmp/checkpoint-acquired-source-seasons-blind-assessment-20260908.json"
+    ]
+  },
+  "identity_checks": {
+    "prompt_and_ordered_choices_match_frozen_blind": true,
+    "source_text_hashes_match_frozen_blind": true,
+    "authored_key_matches_frozen_warranted_choice": true
+  },
+  "fields": [
+    {
+      "field": "explanation",
+      "text": "Both hemispheres share essentially the same distance from the Sun at any moment, yet they experience opposite seasons simultaneously. This rules out orbital distance as the primary cause. Earth's ~23.5° axial tilt determines how directly sunlight strikes each hemisphere: in January the South Pole tilts toward the Sun, giving the Southern Hemisphere summer and the Northern Hemisphere winter.",
+      "disposition": "materially_sound_with_source_coverage_gap",
+      "material_error_established": false,
+      "truth_assessment": "The stated primary mechanism and January hemispheric relationship are correct in the ordinary Earth-seasons context. Essentially equal orbital distance and opposite seasons undermine distance as the primary cause. Axial tilt changes the incidence of sunlight; southern summer and northern winter in January follow the stated orientation.",
+      "selected_source_coverage": "The selected source directly supports axial tilt, changing directness, opposite seasons, January perihelion, and the failure of the simple distance explanation. It does not state the numerical tilt angle.",
+      "recalled_or_derived_claims": [
+        {
+          "claim": "Earth’s axial tilt is approximately23.5 degrees.",
+          "assessment": "Consistent with established background knowledge, but absent from this selected source and not independently reverified here."
+        }
+      ],
+      "qualification": "The hemisphere comparison is a school-level causal argument combined with established mechanism, not a deductive identification of the only imaginable cause from two observations alone. The word primary correctly leaves room for smaller orbital-distance effects."
+    },
+    {
+      "field": "choiceExplanations",
+      "choice": "Axial tilt, not orbital distance, primarily determines the seasons",
+      "text": "Correct. Opposite seasons occurring at the same Earth–Sun distance proves distance isn't the driver; the tilt of Earth's axis toward or away from the Sun determines which hemisphere receives more direct sunlight.",
+      "disposition": "materially_sound_in_context",
+      "material_error_established": false,
+      "truth_assessment": "It correctly links hemisphere orientation to more direct sunlight and identifies the principal seasonal mechanism. It explains the actual keyed answer rather than repairing the item.",
+      "selected_source_coverage": "The source explicitly connects axial tilt with opposite seasons and contrasts the January perihelion observation with the distance-causes-seasons misconception.",
+      "recalled_or_derived_claims": [],
+      "qualification": "“Proves distance isn’t the driver” is read in the question’s primary-cause context. It should not be taken as claiming that orbital distance has no radiative or seasonal-modulating effect whatsoever. That stronger reading is not needed for this item and is not established by the wording in context."
+    },
+    {
+      "field": "choiceExplanations",
+      "choice": "Orbital distance drives the seasons but affects each hemisphere differently",
+      "text": "Both hemispheres are nearly the same distance from the Sun at any given time. Distance alone cannot produce opposite seasons simultaneously; this contradicts the scenario's evidence.",
+      "disposition": "materially_sound_in_context",
+      "material_error_established": false,
+      "truth_assessment": "The explanation addresses the wrong choice’s actual claim: it cannot attribute opposite hemisphere seasons to the shared orbital-distance change alone. It introduces no invented cause or learner thought process.",
+      "selected_source_coverage": "The source supplies the opposite seasonal timing and explicitly rejects proximity as the primary explanation; the shared-distance comparison is the corresponding elementary geometric inference.",
+      "recalled_or_derived_claims": [],
+      "qualification": "This is about the ordinary seasonal mechanism for the same Earth, not a theorem excluding every hypothetical system with different response dynamics."
+    },
+    {
+      "field": "choiceExplanations",
+      "choice": "The Southern Hemisphere is significantly closer to the Sun than the Northern Hemisphere in January",
+      "text": "Earth's diameter (~8,000 miles) is negligible compared to the 91.4-million-mile Earth–Sun distance. This tiny difference cannot explain opposite seasons in the two hemispheres.",
+      "disposition": "materially_sound_with_source_coverage_gap",
+      "material_error_established": false,
+      "truth_assessment": "An approximately8000-mile diameter is a reasonable rounded background value and negligible next to the stated91.4-million-mile Earth-Sun distance. The maximum within-Earth separation cannot account for the seasonal contrast. This correctly refutes the claimed significant hemispheric distance advantage.",
+      "selected_source_coverage": "The selected source gives the91.4-million-mile perihelion distance and the tilt mechanism, but does not give Earth’s diameter. Citation to it alone would not substantiate the diameter figure.",
+      "recalled_or_derived_claims": [
+        {
+          "claim": "Earth’s diameter is approximately8000 miles.",
+          "assessment": "Consistent with established background knowledge, absent from the selected passage; no external measurement or lookup performed."
+        }
+      ],
+      "qualification": "The diameter provides a scale or upper bound on separation, not the exact simultaneous difference between two hemisphere-averaged distances. The explanation does not expressly claim that the difference equals the diameter."
+    },
+    {
+      "field": "choiceExplanations",
+      "choice": "Perihelion increases Earth's orbital speed, which shortens winter days in the north",
+      "text": "Orbital speed varies slightly with distance, but day length is governed by axial tilt and latitude, not orbital speed. This mechanism does not explain why the hemispheres have opposite seasons.",
+      "disposition": "materially_sound_for_daylight_context_with_source_coverage_gap",
+      "material_error_established": false,
+      "truth_assessment": "In this school-level explanation of short winter daylight periods, tilt and latitude determine the sunlight geometry; faster orbital motion is not the cause of opposite hemisphere seasons. The explanation properly allows orbital speed to vary rather than falsely denying the true premise of the distractor.",
+      "selected_source_coverage": "The passage supports the tilt mechanism and daily rotation, but does not state orbital-speed variation or explicitly establish the latitude/daylight relation. These parts are background knowledge beyond the selected text.",
+      "recalled_or_derived_claims": [
+        {
+          "claim": "Orbital speed varies with Earth-Sun distance.",
+          "assessment": "Consistent with the ordinary elliptic-orbit model; not supplied or independently checked here."
+        },
+        {
+          "claim": "Daylight duration depends on axial orientation and latitude.",
+          "assessment": "Consistent with ordinary solar geometry; not fully explained in the selected passage."
+        }
+      ],
+      "qualification": "“Day length” here means the winter daylight interval, as suggested by the stem. The sentence would be too broad if repurposed as a claim about exact apparent solar-day duration or all orbital influences on seasonal timing. That different technical meaning does not establish a material error in this question’s daylight context."
+    }
+  ],
+  "summary": {
+    "fields_assessed": 5,
+    "established_materially_false_or_misleading_fields": 0,
+    "materially_sound_in_stated_school_level_context": 5,
+    "fields_with_identified_material_claims_beyond_selected_source": 3,
+    "external_source_coverage_gaps": [
+      "Main explanation: approximate23.5-degree tilt.",
+      "Hemisphere-distance feedback: approximate8000-mile diameter.",
+      "Orbital-speed feedback: speed-distance relationship and explicit latitude/daylight claim."
+    ],
+    "caution": "Source absence is not factual refutation. These background claims are consistent with established knowledge, but this assessment has not fetched independent evidence for them. Correct quotation of the supplied passage would not alone establish those additional facts.",
+    "teaching_quality": "The five explanations address the intended mechanism and each alternative’s actual error without inventing learner histories. Two distance distractors still overlap and the speed alternative is weaker, as already recorded blind.",
+    "prior_difficulty_preserved": 2,
+    "minimum3_met": false,
+    "overall_target_pass": false,
+    "reason_target_not_met": "The question remains a direct application of one familiar causal distinction; sound feedback does not increase the cognitive work required to answer it."
+  },
+  "changes_or_repairs": "None. Exact rejected/accepted status from the model has not been inspected, and no field was rewritten.",
+  "uncertainty": "The proof/driver phrasing and day-length wording are assessed in the ordinary primary-seasonal-cause/daylight context. A broader technical interpretation would need explicit qualifications. No new external lookup was made, and source coverage is reported separately from factual plausibility."
+}

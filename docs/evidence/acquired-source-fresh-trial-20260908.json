@@ -1,0 +1,248 @@
+{
+  "experiment": "acquired-source-fresh-authoring-v1",
+  "status": "completed",
+  "plan_sha256": "2f4d7016677db398b89f15c56668852eb0086d71d2e3291bfdb3582f7801e99a",
+  "source_revision": "204644a1a32d7eb7b9bb403e1322b8b5d97421da",
+  "model": "us.anthropic.claude-opus-4-6-v1",
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_MAX_TOKENS": "16000",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "300",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3"
+  },
+  "maximum_calls": 6,
+  "actual_calls": 5,
+  "calls": [
+    {
+      "case_id": "python_loop_semantics",
+      "role": "author",
+      "request_sha256": "4cbc083c10c7339aa52fe96163efd0de1eef99c3400ea3e97311403c2b90cf0f",
+      "input_utf8_bytes": 11180,
+      "status": "completed",
+      "stopReason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3109,
+        "outputTokens": 3425,
+        "totalTokens": 6534
+      },
+      "sdk_elapsed_seconds": 44.08098137500929,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true
+    },
+    {
+      "case_id": "python_loop_semantics",
+      "role": "auditor",
+      "request_sha256": "9be36f835c8c5e6b52fe5501f493d40b818f902a27cf112bfd5ffb0bc87fe3fe",
+      "input_utf8_bytes": 13216,
+      "status": "completed",
+      "stopReason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3672,
+        "outputTokens": 2535,
+        "totalTokens": 6207
+      },
+      "sdk_elapsed_seconds": 26.222484834026545,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true
+    },
+    {
+      "case_id": "declaration_argument",
+      "role": "author",
+      "request_sha256": "fc21cd50e26460bbc1334d3b7de0a21eb718387308836c32c75dc9f558d11c2b",
+      "input_utf8_bytes": 10101,
+      "status": "completed",
+      "stopReason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2471,
+        "outputTokens": 2181,
+        "totalTokens": 4652
+      },
+      "sdk_elapsed_seconds": 36.43805125000654,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true
+    },
+    {
+      "case_id": "seasons_mechanism",
+      "role": "author",
+      "request_sha256": "bc5b857ba441b33e8c9d699ebb5db0694c557c156ba1d49df05d000ea82db26a",
+      "input_utf8_bytes": 13836,
+      "status": "completed",
+      "stopReason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 4249,
+        "outputTokens": 1962,
+        "totalTokens": 6211
+      },
+      "sdk_elapsed_seconds": 33.57781754201278,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true
+    },
+    {
+      "case_id": "seasons_mechanism",
+      "role": "auditor",
+      "request_sha256": "d592ef9d3f518b0f19904b6dd0359cddad4b6cbd3c5988b4fe318d6237131254",
+      "input_utf8_bytes": 16760,
+      "status": "completed",
+      "stopReason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 4835,
+        "outputTokens": 3212,
+        "totalTokens": 8047
+      },
+      "sdk_elapsed_seconds": 36.348419665999245,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true
+    }
+  ],
+  "results": [
+    {
+      "case_id": "python_loop_semantics",
+      "status": "audited",
+      "contract_reason": null,
+      "question_as_authored": {
+        "prompt": "What does this Python code print?\n\nresult = []\nfor n in range(2, 6):\n    for x in range(2, n):\n        if n % x == 0:\n            break\n    else:\n        result.append(n)\nprint(result)",
+        "choices": [
+          "[2, 3, 5]",
+          "[3, 5]",
+          "[2, 3, 4, 5]",
+          "[2, 3]"
+        ],
+        "expectedAnswer": "[2, 3, 5]",
+        "explanation": "A for-loop's else clause runs when the loop ends without break. For n=2, range(2,2) is empty—no break occurs, so else appends 2. For n=3 and n=5, no divisor is found, so else appends each. For n=4, 4%2==0 triggers break, skipping else. break only exits the inner loop, so the outer loop continues for all n.",
+        "choiceExplanations": {
+          "[2, 3, 5]": "Correct. The else fires for n=2 (empty inner loop, no break), n=3 and n=5 (no divisor found). For n=4, break skips else.",
+          "[3, 5]": "Wrong. This assumes an empty range(2,2) prevents the else clause from running. In Python, an empty loop completes without break, so else still executes for n=2.",
+          "[2, 3, 4, 5]": "Wrong. This assumes else always runs after the inner loop. When n=4, break fires because 4%2==0, which specifically prevents the else clause from executing.",
+          "[2, 3]": "Wrong. This assumes break exits both loops. In Python, break only exits the innermost enclosing loop, so the outer loop continues through all values of n."
+        },
+        "topic": "Python loop else and break in nested loops",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Trace nested loops with break and for-else to predict output."
+      },
+      "auditor_called": true,
+      "audit_eligible": true,
+      "audit_reason": "accepted",
+      "audit_assessed_difficulty": 3,
+      "source_packet_sha256": "fe95bcfb961d0d12dc40ee84aafea53d12ee2f6f85fff2711793d583b3511556",
+      "field_citation_counts": {
+        "item": 3,
+        "main": 2,
+        "choices": {
+          "[2, 3, 5]": 2,
+          "[3, 5]": 1,
+          "[2, 3, 4, 5]": 1,
+          "[2, 3]": 1
+        }
+      }
+    },
+    {
+      "case_id": "declaration_argument",
+      "status": "author_contract_rejected",
+      "contract_reason": "objective:length",
+      "question_as_authored": {
+        "prompt": "According to the Declaration of Independence's stated reasoning, which scenario meets its conditions justifying revolution?",
+        "choices": [
+          "A ruler imposes one unpopular tax but otherwise protects citizens' rights",
+          "A long series of abuses by a ruler, all aimed at establishing absolute control over the people",
+          "A government citizens never consented to but that effectively secures their rights",
+          "Citizens suffer a single unjust law that the government refuses to repeal"
+        ],
+        "expectedAnswer": "A long series of abuses by a ruler, all aimed at establishing absolute control over the people",
+        "explanation": "The Declaration states revolution is warranted not for 'light and transient causes' but only when 'a long train of abuses and usurpations, pursuing invariably the same Object evinces a design to reduce them under absolute Despotism.' Only a sustained, systematic pattern of abuses aimed at total control satisfies all three stated requirements: duration, consistency of aim, and despotic design.",
+        "choiceExplanations": {
+          "A ruler imposes one unpopular tax but otherwise protects citizens' rights": "A single grievance with rights otherwise intact is what the Declaration calls a 'light and transient' cause — explicitly insufficient to justify revolution under its stated reasoning.",
+          "A long series of abuses by a ruler, all aimed at establishing absolute control over the people": "Correct. This matches the required 'long train of abuses and usurpations, pursuing invariably the same Object' that 'evinces a design to reduce them under absolute Despotism.'",
+          "A government citizens never consented to but that effectively secures their rights": "The Declaration says government exists to secure unalienable rights. If rights are effectively secured, the government is not 'destructive of these ends,' so its conditions for revolution are not met.",
+          "Citizens suffer a single unjust law that the government refuses to repeal": "One persistent injustice does not constitute the 'long train of abuses' all 'pursuing invariably the same Object' of absolute Despotism that the Declaration requires before revolution is warranted."
+        },
+        "topic": "Declaration of Independence — Conditions for Justified Revolution",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Apply the Declaration's stated limits on revolution — duration, pattern, and despotic aim — to distinguish justified from unjustified scenarios."
+      },
+      "auditor_called": false,
+      "audit_eligible": null,
+      "audit_reason": null,
+      "audit_assessed_difficulty": null,
+      "source_packet_sha256": "650895f3877c318effd00bf4841c5086b5420f811eb2d088ba0f4656276fab1c",
+      "field_citation_counts": {
+        "item": 0,
+        "main": 0,
+        "choices": {}
+      }
+    },
+    {
+      "case_id": "seasons_mechanism",
+      "status": "audited",
+      "contract_reason": null,
+      "question_as_authored": {
+        "prompt": "In January, Earth is at perihelion—its closest point to the Sun (~91.4 million miles). Yet the Northern Hemisphere experiences winter while the Southern Hemisphere experiences summer. What does this best demonstrate?",
+        "choices": [
+          "Axial tilt, not orbital distance, primarily determines the seasons",
+          "Orbital distance drives the seasons but affects each hemisphere differently",
+          "The Southern Hemisphere is significantly closer to the Sun than the Northern Hemisphere in January",
+          "Perihelion increases Earth's orbital speed, which shortens winter days in the north"
+        ],
+        "expectedAnswer": "Axial tilt, not orbital distance, primarily determines the seasons",
+        "explanation": "Both hemispheres share essentially the same distance from the Sun at any moment, yet they experience opposite seasons simultaneously. This rules out orbital distance as the primary cause. Earth's ~23.5° axial tilt determines how directly sunlight strikes each hemisphere: in January the South Pole tilts toward the Sun, giving the Southern Hemisphere summer and the Northern Hemisphere winter.",
+        "choiceExplanations": {
+          "Axial tilt, not orbital distance, primarily determines the seasons": "Correct. Opposite seasons occurring at the same Earth–Sun distance proves distance isn't the driver; the tilt of Earth's axis toward or away from the Sun determines which hemisphere receives more direct sunlight.",
+          "Orbital distance drives the seasons but affects each hemisphere differently": "Both hemispheres are nearly the same distance from the Sun at any given time. Distance alone cannot produce opposite seasons simultaneously; this contradicts the scenario's evidence.",
+          "The Southern Hemisphere is significantly closer to the Sun than the Northern Hemisphere in January": "Earth's diameter (~8,000 miles) is negligible compared to the 91.4-million-mile Earth–Sun distance. This tiny difference cannot explain opposite seasons in the two hemispheres.",
+          "Perihelion increases Earth's orbital speed, which shortens winter days in the north": "Orbital speed varies slightly with distance, but day length is governed by axial tilt and latitude, not orbital speed. This mechanism does not explain why the hemispheres have opposite seasons."
+        },
+        "topic": "Earth's Seasons and Axial Tilt",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Distinguish axial tilt from orbital distance as the cause of seasons using hemispheric evidence."
+      },
+      "auditor_called": true,
+      "audit_eligible": true,
+      "audit_reason": "accepted",
+      "audit_assessed_difficulty": 3,
+      "source_packet_sha256": "07d1d69963454166a4bd243280acedf9fcde4c3be3a769c429a422a356a73c89",
+      "field_citation_counts": {
+        "item": 3,
+        "main": 3,
+        "choices": {
+          "Axial tilt, not orbital distance, primarily determines the seasons": 2,
+          "Orbital distance drives the seasons but affects each hemisphere differently": 2,
+          "The Southern Hemisphere is significantly closer to the Sun than the Northern Hemisphere in January": 1,
+          "Perihelion increases Earth's orbital speed, which shortens winter days in the north": 1
+        }
+      }
+    }
+  ],
+  "full_capture": {
+    "path": "docs/evidence/acquired-source-fresh-capture-20260908.local.json",
+    "sha256": "be2d3b37a9be2ad3ebd5af39dbcc9eeb7cd6239c20be8ba7bfc8932e9a42a773",
+    "storage": "Ignored local evidence; includes exact source texts, frozen requests, raw responses and lifecycle. This committed summary does not reproduce full references or their quotations."
+  },
+  "offline_replay": "Exact plan/source/request/decision bindings passed before summary creation; no new model calls.",
+  "scope": "Three preselected fresh goals; assistant/native assessments recorded separately. Model eligibility is not factual certification or a production error-rate estimate. Original contract rejection unchanged; no retries or repairs.",
+  "total_usage": {
+    "inputTokens": 18336,
+    "outputTokens": 13315,
+    "totalTokens": 31651
+  }
+}

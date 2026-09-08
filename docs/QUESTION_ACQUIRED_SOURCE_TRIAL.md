@@ -43,3 +43,79 @@ correctness score. A three-item selected trial cannot estimate production error
 rates or establish learning gains. Full captured reference text and request
 packets remain in ignored local evidence files; published summaries retain their
 hashes and limits without redistributing complete source pages.
+
+## Results
+
+The frozen run completed five calls normally and used 31,651 tokens (18,336
+input, 13,315 output). All responses ended with `end_turn`; individual SDK
+intervals were 26.2–44.1 seconds, and local worker/group cleanup was confirmed.
+No response reached the output ceiling. The exact plan hash was
+`2f4d7016677db398b89f15c56668852eb0086d71d2e3291bfdb3582f7801e99a`.
+[Captured results](evidence/acquired-source-fresh-trial-20260908.json) preserve
+every authored question, the contract outcomes, usage and request/source hashes.
+
+| Fresh item | Pipeline outcome | Independent key / teaching assessment | Independent difficulty |
+| --- | --- | --- | --- |
+| Python loops | Accepted with exact citations | Unique correct key confirmed by execution; all five explanations sound for this code | 3, moderate confidence; closely resembles the source's worked example |
+| Declaration argument | Author contract rejected; no audit call | Key supported; four explanations overstate the source's requirements | 2 |
+| Seasons | Accepted with exact citations; model rated 3 | Key supported; explanations sound in ordinary school-level context, with three fields containing facts absent from the selected reference | 2 |
+
+The Declaration rejection was caused by an optional objective label of 144
+characters against the 140-character bound. The stem and choices fit their
+limits. This is a format rejection, **not evidence that the audit detected the
+teaching errors**. The original output remains unchanged, and the unspent audit
+call was not used for a repair. Independent reading found that its feedback
+turned one sufficient justification for revolution into an exclusive necessary
+condition; some distractor explanations added qualifications the source did not
+establish.
+
+The seasons auditor returned valid exact quotations for every required field,
+but those quotations did not cover every claim, including the additional Earth
+diameter and orbital-speed facts. Their absence from the supplied source is not
+proof of falsity. Independent assessment found no material error in the ordinary
+daylight/seasons context, but rated the cognitive work below the requested level.
+This is a concrete limitation of field-level citation coverage and model difficulty
+ratings, not evidence that more output tokens are needed.
+
+Each key/difficulty assessment was frozen before its assessor saw authored keys,
+feedback or the model audit. Subsequent teaching assessments saw the exact
+authored content but still did not see the audit verdict. These are assistant
+assessments, not a human panel or calibrated psychometric measurement. The Python
+code also ran once in isolated Python 3.12 after manual inspection; its output
+exactly matched one choice. That is a check of one exact program, not automatic
+execution support for arbitrary prose questions.
+
+Only the Python item had support for complete teaching content at the requested
+challenge, and its novelty was limited. The trial establishes that acquired
+source text can reach both roles and yield replayable exact citations. It does
+not establish a general correctness improvement over earlier configurations,
+reliable difficulty progression, a production error rate or release readiness.
+
+Offline replay verified frozen plan/source/request/decision bindings with no
+new model calls. Full backend validation passes **826 tests with one existing
+optional-runtime skip**. The new code and results are committed; none of this
+experimental pipeline was deployed or admitted to learner inventory.
+
+Independent evidence:
+
+- [Python blind assessment](evidence/acquired-source-python-blind-assessment-20260908.json) and [exact native execution](evidence/acquired-source-python-native-20260908.json).
+- [Declaration blind assessment](evidence/acquired-source-declaration-blind-assessment-20260908.json).
+- [Python and Declaration teaching assessment](evidence/acquired-source-python-declaration-teaching-20260908.json).
+- [Seasons blind assessment](evidence/acquired-source-seasons-blind-assessment-20260908.json) and [teaching assessment](evidence/acquired-source-seasons-teaching-20260908.json).
+
+## Deployment snapshot, checked separately
+
+A read-only check of the known TestFlight API and worker `$LATEST` packages found
+policy revision 1. The inspected generation/verification/policy files match
+revision `601d273`; both downloaded bundle hashes match Lambda's recorded code
+hash. Policy-2 complete-choice integration is absent. This was a package/config
+inspection, not a live request or an audit of every deployment or traffic alias.
+[Sanitized deployment record](evidence/deployed-backend-correctness-20260908.json).
+
+The deployed worker uses Kimi K2.5 and Sonnet 4.6 review with thinking disabled;
+ordinary output is capped at 6,000 tokens. The API's author is Nova Lite. Existing
+typed outcomes, required assumptions, nonempty resolved limitations and exact
+alternative-answer vetoes are already deployed, so the old assumptions-only
+description is stale even there. Impossibility stated only in non-choice answer
+prose can still evade the legacy checks. The new repository checks and the Opus
+evidence trial must not be described as the behavior current users receive.

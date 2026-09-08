@@ -1,0 +1,149 @@
+{
+  "assessment_type": "Independent assistant assessment of immutable authored teaching fields, blind to model-auditor verdicts",
+  "inputs": {
+    "python_loop_semantics": {
+      "path": "/tmp/checkpoint-acquired-source-python_loop_semantics-teaching-20260908.json",
+      "sha256": "e1a7a764134cf8ed4cf43f903ec7fc2d70cb3edc2f737b2fcf9dee8d0824a0d6"
+    },
+    "declaration_argument": {
+      "path": "/tmp/checkpoint-acquired-source-declaration_argument-teaching-20260908.json",
+      "sha256": "214a2d16fbdddb1128f43e8c354c72478a66b198d9b5b258170fa5b020371b97"
+    }
+  },
+  "frozen_blind_assessments": {
+    "python_loop_semantics": {
+      "path": "/tmp/checkpoint-acquired-source-python-blind-assessment-20260908.json",
+      "sha256": "fd0cd2a9392f33ec783433a5cf19dd7b5c1d33913f1151f8a550ad88b26ee243"
+    },
+    "declaration_argument": {
+      "path": "/tmp/checkpoint-acquired-source-declaration-blind-assessment-20260908.json",
+      "sha256": "55407d25ec2c8957003294438b199d0cb430b8dc75db7fefd41d7d348979a646"
+    }
+  },
+  "method_and_scope": {
+    "read_inputs": "Only the two teaching packets and the assessor's two frozen blind records.",
+    "no_full_capture_or_auditor_output_read": true,
+    "no_network_provider_or_native_calls": true,
+    "root_native_statement": "Root reported executing the exact Python snippet and obtaining [2, 3, 5]. This assessment independently uses the already frozen manual trace and does not claim to have inspected or executed that native evidence.",
+    "truth_vs_support": "Question keys, choice wrongness and feedback accuracy are assessed separately. Declaration findings identify unsupported stronger readings of the supplied text; they do not claim an external empirical fact was falsified by absence from a source."
+  },
+  "cases": [
+    {
+      "case_id": "python_loop_semantics",
+      "authored_key": "[2, 3, 5]",
+      "key_matches_frozen_blind_answer": true,
+      "authored_difficulty": 3,
+      "independent_difficulty": 3,
+      "fields": [
+        {
+          "field": "explanation",
+          "text": "A for-loop's else clause runs when the loop ends without break. For n=2, range(2,2) is empty—no break occurs, so else appends 2. For n=3 and n=5, no divisor is found, so else appends each. For n=4, 4%2==0 triggers break, skipping else. break only exits the inner loop, so the outer loop continues for all n.",
+          "classification": "supported",
+          "material_defect": false,
+          "assessment": "Every stated result matches the literal nested-loop trace. An empty inner range exhausts without break; 3 and 5 have no tested divisor; 4 breaks the inner loop only. The opening rule is correctly applied to this terminating, exception-free snippet; lack of a general return/exception caveat is not a defect in this task."
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "Correct. The else fires for n=2 (empty inner loop, no break), n=3 and n=5 (no divisor found). For n=4, break skips else.",
+          "classification": "supported",
+          "material_defect": false,
+          "assessment": "Correctly includes 2 despite an empty inner range and excludes 4 after break; 3 and 5 complete normally.",
+          "choice": "[2, 3, 5]"
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "Wrong. This assumes an empty range(2,2) prevents the else clause from running. In Python, an empty loop completes without break, so else still executes for n=2.",
+          "classification": "supported",
+          "material_defect": false,
+          "assessment": "Correctly identifies the empty-range/else mistake. Normal exhaustion with zero iterations still runs else; the supplied worked source also demonstrates n=2.",
+          "choice": "[3, 5]"
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "Wrong. This assumes else always runs after the inner loop. When n=4, break fires because 4%2==0, which specifically prevents the else clause from executing.",
+          "classification": "supported",
+          "material_defect": false,
+          "assessment": "Correctly explains that the n=4 break prevents the inner-loop else, so 4 cannot appear.",
+          "choice": "[2, 3, 4, 5]"
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "Wrong. This assumes break exits both loops. In Python, break only exits the innermost enclosing loop, so the outer loop continues through all values of n.",
+          "classification": "supported",
+          "material_defect": false,
+          "assessment": "Correctly explains the nearest-loop scope of break; processing continues to n=5.",
+          "choice": "[2, 3]"
+        }
+      ],
+      "all_five_feedback_fields_supported": true,
+      "complete_teaching_content_supported_at_minimum_three": true,
+      "pedagogical_note": "All three distractor explanations describe plausible control-flow interpretations of the displayed options, not a claim about an observed learner's actual thinking. The near-isomorphic source example limits novelty; the frozen level3 estimate remains moderate confidence."
+    },
+    {
+      "case_id": "declaration_argument",
+      "authored_key": "A long series of abuses by a ruler, all aimed at establishing absolute control over the people",
+      "key_matches_frozen_blind_answer": true,
+      "authored_difficulty": 3,
+      "independent_difficulty": 2,
+      "fields": [
+        {
+          "field": "explanation",
+          "text": "The Declaration states revolution is warranted not for 'light and transient causes' but only when 'a long train of abuses and usurpations, pursuing invariably the same Object evinces a design to reduce them under absolute Despotism.' Only a sustained, systematic pattern of abuses aimed at total control satisfies all three stated requirements: duration, consistency of aim, and despotic design.",
+          "classification": "overbroad_necessity_claim",
+          "material_defect": true,
+          "assessment": "The source supplies this sustained despotic pattern as an explicit justification, but does not say it is the only possible justification or exhaustively define three necessary requirements. Earlier it separately permits alteration or abolition whenever government becomes destructive of its rights-securing ends. The feedback converts a sufficient textual justification into an exclusive necessary test. This is a material unsupported attribution to the source, while the selected answer remains warranted.",
+          "offending_text": "but only when 'a long train of abuses"
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "A single grievance with rights otherwise intact is what the Declaration calls a 'light and transient' cause — explicitly insufficient to justify revolution under its stated reasoning.",
+          "classification": "unsupported_classification",
+          "material_defect": true,
+          "assessment": "The listed facts fail to establish a revolutionary justification. However, the text does not classify every single grievance as light and transient merely because it is one grievance. The tax's severity and duration are unstated, and rights being otherwise protected does not resolve those facts. This overstates why the choice is unsupported rather than showing that it is a warranted answer.",
+          "choice": "A ruler imposes one unpopular tax but otherwise protects citizens' rights",
+          "offending_text": "A single grievance with rights otherwise intact is what the Declaration calls a 'light and transient' cause"
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "Correct. This matches the required 'long train of abuses and usurpations, pursuing invariably the same Object' that 'evinces a design to reduce them under absolute Despotism.'",
+          "classification": "correct_match_with_overbroad_qualification",
+          "material_defect": true,
+          "assessment": "The match between this choice and the quoted long-abuses/despotism passage is accurate. Calling the long train required imports the main explanation's exclusivity claim, which the supplied passage does not establish. This qualification matters to the general lesson even though the choice itself is correct.",
+          "choice": "A long series of abuses by a ruler, all aimed at establishing absolute control over the people",
+          "offending_text": "the required 'long train of abuses and usurpations"
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "The Declaration says government exists to secure unalienable rights. If rights are effectively secured, the government is not 'destructive of these ends,' so its conditions for revolution are not met.",
+          "classification": "supported_in_task_scope",
+          "material_defect": false,
+          "assessment": "Within this supplied scenario, effective protection of rights does not establish a government destructive of those rights-securing ends, so the explanation supports not selecting this choice. It does not explicitly claim the government is legitimate or that consent is irrelevant; those would be additional unsupported readings. The explanation is pedagogically incomplete about the real consent premise, but no material false claim is established here.",
+          "choice": "A government citizens never consented to but that effectively secures their rights"
+        },
+        {
+          "field": "choiceExplanations",
+          "text": "One persistent injustice does not constitute the 'long train of abuses' all 'pursuing invariably the same Object' of absolute Despotism that the Declaration requires before revolution is warranted.",
+          "classification": "overbroad_necessity_claim",
+          "material_defect": true,
+          "assessment": "A single unspecified persistent injustice does not establish a sustained despotic pattern. But the categorical claim that this pattern is required before any revolution is warranted repeats the unsupported necessary-condition reading. The severity and effects of the single law are not given; the source's broader destructive-ends statement cannot simply be erased.",
+          "choice": "Citizens suffer a single unjust law that the government refuses to repeal",
+          "offending_text": "that the Declaration requires before revolution is warranted."
+        }
+      ],
+      "all_five_feedback_fields_supported": false,
+      "complete_teaching_content_supported_at_minimum_three": false,
+      "pedagogical_note": "The question has a warranted answer, but the repeated conversion of sufficient justification into necessary requirements teaches an overly rigid reading. This is separate from the disclosed optional-metadata length rejection; no auditor ran for this item and no repaired item is counted."
+    }
+  ],
+  "summary": {
+    "actual_items": 2,
+    "keys_matching_frozen_blind_findings": 2,
+    "teaching_fields_assessed": 10,
+    "fields_without_material_defect": 6,
+    "fields_with_material_overstatement_or_unsupported_classification": 4,
+    "complete_teaching_items_supported": 1,
+    "complete_teaching_items_supported_at_requested_minimum_three": 1,
+    "unrelated_true_but_uncited_fact_defects_identified": 0,
+    "limit": "Two assistant assessments do not establish model error rates, calibrated difficulty, source entailment automation or production admission."
+  }
+}
