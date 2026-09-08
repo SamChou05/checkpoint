@@ -2,7 +2,20 @@
 
 Use this as the source of truth for the final TestFlight and App Store readiness pass. Keep each entry dated, include the device/build, and link the follow-up commit when a test creates work.
 
-Last updated: August 27, 2026 PDT.
+Last updated: September 7, 2026 PDT.
+
+## September 7 Device Install and MVP Check
+
+The current development app was built from the iOS sources at `b872ecc` and installed over the existing app on the connected iPhone 13 Pro, running iOS 26.6.1. The phone reports version 1.0, build 5. Installation and foreground launch succeeded, and a subsequent process query confirmed that Checkpoint remained running. Strict deep signature verification passed; the main app and all three Screen Time extensions include Family Controls and the shared App Group. The existing app was not uninstalled or reset. Source changes through `fae92f5` during these checks affected backend evaluation/documentation only, not the installed iOS sources.
+
+- The signed **Debug** device build passed. The **Release** attempt failed its configuration gate because `CHECKPOINT_PRIVACY_POLICY_URL` was missing. No placeholder was supplied to bypass that gate.
+- The full signed iPhone 17 Pro simulator suite ran 927 tests: 925 passed, with one stale onboarding announcement assertion and one motion-suppression rendering failure. Commit `b90c041` aligns the announcement assertion with the already-shipped removal of numbered onboarding. A focused signed rerun of both affected test classes then passed all 98 tests. The animation failure did not reproduce and remains a timing-sensitive test result, not a claimed product fix. No complete 927-test rerun was performed after the assertion correction. An earlier unsigned run was excluded because App Group coverage requires simulator signing.
+- Backend validation ran 517 tests: 516 passed and one optional botocore-dependent test was skipped. An initial process-timeout test failure passed on both a focused rerun and the complete rerun. Ruff, Python compilation, deployment-script tests, and SAM validation passed.
+- A read-only check confirmed that the configured TestFlight API was reachable and accepted the configured client token. An intentionally malformed request returned the expected HTTP 400 without requesting generation. No fresh model generation, live inventory claim, backend deployment, or purchase was performed.
+- The deployed backend still matches the September 3 `4a6257f` handler and question-bank implementation. Fresh and legacy goals remain compatible with its version-0 questions. New answer verification is not deployed; goals that have already activated verified learning would reject legacy inventory. See `CheckpointStore.usesVerifiedLearning` for the per-goal activation rule.
+- The full physical shield → checkpoint → timed unlock → background re-lock loop remains unverified. Installation and launch do not clear those checkboxes below. The newer [question correctness audit](QUESTION_CORRECTNESS_AUDIT.md) and [partial stem-length results](QUESTION_STEM_LENGTH_RESULTS.md) supersede the older green generation summary when assessing current question-quality readiness.
+
+The core development MVP is implemented, but these checks do not establish dependable end-to-end behavior or readiness for public release.
 
 ## Latest Local Validation
 
@@ -55,7 +68,7 @@ These must pass before broader TestFlight testing.
 - [ ] Backend endpoint rate limits by install ID and IP before calling Bedrock.
 - [ ] A human-approved backend deployment is active in the intended GitHub Environment; no deployment was inferred from a simulator Release build.
 - [ ] Backend question batch generation returns valid, unique, on-target choices across exam, language, technical, humanities, and uncommon raw-goal cases.
-- [ ] Latest installed iPhone build is launched once while the iPhone is unlocked.
+- [x] Latest installed iPhone build is launched once while the iPhone is unlocked (September 7 development install above).
 - [ ] Physical iPhone shield loop passes the full real-device plan below.
 
 ## Real Shield Loop
