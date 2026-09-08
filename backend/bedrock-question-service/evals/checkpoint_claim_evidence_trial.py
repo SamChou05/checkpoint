@@ -15,6 +15,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 SERVICE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SERVICE_DIR))
@@ -29,6 +30,10 @@ shared = caller.shared
 _hash = caller._hash
 EXPERIMENT = "claim-directed-acquired-evidence-v1"
 CITATION_EXPERIMENT = "frozen-claim-citation-discovery-v2"
+SPLIT_EXPERIMENT = "frozen-source-split-review-v3"
+SPLIT_CAPTURE = Path("/tmp/checkpoint-citation-discovery-live-20260908/capture.json")
+SPLIT_CAPTURE_SHA256 = "f136a693f4fef8e72a6217924d1984021c0bbab1a46d3b4853fc60fe4d2f5a27"
+SPLIT_SOURCE_REVISION = "cb41f487f8a9bc2beb6d93bd86ee23593b0b5da7"
 CHALLENGE_CAPTURE = SERVICE_DIR.parents[1] / "docs/evidence/claim-evidence-interface-capture-20260908.json"
 CHALLENGE_CAPTURE_SHA256 = "ade70260e2bbe9f9366783e70a4d4a2e359c93ffd44b391cf33ee71fff07676c"
 STRUCTURED_REVIEW_SECONDS = 300
@@ -94,12 +99,104 @@ def select_spans(records, challenge):
     return selections
 
 
-def make_plan(fixture, *, source_revision=None):
+def _source_revision(source_revision):
     revision = source_revision or shared.source_revision()
     if (type(revision) is not str or re.fullmatch(r"[0-9a-f]{40}", revision) is None
             or subprocess.run(["git", "cat-file", "-e", revision + "^{commit}"], cwd=SERVICE_DIR,
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode):
         raise ValueError("A resolvable full source commit is required.")
+    return revision
+
+
+def _source_hashes():
+    sources = shared.source_hashes()
+    for name in ("source_acquisition.py", "question_quality.py", "question_teaching.py",
+                 "complete_question_solution.py", "evals/checkpoint_claim_evidence_trial.py",
+                 "evals/claim_evidence_review.py", "evals/grounding_transport.py",
+                 "evals/claim_evidence_schema.py",
+                 "evals/acquired_source_review.py", "evals/question_immutable_review.py",
+                 "evals/question_complete_author.py",
+                 "evals/checkpoint_author_latency_probe.py", "evals/checkpoint_immutable_review_eval.py"):
+        sources[name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
+    return sources
+
+
+def _make_split_plan(fixture, revision):
+    from evals import split_evidence_review as split
+
+    if fixture != {"experiment": SPLIT_EXPERIMENT}:
+        raise ValueError("The fixed split-review fixture has no configurable fields.")
+    raw = SPLIT_CAPTURE.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != SPLIT_CAPTURE_SHA256:
+        raise ValueError("The exact terminal v2 capture is required.")
+    origin = json.loads(raw)
+    if (origin["status"] != "completed" or origin["plan_sha256"] != _hash(origin["plan"])
+            or origin["plan"]["experiment"] != CITATION_EXPERIMENT
+            or origin["plan"]["source_revision"] != SPLIT_SOURCE_REVISION
+            or len(origin["cases"]) != 4 or len(origin["calls"]) != 12
+            or len(origin["plan"]["fixture"]["cases"]) != 4):
+        raise ValueError("Unexpected terminal v2 origin.")
+    cases, jobs = [], []
+    for index, (case, result) in enumerate(zip(origin["plan"]["fixture"]["cases"], origin["cases"], strict=True)):
+        if case["case_id"] != result["case_id"] or result["status"] != "completed":
+            raise ValueError("Origin case binding changed.")
+        records = []
+        for fetched in result["fetches"]:
+            record = fetched["capture"]
+            if record["status"] == "acquired":
+                locator = fetched["native_citation"]
+                if (locator not in result["discovery"]["citation_urls"]
+                        or record["requested_url"] != locator["url"]):
+                    raise ValueError("Origin acquired source/native URL mismatch.")
+                records.append(record)
+        prepared = split.prepare(case["question"], case["context"], records, result["selections"])
+        previous = [(i, c) for i, c in enumerate(origin["calls"])
+                    if c["case_index"] == index and c["role"] == "with_sources"]
+        if len(previous) != 1:
+            raise ValueError("Exactly one old sourced review is required.")
+        old_index, old = previous[0]
+        expected = review_request(*audit.review_prompt(case["question"], case["context"],
+                                  case["challenge"], records, result["selections"]), structured=True)
+        if old["request"] != expected or old["request_sha256"] != _hash(expected):
+            raise ValueError("Old sourced-review request changed.")
+        call_text(old["observation"])
+        requests = {"old_review": copy.deepcopy(old["request"])}
+        for role in ("choices", "teaching"):
+            requests[role] = review_request(*split.prompt(prepared, role))
+            requests[role]["outputConfig"] = split.output_config(role)
+        for request in requests.values():
+            guard_request(request)
+        cases.append({**copy.deepcopy(case), "records": copy.deepcopy(records),
+                      "selections": copy.deepcopy(result["selections"])})
+        jobs.append({"case_id": case["case_id"], "question_sha256": prepared["question_sha256"],
+                     "source_packet_sha256": prepared["source_packet_sha256"],
+                     "source_units": prepared["source_units"], "old_review_call_index": old_index,
+                     "role_order": ["old_review", "choices", "teaching"] if index % 2 == 0
+                     else ["choices", "teaching", "old_review"],
+                     "requests": requests,
+                     "request_sha256": {role: _hash(request) for role, request in requests.items()}})
+    sources = _source_hashes()
+    name = "evals/split_evidence_review.py"
+    sources[name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
+    return {"experiment": SPLIT_EXPERIMENT, "fixture": copy.deepcopy(fixture),
+            "fixture_sha256": _hash(fixture), "frozen_cases": cases, "jobs": jobs,
+            "origin": {"capture_sha256": SPLIT_CAPTURE_SHA256,
+                       "plan_sha256": origin["plan_sha256"], "source_revision": SPLIT_SOURCE_REVISION},
+            "source_revision": revision, "source_sha256": sources, "dependencies": shared.dependencies(),
+            "settings": SETTINGS, "maximum_calls": 12, "maximum_fetches": 0,
+            "maximum_input_bytes_per_call": MAX_INPUT_BYTES,
+            "maximum_input_bytes_total": MAX_INPUT_BYTES * 12,
+            "review_worker_seconds": STRUCTURED_REVIEW_SECONDS, "review_sdk_read_seconds": 300,
+            "diagnostic_minimum_difficulty": DIAGNOSTIC_MINIMUM_DIFFICULTY,
+            "scope": "Four previously selected cases and unchanged acquired spans. Repeat each old sourced review and independently assess choices and main teaching. Candidate calls never receive one another's outputs; the choice solver receives no authored main, key or challenge. Reference binding is not entailment. No factual certification, production stamps or deployment.",
+            "limits": "Twelve SDK attempts maximum, one per role and case; zero fetches. Read 300/connect 3, 300-second local worker deadline and bounded cleanup. Parent persistence is not hard real-time; local termination does not prove remote cancellation or zero usage.",
+            "failure_policy": "Provider/unfinished-response/cleanup/persistence failure stops later calls. Both candidate roles run despite content or format vetoes. No retries, repairs, fallback or resume. Format rejection is not factual detection."}
+
+
+def make_plan(fixture, *, source_revision=None):
+    revision = _source_revision(source_revision)
+    if type(fixture) is dict and fixture.get("experiment") == SPLIT_EXPERIMENT:
+        return _make_split_plan(fixture, revision)
     if type(fixture) is not dict or set(fixture) != {"experiment", "cases"} or fixture["experiment"] not in (EXPERIMENT, CITATION_EXPERIMENT):
         raise ValueError("Unexpected fixture envelope.")
     citation_mode = fixture["experiment"] == CITATION_EXPERIMENT
@@ -140,15 +237,7 @@ def make_plan(fixture, *, source_revision=None):
                      "discovery_request": request, "discovery_request_sha256": _hash(request),
                      "review_order": ["without_sources", "with_sources"] if len(jobs) % 2 == 0
                      else ["with_sources", "without_sources"]})
-    sources = shared.source_hashes()
-    for name in ("source_acquisition.py", "question_quality.py", "question_teaching.py",
-                 "complete_question_solution.py", "evals/checkpoint_claim_evidence_trial.py",
-                 "evals/claim_evidence_review.py", "evals/grounding_transport.py",
-                 "evals/claim_evidence_schema.py",
-                 "evals/acquired_source_review.py", "evals/question_immutable_review.py",
-                 "evals/question_complete_author.py",
-                 "evals/checkpoint_author_latency_probe.py", "evals/checkpoint_immutable_review_eval.py"):
-        sources[name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
+    sources = _source_hashes()
     return {"experiment": fixture["experiment"], "fixture": copy.deepcopy(fixture), "jobs": jobs,
             "challenge_origin_sha256": CHALLENGE_CAPTURE_SHA256 if citation_mode else None,
             "review_output_config": output_config() if citation_mode else None,
@@ -193,6 +282,7 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
     if plan != make_plan(plan["fixture"], source_revision=plan["source_revision"]):
         raise ValueError("Plan no longer matches current sources.")
     citation_mode = plan["experiment"] == CITATION_EXPERIMENT
+    split_mode = plan["experiment"] == SPLIT_EXPERIMENT
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     report = {"plan": plan, "plan_sha256": _hash(plan), "status": "running",
@@ -203,6 +293,9 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
         guard_request(request)
         if len(report["calls"]) >= plan["maximum_calls"]:
             raise TrialFailure("Call allowance exhausted.")
+        size = len(shared.canonical(request).encode("utf-8"))
+        if size + sum(c["input_utf8_bytes"] for c in report["calls"]) > plan["maximum_input_bytes_total"]:
+            raise TrialFailure("Total input allowance exhausted.")
         call = {"case_index": case_index, "role": role, "request": copy.deepcopy(request),
                 "request_sha256": _hash(request), "input_utf8_bytes": len(shared.canonical(request).encode("utf-8")),
                 "status": "launch_intent"}
@@ -211,7 +304,7 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
         def progress(state):
             call["observation"] = state
             persist()
-        worker = grounding.grounding_worker if role == "discovery" else (structured_review_worker if citation_mode else review_worker)
+        worker = grounding.grounding_worker if role == "discovery" else (structured_review_worker if citation_mode or split_mode else review_worker)
         timeout = WORKER_SECONDS if role == "discovery" else plan["review_worker_seconds"]
         call["worker_timeout_seconds"] = timeout
         persist()
@@ -222,9 +315,27 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
         return call_text(call["observation"]), call["observation"]["response"]
     persist()
     try:
-        for index, (case, job) in enumerate(zip(plan["fixture"]["cases"], plan["jobs"], strict=True)):
+        cases = plan["frozen_cases"] if split_mode else plan["fixture"]["cases"]
+        for index, (case, job) in enumerate(zip(cases, plan["jobs"], strict=True)):
             result = {"case_id": case["case_id"], "status": "discovering", "fetches": [], "reviews": {}}
             report["cases"].append(result)
+            if split_mode:
+                from evals import split_evidence_review as split
+
+                result.update(status="reviewing", challenge=case["challenge"], selections=case["selections"])
+                prepared = split.prepare(case["question"], case["context"], case["records"], case["selections"])
+                for role in job["role_order"]:
+                    raw, _ = invoke(job["requests"][role], role, index)
+                    result["reviews"][role] = (
+                        audit.observe_review(raw, case["question"], case["context"], case["challenge"],
+                                             case["records"], case["selections"], minimum_difficulty=DIAGNOSTIC_MINIMUM_DIFFICULTY)
+                        if role == "old_review" else split.observe(raw, prepared, role))
+                    persist()
+                result.update(status="completed", candidate=split.combine(
+                    prepared, result["reviews"]["choices"], result["reviews"]["teaching"],
+                    minimum_difficulty=DIAGNOSTIC_MINIMUM_DIFFICULTY))
+                persist()
+                continue
             _, response = invoke(job["discovery_request"], "discovery", index)
             try:
                 discovery = grounding.decode_grounding_response(response)
@@ -289,6 +400,27 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
     finally:
         persist()
     return report
+
+
+def replay_split_capture(report):
+    """Re-derive terminal v3 observations through the same run, without clients."""
+    if (report.get("status") not in ("completed", "operational_failure")
+            or report["plan"]["experiment"] != SPLIT_EXPERIMENT
+            or report["plan_sha256"] != _hash(report["plan"])):
+        raise ValueError("A terminal hash-bound v3 capture is required.")
+    calls = iter(report["calls"])
+    def transport(request, **kwargs):
+        recorded_call = next(calls)
+        if (recorded_call["request"] != request
+                or recorded_call["request_sha256"] != _hash(request)
+                or recorded_call["worker_timeout_seconds"] != kwargs["timeout"]):
+            raise ValueError("Recorded request or timeout mismatch.")
+        return copy.deepcopy(recorded_call["observation"])
+    with tempfile.TemporaryDirectory() as directory:
+        derived = run(report["plan"], Path(directory) / "replay", transport=transport)
+    if derived != report:
+        raise ValueError("Replay differs; interrupted persistence captures cannot be promoted.")
+    return derived
 
 
 def main():
