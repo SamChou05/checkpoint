@@ -1,0 +1,982 @@
+{
+  "schema": "checkpoint.stem_length_html_blind_assessment.v1",
+  "frozen_at_utc": "2026-09-08T02:11:22.859268+00:00",
+  "reviewer": "independent subagent /root/review_design",
+  "blinding": {
+    "input_has_no_author_keys_explanations_difficulty_or_verdicts": true,
+    "no_capture_or_answer_bearing_file_read": true,
+    "arm_labels_not_seen": true,
+    "length_and_choice_order_can_leak_arm_or_processing_information": true,
+    "independent_answers_and_ratings_frozen_before_feedback": true
+  },
+  "input": {
+    "path": "/tmp/checkpoint-stem-length-html-blind-20260908.json",
+    "sha256": "4f3bdbaad9e1826c4b25a9b6403457b08ac147478a22af8e54792d67011483a9",
+    "variant_count": 9
+  },
+  "source_context": {
+    "goal": {
+      "title": "Understand HTML form disabled state and constraint validation",
+      "category": "",
+      "focusAreas": "Trace inherited disabling through nested fieldsets and first-legend exceptions; Predict effective disabled state after changing the input's own attribute; Interpret willValidate and checkValidity for barred inputs",
+      "currentLevel": "",
+      "learningTarget": "Understand HTML form disabled state and constraint validation",
+      "contentTopics": [
+        "Trace inherited disabling through nested fieldsets and first-legend exceptions",
+        "Predict effective disabled state after changing the input's own attribute",
+        "Interpret willValidate and checkValidity for barred inputs"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "WHATWG HTML Living Standard: disabled controls and constraint validation",
+        "text": "Source: https://html.spec.whatwg.org/multipage/form-control-infrastructure.html (accessed 2026-09-06). Paraphrased guidance:\n\nAn input's disabled attribute disables it whenever present, regardless of its string value. An input is also disabled by a fieldset ancestor with that attribute, except when inside that fieldset's first legend element child. Evaluate this exception separately for each fieldset ancestor: exemption from one does not remove another qualifying ancestor or the input's own attribute. Removing the input's attribute therefore need not enable it. Disabled controls are barred from constraint validation. A datalist ancestor is another barring condition; these examples are not an exhaustive list. willValidate is true exactly when the element is a candidate for constraint validation. checkValidity() returns false when a candidate fails its constraints and fires invalid; otherwise it returns true. Consequently, true does not prove that a barred control's value satisfies its constraints. Disabling does not prevent every modification: JavaScript can still change value or checkedness. These rules apply to the current DOM state; changes to attributes or ancestry can change the result.",
+        "truncated": false
+      }
+    ],
+    "canonical_context_sha256": "99b43b7386d1d5e4b000aad2c4d9ba0c5ca5e3b3caa059d5fc7f932653007a2d",
+    "normative_reference": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html",
+    "source_basis": "Supplied, independently preflight-reviewed primary-source summary; no missing case facts inferred from reference text."
+  },
+  "method": {
+    "prospective_doc": "docs/QUESTION_STEM_LENGTH_EXPERIMENT.md",
+    "prospective_doc_sha256": "fb0fed6199d9d2bcb7f6333ca40c5c1b424f30169605f3278425c0439d45607a",
+    "fixture_path": "backend/bedrock-question-service/evals/fixtures/question_stem_length.json",
+    "fixture_sha256": "8694d16e29bd947f52281e5e80f689bc7e87651235d9d99d174d76ca988e3bf1",
+    "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+    "observation_sha256": "e74776744ef46b2bc389118436f9007cdcd60e80d5eb49b6bdd13ca7d04d5989",
+    "observation_runner": "/tmp/checkpoint-stem-length-html-blind-observe-20260908.js",
+    "observation_runner_sha256": "a382789f4f9221150b820f044640dc9254f401acc94e2e35bf4d7b43d79e1295",
+    "browser": "151.0.7922.34",
+    "exact_displayed_full_html_groups": 3,
+    "explicit_prose_realization_groups": 3,
+    "repairs_to_displayed_markup": 0,
+    "provider_calls": 0,
+    "details": "Executed only the displayed benign attribute-removal statements. Trusted observation code queried native DOM and validation APIs. For prose cases, constructed and labeled a realization of stated relationships; used the source rules to assess whether the relationship description determines the answer. Exact prompts and ordered alternatives are separately bound per variant."
+  },
+  "summary": {
+    "unique_raw_question_groups": 6,
+    "display_variants": 9,
+    "complete_with_exactly_one_warranted_choice_groups": 6,
+    "zero_warranted_choice_groups": 0,
+    "multiple_warranted_choice_groups": 0,
+    "independent_difficulty_counts": {
+      "2": 2,
+      "3": 4
+    },
+    "at_least_level_3_groups": 4,
+    "distractor_quality_concern_groups": 2,
+    "distractor_quality_concern_group_ids": [
+      "html_own_attribute_markup",
+      "html_nested_prose"
+    ],
+    "blind_core_at_least_level_3_with_plausible_distinct_distractors_groups": 3,
+    "full_question_feedback_qualified_groups": null,
+    "feedback_unseen_groups": 6,
+    "groups_over_320": 1,
+    "groups_over_320_ids": [
+      "html_nested_markup_three_inputs"
+    ],
+    "prompt_lengths": [
+      317,
+      243,
+      327,
+      158,
+      181,
+      255
+    ],
+    "source_to_subject_coverage": "Six distinct raw questions but three repeated objective families: own-attribute removal, nested legend exceptions, and invalid-email validation. Order variants do not create independent samples."
+  },
+  "groups": [
+    {
+      "group_id": "html_own_attribute_markup",
+      "group_content_sha256": "ead3c9d90c50033902f0b7fdc8d9882eae13bc5b0518640805fce73a968314b1",
+      "variant_ids": [
+        "193358a6b4de6a206130e0e537b0fa8aaa2a79e40c071c69994dcf7bbd7886e3",
+        "3170e6c327b9beb87a84d25c8dac0584dead5bef898f8d38fb932a285efd5bf7"
+      ],
+      "variant_relationship": "Exact same prompt and choice-text set; any differences are order only. Count once as a raw question for this assessment.",
+      "prompt_code_points": 317,
+      "independent_difficulty": 2,
+      "complete_unique_warranted_answer": true,
+      "three_plausible_distinct_distractors": false,
+      "blind_core_at_least_level_3": false
+    },
+    {
+      "group_id": "html_nested_prose",
+      "group_content_sha256": "1fdb99d1dab8db446e6fc0df466ee0e21568d29ee72d7e29f645606a1c85da35",
+      "variant_ids": [
+        "42b88826b6e181fd764ec9a3cee34ff101b7baf76c1bf5cdbf4c9b7393f7ff87"
+      ],
+      "variant_relationship": "Exact same prompt and choice-text set; any differences are order only. Count once as a raw question for this assessment.",
+      "prompt_code_points": 243,
+      "independent_difficulty": 3,
+      "complete_unique_warranted_answer": true,
+      "three_plausible_distinct_distractors": false,
+      "blind_core_at_least_level_3": false
+    },
+    {
+      "group_id": "html_nested_markup_three_inputs",
+      "group_content_sha256": "17c6be6672aad96775bd60eb1e17cce7582fdd1b0f06ea10348e066318e869ac",
+      "variant_ids": [
+        "8bba0398388a28c936525aef907eeffb6c1efbb742e8257cdc9f21231c115f33",
+        "adc0003e33e45b4b51ce17dd2b2053f25440614c40ddfcdd44732574a8b1e63b"
+      ],
+      "variant_relationship": "Exact same prompt and choice-text set; any differences are order only. Count once as a raw question for this assessment.",
+      "prompt_code_points": 327,
+      "independent_difficulty": 3,
+      "complete_unique_warranted_answer": true,
+      "three_plausible_distinct_distractors": true,
+      "blind_core_at_least_level_3": true
+    },
+    {
+      "group_id": "html_validation_prose",
+      "group_content_sha256": "d33bb9754bf88c1f42c38e5a5d5371cecdd8324c234a03f31f954e3bfe6e2572",
+      "variant_ids": [
+        "aeca7247904dce86b52e02aab4488a7e71e6b101844903765f13b9f78ffa508b"
+      ],
+      "variant_relationship": "Exact same prompt and choice-text set; any differences are order only. Count once as a raw question for this assessment.",
+      "prompt_code_points": 158,
+      "independent_difficulty": 3,
+      "complete_unique_warranted_answer": true,
+      "three_plausible_distinct_distractors": true,
+      "blind_core_at_least_level_3": true
+    },
+    {
+      "group_id": "html_own_attribute_prose",
+      "group_content_sha256": "b4309a81917e1662854696124a8d895f0ed549a3893e7c31ea17c09b44503eee",
+      "variant_ids": [
+        "cf618daf2b17aedd521d248a848f719c031c7268c1cb37fa0419b0303bd393a7",
+        "fb498af49b7603cf1736a17955a11614d955a00fcfde452147f876ad86b6b92f"
+      ],
+      "variant_relationship": "Exact same prompt and choice-text set; any differences are order only. Count once as a raw question for this assessment.",
+      "prompt_code_points": 181,
+      "independent_difficulty": 2,
+      "complete_unique_warranted_answer": true,
+      "three_plausible_distinct_distractors": true,
+      "blind_core_at_least_level_3": false
+    },
+    {
+      "group_id": "html_validation_markup",
+      "group_content_sha256": "ccaeadcc933966d89065b893db43694cfb8b5c1870f065ad3994b91085f383bb",
+      "variant_ids": [
+        "f22c74e26bdc1712e395b6c9f6072f79a310f93615d9242fc0195ae7e2a51707"
+      ],
+      "variant_relationship": "Exact same prompt and choice-text set; any differences are order only. Count once as a raw question for this assessment.",
+      "prompt_code_points": 255,
+      "independent_difficulty": 3,
+      "complete_unique_warranted_answer": true,
+      "three_plausible_distinct_distractors": true,
+      "blind_core_at_least_level_3": true
+    }
+  ],
+  "assessments": [
+    {
+      "id": "193358a6b4de6a206130e0e537b0fa8aaa2a79e40c071c69994dcf7bbd7886e3",
+      "group_id": "html_own_attribute_markup",
+      "prompt": "An input element #x exists in the following markup:\n\n<fieldset disabled id=\"fs\">\n  <legend>Title</legend>\n  <input id=\"x\" type=\"text\" disabled required value=\"\">\n</fieldset>\n\nA script then runs:\n  document.getElementById('x').removeAttribute('disabled');\n\nAfter the script executes, what is the effective state of #x?",
+      "choices": [
+        "Still disabled, because the disabled fieldset ancestor still applies",
+        "Enabled, because its own disabled attribute was removed",
+        "Enabled, because removeAttribute always overrides inherited disabling",
+        "Still disabled, but only until the browser recalculates layout"
+      ],
+      "prompt_sha256": "8d1c29f30b612cf4d4de509651b72059c6f87024b51b8774f23f3d41bd7e694f",
+      "ordered_choices_sha256": "e78919627f97089b432a5a3b26ec14a48e777a4441ad27e51976c3c38b48e44f",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The exact markup puts x after the first legend, under a disabled fieldset, and gives x its own disabled attribute. The exact operation removes only that own attribute. No further ancestry or mutation must be supplied to decide the effective disabled state."
+      },
+      "warranted_exact_choices": [
+        "Still disabled, because the disabled fieldset ancestor still applies"
+      ],
+      "warranted_choice_indices_zero_based": [
+        0
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 0,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed HTML parsed with x outside the first legend. Before removal ownDisabled=true/effectiveDisabled=true; after the exact statement ownDisabled=false/effectiveDisabled=true. The fieldset ancestor remains disabled.",
+        "ambiguity_or_limit": "No answer-changing ambiguity in the displayed fragment and stated operation. Standard standalone-fragment reading is used; no imaginary external disabled ancestor or concurrent mutation is introduced.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "Still disabled, because the disabled fieldset ancestor still applies",
+          "answer_adequacy": "supported",
+          "decisive_reason": "The ancestor remains applicable after only the input attribute is removed.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "Enabled, because its own disabled attribute was removed",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "Own-attribute removal does not remove the applicable fieldset condition.",
+          "distractor_plausibility": "moderate_but_overlaps_another"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "Enabled, because removeAttribute always overrides inherited disabling",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The stated universal override is contradicted by the unchanged disabled fieldset.",
+          "distractor_plausibility": "moderate_but_overlaps_another"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "Still disabled, but only until the browser recalculates layout",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The disabling condition remains in the DOM; a layout recalculation is not the missing mutation needed to enable it.",
+          "distractor_plausibility": "weak"
+        }
+      ],
+      "distractors": {
+        "three_plausible": false,
+        "three_meaningfully_distinct": false,
+        "rationale": "Two enabled alternatives restate essentially the same removal-overrides-inheritance misconception. The layout-recalculation alternative is a weak, unsupported timing story. This is a distractor-quality concern, not another warranted answer.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "rationale": "Directly applies the familiar rule that an applicable disabled fieldset remains effective after the input attribute is removed. The added markup, empty required value and layout language do not introduce a further substantive inference.",
+        "at_least_3": false,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 317,
+        "exceeds_320": false,
+        "contains_useful_scenario_premises": true,
+        "rationale": "The displayed ancestry and exact removal are useful premises. type=text, required, value and the introductory wording add no condition needed for this question. At 317 characters this item does not exercise a greater-than-320 allowance."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "3170e6c327b9beb87a84d25c8dac0584dead5bef898f8d38fb932a285efd5bf7",
+      "group_id": "html_own_attribute_markup",
+      "prompt": "An input element #x exists in the following markup:\n\n<fieldset disabled id=\"fs\">\n  <legend>Title</legend>\n  <input id=\"x\" type=\"text\" disabled required value=\"\">\n</fieldset>\n\nA script then runs:\n  document.getElementById('x').removeAttribute('disabled');\n\nAfter the script executes, what is the effective state of #x?",
+      "choices": [
+        "Enabled, because its own disabled attribute was removed",
+        "Still disabled, because the disabled fieldset ancestor still applies",
+        "Enabled, because removeAttribute always overrides inherited disabling",
+        "Still disabled, but only until the browser recalculates layout"
+      ],
+      "prompt_sha256": "8d1c29f30b612cf4d4de509651b72059c6f87024b51b8774f23f3d41bd7e694f",
+      "ordered_choices_sha256": "9bdd8fbcbecef8c960b06f9c1caaea16431950ef3dba54e2fb98d7c19e78427b",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The exact markup puts x after the first legend, under a disabled fieldset, and gives x its own disabled attribute. The exact operation removes only that own attribute. No further ancestry or mutation must be supplied to decide the effective disabled state."
+      },
+      "warranted_exact_choices": [
+        "Still disabled, because the disabled fieldset ancestor still applies"
+      ],
+      "warranted_choice_indices_zero_based": [
+        1
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 0,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed HTML parsed with x outside the first legend. Before removal ownDisabled=true/effectiveDisabled=true; after the exact statement ownDisabled=false/effectiveDisabled=true. The fieldset ancestor remains disabled.",
+        "ambiguity_or_limit": "No answer-changing ambiguity in the displayed fragment and stated operation. Standard standalone-fragment reading is used; no imaginary external disabled ancestor or concurrent mutation is introduced.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "Enabled, because its own disabled attribute was removed",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "Own-attribute removal does not remove the applicable fieldset condition.",
+          "distractor_plausibility": "moderate_but_overlaps_another"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "Still disabled, because the disabled fieldset ancestor still applies",
+          "answer_adequacy": "supported",
+          "decisive_reason": "The ancestor remains applicable after only the input attribute is removed.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "Enabled, because removeAttribute always overrides inherited disabling",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The stated universal override is contradicted by the unchanged disabled fieldset.",
+          "distractor_plausibility": "moderate_but_overlaps_another"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "Still disabled, but only until the browser recalculates layout",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The disabling condition remains in the DOM; a layout recalculation is not the missing mutation needed to enable it.",
+          "distractor_plausibility": "weak"
+        }
+      ],
+      "distractors": {
+        "three_plausible": false,
+        "three_meaningfully_distinct": false,
+        "rationale": "Two enabled alternatives restate essentially the same removal-overrides-inheritance misconception. The layout-recalculation alternative is a weak, unsupported timing story. This is a distractor-quality concern, not another warranted answer.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "rationale": "Directly applies the familiar rule that an applicable disabled fieldset remains effective after the input attribute is removed. The added markup, empty required value and layout language do not introduce a further substantive inference.",
+        "at_least_3": false,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 317,
+        "exceeds_320": false,
+        "contains_useful_scenario_premises": true,
+        "rationale": "The displayed ancestry and exact removal are useful premises. type=text, required, value and the introductory wording add no condition needed for this question. At 317 characters this item does not exercise a greater-than-320 allowance."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "42b88826b6e181fd764ec9a3cee34ff101b7baf76c1bf5cdbf4c9b7393f7ff87",
+      "group_id": "html_nested_prose",
+      "prompt": "A disabled outer fieldset's first legend contains a disabled inner fieldset that has no legend child. Inside the inner fieldset is <input id='x'> with no own disabled attribute. Which statement correctly describes #x's disabled status and why?",
+      "choices": [
+        "Disabled — exempt from the outer fieldset, but the inner fieldset still disables it",
+        "Not disabled — the outer's first-legend exception covers everything inside that legend",
+        "Disabled — both fieldsets disable it because nested legends never stack exceptions",
+        "Not disabled — the inner fieldset inherits the exemption granted by the outer's first legend"
+      ],
+      "prompt_sha256": "fb6f7a700404c13dccc2849d79fa8ca0f285289e47deb2233725ff6c633f5a96",
+      "ordered_choices_sha256": "1888182c9480445f33840a0feeae85ea46243f9451d5bc5cba02c22122399618",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The prose supplies the relevant ancestry: the disabled inner fieldset is inside the outer first legend, x is inside that inner fieldset, the inner fieldset has no legend child, and x lacks an own disabled attribute. This is enough to decide both the state and which supplied ancestor applies."
+      },
+      "warranted_exact_choices": [
+        "Disabled — exempt from the outer fieldset, but the inner fieldset still disables it"
+      ],
+      "warranted_choice_indices_zero_based": [
+        0
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 1,
+        "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+        "rationale": "An explicitly labeled assistant realization of that prose, retaining the exact input tag, has x outside any first legend of the inner fieldset and inside the outer first legend. Chromium reports ownDisabled=false/effectiveDisabled=true. The construction confirms one realization; the source rule plus the stated ancestry establishes the conclusion.",
+        "ambiguity_or_limit": "No missing case fact changes the answer. This is a DOM/behavior problem, not a claim that every described parent/child placement is conforming author markup. No conformity repair was performed. The browser realization is not mislabeled as an exact full source fragment.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "Disabled — exempt from the outer fieldset, but the inner fieldset still disables it",
+          "answer_adequacy": "supported",
+          "decisive_reason": "Outer first-legend containment exempts x from that outer fieldset; the inner disabled fieldset has no applicable legend exception.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "Not disabled — the outer's first-legend exception covers everything inside that legend",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "Outer exemption does not remove the independent inner disabled-fieldset condition.",
+          "distractor_plausibility": "moderate_but_overlaps_another"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "Disabled — both fieldsets disable it because nested legends never stack exceptions",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The outer first-legend exception applies; the disabled state does not make the offered both-ancestors reason correct.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "Not disabled — the inner fieldset inherits the exemption granted by the outer's first legend",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "An outer exception does not cancel the inner fieldset disabled attribute for its descendants.",
+          "distractor_plausibility": "moderate_but_overlaps_another"
+        }
+      ],
+      "distractors": {
+        "three_plausible": true,
+        "three_meaningfully_distinct": false,
+        "rationale": "The two not-disabled choices both globalize the outer first-legend exemption, with only a small change of causal wording. The both-fieldsets alternative is a distinct plausible reason error. The set therefore has a near-redundancy concern despite a unique correct answer.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 3,
+        "rationale": "Requires separately interpreting two ancestor relations, applying the outer exception while retaining the inner disabling condition, and distinguishing a correct state with a wrong reason from the warranted explanation.",
+        "at_least_3": true,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 243,
+        "exceeds_320": false,
+        "contains_useful_scenario_premises": true,
+        "rationale": "The 243-character prose gives the relevant ancestry, inner absence of a legend and input attribute state without a full markup block. Each structural condition supports the ancestor-specific reasoning. It does not exercise a greater-than-320 allowance."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "8bba0398388a28c936525aef907eeffb6c1efbb742e8257cdc9f21231c115f33",
+      "group_id": "html_nested_markup_three_inputs",
+      "prompt": "Consider this HTML structure:\n\n<fieldset disabled>\n  <legend>\n    <fieldset disabled>\n      <legend><input id=\"A\"></legend>\n      <input id=\"B\">\n    </fieldset>\n  </legend>\n  <input id=\"C\">\n</fieldset>\n\nNone of the inputs have their own disabled attribute. Which correctly describes the effective disabled state of A, B, and C?",
+      "choices": [
+        "A is enabled; B is disabled; C is disabled",
+        "A is enabled; B is enabled; C is disabled",
+        "A is disabled; B is disabled; C is disabled",
+        "A is enabled; B is disabled; C is enabled"
+      ],
+      "prompt_sha256": "dd56b57e1a138d93dd4e10ea914125173f48958097cb1dad6489839cd7411435",
+      "ordered_choices_sha256": "4774a7a410abfbb8613c7bee5bb9d5eced265153a5458e8983bc10ae608470a3",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The exact fragment locates A in both first legends, B in the outer first legend but outside the inner legend, and C outside the outer legend. Both fieldsets have disabled; no input has an own disabled attribute. All facts needed for the three states are displayed."
+      },
+      "warranted_exact_choices": [
+        "A is enabled; B is disabled; C is disabled"
+      ],
+      "warranted_choice_indices_zero_based": [
+        0
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 2,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed fragment preserves the specified nesting when parsed. Chromium reports A effectiveDisabled=false, B=true, C=true. Recorded fieldset paths show first-legend containment [true,true] for A, [false,true] for B, and [false] for C.",
+        "ambiguity_or_limit": "No answer-changing missing condition or parser-induced tree change was found. The observation concerns the actual parsed structure; it does not certify HTML authoring conformance. No alternate tree was substituted.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "A is enabled; B is disabled; C is disabled",
+          "answer_adequacy": "supported",
+          "decisive_reason": "A is in both first legends; B is subject to the inner fieldset; C is subject to the outer fieldset.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "A is enabled; B is enabled; C is disabled",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "B is outside the inner fieldset first legend and is disabled by that fieldset.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "A is disabled; B is disabled; C is disabled",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "A is inside the first legend of each disabled fieldset ancestor and has no own disabled attribute.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "A is enabled; B is disabled; C is enabled",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "C is outside the outer first legend and is disabled by the outer fieldset.",
+          "distractor_plausibility": "moderate"
+        }
+      ],
+      "distractors": {
+        "three_plausible": true,
+        "three_meaningfully_distinct": true,
+        "rationale": "The three wrong state profiles differ materially: overlook the inner fieldset for B, overlook legend exemptions for A, or fail to disable C outside the outer legend. Plausibility is an evaluator judgment, not measured response data.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 3,
+        "rationale": "The student must read a nested representation and evaluate each first-legend exception against the corresponding ancestor. The three profiles make the ancestry distinctions consequential. Repeating one rule for several inputs is insufficient evidence for level 4.",
+        "at_least_3": true,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 327,
+        "exceeds_320": true,
+        "contains_useful_scenario_premises": true,
+        "rationale": "At 327 characters, this is the only unique question over 320. Its explicit nested tree is useful premise-bearing content, not an empty long scenario. However, removing only the 31-character introductory line and blank line would leave the entire exact DOM, no-own-attribute statement and question intact at 296 characters. Thus actual over-cap use is observed, but the extra allowance is not shown to be necessary for completeness."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "adc0003e33e45b4b51ce17dd2b2053f25440614c40ddfcdd44732574a8b1e63b",
+      "group_id": "html_nested_markup_three_inputs",
+      "prompt": "Consider this HTML structure:\n\n<fieldset disabled>\n  <legend>\n    <fieldset disabled>\n      <legend><input id=\"A\"></legend>\n      <input id=\"B\">\n    </fieldset>\n  </legend>\n  <input id=\"C\">\n</fieldset>\n\nNone of the inputs have their own disabled attribute. Which correctly describes the effective disabled state of A, B, and C?",
+      "choices": [
+        "A is enabled; B is enabled; C is disabled",
+        "A is enabled; B is disabled; C is disabled",
+        "A is disabled; B is disabled; C is disabled",
+        "A is enabled; B is disabled; C is enabled"
+      ],
+      "prompt_sha256": "dd56b57e1a138d93dd4e10ea914125173f48958097cb1dad6489839cd7411435",
+      "ordered_choices_sha256": "d767218bab3b71692cc0325e772057a68f831726f1d5f91275c9ee8495d3137c",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The exact fragment locates A in both first legends, B in the outer first legend but outside the inner legend, and C outside the outer legend. Both fieldsets have disabled; no input has an own disabled attribute. All facts needed for the three states are displayed."
+      },
+      "warranted_exact_choices": [
+        "A is enabled; B is disabled; C is disabled"
+      ],
+      "warranted_choice_indices_zero_based": [
+        1
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 2,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed fragment preserves the specified nesting when parsed. Chromium reports A effectiveDisabled=false, B=true, C=true. Recorded fieldset paths show first-legend containment [true,true] for A, [false,true] for B, and [false] for C.",
+        "ambiguity_or_limit": "No answer-changing missing condition or parser-induced tree change was found. The observation concerns the actual parsed structure; it does not certify HTML authoring conformance. No alternate tree was substituted.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "A is enabled; B is enabled; C is disabled",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "B is outside the inner fieldset first legend and is disabled by that fieldset.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "A is enabled; B is disabled; C is disabled",
+          "answer_adequacy": "supported",
+          "decisive_reason": "A is in both first legends; B is subject to the inner fieldset; C is subject to the outer fieldset.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "A is disabled; B is disabled; C is disabled",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "A is inside the first legend of each disabled fieldset ancestor and has no own disabled attribute.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "A is enabled; B is disabled; C is enabled",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "C is outside the outer first legend and is disabled by the outer fieldset.",
+          "distractor_plausibility": "moderate"
+        }
+      ],
+      "distractors": {
+        "three_plausible": true,
+        "three_meaningfully_distinct": true,
+        "rationale": "The three wrong state profiles differ materially: overlook the inner fieldset for B, overlook legend exemptions for A, or fail to disable C outside the outer legend. Plausibility is an evaluator judgment, not measured response data.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 3,
+        "rationale": "The student must read a nested representation and evaluate each first-legend exception against the corresponding ancestor. The three profiles make the ancestry distinctions consequential. Repeating one rule for several inputs is insufficient evidence for level 4.",
+        "at_least_3": true,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 327,
+        "exceeds_320": true,
+        "contains_useful_scenario_premises": true,
+        "rationale": "At 327 characters, this is the only unique question over 320. Its explicit nested tree is useful premise-bearing content, not an empty long scenario. However, removing only the 31-character introductory line and blank line would leave the entire exact DOM, no-own-attribute statement and question intact at 296 characters. Thus actual over-cap use is observed, but the extra allowance is not shown to be necessary for completeness."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "aeca7247904dce86b52e02aab4488a7e71e6b101844903765f13b9f78ffa508b",
+      "group_id": "html_validation_prose",
+      "prompt": "<input id='c' type='email' value='bad' required> is inside a disabled fieldset and not inside any legend. What do c.willValidate and c.checkValidity() return?",
+      "choices": [
+        "willValidate: false; checkValidity(): true",
+        "willValidate: false; checkValidity(): false",
+        "willValidate: true; checkValidity(): false",
+        "willValidate: true; checkValidity(): true"
+      ],
+      "prompt_sha256": "c186a60e5e5875b38dfc2c7659ada4aba366e03095148bda0a43089e8e13f639",
+      "ordered_choices_sha256": "1066f74e809c2bcf7759a4f070a704be520322a5feabdc32890ed06e3e4bbfce",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The exact input tag specifies an invalid nonempty email and required. The prose supplies its disabled fieldset ancestor and exclusion from any legend. Disabled status alone establishes the relevant validation bar; no additional tree detail is needed for the requested pair."
+      },
+      "warranted_exact_choices": [
+        "willValidate: false; checkValidity(): true"
+      ],
+      "warranted_choice_indices_zero_based": [
+        0
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 3,
+        "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+        "rationale": "The assistant realization uses the exact input tag and the explicitly stated outside-legend disabled-fieldset relationship. Chromium reports effectiveDisabled=true, willValidate=false, checkValidity=true, typeMismatch=true and validity.valid=false. The source algorithm, rather than a repair to the value, explains true from checkValidity.",
+        "ambiguity_or_limit": "The shorthand c identifies the displayed input, as standard in this API question. No alternative value, enabling operation, event handler or omitted legend is supplied. A constructed full DOM is labeled a realization of prose, not exact authored markup.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "willValidate: false; checkValidity(): true",
+          "answer_adequacy": "supported",
+          "decisive_reason": "The input is barred; willValidate is false and checkValidity returns true without establishing that the email satisfies constraints.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "willValidate: false; checkValidity(): false",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The acknowledged bar prevents the invalid value from making checkValidity return false.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "willValidate: true; checkValidity(): false",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "This ignores the effective disabled state and resulting validation bar.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "willValidate: true; checkValidity(): true",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "willValidate must be false for the disabled input; a true method result does not imply eligibility.",
+          "distractor_plausibility": "moderate_lower"
+        }
+      ],
+      "distractors": {
+        "three_plausible": true,
+        "three_meaningfully_distinct": true,
+        "rationale": "All four Boolean pairs are distinct. Wrong pairs separately confuse the validation bar, the method result, or both. The true/true distractor is weaker but remains a recognizable confusion of a method returning true with a validation-eligibility property.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 3,
+        "rationale": "Distinguishes an invalid email value from eligibility for constraint validation, then interprets two different API results. The invalid-value cue makes the competing false method result plausible; simply treating true as proof of valid content gives the wrong interpretation.",
+        "at_least_3": true,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 158,
+        "exceeds_320": false,
+        "contains_useful_scenario_premises": true,
+        "rationale": "At 158 characters, the compact input attributes, ancestor condition and paired API question are sufficient. The invalid email is a meaningful competing cue; required is redundant for a nonempty type-mismatched email. No greater-than-320 allowance is exercised."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "cf618daf2b17aedd521d248a848f719c031c7268c1cb37fa0419b0303bd393a7",
+      "group_id": "html_own_attribute_prose",
+      "prompt": "<input id='b' disabled> sits inside a disabled fieldset, not inside any legend element. A script executes b.removeAttribute('disabled'). What is the effective state of #b afterward?",
+      "choices": [
+        "Enabled — removing the attribute always re-enables an input",
+        "Still disabled — the disabled fieldset ancestor still applies",
+        "Still disabled — removeAttribute cannot change the disabled property",
+        "Enabled — fieldset disabling only takes effect when the input has its own disabled attribute"
+      ],
+      "prompt_sha256": "9d70118d31d9e3d463821e8f1607ab3f9de7f932ea43fdddb7387cc483120de1",
+      "ordered_choices_sha256": "9247bce714fb9678cd3589f36dcad28015cd421305e747e2be1017ad18d78d6a",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The prompt gives an own disabled attribute, an applicable disabled fieldset outside every legend, and an exact removal of only the own attribute. These premises are sufficient to determine the effective state afterward."
+      },
+      "warranted_exact_choices": [
+        "Still disabled — the disabled fieldset ancestor still applies"
+      ],
+      "warranted_choice_indices_zero_based": [
+        1
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 4,
+        "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+        "rationale": "The assistant realization retains the exact input tag and supplied prose ancestry. Executing the literal b.removeAttribute statement changes ownDisabled from true to false while effectiveDisabled stays true. No ancestor attribute is changed.",
+        "ambiguity_or_limit": "The script shorthand b refers to the displayed input; the literal statement executed successfully with that named element in the isolated browser. No layout delay or extra mutation is assumed.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "Enabled — removing the attribute always re-enables an input",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "Removing the own attribute does not eliminate the applicable disabled-fieldset ancestor.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "Still disabled — the disabled fieldset ancestor still applies",
+          "answer_adequacy": "supported",
+          "decisive_reason": "The ancestor condition is unchanged and still applies outside a legend.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "Still disabled — removeAttribute cannot change the disabled property",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The own disabled property does change to false; the state persists because of the ancestor, not the offered reason.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "Enabled — fieldset disabling only takes effect when the input has its own disabled attribute",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "An applicable fieldset ancestor is an independent disabling condition.",
+          "distractor_plausibility": "moderate"
+        }
+      ],
+      "distractors": {
+        "three_plausible": true,
+        "three_meaningfully_distinct": true,
+        "rationale": "The wrong reasons respectively claim a universal enabling effect, deny attribute/property reflection, or make inherited disabling depend on the own attribute. The first and last share an enabled conclusion but assert different mechanisms; these are adequately distinct, plausible rule confusions.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "rationale": "Direct application of the familiar distinction between the input attribute and inherited disabling. The scenario changes one attribute and requires no nested exception or competing API algorithm.",
+        "at_least_3": false,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 181,
+        "exceeds_320": false,
+        "contains_useful_scenario_premises": true,
+        "rationale": "At 181 characters, all relevant state and operation information is present. The prose efficiently supplies ancestry without a full DOM display. It does not exercise a greater-than-320 allowance."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "fb498af49b7603cf1736a17955a11614d955a00fcfde452147f876ad86b6b92f",
+      "group_id": "html_own_attribute_prose",
+      "prompt": "<input id='b' disabled> sits inside a disabled fieldset, not inside any legend element. A script executes b.removeAttribute('disabled'). What is the effective state of #b afterward?",
+      "choices": [
+        "Still disabled — the disabled fieldset ancestor still applies",
+        "Enabled — removing the attribute always re-enables an input",
+        "Still disabled — removeAttribute cannot change the disabled property",
+        "Enabled — fieldset disabling only takes effect when the input has its own disabled attribute"
+      ],
+      "prompt_sha256": "9d70118d31d9e3d463821e8f1607ab3f9de7f932ea43fdddb7387cc483120de1",
+      "ordered_choices_sha256": "321cdfcd56eeb080e6b1ffe61d6279608787eeb0015f588818a91f198002eb50",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The prompt gives an own disabled attribute, an applicable disabled fieldset outside every legend, and an exact removal of only the own attribute. These premises are sufficient to determine the effective state afterward."
+      },
+      "warranted_exact_choices": [
+        "Still disabled — the disabled fieldset ancestor still applies"
+      ],
+      "warranted_choice_indices_zero_based": [
+        0
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 4,
+        "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+        "rationale": "The assistant realization retains the exact input tag and supplied prose ancestry. Executing the literal b.removeAttribute statement changes ownDisabled from true to false while effectiveDisabled stays true. No ancestor attribute is changed.",
+        "ambiguity_or_limit": "The script shorthand b refers to the displayed input; the literal statement executed successfully with that named element in the isolated browser. No layout delay or extra mutation is assumed.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "Still disabled — the disabled fieldset ancestor still applies",
+          "answer_adequacy": "supported",
+          "decisive_reason": "The ancestor condition is unchanged and still applies outside a legend.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "Enabled — removing the attribute always re-enables an input",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "Removing the own attribute does not eliminate the applicable disabled-fieldset ancestor.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "Still disabled — removeAttribute cannot change the disabled property",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The own disabled property does change to false; the state persists because of the ancestor, not the offered reason.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "Enabled — fieldset disabling only takes effect when the input has its own disabled attribute",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "An applicable fieldset ancestor is an independent disabling condition.",
+          "distractor_plausibility": "moderate"
+        }
+      ],
+      "distractors": {
+        "three_plausible": true,
+        "three_meaningfully_distinct": true,
+        "rationale": "The wrong reasons respectively claim a universal enabling effect, deny attribute/property reflection, or make inherited disabling depend on the own attribute. The first and last share an enabled conclusion but assert different mechanisms; these are adequately distinct, plausible rule confusions.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 2,
+        "rationale": "Direct application of the familiar distinction between the input attribute and inherited disabling. The scenario changes one attribute and requires no nested exception or competing API algorithm.",
+        "at_least_3": false,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 181,
+        "exceeds_320": false,
+        "contains_useful_scenario_premises": true,
+        "rationale": "At 181 characters, all relevant state and operation information is present. The prose efficiently supplies ancestry without a full DOM display. It does not exercise a greater-than-320 allowance."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    },
+    {
+      "id": "f22c74e26bdc1712e395b6c9f6072f79a310f93615d9242fc0195ae7e2a51707",
+      "group_id": "html_validation_markup",
+      "prompt": "Given this markup:\n\n<fieldset disabled>\n  <input id=\"q\" type=\"email\" value=\"not-an-email\" required>\n</fieldset>\n\nThe input #q has an invalid email value and is required. A script reads q.willValidate and then calls q.checkValidity(). What are the results?",
+      "choices": [
+        "willValidate is false; checkValidity() returns true",
+        "willValidate is false; checkValidity() returns false",
+        "willValidate is true; checkValidity() returns false",
+        "willValidate is true; checkValidity() returns true"
+      ],
+      "prompt_sha256": "eaf342ee072360fac9e00d4e0009fe34ac6d84fccc4d017638e6c66bca6cccda",
+      "ordered_choices_sha256": "8a0a3a82164d6b90e5d31a9381c06d445bd30016b915897766e9502cf1554b18",
+      "completeness": {
+        "status": "complete_for_requested_conclusion",
+        "rationale": "The exact fragment shows the invalid required email input directly under a disabled fieldset and outside a legend. The named property and method are explicit. No missing enabling step or alternative value is needed."
+      },
+      "warranted_exact_choices": [
+        "willValidate is false; checkValidity() returns true"
+      ],
+      "warranted_choice_indices_zero_based": [
+        0
+      ],
+      "unique_warranted_answer": true,
+      "evidence": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 5,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed fragment parses with q directly under the disabled fieldset. Chromium reports effectiveDisabled=true, willValidate=false, checkValidity=true, typeMismatch=true and validity.valid=false. This directly distinguishes the native method result from content validity.",
+        "ambiguity_or_limit": "No answer-changing missing condition was found in the provided fragment. The observation is for the unchanged value and DOM and assumes no unmentioned script mutations or event handlers.",
+        "countermodel_used": false
+      },
+      "choice_assessment": [
+        {
+          "index_zero_based": 0,
+          "text": "willValidate is false; checkValidity() returns true",
+          "answer_adequacy": "supported",
+          "decisive_reason": "Disabled q is barred; willValidate is false while checkValidity returns true despite typeMismatch.",
+          "distractor_plausibility": "not_applicable"
+        },
+        {
+          "index_zero_based": 1,
+          "text": "willValidate is false; checkValidity() returns false",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "A barred input does not produce a false checkValidity result for its invalid email content.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 2,
+          "text": "willValidate is true; checkValidity() returns false",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "This omits the disabled-fieldset validation bar.",
+          "distractor_plausibility": "moderate"
+        },
+        {
+          "index_zero_based": 3,
+          "text": "willValidate is true; checkValidity() returns true",
+          "answer_adequacy": "refuted",
+          "decisive_reason": "The method result does not make the disabled input eligible for validation.",
+          "distractor_plausibility": "moderate_lower"
+        }
+      ],
+      "distractors": {
+        "three_plausible": true,
+        "three_meaningfully_distinct": true,
+        "rationale": "All four Boolean result combinations are distinct and represent confusion about eligibility, the method algorithm, or both. The true/true alternative is weaker but still a plausible property-versus-method confusion.",
+        "empirically_calibrated": false
+      },
+      "goal_fit": {
+        "status": "direct",
+        "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+      },
+      "independent_difficulty": {
+        "level": 3,
+        "rationale": "Requires distinguishing actual invalid content from the validation bar and combining that distinction with the property and method algorithms. It is the same substantive reasoning as the shorter validation question, not a higher level because it displays more markup.",
+        "at_least_3": true,
+        "psychometrically_calibrated": false
+      },
+      "useful_premise_bearing_length": {
+        "prompt_code_points": 255,
+        "exceeds_320": false,
+        "contains_useful_scenario_premises": true,
+        "rationale": "The 255-character item includes a useful explicit parent/child fragment. The extra prose restates the invalid email and required attributes; it adds no premise absent from the shorter validation item. No greater-than-320 allowance is exercised."
+      },
+      "feedback_assessment": "unassessed_and_unseen",
+      "author_key_comparison": "not_performed_before_freeze",
+      "pipeline_verdict": "unseen",
+      "arm": "unseen"
+    }
+  ],
+  "limits": [
+    "Author keys, explanations and pipeline decisions were not inspected; no acceptance or feedback success is claimed.",
+    "Browser observations corroborate these specific DOMs and operations, not arbitrary HTML, source faithfulness of unseen claims, or cross-browser conformance.",
+    "Three full DOMs are exact displayed fragments; three full DOMs are assistant realizations of explicit prose, never silently substituted for an authored fragment.",
+    "Difficulty and distractor plausibility are reasoned independent judgments, not learner calibration. Near-redundant distractors are quality concerns and do not change the six unique warranted answer conclusions.",
+    "The sole 327-character question contains a useful nested tree, but its extra length is not established as necessary: deleting only the introductory sentence leaves every premise and the actual question at 296 characters. No causal completeness gain from the larger cap can be inferred from this item alone.",
+    "Equivalent order variants count once. Questions in different raw groups that apply the same objective remain separate raw candidates but are not six independent subject mechanisms."
+  ],
+  "unresolved_issues": [
+    "Teaching explanations and every-choice feedback remain deliberately unassessed until this file is hashed.",
+    "Arm, raw/admitted/returned counts and length-policy outcomes require a later join controlled by the parent; they cannot be inferred reliably from this blind export."
+  ]
+}

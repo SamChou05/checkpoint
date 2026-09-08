@@ -1,0 +1,96 @@
+{
+  "schema": "checkpoint.stem_length_html_binding_audit.v1",
+  "scope": "Independent evidence binding/native-replay verification after blind judgments froze; not a new cognitive-difficulty or feedback assessment.",
+  "files": {
+    "blind_input": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-20260908.json",
+      "sha256": "4f3bdbaad9e1826c4b25a9b6403457b08ac147478a22af8e54792d67011483a9"
+    },
+    "frozen_assessment": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-assessment-20260908.json",
+      "sha256": "d0662ab46a76a884efaf318afc4c3a422749ee7ebf9ca0b55b30d37c419f59f2"
+    },
+    "frozen_observations": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+      "sha256": "e74776744ef46b2bc389118436f9007cdcd60e80d5eb49b6bdd13ca7d04d5989"
+    },
+    "frozen_runner": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-observe-20260908.js",
+      "sha256": "a382789f4f9221150b820f044640dc9254f401acc94e2e35bf4d7b43d79e1295"
+    },
+    "capture": {
+      "path": "/tmp/checkpoint-stem-length-capture-20260908-22980c1/capture.json",
+      "sha256": "fe7e0352a9af481595eb7de203d9f174d0e1caa64dba0409e4aae9cb037439c9"
+    },
+    "independent_replay_observations": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-observations-independent-20260908.json",
+      "sha256": "1e3b32d03a4a4ca72ed30f6286b49d8e4c730d8bcff8202ca1899a2cc7c510d7"
+    },
+    "independent_replay_runner": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-observe-independent-20260908.js",
+      "sha256": "bd3f3d7bacfe0f00428561e736468c2046b1029c4157d1fcd456dd7ed512bf32"
+    }
+  },
+  "findings": [],
+  "bindings": {
+    "all_nine_blind_ids_join_assessments": true,
+    "all_prompt_and_ordered_choice_hashes_match": true,
+    "all_six_group_content_hashes_match": true,
+    "source_context_hash_matches": true,
+    "one_raw_candidate_per_group": true,
+    "raw_candidate_groups": 6,
+    "display_variants": 9,
+    "variant_differences_within_each_group": "choice order only; exact prompt and choice set match",
+    "observation_indices_and_exact_content_spans_match": true
+  },
+  "native_observations": {
+    "exact_displayed_html_fragment_groups": 3,
+    "explicitly_labeled_prose_realization_groups": 3,
+    "displayed_input_spans_in_realizations_preserved": true,
+    "prose_relationships_realized": "Disabled fieldset with input outside legends; or disabled inner fieldset without legend inside the outer disabled fieldset first legend, as explicitly stated. Added ancestor IDs are instrumentation labels.",
+    "native_queries": [
+      "input.disabled",
+      "input.matches(':disabled')",
+      "input.willValidate",
+      "input.checkValidity()",
+      "input.validity.valid",
+      "input.validity.typeMismatch",
+      "input.validity.valueMissing"
+    ],
+    "stored_expected_results_or_assessment_not_loaded_by_runner": true,
+    "script_actions": "Only the two exact displayed benign removeAttribute statements selected by the trusted observer; no arbitrary generated JavaScript executed.",
+    "no_repair_of_displayed_html": true
+  },
+  "replay": {
+    "browser_version": "151.0.7922.34",
+    "node_executable": "/Users/samchou/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "PLAYWRIGHT_BROWSERS_PATH": "/tmp/checkpoint-html-browser-runtime-20260906",
+    "settings": {
+      "offline": true,
+      "javaScriptEnabled": false,
+      "acceptDownloads": false,
+      "allRoutesAborted": true,
+      "chromiumSandbox": true
+    },
+    "all_observations_identical_to_frozen": true,
+    "runner_change": "Only the separate output file path was changed; embedded runner_source consequently records that separate copy.",
+    "first_attempt": "Default Playwright cache lacked required executable; failed before browser launch or observation. Existing original browser environment then resolved the dependency; no installation.",
+    "frozen_inputs_unchanged": true
+  },
+  "introductory_text_deletion": {
+    "original_code_points": 327,
+    "removed_text": "Consider this HTML structure:\n\n",
+    "removed_code_points": 31,
+    "retained_code_points": 296,
+    "retained_prompt_utf8_sha256": "3f9c354d995e70b0bd9d169226f94dfb208f1bc084b87184e7f5c86e6d2ef5e7",
+    "exact_dom_and_all_following_premise_and_question_bytes_preserved": true,
+    "semantic_boundary": "Only the introductory direction Consider this HTML structure and blank line are omitted; all actual markup, no-own-disabled-attribute statement and requested conclusion remain. This demonstrates that this item does not establish necessity of more than320 characters.",
+    "counterfactual_deletion_applied_to_frozen_item": false
+  },
+  "boundaries": [
+    "The three prose realizations corroborate the stated relationships but are not literal authored full HTML fragments.",
+    "Native observations qualify these exact DOMs and benign operations in this browser, not arbitrary web-source claims or universal cross-browser conformance.",
+    "No new difficulty rating, distractor rating, feedback assessment, overall MCQ qualification, model call or repository edit was performed.",
+    "The failed chess run and the original twelve-slot denominator are unchanged."
+  ]
+}

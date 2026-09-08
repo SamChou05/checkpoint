@@ -1,0 +1,361 @@
+{
+  "schema": "checkpoint.html_blind_native_observations.v1",
+  "input_path": "/tmp/checkpoint-stem-length-html-blind-20260908.json",
+  "input_sha256": "4f3bdbaad9e1826c4b25a9b6403457b08ac147478a22af8e54792d67011483a9",
+  "browser_version": "151.0.7922.34",
+  "runner_source": "const fs = require('fs');\nconst crypto = require('crypto');\nconst {chromium} = require('/Users/samchou/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');\nconst inputPath='/tmp/checkpoint-stem-length-html-blind-20260908.json';\nconst sha=s=>crypto.createHash('sha256').update(s).digest('hex');\nconst raw=fs.readFileSync(inputPath);\nif(sha(raw)!=='4f3bdbaad9e1826c4b25a9b6403457b08ac147478a22af8e54792d67011483a9')throw Error('Blind input hash mismatch');\nconst items=JSON.parse(raw);\nconst groups=new Map();\nfor(const item of items){if(!groups.has(item.prompt))groups.set(item.prompt,[]);groups.get(item.prompt).push(item.id);}\n(async()=>{\n const browser=await chromium.launch({headless:true,chromiumSandbox:true,timeout:15000});\n const output={schema:'checkpoint.html_blind_native_observations.v1',input_path:inputPath,input_sha256:sha(raw),browser_version:browser.version(),runner_source:fs.readFileSync(__filename,'utf8'),settings:{offline:true,javaScriptEnabled:false,acceptDownloads:false,allRoutesAborted:true,chromiumSandbox:true},observations:[]};\n try{\n  for(const [prompt,ids] of groups){\n   let html,kind,statement=null,span=null,inputSpan=null;\n   if(prompt.includes('<fieldset')){\n    const start=prompt.indexOf('<fieldset'),end=prompt.lastIndexOf('</fieldset>')+'</fieldset>'.length;\n    html=prompt.slice(start,end);kind='exact_displayed_html_fragment';span={start,end};\n    if(prompt.includes(\"document.getElementById('x').removeAttribute('disabled');\"))statement=\"document.getElementById('x').removeAttribute('disabled');\";\n   }else{\n    const match=/<input[^>]*>/.exec(prompt);if(!match)throw Error('No literal input');\n    inputSpan={start:match.index,end:match.index+match[0].length,text:match[0]};\n    kind='assistant_realization_of_explicit_prose_ancestry_with_exact_input';\n    if(prompt.startsWith(\"A disabled outer fieldset's first legend\"))html='<fieldset disabled id=\"outer\"><legend><fieldset disabled id=\"inner\">'+match[0]+'</fieldset></legend></fieldset>';\n    else html='<fieldset disabled>'+match[0]+'</fieldset>';\n    if(prompt.includes(\"b.removeAttribute('disabled')\"))statement=\"b.removeAttribute('disabled')\";\n   }\n   const context=await browser.newContext({offline:true,javaScriptEnabled:false,acceptDownloads:false});\n   await context.route('**/*',route=>route.abort());\n   const page=await context.newPage();\n   const observe=()=>page.evaluate(()=>[...document.querySelectorAll('input')].map(input=>({id:input.id,ownDisabled:input.disabled,effectiveDisabled:input.matches(':disabled'),willValidate:input.willValidate,checkValidity:input.checkValidity(),validityValid:input.validity.valid,typeMismatch:input.validity.typeMismatch,valueMissing:input.validity.valueMissing,value:input.value,outerHTML:input.outerHTML,fieldsetAncestors:[...(()=>{let result=[],p=input.parentElement;while(p){if(p.localName==='fieldset')result.push(p);p=p.parentElement;}return result;})()].map(fs=>({id:fs.id,disabledAttribute:fs.hasAttribute('disabled'),insideFirstLegend:[...fs.children].filter(c=>c.localName==='legend')[0]?.contains(input)??false}))})));\n   try{\n    await page.setContent(html,{timeout:10000});\n    const row={ids,prompt,prompt_sha256:sha(prompt),prompt_code_points:[...prompt].length,observation_kind:kind,html,html_sha256:sha(html),exact_html_span:span,exact_input_span:inputSpan,statement,serializedDOMBefore:await page.locator('body').innerHTML(),before:await observe()};\n    if(statement){row.exact_statement_span={start:prompt.indexOf(statement),end:prompt.indexOf(statement)+statement.length};await page.evaluate(statement);row.after=await observe();row.serializedDOMAfter=await page.locator('body').innerHTML();}\n    output.observations.push(row);\n   }finally{await context.close();}\n  }\n }finally{await browser.close();}\n const outputPath='/tmp/checkpoint-stem-length-html-blind-observations-independent-20260908.json';\n fs.writeFileSync(outputPath,JSON.stringify(output,null,2)+'\\n');\n console.log(JSON.stringify({path:outputPath,sha256:sha(fs.readFileSync(outputPath)),observations:output.observations.map(r=>({ids:r.ids,chars:r.prompt_code_points,kind:r.observation_kind,before:r.before,after:r.after}))},null,2));\n})().catch(e=>{console.error(e.stack);process.exitCode=1;});\n",
+  "settings": {
+    "offline": true,
+    "javaScriptEnabled": false,
+    "acceptDownloads": false,
+    "allRoutesAborted": true,
+    "chromiumSandbox": true
+  },
+  "observations": [
+    {
+      "ids": [
+        "193358a6b4de6a206130e0e537b0fa8aaa2a79e40c071c69994dcf7bbd7886e3",
+        "3170e6c327b9beb87a84d25c8dac0584dead5bef898f8d38fb932a285efd5bf7"
+      ],
+      "prompt": "An input element #x exists in the following markup:\n\n<fieldset disabled id=\"fs\">\n  <legend>Title</legend>\n  <input id=\"x\" type=\"text\" disabled required value=\"\">\n</fieldset>\n\nA script then runs:\n  document.getElementById('x').removeAttribute('disabled');\n\nAfter the script executes, what is the effective state of #x?",
+      "prompt_sha256": "8d1c29f30b612cf4d4de509651b72059c6f87024b51b8774f23f3d41bd7e694f",
+      "prompt_code_points": 317,
+      "observation_kind": "exact_displayed_html_fragment",
+      "html": "<fieldset disabled id=\"fs\">\n  <legend>Title</legend>\n  <input id=\"x\" type=\"text\" disabled required value=\"\">\n</fieldset>",
+      "html_sha256": "f02f18d9ab77ae4d64aec92241446b85676af3279f921067be1bfab42102d220",
+      "exact_html_span": {
+        "start": 53,
+        "end": 173
+      },
+      "exact_input_span": null,
+      "statement": "document.getElementById('x').removeAttribute('disabled');",
+      "serializedDOMBefore": "<fieldset disabled=\"\" id=\"fs\">\n  <legend>Title</legend>\n  <input id=\"x\" type=\"text\" disabled=\"\" required=\"\" value=\"\">\n</fieldset>",
+      "before": [
+        {
+          "id": "x",
+          "ownDisabled": true,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"x\" type=\"text\" disabled=\"\" required=\"\" value=\"\">",
+          "fieldsetAncestors": [
+            {
+              "id": "fs",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            }
+          ]
+        }
+      ],
+      "exact_statement_span": {
+        "start": 197,
+        "end": 254
+      },
+      "after": [
+        {
+          "id": "x",
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"x\" type=\"text\" required=\"\" value=\"\">",
+          "fieldsetAncestors": [
+            {
+              "id": "fs",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            }
+          ]
+        }
+      ],
+      "serializedDOMAfter": "<fieldset disabled=\"\" id=\"fs\">\n  <legend>Title</legend>\n  <input id=\"x\" type=\"text\" required=\"\" value=\"\">\n</fieldset>"
+    },
+    {
+      "ids": [
+        "42b88826b6e181fd764ec9a3cee34ff101b7baf76c1bf5cdbf4c9b7393f7ff87"
+      ],
+      "prompt": "A disabled outer fieldset's first legend contains a disabled inner fieldset that has no legend child. Inside the inner fieldset is <input id='x'> with no own disabled attribute. Which statement correctly describes #x's disabled status and why?",
+      "prompt_sha256": "fb6f7a700404c13dccc2849d79fa8ca0f285289e47deb2233725ff6c633f5a96",
+      "prompt_code_points": 243,
+      "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+      "html": "<fieldset disabled id=\"outer\"><legend><fieldset disabled id=\"inner\"><input id='x'></fieldset></legend></fieldset>",
+      "html_sha256": "caf073a0047ecd25888d3096eaaea52518d3aeb2391ca628fdd8ce64ca73eeb0",
+      "exact_html_span": null,
+      "exact_input_span": {
+        "start": 131,
+        "end": 145,
+        "text": "<input id='x'>"
+      },
+      "statement": null,
+      "serializedDOMBefore": "<fieldset disabled=\"\" id=\"outer\"><legend><fieldset disabled=\"\" id=\"inner\"><input id=\"x\"></fieldset></legend></fieldset>",
+      "before": [
+        {
+          "id": "x",
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"x\">",
+          "fieldsetAncestors": [
+            {
+              "id": "inner",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            },
+            {
+              "id": "outer",
+              "disabledAttribute": true,
+              "insideFirstLegend": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ids": [
+        "8bba0398388a28c936525aef907eeffb6c1efbb742e8257cdc9f21231c115f33",
+        "adc0003e33e45b4b51ce17dd2b2053f25440614c40ddfcdd44732574a8b1e63b"
+      ],
+      "prompt": "Consider this HTML structure:\n\n<fieldset disabled>\n  <legend>\n    <fieldset disabled>\n      <legend><input id=\"A\"></legend>\n      <input id=\"B\">\n    </fieldset>\n  </legend>\n  <input id=\"C\">\n</fieldset>\n\nNone of the inputs have their own disabled attribute. Which correctly describes the effective disabled state of A, B, and C?",
+      "prompt_sha256": "dd56b57e1a138d93dd4e10ea914125173f48958097cb1dad6489839cd7411435",
+      "prompt_code_points": 327,
+      "observation_kind": "exact_displayed_html_fragment",
+      "html": "<fieldset disabled>\n  <legend>\n    <fieldset disabled>\n      <legend><input id=\"A\"></legend>\n      <input id=\"B\">\n    </fieldset>\n  </legend>\n  <input id=\"C\">\n</fieldset>",
+      "html_sha256": "8e1c54d2ef4f8ec1295df6c2bafb12487918bff972dad577dea9730c665c554c",
+      "exact_html_span": {
+        "start": 31,
+        "end": 201
+      },
+      "exact_input_span": null,
+      "statement": null,
+      "serializedDOMBefore": "<fieldset disabled=\"\">\n  <legend>\n    <fieldset disabled=\"\">\n      <legend><input id=\"A\"></legend>\n      <input id=\"B\">\n    </fieldset>\n  </legend>\n  <input id=\"C\">\n</fieldset>",
+      "before": [
+        {
+          "id": "A",
+          "ownDisabled": false,
+          "effectiveDisabled": false,
+          "willValidate": true,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"A\">",
+          "fieldsetAncestors": [
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": true
+            },
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": true
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"B\">",
+          "fieldsetAncestors": [
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            },
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": true
+            }
+          ]
+        },
+        {
+          "id": "C",
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"C\">",
+          "fieldsetAncestors": [
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ids": [
+        "aeca7247904dce86b52e02aab4488a7e71e6b101844903765f13b9f78ffa508b"
+      ],
+      "prompt": "<input id='c' type='email' value='bad' required> is inside a disabled fieldset and not inside any legend. What do c.willValidate and c.checkValidity() return?",
+      "prompt_sha256": "c186a60e5e5875b38dfc2c7659ada4aba366e03095148bda0a43089e8e13f639",
+      "prompt_code_points": 158,
+      "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+      "html": "<fieldset disabled><input id='c' type='email' value='bad' required></fieldset>",
+      "html_sha256": "84a82a0efa0357b26b0d1373edb5d2921c5f0e71400de86836cb98e729740ad9",
+      "exact_html_span": null,
+      "exact_input_span": {
+        "start": 0,
+        "end": 48,
+        "text": "<input id='c' type='email' value='bad' required>"
+      },
+      "statement": null,
+      "serializedDOMBefore": "<fieldset disabled=\"\"><input id=\"c\" type=\"email\" value=\"bad\" required=\"\"></fieldset>",
+      "before": [
+        {
+          "id": "c",
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": false,
+          "typeMismatch": true,
+          "valueMissing": false,
+          "value": "bad",
+          "outerHTML": "<input id=\"c\" type=\"email\" value=\"bad\" required=\"\">",
+          "fieldsetAncestors": [
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ids": [
+        "cf618daf2b17aedd521d248a848f719c031c7268c1cb37fa0419b0303bd393a7",
+        "fb498af49b7603cf1736a17955a11614d955a00fcfde452147f876ad86b6b92f"
+      ],
+      "prompt": "<input id='b' disabled> sits inside a disabled fieldset, not inside any legend element. A script executes b.removeAttribute('disabled'). What is the effective state of #b afterward?",
+      "prompt_sha256": "9d70118d31d9e3d463821e8f1607ab3f9de7f932ea43fdddb7387cc483120de1",
+      "prompt_code_points": 181,
+      "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+      "html": "<fieldset disabled><input id='b' disabled></fieldset>",
+      "html_sha256": "cc73a48d6fadeb0e117f4a86df55633c0d19d1eedc38def202415abe3aedf28c",
+      "exact_html_span": null,
+      "exact_input_span": {
+        "start": 0,
+        "end": 23,
+        "text": "<input id='b' disabled>"
+      },
+      "statement": "b.removeAttribute('disabled')",
+      "serializedDOMBefore": "<fieldset disabled=\"\"><input id=\"b\" disabled=\"\"></fieldset>",
+      "before": [
+        {
+          "id": "b",
+          "ownDisabled": true,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"b\" disabled=\"\">",
+          "fieldsetAncestors": [
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            }
+          ]
+        }
+      ],
+      "exact_statement_span": {
+        "start": 106,
+        "end": 135
+      },
+      "after": [
+        {
+          "id": "b",
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": true,
+          "typeMismatch": false,
+          "valueMissing": false,
+          "value": "",
+          "outerHTML": "<input id=\"b\">",
+          "fieldsetAncestors": [
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            }
+          ]
+        }
+      ],
+      "serializedDOMAfter": "<fieldset disabled=\"\"><input id=\"b\"></fieldset>"
+    },
+    {
+      "ids": [
+        "f22c74e26bdc1712e395b6c9f6072f79a310f93615d9242fc0195ae7e2a51707"
+      ],
+      "prompt": "Given this markup:\n\n<fieldset disabled>\n  <input id=\"q\" type=\"email\" value=\"not-an-email\" required>\n</fieldset>\n\nThe input #q has an invalid email value and is required. A script reads q.willValidate and then calls q.checkValidity(). What are the results?",
+      "prompt_sha256": "eaf342ee072360fac9e00d4e0009fe34ac6d84fccc4d017638e6c66bca6cccda",
+      "prompt_code_points": 255,
+      "observation_kind": "exact_displayed_html_fragment",
+      "html": "<fieldset disabled>\n  <input id=\"q\" type=\"email\" value=\"not-an-email\" required>\n</fieldset>",
+      "html_sha256": "896dcd4f17a304db5fb3b220045df8ee0974f7a254b79e808faa596a1f653f3b",
+      "exact_html_span": {
+        "start": 20,
+        "end": 111
+      },
+      "exact_input_span": null,
+      "statement": null,
+      "serializedDOMBefore": "<fieldset disabled=\"\">\n  <input id=\"q\" type=\"email\" value=\"not-an-email\" required=\"\">\n</fieldset>",
+      "before": [
+        {
+          "id": "q",
+          "ownDisabled": false,
+          "effectiveDisabled": true,
+          "willValidate": false,
+          "checkValidity": true,
+          "validityValid": false,
+          "typeMismatch": true,
+          "valueMissing": false,
+          "value": "not-an-email",
+          "outerHTML": "<input id=\"q\" type=\"email\" value=\"not-an-email\" required=\"\">",
+          "fieldsetAncestors": [
+            {
+              "id": "",
+              "disabledAttribute": true,
+              "insideFirstLegend": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

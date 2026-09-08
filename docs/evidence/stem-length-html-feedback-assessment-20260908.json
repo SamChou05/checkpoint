@@ -1,0 +1,1276 @@
+{
+  "schema": "checkpoint.stem_length_html_feedback_assessment.v1",
+  "created_at_utc": "2026-09-08T02:17:55.154725+00:00",
+  "reviewer": "independent subagent /root/review_design",
+  "authorization": "Parent authorized key/feedback exposure only after the prior assessment hash was sent and frozen.",
+  "inputs": {
+    "capture": {
+      "path": "/Users/samchou/Documents/Checkpoint/docs/evidence/stem-length-capture-20260908.json",
+      "sha256": "fe7e0352a9af481595eb7de203d9f174d0e1caa64dba0409e4aae9cb037439c9",
+      "plan_sha256": "3462043fb316b763017feb0421a0bac6354ef2b4413b5a3ca1abc3ed48ea0f72"
+    },
+    "frozen_blind_assessment": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-assessment-20260908.json",
+      "sha256": "d0662ab46a76a884efaf318afc4c3a422749ee7ebf9ca0b55b30d37c419f59f2"
+    },
+    "frozen_blind_input": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-20260908.json",
+      "sha256": "4f3bdbaad9e1826c4b25a9b6403457b08ac147478a22af8e54792d67011483a9"
+    },
+    "native_observations": {
+      "path": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+      "sha256": "e74776744ef46b2bc389118436f9007cdcd60e80d5eb49b6bdd13ca7d04d5989"
+    }
+  },
+  "method": {
+    "join": "Exact prompt and choice-text set matched from each raw occurrence to normalized/returned/production-sanitizer occurrences, then exact blind object and its frozen ID checked. Authored key was compared only after the join and blind freeze. All six captured final texts decode to their archived stage outputs; optional outer JSON fences are handled without repairing content.",
+    "frozen_difficulty_and_distractor_judgments_modified": false,
+    "new_model_calls": 0,
+    "repository_or_capture_edits": 0,
+    "new_browser_runs": 0,
+    "reviewed_counts": {
+      "unique_raw_candidates": 6,
+      "all_blind_variants_joined": 9,
+      "author_main_explanations": 6,
+      "returned_main_explanations": 6,
+      "returned_choice_explanations": 24,
+      "auxiliary_solver_records_separately_reviewed": 6
+    },
+    "contextual_scope": "Feedback is evaluated against its unchanged stem and main explanation. Short contextual statements are not silently treated as universal rules about every possible HTML input; any wording sensitivity is recorded."
+  },
+  "summary": {
+    "keys_matching_frozen_answers": 6,
+    "raw_main_supported": 5,
+    "raw_main_with_clear_factual_error": 1,
+    "returned_main_supported": 6,
+    "returned_choice_feedback_supported_in_context": 24,
+    "returned_feedback_clear_factual_errors": 0,
+    "raw_author_error_removed_from_returned_feedback": 1,
+    "auxiliary_solver_false_claims_not_present_in_returned_feedback": 1,
+    "raw_author_explanations_exceeding_unchanged_320_instruction": 3,
+    "completed_html_job_count": 2,
+    "completed_chess_job_count": 0,
+    "run_terminal_status": "operational_failure",
+    "operational_failure_is_not_counted_as_content_success": true
+  },
+  "arm_summaries": [
+    {
+      "arm": "stem_320",
+      "requested_html_slots": 3,
+      "raw_candidates": 3,
+      "sanitized_candidates": 3,
+      "returned_candidates": 3,
+      "exact_keys_agree_with_blind_selection": 3,
+      "raw_main_explanations_reviewed": 3,
+      "raw_main_explanations_supported": 2,
+      "raw_main_explanations_with_factual_error": 1,
+      "returned_main_explanations_reviewed": 3,
+      "returned_main_explanations_supported": 3,
+      "returned_choice_explanations_reviewed": 12,
+      "returned_choice_explanations_with_clear_factual_error": 0,
+      "raw_author_explanations_over_unchanged_320_instruction": 0,
+      "independent_level_at_least_3": 2,
+      "independent_distractor_quality_concern_items": 1,
+      "returned_core_plus_this_reviewer_difficulty_and_distractors_pass": 1
+    },
+    {
+      "arm": "stem_1200",
+      "requested_html_slots": 3,
+      "raw_candidates": 3,
+      "sanitized_candidates": 3,
+      "returned_candidates": 3,
+      "exact_keys_agree_with_blind_selection": 3,
+      "raw_main_explanations_reviewed": 3,
+      "raw_main_explanations_supported": 3,
+      "raw_main_explanations_with_factual_error": 0,
+      "returned_main_explanations_reviewed": 3,
+      "returned_main_explanations_supported": 3,
+      "returned_choice_explanations_reviewed": 12,
+      "returned_choice_explanations_with_clear_factual_error": 0,
+      "raw_author_explanations_over_unchanged_320_instruction": 3,
+      "independent_level_at_least_3": 2,
+      "independent_distractor_quality_concern_items": 1,
+      "returned_core_plus_this_reviewer_difficulty_and_distractors_pass": 2
+    }
+  ],
+  "items": [
+    {
+      "case_id": "html_disabled_constraint_validation",
+      "job_index": 0,
+      "arm": "stem_320",
+      "raw_item_index": 0,
+      "group_id": "html_nested_prose",
+      "occurrence_joins": {
+        "raw": {
+          "item_index": 0,
+          "blind_id": "42b88826b6e181fd764ec9a3cee34ff101b7baf76c1bf5cdbf4c9b7393f7ff87",
+          "exact_question_sha256": "cc6a1e469f368a9faa7a669468450ef5862200b9aa66fa453e4666e2d9e85908",
+          "prompt_sha256": "fb6f7a700404c13dccc2849d79fa8ca0f285289e47deb2233725ff6c633f5a96",
+          "ordered_choices_sha256": "1888182c9480445f33840a0feeae85ea46243f9451d5bc5cba02c22122399618"
+        },
+        "sanitized": {
+          "item_index": 0,
+          "blind_id": "42b88826b6e181fd764ec9a3cee34ff101b7baf76c1bf5cdbf4c9b7393f7ff87",
+          "exact_question_sha256": "3113c5a6a7fb9b64acf85f4ca641e444d1de17b3d29d3b7dd1d569e134ea0a84",
+          "prompt_sha256": "fb6f7a700404c13dccc2849d79fa8ca0f285289e47deb2233725ff6c633f5a96",
+          "ordered_choices_sha256": "1888182c9480445f33840a0feeae85ea46243f9451d5bc5cba02c22122399618"
+        },
+        "returned": {
+          "item_index": 0,
+          "blind_id": "42b88826b6e181fd764ec9a3cee34ff101b7baf76c1bf5cdbf4c9b7393f7ff87",
+          "exact_question_sha256": "9466aa2bf10c5954fc6dcc5ba114c001ae0552a4874aeb4d3c9a430ede3918cd",
+          "prompt_sha256": "fb6f7a700404c13dccc2849d79fa8ca0f285289e47deb2233725ff6c633f5a96",
+          "ordered_choices_sha256": "1888182c9480445f33840a0feeae85ea46243f9451d5bc5cba02c22122399618"
+        },
+        "production_320_sanitizer": {
+          "item_index": 0,
+          "blind_id": "42b88826b6e181fd764ec9a3cee34ff101b7baf76c1bf5cdbf4c9b7393f7ff87",
+          "exact_question_sha256": "3113c5a6a7fb9b64acf85f4ca641e444d1de17b3d29d3b7dd1d569e134ea0a84",
+          "prompt_sha256": "fb6f7a700404c13dccc2849d79fa8ca0f285289e47deb2233725ff6c633f5a96",
+          "ordered_choices_sha256": "1888182c9480445f33840a0feeae85ea46243f9451d5bc5cba02c22122399618"
+        }
+      },
+      "exact_prompt": "A disabled outer fieldset's first legend contains a disabled inner fieldset that has no legend child. Inside the inner fieldset is <input id='x'> with no own disabled attribute. Which statement correctly describes #x's disabled status and why?",
+      "raw_ordered_choices": [
+        "Disabled — exempt from the outer fieldset, but the inner fieldset still disables it",
+        "Not disabled — the outer's first-legend exception covers everything inside that legend",
+        "Disabled — both fieldsets disable it because nested legends never stack exceptions",
+        "Not disabled — the inner fieldset inherits the exemption granted by the outer's first legend"
+      ],
+      "returned_ordered_choices": [
+        "Disabled — exempt from the outer fieldset, but the inner fieldset still disables it",
+        "Not disabled — the outer's first-legend exception covers everything inside that legend",
+        "Disabled — both fieldsets disable it because nested legends never stack exceptions",
+        "Not disabled — the inner fieldset inherits the exemption granted by the outer's first legend"
+      ],
+      "exact_unchanged_correct_choice": "Disabled — exempt from the outer fieldset, but the inner fieldset still disables it",
+      "key_assessment": {
+        "matches_frozen_independent_selection": true,
+        "all_stages_preserve_exact_answer_text": true,
+        "all_stages_preserve_exact_prompt": true,
+        "all_stages_preserve_choice_text_set": true,
+        "choice_order_changed": false
+      },
+      "native_observation": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 1,
+        "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+        "rationale": "An explicitly labeled assistant realization of that prose, retaining the exact input tag, has x outside any first legend of the inner fieldset and inside the outer first legend. Chromium reports ownDisabled=false/effectiveDisabled=true. The construction confirms one realization; the source rule plus the stated ancestry establishes the conclusion.",
+        "ambiguity_or_limit": "No missing case fact changes the answer. This is a DOM/behavior problem, not a claim that every described parent/child placement is conforming author markup. No conformity repair was performed. The browser realization is not mislabeled as an exact full source fragment.",
+        "countermodel_used": false
+      },
+      "author_main": {
+        "text": "The first-legend exception is evaluated separately for each disabled fieldset ancestor. #x is inside the outer fieldset's first legend child, so it is exempt from the outer. The inner fieldset has no legend child, so #x has no exemption there and is disabled by the inner fieldset.",
+        "sha256": "19c099b5595b0ff8ffa781d7c33abd460c24ff6e23c827e13514f2ec16b1636c",
+        "judgment": "supported",
+        "rationale": "Correctly applies the first-legend exception separately: x is exempt from the outer fieldset but has no legend exemption from the independently disabled inner fieldset. No unstated fieldset or false reason is added.",
+        "faults": [],
+        "characters": 281,
+        "author_instruction_maximum_characters": 320,
+        "within_author_instruction_limit": true,
+        "sanitized_text_unchanged": true
+      },
+      "returned_main": {
+        "text": "The first-legend exception is evaluated per fieldset ancestor. #x sits inside the outer fieldset's first legend (exempt from outer), but the inner fieldset is independently disabled and has no legend child, so no exception applies there.",
+        "sha256": "0f92e80e9a7c8f4267d16903d4a2afa44f4f22419d308efae5cbc4abaf7e5090",
+        "judgment": "supported",
+        "rationale": "Correctly retains the independent inner-fieldset cause and outer exemption; it neither repeats the distractor claim that both ancestors disable x nor invents a global exception.",
+        "characters": 237,
+        "faults": []
+      },
+      "returned_choice_feedback": [
+        {
+          "returned_choice_index_zero_based": 0,
+          "choice": "Disabled — exempt from the outer fieldset, but the inner fieldset still disables it",
+          "feedback": "Correct: the exemption from the outer fieldset does not remove the inner fieldset's independent disabling effect.",
+          "feedback_sha256": "988c2587ec0ebf01f7832c373b4f3fbbd2dffb682bf0ae4cd689c91b460e8bae",
+          "frozen_choice_adequacy": "supported",
+          "judgment": "supported_in_question_context",
+          "rationale": "Outer first-legend containment exempts x from that outer fieldset; the inner disabled fieldset has no applicable legend exception.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 1,
+          "choice": "Not disabled — the outer's first-legend exception covers everything inside that legend",
+          "feedback": "Wrong: the exception only exempts from that specific fieldset, not from other disabled fieldset ancestors.",
+          "feedback_sha256": "8ee02c3dd3ed4965ca80e69535cdd21c70cf68f57fb856f3f62c5f5e853027b1",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "Outer exemption does not remove the independent inner disabled-fieldset condition.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 2,
+          "choice": "Disabled — both fieldsets disable it because nested legends never stack exceptions",
+          "feedback": "Wrong reasoning: #x is exempt from the outer fieldset; it is disabled solely because of the inner fieldset.",
+          "feedback_sha256": "f0dc137b3f230c703d07ec6280e47d6309d906e49e1a77b59d610ea48fe708e4",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "The outer first-legend exception applies; the disabled state does not make the offered both-ancestors reason correct.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 3,
+          "choice": "Not disabled — the inner fieldset inherits the exemption granted by the outer's first legend",
+          "feedback": "Wrong: exemptions do not propagate; each fieldset's disabling is evaluated independently.",
+          "feedback_sha256": "bf08d8cda21b314e13a6185b21cb422531d9956a06e930c958ded15dde38bad0",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "An outer exception does not cancel the inner fieldset disabled attribute for its descendants.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": "“Exemptions do not propagate” is supported as a refutation of cancelling another fieldset’s disabling. Read with the following clause, it does not say that first-legend containment cannot include nested descendants. More explicit wording would avoid that ambiguity; this is not counted as a factual error in this question context."
+        }
+      ],
+      "internal_solver": {
+        "review_scope": "auxiliary internal solver prose, separate from author/returned feedback denominators",
+        "outcome": "resolved",
+        "answer": "#x is disabled — because of the inner fieldset. The inner fieldset is disabled and has no legend child, so there is no first-legend exception for it; #x is therefore disabled by that ancestor. Although #x is also a descendant of the disabled outer fieldset, it is exempt from that fieldset's disabling because it sits inside the outer fieldset's first legend child. The exemption from one fieldset does not remove disabling inherited from another. Since the inner fieldset still qualifies, #x is disabled.",
+        "limitations": "",
+        "judgment": "supported_in_question_context",
+        "false_auxiliary_claim": null,
+        "rationale": "The supplied conclusion and supporting prose match the literal scenario and native observation. No separate factual defect found."
+      },
+      "pipeline_observation": {
+        "sanitized": true,
+        "model_valid": true,
+        "returned": true,
+        "model_review_difficulty": 4,
+        "returned_difficulty": 4,
+        "verificationVersion": 1,
+        "production_320_sanitizer_retained": true,
+        "production_scope": "Deterministic length/content sanitizer observation, not a production solver/reviewer rerun or deployment."
+      },
+      "frozen_blind_quality": {
+        "difficulty": {
+          "level": 3,
+          "rationale": "Requires separately interpreting two ancestor relations, applying the outer exception while retaining the inner disabling condition, and distinguishing a correct state with a wrong reason from the warranted explanation.",
+          "at_least_3": true,
+          "psychometrically_calibrated": false
+        },
+        "distractors": {
+          "three_plausible": true,
+          "three_meaningfully_distinct": false,
+          "rationale": "The two not-disabled choices both globalize the outer first-legend exemption, with only a small change of causal wording. The both-fieldsets alternative is a distinct plausible reason error. The set therefore has a near-redundancy concern despite a unique correct answer.",
+          "empirically_calibrated": false
+        },
+        "goal_fit": {
+          "status": "direct",
+          "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+        },
+        "useful_premise_bearing_length": {
+          "prompt_code_points": 243,
+          "exceeds_320": false,
+          "contains_useful_scenario_premises": true,
+          "rationale": "The 243-character prose gives the relevant ancestry, inner absence of a legend and input attribute state without a full markup block. Each structural condition supports the ancestor-specific reasoning. It does not exercise a greater-than-320 allowance."
+        },
+        "unchanged": true
+      },
+      "content_conclusions": {
+        "raw_key_and_main_fully_supported": true,
+        "returned_key_main_and_all_four_choice_explanations_supported": true,
+        "returned_full_core_plus_own_independent_difficulty_and_distractors_pass": false,
+        "not_equivalent_to_pipeline_acceptance": true
+      }
+    },
+    {
+      "case_id": "html_disabled_constraint_validation",
+      "job_index": 0,
+      "arm": "stem_320",
+      "raw_item_index": 1,
+      "group_id": "html_own_attribute_prose",
+      "occurrence_joins": {
+        "raw": {
+          "item_index": 1,
+          "blind_id": "cf618daf2b17aedd521d248a848f719c031c7268c1cb37fa0419b0303bd393a7",
+          "exact_question_sha256": "85dadb8feb62e68ab67cbbdd5dafcba619c316b109e2df214662f45b54b39cf3",
+          "prompt_sha256": "9d70118d31d9e3d463821e8f1607ab3f9de7f932ea43fdddb7387cc483120de1",
+          "ordered_choices_sha256": "9247bce714fb9678cd3589f36dcad28015cd421305e747e2be1017ad18d78d6a"
+        },
+        "sanitized": {
+          "item_index": 1,
+          "blind_id": "fb498af49b7603cf1736a17955a11614d955a00fcfde452147f876ad86b6b92f",
+          "exact_question_sha256": "0a34ff5e5b7425376ddb0014904bb3112573825c4adb7b42c3ca0fbb21585eda",
+          "prompt_sha256": "9d70118d31d9e3d463821e8f1607ab3f9de7f932ea43fdddb7387cc483120de1",
+          "ordered_choices_sha256": "321cdfcd56eeb080e6b1ffe61d6279608787eeb0015f588818a91f198002eb50"
+        },
+        "returned": {
+          "item_index": 1,
+          "blind_id": "fb498af49b7603cf1736a17955a11614d955a00fcfde452147f876ad86b6b92f",
+          "exact_question_sha256": "72d6e62997fa842afc6dc45579bf6feb6fb2923c3b960600b75f5a3629e669b2",
+          "prompt_sha256": "9d70118d31d9e3d463821e8f1607ab3f9de7f932ea43fdddb7387cc483120de1",
+          "ordered_choices_sha256": "321cdfcd56eeb080e6b1ffe61d6279608787eeb0015f588818a91f198002eb50"
+        },
+        "production_320_sanitizer": {
+          "item_index": 1,
+          "blind_id": "fb498af49b7603cf1736a17955a11614d955a00fcfde452147f876ad86b6b92f",
+          "exact_question_sha256": "0a34ff5e5b7425376ddb0014904bb3112573825c4adb7b42c3ca0fbb21585eda",
+          "prompt_sha256": "9d70118d31d9e3d463821e8f1607ab3f9de7f932ea43fdddb7387cc483120de1",
+          "ordered_choices_sha256": "321cdfcd56eeb080e6b1ffe61d6279608787eeb0015f588818a91f198002eb50"
+        }
+      },
+      "exact_prompt": "<input id='b' disabled> sits inside a disabled fieldset, not inside any legend element. A script executes b.removeAttribute('disabled'). What is the effective state of #b afterward?",
+      "raw_ordered_choices": [
+        "Enabled — removing the attribute always re-enables an input",
+        "Still disabled — the disabled fieldset ancestor still applies",
+        "Still disabled — removeAttribute cannot change the disabled property",
+        "Enabled — fieldset disabling only takes effect when the input has its own disabled attribute"
+      ],
+      "returned_ordered_choices": [
+        "Still disabled — the disabled fieldset ancestor still applies",
+        "Enabled — removing the attribute always re-enables an input",
+        "Still disabled — removeAttribute cannot change the disabled property",
+        "Enabled — fieldset disabling only takes effect when the input has its own disabled attribute"
+      ],
+      "exact_unchanged_correct_choice": "Still disabled — the disabled fieldset ancestor still applies",
+      "key_assessment": {
+        "matches_frozen_independent_selection": true,
+        "all_stages_preserve_exact_answer_text": true,
+        "all_stages_preserve_exact_prompt": true,
+        "all_stages_preserve_choice_text_set": true,
+        "choice_order_changed": true
+      },
+      "native_observation": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 4,
+        "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+        "rationale": "The assistant realization retains the exact input tag and supplied prose ancestry. Executing the literal b.removeAttribute statement changes ownDisabled from true to false while effectiveDisabled stays true. No ancestor attribute is changed.",
+        "ambiguity_or_limit": "The script shorthand b refers to the displayed input; the literal statement executed successfully with that named element in the isolated browser. No layout delay or extra mutation is assumed.",
+        "countermodel_used": false
+      },
+      "author_main": {
+        "text": "removeAttribute successfully removes the input's own disabled attribute, but that does not enable it. The input is still inside a disabled fieldset and not inside that fieldset's first legend child, so the fieldset independently keeps it disabled. Removing the input's attribute need not enable it.",
+        "sha256": "4ac45da87ee688d5f718a204fc58f14c4c88f47f6e65fd452369db9a915cf95c",
+        "judgment": "supported",
+        "rationale": "Correctly explains that removing the input attribute succeeds while the unchanged applicable fieldset keeps the input disabled. The exact prose excludes every legend, so the scope condition is supplied.",
+        "faults": [],
+        "characters": 298,
+        "author_instruction_maximum_characters": 320,
+        "within_author_instruction_limit": true,
+        "sanitized_text_unchanged": true
+      },
+      "returned_main": {
+        "text": "Removing the input's own disabled attribute eliminates one disabling source, but the element is still inside a disabled fieldset and not inside any legend, so fieldset-inherited disabling keeps it disabled.",
+        "sha256": "ded8f70d24d92a4f79da13c9c0d2f2aaff05918fe01c668dea7862286705a834",
+        "judgment": "supported",
+        "rationale": "Accurately distinguishes the own attribute from applicable inherited disabling, with the outside-every-legend condition explicit. Browser observation confirms the own property becomes false while effective disabling stays true.",
+        "characters": 206,
+        "faults": []
+      },
+      "returned_choice_feedback": [
+        {
+          "returned_choice_index_zero_based": 0,
+          "choice": "Still disabled — the disabled fieldset ancestor still applies",
+          "feedback": "Correct: the fieldset ancestor's disabling is independent of the input's own attribute.",
+          "feedback_sha256": "3fb125e7f73f88a1b098590bbd8530f281ceecef8b9cd5da623a6c148394c390",
+          "frozen_choice_adequacy": "supported",
+          "judgment": "supported_in_question_context",
+          "rationale": "The ancestor condition is unchanged and still applies outside a legend.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 1,
+          "choice": "Enabled — removing the attribute always re-enables an input",
+          "feedback": "Wrong: fieldset-inherited disabling is an independent source that persists after the attribute is removed.",
+          "feedback_sha256": "cdcd9c90e8fafababa07d3e61a7ff29dd9496564b32fd2d759571ebcd06b2c8a",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "Removing the own attribute does not eliminate the applicable disabled-fieldset ancestor.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 2,
+          "choice": "Still disabled — removeAttribute cannot change the disabled property",
+          "feedback": "Wrong reasoning: removeAttribute does remove the attribute and updates the property, but another source of disabling remains.",
+          "feedback_sha256": "4011c34b6008921a60c2ab1d4e84071611dbc4ae83599e13533781e9b78fc18d",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "The own disabled property does change to false; the state persists because of the ancestor, not the offered reason.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 3,
+          "choice": "Enabled — fieldset disabling only takes effect when the input has its own disabled attribute",
+          "feedback": "Wrong: fieldset disabling applies regardless of the input's own attribute.",
+          "feedback_sha256": "4509b2e689415fb7be9d72a5be2a9b7a73e47ea5a6e280f9600ffbcb0b4c8736",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "An applicable fieldset ancestor is an independent disabling condition.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": "“Regardless of the input’s own attribute” correctly describes independence once the fieldset disabling condition applies. The stem explicitly places b outside any legend; this is not treated as a claim that legend exceptions never exist."
+        }
+      ],
+      "internal_solver": {
+        "review_scope": "auxiliary internal solver prose, separate from author/returned feedback denominators",
+        "outcome": "resolved",
+        "answer": "#b is still disabled. Removing the input's own disabled attribute eliminates one source of disabling, but #b remains inside a disabled fieldset and is not inside any legend of that fieldset. The fieldset-inherited disabling still applies independently. As the source states: 'Removing the input's attribute therefore need not enable it.'",
+        "limitations": "",
+        "judgment": "supported_in_question_context",
+        "false_auxiliary_claim": null,
+        "rationale": "The supplied conclusion and supporting prose match the literal scenario and native observation. No separate factual defect found."
+      },
+      "pipeline_observation": {
+        "sanitized": true,
+        "model_valid": true,
+        "returned": true,
+        "model_review_difficulty": 3,
+        "returned_difficulty": 3,
+        "verificationVersion": 1,
+        "production_320_sanitizer_retained": true,
+        "production_scope": "Deterministic length/content sanitizer observation, not a production solver/reviewer rerun or deployment."
+      },
+      "frozen_blind_quality": {
+        "difficulty": {
+          "level": 2,
+          "rationale": "Direct application of the familiar distinction between the input attribute and inherited disabling. The scenario changes one attribute and requires no nested exception or competing API algorithm.",
+          "at_least_3": false,
+          "psychometrically_calibrated": false
+        },
+        "distractors": {
+          "three_plausible": true,
+          "three_meaningfully_distinct": true,
+          "rationale": "The wrong reasons respectively claim a universal enabling effect, deny attribute/property reflection, or make inherited disabling depend on the own attribute. The first and last share an enabled conclusion but assert different mechanisms; these are adequately distinct, plausible rule confusions.",
+          "empirically_calibrated": false
+        },
+        "goal_fit": {
+          "status": "direct",
+          "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+        },
+        "useful_premise_bearing_length": {
+          "prompt_code_points": 181,
+          "exceeds_320": false,
+          "contains_useful_scenario_premises": true,
+          "rationale": "At 181 characters, all relevant state and operation information is present. The prose efficiently supplies ancestry without a full DOM display. It does not exercise a greater-than-320 allowance."
+        },
+        "unchanged": true
+      },
+      "content_conclusions": {
+        "raw_key_and_main_fully_supported": true,
+        "returned_key_main_and_all_four_choice_explanations_supported": true,
+        "returned_full_core_plus_own_independent_difficulty_and_distractors_pass": false,
+        "not_equivalent_to_pipeline_acceptance": true
+      }
+    },
+    {
+      "case_id": "html_disabled_constraint_validation",
+      "job_index": 0,
+      "arm": "stem_320",
+      "raw_item_index": 2,
+      "group_id": "html_validation_prose",
+      "occurrence_joins": {
+        "raw": {
+          "item_index": 2,
+          "blind_id": "aeca7247904dce86b52e02aab4488a7e71e6b101844903765f13b9f78ffa508b",
+          "exact_question_sha256": "a13af256eff596c1cc15e98ac71628d00145bdccbceace60a120d95dd8e75c5b",
+          "prompt_sha256": "c186a60e5e5875b38dfc2c7659ada4aba366e03095148bda0a43089e8e13f639",
+          "ordered_choices_sha256": "1066f74e809c2bcf7759a4f070a704be520322a5feabdc32890ed06e3e4bbfce"
+        },
+        "sanitized": {
+          "item_index": 2,
+          "blind_id": "aeca7247904dce86b52e02aab4488a7e71e6b101844903765f13b9f78ffa508b",
+          "exact_question_sha256": "71636e5a0a363d51a636311321b5ac530bdf8f10abe9e03d8b71314aede6eff2",
+          "prompt_sha256": "c186a60e5e5875b38dfc2c7659ada4aba366e03095148bda0a43089e8e13f639",
+          "ordered_choices_sha256": "1066f74e809c2bcf7759a4f070a704be520322a5feabdc32890ed06e3e4bbfce"
+        },
+        "returned": {
+          "item_index": 2,
+          "blind_id": "aeca7247904dce86b52e02aab4488a7e71e6b101844903765f13b9f78ffa508b",
+          "exact_question_sha256": "f3159111e869bdcc0ec0f7c5b716c6196c8a6792a9705425ad0ec96da5abd95f",
+          "prompt_sha256": "c186a60e5e5875b38dfc2c7659ada4aba366e03095148bda0a43089e8e13f639",
+          "ordered_choices_sha256": "1066f74e809c2bcf7759a4f070a704be520322a5feabdc32890ed06e3e4bbfce"
+        },
+        "production_320_sanitizer": {
+          "item_index": 2,
+          "blind_id": "aeca7247904dce86b52e02aab4488a7e71e6b101844903765f13b9f78ffa508b",
+          "exact_question_sha256": "71636e5a0a363d51a636311321b5ac530bdf8f10abe9e03d8b71314aede6eff2",
+          "prompt_sha256": "c186a60e5e5875b38dfc2c7659ada4aba366e03095148bda0a43089e8e13f639",
+          "ordered_choices_sha256": "1066f74e809c2bcf7759a4f070a704be520322a5feabdc32890ed06e3e4bbfce"
+        }
+      },
+      "exact_prompt": "<input id='c' type='email' value='bad' required> is inside a disabled fieldset and not inside any legend. What do c.willValidate and c.checkValidity() return?",
+      "raw_ordered_choices": [
+        "willValidate: false; checkValidity(): true",
+        "willValidate: false; checkValidity(): false",
+        "willValidate: true; checkValidity(): false",
+        "willValidate: true; checkValidity(): true"
+      ],
+      "returned_ordered_choices": [
+        "willValidate: false; checkValidity(): true",
+        "willValidate: false; checkValidity(): false",
+        "willValidate: true; checkValidity(): false",
+        "willValidate: true; checkValidity(): true"
+      ],
+      "exact_unchanged_correct_choice": "willValidate: false; checkValidity(): true",
+      "key_assessment": {
+        "matches_frozen_independent_selection": true,
+        "all_stages_preserve_exact_answer_text": true,
+        "all_stages_preserve_exact_prompt": true,
+        "all_stages_preserve_choice_text_set": true,
+        "choice_order_changed": false
+      },
+      "native_observation": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 3,
+        "observation_kind": "assistant_realization_of_explicit_prose_ancestry_with_exact_input",
+        "rationale": "The assistant realization uses the exact input tag and the explicitly stated outside-legend disabled-fieldset relationship. Chromium reports effectiveDisabled=true, willValidate=false, checkValidity=true, typeMismatch=true and validity.valid=false. The source algorithm, rather than a repair to the value, explains true from checkValidity.",
+        "ambiguity_or_limit": "The shorthand c identifies the displayed input, as standard in this API question. No alternative value, enabling operation, event handler or omitted legend is supplied. A constructed full DOM is labeled a realization of prose, not exact authored markup.",
+        "countermodel_used": false
+      },
+      "author_main": {
+        "text": "Disabled controls are barred from constraint validation, so willValidate is false. checkValidity() returns false only when a candidate fails its constraints; since #c is barred and not a candidate, checkValidity() returns true despite the invalid email value and missing required value.",
+        "sha256": "1165928aca9a1cf21171fc6927247178a629a1d2b93a6b0f91bb775066e93a3b",
+        "judgment": "contains_factual_error",
+        "rationale": "The candidate/barred-control reasoning and answer are correct, but the final phrase invents a missing required value. The exact value is the nonempty string bad; the native observation reports valueMissing=false and typeMismatch=true. The email is malformed, not absent.",
+        "faults": [
+          {
+            "classification": "invented_case_fact",
+            "exact_problematic_text": "missing required value",
+            "why_false": "The unchanged literal input contains value='bad', a nonempty string. Native observation reports valueMissing=false and typeMismatch=true. Required does not turn malformed email syntax into an absent value.",
+            "affects_unique_answer": false,
+            "present_in_returned_main": false,
+            "present_in_returned_choice_feedback": false
+          }
+        ],
+        "characters": 286,
+        "author_instruction_maximum_characters": 320,
+        "within_author_instruction_limit": true,
+        "sanitized_text_unchanged": true
+      },
+      "returned_main": {
+        "text": "A disabled control is barred from constraint validation, so willValidate is false. checkValidity() returns false only when a candidate fails its constraints; a barred control is not a candidate, so it returns true regardless of the value.",
+        "sha256": "a85edf5778c96902d3445606fadbb09aef0c98ff1f812b64fde42c3b67b3908d",
+        "judgment": "supported",
+        "rationale": "Correctly gives the candidate-gated false/true API result. It removes the raw author claim about a missing required value and does not assert that checkValidity true proves valid content.",
+        "characters": 238,
+        "faults": []
+      },
+      "returned_choice_feedback": [
+        {
+          "returned_choice_index_zero_based": 0,
+          "choice": "willValidate: false; checkValidity(): true",
+          "feedback": "Correct: barred controls are not candidates (willValidate false) and checkValidity returns true via the 'otherwise' branch.",
+          "feedback_sha256": "9563f8ff8609a8f8c095cb41f071e91c75385ffd884ab92f05b51204031bfe9d",
+          "frozen_choice_adequacy": "supported",
+          "judgment": "supported_in_question_context",
+          "rationale": "The input is barred; willValidate is false and checkValidity returns true without establishing that the email satisfies constraints.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 1,
+          "choice": "willValidate: false; checkValidity(): false",
+          "feedback": "Wrong on checkValidity: it returns false only for candidates that fail; a barred control takes the 'otherwise true' path.",
+          "feedback_sha256": "b12db764b6b8e141539e23f355d067b2c5ca68dc321f2a019bec4c9065d7e7a8",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "The acknowledged bar prevents the invalid value from making checkValidity return false.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 2,
+          "choice": "willValidate: true; checkValidity(): false",
+          "feedback": "Wrong on both: a disabled input is not a candidate, and a non-candidate cannot fail validation.",
+          "feedback_sha256": "27129f5ade45c57aba87e35af2246b8a765d609fdacdce701df116d6f48772e9",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "This ignores the effective disabled state and resulting validation bar.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": "“A non-candidate cannot fail validation” is accurate for this checkValidity procedure. It must not be read as saying validity.valid is necessarily true or that the email content meets its constraints; the native observation has validity.valid=false. The surrounding main explanation scopes the claim to the procedure, so this is recorded as wording sensitivity, not a demonstrated false returned claim."
+        },
+        {
+          "returned_choice_index_zero_based": 3,
+          "choice": "willValidate: true; checkValidity(): true",
+          "feedback": "Wrong: willValidate must be false because the control is barred from constraint validation.",
+          "feedback_sha256": "6fc8d3a88e53fcb7f4c07580d74754020cfe9da7eef3ed3177f355be5a212284",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "willValidate must be false for the disabled input; a true method result does not imply eligibility.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        }
+      ],
+      "internal_solver": {
+        "review_scope": "auxiliary internal solver prose, separate from author/returned feedback denominators",
+        "outcome": "resolved",
+        "answer": "c.willValidate returns false; c.checkValidity() returns true. Because #c is inside a disabled fieldset (and not in any legend), it is disabled and therefore barred from constraint validation. willValidate is true only for candidates, so it is false. checkValidity() returns false only when a candidate fails its constraints; since #c is not a candidate, it returns true (the 'otherwise' branch). This true does not prove the value satisfies constraints — it merely reflects that a barred control cannot fail validation.",
+        "limitations": "",
+        "judgment": "supported_in_question_context",
+        "false_auxiliary_claim": null,
+        "rationale": "The supplied conclusion and supporting prose match the literal scenario and native observation. No separate factual defect found."
+      },
+      "pipeline_observation": {
+        "sanitized": true,
+        "model_valid": true,
+        "returned": true,
+        "model_review_difficulty": 3,
+        "returned_difficulty": 3,
+        "verificationVersion": 1,
+        "production_320_sanitizer_retained": true,
+        "production_scope": "Deterministic length/content sanitizer observation, not a production solver/reviewer rerun or deployment."
+      },
+      "frozen_blind_quality": {
+        "difficulty": {
+          "level": 3,
+          "rationale": "Distinguishes an invalid email value from eligibility for constraint validation, then interprets two different API results. The invalid-value cue makes the competing false method result plausible; simply treating true as proof of valid content gives the wrong interpretation.",
+          "at_least_3": true,
+          "psychometrically_calibrated": false
+        },
+        "distractors": {
+          "three_plausible": true,
+          "three_meaningfully_distinct": true,
+          "rationale": "All four Boolean pairs are distinct. Wrong pairs separately confuse the validation bar, the method result, or both. The true/true distractor is weaker but remains a recognizable confusion of a method returning true with a validation-eligibility property.",
+          "empirically_calibrated": false
+        },
+        "goal_fit": {
+          "status": "direct",
+          "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+        },
+        "useful_premise_bearing_length": {
+          "prompt_code_points": 158,
+          "exceeds_320": false,
+          "contains_useful_scenario_premises": true,
+          "rationale": "At 158 characters, the compact input attributes, ancestor condition and paired API question are sufficient. The invalid email is a meaningful competing cue; required is redundant for a nonempty type-mismatched email. No greater-than-320 allowance is exercised."
+        },
+        "unchanged": true
+      },
+      "content_conclusions": {
+        "raw_key_and_main_fully_supported": false,
+        "returned_key_main_and_all_four_choice_explanations_supported": true,
+        "returned_full_core_plus_own_independent_difficulty_and_distractors_pass": true,
+        "not_equivalent_to_pipeline_acceptance": true
+      }
+    },
+    {
+      "case_id": "html_disabled_constraint_validation",
+      "job_index": 1,
+      "arm": "stem_1200",
+      "raw_item_index": 0,
+      "group_id": "html_nested_markup_three_inputs",
+      "occurrence_joins": {
+        "raw": {
+          "item_index": 0,
+          "blind_id": "adc0003e33e45b4b51ce17dd2b2053f25440614c40ddfcdd44732574a8b1e63b",
+          "exact_question_sha256": "7d966507eb30908cc2b3a5bf3d212b1db7f2c7a2a5ac3634684c2422c0d98558",
+          "prompt_sha256": "dd56b57e1a138d93dd4e10ea914125173f48958097cb1dad6489839cd7411435",
+          "ordered_choices_sha256": "d767218bab3b71692cc0325e772057a68f831726f1d5f91275c9ee8495d3137c"
+        },
+        "sanitized": {
+          "item_index": 0,
+          "blind_id": "8bba0398388a28c936525aef907eeffb6c1efbb742e8257cdc9f21231c115f33",
+          "exact_question_sha256": "2e953f4dc0f7677c1e8f4c0301df96126277cf35f9c1fca72385ab2d01ced17e",
+          "prompt_sha256": "dd56b57e1a138d93dd4e10ea914125173f48958097cb1dad6489839cd7411435",
+          "ordered_choices_sha256": "4774a7a410abfbb8613c7bee5bb9d5eced265153a5458e8983bc10ae608470a3"
+        },
+        "returned": {
+          "item_index": 0,
+          "blind_id": "8bba0398388a28c936525aef907eeffb6c1efbb742e8257cdc9f21231c115f33",
+          "exact_question_sha256": "5f5979cad6a26b96313d28b5a5bc07381eca933b0720579db51bf520e9371367",
+          "prompt_sha256": "dd56b57e1a138d93dd4e10ea914125173f48958097cb1dad6489839cd7411435",
+          "ordered_choices_sha256": "4774a7a410abfbb8613c7bee5bb9d5eced265153a5458e8983bc10ae608470a3"
+        },
+        "production_320_sanitizer": null
+      },
+      "exact_prompt": "Consider this HTML structure:\n\n<fieldset disabled>\n  <legend>\n    <fieldset disabled>\n      <legend><input id=\"A\"></legend>\n      <input id=\"B\">\n    </fieldset>\n  </legend>\n  <input id=\"C\">\n</fieldset>\n\nNone of the inputs have their own disabled attribute. Which correctly describes the effective disabled state of A, B, and C?",
+      "raw_ordered_choices": [
+        "A is enabled; B is enabled; C is disabled",
+        "A is enabled; B is disabled; C is disabled",
+        "A is disabled; B is disabled; C is disabled",
+        "A is enabled; B is disabled; C is enabled"
+      ],
+      "returned_ordered_choices": [
+        "A is enabled; B is disabled; C is disabled",
+        "A is enabled; B is enabled; C is disabled",
+        "A is disabled; B is disabled; C is disabled",
+        "A is enabled; B is disabled; C is enabled"
+      ],
+      "exact_unchanged_correct_choice": "A is enabled; B is disabled; C is disabled",
+      "key_assessment": {
+        "matches_frozen_independent_selection": true,
+        "all_stages_preserve_exact_answer_text": true,
+        "all_stages_preserve_exact_prompt": true,
+        "all_stages_preserve_choice_text_set": true,
+        "choice_order_changed": true
+      },
+      "native_observation": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 2,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed fragment preserves the specified nesting when parsed. Chromium reports A effectiveDisabled=false, B=true, C=true. Recorded fieldset paths show first-legend containment [true,true] for A, [false,true] for B, and [false] for C.",
+        "ambiguity_or_limit": "No answer-changing missing condition or parser-induced tree change was found. The observation concerns the actual parsed structure; it does not certify HTML authoring conformance. No alternate tree was substituted.",
+        "countermodel_used": false
+      },
+      "author_main": {
+        "text": "Input A is inside the inner fieldset's first legend (exempt from inner) AND inside the outer fieldset's first legend (exempt from outer), so it is enabled. Input B is inside the inner fieldset but not in its first legend, so the inner fieldset disables it; being inside the outer's first legend does not override that. Input C is inside the outer fieldset but not in its first legend, so the outer fieldset disables it.",
+        "sha256": "9f3dd95e969cc1c36afc06045b3de9e57c078569380aab3fb15f7a4712d63d20",
+        "judgment": "supported",
+        "rationale": "All three ancestor-specific conclusions match the exact parsed tree: A is exempt from both fieldsets, B only from the outer, and C from neither applicable outer condition. No incorrect shortcut or unstated case fact is introduced.",
+        "faults": [],
+        "characters": 419,
+        "author_instruction_maximum_characters": 320,
+        "within_author_instruction_limit": false,
+        "sanitized_text_unchanged": true
+      },
+      "returned_main": {
+        "text": "Each input must be checked against every disabled-fieldset ancestor independently for the first-legend exemption. A sits inside the first legend of both fieldsets, so it escapes both. B escapes the outer but not the inner. C is outside any legend of the outer fieldset.",
+        "sha256": "3fdd9c11a1b429e7898967da193756ae7925ec812742766911cbb9d9df80f769",
+        "judgment": "supported",
+        "rationale": "Correctly maps each input to its independent legend exemptions and disabling ancestor. The actual browser tree and all three observed states agree.",
+        "characters": 269,
+        "faults": []
+      },
+      "returned_choice_feedback": [
+        {
+          "returned_choice_index_zero_based": 0,
+          "choice": "A is enabled; B is disabled; C is disabled",
+          "feedback": "Correct: A is exempt from both fieldsets via first-legend; B is exempt from the outer but disabled by the inner; C is disabled by the outer.",
+          "feedback_sha256": "855517562ce5e700bf6fc02760b1090c309329ad8112e03d78454c594c34cee1",
+          "frozen_choice_adequacy": "supported",
+          "judgment": "supported_in_question_context",
+          "rationale": "A is in both first legends; B is subject to the inner fieldset; C is subject to the outer fieldset.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 1,
+          "choice": "A is enabled; B is enabled; C is disabled",
+          "feedback": "Wrong because B is not inside the inner fieldset's first legend, so the inner fieldset disables it.",
+          "feedback_sha256": "8415a212f83318cecfed7417e3eb89e87413ba0e6aae03ffd191a2a0322f0d2e",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "B is outside the inner fieldset first legend and is disabled by that fieldset.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 2,
+          "choice": "A is disabled; B is disabled; C is disabled",
+          "feedback": "Wrong because A is inside the first legend of both disabled fieldsets and is therefore exempt from both.",
+          "feedback_sha256": "2c9c9e4fd6a36b9b595a3629c2a88db1aef37c857d94c743f0304b475fce2a75",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "A is inside the first legend of each disabled fieldset ancestor and has no own disabled attribute.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 3,
+          "choice": "A is enabled; B is disabled; C is enabled",
+          "feedback": "Wrong because C is a direct child of the outer fieldset, not inside its first legend, so it is disabled.",
+          "feedback_sha256": "379878be0b473c6f475042419347e85bc2fea30d14f4e3aaaebb4c961134a601",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "C is outside the outer first legend and is disabled by the outer fieldset.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        }
+      ],
+      "internal_solver": {
+        "review_scope": "auxiliary internal solver prose, separate from author/returned feedback denominators",
+        "outcome": "resolved",
+        "answer": "A is enabled; B and C are disabled.\n\nFor each input, evaluate exemption from each disabled fieldset ancestor independently:\n• Input A: Two disabled fieldset ancestors (outer, inner). A is inside the first <legend> of the inner fieldset → exempt from inner. A is also inside the first <legend> of the outer fieldset → exempt from outer. No own disabled attribute → A is enabled.\n• Input B: Inside the first <legend> of the outer fieldset → exempt from outer. But B is NOT inside the first <legend> of the inner fieldset → disabled by inner. → B is disabled.\n• Input C: Not inside the first <legend> of the outer fieldset → disabled by outer. → C is disabled.",
+        "limitations": "",
+        "judgment": "supported_in_question_context",
+        "false_auxiliary_claim": null,
+        "rationale": "The supplied conclusion and supporting prose match the literal scenario and native observation. No separate factual defect found."
+      },
+      "pipeline_observation": {
+        "sanitized": true,
+        "model_valid": true,
+        "returned": true,
+        "model_review_difficulty": 4,
+        "returned_difficulty": 4,
+        "verificationVersion": 1,
+        "production_320_sanitizer_retained": false,
+        "production_scope": "Deterministic length/content sanitizer observation, not a production solver/reviewer rerun or deployment."
+      },
+      "frozen_blind_quality": {
+        "difficulty": {
+          "level": 3,
+          "rationale": "The student must read a nested representation and evaluate each first-legend exception against the corresponding ancestor. The three profiles make the ancestry distinctions consequential. Repeating one rule for several inputs is insufficient evidence for level 4.",
+          "at_least_3": true,
+          "psychometrically_calibrated": false
+        },
+        "distractors": {
+          "three_plausible": true,
+          "three_meaningfully_distinct": true,
+          "rationale": "The three wrong state profiles differ materially: overlook the inner fieldset for B, overlook legend exemptions for A, or fail to disable C outside the outer legend. Plausibility is an evaluator judgment, not measured response data.",
+          "empirically_calibrated": false
+        },
+        "goal_fit": {
+          "status": "direct",
+          "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+        },
+        "useful_premise_bearing_length": {
+          "prompt_code_points": 327,
+          "exceeds_320": true,
+          "contains_useful_scenario_premises": true,
+          "rationale": "At 327 characters, this is the only unique question over 320. Its explicit nested tree is useful premise-bearing content, not an empty long scenario. However, removing only the 31-character introductory line and blank line would leave the entire exact DOM, no-own-attribute statement and question intact at 296 characters. Thus actual over-cap use is observed, but the extra allowance is not shown to be necessary for completeness."
+        },
+        "unchanged": true
+      },
+      "content_conclusions": {
+        "raw_key_and_main_fully_supported": true,
+        "returned_key_main_and_all_four_choice_explanations_supported": true,
+        "returned_full_core_plus_own_independent_difficulty_and_distractors_pass": true,
+        "not_equivalent_to_pipeline_acceptance": true
+      }
+    },
+    {
+      "case_id": "html_disabled_constraint_validation",
+      "job_index": 1,
+      "arm": "stem_1200",
+      "raw_item_index": 1,
+      "group_id": "html_own_attribute_markup",
+      "occurrence_joins": {
+        "raw": {
+          "item_index": 1,
+          "blind_id": "3170e6c327b9beb87a84d25c8dac0584dead5bef898f8d38fb932a285efd5bf7",
+          "exact_question_sha256": "9773e11015b373ec7f91a8ae86353646e646d002b22c6fc216af2d9efd79c7a2",
+          "prompt_sha256": "8d1c29f30b612cf4d4de509651b72059c6f87024b51b8774f23f3d41bd7e694f",
+          "ordered_choices_sha256": "9bdd8fbcbecef8c960b06f9c1caaea16431950ef3dba54e2fb98d7c19e78427b"
+        },
+        "sanitized": {
+          "item_index": 1,
+          "blind_id": "193358a6b4de6a206130e0e537b0fa8aaa2a79e40c071c69994dcf7bbd7886e3",
+          "exact_question_sha256": "1db02e0f706bac345e89dd49c22e92589aa71089e8f24817767c99ce08fc1ab9",
+          "prompt_sha256": "8d1c29f30b612cf4d4de509651b72059c6f87024b51b8774f23f3d41bd7e694f",
+          "ordered_choices_sha256": "e78919627f97089b432a5a3b26ec14a48e777a4441ad27e51976c3c38b48e44f"
+        },
+        "returned": {
+          "item_index": 1,
+          "blind_id": "193358a6b4de6a206130e0e537b0fa8aaa2a79e40c071c69994dcf7bbd7886e3",
+          "exact_question_sha256": "4fefc8acf9a53794d5f34845a4499d3aa9c0b375ce953671a84a4ee5bebd5644",
+          "prompt_sha256": "8d1c29f30b612cf4d4de509651b72059c6f87024b51b8774f23f3d41bd7e694f",
+          "ordered_choices_sha256": "e78919627f97089b432a5a3b26ec14a48e777a4441ad27e51976c3c38b48e44f"
+        },
+        "production_320_sanitizer": {
+          "item_index": 0,
+          "blind_id": "193358a6b4de6a206130e0e537b0fa8aaa2a79e40c071c69994dcf7bbd7886e3",
+          "exact_question_sha256": "1db02e0f706bac345e89dd49c22e92589aa71089e8f24817767c99ce08fc1ab9",
+          "prompt_sha256": "8d1c29f30b612cf4d4de509651b72059c6f87024b51b8774f23f3d41bd7e694f",
+          "ordered_choices_sha256": "e78919627f97089b432a5a3b26ec14a48e777a4441ad27e51976c3c38b48e44f"
+        }
+      },
+      "exact_prompt": "An input element #x exists in the following markup:\n\n<fieldset disabled id=\"fs\">\n  <legend>Title</legend>\n  <input id=\"x\" type=\"text\" disabled required value=\"\">\n</fieldset>\n\nA script then runs:\n  document.getElementById('x').removeAttribute('disabled');\n\nAfter the script executes, what is the effective state of #x?",
+      "raw_ordered_choices": [
+        "Enabled, because its own disabled attribute was removed",
+        "Still disabled, because the disabled fieldset ancestor still applies",
+        "Enabled, because removeAttribute always overrides inherited disabling",
+        "Still disabled, but only until the browser recalculates layout"
+      ],
+      "returned_ordered_choices": [
+        "Still disabled, because the disabled fieldset ancestor still applies",
+        "Enabled, because its own disabled attribute was removed",
+        "Enabled, because removeAttribute always overrides inherited disabling",
+        "Still disabled, but only until the browser recalculates layout"
+      ],
+      "exact_unchanged_correct_choice": "Still disabled, because the disabled fieldset ancestor still applies",
+      "key_assessment": {
+        "matches_frozen_independent_selection": true,
+        "all_stages_preserve_exact_answer_text": true,
+        "all_stages_preserve_exact_prompt": true,
+        "all_stages_preserve_choice_text_set": true,
+        "choice_order_changed": true
+      },
+      "native_observation": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 0,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed HTML parsed with x outside the first legend. Before removal ownDisabled=true/effectiveDisabled=true; after the exact statement ownDisabled=false/effectiveDisabled=true. The fieldset ancestor remains disabled.",
+        "ambiguity_or_limit": "No answer-changing ambiguity in the displayed fragment and stated operation. Standard standalone-fragment reading is used; no imaginary external disabled ancestor or concurrent mutation is introduced.",
+        "countermodel_used": false
+      },
+      "author_main": {
+        "text": "Removing the input's own disabled attribute is not sufficient to enable it. The input is a child of the fieldset (not a descendant of the fieldset's first legend child), so the fieldset's disabled attribute independently disables it. The exception applies only to controls inside the first legend element child of the disabled fieldset, which #x is not.",
+        "sha256": "0393c401278eafb90fb0121925f23d4d1675a3e02b697255f39f143bbc76de7b",
+        "judgment": "supported",
+        "rationale": "Correctly identifies x as a fieldset child outside its first legend and explains why removing only the input attribute leaves effective disabling. The first-legend qualifier is present.",
+        "faults": [],
+        "characters": 353,
+        "author_instruction_maximum_characters": 320,
+        "within_author_instruction_limit": false,
+        "sanitized_text_unchanged": true
+      },
+      "returned_main": {
+        "text": "Removing #x's own disabled attribute does not enable it because #x is still a descendant of a disabled fieldset and is not inside that fieldset's first legend child. The fieldset's disabling applies independently of the input's own attribute.",
+        "sha256": "70b486b3629c70553c8cd08700000d7df24b4b4fa73fad8a73048b081eb77b66",
+        "judgment": "supported",
+        "rationale": "Correctly states that x is outside the first legend and the independent fieldset condition survives own-attribute removal. No layout timing story is retained.",
+        "characters": 242,
+        "faults": []
+      },
+      "returned_choice_feedback": [
+        {
+          "returned_choice_index_zero_based": 0,
+          "choice": "Still disabled, because the disabled fieldset ancestor still applies",
+          "feedback": "Correct: #x sits outside the fieldset's first <legend>, so the disabled fieldset still disables it.",
+          "feedback_sha256": "31fdc5999a5ad4ddda70f991f1ddefae2f06d504cd99ebe19230b1410b2ae81a",
+          "frozen_choice_adequacy": "supported",
+          "judgment": "supported_in_question_context",
+          "rationale": "The ancestor remains applicable after only the input attribute is removed.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 1,
+          "choice": "Enabled, because its own disabled attribute was removed",
+          "feedback": "Wrong; removing the own attribute does not cancel disabling inherited from the fieldset ancestor.",
+          "feedback_sha256": "8f0d3c1d2de467e9dc8767026f4cb6acd13733f96b108ba40836ce323f7e572c",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "Own-attribute removal does not remove the applicable fieldset condition.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 2,
+          "choice": "Enabled, because removeAttribute always overrides inherited disabling",
+          "feedback": "Wrong; removeAttribute affects only the element's own attribute, not the fieldset's independent disabling.",
+          "feedback_sha256": "7e2dad6e81fb6068c2e66562f823f09a0624d3b77e23951ee31a8b8f92185b26",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "The stated universal override is contradicted by the unchanged disabled fieldset.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 3,
+          "choice": "Still disabled, but only until the browser recalculates layout",
+          "feedback": "Wrong; the disabled state is a DOM-level semantic, not a layout timing issue. The fieldset keeps it disabled.",
+          "feedback_sha256": "4bf82a9bf4e505c4ede82bd7f2c9aeb15a73fd2dd67b4bfe292e0ef2d935f2e4",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "The disabling condition remains in the DOM; a layout recalculation is not the missing mutation needed to enable it.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        }
+      ],
+      "internal_solver": {
+        "review_scope": "auxiliary internal solver prose, separate from author/returned feedback denominators",
+        "outcome": "resolved",
+        "answer": "#x is still disabled (and therefore barred from constraint validation, with willValidate false).\n\nAfter removeAttribute('disabled'), #x's own disabled attribute is gone. However, #x is a direct child of <fieldset disabled> and is NOT inside that fieldset's first <legend> child (the <legend>Title</legend> is a sibling, not an ancestor of #x). Therefore the fieldset still disables #x. Per the source: \"Removing the input's attribute therefore need not enable it.\" Because #x remains disabled, it is barred from constraint validation despite having required with an empty value.",
+        "limitations": "",
+        "judgment": "supported_in_question_context",
+        "false_auxiliary_claim": null,
+        "rationale": "The supplied conclusion and supporting prose match the literal scenario and native observation. No separate factual defect found."
+      },
+      "pipeline_observation": {
+        "sanitized": true,
+        "model_valid": true,
+        "returned": true,
+        "model_review_difficulty": 3,
+        "returned_difficulty": 3,
+        "verificationVersion": 1,
+        "production_320_sanitizer_retained": true,
+        "production_scope": "Deterministic length/content sanitizer observation, not a production solver/reviewer rerun or deployment."
+      },
+      "frozen_blind_quality": {
+        "difficulty": {
+          "level": 2,
+          "rationale": "Directly applies the familiar rule that an applicable disabled fieldset remains effective after the input attribute is removed. The added markup, empty required value and layout language do not introduce a further substantive inference.",
+          "at_least_3": false,
+          "psychometrically_calibrated": false
+        },
+        "distractors": {
+          "three_plausible": false,
+          "three_meaningfully_distinct": false,
+          "rationale": "Two enabled alternatives restate essentially the same removal-overrides-inheritance misconception. The layout-recalculation alternative is a weak, unsupported timing story. This is a distractor-quality concern, not another warranted answer.",
+          "empirically_calibrated": false
+        },
+        "goal_fit": {
+          "status": "direct",
+          "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+        },
+        "useful_premise_bearing_length": {
+          "prompt_code_points": 317,
+          "exceeds_320": false,
+          "contains_useful_scenario_premises": true,
+          "rationale": "The displayed ancestry and exact removal are useful premises. type=text, required, value and the introductory wording add no condition needed for this question. At 317 characters this item does not exercise a greater-than-320 allowance."
+        },
+        "unchanged": true
+      },
+      "content_conclusions": {
+        "raw_key_and_main_fully_supported": true,
+        "returned_key_main_and_all_four_choice_explanations_supported": true,
+        "returned_full_core_plus_own_independent_difficulty_and_distractors_pass": false,
+        "not_equivalent_to_pipeline_acceptance": true
+      }
+    },
+    {
+      "case_id": "html_disabled_constraint_validation",
+      "job_index": 1,
+      "arm": "stem_1200",
+      "raw_item_index": 2,
+      "group_id": "html_validation_markup",
+      "occurrence_joins": {
+        "raw": {
+          "item_index": 2,
+          "blind_id": "f22c74e26bdc1712e395b6c9f6072f79a310f93615d9242fc0195ae7e2a51707",
+          "exact_question_sha256": "b843169788ee5db462b335230ca3b16c2c5c8e34ba0a8123456debb4df93a745",
+          "prompt_sha256": "eaf342ee072360fac9e00d4e0009fe34ac6d84fccc4d017638e6c66bca6cccda",
+          "ordered_choices_sha256": "8a0a3a82164d6b90e5d31a9381c06d445bd30016b915897766e9502cf1554b18"
+        },
+        "sanitized": {
+          "item_index": 2,
+          "blind_id": "f22c74e26bdc1712e395b6c9f6072f79a310f93615d9242fc0195ae7e2a51707",
+          "exact_question_sha256": "10b7f94e85111a5875d9585a432ccb6ad6fba0f9caa66227e049383595c5d8e1",
+          "prompt_sha256": "eaf342ee072360fac9e00d4e0009fe34ac6d84fccc4d017638e6c66bca6cccda",
+          "ordered_choices_sha256": "8a0a3a82164d6b90e5d31a9381c06d445bd30016b915897766e9502cf1554b18"
+        },
+        "returned": {
+          "item_index": 2,
+          "blind_id": "f22c74e26bdc1712e395b6c9f6072f79a310f93615d9242fc0195ae7e2a51707",
+          "exact_question_sha256": "29e3f03e137dfd35f7a873134af24b170445ef41000965cd87ecda191d556c55",
+          "prompt_sha256": "eaf342ee072360fac9e00d4e0009fe34ac6d84fccc4d017638e6c66bca6cccda",
+          "ordered_choices_sha256": "8a0a3a82164d6b90e5d31a9381c06d445bd30016b915897766e9502cf1554b18"
+        },
+        "production_320_sanitizer": {
+          "item_index": 1,
+          "blind_id": "f22c74e26bdc1712e395b6c9f6072f79a310f93615d9242fc0195ae7e2a51707",
+          "exact_question_sha256": "10b7f94e85111a5875d9585a432ccb6ad6fba0f9caa66227e049383595c5d8e1",
+          "prompt_sha256": "eaf342ee072360fac9e00d4e0009fe34ac6d84fccc4d017638e6c66bca6cccda",
+          "ordered_choices_sha256": "8a0a3a82164d6b90e5d31a9381c06d445bd30016b915897766e9502cf1554b18"
+        }
+      },
+      "exact_prompt": "Given this markup:\n\n<fieldset disabled>\n  <input id=\"q\" type=\"email\" value=\"not-an-email\" required>\n</fieldset>\n\nThe input #q has an invalid email value and is required. A script reads q.willValidate and then calls q.checkValidity(). What are the results?",
+      "raw_ordered_choices": [
+        "willValidate is false; checkValidity() returns true",
+        "willValidate is false; checkValidity() returns false",
+        "willValidate is true; checkValidity() returns false",
+        "willValidate is true; checkValidity() returns true"
+      ],
+      "returned_ordered_choices": [
+        "willValidate is false; checkValidity() returns true",
+        "willValidate is false; checkValidity() returns false",
+        "willValidate is true; checkValidity() returns false",
+        "willValidate is true; checkValidity() returns true"
+      ],
+      "exact_unchanged_correct_choice": "willValidate is false; checkValidity() returns true",
+      "key_assessment": {
+        "matches_frozen_independent_selection": true,
+        "all_stages_preserve_exact_answer_text": true,
+        "all_stages_preserve_exact_prompt": true,
+        "all_stages_preserve_choice_text_set": true,
+        "choice_order_changed": false
+      },
+      "native_observation": {
+        "observation_file": "/tmp/checkpoint-stem-length-html-blind-observations-20260908.json",
+        "observation_group_index_zero_based": 5,
+        "observation_kind": "exact_displayed_html_fragment",
+        "rationale": "The literal displayed fragment parses with q directly under the disabled fieldset. Chromium reports effectiveDisabled=true, willValidate=false, checkValidity=true, typeMismatch=true and validity.valid=false. This directly distinguishes the native method result from content validity.",
+        "ambiguity_or_limit": "No answer-changing missing condition was found in the provided fragment. The observation is for the unchanged value and DOM and assumes no unmentioned script mutations or event handlers.",
+        "countermodel_used": false
+      },
+      "author_main": {
+        "text": "The input is disabled by its fieldset ancestor, which bars it from constraint validation. Therefore willValidate is false. checkValidity() returns false only when a candidate for constraint validation fails its constraints; since #q is not a candidate, checkValidity() returns true. This does not prove the value satisfies the email or required constraints—it simply means validation is not performed.",
+        "sha256": "c867a447d356dd4cff664cb3042224ab17be2a49823f12c18a76bcdf580c94f8",
+        "judgment": "supported",
+        "rationale": "Correctly separates the native false/true API pair from whether the value satisfies constraints. Saying that a true method result does not prove satisfaction of email or required constraints does not assert that the nonempty value fails required. The explanation is sound in context.",
+        "faults": [],
+        "characters": 401,
+        "author_instruction_maximum_characters": 320,
+        "within_author_instruction_limit": false,
+        "sanitized_text_unchanged": true
+      },
+      "returned_main": {
+        "text": "A disabled input is barred from constraint validation, so willValidate is false. checkValidity() returns false only when the element is a candidate that fails its constraints; a barred element is not a candidate, so it returns true regardless of the invalid value.",
+        "sha256": "3fe96c1319f246ebc9666f2dd5fe13e0590293ba2335677706871669c2d206f4",
+        "judgment": "supported",
+        "rationale": "Correctly explains false willValidate and true checkValidity for the disabled input regardless of its invalid email value; it does not repeat the internal solver claim that the value would also fail required.",
+        "characters": 264,
+        "faults": []
+      },
+      "returned_choice_feedback": [
+        {
+          "returned_choice_index_zero_based": 0,
+          "choice": "willValidate is false; checkValidity() returns true",
+          "feedback": "Correct: barred from validation means willValidate is false and checkValidity() vacuously returns true.",
+          "feedback_sha256": "31ec09f0ce5dc3e9c941aca08f531563489fd45207ad6434a881709ab8259771",
+          "frozen_choice_adequacy": "supported",
+          "judgment": "supported_in_question_context",
+          "rationale": "Disabled q is barred; willValidate is false while checkValidity returns true despite typeMismatch.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 1,
+          "choice": "willValidate is false; checkValidity() returns false",
+          "feedback": "Wrong because checkValidity() returns false only for candidates that fail; a barred control returns true.",
+          "feedback_sha256": "63c12b4d271954e06ccbc1e7c496c28b463618b09357904a91e84fa24fd273a5",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "A barred input does not produce a false checkValidity result for its invalid email content.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 2,
+          "choice": "willValidate is true; checkValidity() returns false",
+          "feedback": "Wrong on both counts; the input is barred, so willValidate is false and checkValidity does not perform validation.",
+          "feedback_sha256": "fc87d1e59e6f4ab46796a32f376680ab27541d5d8e0a05ef421df330cb632b80",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "This omits the disabled-fieldset validation bar.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        },
+        {
+          "returned_choice_index_zero_based": 3,
+          "choice": "willValidate is true; checkValidity() returns true",
+          "feedback": "Wrong because willValidate must be false for a disabled (barred) input.",
+          "feedback_sha256": "e06138d9a93d4843a74853aab992e6361ee1a5398e5bd53f0365552090dfd1a7",
+          "frozen_choice_adequacy": "refuted",
+          "judgment": "supported_in_question_context",
+          "rationale": "The method result does not make the disabled input eligible for validation.",
+          "invented_fault_found": false,
+          "false_absolute_found_in_context": false,
+          "missing_required_qualifier_found_in_context": false,
+          "incorrect_distractor_statement_repeated_as_true": false,
+          "scope_note": null
+        }
+      ],
+      "internal_solver": {
+        "review_scope": "auxiliary internal solver prose, separate from author/returned feedback denominators",
+        "outcome": "resolved",
+        "answer": "q.willValidate is false; q.checkValidity() returns true.\n\n#q is inside a disabled fieldset and is not inside that fieldset's first <legend> child (no <legend> exists), so #q is disabled. Disabled controls are barred from constraint validation, so willValidate is false. checkValidity() returns false only when the element is a candidate for constraint validation AND fails its constraints. Since #q is barred (not a candidate), checkValidity() returns true — even though the value 'not-an-email' would fail email-type and required constraints if validated. True here does NOT prove the value satisfies constraints.",
+        "limitations": "",
+        "judgment": "contains_false_auxiliary_claim",
+        "false_auxiliary_claim": "the value 'not-an-email' would fail email-type and required constraints if validated",
+        "rationale": "The nonempty value fails email syntax, not required's missing-value condition. The answer pair remains correct, and this false conjunct is absent from returned feedback."
+      },
+      "pipeline_observation": {
+        "sanitized": true,
+        "model_valid": true,
+        "returned": true,
+        "model_review_difficulty": 3,
+        "returned_difficulty": 3,
+        "verificationVersion": 1,
+        "production_320_sanitizer_retained": true,
+        "production_scope": "Deterministic length/content sanitizer observation, not a production solver/reviewer rerun or deployment."
+      },
+      "frozen_blind_quality": {
+        "difficulty": {
+          "level": 3,
+          "rationale": "Requires distinguishing actual invalid content from the validation bar and combining that distinction with the property and method algorithms. It is the same substantive reasoning as the shorter validation question, not a higher level because it displays more markup.",
+          "at_least_3": true,
+          "psychometrically_calibrated": false
+        },
+        "distractors": {
+          "three_plausible": true,
+          "three_meaningfully_distinct": true,
+          "rationale": "All four Boolean result combinations are distinct and represent confusion about eligibility, the method algorithm, or both. The true/true alternative is weaker but still a plausible property-versus-method confusion.",
+          "empirically_calibrated": false
+        },
+        "goal_fit": {
+          "status": "direct",
+          "rationale": "Direct application of one of the three supplied HTML disabled-state/validation objectives; no off-goal subject matter."
+        },
+        "useful_premise_bearing_length": {
+          "prompt_code_points": 255,
+          "exceeds_320": false,
+          "contains_useful_scenario_premises": true,
+          "rationale": "The 255-character item includes a useful explicit parent/child fragment. The extra prose restates the invalid email and required attributes; it adds no premise absent from the shorter validation item. No greater-than-320 allowance is exercised."
+        },
+        "unchanged": true
+      },
+      "content_conclusions": {
+        "raw_key_and_main_fully_supported": true,
+        "returned_key_main_and_all_four_choice_explanations_supported": true,
+        "returned_full_core_plus_own_independent_difficulty_and_distractors_pass": true,
+        "not_equivalent_to_pipeline_acceptance": true
+      }
+    }
+  ],
+  "difficulty_sensitivity": {
+    "this_review_frozen_levels": {
+      "own_attribute_removal": 2,
+      "nested_first_legend_exceptions": 3,
+      "paired_validation_apis": 3
+    },
+    "parent_reported_independent_difference": "Parent reports level 2, rather than this reviewer’s frozen level 3, for the two paired validation-API questions. The parent notes themselves were not inspected here.",
+    "handling": "Retain both independent ratings as sensitivity; do not revise this frozen assessment after unblinding. Neither rating yields three fully qualifying items in either HTML arm because each includes an own-attribute-removal item at this reviewer’s level 2, and each also has a frozen distractor-quality concern."
+  },
+  "limitations": [
+    "These are six returned HTML questions from two correlated three-question batches, not a generalized accuracy rate. The first chess author timed out and the other chess job was unattempted.",
+    "Correct keys and returned feedback do not imply all distractors are sufficiently distinct or that the requested cognitive difficulty was met.",
+    "The raw author explanation defect was corrected in returned prose, but the audit cannot attribute that correction to a particular internal causal mechanism.",
+    "The one expanded solver error is an internal auxiliary claim and must not be counted as a returned teaching-feedback error. Conversely, its absence from returned feedback does not make the internal claim true.",
+    "Three expanded-arm raw explanations exceeded the unchanged 320-character author instruction but survived the separate sanitizer allowance. This is instruction-compliance evidence, separate from factual correctness and the stem-length intervention.",
+    "No production deployment, mobile presentation qualification, adaptive learning effect, or model promotion follows from this assessment."
+  ]
+}
