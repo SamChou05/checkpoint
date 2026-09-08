@@ -326,7 +326,9 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
         try container.encode(topics, forKey: .topics)
         try container.encode(archivedTopics, forKey: .archivedTopics)
         try container.encode(status, forKey: .status)
-        try container.encode(evolutionEnabled, forKey: .evolutionEnabled)
+        // Older app versions know only the Boolean. Never let them interpret
+        // a request to review suggestions as permission to advance automatically.
+        try container.encode(growthMode == .automatic, forKey: .evolutionEnabled)
         try container.encode(growthMode, forKey: .growthMode)
         try container.encodeIfPresent(pendingEvolutionSuggestion, forKey: .pendingEvolutionSuggestion)
         try container.encode(dismissedEvolutionSkillIDs, forKey: .dismissedEvolutionSkillIDs)

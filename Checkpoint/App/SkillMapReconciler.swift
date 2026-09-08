@@ -98,17 +98,12 @@ struct SkillMapReconciler {
     }
 
     static func skillMapContentSignature(topics: [SkillMapTopic]) -> String {
-        topics.map { skill in
-            let objectives = skill.objectives
-                .map { "\($0.id.uuidString):\($0.name):\($0.detail)" }
-                .joined(separator: ",")
-            let predecessors = skill.predecessorIDs
-                .map(\.uuidString)
-                .sorted()
-                .joined(separator: ",")
-            return "\(skill.id.uuidString):\(skill.name):\(skill.detail):\(skill.isPaused):\(skill.practiceEmphasis.rawValue):\(skill.challenge.rawValue):\(skill.stage):\(predecessors):\(objectives)"
-        }
-        .joined(separator: "|")
+        // Descriptions can contain punctuation, so a delimited string can make
+        // different names/descriptions look identical. Preserve order and field
+        // boundaries while including every persisted configuration value.
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return (try? encoder.encode(topics))?.base64EncodedString() ?? ""
     }
 
     static func skillMapFingerprint(topics: [SkillMapTopic]) -> String {
@@ -269,7 +264,9 @@ struct SkillMapReconciler {
                 id: proposedTopic.id,
                 name: name,
                 aliases: aliases,
-                objectives: objectives,
+                objectives: objectives.map {
+                    SkillMapObjective(id: $0.id, name: $0.name, detail: $0.detail)
+                },
                 stage: existingTopic?.stage ?? proposedTopic.stage,
                 predecessorIDs: existingTopic?.predecessorIDs ?? proposedTopic.predecessorIDs,
                 detail: proposedTopic.detail,

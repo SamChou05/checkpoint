@@ -255,6 +255,43 @@ final class LearningMapConfigurationTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(fixture.store.remoteQuestionBankDesiredCount(for: goal, localDeficit: 1), 5)
     }
 
+    func testReviewPreferenceNeverEncodesLegacyPermissionToAutoAdvance() throws {
+        let map = GoalSkillMap(topics: makeTopics(), growthMode: .reviewSuggestions)
+        let data = try JSONEncoder().encode(map)
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(payload["evolutionEnabled"] as? Bool, false)
+        let decoded = try JSONDecoder().decode(GoalSkillMap.self, from: data)
+        XCTAssertEqual(decoded.growthMode, .reviewSuggestions)
+        XCTAssertTrue(decoded.evolutionEnabled)
+    }
+
+    @MainActor
+    func testEditedFocusPointNamesNormalizeWithoutReplacingTheirIdentity() {
+        let original = GoalSkillMap(topics: makeTopics())
+        var topics = original.topics
+        let objectiveID = topics[0].objectives[0].id
+        topics[0].objectives[0].name = "  Compare   approaches  "
+        topics[0].objectives[0].detail = "  Check edge cases  "
+        let reviewed = SkillMapReconciler.reviewedSkillMapTopics(topics, preserving: original)
+        XCTAssertEqual(reviewed[0].objectives[0].id, objectiveID)
+        XCTAssertEqual(reviewed[0].objectives[0].name, "Compare approaches")
+        XCTAssertEqual(reviewed[0].objectives[0].detail, "Check edge cases")
+    }
+
+    @MainActor
+    func testDescriptionPunctuationCannotHideAChangedGenerationContext() {
+        var first = makeTopics()
+        first[0].name = "Array:traversal"
+        first[0].detail = "Practice carefully"
+        var second = first
+        second[0].name = "Array"
+        second[0].detail = "traversal:Practice carefully"
+        XCTAssertNotEqual(
+            SkillMapReconciler.skillMapContentSignature(topics: first),
+            SkillMapReconciler.skillMapContentSignature(topics: second)
+        )
+    }
+
     private func makeTopics() -> [SkillMapTopic] {
         ["Arrays", "Recursion", "Hash maps"].map {
             SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: "Apply \($0)"), SkillMapObjective(name: "Explain \($0)")])
