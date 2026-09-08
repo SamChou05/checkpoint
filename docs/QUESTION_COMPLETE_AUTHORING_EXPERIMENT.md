@@ -7,6 +7,10 @@ veto blocked an all-pairs question even though the model approved it while
 reporting a decisive objection. It did not establish that new complete teaching
 items can be authored and survive independent solving and review.
 
+The [first execution result](QUESTION_COMPLETE_AUTHORING_RESULTS.md) is now
+terminal: the first author call timed out, and the other three goals were not
+attempted. The prospective requirements below remain unchanged.
+
 This trial tests that missing construction step. One generic author writes the
 stem, four choices, key, main explanation and four choice explanations together.
 The current option-blind solver receives only the stem, topic, goal and sources.
@@ -104,4 +108,4 @@ The [exact plan](evidence/complete-authoring-plan-20260908.json) was prepared fr
 - Initial author request UTF-8 bytes: 5687, 5644, 4937, 4964.
 - Runtime dependencies: `{"boto3": "1.43.89", "botocore": "1.43.89", "python": "3.12.11"}`.
 
-The19focused author/runner tests and716-test backend suite pass, with one existing optional-runtime skip. Independent reviews checked the fixture, context isolation, dynamic bindings, budget rejection and malformed-output classification. Ruff and diff checks pass. The original clean-source plan reconstructs exactly; no provider calls have occurred at this freeze point.
+The 19 focused author/runner tests and 716-test backend suite pass, with one existing optional-runtime skip. Independent reviews checked the fixture, context isolation, dynamic bindings, budget rejection and malformed-output classification. Ruff and diff checks pass. The original clean-source plan reconstructs exactly; no provider calls had occurred at this freeze point.

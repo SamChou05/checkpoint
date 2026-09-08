@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "status": "operational_failure",
+      "failure_role": "author"
+    },
+    {
+      "case_id": "fresh_conditional_probability",
+      "status": "unattempted"
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "status": "unattempted"
+    },
+    {
+      "case_id": "fresh_solution_mass_balance",
+      "status": "unattempted"
+    }
+  ],
+  "provider_calls": 1,
+  "input_utf8_bytes": 5687,
+  "scope": "Replay verifies captured bindings and code decisions, not semantic correctness."
+}

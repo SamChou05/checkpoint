@@ -1,0 +1,92 @@
+{
+  "audit": "complete-authoring-operational-failure-binding-review-v1",
+  "assessor": "review_design; independent offline assistant integrity review, not a subject-matter assessment",
+  "inputs": {
+    "/tmp/checkpoint-complete-authoring-capture-20260908/capture.json": "1362b862932ebf7705b1ff7420789ce002f8eb8eb8434bc5cb90a38856ad0e25",
+    "/tmp/checkpoint-complete-authoring-capture-20260908/replay.json": "6a52e1f9b42b9e862c67600a194ba6a94941e0d9e85cb90cbbadb28d7911ba64",
+    "/tmp/checkpoint-complete-authoring-plan-20260908/plan.json": "c15d48b270b9c710a96123ba4da334dd25aaf79c28fe05153beba3291bb5626a"
+  },
+  "frozen_plan_canonical_sha256": "5605a3b97b0ad407bee7cac1aa9466a16fc090e9e666824903fa5179ff93f2de",
+  "clean_source_path": "/private/tmp/checkpoint-complete-authoring-live-20260908/backend/bedrock-question-service",
+  "source_revision": "d06a7bfdf08853b8644a00c6df2e0a8aa46726c9",
+  "source_hash_count": 28,
+  "all_source_hashes_match": true,
+  "dependencies_match_frozen_plan": true,
+  "exact_plan_rebuild_and_existing_replay_match": true,
+  "exact_request_and_context_binding_match": true,
+  "request_before_dispatch": "The source persists the exact prepared request before calling Converse. This terminal capture matches that request; the audit does not independently reconstruct a pre-dispatch filesystem snapshot.",
+  "client_config_offline_factory_check": {
+    "connect_timeout": 3,
+    "read_timeout": 100,
+    "retries": {
+      "mode": "standard",
+      "total_max_attempts": 1
+    },
+    "region_name": "us-east-1"
+  },
+  "provider_operations_during_audit": 0,
+  "sdk_attempt_control": "The frozen shared client factory uses total_max_attempts=1. Audited with boto3.client patched: no client or credential flow was created. This establishes requested local configuration, not service completion or billing.",
+  "observed_run": {
+    "status": "operational_failure",
+    "provider_dispatch_attempts": 1,
+    "role": "author",
+    "case_id": "fresh_css_grid_placement",
+    "elapsed_seconds": 100.213,
+    "error_type": "ReadTimeoutError",
+    "error_phase": "provider_dispatch",
+    "request_input_utf8_bytes": 5687,
+    "response_available": false,
+    "usage_known": false,
+    "input_tokens": null,
+    "output_tokens": null,
+    "stop_reason": null,
+    "returned_reasoning_block_count": null,
+    "questions_available": 0,
+    "solver_outputs_available": 0,
+    "auditor_outputs_available": 0,
+    "unattempted_cases": [
+      "fresh_conditional_probability",
+      "fresh_english_condition_scope",
+      "fresh_solution_mass_balance"
+    ]
+  },
+  "malformed_failure_replay_checks": [
+    {
+      "synthetic_change": "changed_body_rehashed",
+      "rejected": true,
+      "error_type": "ValueError"
+    },
+    {
+      "synthetic_change": "unknown_usage_claimed_known",
+      "rejected": true,
+      "error_type": "ValueError"
+    },
+    {
+      "synthetic_change": "missing_failure_type",
+      "rejected": true,
+      "error_type": "ValueError"
+    },
+    {
+      "synthetic_change": "later_dispatch",
+      "rejected": true,
+      "error_type": "ValueError"
+    },
+    {
+      "synthetic_change": "false_completion",
+      "rejected": true,
+      "error_type": "ValueError"
+    },
+    {
+      "synthetic_change": "completed_call_without_response",
+      "rejected": true,
+      "error_type": "KeyError"
+    }
+  ],
+  "classification": "Operational failure. No MCQ exists in the capture; no correctness, feedback, difficulty, or learning-value verdict is available.",
+  "limits": [
+    "No provider, model, browser, native-artifact execution, repair or retry occurred during this audit.",
+    "The original first author dispatch may have consumed service resources despite the read timeout; no usage or billing total is inferred.",
+    "A 100-second socket read timeout is not a whole-trial deadline or proof of why the service did not respond.",
+    "Malformed synthetic mutations were evaluated only in memory through the existing replay helper; the original capture, replay and source were not modified."
+  ]
+}
