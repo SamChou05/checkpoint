@@ -1,0 +1,75 @@
+{
+  "capture_path": "/tmp/checkpoint-fresh-immutable-capture-20260908/capture.json",
+  "capture_sha256": "24370b8065b006f1779601ec058d5b9769e23400b808b237cb1c8bcd6929aced",
+  "frozen_plan_canonical_sha256": "236eca966a40518e2d6c099fdf473f7914147b89621e3fb53a0aa40a9f57cc43",
+  "source_revision": "ed38bdde4021918377cc56f89c9b16992e06c869",
+  "scope": "Offline replay/assessment only. No client creation, provider call, repair or production admission.",
+  "replayed_at_utc": "2026-09-08T07:51:31.325832+00:00",
+  "frozen_source_and_dependencies_rebuild_equal": true,
+  "floor": 1,
+  "replay": {
+    "results": [
+      {
+        "case_id": "fresh_css_grid_placement",
+        "observation": {
+          "eligible": true,
+          "reason": "accepted",
+          "question": {
+            "prompt": "A grid has grid-template-columns: repeat(3, 1fr) and grid-auto-flow: row (default sparse packing). Three children in document order: A (grid-column: span 2), B (grid-column: span 2), C (no placement rules). Which cell is left empty after all items are placed?",
+            "choices": [
+              "Row 1, column 3",
+              "Row 2, column 3",
+              "Row 1, column 1",
+              "No cell is left empty"
+            ],
+            "expectedAnswer": "Row 1, column 3",
+            "explanation": "With sparse row auto-flow, the placement cursor never revisits earlier gaps. A occupies row 1, cols 1–2. B needs 2 columns but only col 3 remains in row 1, so B wraps to row 2, cols 1–2. The cursor advances to row 2, col 3, where C is placed. Row 1, col 3 is never filled—only dense packing would revisit that gap.",
+            "choiceExplanations": {
+              "Row 1, column 3": "Correct. A fills row 1, cols 1–2. B cannot fit in the remaining single column, so it wraps to row 2, cols 1–2. Sparse packing advances the cursor past the gap, placing C at row 2, col 3 and leaving row 1, col 3 empty.",
+              "Row 2, column 3": "This cell is occupied by C. After B is placed at row 2, cols 1–2, the cursor is at row 2, col 3, so C (needing only 1 column) is placed there.",
+              "Row 1, column 1": "This cell is occupied by A, whose span 2 covers columns 1 and 2 of row 1.",
+              "No cell is left empty": "This would be true with grid-auto-flow: row dense, which allows the cursor to revisit earlier gaps. Default sparse packing skips the gap at row 1, col 3."
+            },
+            "topic": "CSS Grid auto-placement",
+            "objective": "Predict which cells remain empty when column spans force gaps under sparse row auto-flow.",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          }
+        }
+      },
+      {
+        "case_id": "fresh_english_condition_scope",
+        "observation": {
+          "eligible": true,
+          "reason": "accepted",
+          "question": {
+            "prompt": "A community center posts this rule: \"Only residents may reserve the picnic shelter on weekends.\" Which conclusion is warranted by this rule alone?",
+            "choices": [
+              "Every resident may reserve the picnic shelter on weekends",
+              "A non-resident may not reserve the picnic shelter on a weekend",
+              "Residents may not reserve the picnic shelter on weekdays",
+              "Non-residents may not reserve the picnic shelter at any time"
+            ],
+            "expectedAnswer": "A non-resident may not reserve the picnic shelter on a weekend",
+            "explanation": "\"Only residents may … on weekends\" makes residence a necessary condition for weekend reservations: if someone reserves on a weekend, that person must be a resident. Equivalently, non-residents may not reserve on a weekend. It does not make residence sufficient (other requirements may exist), and it says nothing about weekdays.",
+            "choiceExplanations": {
+              "Every resident may reserve the picnic shelter on weekends": "This reads 'only' as 'all,' treating a necessary condition as sufficient. The rule says residence is required, not that it is enough; other restrictions could still apply.",
+              "A non-resident may not reserve the picnic shelter on a weekend": "Correct. 'Only residents may … on weekends' directly entails that non-residents may not reserve on weekends. This is the straightforward contrapositive of the stated necessary condition.",
+              "Residents may not reserve the picnic shelter on weekdays": "The rule restricts weekend reservations to residents. It says nothing about weekdays, so no weekday restriction on residents can be inferred.",
+              "Non-residents may not reserve the picnic shelter at any time": "This extends the restriction beyond its stated scope. The rule applies only to weekends; non-residents might still be permitted to reserve on weekdays."
+            },
+            "topic": "Necessary vs. sufficient conditions and quantifier scope",
+            "objective": "Distinguish a necessary condition from a sufficient one when interpreting 'only' in an everyday rule.",
+            "difficulty": 2,
+            "format": "Multiple Choice"
+          }
+        }
+      }
+    ],
+    "dispatch_intents": 2,
+    "provider_calls": 2,
+    "scope": "Replay verifies bindings, not factual correctness."
+  },
+  "all_teaching_text_and_choice_order_preserved": true,
+  "original_capture_unchanged": true
+}

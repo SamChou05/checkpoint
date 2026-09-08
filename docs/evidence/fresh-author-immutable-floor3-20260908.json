@@ -1,0 +1,60 @@
+{
+  "capture_path": "/tmp/checkpoint-fresh-immutable-capture-20260908/capture.json",
+  "capture_sha256": "24370b8065b006f1779601ec058d5b9769e23400b808b237cb1c8bcd6929aced",
+  "frozen_plan_canonical_sha256": "236eca966a40518e2d6c099fdf473f7914147b89621e3fb53a0aa40a9f57cc43",
+  "source_revision": "ed38bdde4021918377cc56f89c9b16992e06c869",
+  "scope": "Offline replay/assessment only. No client creation, provider call, repair or production admission.",
+  "assessment": "predeclared-original-target-threshold-v1",
+  "minimum_difficulty": 3,
+  "predeclared_source": "plan.fixture.predeclared_scoring.second_local_observation",
+  "original_floor_1_results_unchanged": true,
+  "results": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "review_response_text_sha256": "dc99f8cb704b582aef16ff2c2f54b4542e12fc5329db7b7638d877bc36c41b1a",
+      "question_canonical_sha256": "52d4616595086a1ed564fa74e74c3421793a272d110f09b0569c369e28796ede",
+      "minimum_difficulty": 3,
+      "observation": {
+        "eligible": true,
+        "reason": "accepted",
+        "question": {
+          "prompt": "A grid has grid-template-columns: repeat(3, 1fr) and grid-auto-flow: row (default sparse packing). Three children in document order: A (grid-column: span 2), B (grid-column: span 2), C (no placement rules). Which cell is left empty after all items are placed?",
+          "choices": [
+            "Row 1, column 3",
+            "Row 2, column 3",
+            "Row 1, column 1",
+            "No cell is left empty"
+          ],
+          "expectedAnswer": "Row 1, column 3",
+          "explanation": "With sparse row auto-flow, the placement cursor never revisits earlier gaps. A occupies row 1, cols 1–2. B needs 2 columns but only col 3 remains in row 1, so B wraps to row 2, cols 1–2. The cursor advances to row 2, col 3, where C is placed. Row 1, col 3 is never filled—only dense packing would revisit that gap.",
+          "choiceExplanations": {
+            "Row 1, column 3": "Correct. A fills row 1, cols 1–2. B cannot fit in the remaining single column, so it wraps to row 2, cols 1–2. Sparse packing advances the cursor past the gap, placing C at row 2, col 3 and leaving row 1, col 3 empty.",
+            "Row 2, column 3": "This cell is occupied by C. After B is placed at row 2, cols 1–2, the cursor is at row 2, col 3, so C (needing only 1 column) is placed there.",
+            "Row 1, column 1": "This cell is occupied by A, whose span 2 covers columns 1 and 2 of row 1.",
+            "No cell is left empty": "This would be true with grid-auto-flow: row dense, which allows the cursor to revisit earlier gaps. Default sparse packing skips the gap at row 1, col 3."
+          },
+          "topic": "CSS Grid auto-placement",
+          "objective": "Predict which cells remain empty when column spans force gaps under sparse row auto-flow.",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      }
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "review_response_text_sha256": "4bd823cf5daf4915b74e49f5cbb7b66a8f5984dc7411be9b8b956e25423d38ab",
+      "question_canonical_sha256": "53c90b7af90b350d42e5f42a5b72c45d19ed1b6ed69f06a03f2f3044c1e93f57",
+      "minimum_difficulty": 3,
+      "observation": {
+        "eligible": false,
+        "reason": "difficulty_floor",
+        "question": null
+      }
+    }
+  ],
+  "summary": {
+    "eligible": 1,
+    "difficulty_floor_rejections": 1,
+    "new_provider_calls": 0
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "assessment": "css-feedback-native-correspondence-v1",
+  "created_at_utc": "2026-09-08T07:54:49.249947+00:00",
+  "input_files": [
+    {
+      "path": "/tmp/checkpoint-css-feedback-native-20260908/check.swift",
+      "sha256": "a8342f6c9627f2bb0083a3e3b4666c5dabe0e17dba8ad3a5ee5481d88fccd65d",
+      "bytes": 2344
+    },
+    {
+      "path": "/tmp/checkpoint-css-feedback-native-20260908/observed.json",
+      "sha256": "c3ac84999bb7008c6265da80d29f328c12d4720e397aee3238111f118b8976bf",
+      "bytes": 387
+    },
+    {
+      "path": "/tmp/checkpoint-css-feedback-native-20260908/run.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "captured_item_bindings": {
+    "author_capture_path": "/tmp/checkpoint-author-latency-capture-20260908/capture.json",
+    "author_capture_sha256": "bd987c3d17d501c21e723a13ce100084b0faee7a60fcfa88039c699509577bb9",
+    "immutable_audit_capture_path": "/tmp/checkpoint-fresh-immutable-capture-20260908/capture.json",
+    "immutable_audit_capture_sha256": "24370b8065b006f1779601ec058d5b9769e23400b808b237cb1c8bcd6929aced",
+    "question_canonical_sha256": "52d4616595086a1ed564fa74e74c3421793a272d110f09b0569c369e28796ede",
+    "exact_author_item_equals_frozen_and_returned_immutable_item": true,
+    "exact_stem": "A grid has grid-template-columns: repeat(3, 1fr) and grid-auto-flow: row (default sparse packing). Three children in document order: A (grid-column: span 2), B (grid-column: span 2), C (no placement rules). Which cell is left empty after all items are placed?",
+    "disputed_choice": "No cell is left empty",
+    "exact_disputed_feedback": "This would be true with grid-auto-flow: row dense, which allows the cursor to revisit earlier gaps. Default sparse packing skips the gap at row 1, col 3."
+  },
+  "correspondence": {
+    "status": "matches_the_displayed_placement_problem_and_stated_counterfactual",
+    "fixed_rules_preserved": [
+      "Three equal fractional columns.",
+      "Children A, B and C in that document order, with default order values.",
+      "A and B each have grid-column: span 2; C has no placement declaration.",
+      "Sparse case uses grid-auto-flow: row; dense case changes only that placement mode to row dense.",
+      "Neither case assigns explicit grid-row positions, additional placement, row spans, or different order values."
+    ],
+    "presentation_scaffolding": [
+      {
+        "addition": "display: grid",
+        "assessment": "Makes the stem's stated grid concrete; it does not add a new placement condition."
+      },
+      {
+        "addition": "width: 300px and grid-auto-rows: 40px",
+        "assessment": "Provide measurable 100-pixel columns and 40-pixel rows for the tiny A/B/C labels. These sizes do not change the number of columns, spans, item order, or sparse/dense placement search. They make the same logical occupancy observable; no claim is made about arbitrary content or size-dependent CSS not present here."
+      },
+      {
+        "addition": "body margin 0; a 600 by 300 WKWebView; two separate containers",
+        "assessment": "Affect location and measurement convenience, not the declared grid placement. Each rectangle is measured relative to its own container origin."
+      }
+    ]
+  },
+  "native_measurement_binding": {
+    "observed_values_come_from": "The agent-owned JavaScript calls getBoundingClientRect on the actual grid and its actual children. It reports measured width/height and derives row, column and span from offsets divided by the declared row/column dimensions. It does not return stored expected placements or a hard-coded success verdict.",
+    "row_and_column_interpretation": "The fixed local document has ordinary horizontal left-to-right defaults and no contrary writing-mode or direction rule. This is one legitimate concrete realization of the logical grid problem.",
+    "grids_have_two_rows": "Observed height 80 with fixed 40-pixel rows establishes two rendered rows; the explicit template establishes three columns.",
+    "derived_occupancy": [
+      {
+        "mode": "sparse",
+        "native_grid_width": 300,
+        "native_grid_height": 80,
+        "native_item_observations": [
+          {
+            "item": "A",
+            "row": 1,
+            "column": 1,
+            "columnSpan": 2
+          },
+          {
+            "item": "B",
+            "row": 2,
+            "column": 1,
+            "columnSpan": 2
+          },
+          {
+            "item": "C",
+            "row": 2,
+            "column": 3,
+            "columnSpan": 1
+          }
+        ],
+        "occupied_cells": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "empty_cells": [
+          [
+            1,
+            3
+          ]
+        ],
+        "empty_cell_count": 1
+      },
+      {
+        "mode": "dense",
+        "native_grid_width": 300,
+        "native_grid_height": 80,
+        "native_item_observations": [
+          {
+            "item": "A",
+            "row": 1,
+            "column": 1,
+            "columnSpan": 2
+          },
+          {
+            "item": "B",
+            "row": 2,
+            "column": 1,
+            "columnSpan": 2
+          },
+          {
+            "item": "C",
+            "row": 1,
+            "column": 3,
+            "columnSpan": 1
+          }
+        ],
+        "occupied_cells": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            2
+          ]
+        ],
+        "empty_cells": [
+          [
+            2,
+            3
+          ]
+        ],
+        "empty_cell_count": 1
+      }
+    ]
+  },
+  "finding": {
+    "sparse_answer_supported": "Row 1, column 3",
+    "dense_gap": "Row 2, column 3",
+    "disputed_counterfactual_supported": false,
+    "reason": "Each run occupies five cells in a two-row, three-column grid. Dense packing moves C into the earlier gap and leaves the later cell empty. The native observation corroborates that No cell is left empty remains false under row dense.",
+    "affects_prior_audit_conclusion": "Corroborates the already-frozen false-feedback finding; does not replace or retroactively repair the raw question or the auditor's false support judgment."
+  },
+  "operational_scope": {
+    "executed_by_this_assessor": false,
+    "new_provider_calls": 0,
+    "terminal_exit_0": "Reported by parent who ran the process; this read-only check did not independently witness execution.",
+    "run_log_verified_empty": true,
+    "source_and_output_readable_and_json_parseable": true,
+    "page_origin": "Local HTML string, nil base URL and no external resource references; nonpersistent website data store.",
+    "engine": "WKWebView/WebKit; exact browser engine build is not recorded in these three files."
+  },
+  "limitations": [
+    "The reproduction is fixed code written by a development agent from a prose MCQ. It is not model-generated question JavaScript or an automated binding of an arbitrary author-supplied executable artifact.",
+    "The correspondence judgment checks the preserved rules and observed mapping. Hashes identify the files inspected after execution, not a cryptographic attestation that those exact bytes ran.",
+    "This is one WebKit implementation and one compact setup, not cross-browser qualification or proof of every CSS Grid case.",
+    "Added dimensions are harmless for these small labels and placement-only claims; this does not certify arbitrary layout geometry, content overflow, writing modes or other omitted CSS.",
+    "No general production verifier, security-isolation guarantee, process/browser cleanup proof, authoring success rate, adaptive-learning claim or new runtime approval follows.",
+    "No source, captured question, feedback, native output, or previous frozen assessment was edited, and no native/model/provider execution was repeated."
+  ],
+  "primary_semantic_reference": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo"
+}

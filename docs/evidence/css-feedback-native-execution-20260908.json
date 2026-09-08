@@ -1,0 +1,51 @@
+{
+  "scope": "Fixed local WebKit reproduction written by root after the model audit failed. Not a generalized runtime verifier or model-generated code.",
+  "model_capture_sha256": "24370b8065b006f1779601ec058d5b9769e23400b808b237cb1c8bcd6929aced",
+  "question_canonical_sha256": "52d4616595086a1ed564fa74e74c3421793a272d110f09b0569c369e28796ede",
+  "runtime": {
+    "macOS": "26.6.2",
+    "build": "25G83",
+    "WebKit_CFBundleShortVersionString": "21624"
+  },
+  "exit_code": 0,
+  "stderr_empty": true,
+  "network_or_remote_content": false,
+  "persistent_website_data": false,
+  "scaffolding": "300px grid width and40px automatic row height make rectangle-to-cell measurements explicit; no gaps, explicit placement, reordered children, or changed spans. Only row vs row dense differs between grids.",
+  "observed_rows": {
+    "sparse": [
+      [
+        "A",
+        "A",
+        null
+      ],
+      [
+        "B",
+        "B",
+        "C"
+      ]
+    ],
+    "dense": [
+      [
+        "A",
+        "A",
+        "C"
+      ],
+      [
+        "B",
+        "B",
+        null
+      ]
+    ]
+  },
+  "empty_cells_each_mode": 1,
+  "files": {
+    "css-feedback-native-check-20260908.swift": "a8342f6c9627f2bb0083a3e3b4666c5dabe0e17dba8ad3a5ee5481d88fccd65d",
+    "css-feedback-native-observed-20260908.json": "c3ac84999bb7008c6265da80d29f328c12d4720e397aee3238111f118b8976bf"
+  },
+  "limits": [
+    "Single local WebKit layout implementation and one fixed counterexample.",
+    "Native observation corroborates cell occupancy, not the internal cursor timing claim.",
+    "No provider call or production integration."
+  ]
+}

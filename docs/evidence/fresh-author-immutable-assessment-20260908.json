@@ -1,0 +1,232 @@
+{
+  "capture_path": "/tmp/checkpoint-fresh-immutable-capture-20260908/capture.json",
+  "capture_sha256": "24370b8065b006f1779601ec058d5b9769e23400b808b237cb1c8bcd6929aced",
+  "frozen_plan_canonical_sha256": "236eca966a40518e2d6c099fdf473f7914147b89621e3fb53a0aa40a9f57cc43",
+  "source_revision": "ed38bdde4021918377cc56f89c9b16992e06c869",
+  "scope": "Offline replay/assessment only. No client creation, provider call, repair or production admission.",
+  "assessment": "fresh-immutable-audit-results-v1",
+  "frozen_plan_file_sha256": "d32e3fed0e5acf9ad9eb504895b16e235b8c01fe77a01587034593b2bd3c16c8",
+  "prior_feedback_assessment_path": "/tmp/checkpoint-author-latency-feedback-assessment-20260908.json",
+  "prior_feedback_assessment_sha256": "9cfb23cfc33e88647690033edd831702891fc1233f86d9cf1dc42777dc016f36",
+  "prior_blind_assessment_path": "/tmp/checkpoint-author-latency-blind-assessment-20260908.json",
+  "prior_blind_assessment_sha256": "dc8045a9f729f001a8249b2ed63447280f4282b3816e56cba27526880c4713f0",
+  "execution": {
+    "terminal_status": "completed",
+    "terminal_process_exit_0": "Confirmed by parent; capture alone is not used as proof of process termination.",
+    "maximum_calls": 2,
+    "maximum_calls_per_case": 1,
+    "provider_dispatches": 2,
+    "recorded_responses": 2,
+    "completed_cases": 2,
+    "unattempted_cases": 0,
+    "operational_failures": 0,
+    "schema_valid_responses": 2,
+    "end_turn_responses": 2,
+    "known_usage_responses": 2,
+    "input_tokens": 2848,
+    "output_tokens": 2160,
+    "total_tokens": 5008,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "input_text_utf8_bytes": [
+      6446,
+      6040
+    ],
+    "input_text_utf8_bytes_total": 12486,
+    "sum_recorded_call_intervals_seconds": 32.58,
+    "timing_scope": "Sum of recorded call intervals, not independently measured whole-trial wall time or a pure provider-compute interval.",
+    "sdk_total_max_attempts": 1,
+    "model": "us.anthropic.claude-opus-4-6-v1",
+    "settings": {
+      "AWS_REGION": "us-east-1",
+      "BEDROCK_REGION": "us-east-1",
+      "BEDROCK_CLAUDE_THINKING": "adaptive",
+      "BEDROCK_CLAUDE_EFFORT": "high",
+      "BEDROCK_THINKING_MAX_TOKENS": "16000",
+      "BEDROCK_MAX_TOKENS": "16000",
+      "BEDROCK_FALLBACK_MODEL_ID": "",
+      "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+      "BEDROCK_GUARDRAIL_VERSION": "",
+      "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+      "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+      "BEDROCK_READ_TIMEOUT_SECONDS": "100",
+      "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3"
+    },
+    "private_reasoning": "No private reasoning text is stored in response records; each reports one reasoning-content block. Reasoning tokens may be included in provider output-token usage.",
+    "credentials": "Response records contain final text and expected usage/stop/count metadata, not headers, exception messages or credential fields.",
+    "billed_cost": "Not calculated; token totals are observed provider usage, not a verified price."
+  },
+  "bindings": {
+    "frozen_plan_rebuilt_with_client_prohibited": true,
+    "exact_order_request_and_question_hashes_replayed": true,
+    "two_responses_match_two_original_jobs": true,
+    "original_raw_author_question_fields_equal_prior_assessment": true,
+    "all_retained_teaching_text_and_choice_order_equal_frozen_question": true,
+    "only_assessed_difficulty_metadata_changed_for_english": true,
+    "floor3_uses_same_responses_without_dispatch": true
+  },
+  "cases": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "exact_review": {
+        "valid": true,
+        "answer": "Row 1, column 3",
+        "difficulty": 3,
+        "mainExplanation": "supported",
+        "choiceExplanations": {
+          "Row 1, column 3": "supported",
+          "Row 2, column 3": "supported",
+          "Row 1, column 1": "supported",
+          "No cell is left empty": "supported"
+        },
+        "issues": []
+      },
+      "review_response_text_sha256": "dc99f8cb704b582aef16ff2c2f54b4542e12fc5329db7b7638d877bc36c41b1a",
+      "request_canonical_sha256": "2e4191be75970bdac16a40b506989946968988421fcc13c0f5dbd254204cdecf",
+      "question_canonical_sha256": "52d4616595086a1ed564fa74e74c3421793a272d110f09b0569c369e28796ede",
+      "floor_1_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "separate_floor_3_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "warranted_key_agreement": true,
+      "difficulty": {
+        "original_requested_minimum": 3,
+        "author_reported": 3,
+        "frozen_independent_assessment": 3,
+        "auditor_assessed": 3,
+        "auditor_matches_frozen_independent_assessment": true
+      },
+      "semantic_finding": "False full-item approval: the auditor marks the materially false dense-packing choice explanation supported, declares the entire item valid and reports no issues. The bad teaching content is retained unchanged at both floors.",
+      "feedback_assessment": [
+        {
+          "field": "choiceExplanations[No cell is left empty]",
+          "exact_original_text": "This would be true with grid-auto-flow: row dense, which allows the cursor to revisit earlier gaps. Default sparse packing skips the gap at row 1, col 3.",
+          "auditor_disposition": "supported",
+          "frozen_independent_disposition": "unsupported",
+          "severity": "material_false_counterfactual",
+          "reason": "Dense placement produces row 1 [A,A,C] and row 2 [B,B,empty]. It still leaves one empty cell; only its location changes. The counterfactual No cell is left empty is false even though that choice is correctly unselected in the original sparse task."
+        },
+        {
+          "field": "choiceExplanations[Row 2, column 3]",
+          "auditor_disposition": "supported",
+          "frozen_independent_disposition": "qualified",
+          "severity": "minor_cursor_trace_imprecision",
+          "reason": "The cursor advances from B's start while processing C, rather than already occupying column 3 immediately after placing B. This is secondary to the decisive dense-packing error."
+        }
+      ],
+      "predeclared_target_outcome_met": false,
+      "complete_content_supported_by_frozen_assessment": false,
+      "complete_content_supported_and_at_requested_minimum": false,
+      "distractor_qualification": {
+        "count": 3,
+        "distinct_in_meaning": true,
+        "all_nonwarranted": true,
+        "plausible_count_by_this_assessor": 2,
+        "weak_count": 1,
+        "scope": "Qualitative judgments for the stated learner, not observed learner error rates or calibrated item statistics."
+      },
+      "usage": {
+        "inputTokens": 1535,
+        "outputTokens": 1179,
+        "totalTokens": 2714,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "recorded_call_interval_seconds": 16.978
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "exact_review": {
+        "valid": true,
+        "answer": "A non-resident may not reserve the picnic shelter on a weekend",
+        "difficulty": 2,
+        "mainExplanation": "supported",
+        "choiceExplanations": {
+          "Residents may not reserve the picnic shelter on weekdays": "supported",
+          "Non-residents may not reserve the picnic shelter at any time": "supported",
+          "Every resident may reserve the picnic shelter on weekends": "supported",
+          "A non-resident may not reserve the picnic shelter on a weekend": "supported"
+        },
+        "issues": []
+      },
+      "review_response_text_sha256": "4bd823cf5daf4915b74e49f5cbb7b66a8f5984dc7411be9b8b956e25423d38ab",
+      "request_canonical_sha256": "289148288b672a934ded1f53c1ea7fab6691d887b7186a0046434daf7fba57de",
+      "question_canonical_sha256": "53c90b7af90b350d42e5f42a5b72c45d19ed1b6ed69f06a03f2f3044c1e93f57",
+      "floor_1_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "separate_floor_3_observation": {
+        "eligible": false,
+        "reason": "difficulty_floor"
+      },
+      "warranted_key_agreement": true,
+      "difficulty": {
+        "original_requested_minimum": 3,
+        "author_reported": 3,
+        "frozen_independent_assessment": 2,
+        "auditor_assessed": 2,
+        "auditor_matches_frozen_independent_assessment": true
+      },
+      "semantic_finding": "Correct factual-support retention and difficulty assessment: all five fields were independently supported, and the auditor rates this direct necessary-condition application level 2. It is retained at floor 1 and excluded by the predeclared level-3 comparison.",
+      "feedback_assessment": [
+        {
+          "fields": "main explanation and all four choice explanations",
+          "auditor_disposition": "supported",
+          "frozen_independent_disposition": "supported",
+          "reason": "The permission rule is interpreted with its weekend scope; alternatives are correctly described as not entailed, without claiming they are impossible."
+        }
+      ],
+      "predeclared_target_outcome_met": true,
+      "complete_content_supported_by_frozen_assessment": true,
+      "complete_content_supported_and_at_requested_minimum": false,
+      "distractor_qualification": {
+        "count": 3,
+        "distinct_in_meaning": true,
+        "all_nonwarranted": true,
+        "plausible_count_by_this_assessor": 3,
+        "weak_count": 0,
+        "scope": "Nonwarranted does not mean impossible: the other policies could hold independently, but are not conclusions of this rule. Plausibility is qualitative, not learner-tested."
+      },
+      "usage": {
+        "inputTokens": 1313,
+        "outputTokens": 981,
+        "totalTokens": 2294,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "recorded_call_interval_seconds": 15.602
+    }
+  ],
+  "summary": {
+    "floor_1_code_retained": 2,
+    "floor_3_code_retained": 1,
+    "floor_3_difficulty_rejected": 1,
+    "keys_matching_independent_answer": 2,
+    "difficulty_ratings_matching_frozen_independent_ratings": 2,
+    "targeted_material_feedback_defects_present": 1,
+    "targeted_material_feedback_defects_detected": 0,
+    "materially_false_feedback_items_retained_at_both_floors": 1,
+    "sound_easy_control_retained_at_floor_1": 1,
+    "sound_easy_control_excluded_at_floor_3": 1,
+    "complete_supported_content_among_floor_1_retained_items": 1,
+    "complete_supported_content_among_floor_3_retained_items": 0,
+    "complete_supported_items_at_original_requested_minimum_3": 0,
+    "predeclared_case_outcomes_met": 1,
+    "predeclared_case_outcomes_total": 2,
+    "overall_two_case_feasibility_pass": false,
+    "production_items_admitted_or_served": 0
+  },
+  "limits": [
+    "This two-case targeted audit is not a general error-rate or independence estimate.",
+    "The CSS error escaped despite a correct selected key and independently appropriate difficulty; the auditor's full-field support judgments are themselves false evidence of adequacy.",
+    "The English difficulty result demonstrates the predeclared threshold on this one easy control, not calibrated difficulty or adaptive learning.",
+    "The existing floor-1 capture is unchanged; the separate level-3 observation is not a new trial or an overwritten outcome.",
+    "No repaired content, new prompts, extra provider calls, production changes or deployment were performed."
+  ],
+  "primary_reference": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/#auto-placement-algo"
+}

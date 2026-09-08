@@ -1,5 +1,7 @@
 # Audit two unchanged fresh author outputs
 
+Completed run: [fresh feedback error escaped review](QUESTION_FRESH_AUTHOR_IMMUTABLE_RESULTS.md).
+
 Prospective protocol, September 8, 2026 UTC. The [author-only observations](QUESTION_AUTHOR_LATENCY_RESULTS.md)
 produced two correct keys, one material CSS feedback error and one sound English
 item below the requested difficulty. This follow-up asks whether the existing
