@@ -1,6 +1,7 @@
 """Actual runtime with scripted observer responses; no SDK, workers or inference."""
 
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -367,6 +368,235 @@ class RuntimeQualificationTests(unittest.TestCase):
         with patch.dict(os.environ, trial.SETTINGS), self.assertRaisesRegex(ValueError, "deadline gate"):
             client.converse(**saved["request"])
         client.observer.assert_not_called()
+
+
+class FrozenRuntimeRecheckTests(unittest.TestCase):
+    """Synthetic current-source origins avoid pinning production to old code."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.directory = Path(temporary.name)
+        self.output = self.directory / "capture"
+        self.plan_path = self.directory / "plan.json"
+        self.packet = {"experiment": trial.RECHECK_EXPERIMENT}
+        prior = trial.make_plan(json.loads(FIXTURE.read_text()))
+        request = prior["operations"][1]["request"]
+        raw_questions = [_raw_question(
+            f"Observation set {i} records a baseline and a changed condition. Which conclusion follows from these facts?"
+        ) for i in range(5)]
+        candidates = trial._sanitize_questions(raw_questions, request)
+        with patch.dict(os.environ, trial.SETTINGS):
+            first = trial._first_request(request, candidates)
+        # Evaluator provenance may differ; production/prompt sources must match.
+        prior["source_sha256"]["evals/checkpoint_runtime_qualification.py"] = "0" * 64
+        self.origin = {
+            "plan": prior, "plan_sha256": trial._hash(prior), "status": "completed",
+            "calls": [{}, {}, {
+                "role": "author", "request": prior["operations"][1]["first_request"],
+                "observation": completed({"questions": raw_questions}),
+            }, {"request": first}, {}],
+        }
+        origin_bytes = json.dumps(self.origin, ensure_ascii=False).encode("utf-8")
+        origin_path = Mock(wraps=trial.RECHECK_ORIGIN)
+        origin_path.read_bytes.return_value = origin_bytes
+        origin_path.read_text.return_value = origin_bytes.decode("utf-8")
+        for target, value in (("RECHECK_ORIGIN", origin_path),
+                              ("RECHECK_ORIGIN_SHA256", hashlib.sha256(origin_bytes).hexdigest())):
+            replacement = patch.object(trial, target, value)
+            replacement.start()
+            self.addCleanup(replacement.stop)
+        self.plan = trial.make_plan(self.packet)
+        trial.shared.write_json(self.plan_path, self.plan)
+        self.questions = self.plan["operations"][0]["questions"]
+        self.keys = {q["prompt"]: q["expectedAnswer"] for q in self.questions}
+        self.excluded = {self.questions[i]["prompt"] for i in (0, 2)}
+
+    def run_trial(self, observer=None):
+        return trial.run_trial(self.plan_path, trial._hash(self.plan), self.output,
+                               observer=observer or self.observer)
+
+    def observer(self, request, *, on_progress, timeout, **_):
+        self.assertGreater(timeout, 0)
+        self.assertLessEqual(timeout, 240)
+        report = json.loads((self.output / "capture.json").read_text())
+        call = report["calls"][-1]
+        job = self.plan["operations"][call["operation_index"]]
+        self.assertEqual(call["request"], request)
+        self.assertEqual(call["request_sha256"], trial._hash(request))
+        self.assertEqual(trial.caller.SETTINGS, job["settings"])
+        adaptive = job["arm"] == "adaptive"
+        if call["role"] == "solver":
+            items = payload(request, "question_solution_json")["items"]
+            value = {"solutions": [{
+                "index": item["index"], "choices": [{
+                    "choice": choice,
+                    "judgment": "supported" if choice == self.keys[item["prompt"]]
+                    and not (adaptive and item["prompt"] in self.excluded) else "refuted",
+                    "reason": "A scripted declared judgment for transport testing only.",
+                } for choice in reversed(item["choices"])],
+            } for item in reversed(items)]}
+        else:
+            self.assertEqual(call["role"], "reviewer")
+            data = payload(request, "question_review_json")
+            items = data["items"]
+            self.assertEqual([i["index"] for i in items], list(range(len(items))))
+            self.assertEqual(len(items), 3 if adaptive else 5)
+            self.assertEqual([i["index"] for i in data["independentSolutions"]], list(range(len(items))))
+            value = {"reviews": [{
+                "index": item["index"], "valid": True, "difficulty": 3,
+                "answer": self.keys[item["prompt"]],
+                "explanation": "This is scripted feedback for a transport test, not a factual assessment.",
+                "choiceExplanations": {c: "This scripted explanation only tests exact response binding."
+                                       for c in item["choices"]},
+            } for item in reversed(items)]}
+        state = completed(value)
+        state["response"]["reasoningContentBlockCount"] = int(adaptive)
+        on_progress(copy.deepcopy(state))
+        return state
+
+    def test_exact_archive_reconstruction_same_inputs_and_only_allowed_request_differences(self):
+        with patch.object(trial, "_normalize_request", wraps=trial._normalize_request) as normalize:
+            self.assertEqual(trial.make_plan(self.packet), self.plan)
+        normalize.assert_called_once_with(self.origin["plan"]["fixture"]["fresh"]["payload"])
+        self.assertEqual(self.plan["maximum_calls"], 4)
+        self.assertEqual(self.plan["maximum_input_utf8_bytes_total"], 4 * trial.MAX_INPUT_BYTES)
+        disabled, adaptive = self.plan["operations"]
+        self.assertEqual([j["arm"] for j in (disabled, adaptive)], ["disabled", "adaptive"])
+        self.assertEqual([j["maximum_calls"] for j in (disabled, adaptive)], [2, 2])
+        self.assertEqual(disabled["request"], self.origin["plan"]["operations"][1]["request"])
+        self.assertEqual(disabled["request"], adaptive["request"])
+        self.assertEqual(disabled["questions"], adaptive["questions"])
+        self.assertEqual(len(disabled["questions"]), 5)
+        self.assertEqual(disabled["first_request"], self.origin["calls"][3]["request"])
+        for key in ("modelId", "messages", "system"):
+            self.assertEqual(disabled["first_request"][key], adaptive["first_request"][key])
+        self.assertEqual(adaptive["first_request"]["inferenceConfig"], {"maxTokens": 6000})
+        self.assertEqual(adaptive["first_request"]["additionalModelRequestFields"], {
+            "thinking": {"type": "adaptive"}, "output_config": {"effort": "high"},
+        })
+        provenance = self.plan["origin"]
+        self.assertEqual(provenance["capture_sha256"], hashlib.sha256(trial.RECHECK_ORIGIN.read_bytes()).hexdigest())
+        self.assertEqual(provenance["normalized_request_sha256"], trial._hash(disabled["request"]))
+        self.assertEqual(provenance["sanitized_candidates_sha256"], trial._hash(self.questions))
+        self.assertNotEqual(self.plan["source_sha256"]["evals/checkpoint_runtime_qualification.py"],
+                            provenance["source_sha256"]["evals/checkpoint_runtime_qualification.py"])
+        sent = payload(disabled["first_request"], "question_solution_json")
+        self.assertEqual(len(sent["items"]), 5)
+        for item in sent["items"]:
+            self.assertFalse(set(item) & {"expectedAnswer", "explanation", "choiceExplanations", "assessment", "difficulty"})
+
+    def test_both_arms_use_actual_survivor_filtering_four_calls_and_exact_replay(self):
+        with patch.object(trial.shared, "new_client", side_effect=AssertionError("No SDK")):
+            report = self.run_trial()
+            self.assertEqual(trial.replay_capture(report), report)
+        self.assertEqual(report["status"], "completed")
+        self.assertEqual([c["role"] for c in report["calls"]], ["solver", "reviewer"] * 2)
+        self.assertEqual([c["operation_index"] for c in report["calls"]], [0, 0, 1, 1])
+        self.assertEqual([len(j["questions"]) for j in report["operations"]], [5, 3])
+        self.assertEqual([j["budget_reservations"] for j in report["operations"]], [2, 2])
+        self.assertEqual([q["prompt"] for q in report["operations"][1]["questions"]],
+                         [q["prompt"] for q in self.questions if q["prompt"] not in self.excluded])
+        self.assertEqual(report["accounting"]["known_usage_subtotal"], {"inputTokens": 44, "outputTokens": 68})
+        for index in (0, 2):
+            self.assertEqual(report["calls"][index]["request"], self.plan["operations"][index // 2]["first_request"])
+        for call_index in (1, 3):
+            changed = copy.deepcopy(report)
+            changed["calls"][call_index]["request"]["messages"][0]["content"][0]["text"] += "changed"
+            with self.assertRaises(ValueError):
+                trial.replay_capture(changed)
+
+    def test_zero_survivors_and_malformed_response_do_not_force_review_or_repair(self):
+        def none_supported(request, **_):
+            items = payload(request, "question_solution_json")["items"]
+            return completed({"solutions": [{
+                "index": i["index"], "choices": [{"choice": c, "judgment": "refuted", "reason": "Scripted refutation."}
+                                                   for c in i["choices"]],
+            } for i in items]})
+        for index, observer in enumerate((none_supported, Mock(return_value=completed("malformed JSON")))):
+            self.output = self.directory / f"content-{index}"
+            report = self.run_trial(observer)
+            self.assertEqual(report["status"], "completed")
+            self.assertEqual([c["role"] for c in report["calls"]], ["solver", "solver"])
+            self.assertTrue(all(not j["questions"] for j in report["operations"]))
+            self.assertEqual(trial.replay_capture(report), report)
+
+    def test_recheck_profiles_caps_order_source_and_inputs_cannot_be_modified(self):
+        paths = [
+            (("maximum_calls",), 5), (("maximum_input_utf8_bytes_total",), 999999),
+            (("operations", 1, "maximum_calls"), 3), (("operations", 1, "arm"), "disabled"),
+            (("operations", 1, "settings", "BEDROCK_THINKING_MAX_TOKENS"), "16000"),
+            (("operations", 1, "settings", "BEDROCK_CLAUDE_EFFORT"), "max"),
+            (("operations", 1, "first_request", "inferenceConfig", "maxTokens"), True),
+            (("operations", 0, "request", "minimumDifficulty"), 1),
+            (("origin", "capture_sha256"), "wrong"), (("source_sha256", "question_verification.py"), "wrong"),
+        ]
+        observer = Mock()
+        for path, value in paths:
+            changed = copy.deepcopy(self.plan)
+            target = changed
+            for part in path[:-1]:
+                target = target[part]
+            target[path[-1]] = value
+            trial.shared.write_json(self.plan_path, changed)
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                trial.run_trial(self.plan_path, trial._hash(changed), self.output, observer=observer)
+        observer.assert_not_called()
+        self.assertFalse(self.output.exists())
+        with self.assertRaises(ValueError):
+            trial.make_plan({**self.packet, "profile": "adaptive"})
+        with patch.object(trial, "RECHECK_ORIGIN_SHA256", "wrong"), self.assertRaisesRegex(ValueError, "origin capture"):
+            trial.make_plan(self.packet)
+        original_snapshot = trial._source_snapshot(None)
+        original_snapshot["source_sha256"]["question_verification.py"] = "changed"
+        with patch.object(trial, "_source_snapshot", return_value=original_snapshot), self.assertRaisesRegex(ValueError, "Runtime sources"):
+            trial.make_plan(self.packet)
+
+    def test_later_arm_failure_stops_without_retries_and_preserves_earlier_results(self):
+        def observer(request, **kwargs):
+            if trial.caller.SETTINGS["BEDROCK_CLAUDE_THINKING"] == "adaptive":
+                return {"status": "operational_failure", "error_type": "ReadTimeoutError",
+                        "provider_dispatch_attempted": True, "usage_known": False}
+            return self.observer(request, **kwargs)
+        report = self.run_trial(observer)
+        self.assertEqual(len(report["calls"]), 3)
+        self.assertEqual(report["status"], "operational_failure")
+        self.assertEqual(len(report["operations"][0]["questions"]), 5)
+        self.assertEqual(report["operations"][1]["questions"], [])
+        self.assertEqual(report["accounting"]["unknown_usage_calls"], 1)
+        self.assertEqual(trial.replay_capture(report), report)
+
+    def test_recheck_prelaunch_deadline_input_role_and_call_caps_prevent_dispatch(self):
+        for mode in (0, 1):
+            job = self.plan["operations"][mode]
+            for violation in ("deadline", "bytes", "calls", "author"):
+                report = trial._empty_report(self.plan)
+                client = trial._RuntimeClient(report, lambda: None, Mock())
+                client.operation_index, client.settings = mode, job["settings"]
+                client.context = Mock(get_remaining_time_in_millis=Mock(return_value=79000))
+                request = copy.deepcopy(job["first_request"])
+                if violation == "deadline":
+                    client.context.get_remaining_time_in_millis.side_effect = [240000, 0]
+                elif violation == "bytes":
+                    request["messages"][0]["content"][0]["text"] += "é" * trial.MAX_INPUT_BYTES
+                elif violation == "calls":
+                    report["calls"] = [{"operation_index": mode}] * 2
+                else:
+                    request = copy.deepcopy(self.origin["calls"][2]["request"])
+                with patch.dict(os.environ, job["settings"]), self.subTest(mode=mode, violation=violation), self.assertRaises(Exception):
+                    client.converse(**request)
+                client.observer.assert_not_called()
+
+    def test_recheck_dry_cli_never_creates_client_and_uses_fresh_directory(self):
+        fixture = self.directory / "fixture.json"
+        trial.shared.write_json(fixture, self.packet)
+        with patch.object(trial.shared, "new_client", side_effect=AssertionError("No SDK")), patch.object(
+            trial.caller, "observe_request", side_effect=AssertionError("No worker"),
+        ):
+            self.assertEqual(trial.main(["--fixture", str(fixture), "--output", str(self.output)]), 0)
+        self.assertEqual(json.loads((self.output / "plan.json").read_text()), self.plan)
+        with self.assertRaises(FileExistsError):
+            trial.main(["--fixture", str(fixture), "--output", str(self.output)])
 
 
 if __name__ == "__main__":

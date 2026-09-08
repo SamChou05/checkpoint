@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Local policy-two runtime qualification; dry by default, no Lambda invocation.
 
-One fixed batch (at most two calls), then one fresh generation operation (six).
+Original mode: one fixed batch (two calls), then fresh generation (six).
+Frozen-recheck mode: the same archived five candidates in two two-call arms.
 The unchanged runtime owns parsing, filtering, top-offs and JSON repair. The
 existing isolated caller owns transport/deadlines; this file adds no supervisor.
 Operational completion and policy stamps are not factual correctness scores.
@@ -32,11 +33,15 @@ from question_verification import (  # noqa: E402
 )
 from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT  # noqa: E402
 from request_contract import _normalize_request  # noqa: E402
+from question_quality import _extract_json_object, _sanitize_questions  # noqa: E402
 from service_errors import ProviderError  # noqa: E402
 
 shared, recorded = caller.shared, caller.recorded
 _hash, _same = recorded._hash, recorded._same
 EXPERIMENT = "policy-two-runtime-qualification-v1"
+RECHECK_EXPERIMENT = "policy-two-frozen-recheck-v1"
+RECHECK_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/runtime-qualification-capture-20260908.json"
+RECHECK_ORIGIN_SHA256 = "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d"
 MAX_CALLS, MAX_INPUT_BYTES = 8, 32 * 1024
 OPERATION_SECONDS = 240
 SETTINGS = {
@@ -64,7 +69,7 @@ class _RequestCaptured(BaseException):
     pass
 
 
-def _first_request(request, questions=None):
+def _first_request(request, questions=None, *, settings=None):
     captured = []
 
     class Client:
@@ -87,7 +92,7 @@ def _first_request(request, questions=None):
         pass
     if len(captured) != 1:
         raise ValueError("The initial runtime request must exist.")
-    _guard_request(captured[0])
+    _guard_request(captured[0], settings)
     return captured[0]
 
 
@@ -105,13 +110,18 @@ def _role(request):
     raise ValueError("Unexpected runtime role.")
 
 
-def _guard_request(request):
+def _guard_request(request, settings=None):
+    settings = SETTINGS if settings is None else settings
     role = _role(request)
-    expected_model = SETTINGS["BEDROCK_MODEL_ID" if role.startswith("author") else "BEDROCK_VERIFICATION_MODEL_ID"]
+    expected_model = settings["BEDROCK_MODEL_ID" if role.startswith("author") else "BEDROCK_VERIFICATION_MODEL_ID"]
+    adaptive = not role.startswith("author") and settings["BEDROCK_CLAUDE_THINKING"] == "adaptive"
+    inference = {"maxTokens": 6000} if adaptive else {"maxTokens": 6000, "temperature": 0.2}
+    additional = ({"thinking": {"type": "adaptive"}, "output_config": {"effort": "high"}}
+                  if adaptive else {"thinking": {"type": "disabled"}})
     if (
         request.get("modelId") != expected_model
-        or not _same(request.get("inferenceConfig"), {"maxTokens": 6000, "temperature": 0.2})
-        or not _same(request.get("additionalModelRequestFields"), {"thinking": {"type": "disabled"}})
+        or not _same(request.get("inferenceConfig"), inference)
+        or not _same(request.get("additionalModelRequestFields"), additional)
         or set(request) != {"modelId", "messages", "system", "inferenceConfig", "additionalModelRequestFields"}
         or len(shared.canonical(request).encode("utf-8")) > MAX_INPUT_BYTES
     ):
@@ -120,6 +130,8 @@ def _guard_request(request):
 
 
 def make_plan(packet, *, source_revision=None):
+    if type(packet) is dict and packet.get("experiment") == RECHECK_EXPERIMENT:
+        return _make_recheck_plan(packet, source_revision=source_revision)
     if type(packet) is not dict or packet.get("experiment") != EXPERIMENT:
         raise ValueError("Wrong experiment fixture.")
     fixed, fresh = packet["fixed"], packet["fresh"]
@@ -132,25 +144,15 @@ def make_plan(packet, *, source_revision=None):
     for payload in (fixed["request"], fresh["payload"]):
         if type(payload.get("targetCount")) is not int or payload["targetCount"] != 5:
             raise ValueError("Both operations must request five questions.")
-    revision = shared.source_revision() if source_revision is None else source_revision
-    if (type(revision) is not str or not re.fullmatch(r"[0-9a-f]{40}", revision)
-            or subprocess.run(["git", "cat-file", "-e", revision + "^{commit}"],
-                              cwd=SERVICE_DIR, stdout=subprocess.DEVNULL,
-                              stderr=subprocess.DEVNULL).returncode):
-        raise ValueError("A resolvable full source revision is required.")
+    snapshot = _source_snapshot(source_revision)
     with patch.dict(os.environ, SETTINGS):
         fixed_request = _normalize_request(copy.deepcopy(fixed["request"]))
         fresh_request = _normalize_request(copy.deepcopy(fresh["payload"]))
         questions = [copy.deepcopy(case["question"]) for case in cases]
         first = [_first_request(fixed_request, questions), _first_request(fresh_request)]
-    sources = shared.source_hashes()
-    for name in ("evals/checkpoint_runtime_qualification.py", "evals/checkpoint_author_latency_probe.py",
-                 "evals/checkpoint_immutable_review_eval.py", "evals/question_immutable_review.py",
-                 "evals/question_complete_author.py", "evals/checkpoint_solution_compatibility_eval.py"):
-        sources[name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
     return {
         "experiment": EXPERIMENT, "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
-        "source_revision": revision, "source_sha256": sources, "dependencies": shared.dependencies(),
+        **snapshot,
         "settings": copy.deepcopy(SETTINGS),
         "operations": [
             {"kind": "fixed", "request": fixed_request, "questions": questions,
@@ -169,6 +171,79 @@ def make_plan(packet, *, source_revision=None):
         "failure_policy": "Observer, unfinished response, correlation, input-budget or persistence failure latches a global stop, including runtime-caught top-up failures. No provider-failure retry, model fallback, resumption or replacement operation. Existing runtime content top-offs and malformed-author JSON repair remain within six calls and are recorded distinctly.",
         "scope": "Local direct-model calls through current production functions, not deployed Lambda or bank writes. Observed deployed worker model aliases/read75/token6000/thinking-disabled limits; connect3 and temperature0.2 are runtime defaults. Balanced prompt and disabled guardrails are explicit trial settings. Fixed diagnostic acceptance and fresh yield do not establish factual, feedback or difficulty correctness.",
         "timing_scope": "Two independent 240-second operation clocks. Each existing isolated observer is bounded by the remaining operation time, with read75/connect3 and SDK1; bounded local cleanup can extend that wait slightly. The supplied fixed75 transport causes conservative runtime admission; deployed _bedrock_client can instead shorten its read timeout late in an operation. This is not an exact late-deadline Lambda simulation. Parent persistence is not hard real-time. Missing responses have unknown usage and remote completion.",
+    }
+
+
+def _source_snapshot(source_revision):
+    revision = shared.source_revision() if source_revision is None else source_revision
+    if (type(revision) is not str or not re.fullmatch(r"[0-9a-f]{40}", revision)
+            or subprocess.run(["git", "cat-file", "-e", revision + "^{commit}"],
+                              cwd=SERVICE_DIR, stdout=subprocess.DEVNULL,
+                              stderr=subprocess.DEVNULL).returncode):
+        raise ValueError("A resolvable full source revision is required.")
+    sources = shared.source_hashes()
+    for name in ("evals/checkpoint_runtime_qualification.py", "evals/checkpoint_author_latency_probe.py",
+                 "evals/checkpoint_immutable_review_eval.py", "evals/question_immutable_review.py",
+                 "evals/question_complete_author.py", "evals/checkpoint_solution_compatibility_eval.py"):
+        sources[name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
+    return {"source_revision": revision, "source_sha256": sources, "dependencies": shared.dependencies()}
+
+
+def _make_recheck_plan(packet, *, source_revision):
+    if packet != {"experiment": RECHECK_EXPERIMENT}:
+        raise ValueError("The frozen recheck has no configurable inputs or profiles.")
+    raw = RECHECK_ORIGIN.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != RECHECK_ORIGIN_SHA256:
+        raise ValueError("The exact committed origin capture is required.")
+    origin = json.loads(raw)
+    prior = origin["plan"]
+    if origin["status"] != "completed" or origin["plan_sha256"] != _hash(prior):
+        raise ValueError("Origin capture/plan binding failed.")
+    snapshot = _source_snapshot(source_revision)
+    runtime = {k: v for k, v in snapshot["source_sha256"].items() if not k.startswith("evals/")}
+    if runtime != {k: v for k, v in prior["source_sha256"].items() if not k.startswith("evals/")}:
+        raise ValueError("Runtime sources changed since the original capture.")
+    settings = {**SETTINGS, "BEDROCK_THINKING_MAX_TOKENS": "6000"}
+    with patch.dict(os.environ, settings):
+        # Normalize the original user payload, never the already normalized object.
+        request = _normalize_request(copy.deepcopy(prior["fixture"]["fresh"]["payload"]))
+        if not _same(request, prior["operations"][1]["request"]):
+            raise ValueError("Original normalized request cannot be reconstructed exactly.")
+        author = origin["calls"][2]
+        author_text = author["observation"]["response"]["text"]
+        raw_questions = _extract_json_object(author_text).get("questions")
+        questions = _sanitize_questions(raw_questions, request)
+        if author["role"] != "author" or len(raw_questions) != 5 or len(questions) != 5:
+            raise ValueError("Exactly the five original fresh candidates are required.")
+        first = _first_request(request, questions, settings=settings)
+        if not _same(first, origin["calls"][3]["request"]):
+            raise ValueError("Original solver input/settings cannot be reconstructed exactly.")
+    operations = []
+    for mode in ("disabled", "adaptive"):
+        profile = {**settings, "BEDROCK_CLAUDE_THINKING": mode}
+        with patch.dict(os.environ, profile):
+            initial = _first_request(request, questions, settings=profile)
+        if any(not _same(initial[k], first[k]) for k in ("modelId", "system", "messages")):
+            raise ValueError("The two arms must preserve identical solver subject input.")
+        operations.append({"kind": "fixed", "arm": mode, "settings": profile,
+                           "request": copy.deepcopy(request), "questions": copy.deepcopy(questions),
+                           "maximum_calls": 2, "first_request": initial})
+    return {
+        **copy.deepcopy(prior), **snapshot,
+        "experiment": RECHECK_EXPERIMENT, "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
+        "settings": settings, "operations": operations, "maximum_calls": 4,
+        "maximum_input_utf8_bytes_total": 4 * MAX_INPUT_BYTES,
+        "origin": {
+            "path": str(RECHECK_ORIGIN.relative_to(SERVICE_DIR.parents[1])),
+            "capture_sha256": RECHECK_ORIGIN_SHA256, "plan_sha256": origin["plan_sha256"],
+            "source_revision": prior["source_revision"], "source_sha256": prior["source_sha256"],
+            "raw_author_call_index": 2, "baseline_call_indexes": [3, 4],
+            "raw_author_text_sha256": hashlib.sha256(author_text.encode("utf-8")).hexdigest(),
+            "normalized_request_sha256": _hash(request), "sanitized_candidates_sha256": _hash(questions),
+            "runtime_sources_unchanged": True,
+        },
+        "failure_policy": "At most one solver and one survivor-only reviewer per arm. No author, repair, top-off, retries, fallback or resume. Operational/unfinished-response/cleanup/persistence failure stops both arms. Normal runtime content rejection remains distinct and does not force a reviewer call when no item survives.",
+        "scope": "A new disabled-then-adaptive paired diagnostic on five selected archived authored MCQs, not fresh authoring or a randomized accuracy estimate. Both arms use Sonnet4.6/6000; adaptive sends high effort without sampling controls, disabled sends temperature0.2 without an effort field. Solver and reviewer settings change together. Original disabled results are historical evidence only. New reviewers see new solver survivors/reasons and generate feedback; they do not audit the old returned teaching fields. No deployed calls, bank writes or correctness guarantees.",
     }
 
 
@@ -253,6 +328,7 @@ class _RuntimeClient:
         self.report, self.persist, self.observer = report, persist, observer
         self.cli_credentials, self.replay = cli_credentials, replay
         self.failed = False
+        self.settings = SETTINGS
         self.meta = SimpleNamespace(config=SimpleNamespace(
             connect_timeout=3, read_timeout=75, retries={"total_max_attempts": 1},
         ))
@@ -264,10 +340,10 @@ class _RuntimeClient:
         position = len(self.report["calls"])
         count = sum(c["operation_index"] == self.operation_index for c in self.report["calls"])
         try:
-            role = _guard_request(request)
-            if position >= MAX_CALLS or count >= operation["maximum_calls"]:
+            role = _guard_request(request, self.settings)
+            if position >= self.report["plan"]["maximum_calls"] or count >= operation["maximum_calls"]:
                 raise ValueError("Call cap exceeded.")
-            if self.operation_index == 0 and role not in ("solver", "reviewer"):
+            if operation["kind"] == "fixed" and role not in ("solver", "reviewer"):
                 raise ValueError("Fixed batch cannot invoke an author.")
             remaining = self.context.get_remaining_time_in_millis()
             if remaining <= 0:
@@ -373,12 +449,14 @@ class _RuntimeClient:
 
 def _execute(plan, report, persist, observer=None, *, cli_credentials=False, replay=None):
     client = _RuntimeClient(report, persist, observer, cli_credentials, replay and replay["calls"])
-    with patch.dict(os.environ, SETTINGS), patch.object(caller, "SETTINGS", copy.deepcopy(SETTINGS)):
-        for index, job in enumerate(plan["operations"]):
+    for index, job in enumerate(plan["operations"]):
+        settings = job.get("settings", plan["settings"])
+        with patch.dict(os.environ, settings), patch.object(caller, "SETTINGS", copy.deepcopy(settings)):
             result = report["operations"][index]
             result["status"] = "running"
             context = _OperationContext(result, None if replay is None else replay["operations"][index]["remaining_milliseconds"])
             client.operation_index, client.context = index, context
+            client.settings = settings
             budget = generation.ProviderCallBudget(job["maximum_calls"], context=context)
             metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
             error_type, questions = None, []
