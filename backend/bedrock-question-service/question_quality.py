@@ -113,6 +113,8 @@ def _sanitize_questions(
     raw_questions: Any,
     request: dict[str, Any],
     request_metrics: dict[str, Any] | None = None,
+    *,
+    preserve_authored_explanation: bool = False,
 ) -> list[dict[str, Any]]:
     if not isinstance(raw_questions, list):
         record_quality(request_metrics, "sanitize", "invalid_envelope")
@@ -188,7 +190,22 @@ def _sanitize_questions(
         expected_answer = _choice_uniqueness_key(
             str(raw_question.get("expectedAnswer") or "")
         )
-        explanation = _clip(_clean_text(raw_question.get("explanation")), 420)
+        if preserve_authored_explanation:
+            # This text will be audited and then displayed unchanged. Reject
+            # incomplete/oversized content instead of silently clipping it.
+            explanation = raw_question.get("explanation")
+            supplied_feedback = raw_question.get("choiceExplanations", {})
+            if (
+                type(explanation) is not str
+                or len(explanation.strip()) < 12
+                or len(explanation) > 420
+                or type(supplied_feedback) is not dict
+                or supplied_feedback
+            ):
+                record_quality(request_metrics, "sanitize", "invalid_content")
+                continue
+        else:
+            explanation = _clip(_clean_text(raw_question.get("explanation")), 420)
         topic = (
             skill_tag["topic"]
             if skill_tag

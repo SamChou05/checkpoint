@@ -4,6 +4,9 @@ Revision 1 identifies the historical stem-only solver gate and final review.
 Revision 2 requires complete-choice judgments, unique exact key agreement, and
 final review. Neither certifies factual correctness. Missing revisions remain
 legacy/unknown; reading or claiming inventory must never assign a new revision.
+Revision 3 additionally identifies the opt-in authored worked-explanation audit;
+the final reviewer cannot replace learner-facing teaching. It is not yet the
+default generation contract or required claim minimum.
 """
 
 from typing import Any
@@ -12,6 +15,7 @@ from typing import Any
 VERIFICATION_VERSION = 1
 LEGACY_VERIFICATION_POLICY_REVISION = 1
 COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION = 2
+AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION = 3
 VERIFICATION_POLICY_REVISION = COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION
 
 

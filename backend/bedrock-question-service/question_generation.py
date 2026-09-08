@@ -198,6 +198,7 @@ def _generate_sanitized_questions(
     call_budget: ProviderCallBudget | None = None,
     request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    feedback_contract = _feedback_contract()
     target_count = request["targetCount"]
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
@@ -232,7 +233,8 @@ def _generate_sanitized_questions(
                 request_metrics=request_metrics,
             )
             candidates = _sanitize_questions(
-                provider_payload.get("questions", []), current_request, request_metrics
+                provider_payload.get("questions", []), current_request, request_metrics,
+                preserve_authored_explanation=feedback_contract == "authored_solution",
             )
             generated_questions = verify_questions(
                 candidates,
@@ -257,6 +259,7 @@ def _generate_sanitized_questions(
                     request_metrics=request_metrics,
                 ),
                 solver_contract="complete_choices",
+                feedback_contract=feedback_contract,
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -575,6 +578,14 @@ def _model_setting(key: str, default: str, allowed: set[str]) -> str:
     return value
 
 
+def _feedback_contract() -> str:
+    """Opt-in until fresh content qualification; never inferred from model text."""
+    return _model_setting(
+        "QUESTION_FEEDBACK_CONTRACT", "reviewer_written",
+        {"reviewer_written", "authored_solution"},
+    )
+
+
 def _conversation_prompt(user_prompt: str, system_prompt: str | None = None) -> str:
     return f"""
 {system_prompt or _system_prompt()}
@@ -830,6 +841,23 @@ of existing/reported questions, while allowing deliberate practice of a concept.
 Vary the decision, evidence, or operation across the batch. Return final JSON only.
 """
     ).strip()
+    if _feedback_contract() == "authored_solution":
+        base_prompt += """
+
+The main explanation is the complete worked solution that the learner will see.
+State the relevant rule, apply the actual facts, and show the decisive reasoning
+that establishes the answer. For a calculation, show how the supplied quantities
+produce the result; for an inference or decision, connect the stated conditions
+to the conclusion. Merely naming the correct answer is not sufficient teaching.
+Preserve necessary qualifications without inventing observations or unrelated
+counterfactuals. Put premises needed by the answer in the stem, not only here.
+Finish the explanation now, within the existing bounds. A later reviewer may
+reject it but cannot rewrite, shorten, or add learner-facing content. Do not
+produce choiceExplanations; all four alternatives will still be independently
+checked for correctness and plausibility. The explanation must be useful on its
+own. An unsupported_authored_explanation, uncertain_authored_explanation, or
+reported_issues rejection requires a new complete, supported teaching item.
+""".rstrip()
     variant_instructions = _prompt_variant_instructions()
     if variant_instructions:
         return f"{base_prompt}\n\n{variant_instructions}"

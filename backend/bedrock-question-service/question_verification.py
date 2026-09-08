@@ -14,9 +14,17 @@ from complete_question_solution import (
 from generation_diagnostics import record_quality
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _extract_json_object
+from question_teaching import (
+    AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT,
+    AuthoredTeachingFormatError,
+    authored_review_rejection_reason,
+    freeze_authored_question,
+    validate_authored_reviews,
+)
 from service_errors import ProviderError
 from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
+    AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
     LEGACY_VERIFICATION_POLICY_REVISION,
     VERIFICATION_VERSION,
@@ -190,6 +198,7 @@ def verify_questions(
     *,
     solve: Callable[[str, str], str] | None = None,
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
+    feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
 ) -> list[dict[str, Any]]:
     """Review with an explicit solver contract; legacy remains the eval default.
 
@@ -199,7 +208,12 @@ def verify_questions(
     """
     if solver_contract not in ("stem_only", "complete_choices"):
         raise ValueError("Unknown independent-solver contract.")
+    if feedback_contract not in ("reviewer_written", "authored_solution"):
+        raise ValueError("Unknown teaching-feedback contract.")
     complete_choices = solver_contract == "complete_choices"
+    authored_solution = feedback_contract == "authored_solution"
+    if authored_solution and not complete_choices:
+        raise ValueError("Authored teaching requires the complete-choice solver contract.")
     original_count = len(questions)
     questions = [
         question for question in questions if _has_reviewable_choices(question)
@@ -207,6 +221,14 @@ def verify_questions(
     record_quality(
         request_metrics, "review", "invalid_choices", original_count - len(questions)
     )
+    if authored_solution:
+        frozen = []
+        for question in questions:
+            try:
+                frozen.append(freeze_authored_question(question))
+            except AuthoredTeachingFormatError:
+                record_quality(request_metrics, "review", "invalid_feedback")
+        questions = frozen
     if not questions:
         return []
     if complete_choices and solve is None:
@@ -229,7 +251,12 @@ def verify_questions(
             }
         )
     data = {key: request.get(key) for key in ("goal", "skillMap", "sourceDocuments")}
-    data["existingQuestions"] = request.get("existingQuestionCoverage", [])[-30:]
+    history = request.get("existingQuestionCoverage", [])[-30:]
+    data["existingQuestions"] = [
+        {key: value for key, value in entry.items()
+         if key in {"prompt", "topic", "skillID", "objectiveID", "objective"}}
+        for entry in history
+    ] if authored_solution else history
     data["items"] = items
     if solve is not None:
         if complete_choices:
@@ -290,21 +317,36 @@ def verify_questions(
             item["index"] = new_index
             solution["index"] = new_index
         solutions = supported
-        data["independentSolutions"] = solutions
+        if not authored_solution:
+            data["independentSolutions"] = solutions
+    if authored_solution:
+        # The solver remains answer/feedback blind. Only dense survivors now
+        # expose their already-frozen teaching for an audit that cannot rewrite it.
+        for item, question in zip(data["items"], questions, strict=True):
+            item["explanation"] = question["explanation"]
     prompt = (
         "<question_review_json>\n"
         + json.dumps(data, ensure_ascii=False)
         + "\n</question_review_json>"
     )
     raw = review(
-        COMPLETE_REVIEW_SYSTEM_PROMPT if complete_choices else REVIEW_SYSTEM_PROMPT,
+        AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT if authored_solution else (
+            COMPLETE_REVIEW_SYSTEM_PROMPT if complete_choices else REVIEW_SYSTEM_PROMPT
+        ),
         prompt,
     )
-    try:
-        reviews = _extract_json_object(raw).get("reviews")
-    except ProviderError:
-        record_quality(request_metrics, "review", "invalid_json", len(questions))
-        return []
+    if authored_solution:
+        try:
+            reviews = validate_authored_reviews(raw, data["items"])
+        except AuthoredTeachingFormatError:
+            record_quality(request_metrics, "review", "invalid_authored_review", len(questions))
+            return []
+    else:
+        try:
+            reviews = _extract_json_object(raw).get("reviews")
+        except ProviderError:
+            record_quality(request_metrics, "review", "invalid_json", len(questions))
+            return []
     if not isinstance(reviews, list) or len(reviews) != len(questions):
         record_quality(request_metrics, "review", "invalid_envelope", len(questions))
         return []
@@ -328,6 +370,11 @@ def verify_questions(
     accepted = []
     for index, question in enumerate(questions):
         item = by_index[index]
+        if authored_solution:
+            reason = authored_review_rejection_reason(item, question)
+            if reason is not None:
+                record_quality(request_metrics, "review", reason)
+                continue
         if item.get("valid") is not True:
             record_quality(request_metrics, "review", "rejected_by_model")
             continue
@@ -354,23 +401,26 @@ def verify_questions(
         if target is not None and difficulty != target:
             record_quality(request_metrics, "review", "difficulty_target")
             continue
-        explanation = item.get("explanation")
-        choices = item.get("choiceExplanations")
-        if not _bounded_explanation(explanation, 420) or not isinstance(choices, dict):
-            record_quality(request_metrics, "review", "invalid_feedback")
-            continue
-        if set(choices) != set(question["choices"]) or not all(
-            _bounded_explanation(value, 280) for value in choices.values()
-        ):
-            record_quality(request_metrics, "review", "invalid_feedback")
-            continue
-        if any(
-            re.search(r"\b(?:choice|option|answer)\s+[A-D]\b", text, re.I)
-            for text in [explanation, *choices.values()]
-        ):
-            # Choices are shuffled on the phone; feedback must name the concept.
-            record_quality(request_metrics, "review", "answer_labels")
-            continue
+        if authored_solution:
+            explanation, choices = question["explanation"], {}
+        else:
+            explanation = item.get("explanation")
+            choices = item.get("choiceExplanations")
+            if not _bounded_explanation(explanation, 420) or not isinstance(choices, dict):
+                record_quality(request_metrics, "review", "invalid_feedback")
+                continue
+            if set(choices) != set(question["choices"]) or not all(
+                _bounded_explanation(value, 280) for value in choices.values()
+            ):
+                record_quality(request_metrics, "review", "invalid_feedback")
+                continue
+            if any(
+                re.search(r"\b(?:choice|option|answer)\s+[A-D]\b", text, re.I)
+                for text in [explanation, *choices.values()]
+            ):
+                # Choices are shuffled on the phone; feedback must name the concept.
+                record_quality(request_metrics, "review", "answer_labels")
+                continue
         verified_question = {
             # Caller/author metadata cannot establish policy provenance.
             **{
@@ -379,7 +429,7 @@ def verify_questions(
                 if key != "verificationPolicyRevision"
             },
             "difficulty": difficulty,
-            "explanation": explanation.strip(),
+            "explanation": explanation if authored_solution else explanation.strip(),
             "choiceExplanations": {
                 key: value.strip() for key, value in choices.items()
             },
@@ -389,8 +439,10 @@ def verify_questions(
             # Each path owns its revision. A legacy solver must never acquire
             # the current complete-choice policy by a constant/version bump.
             verified_question["verificationPolicyRevision"] = (
-                COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
-                else LEGACY_VERIFICATION_POLICY_REVISION
+                AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
+                    COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
+                    else LEGACY_VERIFICATION_POLICY_REVISION
+                )
             )
         accepted.append(verified_question)
         record_quality(request_metrics, "review", "accepted")
