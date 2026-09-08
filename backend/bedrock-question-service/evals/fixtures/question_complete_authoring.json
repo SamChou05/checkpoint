@@ -1,0 +1,193 @@
+{
+  "experiment": "complete-authoring-immutable-audit-v1",
+  "prepared_on_utc": "2026-09-08",
+  "scope": "Four fresh ordinary learning goals, one complete authored MCQ per goal. This is an unpaired feasibility input packet, not an exam template, a source-access comparison, a correctness result or a deployment qualification.",
+  "prospective_assessment": {
+    "planned_questions": 4,
+    "questions_per_goal": 1,
+    "minimum_difficulty": 3,
+    "provider_input_boundary": "Only each case's context is an authoring input. Preserve the identical goal and sourceDocuments for its solver and immutable auditor. Case IDs, this assessment, source provenance and all per-case external_assessment fields stay outside provider requests.",
+    "criteria": [
+      "Assess every raw authored item, including content-rejected and unreturned items. Missing or unattempted stages remain missing rather than being scored as clean content.",
+      "The unchanged displayed question must supply its necessary premises and exactly one warranted answer. Judge every choice literally; do not rescue a key using a best-listed interpretation or a missing assumption.",
+      "All three distractors must be distinct, wrong for the actual task and defensible as learning alternatives. Being grammatically different or obviously absurd does not establish useful distractors.",
+      "Inspect the exact authored main explanation and all four choice explanations, then the auditor's judgments and issue text. A correct key or internally consistent feedback does not validate an invented mechanism, condition or distractor origin.",
+      "Independently assess the shared 1-5 rubric. Level 3 requires interpretation of evidence or a representation to distinguish plausible conclusions, with scenario details affecting the answer. Length, multiple calculations and an assigned difficulty label alone do not establish it.",
+      "Require four complete supported items with defensible distractors and independently assessed difficulty at least 3 for full fixed-packet feasibility. Report counts for construction, solver eligibility, audit acceptance, supported content and useful challenge separately out of four; no repair or replacement earns retrospective credit."
+    ],
+    "limits": [
+      "Two goals include manually inspected primary-source summaries and two have no source documents. Subjects differ, so this is not a matched estimate of source effects.",
+      "Source summaries are evidence, not automatic factual approval. Absence from a summary does not prove a claim false; any material outside claim needs separate assessment.",
+      "Complete learner fields retain the frozen 320/140/420/280 limits without truncation. Input preparation does not prove that a model can meet those limits or produce the requested reasoning.",
+      "No ready-made stems, answer menus, keys or teaching explanations are supplied. The generic pipeline owns authoring and output shape; the goals do not impose subject-specific schemas.",
+      "No provider calls, native execution or production changes were made to prepare this packet. Model settings, call caps and the full source/request freeze belong to the separate prospective runner plan."
+    ],
+    "prior_results_considered": [
+      "docs/QUESTION_SOURCE_AUTHORING_EXPERIMENT.md: source access did not prevent missing qualifications, invented teaching mechanisms or overstated difficulty.",
+      "docs/QUESTION_SOLUTION_CONSTRUCTION_RESULTS.md: length rejection is not factual verification; avoidable prose and underqualified causal diagnoses can coexist with an independently supplied answer."
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "fresh_css_grid_placement",
+      "context": {
+        "goal": {
+          "title": "Understand CSS Grid placement in small page layouts",
+          "currentLevel": "I can create a simple grid and read CSS declarations, but I struggle to predict placement when item spans and automatic flow interact.",
+          "focusAreas": "Interpret compact grid declarations and item order to predict occupied cells; distinguish line ranges, spans and sparse or dense row placement."
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "W3C CSS Grid Level 1: placement and automatic flow (inspected summary)",
+            "text": "Grid tracks lie between grid lines. Positive line numbers count from the explicit grid's start edge and negative numbers from its end edge. A span states the number of tracks occupied. Row auto-flow places items across rows and adds rows when needed. Items explicitly positioned in both axes are placed before the remaining auto-positioned items. Auto-placement uses order-modified document order. Without dense, packing moves forward without revisiting earlier holes. Dense packing can fill earlier holes with later fitting items, changing visual order. Grid placement affects visual presentation, not document source order. Physical left/right interpretation depends on writing direction."
+          }
+        ]
+      },
+      "external_assessment": {
+        "expected_skills": [
+          "Read a small actual layout representation and track which cells an item can occupy.",
+          "Reconcile a span or explicit placement with the stated automatic-placement behavior."
+        ],
+        "level3_requirement": "The concrete declarations and item arrangement must be necessary to distinguish plausible results. Merely naming dense, counting the endpoints of one range or repeating a property definition is insufficient.",
+        "scope_checks": [
+          "All material placement declarations, relevant item order and grid dimensions must be visible. Resolve direction if choices depend on physical left/right.",
+          "Do not invent inherited styles, other items, accessibility behavior or pixel dimensions from absent sizing/content constraints.",
+          "A compact code fragment is eligible subject content, but no browser observation or cross-browser guarantee is provided by this packet."
+        ]
+      },
+      "provenance": {
+        "kind": "fresh goal with a manually inspected primary-source paraphrase",
+        "sources": [
+          {
+            "source_document_index": 0,
+            "url": "https://www.w3.org/TR/2025/CRD-css-grid-1-20250326/",
+            "title": "CSS Grid Layout Module Level 1",
+            "publisher": "W3C CSS Working Group",
+            "document_status": "Candidate Recommendation Draft, 26 March 2025; this is a dated specification snapshot, not a claim that it is a final Recommendation.",
+            "inspected_sections": [
+              "7.1 The Explicit Grid",
+              "7.7 Automatic Placement",
+              "8.1.2 Numeric Indexes and Spans",
+              "8.2 Grid Item Placement vs. Source Order",
+              "8.5 Grid Item Placement Algorithm"
+            ],
+            "retrieved_on_utc": "2026-09-08",
+            "adaptation": "Concise factual paraphrase only. No source example, exercise, numbers or answer choice was copied. URLs and this provenance are not provider instructions."
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "fresh_conditional_probability",
+      "context": {
+        "goal": {
+          "title": "Interpret conditional probabilities in everyday data",
+          "currentLevel": "I can calculate percentages, but I confuse the population being conditioned on and sometimes treat reversed conditional probabilities as equal.",
+          "focusAreas": "Use complete subgroup counts or classification results to compare claims; track the relevant denominator, conditioning direction and group sizes before interpreting a rate."
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Penn State STAT 500: conditional and marginal probability (inspected summary)",
+            "text": "Conditional probability restricts attention to outcomes satisfying the given event. For P(B) greater than zero, P(A given B) equals P(A and B) divided by P(B). For uniform selection of an individual from a finite table, use the overlap count divided by the count in the conditioned group. Reversing the conditioning changes the denominator: P(A given B) and P(B given A) need not agree. A marginal probability uses the whole relevant population without conditioning on another event. A joint probability and a conditional probability are different quantities even when they use the same overlap count."
+          }
+        ]
+      },
+      "external_assessment": {
+        "expected_skills": [
+          "Identify the actual selected population and the conditioning event from a concrete count representation.",
+          "Distinguish a supported rate comparison from reversed conditioning or neglect of group sizes."
+        ],
+        "level3_requirement": "The learner must interpret the supplied distribution or competing data claims, not merely substitute into a labeled formula or recall a definition. The actual group counts must matter to the conclusion.",
+        "scope_checks": [
+          "Check that all needed counts or probabilities are supplied, consistent and attached to explicit groups; conditioning denominators must be nonzero.",
+          "A finite-table result requires its stated sampling interpretation. Do not infer an unstated population prevalence, representativeness, independence or causal effect.",
+          "Preserve exact versus approximate probability and rounding conditions; distinct-looking numeric choices may be equivalent."
+        ]
+      },
+      "provenance": {
+        "kind": "fresh goal with a manually inspected primary-source paraphrase",
+        "sources": [
+          {
+            "source_document_index": 0,
+            "url": "https://online.stat.psu.edu/stat500/Lesson02",
+            "title": "STAT 500: Probability",
+            "publisher": "Penn State Department of Statistics",
+            "inspected_sections": [
+              "Definition 2.14 Conditional Probability",
+              "Computing Conditional Probability",
+              "Definition 2.15 Marginal Probability",
+              "Example 2.6 Enrollment Figures: denominator distinction only"
+            ],
+            "retrieved_on_utc": "2026-09-08",
+            "retrieval_note": "Indexed primary content and the actual primary HTML were inspected. Direct HTML retrieval succeeded after the web reader failed to open the page.",
+            "adaptation": "Factual paraphrase of conditional, marginal and joint probability. No enrollment values, demographic categories, ready-made question or answer was copied."
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "fresh_english_condition_scope",
+      "context": {
+        "goal": {
+          "title": "Read English conditions and quantifiers precisely",
+          "currentLevel": "I understand ordinary sentences, but I sometimes confuse a requirement with a guarantee or read all, some and only as stronger claims than they make.",
+          "focusAreas": "Interpret short everyday instructions and claims; use the actual wording of necessary or sufficient conditions and quantifiers to distinguish warranted conclusions."
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": []
+      },
+      "external_assessment": {
+        "expected_skills": [
+          "Track which direction a condition licenses an inference and which quantities a statement actually covers.",
+          "Distinguish a necessary conclusion from a possible interpretation by comparing the displayed wording and facts."
+        ],
+        "level3_requirement": "The actual statements and their relationship must determine which inference is warranted. A vocabulary definition or a single obvious reversal with three absurd alternatives does not establish level 3.",
+        "scope_checks": [
+          "All relevant sentences, comparison claims and concrete facts must appear in the task. Do not manufacture the existence of a person or group from a universal statement alone.",
+          "Ordinary conditions do not automatically mean if-and-only-if; some does not automatically exclude all. Check any claimed exclusivity or exception against the exact wording.",
+          "If natural-language scope genuinely permits different readings, count the ambiguity instead of converting the text silently into a preferred formal rule.",
+          "A stem-only solver asking to see the missing answer menu is an input-boundary limitation, not successful detection of an invalid complete MCQ."
+        ]
+      },
+      "provenance": {
+        "kind": "fresh general learning goal; no supplied source packet",
+        "sources": [],
+        "knowledge_scope": "Stable ordinary-language and elementary inference concepts. The author must supply the concrete task context; there is no stipulated-rule constructor, fixed rule schema or handauthored exercise in this input.",
+        "novelty": "Condition and quantifier scope rather than the earlier modifier-attachment exercise."
+      }
+    },
+    {
+      "case_id": "fresh_solution_mass_balance",
+      "context": {
+        "goal": {
+          "title": "Reason about dissolved material and concentration during physical changes",
+          "currentLevel": "I can read a concentration and do a simple dilution, but I lose track of what stays in the container when a mixture is transferred or solvent is removed.",
+          "focusAreas": "Compare changes in dissolved material, total mixture amount and concentration across clearly described mixing, dilution, transfer or solvent-evaporation processes."
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": []
+      },
+      "external_assessment": {
+        "expected_skills": [
+          "Track which material is retained or removed during a specified physical process.",
+          "Distinguish solute amount from concentration using the actual process sequence and measurement basis."
+        ],
+        "level3_requirement": "The described operations and retained quantities must affect the inference, rather than merely asking for a concentration definition or direct substitution into one dilution equation. A process comparison can earn 3 only when its relevant conditions are complete.",
+        "scope_checks": [
+          "Concentration basis and units must be explicit. Do not silently treat mass fraction, amount per volume and volume fraction as interchangeable.",
+          "The task must establish what each transfer or evaporation removes, and any homogeneity, no-spillage, nonvolatile-solute or no-reaction condition needed for its conclusion.",
+          "Do not assume additive solution volumes, absence of precipitation or unlimited solubility without support when those details matter. A mass-based idealized scenario can avoid unnecessary volume assumptions.",
+          "No causal diagnosis of an unexplained experimental observation or unstated material property is supplied by this general goal."
+        ]
+      },
+      "provenance": {
+        "kind": "fresh general learning goal; no supplied source packet",
+        "sources": [],
+        "knowledge_scope": "Stable conservation and concentration reasoning under explicitly described idealized physical conditions. The author supplies any necessary material properties and process premises; no ready-made measurements, recipe or answer is provided.",
+        "novelty": "Physical mixture accounting rather than the earlier lunar-orientation or photographic-cause questions."
+      }
+    }
+  ]
+}
