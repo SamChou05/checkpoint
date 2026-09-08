@@ -466,20 +466,13 @@ final class CheckpointStore {
     }
 
     func updateActiveSkillMapEvolutionEnabled(_ isEnabled: Bool) {
-        guard var updatedGoal = goal, var skillMap = updatedGoal.derivedSkillMap else { return }
-        guard skillMap.evolutionEnabled != isEnabled else { return }
-        skillMap.evolutionEnabled = isEnabled
-        skillMap.updatedAt = Date()
-        updatedGoal.derivedSkillMap = skillMap
-        storeGoalProfile(updatedGoal)
-        if !isEnabled {
-            removeSkillMapEvolutionIntent(for: updatedGoal.id)
-        }
-        save()
-        publishShieldContext()
-        if isEnabled {
-            _ = scheduleSkillMapEvolutionIfNeeded(for: updatedGoal)
-        }
+        guard let goal, let skillMap = goal.derivedSkillMap else { return }
+        _ = updateLearningMap(
+            goalID: goal.id,
+            expectedMap: skillMap,
+            topics: skillMap.topics,
+            growthMode: isEnabled ? .automatic : .manual
+        )
     }
 
     var isBuildingActiveSkillMap: Bool {
@@ -526,6 +519,21 @@ final class CheckpointStore {
         forGoalID expectedGoalID: Goal.ID,
         expectedMap: GoalSkillMap
     ) -> Bool {
+        updateLearningMap(
+            goalID: expectedGoalID,
+            expectedMap: expectedMap,
+            topics: proposedTopics,
+            growthMode: expectedMap.growthMode
+        )
+    }
+
+    @discardableResult
+    func updateLearningMap(
+        goalID expectedGoalID: Goal.ID,
+        expectedMap: GoalSkillMap,
+        topics proposedTopics: [SkillMapTopic],
+        growthMode: SkillMapGrowthMode
+    ) -> Bool {
         guard var updatedGoal = goal,
               updatedGoal.id == expectedGoalID,
               let existingMap = updatedGoal.derivedSkillMap,
@@ -539,7 +547,8 @@ final class CheckpointStore {
             preserving: existingMap
         )
         let archivedSkillIDs = Set(existingMap.archivedTopics.map(\.id))
-        guard (3...6).contains(reviewedTopics.count),
+        guard proposedTopics.allSatisfy({ $0.objectives.count <= SkillMapTopic.maximumActiveObjectiveCount }),
+              SkillMapReconciler.learningMapValidationError(topics: reviewedTopics) == nil,
               !SkillMapReconciler.hasArchivedSkillCollision(
                 topics: reviewedTopics,
                 archivedTopics: existingMap.archivedTopics
@@ -551,6 +560,16 @@ final class CheckpointStore {
             return false
         }
 
+        let existingIDs = Set(existingMap.topics.map(\.id))
+        let removedIDs = existingIDs.subtracting(reviewedTopics.map(\.id))
+        let replacementTopics = reviewedTopics.filter { !existingIDs.contains($0.id) && !$0.predecessorIDs.isEmpty }
+        guard replacementTopics.allSatisfy({ topic in
+            topic.predecessorIDs.count == 1 &&
+                topic.predecessorIDs.allSatisfy(removedIDs.contains) &&
+                topic.stage == (existingMap.topics.first { $0.id == topic.predecessorIDs.first }?.stage ?? 0) + 1
+        }), Set(replacementTopics.flatMap(\.predecessorIDs)).count == replacementTopics.count else {
+            return false
+        }
         let rollbackState = goalProfileMutationRollbackState()
         let previousMap = existingMap
         let contentChanged = SkillMapReconciler.skillMapContentSignature(
@@ -558,12 +577,19 @@ final class CheckpointStore {
         ) != SkillMapReconciler.skillMapContentSignature(topics: reviewedTopics)
         if !contentChanged {
             let metadataChanged = existingMap.status != .reviewed ||
-                existingMap.topics != reviewedTopics
+                existingMap.topics != reviewedTopics || existingMap.growthMode != growthMode
             guard metadataChanged else { return true }
 
             var reviewedMap = existingMap
             reviewedMap.topics = reviewedTopics
             reviewedMap.status = .reviewed
+            if reviewedMap.growthMode != growthMode {
+                reviewedMap.growthMode = growthMode
+                reviewedMap.version += 1
+                reviewedMap.pendingEvolutionSuggestion = nil
+                reviewedMap.dismissedEvolutionSkillIDs = []
+                removeSkillMapEvolutionIntent(for: updatedGoal.id)
+            }
             reviewedMap.updatedAt = Date()
             updatedGoal.derivedSkillMap = reviewedMap
             storeGoalProfile(updatedGoal)
@@ -572,6 +598,7 @@ final class CheckpointStore {
                 return false
             }
             publishShieldContext()
+            _ = scheduleSkillMapEvolutionIfNeeded(for: updatedGoal)
             return true
         }
 
@@ -580,11 +607,12 @@ final class CheckpointStore {
             guard !reviewedSkillIDs.contains(topic.id), !archivedSkillIDs.contains(topic.id) else {
                 return nil
             }
+            let successors = replacementTopics.filter { $0.predecessorIDs.contains(topic.id) }.map(\.id)
             return archivedSkillEntry(
                 for: topic,
                 goalID: updatedGoal.id,
-                reason: .userRemoved,
-                successorSkillIDs: []
+                reason: successors.isEmpty ? .userRemoved : .userReplaced,
+                successorSkillIDs: successors
             )
         }
         updatedGoal.derivedSkillMap = GoalSkillMap(
@@ -596,7 +624,8 @@ final class CheckpointStore {
             evolutionEnabled: existingMap.evolutionEnabled,
             lastEvolvedAt: existingMap.lastEvolvedAt,
             createdAt: existingMap.createdAt,
-            updatedAt: Date()
+            updatedAt: Date(),
+            growthMode: growthMode
         )
         storeGoalProfile(updatedGoal)
         removeSkillMapEvolutionIntent(for: updatedGoal.id)
@@ -616,6 +645,14 @@ final class CheckpointStore {
                 continue
             }
 
+            // Descriptions and focus-point edits change what a question should test.
+            // Retain earned evidence while refreshing stale practice inventory.
+            let objectivesChanged = previousSkill.objectives.sorted { $0.id.uuidString < $1.id.uuidString }
+                != reviewedSkill.objectives.sorted { $0.id.uuidString < $1.id.uuidString }
+            if previousSkill.detail != reviewedSkill.detail || objectivesChanged {
+                questions[index].status = .retired
+                questions[index].nextReviewAt = nil
+            }
             questions[index] = SkillMapReconciler.canonicalizedQuestion(
                 questions[index],
                 for: reviewedSkill
@@ -957,7 +994,7 @@ final class CheckpointStore {
                 readyObjectiveIDsBySkillID[skill.id, default: []].insert(objectiveID)
             }
         }
-        return Dictionary(uniqueKeysWithValues: skillMap.topics.map { skill in
+        return Dictionary(uniqueKeysWithValues: skillMap.topics.filter { !$0.isPaused }.map { skill in
             let skillFloorDeficit = max(0, 2 - readyCountBySkillID[skill.id, default: 0])
             let coveredObjectiveIDs = readyObjectiveIDsBySkillID[skill.id, default: []]
             let objectiveDeficit = skill.objectives.filter {
@@ -1087,6 +1124,7 @@ final class CheckpointStore {
             matching: question,
             in: skillMap
         )
+        guard mappedSkill?.isPaused != true else { return nil }
         let skillName = mappedSkill?.name ?? question.topic
         let skillNameKey = SkillMapReconciler.competencyTopicKey(skillName)
         let hasPracticeHistory = activeProgressCompetencies.contains { candidate in
@@ -4120,6 +4158,56 @@ final class CheckpointStore {
     // MARK: - Adaptive skill-map evolution
 
     @discardableResult
+    func acceptLearningMapSuggestion(goalID: Goal.ID, expectedMap: GoalSkillMap) -> Bool {
+        guard isMember, permitsPersistenceWrites,
+              let currentGoal = goal, currentGoal.id == goalID,
+              currentGoal.derivedSkillMap == expectedMap,
+              expectedMap.growthMode == .reviewSuggestions,
+              activeCheckpointRun?.goalID != goalID,
+              let suggestion = expectedMap.pendingEvolutionSuggestion else { return false }
+        let intent = SkillMapEvolutionIntent(
+            goalID: goalID,
+            baseVersion: suggestion.baseVersion,
+            baseMapFingerprint: suggestion.baseMapFingerprint,
+            masteredSkillIDs: suggestion.replacements.map(\.predecessorSkillID)
+        )
+        let proposal = SkillMapEvolutionProposal(
+            baseMapFingerprint: suggestion.baseMapFingerprint,
+            baseVersion: suggestion.baseVersion,
+            topics: suggestion.topics,
+            replacements: suggestion.replacements.map {
+                SkillMapEvolutionReplacement(
+                    predecessorSkillID: $0.predecessorSkillID,
+                    successorSkillID: $0.successorSkillID
+                )
+            }
+        )
+        return applySkillMapEvolution(proposal, intent: intent, to: currentGoal, userAcceptedSuggestion: true)
+    }
+
+    @discardableResult
+    func dismissLearningMapSuggestion(goalID: Goal.ID, expectedMap: GoalSkillMap) -> Bool {
+        guard permitsPersistenceWrites,
+              var currentGoal = goal, currentGoal.id == goalID,
+              var map = currentGoal.derivedSkillMap, map == expectedMap,
+              let suggestion = map.pendingEvolutionSuggestion else { return false }
+        let rollbackState = goalProfileMutationRollbackState()
+        map.dismissedEvolutionSkillIDs = Array(Set(
+            map.dismissedEvolutionSkillIDs + suggestion.replacements.map(\.predecessorSkillID)
+        )).sorted { $0.uuidString < $1.uuidString }
+        map.pendingEvolutionSuggestion = nil
+        map.updatedAt = Date()
+        currentGoal.derivedSkillMap = map
+        storeGoalProfile(currentGoal)
+        removeSkillMapEvolutionIntent(for: goalID)
+        guard save() else {
+            restoreGoalProfileMutationState(rollbackState)
+            return false
+        }
+        return true
+    }
+
+    @discardableResult
     func evaluateSkillMapEvolutionIfNeeded() -> Bool {
         guard let goal else { return false }
         return scheduleSkillMapEvolutionIfNeeded(for: goal)
@@ -4136,6 +4224,8 @@ final class CheckpointStore {
             return false
         }
 
+        // A reviewed proposal is a durable decision, not a background retry.
+        guard skillMap.pendingEvolutionSuggestion == nil else { return false }
         if let existingIntent = skillMapEvolutionIntents.first(where: { $0.goalID == targetGoal.id }) {
             if !isSkillMapEvolutionIntentCurrent(existingIntent, for: targetGoal) {
                 removeSkillMapEvolutionIntent(id: existingIntent.id)
@@ -4227,7 +4317,9 @@ final class CheckpointStore {
         )
 
         return skillMap.topics.compactMap { skill -> (SkillMapTopic, TopicCompetency)? in
-            guard let competency = competencyBySkillID[skill.id],
+            guard !skill.isPaused,
+                  !skillMap.dismissedEvolutionSkillIDs.contains(skill.id),
+                  let competency = competencyBySkillID[skill.id],
                   competency.attempts >= Self.evolutionMinimumAttempts,
                   competency.masteryPercent >= Self.evolutionMinimumMasteryPercent,
                   competency.currentStreak >= Self.evolutionMinimumCorrectStreak,
@@ -4535,7 +4627,8 @@ final class CheckpointStore {
     private func applySkillMapEvolution(
         _ proposal: SkillMapEvolutionProposal,
         intent: SkillMapEvolutionIntent,
-        to currentGoal: Goal
+        to currentGoal: Goal,
+        userAcceptedSuggestion: Bool = false
     ) -> Bool {
         guard var currentMap = currentGoal.derivedSkillMap,
               isSkillMapEvolutionIntentCurrentAndEligible(intent, for: currentGoal),
@@ -4606,6 +4699,9 @@ final class CheckpointStore {
             successor.aliases = []
             successor.stage = predecessor.stage + 1
             successor.predecessorIDs = [predecessor.id]
+            successor.isPaused = predecessor.isPaused
+            successor.practiceEmphasis = predecessor.practiceEmphasis
+            successor.challenge = predecessor.challenge
             evolvedTopics.append(successor)
         }
         let successorsHaveValidObjectives = evolvedTopics
@@ -4633,7 +4729,35 @@ final class CheckpointStore {
             return false
         }
 
+        let rollbackState = goalProfileMutationRollbackState()
+        if currentMap.growthMode == .reviewSuggestions && !userAcceptedSuggestion {
+            currentMap.pendingEvolutionSuggestion = PendingSkillMapEvolutionSuggestion(
+                baseVersion: proposal.baseVersion,
+                baseMapFingerprint: proposal.baseMapFingerprint,
+                topics: evolvedTopics,
+                replacements: proposal.replacements.map {
+                    PendingSkillMapReplacement(
+                        predecessorSkillID: $0.predecessorSkillID,
+                        successorSkillID: $0.successorSkillID
+                    )
+                }
+            )
+            currentMap.updatedAt = Date()
+            var suggestedGoal = currentGoal
+            suggestedGoal.derivedSkillMap = currentMap
+            storeGoalProfile(suggestedGoal)
+            removeSkillMapEvolutionIntent(id: intent.id)
+            checkpointNotice = "Your next skills are ready to review in the learning map."
+            guard save() else {
+                restoreGoalProfileMutationState(rollbackState)
+                return false
+            }
+            scheduleQuestionBankMaintenanceIfNeeded(for: suggestedGoal)
+            return true
+        }
+
         let evolutionDate = Date()
+        currentMap.pendingEvolutionSuggestion = nil
         var archivedTopics = currentMap.archivedTopics
         for replacement in proposal.replacements {
             guard let predecessor = currentByID[replacement.predecessorSkillID] else { continue }
@@ -4690,7 +4814,10 @@ final class CheckpointStore {
         checkpointNotice = transitionSummary.isEmpty
             ? "Your skill map advanced. New questions are being prepared."
             : "Skill map advanced: \(transitionSummary.joined(separator: "; ")). New questions are being prepared."
-        save()
+        guard save() else {
+            restoreGoalProfileMutationState(rollbackState)
+            return false
+        }
         publishShieldContext()
         if evolutionEligibleSkills(for: updatedGoal).isEmpty {
             topOffQuestionBankInBackground(for: updatedGoal)
@@ -6218,7 +6345,7 @@ final class CheckpointStore {
             for: targetGoal,
             competencies: goalCompetencies
         )
-        let skillIDs = skillMap.topics.map(\.id)
+        let skillIDs = skillMap.topics.filter { !$0.isPaused }.map(\.id)
         let positiveWeightSkillCount = skillIDs.filter { weights[$0, default: 0] > 0 }.count
         let coverageDeficits = skillQuestionCoverageDeficitBySkillID(for: targetGoal)
         let objectiveCounts = Dictionary(uniqueKeysWithValues: skillMap.topics.map {
@@ -6572,7 +6699,7 @@ final class CheckpointStore {
         let resolvedTargetCount = targetCount ?? questionBankTargetCount
         let generationCompetencies: [TopicCompetency]
         if let skillMap = goal.derivedSkillMap {
-            let activeSkillIDs = Set(skillMap.topics.map(\.id))
+            let activeSkillIDs = Set(skillMap.topics.filter { !$0.isPaused }.map(\.id))
             generationCompetencies = competencies.filter { competency in
                 guard let skillID = competency.skillID else { return true }
                 return activeSkillIDs.contains(skillID)
@@ -6618,12 +6745,12 @@ final class CheckpointStore {
             }
         }
         var allocation: [SkillMapTopic.ID: Int] = [:]
-        for skill in skillMap.topics {
+        for skill in skillMap.topics where !skill.isPaused {
             let competency = competencyBySkillID[skill.id]
                 ?? .initial(topic: skill.name, goalID: targetGoal.id, skillID: skill.id)
             if competency.attempts == 0 {
                 // Give new skills a strong exploration prior independent of the local cache.
-                allocation[skill.id] = 12
+                allocation[skill.id] = max(1, Int((12 * skill.practiceEmphasis.allocationMultiplier).rounded()))
                 continue
             }
 
@@ -6641,7 +6768,7 @@ final class CheckpointStore {
                     3 + weaknessBonus + uncertaintyBonus
                 )
             )
-            allocation[skill.id] = weight
+            allocation[skill.id] = max(1, Int((Double(weight) * skill.practiceEmphasis.allocationMultiplier).rounded()))
         }
         return allocation
     }
@@ -6655,9 +6782,16 @@ final class CheckpointStore {
     }
 
     private func adaptiveSkillPlans(for targetGoal: Goal) -> [AdaptiveSkillPlan] {
-        guard usesVerifiedLearning(for: targetGoal) else { return [] }
+        let verifiedLearning = usesVerifiedLearning(for: targetGoal)
         let excludedQuestions = Set(questionReports.filter { $0.goalID == targetGoal.id }.map(\.questionID))
-        return AdaptiveLearningPolicy.plans(for: targetGoal, attempts: attempts.filter { !excludedQuestions.contains($0.questionID) })
+        let plans = AdaptiveLearningPolicy.plans(
+            for: targetGoal,
+            attempts: verifiedLearning ? attempts.filter { !excludedQuestions.contains($0.questionID) } : []
+        )
+        guard !verifiedLearning else { return plans }
+        let configuredIDs = Set((targetGoal.derivedSkillMap?.topics ?? [])
+            .filter { $0.challenge != .adaptive }.map(\.id))
+        return plans.filter { configuredIDs.contains($0.skillID) }
     }
 
     func adaptiveLearningPlan(for competency: TopicCompetency) -> AdaptiveSkillPlan? {

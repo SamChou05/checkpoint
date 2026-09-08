@@ -2233,6 +2233,10 @@ struct CompetencyView: View {
             ]
             .compactMap { $0 }
             .joined(separator: " · ")
+        case .userReplaced:
+            return ["Replaced during review", estimate.map { "\($0) at replacement" }, date]
+                .compactMap { $0 }
+                .joined(separator: " · ")
         }
     }
 

@@ -67,7 +67,7 @@ enum AdaptiveLearningPolicy {
         attempts: [CheckpointAttempt],
         now: Date = Date()
     ) -> [AdaptiveSkillPlan] {
-        (goal.derivedSkillMap?.topics ?? []).map { skill in
+        (goal.derivedSkillMap?.topics ?? []).filter { !$0.isPaused }.map { skill in
             let evidence = distinctAttempts(for: skill, goalID: goal.id, attempts: attempts, now: now)
             let floor = goal.minimumQuestionDifficulty
             var target = max(floor, evidence.first?.questionDifficulty ?? floor)
@@ -109,7 +109,7 @@ enum AdaptiveLearningPolicy {
             }
             return AdaptiveSkillPlan(
                 skillID: skill.id,
-                targetDifficulty: min(5, max(floor, target)),
+                targetDifficulty: skill.challenge.targetDifficulty(adaptive: target, minimum: floor),
                 evidenceCount: recent.count,
                 recentAccuracyPercent: accuracy,
                 focusObjectiveIDs: mistakes.map(\.objectiveID),

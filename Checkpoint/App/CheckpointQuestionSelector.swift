@@ -290,7 +290,7 @@ struct CheckpointQuestionSelector {
         }
 
         let distinctSkillCount = Set(selectedQuestions.map(questionSkillKey)).count
-        let breadthFloor = min(3, skillMap.topics.count, targetCount)
+        let breadthFloor = min(3, skillMap.topics.filter { !$0.isPaused }.count, targetCount)
         guard distinctSkillCount < breadthFloor else { return false }
 
         if selectedQuestions.count == 1 {
@@ -409,7 +409,12 @@ struct CheckpointQuestionSelector {
         guard let skillMap = storedGoalProfile(withID: question.goalID)?.derivedSkillMap else {
             return true
         }
-        return SkillMapReconciler.skillMapTopic(matching: question, in: skillMap) != nil
+        guard let skill = SkillMapReconciler.skillMapTopic(matching: question, in: skillMap),
+              !skill.isPaused else { return false }
+        // An objective removed from the plan must never be silently remapped.
+        if let objectiveID = question.objectiveID,
+           !skill.objectives.contains(where: { $0.id == objectiveID }) { return false }
+        return true
     }
 
     static func correctAnswerReviewDelayDays(for correctStreak: Int) -> Int {
@@ -424,6 +429,9 @@ struct CheckpointQuestionSelector {
     }
 
     private func sortByAdaptivePriority(_ lhs: CheckpointQuestion, _ rhs: CheckpointQuestion) -> Bool {
+        let lhsEmphasis = skill(for: lhs)?.practiceEmphasis.allocationMultiplier ?? 1
+        let rhsEmphasis = skill(for: rhs)?.practiceEmphasis.allocationMultiplier ?? 1
+        if lhsEmphasis != rhsEmphasis { return lhsEmphasis > rhsEmphasis }
         let lhsCompetency = competency(for: lhs)
         let rhsCompetency = competency(for: rhs)
 
@@ -497,10 +505,23 @@ struct CheckpointQuestionSelector {
         return "\(skill.id.uuidString):\(objectiveID.uuidString)"
     }
 
+    private func skill(for question: CheckpointQuestion) -> SkillMapTopic? {
+        guard let map = storedGoalProfile(withID: question.goalID)?.derivedSkillMap else { return nil }
+        return SkillMapReconciler.skillMapTopic(matching: question, in: map)
+    }
+
     private func targetDifficulty(for competency: TopicCompetency) -> Double {
         if let skillID = competency.skillID, let target = adaptiveDifficultyBySkillID[skillID] {
             return Double(target)
         }
-        return min(5.0, max(1.0, competency.estimatedLevel + 0.5))
+        let adaptive = min(5.0, max(1.0, competency.estimatedLevel + 0.5))
+        if let skill = activeDerivedSkillMap?.topics.first(where: { $0.id == competency.skillID }),
+           skill.challenge != .adaptive {
+            return Double(skill.challenge.targetDifficulty(
+                adaptive: Int(adaptive.rounded()),
+                minimum: activeQuestionDifficulty
+            ))
+        }
+        return adaptive
     }
 }

@@ -27,23 +27,82 @@ enum SkillMapProvenance: String, Codable, Equatable, Sendable {
 enum ArchivedSkillReason: String, Codable, Equatable, Sendable {
     case mastered
     case userRemoved
+    case userReplaced
+}
+
+enum SkillPracticeEmphasis: String, Codable, CaseIterable, Identifiable, Sendable {
+    case balanced, focus, maintain
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .balanced: "Balanced"
+        case .focus: "Focus more"
+        case .maintain: "Maintain"
+        }
+    }
+    var allocationMultiplier: Double {
+        switch self {
+        case .balanced: 1
+        case .focus: 1.75
+        case .maintain: 0.5
+        }
+    }
+}
+
+enum SkillChallenge: String, Codable, CaseIterable, Identifiable, Sendable {
+    case adaptive, foundations, stretch
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .adaptive: "Adaptive"
+        case .foundations: "Foundations"
+        case .stretch: "Stretch"
+        }
+    }
+    func targetDifficulty(adaptive: Int, minimum: Int) -> Int {
+        switch self {
+        case .adaptive: min(5, max(minimum, adaptive))
+        case .foundations: min(5, max(1, minimum))
+        case .stretch: min(5, max(minimum, adaptive + 1))
+        }
+    }
+}
+
+enum SkillMapGrowthMode: String, Codable, CaseIterable, Identifiable, Sendable {
+    case automatic, reviewSuggestions, manual
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .automatic: "Advance automatically"
+        case .reviewSuggestions: "Review suggestions"
+        case .manual: "Manage manually"
+        }
+    }
 }
 
 struct SkillMapObjective: Identifiable, Codable, Equatable, Sendable {
     var id: UUID
     var name: String
+    var detail: String
 
-    init(
-        id: UUID = UUID(),
-        name: String
-    ) {
+    init(id: UUID = UUID(), name: String, detail: String = "") {
         self.id = id
         self.name = SkillMapTopic.normalizedName(name)
+        self.detail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    enum CodingKeys: String, CodingKey { case id, name, detail }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        name = try container.decode(String.self, forKey: .name)
+        detail = try container.decodeIfPresent(String.self, forKey: .detail) ?? ""
     }
 }
 
 struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
     static let maximumActiveObjectiveCount = 5
+    static let maximumDetailLength = 500
 
     var id: UUID
     var name: String
@@ -51,6 +110,10 @@ struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
     var objectives: [SkillMapObjective]
     var stage: Int
     var predecessorIDs: [UUID]
+    var detail: String
+    var isPaused: Bool
+    var practiceEmphasis: SkillPracticeEmphasis
+    var challenge: SkillChallenge
 
     init(
         id: UUID = UUID(),
@@ -58,7 +121,11 @@ struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
         aliases: [String] = [],
         objectives: [SkillMapObjective] = [],
         stage: Int = 1,
-        predecessorIDs: [UUID] = []
+        predecessorIDs: [UUID] = [],
+        detail: String = "",
+        isPaused: Bool = false,
+        practiceEmphasis: SkillPracticeEmphasis = .balanced,
+        challenge: SkillChallenge = .adaptive
     ) {
         self.id = id
         self.name = name
@@ -66,6 +133,10 @@ struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
         self.objectives = objectives
         self.stage = max(1, stage)
         self.predecessorIDs = predecessorIDs
+        self.detail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.isPaused = isPaused
+        self.practiceEmphasis = practiceEmphasis
+        self.challenge = challenge
     }
 
     enum CodingKeys: String, CodingKey {
@@ -75,6 +146,7 @@ struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
         case objectives
         case stage
         case predecessorIDs
+        case detail, isPaused, practiceEmphasis, challenge
     }
 
     init(from decoder: Decoder) throws {
@@ -85,6 +157,10 @@ struct SkillMapTopic: Identifiable, Codable, Equatable, Sendable {
         objectives = try container.decodeIfPresent([SkillMapObjective].self, forKey: .objectives) ?? []
         stage = max(1, try container.decodeIfPresent(Int.self, forKey: .stage) ?? 1)
         predecessorIDs = try container.decodeIfPresent([UUID].self, forKey: .predecessorIDs) ?? []
+        detail = try container.decodeIfPresent(String.self, forKey: .detail) ?? ""
+        isPaused = try container.decodeIfPresent(Bool.self, forKey: .isPaused) ?? false
+        practiceEmphasis = try container.decodeIfPresent(SkillPracticeEmphasis.self, forKey: .practiceEmphasis) ?? .balanced
+        challenge = try container.decodeIfPresent(SkillChallenge.self, forKey: .challenge) ?? .adaptive
     }
 
     static func normalizedName(_ rawName: String) -> String {
@@ -149,13 +225,36 @@ struct ArchivedSkillMapTopic: Identifiable, Codable, Equatable, Sendable {
     var id: SkillMapTopic.ID { topic.id }
 }
 
+struct PendingSkillMapReplacement: Codable, Equatable, Sendable {
+    var predecessorSkillID: UUID
+    var successorSkillID: UUID
+}
+
+struct PendingSkillMapEvolutionSuggestion: Identifiable, Codable, Equatable, Sendable {
+    var id: UUID = UUID()
+    var baseVersion: Int
+    var baseMapFingerprint: String
+    var topics: [SkillMapTopic]
+    var replacements: [PendingSkillMapReplacement]
+    var createdAt: Date = Date()
+}
+
 struct GoalSkillMap: Codable, Equatable, Sendable {
     var version: Int
     var provenance: SkillMapProvenance
     var topics: [SkillMapTopic]
     var archivedTopics: [ArchivedSkillMapTopic]
     var status: SkillMapStatus
-    var evolutionEnabled: Bool
+    var growthMode: SkillMapGrowthMode
+    var pendingEvolutionSuggestion: PendingSkillMapEvolutionSuggestion?
+    var dismissedEvolutionSkillIDs: [UUID]
+    var evolutionEnabled: Bool {
+        get { growthMode != .manual }
+        set {
+            if !newValue { growthMode = .manual }
+            else if growthMode == .manual { growthMode = .automatic }
+        }
+    }
     var lastEvolvedAt: Date?
     var createdAt: Date
     var updatedAt: Date
@@ -169,14 +268,19 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
         evolutionEnabled: Bool = true,
         lastEvolvedAt: Date? = nil,
         createdAt: Date = Date(),
-        updatedAt: Date = Date()
+        updatedAt: Date = Date(),
+        growthMode: SkillMapGrowthMode? = nil,
+        pendingEvolutionSuggestion: PendingSkillMapEvolutionSuggestion? = nil,
+        dismissedEvolutionSkillIDs: [UUID] = []
     ) {
         self.version = max(1, version)
         self.provenance = provenance
         self.topics = topics.map { $0.limitedToActiveObjectiveCount() }
         self.archivedTopics = archivedTopics
         self.status = status
-        self.evolutionEnabled = evolutionEnabled
+        self.growthMode = growthMode ?? (evolutionEnabled ? .automatic : .manual)
+        self.pendingEvolutionSuggestion = pendingEvolutionSuggestion
+        self.dismissedEvolutionSkillIDs = dismissedEvolutionSkillIDs
         self.lastEvolvedAt = lastEvolvedAt
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -188,7 +292,7 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
         case topics
         case archivedTopics
         case status
-        case evolutionEnabled
+        case evolutionEnabled, growthMode, pendingEvolutionSuggestion, dismissedEvolutionSkillIDs
         case lastEvolvedAt
         case createdAt
         case updatedAt
@@ -206,10 +310,29 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
             forKey: .archivedTopics
         ) ?? []
         status = try container.decodeIfPresent(SkillMapStatus.self, forKey: .status) ?? .suggested
-        evolutionEnabled = try container.decodeIfPresent(Bool.self, forKey: .evolutionEnabled) ?? true
+        growthMode = try container.decodeIfPresent(SkillMapGrowthMode.self, forKey: .growthMode)
+            ?? ((try container.decodeIfPresent(Bool.self, forKey: .evolutionEnabled) ?? true) ? .automatic : .manual)
+        pendingEvolutionSuggestion = try container.decodeIfPresent(PendingSkillMapEvolutionSuggestion.self, forKey: .pendingEvolutionSuggestion)
+        dismissedEvolutionSkillIDs = try container.decodeIfPresent([UUID].self, forKey: .dismissedEvolutionSkillIDs) ?? []
         lastEvolvedAt = try container.decodeIfPresent(Date.self, forKey: .lastEvolvedAt)
         createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
         updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt) ?? createdAt
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(version, forKey: .version)
+        try container.encode(provenance, forKey: .provenance)
+        try container.encode(topics, forKey: .topics)
+        try container.encode(archivedTopics, forKey: .archivedTopics)
+        try container.encode(status, forKey: .status)
+        try container.encode(evolutionEnabled, forKey: .evolutionEnabled)
+        try container.encode(growthMode, forKey: .growthMode)
+        try container.encodeIfPresent(pendingEvolutionSuggestion, forKey: .pendingEvolutionSuggestion)
+        try container.encode(dismissedEvolutionSkillIDs, forKey: .dismissedEvolutionSkillIDs)
+        try container.encodeIfPresent(lastEvolvedAt, forKey: .lastEvolvedAt)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
     }
 
     var topicNames: [String] {

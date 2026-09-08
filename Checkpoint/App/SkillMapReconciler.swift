@@ -29,6 +29,40 @@ struct SkillMapReconciler {
         return normalizedMap
     }
 
+    static func learningMapValidationError(topics: [SkillMapTopic]) -> String? {
+        guard SkillMapTopic.validatedNames(topics.map(\.name)) != nil else {
+            return "Keep 3–6 skills with distinct names of up to 48 characters."
+        }
+        guard Set(topics.map(\.id)).count == topics.count else {
+            return "Each skill needs its own identity."
+        }
+        guard topics.contains(where: { !$0.isPaused }) else {
+            return "Keep at least one skill available for practice."
+        }
+        var objectiveIDs = Set<UUID>()
+        for topic in topics {
+            guard topic.detail.count <= SkillMapTopic.maximumDetailLength else {
+                return "Keep skill descriptions within 500 characters."
+            }
+            guard (1...SkillMapTopic.maximumActiveObjectiveCount).contains(topic.objectives.count) else {
+                return "Give each skill 1–5 focus points."
+            }
+            var names = Set<String>()
+            for objective in topic.objectives {
+                let name = SkillMapTopic.normalizedName(objective.name)
+                guard (1...80).contains(name.count),
+                      names.insert(SkillMapTopic.canonicalIdentityKey(name)).inserted,
+                      objectiveIDs.insert(objective.id).inserted else {
+                    return "Give focus points distinct names of up to 80 characters."
+                }
+                guard objective.detail.count <= SkillMapTopic.maximumDetailLength else {
+                    return "Keep focus-point descriptions within 500 characters."
+                }
+            }
+        }
+        return nil
+    }
+
     static func defaultObjective(
         for skillID: SkillMapTopic.ID,
         name: String
@@ -66,16 +100,14 @@ struct SkillMapReconciler {
     static func skillMapContentSignature(topics: [SkillMapTopic]) -> String {
         topics.map { skill in
             let objectives = skill.objectives
-                .map { "\($0.id.uuidString):\($0.name)" }
-                .sorted()
+                .map { "\($0.id.uuidString):\($0.name):\($0.detail)" }
                 .joined(separator: ",")
             let predecessors = skill.predecessorIDs
                 .map(\.uuidString)
                 .sorted()
                 .joined(separator: ",")
-            return "\(skill.id.uuidString):\(skill.name):\(skill.stage):\(predecessors):\(objectives)"
+            return "\(skill.id.uuidString):\(skill.name):\(skill.detail):\(skill.isPaused):\(skill.practiceEmphasis.rawValue):\(skill.challenge.rawValue):\(skill.stage):\(predecessors):\(objectives)"
         }
-        .sorted()
         .joined(separator: "|")
     }
 
@@ -239,7 +271,11 @@ struct SkillMapReconciler {
                 aliases: aliases,
                 objectives: objectives,
                 stage: existingTopic?.stage ?? proposedTopic.stage,
-                predecessorIDs: existingTopic?.predecessorIDs ?? proposedTopic.predecessorIDs
+                predecessorIDs: existingTopic?.predecessorIDs ?? proposedTopic.predecessorIDs,
+                detail: proposedTopic.detail,
+                isPaused: proposedTopic.isPaused,
+                practiceEmphasis: proposedTopic.practiceEmphasis,
+                challenge: proposedTopic.challenge
             )
         }
     }
