@@ -2,6 +2,8 @@
 
 Status: prospective, September 8, 2026 UTC. No calls have been dispatched for this experiment. This is an isolated evaluation; it does not change production verification or qualify the question generator.
 
+The exact [dispatch plan](evidence/solution-compatibility-plan-20260908.json) is frozen at source commit `04e9304`, with canonical SHA-256 `ad43b24c7e22039e9a870946d23539dbb329c03ea8966a34547c0c4bd7fc5e67`. It contains sixteen requests totaling 67,914 UTF-8 input text bytes; the largest is 5,819 bytes. Execution uses the dedicated detached worktree at that commit and the recorded Python 3.12.11, boto3 1.43.89, and botocore 1.43.89 environment. Later report commits do not change that source snapshot.
+
 ## Question and intervention
 
 The current verifier enforces declared solver outcomes and nonempty limitations, but a report labeled `resolved` can bury a decisive objection in its answer text. The final reviewer already receives that text and instructions to preserve it. Earlier [claim audits](QUESTION_CHOICE_AUDIT_EXPERIMENT.md) and [isolated-choice audits](QUESTION_ISOLATED_CANDIDATE_EXPERIMENT.md) also produced incorrect semantic judgments, so another elaborate checklist is not sufficient evidence of improvement.
