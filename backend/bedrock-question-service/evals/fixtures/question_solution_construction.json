@@ -1,0 +1,108 @@
+{
+  "experiment": "solution-key-construction-v1",
+  "prepared_on_utc": "2026-09-08",
+  "scope": "Three fresh standalone tasks in ordinary learning goals and one unchanged historical task stem. A fresh independent solution owns the exact answer; later calls cannot rewrite it. Construction feasibility only, not a matched causal comparison, production error rate, or deployed question bank.",
+  "prospective_assessment": {
+    "planned_candidates": 4,
+    "fresh_task_candidates": 3,
+    "fixed_task_sentinels": 1,
+    "criteria": [
+      "Every fresh task preserves all necessary displayed premises and fits the requested goal without narrowing the goal to a fixed subject template.",
+      "The final literal stem has exactly one warranted choice; its exact key equals the independently supplied answerText, with no shortening, paraphrasing, or condition deletion by a later stage.",
+      "All three distractors are semantically distinct, wrong for the actual task, and plausible for the stated learning objective. Count alternative true answers and misleading or filler distractors as separate defects.",
+      "Assess the raw solver answer/support, all proposed distractor feedback, and every final main/choice explanation. A correct key does not excuse unsupported teaching feedback.",
+      "Each fresh question should require difficulty at least 3 under the shared cognitive rubric. Report disagreements and too-easy cases rather than accepting the author's or reviewer's label as evidence.",
+      "The all-pairs stem cannot support an unconditional linear-total-time enumeration method. A new negative-answer choice may make a different complete MCQ valid, but does not count as the old defective choice set being correctly rejected by the production verifier.",
+      "Report constructed, content-rejected, reviewer-eligible, independently correct, useful-difficulty, plausible-distractor, and fully-supported-feedback counts separately out of four. All four must meet their relevant criteria for full feasibility success; partial signals remain partial."
+    ],
+    "bounds": "At most fifteen single-attempt model calls, four per fresh case and three for the fixed stem; no repair, replacement, top-up, native execution, provider escalation, or production write. No baseline arm is present, so no causal accuracy gain may be claimed."
+  },
+  "cases": [
+    {
+      "case_id": "fresh_photography_motion",
+      "context": {
+        "goal": {
+          "title": "Learn to diagnose motion blur and make deliberate shutter choices",
+          "focusAreas": "Interpret a concrete photographic result and stated shooting constraints to distinguish subject motion, camera movement and changes in light reaching the sensor.",
+          "currentLevel": "Intermediate"
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Nikon: shutter duration, light and motion (inspected summary)",
+            "url": "https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-shutter-speed",
+            "text": "Shutter duration controls how long light reaches the sensor. With other conditions fixed, a shorter duration admits less light. Shorter durations tend to reduce recorded subject motion; longer durations show more motion blur. Whether a particular duration freezes a subject depends on the actual motion and shooting conditions. A source example's successful duration is not a universal threshold."
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "fresh_writing_modifiers",
+      "context": {
+        "goal": {
+          "title": "Write clear English sentences that preserve the intended actor and meaning",
+          "focusAreas": "Interpret an original sentence in its stated context, diagnose modifier attachment, and distinguish a revision that preserves the intended meaning from one that merely sounds grammatical.",
+          "currentLevel": "Intermediate"
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Purdue OWL: dangling modifiers (inspected summary)",
+            "url": "https://owl.purdue.edu/owl/general_writing/mechanics/dangling_modifiers_and_how_to_correct_them.html",
+            "text": "An introductory participial modifier needs a clearly identified logical actor. In the ordinary construction discussed here, that actor is the subject of the following main clause. A repair can name that actor as the main subject or give the introductory clause its own subject and finite verb. Several grammatical rewrites may exist, so any additional requirement about intended meaning or allowed changes must be stated in the exercise."
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "fresh_moon_observations",
+      "context": {
+        "goal": {
+          "title": "Understand lunar phases from observations and Sun-Earth-Moon geometry",
+          "focusAreas": "Use concrete observations to distinguish changing phase, viewing orientation and an eclipse; connect the observation to the geometry instead of merely naming a phase.",
+          "currentLevel": "Intermediate"
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "NASA: lunar phases and viewing geometry (inspected summaries)",
+            "url": "https://science.nasa.gov/moon/top-moon-questions/",
+            "text": "Outside lunar eclipses, sunlight illuminates roughly half of the Moon. Ordinary phases reflect how much of that illuminated half faces Earth, not Earth's shadow covering the Moon. Observers in different hemispheres see the same phase at a given time, though its orientation differs. Full Moon places the illuminated near side toward Earth; at new Moon the illuminated far side faces away from Earth. The far side is not permanently dark."
+          },
+          {
+            "name": "NASA: phase sequence and approximate observing times (inspected summary)",
+            "url": "https://science.nasa.gov/moon/moon-phases/",
+            "text": "The phase sequence runs from new through waxing crescent, first quarter, waxing gibbous, full, waning gibbous, last quarter and waning crescent. At most latitudes, a first-quarter Moon rises roughly near midday and sets near midnight; a last-quarter Moon rises roughly near midnight and sets near midday. These are approximate phase relationships, not precise local schedules; season and location affect rise and set. A new Moon usually passes near the Sun in Earth's sky, rather than directly across it, because the lunar orbit is inclined."
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "fixed_all_pairs_stem",
+      "context": {
+        "goal": {
+          "title": "Prepare for LeetCode interviews",
+          "focusAreas": "hash maps"
+        },
+        "minimumDifficulty": 3,
+        "sourceDocuments": []
+      },
+      "fixed_task": {
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "topic": "hash maps",
+        "objective": "Analyze the requirements of finding all matching pairs",
+        "difficulty": 3
+      },
+      "provenance": {
+        "source": "evals/fixtures/question_verification_cases.jsonl",
+        "source_case_id": "all_pairs_output_bound",
+        "preserved": "The exact historical stem and goal title/focus are copied. No old choices, key, explanation or assessment enter a provider request. The separately constructed objective is task scope, not a supplied output-size proof."
+      },
+      "external_assessment": {
+        "warranted_conclusion": "No method can guarantee linear total time while explicitly listing every matching index pair for arbitrary arrays.",
+        "support": "With n zeroes and target zero, there are n(n-1)/2 distinct index pairs. Explicit output alone may require quadratic work. The unchanged question does not grant permission to reinterpret all pairs as Boolean existence, only distinct value pairs, or exclude output work.",
+        "required_reporting": "A new negative-answer item is a changed complete MCQ even though its stem is preserved. Do not overwrite or reclassify any earlier experiment's acceptance of the old positive key."
+      }
+    }
+  ]
+}
