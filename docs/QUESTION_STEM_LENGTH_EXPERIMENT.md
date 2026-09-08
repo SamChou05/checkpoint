@@ -1,8 +1,8 @@
 # Testing room for complete applied questions
 
-Status: prospective experiment, prepared September 6, 2026. No live results are claimed in this revision. The [fixture](../backend/bedrock-question-service/evals/fixtures/question_stem_length.json) freezes the goals, source summaries, assessment criteria, and limits before generation.
+Status: prospective protocol, prepared September 6, 2026. The [fixture](../backend/bedrock-question-service/evals/fixtures/question_stem_length.json) freezes the goals, source summaries, assessment criteria, and limits before generation. The subsequent [September 8 UTC live run](QUESTION_STEM_LENGTH_RESULTS.md) stopped on a chess-author timeout; its partial observations do not change the criteria below.
 
-September 7 setup verification: the backend suite passed all 499 tests with one existing skip; the 13 new experiment tests and Ruff also passed. Independent code review found no critical issue. No inference has been dispatched for this comparison. The AWS session expired before execution, so live results remain pending renewed authentication.
+September 7 setup verification: the backend suite passed all 499 tests with one existing skip; the 13 new experiment tests and Ruff also passed. Independent code review found no critical issue. No inference had been dispatched at that point because the AWS session expired before execution. Authentication was renewed before the subsequent run.
 
 The current author has 320 characters for the entire problem. The question-quality audit identified missing conditions but has not established that this limit caused them. This experiment compares the existing limit with 1200 characters while keeping the author model, goal, reference packet, other instructions, and solver/reviewer unchanged. It tests author guidance and matching admission length together. It does not isolate prompting from admission policy.
 

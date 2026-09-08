@@ -1,0 +1,472 @@
+{
+  "schema_version": 1,
+  "kind": "independent operational metadata audit; generated content and semantic judgments withheld",
+  "prepared_at_utc": "2026-09-08T02:07:34.095642+00:00",
+  "inputs": {
+    "capture": {
+      "path": "/tmp/checkpoint-stem-length-capture-20260908-22980c1/capture.json",
+      "sha256": "fe7e0352a9af481595eb7de203d9f174d0e1caa64dba0409e4aae9cb037439c9"
+    },
+    "archived_plan": {
+      "path": "/Users/samchou/Documents/Checkpoint/docs/evidence/stem-length-plan-20260907.json",
+      "sha256": "ee8cc29af7fb8e0281d48f87cd3aa806f0985552665bd94568b231dbcf5df8df",
+      "canonical_sha256": "3462043fb316b763017feb0421a0bac6354ef2b4413b5a3ca1abc3ed48ea0f72"
+    },
+    "original_plan": {
+      "path": "/tmp/checkpoint-stem-length-plan-20260907-22980c1/plan.json",
+      "sha256": "ee8cc29af7fb8e0281d48f87cd3aa806f0985552665bd94568b231dbcf5df8df"
+    },
+    "archive_plan_bytes_equal_original": true
+  },
+  "frozen_contract": {
+    "source_revision": "22980c1dbfb8875512f8acdd27664c9993d4d064",
+    "source_sha256": {
+      "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "generation_diagnostics.py": "b01c760ffdc8c0e5b8d91151b23a984a051e7572d5d8f7ddad2650d4cfb57175",
+      "lambda_function.py": "c2192dc63eab7a7a220c4ace2c59b93ebd99a3cf979aae9c0255553ebd81aea2",
+      "question_bank.py": "3a8919c7358ae7eb014bbdc498f79d9006f20e3a26b063e7ec0370599881f847",
+      "question_bank_common.py": "f097cd99a65f783e5d624baad3f57c38dd94e603cc7c9f469fbada91551a84b1",
+      "question_bank_inventory.py": "45cefe2ecffd72845141782b4d507609d2127a27c10f02a36403bb4cfad1ccb4",
+      "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "question_bank_worker.py": "c79ab8738fbfd1fdb2e2b34e09df21e91d7c53c740c2ade7c86c1d3352450adc",
+      "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "question_generation.py": "2c91006e9334882ea9d98231fb7fb6997a9405b0b401c7e7cf14bfa274da29a9",
+      "question_quality.py": "e2178e578b081c56c128876e4f29fb9e2ff9d78302a78aeae84daa170bc076c0",
+      "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "question_verification.py": "6a25b5625808c862adfe75b91b1237c56a77ce97d6961e9c0157ce8c0f70b95f",
+      "request_contract.py": "b9e3f10ec9b49fce5b7fad8cecf49f768aefa8e049d222e53d142b0f8b2e6928",
+      "service_errors.py": "9c8d3bee6543290f8db804075dfbc4ca21821136614070cb323c1959980ea243",
+      "skill_maps.py": "581e1916a1c635faf31d852abffd0fc48a8107854852a3a99dae09ece8d100da",
+      "smoke_test_backend.py": "acf5fe0b9b54d24d6f69216898fea80c76d442c1c54c91babde93fd9b0bf38a1",
+      "evals/checkpoint_source_authoring_eval.py": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+      "evals/checkpoint_model_comparison.py": "47cdc060672985460fc0bf30a32a2ccd4435dbbb3f473cd86cc0d5ac93bc3d8d",
+      "evals/checkpoint_full_pipeline_smoke.py": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+      "evals/checkpoint_learning_eval.py": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+      "evals/checkpoint_prompt_ablation.py": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+      "evals/checkpoint_stem_length_eval.py": "fbd81995999347dfad54798c019bec461cb35c2568d69598d4a98c7ade881d22"
+    },
+    "dependencies": {
+      "python": "3.12.11",
+      "boto3": "1.43.89",
+      "botocore": "1.43.89"
+    },
+    "plan_reconstructed_successfully_in_frozen_worktree": true,
+    "model": "us.anthropic.claude-opus-4-6-v1",
+    "settings": {
+      "AWS_REGION": "us-east-1",
+      "BEDROCK_REGION": "us-east-1",
+      "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+      "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+      "BEDROCK_FALLBACK_MODEL_ID": "",
+      "BEDROCK_CLAUDE_THINKING": "adaptive",
+      "BEDROCK_CLAUDE_EFFORT": "high",
+      "BEDROCK_THINKING_MAX_TOKENS": "16000",
+      "BEDROCK_MAX_TOKENS": "16000",
+      "BEDROCK_READ_TIMEOUT_SECONDS": "100",
+      "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+      "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+      "QUESTION_BANK_MAX_RECEIVE_COUNT": "6",
+      "GENERATION_ATTEMPTS": "3",
+      "CHECKPOINT_PROMPT_VARIANT": "balanced",
+      "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+      "BEDROCK_GUARDRAIL_VERSION": ""
+    },
+    "maximum_calls": 12,
+    "maximum_calls_per_job": 3,
+    "sdk_total_max_attempts": 1,
+    "maximum_input_utf8_bytes_per_call": 32000,
+    "maximum_input_utf8_bytes_total": 384000
+  },
+  "terminal_status": {
+    "capture_status": "operational_failure",
+    "stopped_early": true,
+    "root_reported_terminal_session": 14958,
+    "root_reported_exit_code": 1,
+    "terminal_evidence_scope": "Parent confirmed actual process termination; this audit independently inspects persisted capture, not the original terminal handle."
+  },
+  "failure": {
+    "call_number": 7,
+    "job_index": 2,
+    "stage": "author",
+    "case_id": "chess_castling_rights",
+    "arm": "stem_1200",
+    "recorded_sdk_exception_type": "ReadTimeoutError",
+    "recorded_job_exception_type": "ProviderError",
+    "configured_read_timeout_seconds": 100,
+    "call_elapsed_seconds": 100.003,
+    "job_elapsed_seconds": 100.021,
+    "response_object_received_or_captured": false,
+    "final_question_response_available": false,
+    "raw_candidates_available_for_separate_assessment": false,
+    "remote_completion": "unknown",
+    "failed_call_usage": "unknown",
+    "failed_call_billed_cost": "unknown",
+    "scope": "Recorded read timeout while awaiting Converse; no provider response, stop reason or error code establishes a more specific remote cause. Do not classify this as a malformed MCQ, content rejection, token exhaustion or correctness success."
+  },
+  "calls": [
+    {
+      "call_index": 0,
+      "call_number": 1,
+      "job_index": 0,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_320",
+      "stage": "author",
+      "status": "response_received",
+      "request_canonical_sha256": "d01b01adc5c913eaabc1dc19a7b0331225a9b815107a6f525bf4e8c2345329b1",
+      "system_prompt_utf8_sha256": "b0cff11cd2a0f5331329c77ee36f6e22f6ef32bc8336daadce704d4a6b9a89e5",
+      "user_prompt_utf8_sha256": "743375df13128cc7b39d744aa1eb5c73485a74c841cd5eb900ed0878a17188a8",
+      "request_matches_frozen_settings_and_prompt_builder_context": true,
+      "input_utf8_bytes": 10591,
+      "elapsed_seconds": 74.447,
+      "error": null,
+      "response_present": true,
+      "stop_reason": "end_turn",
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 2287,
+        "outputTokens": 4565,
+        "totalTokens": 6852,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "final_text_block_count": 1,
+      "final_text_code_points": [
+        3457
+      ],
+      "final_text_utf8_sha256": [
+        "786b8958d8f65288da41e4b10478fb2e75290597408f8eb46222b6e03b9fa320"
+      ]
+    },
+    {
+      "call_index": 1,
+      "call_number": 2,
+      "job_index": 0,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_320",
+      "stage": "solver",
+      "status": "response_received",
+      "request_canonical_sha256": "03fc86fe4bcaedd052fddec722010e1a74bd5f3b57c5a640faec0a470da2e88c",
+      "system_prompt_utf8_sha256": "a951e9a6f4f9f078d0f98db47aebe77fdd8c318d9d840fc44ec8d5154b436441",
+      "user_prompt_utf8_sha256": "5858c91b522a1e7e08d9a4d9cc1ea2a6402b520d31683b5f584016ad7fb0b073",
+      "request_matches_frozen_settings_and_prompt_builder_context": true,
+      "input_utf8_bytes": 7512,
+      "elapsed_seconds": 16.556,
+      "error": null,
+      "response_present": true,
+      "stop_reason": "end_turn",
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 1649,
+        "outputTokens": 1076,
+        "totalTokens": 2725,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "final_text_block_count": 1,
+      "final_text_code_points": [
+        1743
+      ],
+      "final_text_utf8_sha256": [
+        "5352f5f9acb4f3c5e30941e75f96fa07b1b4fc15584538d29ff1a085e4918c44"
+      ]
+    },
+    {
+      "call_index": 2,
+      "call_number": 3,
+      "job_index": 0,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_320",
+      "stage": "reviewer",
+      "status": "response_received",
+      "request_canonical_sha256": "f20939c61631acdfce0add0bf9a972b6ce53dff154524351dd3bf89688c330af",
+      "system_prompt_utf8_sha256": "c7acbe0b94e8cc9b80f78ec084ed393a3b1d2b2245f5c86cbc0b3d7416be1cb3",
+      "user_prompt_utf8_sha256": "4b507fb03084d1b806ef7005420e60e20c6fe46cc012354fd6fcdb3f365d06df",
+      "request_matches_frozen_settings_and_prompt_builder_context": true,
+      "input_utf8_bytes": 9782,
+      "elapsed_seconds": 36.215,
+      "error": null,
+      "response_present": true,
+      "stop_reason": "end_turn",
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 2171,
+        "outputTokens": 2475,
+        "totalTokens": 4646,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "final_text_block_count": 1,
+      "final_text_code_points": [
+        3506
+      ],
+      "final_text_utf8_sha256": [
+        "ec0c97e9db12d24e7e7dbc5268da25907d5eb7c4694d65c78b4eba258509a1af"
+      ]
+    },
+    {
+      "call_index": 3,
+      "call_number": 4,
+      "job_index": 1,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_1200",
+      "stage": "author",
+      "status": "response_received",
+      "request_canonical_sha256": "9880a81c74fb18173f0172aba393d517dee30833483883a889c9358f7e12f2b2",
+      "system_prompt_utf8_sha256": "4705f6942f25ab6f2b6b42a83c0c9695c0b96e454e926238b4c05a7929fd95f0",
+      "user_prompt_utf8_sha256": "743375df13128cc7b39d744aa1eb5c73485a74c841cd5eb900ed0878a17188a8",
+      "request_matches_frozen_settings_and_prompt_builder_context": true,
+      "input_utf8_bytes": 10592,
+      "elapsed_seconds": 33.002,
+      "error": null,
+      "response_present": true,
+      "stop_reason": "end_turn",
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 2288,
+        "outputTokens": 2188,
+        "totalTokens": 4476,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "final_text_block_count": 1,
+      "final_text_code_points": [
+        3514
+      ],
+      "final_text_utf8_sha256": [
+        "a64b0facbdb47e92e67e814b347e5cbf4038effe0ef87ba94afd1d2bf02d38ba"
+      ]
+    },
+    {
+      "call_index": 4,
+      "call_number": 5,
+      "job_index": 1,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_1200",
+      "stage": "solver",
+      "status": "response_received",
+      "request_canonical_sha256": "8c562ff96d7f2144370e385535ebb63dd62ca610f64e64e20b1f1e446969177e",
+      "system_prompt_utf8_sha256": "a951e9a6f4f9f078d0f98db47aebe77fdd8c318d9d840fc44ec8d5154b436441",
+      "user_prompt_utf8_sha256": "ad22ef88d08655afb3f16e7e53d162190d35f477ffe2736a1367df689222f5b4",
+      "request_matches_frozen_settings_and_prompt_builder_context": true,
+      "input_utf8_bytes": 7877,
+      "elapsed_seconds": 20.495,
+      "error": null,
+      "response_present": true,
+      "stop_reason": "end_turn",
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 1788,
+        "outputTokens": 1348,
+        "totalTokens": 3136,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "final_text_block_count": 1,
+      "final_text_code_points": [
+        2136
+      ],
+      "final_text_utf8_sha256": [
+        "ab129ad60100b02df1882319f8cf41278df2f2e3fd0951e95c5148a55e6c15d5"
+      ]
+    },
+    {
+      "call_index": 5,
+      "call_number": 6,
+      "job_index": 1,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_1200",
+      "stage": "reviewer",
+      "status": "response_received",
+      "request_canonical_sha256": "75c0ab00e71787b07fedf604ac165303568a7eac408eb9cf6a3651eceee3369e",
+      "system_prompt_utf8_sha256": "c7acbe0b94e8cc9b80f78ec084ed393a3b1d2b2245f5c86cbc0b3d7416be1cb3",
+      "user_prompt_utf8_sha256": "7e4ce537d881473370514fe5fe429fd02c5a3477b4cd51d1642a59a305fec463",
+      "request_matches_frozen_settings_and_prompt_builder_context": true,
+      "input_utf8_bytes": 10484,
+      "elapsed_seconds": 26.665,
+      "error": null,
+      "response_present": true,
+      "stop_reason": "end_turn",
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 2432,
+        "outputTokens": 2038,
+        "totalTokens": 4470,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "final_text_block_count": 1,
+      "final_text_code_points": [
+        3185
+      ],
+      "final_text_utf8_sha256": [
+        "5ccde2008eee2ff7b5d767c22c7ca088893dc4a2248e370f1c15fdc49be227f2"
+      ]
+    },
+    {
+      "call_index": 6,
+      "call_number": 7,
+      "job_index": 2,
+      "case_id": "chess_castling_rights",
+      "arm": "stem_1200",
+      "stage": "author",
+      "status": "operational_failure",
+      "request_canonical_sha256": "74e7876accab5a88fbf95cf7e149f66090706717bf617662a1e99666d09161cf",
+      "system_prompt_utf8_sha256": "4705f6942f25ab6f2b6b42a83c0c9695c0b96e454e926238b4c05a7929fd95f0",
+      "user_prompt_utf8_sha256": "ae57b361d1753110579ad9db023d934519f4be96b51e01ee1e27f135e1a39874",
+      "request_matches_frozen_settings_and_prompt_builder_context": true,
+      "input_utf8_bytes": 10363,
+      "elapsed_seconds": 100.003,
+      "error": {
+        "type": "ReadTimeoutError"
+      },
+      "response_present": false,
+      "stop_reason": null,
+      "usage_known": false,
+      "usage": null,
+      "reasoning_content_block_count": null,
+      "final_text_block_count": 0,
+      "final_text_code_points": [],
+      "final_text_utf8_sha256": []
+    }
+  ],
+  "jobs": [
+    {
+      "job_index": 0,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_320",
+      "status": "completed",
+      "planned_requested_slots": 3,
+      "provider_calls_recorded": 3,
+      "raw_candidate_occurrences_observed": 3,
+      "elapsed_seconds": 127.263,
+      "usage_known": true,
+      "error": null,
+      "format_failure_stage": null,
+      "assessment_results": "withheld; operational audit contains no generated keys, content, feedback or semantic verdicts"
+    },
+    {
+      "job_index": 1,
+      "case_id": "html_disabled_constraint_validation",
+      "arm": "stem_1200",
+      "status": "completed",
+      "planned_requested_slots": 3,
+      "provider_calls_recorded": 3,
+      "raw_candidate_occurrences_observed": 3,
+      "elapsed_seconds": 80.234,
+      "usage_known": true,
+      "error": null,
+      "format_failure_stage": null,
+      "assessment_results": "withheld; operational audit contains no generated keys, content, feedback or semantic verdicts"
+    },
+    {
+      "job_index": 2,
+      "case_id": "chess_castling_rights",
+      "arm": "stem_1200",
+      "status": "operational_failure",
+      "planned_requested_slots": 3,
+      "provider_calls_recorded": 1,
+      "raw_candidate_occurrences_observed": 0,
+      "elapsed_seconds": 100.021,
+      "usage_known": false,
+      "error": {
+        "type": "ProviderError"
+      },
+      "format_failure_stage": null,
+      "assessment_results": "withheld; operational audit contains no generated keys, content, feedback or semantic verdicts"
+    },
+    {
+      "job_index": 3,
+      "case_id": "chess_castling_rights",
+      "arm": "stem_320",
+      "status": "unattempted",
+      "planned_requested_slots": 3,
+      "provider_calls_recorded": 0,
+      "raw_candidate_occurrences_observed": 0,
+      "elapsed_seconds": null,
+      "usage_known": null,
+      "error": null,
+      "format_failure_stage": null,
+      "assessment_results": "withheld; operational audit contains no generated keys, content, feedback or semantic verdicts"
+    }
+  ],
+  "denominators": {
+    "planned_goals": 2,
+    "planned_arms_per_goal": 2,
+    "planned_jobs": 4,
+    "requested_slots_per_job": 3,
+    "planned_requested_slots": 12,
+    "jobs_with_complete_three_stage_sequences": 2,
+    "jobs_with_operational_failure": 1,
+    "jobs_unattempted": 1,
+    "provider_calls_recorded": 7,
+    "calls_by_stage": {
+      "author": 3,
+      "solver": 2,
+      "reviewer": 2
+    },
+    "final_responses_observed": 6,
+    "completed_author_responses": 2,
+    "observed_raw_candidates": 6,
+    "requested_slots_for_author_jobs_with_observed_responses": 6,
+    "requested_slots_in_timed_out_author_job": 3,
+    "requested_slots_in_unattempted_job": 3,
+    "timed_out_author_actual_generated_count": "unknown; zero observed occurrences does not prove no remote generation",
+    "quality_denominator_note": "Six observable raw candidates can be assessed. The twelve originally requested slots and six unavailable slots remain reported separately; no missing or timed-out slot earns correct-rejection credit. This operational audit does not report acceptance or correctness counts."
+  },
+  "usage_and_time": {
+    "all_call_usage_known": false,
+    "known_usage_calls": 6,
+    "unknown_usage_calls": 1,
+    "known_usage_subtotal_not_complete_run_usage": {
+      "inputTokens": 12615,
+      "outputTokens": 13690,
+      "totalTokens": 26305,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "complete_run_input_tokens": null,
+    "complete_run_output_tokens": null,
+    "complete_run_billed_cost": null,
+    "recorded_input_text_utf8_bytes": 67201,
+    "sum_recorded_call_elapsed_seconds": 307.383,
+    "sum_attempted_job_elapsed_seconds": 307.518,
+    "time_scope": "Sums of recorded per-call/per-job intervals; capture has no complete wall-clock start/end timestamps. These are not an independent terminal runtime or latency guarantee."
+  },
+  "recording_and_budget_checks": {
+    "all_seven_complete_application_requests_saved": true,
+    "all_request_shapes_and_settings_match_plan": true,
+    "all_author_prompts_match_frozen_jobs": true,
+    "solver_and_reviewer_context_matches_frozen_goal_and_sources": true,
+    "all_call_stages_in_per_job_order": true,
+    "per_job_and_global_call_caps_respected": true,
+    "input_byte_caps_respected": true,
+    "subsequent_jobs_stopped_after_operational_failure": true,
+    "no_additional_recorded_call_for_failed_job": true,
+    "sdk_retry_configuration_total_attempts": 1,
+    "durable_intent_order": "Frozen RecordingClient appends the complete request and persists before client.converse; finally persists error/elapsed metadata. Final capture contains the seventh request/error. This audit cannot recover historical intermediate files or independent HTTP-attempt telemetry.",
+    "provider_error_wrapping": "Frozen question_generation._generate_with_bedrock wraps the recorded client exception in ProviderError and records request_failed.",
+    "credentials_in_capture_application_request_fields": false
+  },
+  "audit_actions": {
+    "read_only_input_inspection": true,
+    "frozen_plan_reconstruction": true,
+    "client_construction": false,
+    "provider_calls": 0,
+    "response_repair": false,
+    "source_edits": false,
+    "capture_mutation": false,
+    "tests_rerun": false
+  },
+  "limitations": [
+    "No HTML keys, item content, feedback, semantic reviewer verdicts or quality assessment are included.",
+    "ReadTimeoutError does not reveal whether the remote request kept running, generated output, or was billed.",
+    "Known token totals exclude the timed-out call and are not the run total.",
+    "The paired two-goal experiment is incomplete; operational completion and question correctness are separate."
+  ]
+}
