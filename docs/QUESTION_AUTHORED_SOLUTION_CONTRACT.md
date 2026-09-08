@@ -6,7 +6,7 @@ Implemented behind the server environment setting `QUESTION_FEEDBACK_CONTRACT=au
 
 ## Runtime contract
 
-1. The author creates the question, four choices, key and a complete main worked explanation. It must apply the stated facts and explain the decisive reasoning within the existing 420-character main limit. Choice explanations are not requested in this construction mode.
+1. The author creates the question, four choices, key and a complete main worked explanation. It must apply the stated facts and explain the decisive reasoning. The existing author prompt instructs a 320-character main limit; runtime validation permits up to 420 characters. This mode does not widen either bound. Choice explanations are not requested in this construction mode.
 2. Sanitization rejects malformed or oversized main explanations instead of cleaning or clipping them. A supplied nonempty or malformed `choiceExplanations` value is a rejection, never permission to discard existing teaching. Normal stem and choice sanitization still occurs before the candidate is frozen.
 3. The existing complete-choice solver receives the exact candidate stem and choices without the author key, explanation or difficulty. Zero or multiple supported choices, uncertainty and exact key disagreement block final review. These are enforced declarations, not proof that each model judgment is true.
 4. The final audit receives the frozen candidate and main explanation, plus goal, skill and supplied source context. It receives neither the explicit author key/difficulty nor solver judgments/reasons. Historical answers and teaching are omitted. The explanation may reveal the intended key, so this audit is not answer-blind.

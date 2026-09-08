@@ -1,0 +1,276 @@
+{
+  "prepared_date": "2026-09-08",
+  "status": "Final prospective fixture; no trial model calls or generated questions.",
+  "cases": [
+    {
+      "case_id": "houseplant_propagation_decisions",
+      "payload": {
+        "goal": {
+          "title": "Make better houseplant propagation decisions",
+          "category": "Gardening",
+          "currentLevel": "I can identify common houseplant parts and have tried simple cuttings.",
+          "focusAreas": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+          "learningTarget": "Use plant structure and observations to choose and explain appropriate propagation steps."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "UMN Extension: Monstera deliciosa — selected paraphrase",
+            "text": "Assistant-written selective paraphrase of UMN Extension: Monstera deliciosa. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa\n\nFor Monstera deliciosa, a propagating stem piece needs a node with an axillary bud; a detached leaf or petiole alone cannot develop into a new growing plant. Rooting medium should provide moisture and physical support while draining well. Monstera can root in plain water or suitable solid media. Additional rooting hormone is optional; it can speed rooting but is not required. Inspect roots before moving a cutting: a piece with few or no roots should remain in its rooting medium. Healthy roots are firm and creamy white; soft brown roots suggest excessive moisture or poor drainage. Healthy roots together with active growth indicate readiness for a longer-term pot. These recommendations concern Monstera cuttings, not every plant species. The page describes several propagation and care methods rather than one universally necessary method.",
+            "truncated": true
+          },
+          {
+            "name": "Iowa State Extension: Propagating Houseplants — selected paraphrase",
+            "text": "Assistant-written selective paraphrase of Iowa State Extension: Propagating Houseplants. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants\n\nPropagation methods differ with a plant’s structure and growth habit. Stem cuttings suit pothos, whereas leaf propagation suits African violets. Iowa State lists leaf cuttings and division for snake plant, and stem cuttings and layering for Monstera deliciosa. These are recommended methods, not a proof that every unlisted approach is biologically impossible.",
+            "truncated": true
+          }
+        ]
+      },
+      "prospective_independent_assessment": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable in a short practical case when tissue viability, rooting observations and the proposed next step interact. The source supports interpreting evidence rather than simply naming a method; actual authored items must demonstrate that depth.",
+        "depth_failure": "A species-to-method lookup, identifying a node, or repeating that wet roots can rot is only recall or one familiar application and does not by itself meet3.",
+        "complete_premises": "Species, material retained and any decisive root/growth observations must be displayed. A leaf, petiole, stem node, root and axillary bud are not interchangeable. Do not infer that a named rooting medium alone establishes root health.",
+        "key_and_distractors": "Determine every warranted action under the exact circumstances. Several propagation methods may be legitimate; a recommended method is not automatically uniquely necessary. Require three distinct plausible errors, not categorical impossibilities invented from omissions in a methods table.",
+        "teaching": "Main explanation must connect displayed observations to the recommendation without guaranteeing propagation success, assigning an unproved disease cause, or treating hormone as a replacement for missing required tissue. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "generalization": "Preserve species-specific scope and distinguish evidence of roots from evidence of continued shoot growth. Do not impose one species’ requirements on all houseplants."
+      },
+      "source_evidence_notes": [
+        {
+          "source_url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+          "source_title": "Monstera deliciosa",
+          "publisher": "University of Minnesota Extension",
+          "access_date": "2026-09-08",
+          "source_access": "Primary publisher page or official government PDF read through the web tool; not an acquire_source record.",
+          "source_locator": "Propagation; Rooting media; Rooting hormone; Caring for your cuttings; When to transplant your rooted cutting",
+          "supplied_representation": "Assistant-authored selective paraphrase; no verbatim quotation or reproduced example.",
+          "verbatim_quote_words": 0,
+          "paraphrase_word_count": 131,
+          "source_document_sha256": "3783aeddac795df4435e003428a9d55374a5ea15f6eea81fc46794b5a5d200c6",
+          "text_sha256": "1423e6f40edc96e4aa002735e15f3a61c7153b262f4fb9799795dbc28c8fd760",
+          "omission_provenance": "truncated=true marks intentional source abridgement, not a transport or parser failure. The supplied summary itself is preserved completely.",
+          "limitations": "Selective text summary; no images, propagation diagram, exact timing guarantee or complete care protocol supplied."
+        },
+        {
+          "source_url": "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants",
+          "source_title": "Propagating Houseplants",
+          "publisher": "Iowa State University Extension and Outreach",
+          "access_date": "2026-09-08",
+          "source_access": "Primary publisher page or official government PDF read through the web tool; not an acquire_source record.",
+          "source_locator": "Which Method do you Use?; Best Propagation Method by Species; page last reviewed January2025",
+          "supplied_representation": "Assistant-authored selective paraphrase; no verbatim quotation or reproduced example.",
+          "verbatim_quote_words": 0,
+          "paraphrase_word_count": 52,
+          "source_document_sha256": "95f3c5536f1706de40a5aa4e24ef1c9c43c8497c4ea3c96c39d7e6de2ca95148",
+          "text_sha256": "595739e6112b2c63e57b7460214ab5eba53d3a5c34583a29787b0c59a39adbd7",
+          "omission_provenance": "truncated=true marks intentional source abridgement, not a transport or parser failure. The supplied summary itself is preserved completely.",
+          "limitations": "Only selected recommendations retained. Blank table cells must not become impossibility evidence."
+        }
+      ]
+    },
+    {
+      "case_id": "english_articles_in_context",
+      "payload": {
+        "goal": {
+          "title": "Choose English articles from meaning and context",
+          "category": "Language",
+          "currentLevel": "I know a, an and the in simple sentences and want to use them accurately in connected writing.",
+          "focusAreas": "Use shared reference, specific versus general meaning and countability to interpret article choices across a short context.",
+          "learningTarget": "Explain how article choices express the intended reference in ordinary written English."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Cambridge English Grammar Today: A/an and the — selected paraphrase",
+            "text": "Assistant-written selective paraphrase of Cambridge English Grammar Today: A/an and the. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the\n\nArticle choice depends on what the listener or reader can identify and on the noun’s use. A or an introduces a singular countable referent that is not already identifiable to that audience; the identifies a referent recoverable from shared knowledge or context. A previous mention is one way to establish reference, not the only one. A and an are limited to singular countable uses, and their form follows the next spoken sound rather than its written first letter. The can accompany singular, plural or uncountable nouns when a particular referent is intended. Bare plural and uncountable nouns commonly express general classes or substances; the can pick out a particular set or amount. Some singular generic uses also take the, so generic meaning is not a universal prohibition. Article use changes with context and intended reference, not just the noun’s spelling.",
+            "truncated": true
+          }
+        ]
+      },
+      "prospective_independent_assessment": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable with two or three short connected sentences where what is mutually known and whether a class or particular member is intended changes the warranted completion. Contextual reference must matter to the answer.",
+        "depth_failure": "A/an sound recognition, an isolated countability label or automatic first-mention/second-mention substitution alone is level1–2.",
+        "complete_premises": "Display the relevant preceding context, audience knowledge and intended meaning. If multiple article choices give grammatical readings, do not claim only one is grammatical without the context that excludes its rival reading.",
+        "key_and_distractors": "Evaluate the whole completed expression in context. Distinct articles are not automatically distinct errors; alternatives must fail the stated intended reference or grammatical construction. Countability coercion and generic singular constructions cannot be dismissed with absolute rules.",
+        "teaching": "Explain the contextual referent and noun use, not merely recite an article rule. Do not assert that first mention always forbids the, that the always requires earlier mention, or that all generic references exclude the. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "dialect_scope": "Prefer ordinary shared conventions. Dialect-sensitive institutional expressions or pronunciation-dependent alternatives require an explicitly relevant variety or pronunciation; otherwise retain the ambiguity."
+      },
+      "source_evidence_notes": [
+        {
+          "source_url": "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the",
+          "source_title": "A/an and the — English Grammar Today",
+          "publisher": "Cambridge University Press & Assessment",
+          "access_date": "2026-09-08",
+          "source_access": "Primary publisher page or official government PDF read through the web tool; not an acquire_source record.",
+          "source_locator": "A/an and the: meaning; When do we use a and when do we use an?; Countable nouns; Uncountable nouns; General nouns; Inventions, musical instruments and cultural institutions",
+          "supplied_representation": "Assistant-authored selective paraphrase; no verbatim quotation or reproduced example.",
+          "verbatim_quote_words": 0,
+          "paraphrase_word_count": 140,
+          "source_document_sha256": "da326b7202c0530afa14185a5f5b3edc19fe4282e64f43e4fd0f5091d34f8ea2",
+          "text_sha256": "b3c5c0d69f330993ddbc3acc02884cc6233764f82a3b50be0c992d24190b7ab0",
+          "omission_provenance": "truncated=true marks intentional source abridgement, not a transport or parser failure. The supplied summary itself is preserved completely.",
+          "limitations": "Selective paraphrase, not an exhaustive article grammar. Source examples are omitted; no exact source question or key is supplied."
+        }
+      ]
+    },
+    {
+      "case_id": "topographic_contour_profiles",
+      "payload": {
+        "goal": {
+          "title": "Interpret terrain from topographic contour information",
+          "category": "Geography",
+          "currentLevel": "I recognize contour lines and elevation labels but want to interpret terrain along a route.",
+          "focusAreas": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from steepness.",
+          "learningTarget": "Use a fully stated contour description to explain changes in elevation and slope along a route."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "USGS: Topographic Map Symbols — selected paraphrase",
+            "text": "Assistant-written selective paraphrase of USGS: Topographic Map Symbols. Accessed 2026-09-08. This is an abridged summary, not a quotation or complete captured page.\nSource: https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf\n\nTopographic contours connect locations at the same elevation relative to a reference surface. Labeled, heavier index contours help establish elevations; intermediate contours provide additional terrain detail. The contour interval describes a vertical elevation difference, not horizontal travel distance, and is given in the map margin. On the same map, tightly spaced ordinary contours represent steeper terrain, whereas wider spacing represents gentler terrain. A map’s chosen interval depends on its terrain, so maps can use different intervals. Labels identify elevation, while spacing helps describe how rapidly elevation changes over horizontal distance. Map legends distinguish ordinary, supplementary and depression contours and other symbols; their meaning must be read using the relevant legend. This summary concerns contour interpretation, not an assertion that a mapped route is safe or passable.",
+            "truncated": true
+          }
+        ]
+      },
+      "prospective_independent_assessment": {
+        "minimum_actual_difficulty": 3,
+        "attainability": "Attainable with a compact self-contained textual contour description in which several labels or spacings must be combined to distinguish plausible terrain profiles. This is representation interpretation, not calculator-only arithmetic.",
+        "depth_failure": "Simply naming the closer-contour slope as steeper, recalling a symbol, or subtracting two elevations without interpreting the route is level1–2.",
+        "complete_premises": "No unseen map may be required. State all needed contour labels, ordinary interval and relevant horizontal spacing/order or orientation. Distinguish same-map comparisons from different scales or intervals. If a map image is not supplied, its decisive geometry must be described completely.",
+        "key_and_distractors": "Check every proposed terrain inference. Elevation does not imply steepness; endpoint height change does not establish total ascent or the entire route profile. Do not assume omitted contours, a straight perpendicular crossing or constant slope unless the description establishes it.",
+        "teaching": "A worked explanation must connect the actual described labels and spacings to the conclusion, with units intact. A location between contours normally has a range, not an exact interpolated elevation absent an additional model. Nonempty choice-specific feedback is a construction-contract failure; preserve it in raw evidence and do not discard it to admit the item.",
+        "scope": "This trial concerns understanding a representation, not real-world route safety. No stream-V orientation, depression geometry or specialized symbol is supported unless supplied explicitly with a sufficient legend/source."
+      },
+      "source_evidence_notes": [
+        {
+          "source_url": "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf",
+          "source_title": "Topographic Map Symbols",
+          "publisher": "U.S. Geological Survey; official U.S. Government Publishing Office repository",
+          "access_date": "2026-09-08",
+          "source_access": "Primary publisher page or official government PDF read through the web tool; not an acquire_source record.",
+          "source_locator": "PDF page1: What is a Topographic Map? and Reading Topographic Maps; page2 contour legend identified but not geometrically interpreted",
+          "supplied_representation": "Assistant-authored selective paraphrase; no verbatim quotation or reproduced example.",
+          "verbatim_quote_words": 0,
+          "paraphrase_word_count": 126,
+          "source_document_sha256": "0476028ab62413b1256db16c4593ba69fa632873791e69e95f627bd74d78093e",
+          "text_sha256": "a1b1829998954686bd0ed7a3785a8c398718d2660dbfd6c9b884af166f3cacd8",
+          "omission_provenance": "truncated=true marks intentional source abridgement, not a transport or parser failure. The supplied summary itself is preserved completely.",
+          "limitations": "Text summary of USGS government material. No map image, terrain fixture, worked question or source example is reproduced. Supplementary-symbol shapes were not inferred from text extraction."
+        }
+      ]
+    }
+  ],
+  "assessment_contract": {
+    "minimum_difficulty": 3,
+    "planned_candidates_per_goal": 2,
+    "goals": 3,
+    "starting_candidate_slots": 6,
+    "score_dimensions": [
+      "exact warranted answer or ambiguity",
+      "complete displayed premises",
+      "all three distinct plausible distractors",
+      "source-consistent complete worked main explanation",
+      "no nonempty choice-specific feedback; do not discard contract failures",
+      "goal fit",
+      "independent difficulty with concrete reasoning"
+    ],
+    "denominators": "Preserve every raw candidate and its formatting, semantic, difficulty or operational outcome. Unreturned content is unavailable. Neither truncation nor dropping bad feedback retrospectively earns correctness credit.",
+    "source_isolation": "Only each payload is intended for runtime normalization/model prompts. Keep source_evidence_notes, prospective_independent_assessment and all proposal metadata outside provider inputs. Sources supply subject knowledge, not test outcomes or hand-authored questions.",
+    "authenticity_scope": "URL-backed assistant paraphrases from primary publishers, not automatically acquired raw pages, exact quotations or independently verified source entailment certificates.",
+    "selection_scope": "The three goals are ordinary but deliberately selected for this bounded qualification. Success cannot establish arbitrary-subject accuracy or learning gains.",
+    "attainability_scope": "Level3 is feasible, not guaranteed by the goal title or model difficulty label. Short items must actually require the listed contextual or representational reasoning.",
+    "choice_feedback_contract": "choiceExplanations must be absent or an empty object. A nonempty map or a wrong type fails the construction contract; it is not optional material to erase. Preserve all raw content for assessment.",
+    "full_favorable_criterion": "All six requested items must be obtained in the first unrepaired generation pass, with two per goal. Each must pass the declared author/content contract and unchanged author-to-solver-to-main-auditor path, have exactly one independently warranted key, complete displayed premises, three distinct plausible distractors, a complete accurate unchanged worked main, goal fit and independent difficulty at least3. No repair, top-up, replacement or post-hoc feedback deletion earns this result.",
+    "partial_results": "Report every raw candidate and all rejected, malformed, unattempted and returned slots. Partial yield and specific improvements may be described, but do not satisfy the six-item criterion. Operational failure is not semantic rejection; missing content is unobserved."
+  },
+  "offline_normalization_checks": [
+    {
+      "case_id": "houseplant_propagation_decisions",
+      "normalized_request_sha256": "015f827a31b5a3f5bda4da000328ef361f286181025ff2ce1caec3d8e7435da1",
+      "normalized_source_characters": 1763,
+      "source_documents_preserved_exactly": true
+    },
+    {
+      "case_id": "english_articles_in_context",
+      "normalized_request_sha256": "33c28200a9c30650d6e1ea286fa652685e600450b8241cf3b5acba139af68ffc",
+      "normalized_source_characters": 1129,
+      "source_documents_preserved_exactly": true
+    },
+    {
+      "case_id": "topographic_contour_profiles",
+      "normalized_request_sha256": "c79cfb3a9fecd07fea4a03a23077491dca591c4dc04f4619fa3e347c4a7998f3",
+      "normalized_source_characters": 1181,
+      "source_documents_preserved_exactly": true
+    }
+  ],
+  "source_access_limitations": [
+    {
+      "url": "https://www.nwcg.gov/course/ffm/mapping/firefighter-math-55-contour-lines-and-intervals",
+      "result": "Direct web open returned403; not used as supplied evidence."
+    },
+    {
+      "url": "https://fs-prod-nwcg.s3.us-gov-west-1.amazonaws.com/s3fs-public/publication/pms475.pdf",
+      "result": "Direct web open refused30,650,584-byte response as too large; search excerpt not promoted to a captured document or used in sourceDocuments."
+    }
+  ],
+  "experiment": "authored-solution-fresh-v1",
+  "proposal_provenance": {
+    "file_sha256": "be20882d3fd5e5104a7bac34300c18f6b96a9d271990aa55c9a6ab371f60e92e",
+    "correction": "Assessment wording now treats nonempty choice-specific feedback as a construction-contract failure. Model-visible payloads and all source documents are unchanged."
+  },
+  "trial_constraints": {
+    "case_order": [
+      "houseplant_propagation_decisions",
+      "english_articles_in_context",
+      "topographic_contour_profiles"
+    ],
+    "environment": {
+      "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+      "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+      "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+      "BEDROCK_KIMI_THINKING": "disabled",
+      "BEDROCK_CLAUDE_THINKING": "disabled",
+      "BEDROCK_MAX_TOKENS": "6000",
+      "BEDROCK_THINKING_MAX_TOKENS": "6000",
+      "BEDROCK_TEMPERATURE": "0.2",
+      "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+      "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+      "GENERATION_ATTEMPTS": "1",
+      "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+      "CHECKPOINT_PROMPT_VARIANT": "balanced",
+      "BEDROCK_FALLBACK_MODEL_ID": ""
+    },
+    "requested_items_per_goal": 2,
+    "requested_items_total": 6,
+    "minimum_difficulty": 3,
+    "maximum_provider_calls_per_goal": 3,
+    "maximum_provider_calls_total": 9,
+    "planned_call_roles_per_goal": [
+      "author",
+      "complete-choice solver",
+      "immutable main-explanation auditor"
+    ],
+    "sdk_total_max_attempts": 1,
+    "operation_seconds_per_goal": 240,
+    "maximum_serialized_request_utf8_bytes_per_call": 32768,
+    "maximum_serialized_request_utf8_bytes_total": 294912,
+    "author_instruction_bounds": {
+      "prompt_characters": 320,
+      "choice_characters": 140,
+      "main_explanation_characters": 320
+    },
+    "runtime_content_bounds": {
+      "prompt_characters": 320,
+      "choice_characters": 140,
+      "main_explanation_characters": 420
+    },
+    "limits_note": "The unchanged author instruction is tighter than the420-character runtime main bound. Full favorable qualification requires adherence to the author instruction as well as runtime admission. Serialized UTF8 bytes are not a certified token bound.",
+    "repair_policy": "No additional repair, top-up, fallback, retry, replacement or resume is authorized. If the existing runtime requests JSON repair, count it within the same three-call goal allowance, preserve the failure and mark the full favorable criterion unmet; do not grant extra capacity.",
+    "stop_policy": "A provider, unfinished response, timeout, source/request binding, persistence or cleanup failure stops remaining work. Content/format/difficulty outcomes and any runtime-caught failures must remain distinguishable and recorded.",
+    "execution_authority": "This fixture is a prospective plan input, not execution authorization. Root freezes the final implemented source/dependency hashes, exact initial requests and plan hash before any calls."
+  }
+}

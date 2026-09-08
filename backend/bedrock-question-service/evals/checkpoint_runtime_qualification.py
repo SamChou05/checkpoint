@@ -3,6 +3,7 @@
 
 Original mode: one fixed batch (two calls), then fresh generation (six).
 Frozen-recheck mode: the same archived five candidates in two two-call arms.
+Authored-solution mode: three fresh two-item goals, at most three calls each.
 The unchanged runtime owns parsing, filtering, top-offs and JSON repair. The
 existing isolated caller owns transport/deadlines; this file adds no supervisor.
 Operational completion and policy stamps are not factual correctness scores.
@@ -34,12 +35,14 @@ from question_verification import (  # noqa: E402
 from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT  # noqa: E402
 from request_contract import _normalize_request  # noqa: E402
 from question_quality import _extract_json_object, _sanitize_questions  # noqa: E402
+from question_teaching import AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT  # noqa: E402
 from service_errors import ProviderError  # noqa: E402
 
 shared, recorded = caller.shared, caller.recorded
 _hash, _same = recorded._hash, recorded._same
 EXPERIMENT = "policy-two-runtime-qualification-v1"
 RECHECK_EXPERIMENT = "policy-two-frozen-recheck-v1"
+AUTHORED_EXPERIMENT = "authored-solution-fresh-v1"
 RECHECK_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/runtime-qualification-capture-20260908.json"
 RECHECK_ORIGIN_SHA256 = "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d"
 MAX_CALLS, MAX_INPUT_BYTES = 8, 32 * 1024
@@ -57,6 +60,7 @@ SETTINGS = {
     "MAX_PROVIDER_CALLS_PER_REQUEST": "6", "GENERATION_ATTEMPTS": "3",
     "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
     "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
     "BEDROCK_GUARDRAIL_IDENTIFIER": "", "BEDROCK_GUARDRAIL_VERSION": "",
 }
 
@@ -107,6 +111,8 @@ def _role(request):
         return "solver"
     if system == [{"text": COMPLETE_REVIEW_SYSTEM_PROMPT}]:
         return "reviewer"
+    if system == [{"text": AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT}]:
+        return "teaching_auditor"
     raise ValueError("Unexpected runtime role.")
 
 
@@ -120,6 +126,8 @@ def _guard_request(request, settings=None):
                   if adaptive else {"thinking": {"type": "disabled"}})
     if (
         request.get("modelId") != expected_model
+        or role == "teaching_auditor" and settings["QUESTION_FEEDBACK_CONTRACT"] != "authored_solution"
+        or role == "reviewer" and settings["QUESTION_FEEDBACK_CONTRACT"] == "authored_solution"
         or not _same(request.get("inferenceConfig"), inference)
         or not _same(request.get("additionalModelRequestFields"), additional)
         or set(request) != {"modelId", "messages", "system", "inferenceConfig", "additionalModelRequestFields"}
@@ -130,6 +138,8 @@ def _guard_request(request, settings=None):
 
 
 def make_plan(packet, *, source_revision=None):
+    if type(packet) is dict and packet.get("experiment") == AUTHORED_EXPERIMENT:
+        return _make_authored_plan(packet, source_revision=source_revision)
     if type(packet) is dict and packet.get("experiment") == RECHECK_EXPERIMENT:
         return _make_recheck_plan(packet, source_revision=source_revision)
     if type(packet) is not dict or packet.get("experiment") != EXPERIMENT:
@@ -187,6 +197,59 @@ def _source_snapshot(source_revision):
                  "evals/question_complete_author.py", "evals/checkpoint_solution_compatibility_eval.py"):
         sources[name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
     return {"source_revision": revision, "source_sha256": sources, "dependencies": shared.dependencies()}
+
+
+def _make_authored_plan(packet, *, source_revision):
+    cases = packet.get("cases")
+    if (type(cases) is not list or len(cases) != 3
+            or any(type(c) is not dict or type(c.get("case_id")) is not str
+                   or not c["case_id"].strip() for c in cases)
+            or len({c["case_id"] for c in cases}) != 3):
+        raise ValueError("Exactly three distinct fresh goal cases are required.")
+    settings = {**SETTINGS, "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+                "GENERATION_ATTEMPTS": "1", "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+                "BEDROCK_THINKING_MAX_TOKENS": "6000"}
+    if "trial_constraints" in packet:
+        constraints = packet["trial_constraints"]
+        expected = {
+            "case_order": [c["case_id"] for c in cases], "requested_items_per_goal": 2,
+            "requested_items_total": 6, "minimum_difficulty": 3,
+            "maximum_provider_calls_per_goal": 3, "maximum_provider_calls_total": 9,
+            "sdk_total_max_attempts": 1, "operation_seconds_per_goal": 240,
+            "maximum_serialized_request_utf8_bytes_per_call": MAX_INPUT_BYTES,
+            "maximum_serialized_request_utf8_bytes_total": 9 * MAX_INPUT_BYTES,
+        }
+        if (type(constraints) is not dict or type(constraints.get("environment")) is not dict
+                or any(k not in settings or not _same(v, settings[k]) for k, v in constraints["environment"].items())
+                or any(not _same(constraints.get(k), v) for k, v in expected.items())):
+            raise ValueError("Declared fixture limits must match the fixed execution contract.")
+    operations = []
+    with patch.dict(os.environ, settings):
+        for case in cases:
+            payload = case.get("payload")
+            if (type(payload) is not dict or type(payload.get("targetCount")) is not int
+                    or payload["targetCount"] != 2 or type(payload.get("minimumDifficulty")) is not int
+                    or payload["minimumDifficulty"] != 3):
+                raise ValueError("Every goal must request exactly two items at minimum difficulty three.")
+            request = _normalize_request(copy.deepcopy(payload))
+            operations.append({"kind": "fresh", "case_id": case["case_id"],
+                               "request": request, "maximum_calls": 3,
+                               "first_request": _first_request(request, settings=settings)})
+    return {
+        "experiment": AUTHORED_EXPERIMENT, "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
+        **_source_snapshot(source_revision), "settings": settings, "operations": operations,
+        "maximum_calls": 9, "maximum_input_utf8_bytes_per_call": MAX_INPUT_BYTES,
+        "maximum_input_utf8_bytes_total": 9 * MAX_INPUT_BYTES,
+        "operation_seconds": OPERATION_SECONDS, "sdk_total_max_attempts": 1,
+        "runtime_deadline_constants": {
+            "client_setup_milliseconds": generation.DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS,
+            "safety_milliseconds": generation.DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS,
+        },
+        "maximum_worker_capture_bytes": caller.MAX_CAPTURE_BYTES,
+        "failure_policy": "At most three calls per goal and nine total. One generation attempt; no added repair, top-up, fallback, retry, resume or replacement operation. Existing runtime author JSON repair remains visible and consumes the same three-call allowance, disqualifying a full unrepaired result. Operational/unfinished-response/cleanup/persistence failure stops all later goals. Ordinary content rejection remains separate.",
+        "scope": "Fresh authoring through actual production functions with the authored_solution server opt-in, not deployed Lambda or bank writes. Kimi authors; Sonnet complete-choice solver and immutable main-teaching auditor use explicit disabled thinking and6000tokens. Only case payloads enter normalization; external assessment/provenance remains outside provider inputs. All raw final outputs are retained. Full unrepaired batch is a path/yield observation, not correctness, plausible-distractor or difficulty certification. Author main guidance remains320characters while immutable runtime admission permits420; no text is clipped to make it pass.",
+        "timing_scope": "Three separate240-second operation clocks, bounded existing workers with read75/connect3/SDK1 and at most32KiB per serialized request. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Fixed75 transport admission is conservative versus deployed late-operation read shortening. No response means unknown usage/content/remote completion.",
+    }
 
 
 def _make_recheck_plan(packet, *, source_revision):
@@ -482,6 +545,15 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
                           questions=questions, runtime_error_type=error_type,
                           budget_reservations=budget.calls,
                           metrics=_metrics_without_runtime_intervals(metrics))
+            if plan["experiment"] == AUTHORED_EXPERIMENT:
+                repairs = sum(c["operation_index"] == index and c["role"] == "author_json_repair"
+                              for c in report["calls"])
+                result["authored_solution_observation"] = {
+                    "requested_count": job["request"]["targetCount"], "returned_count": len(questions),
+                    "author_json_repair_calls": repairs,
+                    "full_unrepaired_batch": not client.failed and repairs == 0
+                    and len(questions) == job["request"]["targetCount"],
+                }
             persist()
             if client.failed:
                 break

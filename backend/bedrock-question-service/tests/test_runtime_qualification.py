@@ -599,5 +599,187 @@ class FrozenRuntimeRecheckTests(unittest.TestCase):
             trial.main(["--fixture", str(fixture), "--output", str(self.output)])
 
 
+class FreshAuthoredSolutionTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.directory = Path(temporary.name)
+        self.output = self.directory / "capture"
+        self.plan_path = self.directory / "plan.json"
+        fixture = trial.SERVICE_DIR.parents[1] / "docs/evidence/authored-solution-fresh-fixture-20260908.json"
+        self.packet = json.loads(fixture.read_text())
+        for case in self.packet["cases"]:
+            case["prospective_independent_assessment"]["test_sentinel"] = "EXTERNAL ASSESSMENT MUST NOT BE SENT"
+        self.plan = trial.make_plan(self.packet)
+        trial.shared.write_json(self.plan_path, self.plan)
+        self.questions = [[_raw_question(
+            f"Observation set {goal}-{i} states a relation and its condition. Which conclusion follows?",
+            explanation=f"  Use the stated relation for case {goal}-{i}.\r\n    Apply its condition to establish the conclusion.  ",
+        ) for i in range(2)] for goal in range(3)]
+        self.by_prompt = {q["prompt"]: q for batch in self.questions for q in batch}
+
+    def run_trial(self, observer=None):
+        return trial.run_trial(self.plan_path, trial._hash(self.plan), self.output,
+                               observer=observer or self.observer)
+
+    def observer(self, request, *, on_progress, timeout, **_):
+        self.assertGreater(timeout, 0)
+        self.assertLessEqual(timeout, 240)
+        saved = json.loads((self.output / "capture.json").read_text())
+        call = saved["calls"][-1]
+        operation = call["operation_index"]
+        self.assertEqual(call["request"], request)
+        self.assertEqual(trial.caller.SETTINGS, self.plan["settings"])
+        self.assertNotIn("EXTERNAL ASSESSMENT MUST NOT BE SENT", json.dumps(request))
+        self.assertEqual(request["inferenceConfig"], {"maxTokens": 6000, "temperature": 0.2})
+        if call["role"].startswith("author"):
+            value = {"questions": self.questions[operation]}
+        elif call["role"] == "solver":
+            data = payload(request, "question_solution_json")
+            self.assertEqual(data["sourceDocuments"], self.plan["operations"][operation]["request"]["sourceDocuments"])
+            for item in data["items"]:
+                self.assertFalse(set(item) & {"explanation", "expectedAnswer", "difficulty"})
+            value = {"solutions": [{
+                "index": item["index"], "choices": [{
+                    "choice": c, "judgment": "supported" if c == self.by_prompt[item["prompt"]]["expectedAnswer"] else "refuted",
+                    "reason": "SOLVER REASON MUST NOT REACH TEACHING AUDITOR",
+                } for c in item["choices"]],
+            } for item in data["items"]]}
+        else:
+            self.assertEqual(call["role"], "teaching_auditor")
+            self.assertNotIn("SOLVER REASON MUST NOT REACH", json.dumps(request))
+            data = payload(request, "question_review_json")
+            self.assertNotIn("independentSolutions", data)
+            self.assertEqual(data["sourceDocuments"], self.plan["operations"][operation]["request"]["sourceDocuments"])
+            for item in data["items"]:
+                self.assertEqual(item["explanation"], self.by_prompt[item["prompt"]]["explanation"])
+                self.assertFalse(set(item) & {"expectedAnswer", "difficulty", "choiceExplanations"})
+            value = {"reviews": [{"index": item["index"], "valid": True,
+                                   "answer": self.by_prompt[item["prompt"]]["expectedAnswer"],
+                                   "difficulty": 3, "explanationSupport": "supported", "issues": []}
+                                  for item in reversed(data["items"])]}
+        state = completed(value)
+        on_progress(copy.deepcopy(state))
+        return state
+
+    def test_actual_three_goal_path_preserves_authored_main_with_nine_call_bound_and_replay(self):
+        self.assertEqual(self.plan["maximum_calls"], 9)
+        self.assertEqual([j["maximum_calls"] for j in self.plan["operations"]], [3, 3, 3])
+        self.assertEqual(self.plan["maximum_input_utf8_bytes_total"], 9 * 32768)
+        self.assertIn("question_teaching.py", self.plan["source_sha256"])
+        self.assertEqual(self.plan["settings"]["GENERATION_ATTEMPTS"], "1")
+        self.assertEqual(self.plan["settings"]["MAX_PROVIDER_CALLS_PER_REQUEST"], "3")
+        with patch.object(trial.shared, "new_client", side_effect=AssertionError("No SDK")):
+            report = self.run_trial()
+            self.assertEqual(trial.replay_capture(report), report)
+        self.assertEqual(report["status"], "completed")
+        self.assertEqual([c["role"] for c in report["calls"]], ["author", "solver", "teaching_auditor"] * 3)
+        self.assertEqual(report["accounting"]["observed_dispatch_attempts"], 9)
+        for index, operation in enumerate(report["operations"]):
+            self.assertEqual(operation["budget_reservations"], 3)
+            self.assertEqual(operation["authored_solution_observation"], {
+                "requested_count": 2, "returned_count": 2, "author_json_repair_calls": 0,
+                "full_unrepaired_batch": True,
+            })
+            author_call = report["calls"][index * 3]
+            self.assertEqual(author_call["request"], self.plan["operations"][index]["first_request"])
+            raw_authored = json.loads(author_call["observation"]["response"]["text"])["questions"]
+            for original, returned in zip(raw_authored, operation["questions"], strict=True):
+                self.assertEqual(original["explanation"].encode(), returned["explanation"].encode())
+                self.assertEqual(returned["choiceExplanations"], {})
+                self.assertEqual(returned["verificationPolicyRevision"], 3)
+        tampered = copy.deepcopy(report)
+        tampered["operations"][2]["questions"][0]["explanation"] += " replacement"
+        with self.assertRaises(ValueError):
+            trial.replay_capture(tampered)
+
+    def test_fresh_fixture_and_execution_settings_are_fixed_before_any_client(self):
+        for edit in ("count", "duplicate", "target", "floor", "constraints"):
+            packet = copy.deepcopy(self.packet)
+            if edit == "count":
+                packet["cases"].pop()
+            elif edit == "duplicate":
+                packet["cases"][1]["case_id"] = packet["cases"][0]["case_id"]
+            elif edit == "target":
+                packet["cases"][0]["payload"]["targetCount"] = True
+            elif edit == "floor":
+                packet["cases"][0]["payload"]["minimumDifficulty"] = 2
+            else:
+                packet["trial_constraints"]["environment"]["GENERATION_ATTEMPTS"] = "2"
+            with self.subTest(edit=edit), self.assertRaises(ValueError):
+                trial.make_plan(packet)
+        observer = Mock()
+        for path, value in ((("maximum_calls",), 10), (("settings", "QUESTION_FEEDBACK_CONTRACT"), "reviewer_written"),
+                            (("settings", "GENERATION_ATTEMPTS"), "2"), (("operations", 2, "maximum_calls"), 4)):
+            changed = copy.deepcopy(self.plan)
+            target = changed
+            for key in path[:-1]:
+                target = target[key]
+            target[path[-1]] = value
+            trial.shared.write_json(self.plan_path, changed)
+            with self.assertRaises(ValueError):
+                trial.run_trial(self.plan_path, trial._hash(changed), self.output, observer=observer)
+        observer.assert_not_called()
+        self.assertFalse(self.output.exists())
+
+    def test_existing_repair_uses_same_three_calls_and_cannot_complete_or_start_later_goals(self):
+        calls = 0
+        def observer(request, **kwargs):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return completed("Malformed original author {\n")
+            return self.observer(request, **kwargs)
+        report = self.run_trial(observer)
+        self.assertEqual([c["role"] for c in report["calls"]], ["author", "author_json_repair", "solver"])
+        self.assertEqual(report["calls"][0]["observation"]["response"]["text"], "Malformed original author {\n")
+        self.assertEqual(report["operations"][0]["budget_reservations"], 3)
+        self.assertEqual(report["operations"][0]["authored_solution_observation"], {
+            "requested_count": 2, "returned_count": 0, "author_json_repair_calls": 1,
+            "full_unrepaired_batch": False,
+        })
+        self.assertEqual(report["operations"][0]["runtime_error_type"], "ProviderCallBudgetExceededError")
+        self.assertEqual([j["status"] for j in report["operations"]][1:], ["unattempted", "unattempted"])
+        self.assertEqual(trial.replay_capture(report), report)
+
+    def test_unsupported_teaching_is_content_rejection_but_cleanup_failure_stops_later_goals(self):
+        def reject_teaching(request, **kwargs):
+            state = self.observer(request, **kwargs)
+            value = json.loads(state["response"]["text"])
+            if "reviews" in value:
+                for row in value["reviews"]:
+                    row["explanationSupport"] = "unsupported"
+                state["response"]["text"] = json.dumps(value)
+            return state
+        report = self.run_trial(reject_teaching)
+        self.assertEqual(report["status"], "completed")
+        self.assertEqual(len(report["calls"]), 9)
+        self.assertTrue(all(not j["questions"] and not j["authored_solution_observation"]["full_unrepaired_batch"]
+                            for j in report["operations"]))
+        self.assertEqual(trial.replay_capture(report), report)
+        self.output = self.directory / "failed-cleanup"
+        failure = completed({})
+        failure["local_process_group_cleanup_confirmed"] = False
+        observer = Mock(return_value=failure)
+        report = self.run_trial(observer)
+        observer.assert_called_once()
+        self.assertEqual(report["status"], "operational_failure")
+        self.assertEqual([j["status"] for j in report["operations"]][1:], ["unattempted", "unattempted"])
+
+    def test_historical_feedback_is_explicitly_pinned_and_fresh_dry_mode_has_no_client(self):
+        baseline_packet = json.loads(FIXTURE.read_text())
+        baseline = trial.make_plan(baseline_packet)
+        with patch.dict(os.environ, {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}):
+            self.assertEqual(trial.make_plan(baseline_packet), baseline)
+        self.assertEqual(baseline["settings"]["QUESTION_FEEDBACK_CONTRACT"], "reviewer_written")
+        fixture = self.directory / "fixture.json"
+        trial.shared.write_json(fixture, self.packet)
+        with patch.object(trial.shared, "new_client", side_effect=AssertionError("No SDK")), patch.object(
+            trial.caller, "observe_request", side_effect=AssertionError("No worker"),
+        ):
+            self.assertEqual(trial.main(["--fixture", str(fixture), "--output", str(self.output)]), 0)
+        self.assertEqual(json.loads((self.output / "plan.json").read_text()), self.plan)
+
+
 if __name__ == "__main__":
     unittest.main()
