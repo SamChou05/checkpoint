@@ -47,7 +47,7 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `MAX_QUESTIONS_PER_BATCH` | `20` | Per-request output-count ceiling. |
 | `BEDROCK_MAX_TOKENS` | `6000` | Per-provider-call output-token ceiling. |
 | `GENERATION_ATTEMPTS` | `5` locally, `3` in SAM | Maximum sanitized top-off passes. |
-| `MAX_PROVIDER_CALLS_PER_REQUEST` | `6` | Hard budget across generation, answer-blind review, JSON repair, and fallback calls. |
+| `MAX_PROVIDER_CALLS_PER_REQUEST` | `6` | Hard budget across author, blind solver, final review, JSON repair, and fallback calls. It also bounds the durable total per asynchronous job across all deliveries. The worker seeds its local allowance from the leased job's persisted count; six permits at most two complete verification passes. |
 | `MAX_REQUEST_BODY_BYTES` | `131072` | Request-body ceiling enforced before quota consumption. |
 | `BEDROCK_CONNECT_TIMEOUT_SECONDS` | `3` | Bounded SDK connection timeout. |
 | `BEDROCK_READ_TIMEOUT_SECONDS` | `20` locally and in the synchronous API; `75` in the SAM worker | SDK read-timeout ceiling, capped at 100 seconds. With a Lambda deadline, each service-created client shortens this timeout to leave the configured connect timeout, 1 second for client setup, and 2 seconds for response handling; calls are refused when fewer than 2 seconds of read time fit. |
@@ -68,7 +68,7 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `QUESTION_BANK_TABLE_NAME` | none locally | DynamoDB table containing expiring question-bank metadata, validated generation context, ready questions, and claim records. SAM configures it for the API, outbox consumer, and worker. |
 | `QUESTION_BANK_QUEUE_URL` | none locally | SQS queue used by `ensure`, the stream outbox consumer, and the worker when more inventory is needed. SAM configures it for all three functions. |
 | `QUESTION_BANK_TTL_SECONDS` | `2592000` | Nominal 30-day lifetime for question-bank records. DynamoDB TTL deletion is asynchronous and is not an exact deletion deadline. |
-| `QUESTION_BANK_MAX_RECEIVE_COUNT` | `6` | Shared SQS redrive and actual per-job Bedrock Converse-call threshold. Six permits two complete author/solve/review passes, subject to the existing deadline and daily quota. |
+| `QUESTION_BANK_MAX_RECEIVE_COUNT` | `6` in the template; `5` in configured TestFlight | SQS delivery/redrive threshold for transport and infrastructure failures. Provider calls use the separate limit above. A job with fewer than three provider calls remaining is terminally acknowledged without another author attempt; exhausted quality retries do not wait for a doomed redelivery. |
 | `QUESTION_BANK_MAX_FAILED_GENERATION_JOBS` | `3` | Exhausted jobs retained per bank context before generation is terminally blocked. Only a new bank/fill-cycle context resets this ledger. |
 | `QUESTION_BANK_FAILURE_COOLDOWN_SECONDS` | `300` | Earliest retry time recorded after a question-bank job reaches terminal failure. |
 | `EMIT_STRUCTURED_METRICS` | on in Lambda | Emits privacy-safe request and provider metrics in CloudWatch EMF. |

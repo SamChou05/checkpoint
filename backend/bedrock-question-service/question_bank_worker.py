@@ -14,6 +14,7 @@ from question_bank_common import (
     LOGGER,
     MAX_CLAIM_COUNT,
     ProviderQuotaLimitError,
+    _max_provider_calls,
     _normalized_stem_identity,
 )
 from question_bank_store import (
@@ -25,7 +26,6 @@ from question_bank_store import (
     _is_conditional_failure,
     _job_id_from_key,
     _json,
-    _max_receive_count,
     _n,
     _number,
     _question_from_item,
@@ -44,7 +44,7 @@ def _reserve_provider_attempt(
     owner_digest: str | None = None,
 ) -> bool:
     """Atomically reserve one imminent provider call and its async quota unit."""
-    provider_limit = _max_receive_count()
+    provider_limit = _max_provider_calls()
     rate_table = os.getenv("RATE_LIMIT_TABLE_NAME", "").strip()
     if not rate_table and _required_rate_limiting():
         raise RuntimeError("Rate-limit table is required.")
@@ -177,7 +177,9 @@ def _worker_objective_allocation(
     if not skills or not requested_skill_allocation:
         return []
 
-    whole_bank_skill_targets = _whole_bank_skill_targets(generation_request, desired_count)
+    whole_bank_skill_targets = _whole_bank_skill_targets(
+        generation_request, desired_count
+    )
     relevant_states = {"", "ready", "claimed"} if low_watermark == 0 else {"", "ready"}
 
     objective_owners: dict[str, tuple[str, str]] = {}
@@ -300,7 +302,8 @@ def _whole_bank_skill_targets(
     desired_allocation = generation_request.get("desiredSkillAllocation", {})
     minimum_counts = (
         {skill["id"]: max(1, len(skill.get("objectives", []))) for skill in skills}
-        if generation_request.get("requiresFullObjectiveCoverage") is True else None
+        if generation_request.get("requiresFullObjectiveCoverage") is True
+        else None
     )
     return _apportion_skill_counts(
         skill_ids,

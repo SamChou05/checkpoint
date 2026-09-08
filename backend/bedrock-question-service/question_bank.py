@@ -24,11 +24,14 @@ from question_bank_common import (
     LOGGER,
     MAX_CLAIM_COUNT,
     MAX_DESIRED_COUNT,
+    MIN_VERIFIED_PASS_CALLS,
     WORKER_LEASE_SECONDS,
+    DurableProviderCallReservation,
     NonRetryableGenerationError,
     ProviderAttemptLimitError,
     ProviderQuotaLimitError,
     QuestionBankError,
+    _max_provider_calls,
     _normalized_stem_identity,
     _stem_fingerprint,
     _validated_blocked_stem_fingerprints,
@@ -788,7 +791,7 @@ def _process_job(
     now = int(time.time())
     lease_token = str(uuid.uuid4())
     try:
-        client.update_item(
+        lease_response = client.update_item(
             TableName=table_name,
             Key=job_key,
             UpdateExpression=(
@@ -807,6 +810,7 @@ def _process_job(
                 ":lease": _n(now + WORKER_LEASE_SECONDS),
                 ":now": _n(now),
             },
+            ReturnValues="ALL_NEW",
         )
     except Exception as error:
         if not _is_conditional_failure(error):
@@ -859,6 +863,15 @@ def _process_job(
             client, table_name, bank_key, job_key, lease_token, now
         )
         return
+
+    leased_job = lease_response.get("Attributes")
+    if not isinstance(leased_job, dict):
+        raise RuntimeError("The leased job did not return its provider allowance.")
+    remaining_provider_calls = max(
+        0, _max_provider_calls() - _number(leased_job, "providerAttemptCount")
+    )
+    if remaining_provider_calls < MIN_VERIFIED_PASS_CALLS:
+        raise ProviderAttemptLimitError
 
     generation_request = json.loads(_string(meta, "generationRequest"))
     existing_items = _query_question_history(client, table_name, bank_key)
@@ -919,11 +932,16 @@ def _process_job(
         ):
             raise ProviderAttemptLimitError
 
+    reservation = DurableProviderCallReservation(
+        reserve_provider_call, remaining_provider_calls
+    )
+    commit_started = False
     try:
-        generated = generate_questions(generation_request, reserve_provider_call)
+        generated = generate_questions(generation_request, reservation)
         prepared = _prepare_questions(bank_id, generated, existing_items)
         if not prepared:
             raise RuntimeError("Provider returned no new usable questions.")
+        commit_started = True
         _commit_generated_questions(
             client,
             table_name,
@@ -956,7 +974,14 @@ def _process_job(
         raise
     except ProviderAttemptLimitError:
         raise
-    except Exception:
+    except Exception as error:
+        # A redelivery cannot complete another verified pass with this remainder.
+        # Finish the logical job now instead of waiting for SQS to redeliver it
+        # and spending calls on an author/solver whose review is unaffordable.
+        # A commit may have succeeded even if its response was lost. Preserve
+        # redelivery so the completed-job path can repair the refill chain.
+        if not commit_started and reservation.remaining_calls < MIN_VERIFIED_PASS_CALLS:
+            raise ProviderAttemptLimitError from error
         _reset_job_for_retry(client, table_name, bank_key, job_key, lease_token)
         raise
 

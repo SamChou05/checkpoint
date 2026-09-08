@@ -9,6 +9,12 @@ import time
 from typing import Any, Callable
 
 from generation_diagnostics import quality_summary, record_quality
+from question_bank_common import (
+    DEFAULT_MAX_PROVIDER_CALLS,  # noqa: F401 - re-exported by lambda_function
+    MIN_VERIFIED_PASS_CALLS,
+    DurableProviderCallReservation,
+    _max_provider_calls,
+)
 from question_difficulty import DIFFICULTY_RUBRIC, _difficulty_guidance
 
 from question_quality import (
@@ -51,7 +57,6 @@ SUPPORTED_OPENAI_REASONING_EFFORTS = {
     "max",
 }
 DEFAULT_GENERATION_ATTEMPTS = 5
-DEFAULT_MAX_PROVIDER_CALLS = 6
 DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS = 3.0
 DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS = 20.0
 MIN_BEDROCK_READ_TIMEOUT_SECONDS = 2.0
@@ -111,13 +116,9 @@ def _new_provider_call_budget(
     context: Any | None,
     reserve_call: Callable[[], None] | None = None,
 ) -> ProviderCallBudget:
-    maximum_calls = _int_env(
-        "MAX_PROVIDER_CALLS_PER_REQUEST", DEFAULT_MAX_PROVIDER_CALLS, maximum=20
-    )
-    if reserve_call is not None:
-        maximum_calls = min(
-            maximum_calls, _int_env("QUESTION_BANK_MAX_RECEIVE_COUNT", 6, maximum=10)
-        )
+    maximum_calls = _max_provider_calls()
+    if isinstance(reserve_call, DurableProviderCallReservation):
+        maximum_calls = min(maximum_calls, reserve_call.remaining_calls)
     return ProviderCallBudget(
         maximum_calls,
         context=context,
@@ -215,7 +216,7 @@ def _generate_sanitized_questions(
         # audit. Do not start a pass whose full verification cannot be afforded.
         if (
             call_budget is not None
-            and call_budget.maximum_calls - call_budget.calls < 3
+            and call_budget.maximum_calls - call_budget.calls < MIN_VERIFIED_PASS_CALLS
         ):
             if questions:
                 break

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
 import unicodedata
-from typing import Any
+from typing import Any, Callable
 
 from service_errors import (  # noqa: F401 - re-exported through question_bank
     ProviderAttemptLimitError,
@@ -21,6 +22,8 @@ DEFAULT_GENERATION_CHUNK_COUNT = 5
 DEFAULT_BANK_TTL_SECONDS = 30 * 24 * 60 * 60
 WORKER_LEASE_SECONDS = 180
 DEFAULT_MAX_RECEIVE_COUNT = 6
+DEFAULT_MAX_PROVIDER_CALLS = 6
+MIN_VERIFIED_PASS_CALLS = 3
 DEFAULT_FAILURE_COOLDOWN_SECONDS = 5 * 60
 DEFAULT_MAX_FAILED_GENERATION_JOBS = 3
 MAX_BLOCKED_STEM_FINGERPRINTS = 750
@@ -40,6 +43,31 @@ _MATH_OPERATOR_SPACING = re.compile(
     r"\N{NOT EQUAL TO}\N{PLUS-MINUS SIGN}\N{MINUS-OR-PLUS SIGN}"
     r"\N{DOT OPERATOR}\N{MIDDLE DOT}*/^%])\s*"
 )
+
+
+def _max_provider_calls() -> int:
+    """Shared local and durable ceiling, independent of SQS delivery attempts."""
+    raw = os.getenv("MAX_PROVIDER_CALLS_PER_REQUEST", "")
+    if not raw:
+        return DEFAULT_MAX_PROVIDER_CALLS
+    try:
+        return max(1, min(20, int(raw)))
+    except ValueError:
+        return 1
+
+
+class DurableProviderCallReservation:
+    """Server-owned remaining allowance captured when this job acquired its lease."""
+
+    def __init__(self, reserve: Callable[[], None], remaining_calls: int):
+        self._reserve = reserve
+        self.remaining_calls = max(0, remaining_calls)
+
+    def __call__(self) -> None:
+        if self.remaining_calls == 0:
+            raise ProviderAttemptLimitError
+        self._reserve()
+        self.remaining_calls -= 1
 
 
 def _legacy_normalized_stem_identity(value: Any) -> str:

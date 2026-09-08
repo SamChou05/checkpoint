@@ -389,7 +389,9 @@ class QuestionBankWorkerTests(QuestionBankTestCase):
         self.assertEqual(refill_client.method_calls, [])
 
     def test_provider_attempt_reservation_caps_duplicate_deliveries(self):
-        os.environ["QUESTION_BANK_MAX_RECEIVE_COUNT"] = "2"
+        settings = mock.patch.dict(os.environ, {"MAX_PROVIDER_CALLS_PER_REQUEST": "2"})
+        settings.start()
+        self.addCleanup(settings.stop)
         client = mock.Mock()
         client.update_item.side_effect = [{}, {}, ConditionalFailure()]
         client.get_item.return_value = {
@@ -563,6 +565,7 @@ class QuestionBankWorkerTests(QuestionBankTestCase):
 
     def test_async_quota_exhaustion_delays_bank_without_retrying_job(self):
         client = mock.Mock()
+        client.update_item.return_value = {"Attributes": {}}
         bank_pk = "BANK#owner#bank"
         revision = "revision-1"
         meta = {

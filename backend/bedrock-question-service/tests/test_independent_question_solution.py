@@ -176,7 +176,7 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
         self.assertEqual(len(client.solution_calls), 1)
         self.assertEqual(len(client.review_calls), 1)
 
-    def test_async_local_budget_cannot_exceed_its_durable_ceiling(self):
+    def test_async_provider_budget_is_independent_of_sqs_deliveries(self):
         from unittest.mock import patch
 
         with patch.dict(
@@ -190,7 +190,7 @@ class IndependentQuestionSolutionTests(unittest.TestCase):
                 _new_provider_call_budget(
                     None, reserve_call=lambda: None
                 ).maximum_calls,
-                5,
+                6,
             )
 
     def test_duplicate_answer_properties_are_not_silently_overwritten(self):

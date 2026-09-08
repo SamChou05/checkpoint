@@ -361,7 +361,7 @@ class StemIdentityTests(QuestionBankTestCase):
                     "contextRevision": "revision",
                 },
                 generate,
-                mock.Mock(),
+                mock.Mock(update_item=mock.Mock(return_value={"Attributes": {}})),
                 FakeQueue(),
             )
         self.assertNotIn("stemFingerprintVersion", observed[0])
