@@ -42,4 +42,6 @@ The initial author/adapters milestone (`04fc960`) passed 42 focused tests, inclu
 
 The next evaluation should keep three questions separate: whether unchanged artifacts obtain a trustworthy native key; whether complete explanations accurately teach their mechanism; and whether authoring fits a usable latency budget. A separately frozen follow-up could observe the two saved artifacts without another author call, preserving this failed run and its four original slots. A future author comparison could test smaller request units, but the present timeout is insufficient evidence to claim that this will fix latency. Increasing output tokens is not supported as the next intervention by this run.
 
+A [separately frozen native follow-up](QUESTION_ARTIFACT_NATIVE_FOLLOWUP.md) subsequently observed the two unchanged saved Python artifacts with no new model calls. Both exact keys matched the frozen manual answers and both sessions closed successfully. That later result does not resume or change this stopped author trial, supply its missing HTML candidates, or remove the teaching/difficulty reservations.
+
 The remaining free-text solver contradiction path and all-pairs failure remain unresolved. This artifact mechanism is not integrated into production and does not replace the requirement to support arbitrary learning goals.

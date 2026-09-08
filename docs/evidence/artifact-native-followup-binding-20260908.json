@@ -1,0 +1,282 @@
+{
+  "experiment": "artifact-native-followup-v1",
+  "native_capture_byte_sha256": "feb393cd199f9632a8be102ae6549fe4258c2038232daec178d049a9aa2348ad",
+  "native_plan_sha256": "c86a42458260ed0c71280b36fd8f0e12f500e237cbdd5d55058d0ab3eddb45c2",
+  "author_capture_byte_sha256": "aa701fa99b2ebd671816383d58ea9678248ded4e121dc1cbf2a9135bb3d1aaa5",
+  "source_sha256": {
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "evals/checkpoint_execution_evidence_eval.py": "55c19ebc0d4d5c338a7361f494d7ad2c66d71846b8a8fa65bb2aa8e5f3805c51",
+    "evals/python_artifact_question.py": "6edd8ceddfb4188824f5bc9d842c464c7674180271b5c99575deb7155e079988",
+    "evals/checkpoint_artifact_observation_eval.py": "e430245004940e8e9ff80ef6d53f685259a83dfe25f10cc0fc44d68b2420afb0",
+    "evals/observe_html_artifact.py": "f410ccba2819dcf6fbb18c19268a9371edc7a22ffceb8dc145fb40af80f8a9f2"
+  },
+  "scope": "Exact native key binding and cleanup only. No new author, model review, feedback repair, replacement, production admission, source/argument change or historical-trial reclassification. All original feedback/difficulty judgments remain in force.",
+  "results": [
+    {
+      "original_id": "item-1",
+      "bundle": {
+        "status": "bound",
+        "question": {
+          "prompt": "CPython 3.12.13: run source, then call. What returns/raises (exact types/value/order)?\n\ndef f(x):\n a=[[1,2],[3,4]]\n b=a[:]\n a[0].append(x)\n a[1]=[5]\n return b\n\nCall:\nf(*[9], **{})",
+          "choices": [
+            "Returns [[1, 2, 9], [3, 4]] (list)",
+            "Returns [[1, 2, 9], [5]] (list)",
+            "Returns [[1, 2], [3, 4]] (list)",
+            "Returns [[1, 2], [5]] (list)"
+          ],
+          "explanation": "a[:] creates a shallow copy: b gets a new outer list but shares the same inner lists. a[0].append(9) mutates the shared inner list, visible via b[0]. a[1]=[5] only rebinds a's slot, leaving b[1] as [3,4].",
+          "choiceExplanations": {
+            "Returns [[1, 2, 9], [3, 4]] (list)": "The shallow copy shares inner lists, so append modifies b[0]. Rebinding a[1] does not affect b[1], which still holds [3,4].",
+            "Returns [[1, 2, 9], [5]] (list)": "This assumes rebinding a[1]=[5] also updates b[1], but the slice copy gives b its own reference to the original [3,4] object.",
+            "Returns [[1, 2], [3, 4]] (list)": "This assumes a[:] made a deep copy, but it only copies the outer list; inner lists remain shared, so append is visible through b[0].",
+            "Returns [[1, 2], [5]] (list)": "This combines a deep-copy assumption for b[0] with a shared-reference assumption for b[1]—the opposite of what actually happens."
+          },
+          "topic": "Shallow copy vs rebinding with nested lists",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "expectedAnswer": "Returns [[1, 2, 9], [3, 4]] (list)"
+        },
+        "observation": {
+          "protocol": "checkpoint.execution.v1",
+          "artifact_sha256": "b69d88be5173a2459003805965c7ce8488c7d5eeabcd80ee56784d609ecaeb79",
+          "input_sha256": "de5081bca9b3bcd98bbbddab4ab59f26ac046025c6af2b5e5442f01f2976cc0a",
+          "job_id": "5b1af47cf6c51f3e1afada5259942268e1c83d88be37abbeecf3cedb48b6fe8e",
+          "mode": "exec",
+          "limits": {
+            "cpu_seconds": 2,
+            "input_bytes": 8192,
+            "memory_bytes": 268435456,
+            "output_bytes": 4096,
+            "result_bytes": 4096,
+            "transport_bytes": 65536,
+            "wall_seconds": 2
+          },
+          "runtime": {
+            "version": "3.12.13 (main, Jun 18 2026, 00:00:00) [GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+            "implementation": "cpython"
+          },
+          "status": "observed",
+          "compile": {
+            "valid": true
+          },
+          "child": {
+            "status": "observed",
+            "stdout": "",
+            "return_value": {
+              "type": "list",
+              "value": [
+                {
+                  "type": "list",
+                  "value": [
+                    {
+                      "type": "int",
+                      "value": "1"
+                    },
+                    {
+                      "type": "int",
+                      "value": "2"
+                    },
+                    {
+                      "type": "int",
+                      "value": "9"
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "value": [
+                    {
+                      "type": "int",
+                      "value": "3"
+                    },
+                    {
+                      "type": "int",
+                      "value": "4"
+                    }
+                  ]
+                }
+              ]
+            },
+            "exception": null,
+            "truncated": false,
+            "reason": null,
+            "runtime": {
+              "version": "3.12.13 (main, Jun 18 2026, 00:00:00) [GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+              "implementation": "cpython",
+              "isolated": 1,
+              "optimize": 0,
+              "hash_randomization": 1
+            },
+            "stdout_base64": ""
+          },
+          "child_exit_code": 0,
+          "timed_out": false,
+          "transport_truncated": false,
+          "child_reaped": true,
+          "reason": null,
+          "child_stderr": "",
+          "envelope_valid": true,
+          "operational_failure": false
+        },
+        "binding": {
+          "protocol": "checkpoint.python-artifact-question.v1",
+          "job_id": "5b1af47cf6c51f3e1afada5259942268e1c83d88be37abbeecf3cedb48b6fe8e",
+          "artifact_sha256": "b69d88be5173a2459003805965c7ce8488c7d5eeabcd80ee56784d609ecaeb79",
+          "input_sha256": "de5081bca9b3bcd98bbbddab4ab59f26ac046025c6af2b5e5442f01f2976cc0a",
+          "harness_sha256": "521f283df21c78a2c770a7ed02427d692491c05409b22bb9a86d14777fd34a64",
+          "spec_sha256": "cf70924930fd78d315594ef4d684a8688d57e1b834a8631fcf01260823c5e4de",
+          "question_sha256": "03bca8920d73fe3325c23de4ed9ddc1046bf0ff089d7966236bb7d1055c5043e",
+          "observation_sha256": "81bcc15a47e8fe121cbc25b96e24e54740ca3376f1d298adc448ede5e2719b76",
+          "observed_identity": {
+            "kind": "return",
+            "value": {
+              "type": "list",
+              "value": [
+                {
+                  "type": "list",
+                  "value": [
+                    {
+                      "type": "int",
+                      "value": "1"
+                    },
+                    {
+                      "type": "int",
+                      "value": "2"
+                    },
+                    {
+                      "type": "int",
+                      "value": "9"
+                    }
+                  ]
+                },
+                {
+                  "type": "list",
+                  "value": [
+                    {
+                      "type": "int",
+                      "value": "3"
+                    },
+                    {
+                      "type": "int",
+                      "value": "4"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "matched_option_index": 0,
+          "runtime": {
+            "implementation": "cpython",
+            "version": "3.12.13"
+          }
+        },
+        "feedback_assessment": "unassessed",
+        "scope": "Exact artifact/invocation observation and typed key binding only. Teaching feedback, difficulty, relevance, distractor quality, determinism, and Python object alias identity are unassessed. No runtime admission."
+      },
+      "matches_frozen_manual_answer": true
+    },
+    {
+      "original_id": "item-2",
+      "bundle": {
+        "status": "bound",
+        "question": {
+          "prompt": "CPython 3.12.13: run source, then call. What returns/raises (exact types/value/order)?\n\ndef g(ns):\n r=0\n for n in ns:\n  if n<0:\n   break\n  r=r+n\n else:\n  r=r*10\n return r\n\nCall:\ng(*[[2, 3, -1, 4]], **{})",
+          "choices": [
+            "Returns 5 (int)",
+            "Returns 50 (int)",
+            "Returns 80 (int)",
+            "Returns 8 (int)"
+          ],
+          "explanation": "The loop accumulates 2+3=5, then breaks when n=-1. Because break exits the loop, the else clause (r=r*10) is skipped, and 5 is returned unchanged.",
+          "choiceExplanations": {
+            "Returns 5 (int)": "The loop sums 2 and 3, then hits -1 and breaks. Break skips the for-else clause, so r remains 5.",
+            "Returns 50 (int)": "This assumes the else clause runs after break, yielding 5*10. In Python, break prevents the loop's else from executing.",
+            "Returns 80 (int)": "This assumes no break occurs and all elements are summed (2+3+(-1)+4=8), then the else multiplies by 10 giving 80.",
+            "Returns 8 (int)": "This assumes all elements are summed without breaking (giving 8) yet the else is skipped—an inconsistent combination of assumptions."
+          },
+          "topic": "for-else with break and conditional accumulation",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "expectedAnswer": "Returns 5 (int)"
+        },
+        "observation": {
+          "protocol": "checkpoint.execution.v1",
+          "artifact_sha256": "7e1da6e036257dba928e9b2076d8914806c9fb9802b24ae25a7d887c061230e9",
+          "input_sha256": "bf24c6f354ab321e657a19ce90de0fede6fe7794f80d7c0afa9bcefaac9b401d",
+          "job_id": "55557e9b53a3d6f1ae408df842eb754b2221489923caaa9436a992b116c8f7e3",
+          "mode": "exec",
+          "limits": {
+            "cpu_seconds": 2,
+            "input_bytes": 8192,
+            "memory_bytes": 268435456,
+            "output_bytes": 4096,
+            "result_bytes": 4096,
+            "transport_bytes": 65536,
+            "wall_seconds": 2
+          },
+          "runtime": {
+            "version": "3.12.13 (main, Jun 18 2026, 00:00:00) [GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+            "implementation": "cpython"
+          },
+          "status": "observed",
+          "compile": {
+            "valid": true
+          },
+          "child": {
+            "status": "observed",
+            "stdout": "",
+            "return_value": {
+              "type": "int",
+              "value": "5"
+            },
+            "exception": null,
+            "truncated": false,
+            "reason": null,
+            "runtime": {
+              "version": "3.12.13 (main, Jun 18 2026, 00:00:00) [GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+              "implementation": "cpython",
+              "isolated": 1,
+              "optimize": 0,
+              "hash_randomization": 1
+            },
+            "stdout_base64": ""
+          },
+          "child_exit_code": 0,
+          "timed_out": false,
+          "transport_truncated": false,
+          "child_reaped": true,
+          "reason": null,
+          "child_stderr": "",
+          "envelope_valid": true,
+          "operational_failure": false
+        },
+        "binding": {
+          "protocol": "checkpoint.python-artifact-question.v1",
+          "job_id": "55557e9b53a3d6f1ae408df842eb754b2221489923caaa9436a992b116c8f7e3",
+          "artifact_sha256": "7e1da6e036257dba928e9b2076d8914806c9fb9802b24ae25a7d887c061230e9",
+          "input_sha256": "bf24c6f354ab321e657a19ce90de0fede6fe7794f80d7c0afa9bcefaac9b401d",
+          "harness_sha256": "d86c9fe53ef0bb0323b8bf3bb364dbaf0fdeff557e0552747cb4f947f483cead",
+          "spec_sha256": "ca8061334d4ba4af5042df70d344b0ce6170eb898882cfb50636ee2c8742129d",
+          "question_sha256": "cf799becd0d22bf90279fb05b16b867fb30f12dea56864e61c402c755322e573",
+          "observation_sha256": "8fa2574e90d2e39a4c356bce4f09973961d4fde744ca023839730ad84aaab944",
+          "observed_identity": {
+            "kind": "return",
+            "value": {
+              "type": "int",
+              "value": "5"
+            }
+          },
+          "matched_option_index": 0,
+          "runtime": {
+            "implementation": "cpython",
+            "version": "3.12.13"
+          }
+        },
+        "feedback_assessment": "unassessed",
+        "scope": "Exact artifact/invocation observation and typed key binding only. Teaching feedback, difficulty, relevance, distractor quality, determinism, and Python object alias identity are unassessed. No runtime admission."
+      },
+      "matches_frozen_manual_answer": true
+    }
+  ]
+}
