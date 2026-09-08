@@ -34,6 +34,9 @@ SPLIT_EXPERIMENT = "frozen-source-split-review-v3"
 SPLIT_CAPTURE = Path("/tmp/checkpoint-citation-discovery-live-20260908/capture.json")
 SPLIT_CAPTURE_SHA256 = "f136a693f4fef8e72a6217924d1984021c0bbab1a46d3b4853fc60fe4d2f5a27"
 SPLIT_SOURCE_REVISION = "cb41f487f8a9bc2beb6d93bd86ee23593b0b5da7"
+OBSTRUCTION_EXPERIMENT = "frozen-task-obstruction-v1"
+PREMISE_CONTROLS = SERVICE_DIR / "evals/fixtures/question_premise_controls.json"
+PREMISE_CONTROLS_SHA256 = "bca393ca3d531f9bcd734a06742dd62b7645318f1240bc2e1593a8c5d953fcd7"
 CHALLENGE_CAPTURE = SERVICE_DIR.parents[1] / "docs/evidence/claim-evidence-interface-capture-20260908.json"
 CHALLENGE_CAPTURE_SHA256 = "ade70260e2bbe9f9366783e70a4d4a2e359c93ffd44b391cf33ee71fff07676c"
 STRUCTURED_REVIEW_SECONDS = 300
@@ -193,8 +196,61 @@ def _make_split_plan(fixture, revision):
             "failure_policy": "Provider/unfinished-response/cleanup/persistence failure stops later calls. Both candidate roles run despite content or format vetoes. No retries, repairs, fallback or resume. Format rejection is not factual detection."}
 
 
+def _make_obstruction_plan(fixture, revision):
+    from evals import task_obstruction_review as obstruction
+
+    if fixture != {"experiment": OBSTRUCTION_EXPERIMENT}:
+        raise ValueError("The fixed obstruction fixture has no configurable fields.")
+    raw = PREMISE_CONTROLS.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != PREMISE_CONTROLS_SHA256:
+        raise ValueError("The exact six-control fixture is required.")
+    controls = json.loads(raw)
+    if (controls["experiment"] != "premise-and-nondefect-controls-v1"
+            or type(controls["cases"]) is not list or len(controls["cases"]) != 6):
+        raise ValueError("Six frozen premise controls are required.")
+    plan = _make_split_plan({"experiment": SPLIT_EXPERIMENT}, revision)
+    cases, jobs = plan["frozen_cases"], []
+    seen = {case["case_id"] for case in cases}
+    for control in controls["cases"]:
+        if (type(control["case_id"]) is not str or not control["case_id"] or control["case_id"] in seen
+                or control["context"].get("sourceDocuments") != []):
+            raise ValueError("Distinct no-acquired-source controls are required.")
+        seen.add(control["case_id"])
+        cases.append({"case_id": control["case_id"], "question": copy.deepcopy(control["question"]),
+                      "context": copy.deepcopy(control["context"]), "records": [], "selections": []})
+    for case in cases:
+        prepared = obstruction.prepare(case["question"], case["context"], case["records"], case["selections"])
+        requests = {}
+        for role in ("choices", "teaching"):
+            requests[role] = review_request(*obstruction.prompt(prepared, role))
+            requests[role]["outputConfig"] = obstruction.output_config(role)
+            guard_request(requests[role])
+        choices, teaching = (json.loads(requests[role]["messages"][0]["content"][0]["text"])
+                             for role in ("choices", "teaching"))
+        if (set(choices) != {"goal", "item", "evidenceSources"}
+                or set(choices["item"]) != {"prompt", "choices"}
+                or teaching["item"].pop("explanation", None) != case["question"]["explanation"]
+                or teaching != choices):
+            raise ValueError("Independent obstruction payload boundary changed.")
+        jobs.append({"case_id": case["case_id"], "question_sha256": prepared["question_sha256"],
+                     "source_packet_sha256": prepared["source_packet_sha256"],
+                     "source_units": prepared["source_units"], "role_order": ["choices", "teaching"],
+                     "requests": requests,
+                     "request_sha256": {role: _hash(request) for role, request in requests.items()}})
+    name = "evals/task_obstruction_review.py"
+    plan["source_sha256"][name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
+    plan.update(experiment=OBSTRUCTION_EXPERIMENT, fixture=copy.deepcopy(fixture), fixture_sha256=_hash(fixture),
+                controls_fixture=controls, controls_fixture_sha256=PREMISE_CONTROLS_SHA256,
+                jobs=jobs, maximum_calls=20, maximum_input_bytes_total=20 * MAX_INPUT_BYTES,
+                scope="Four previously selected source-bearing cases plus six frozen no-acquired-source controls. Two independent choice/main checks per case; no fresh baseline calls. External assessment and reference metadata remain outside both model inputs. Compare historical v3 descriptively only. Bound references and declared judgments do not certify factual correctness or production acceptance.",
+                limits="Twenty SDK attempts maximum, one per role and case; zero fetches. Read 300/connect 3, 300-second local worker deadline and bounded cleanup. Parent persistence is not hard real-time; local termination does not prove remote cancellation or zero usage.")
+    return plan
+
+
 def make_plan(fixture, *, source_revision=None):
     revision = _source_revision(source_revision)
+    if type(fixture) is dict and fixture.get("experiment") == OBSTRUCTION_EXPERIMENT:
+        return _make_obstruction_plan(fixture, revision)
     if type(fixture) is dict and fixture.get("experiment") == SPLIT_EXPERIMENT:
         return _make_split_plan(fixture, revision)
     if type(fixture) is not dict or set(fixture) != {"experiment", "cases"} or fixture["experiment"] not in (EXPERIMENT, CITATION_EXPERIMENT):
@@ -282,7 +338,8 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
     if plan != make_plan(plan["fixture"], source_revision=plan["source_revision"]):
         raise ValueError("Plan no longer matches current sources.")
     citation_mode = plan["experiment"] == CITATION_EXPERIMENT
-    split_mode = plan["experiment"] == SPLIT_EXPERIMENT
+    obstruction_mode = plan["experiment"] == OBSTRUCTION_EXPERIMENT
+    split_mode = plan["experiment"] == SPLIT_EXPERIMENT or obstruction_mode
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     report = {"plan": plan, "plan_sha256": _hash(plan), "status": "running",
@@ -320,9 +377,14 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
             result = {"case_id": case["case_id"], "status": "discovering", "fetches": [], "reviews": {}}
             report["cases"].append(result)
             if split_mode:
-                from evals import split_evidence_review as split
+                if obstruction_mode:
+                    from evals import task_obstruction_review as split
+                else:
+                    from evals import split_evidence_review as split
 
-                result.update(status="reviewing", challenge=case["challenge"], selections=case["selections"])
+                result.update(status="reviewing", selections=case["selections"])
+                if "challenge" in case:
+                    result["challenge"] = case["challenge"]
                 prepared = split.prepare(case["question"], case["context"], case["records"], case["selections"])
                 for role in job["role_order"]:
                     raw, _ = invoke(job["requests"][role], role, index)
@@ -403,11 +465,11 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
 
 
 def replay_split_capture(report):
-    """Re-derive terminal v3 observations through the same run, without clients."""
+    """Re-derive terminal frozen-source observations without creating clients."""
     if (report.get("status") not in ("completed", "operational_failure")
-            or report["plan"]["experiment"] != SPLIT_EXPERIMENT
+            or report["plan"]["experiment"] not in (SPLIT_EXPERIMENT, OBSTRUCTION_EXPERIMENT)
             or report["plan_sha256"] != _hash(report["plan"])):
-        raise ValueError("A terminal hash-bound v3 capture is required.")
+        raise ValueError("A terminal hash-bound frozen-source capture is required.")
     calls = iter(report["calls"])
     def transport(request, **kwargs):
         recorded_call = next(calls)

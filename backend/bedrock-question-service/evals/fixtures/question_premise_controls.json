@@ -1,0 +1,580 @@
+{
+  "experiment": "premise-and-nondefect-controls-v1",
+  "scope": "Six new assistant-constructed diagnostic MCQs across four broad subject areas. Three full items are valid; two invalid keys endorse false why-presuppositions and one correct key accompanies a false main. No model-generated outcome, learner calibration or general accuracy qualification is claimed.",
+  "input_contract": {
+    "provider_visible_fields": [
+      "context.goal",
+      "context.sourceDocuments",
+      "question.prompt",
+      "question.choices"
+    ],
+    "teaching_phase_only": [
+      "question.explanation"
+    ],
+    "always_withheld": [
+      "assessment",
+      "provenance",
+      "primary_sources",
+      "case_id",
+      "domain",
+      "question.expectedAnswer",
+      "question.difficulty"
+    ],
+    "notes": "The trial runner must separately whitelist phase inputs. Source URLs and assessor paraphrases below are assessment metadata, not supplied evidence. Any later acquisition or source condition must be prospectively frozen."
+  },
+  "prospective_assessment": {
+    "minimum_diagnostic_difficulty": 2,
+    "expected_case_count": 6,
+    "expected_valid_full_items": 3,
+    "expected_invalid_full_items": 3,
+    "requirements": [
+      "Assess each of the 24 unchanged choices as an answer to its own unchanged stem.",
+      "Reject both false why-presuppositions for the stated computational or semantic contradiction, while recognizing their offered error-diagnosis answers.",
+      "Retain the lunar-phase key but reject the whole item for its false main cause.",
+      "Retain all three valid complete items, including ordinary false distractors and the proved insufficient-information answer.",
+      "Do not classify a refuted distractor, harmless context or intentionally absent quantity resolved by the key as an item defect.",
+      "Separate each substantive main claim from whether the final numerical or verbal key happens to be correct."
+    ],
+    "failure_accounting": "A format/reference/budget failure, a vague rejection or a rejection for a non-defect is not a correct factual catch. An absent answer is unobserved, not correct. Score key, per-choice reasons, material defects/non-defects and entire main separately before considering full-item yield.",
+    "difficulty_scope": "These compact controls target level-2 semantic contract behavior, not advanced difficulty or broad arbitrary-goal coverage. Distractor plausibility is an assistant assessment, not measured learner discrimination."
+  },
+  "primary_sources": [
+    {
+      "id": "python_lists",
+      "url": "https://docs.python.org/3.12/tutorial/introduction.html#lists",
+      "publisher": "Python Software Foundation",
+      "reviewed_on": "2026-09-08",
+      "scope": "Python 3.12 list assignment, append and length.",
+      "assessor_paraphrase": "Assigning a list to another name retains a reference to the existing object. Mutation through either name is visible through the other. Appending adds an element, and len reports the resulting list length.",
+      "verbatim_excerpt": null
+    },
+    {
+      "id": "python_list_methods",
+      "url": "https://docs.python.org/3.12/tutorial/datastructures.html#more-on-lists",
+      "publisher": "Python Software Foundation",
+      "reviewed_on": "2026-09-08",
+      "scope": "Python 3.12 list.copy and list.append, with mutation of only the outer list.",
+      "assessor_paraphrase": "The list copy method creates a shallow copy. Appending adds an item at the end and returns None; that return value is distinct from the list being mutated.",
+      "verbatim_excerpt": null
+    },
+    {
+      "id": "nasa_phases",
+      "url": "https://science.nasa.gov/moon/moon-phases/",
+      "publisher": "NASA",
+      "reviewed_on": "2026-09-08",
+      "scope": "Ordinary visible first-quarter appearance; approximate geometry, not eclipse conditions or exact photometry.",
+      "assessor_paraphrase": "Moonlight is reflected sunlight. During the ordinary phase cycle the observer sees changing portions of the sunlit hemisphere. First quarter presents about half of that illuminated hemisphere to the observer.",
+      "verbatim_excerpt": null
+    },
+    {
+      "id": "nasa_eclipses",
+      "url": "https://science.nasa.gov/moon/eclipses/",
+      "publisher": "NASA",
+      "reviewed_on": "2026-09-08",
+      "scope": "Lunar eclipse geometry distinguishes Earth-shadow events from ordinary phases.",
+      "assessor_paraphrase": "A lunar eclipse occurs at full Moon when the alignment lets Earth cast its shadow on the Moon. Eclipses do not happen every month because of the Moon's orbital tilt.",
+      "verbatim_excerpt": null
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "spinner_probability_reason",
+      "domain": "Probability",
+      "context": {
+        "goal": {
+          "title": "Reason about probabilities from a stated sample space",
+          "category": "Mathematics",
+          "currentLevel": "Beginner",
+          "focusAreas": "Use favorable and total outcomes to distinguish probability from other ratios."
+        },
+        "sourceDocuments": [],
+        "minimumDifficulty": 2
+      },
+      "question": {
+        "prompt": "A spinner has eight sectors of equal probability: three blue and five white. Why is the probability of blue on one spin 3/5?",
+        "choices": [
+          "Because probability compares the three blue sectors with the five white sectors.",
+          "It is not 3/5; it is 3/8 because three of the eight equally likely sectors are blue.",
+          "Because blue and white outcomes must alternate from one spin to the next.",
+          "Because each blue sector is more likely than each white sector."
+        ],
+        "expectedAnswer": "Because probability compares the three blue sectors with the five white sectors.",
+        "explanation": "For blue, divide the three favorable sectors by the five unfavorable sectors. The ratio 3/5 is the probability of blue; including the favorable sectors in the denominator would count them twice.",
+        "choiceExplanations": {},
+        "topic": "Equally likely outcomes",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "warranted_choices": [
+          "It is not 3/5; it is 3/8 because three of the eight equally likely sectors are blue."
+        ],
+        "per_choice": [
+          {
+            "choice": "Because probability compares the three blue sectors with the five white sectors.",
+            "judgment": "refuted",
+            "reason": "3/5 is the ratio of favorable to unfavorable sector counts, not the probability. The probability denominator includes all eight equally likely outcomes."
+          },
+          {
+            "choice": "It is not 3/5; it is 3/8 because three of the eight equally likely sectors are blue.",
+            "judgment": "supported",
+            "reason": "The explicit equal probabilities give 3/8. Correctly denying the false why-presupposition answers this task; the proposed error diagnosis is not nonresponsive."
+          },
+          {
+            "choice": "Because blue and white outcomes must alternate from one spin to the next.",
+            "judgment": "refuted",
+            "reason": "Equal sector probabilities do not require alternation; no alternation rule is given, and it would not establish the claimed probability."
+          },
+          {
+            "choice": "Because each blue sector is more likely than each white sector.",
+            "judgment": "refuted",
+            "reason": "The stem explicitly gives all eight sectors equal probability, contradicting the suggested color-dependent weighting."
+          }
+        ],
+        "authored_key_supported": false,
+        "main_assessment": {
+          "status": "refuted",
+          "reason": "The main confuses favorable-to-unfavorable odds with probability and falsely says the favorable outcomes would be counted twice in the total. It justifies 3/5 instead of 3/8."
+        },
+        "expected_full_item_eligible": false,
+        "material_defects": [
+          "The why-question presupposes probability 3/5 although its explicit sample space establishes 3/8.",
+          "The authored key and main endorse that false presupposition."
+        ],
+        "nondefects": [
+          "A choice may correctly identify the false presupposition.",
+          "The three refuted alternatives are answer proposals, not contradictory premises."
+        ],
+        "independent_difficulty": 2,
+        "difficulty_reason": "Direct application of one familiar relation or rule, with a short trace where needed; no advanced transfer claim.",
+        "correction_for_assessors_only": "Probability is favorable outcomes divided by all outcomes: 3/(3+5)=3/8. The ratio 3:5 describes favorable-to-unfavorable odds, not probability.",
+        "basis": "Source-independent finite equally likely sample-space deduction.",
+        "primary_source_ids": []
+      },
+      "provenance": {
+        "kind": "new_assistant_constructed_diagnostic",
+        "constructed_on": "2026-09-08",
+        "historical_model_output": false,
+        "question_canonical_sha256": "61c540d9a7bc1de07d2a3bb5da2d43318425db6094de75912bf7f1687080a1bf",
+        "context_canonical_sha256": "6c8728952db2670113cf961ef9114f011969a598cf403bd22bf12433a0a33061",
+        "source_acquisition": "None. Primary pages reviewed through read-only web tools; no source page bodies downloaded or supplied to models."
+      }
+    },
+    {
+      "case_id": "recipe_water_scaling",
+      "domain": "Proportional reasoning",
+      "context": {
+        "goal": {
+          "title": "Scale recipes while preserving ingredient proportions",
+          "category": "Everyday mathematics",
+          "currentLevel": "Beginner",
+          "focusAreas": "Apply one scale factor to each ingredient without confusing percentages or units."
+        },
+        "sourceDocuments": [],
+        "minimumDifficulty": 2
+      },
+      "question": {
+        "prompt": "A recipe uses 300 g of flour and 200 mL of water. You want 1.5 times the recipe while keeping its ingredient proportions. Which water amount and reason are correct?",
+        "choices": [
+          "200 mL, because the water amount stays fixed when flour is increased.",
+          "250 mL, because a 50% increase means adding 50 mL.",
+          "300 mL, because each ingredient amount is multiplied by 1.5.",
+          "450 mL, because water must have the same number of units as the scaled flour."
+        ],
+        "expectedAnswer": "300 mL, because each ingredient amount is multiplied by 1.5.",
+        "explanation": "Keeping the proportions means scaling every ingredient by the same factor. Multiply 200 mL by 1.5 to obtain 300 mL of water. The flour becomes 450 g, but its number in grams does not set the water volume in milliliters.",
+        "choiceExplanations": {},
+        "topic": "Recipe proportions",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "warranted_choices": [
+          "300 mL, because each ingredient amount is multiplied by 1.5."
+        ],
+        "per_choice": [
+          {
+            "choice": "200 mL, because the water amount stays fixed when flour is increased.",
+            "judgment": "refuted",
+            "reason": "Leaving water at 200 mL while scaling flour to 450 g changes the stated ratio."
+          },
+          {
+            "choice": "250 mL, because a 50% increase means adding 50 mL.",
+            "judgment": "refuted",
+            "reason": "50% of 200 mL is 100 mL, not 50 mL; 250 mL is only 1.25 times the original water."
+          },
+          {
+            "choice": "300 mL, because each ingredient amount is multiplied by 1.5.",
+            "judgment": "supported",
+            "reason": "200 times 1.5 is 300 mL, preserving the same common scale factor as the flour."
+          },
+          {
+            "choice": "450 mL, because water must have the same number of units as the scaled flour.",
+            "judgment": "refuted",
+            "reason": "The scaled flour amount is 450 g, not a required 450 mL of water. Equal numerical values in different units are not the original proportions."
+          }
+        ],
+        "authored_key_supported": true,
+        "main_assessment": {
+          "status": "supported",
+          "reason": "The entire main correctly applies a common multiplicative scale and distinguishes the ingredients and their units."
+        },
+        "expected_full_item_eligible": true,
+        "material_defects": [],
+        "nondefects": [
+          "False arithmetic or causal claims inside distractors are not item defects when uniquely refutable.",
+          "The stem intentionally asks for a joint amount-and-reason answer.",
+          "No physical flour-to-water conversion is required."
+        ],
+        "independent_difficulty": 2,
+        "difficulty_reason": "Direct application of one familiar relation or rule, with a short trace where needed; no advanced transfer claim.",
+        "correction_for_assessors_only": "No repair is needed. Retain 300 mL with the worked common-factor explanation.",
+        "basis": "Source-independent arithmetic and the explicit requirement to preserve proportions.",
+        "primary_source_ids": []
+      },
+      "provenance": {
+        "kind": "new_assistant_constructed_diagnostic",
+        "constructed_on": "2026-09-08",
+        "historical_model_output": false,
+        "question_canonical_sha256": "00dee005d5d6920a17f36c746e9e4f5188cfb84fed715924ff390d835d88676a",
+        "context_canonical_sha256": "6a7b14dd1b506c92c601b4c8cb084c06c7fd3ec704bc80fc51f14d91c33aedec",
+        "source_acquisition": "None. Primary pages reviewed through read-only web tools; no source page bodies downloaded or supplied to models."
+      }
+    },
+    {
+      "case_id": "python_assignment_reason",
+      "domain": "Programming",
+      "context": {
+        "goal": {
+          "title": "Understand Python list assignment and mutation",
+          "category": "Programming",
+          "currentLevel": "Beginner",
+          "focusAreas": "Trace how assignment, copying and list mutation affect values."
+        },
+        "sourceDocuments": [],
+        "minimumDifficulty": 2
+      },
+      "question": {
+        "prompt": "In Python 3.12, run this complete code:\na = [10, 20]\nb = a\nb.append(30)\nprint(len(a))\nWhy does it print 2?",
+        "choices": [
+          "Because assigning a to b copies the list before b is changed.",
+          "Because append replaces the final element rather than adding one.",
+          "Because len ignores elements appended after a list is created.",
+          "It does not print 2; it prints 3 because a and b refer to the same list."
+        ],
+        "expectedAnswer": "Because assigning a to b copies the list before b is changed.",
+        "explanation": "Assigning a to b makes an independent copy of the list. Appending 30 changes only the copy named b, so a still has its original two elements and len(a) prints 2.",
+        "choiceExplanations": {},
+        "topic": "List assignment",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "warranted_choices": [
+          "It does not print 2; it prints 3 because a and b refer to the same list."
+        ],
+        "per_choice": [
+          {
+            "choice": "Because assigning a to b copies the list before b is changed.",
+            "judgment": "refuted",
+            "reason": "Simple assignment binds b to the existing list rather than copying it, so this does not explain the actual execution."
+          },
+          {
+            "choice": "Because append replaces the final element rather than adding one.",
+            "judgment": "refuted",
+            "reason": "append adds a new final element; it does not replace 20."
+          },
+          {
+            "choice": "Because len ignores elements appended after a list is created.",
+            "judgment": "refuted",
+            "reason": "len reports the current number of list elements, including appended elements."
+          },
+          {
+            "choice": "It does not print 2; it prints 3 because a and b refer to the same list.",
+            "judgment": "supported",
+            "reason": "Both names refer to the same list. Appending 30 changes it to [10, 20, 30], so the code prints 3, refuting the question's asserted output."
+          }
+        ],
+        "authored_key_supported": false,
+        "main_assessment": {
+          "status": "refuted",
+          "reason": "The main incorrectly describes assignment as a copy and consequently gives the wrong observable output."
+        },
+        "expected_full_item_eligible": false,
+        "material_defects": [
+          "The stem asserts output 2, but the exact displayed program prints 3.",
+          "The authored key and main incorrectly treat list assignment as copying."
+        ],
+        "nondefects": [
+          "An offered diagnosis of the incorrect asserted output is a fully responsive answer.",
+          "Newlines are part of the exact program and must not be flattened or repaired."
+        ],
+        "independent_difficulty": 2,
+        "difficulty_reason": "Direct application of one familiar relation or rule, with a short trace where needed; no advanced transfer claim.",
+        "correction_for_assessors_only": "b = a gives the same list another name. append changes that list in place, and len(a) is then 3.",
+        "basis": "Python 3.12 list semantics plus deterministic tracing of the exact displayed program. Native check may independently confirm this assessor-authored finite program.",
+        "primary_source_ids": [
+          "python_lists"
+        ]
+      },
+      "provenance": {
+        "kind": "new_assistant_constructed_diagnostic",
+        "constructed_on": "2026-09-08",
+        "historical_model_output": false,
+        "question_canonical_sha256": "ee883ccd5015af8dfb339367c6086b14320b998376301bb19bb6b1fe7910b42b",
+        "context_canonical_sha256": "576d8b2bf6216f9ee51cfb978fd1af544dbd320eea06e48d4dca643addd550b0",
+        "source_acquisition": "None. Primary pages reviewed through read-only web tools; no source page bodies downloaded or supplied to models."
+      }
+    },
+    {
+      "case_id": "python_copy_result",
+      "domain": "Programming",
+      "context": {
+        "goal": {
+          "title": "Understand Python list assignment and mutation",
+          "category": "Programming",
+          "currentLevel": "Beginner",
+          "focusAreas": "Trace how assignment, copying and list mutation affect values."
+        },
+        "sourceDocuments": [],
+        "minimumDifficulty": 2
+      },
+      "question": {
+        "prompt": "In Python 3.12, what does this complete code print, and why?\na = [4, 5]\nb = a.copy()\nb.append(6)\nprint(a)",
+        "choices": [
+          "It prints [4, 5, 6], because a.copy() gives b the same list as a.",
+          "It prints [4, 5], because b is a separate outer list.",
+          "It prints None, because append returns None.",
+          "It raises TypeError, because list length cannot change."
+        ],
+        "expectedAnswer": "It prints [4, 5], because b is a separate outer list.",
+        "explanation": "a.copy() creates a separate outer list containing the same two integer elements. Appending 6 changes that new list b, leaving a as [4, 5]. The program prints a, not the return value of append; no exception occurs.",
+        "choiceExplanations": {},
+        "topic": "List copying",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "warranted_choices": [
+          "It prints [4, 5], because b is a separate outer list."
+        ],
+        "per_choice": [
+          {
+            "choice": "It prints [4, 5, 6], because a.copy() gives b the same list as a.",
+            "judgment": "refuted",
+            "reason": "copy makes a new outer list, so appending to b does not extend a."
+          },
+          {
+            "choice": "It prints [4, 5], because b is a separate outer list.",
+            "judgment": "supported",
+            "reason": "The unchanged original list a is [4, 5]. A shallow copy is sufficient here because the operation appends to the outer list; no nested object is mutated."
+          },
+          {
+            "choice": "It prints None, because append returns None.",
+            "judgment": "refuted",
+            "reason": "append does return None, but that return value is not assigned to a or printed. The whole answer is therefore false despite its true subsidiary fact."
+          },
+          {
+            "choice": "It raises TypeError, because list length cannot change.",
+            "judgment": "refuted",
+            "reason": "Python lists support append and can change length; the displayed code has no TypeError."
+          }
+        ],
+        "authored_key_supported": true,
+        "main_assessment": {
+          "status": "supported",
+          "reason": "The main correctly distinguishes shallow outer copying from aliasing and correctly identifies which expression is printed. It makes no deep-copy claim."
+        },
+        "expected_full_item_eligible": true,
+        "material_defects": [],
+        "nondefects": [
+          "A distractor may contain a true subordinate fact but still answer the task incorrectly.",
+          "False distractors do not make the program or question defective.",
+          "No nested-list qualification is missing for this exact append operation."
+        ],
+        "independent_difficulty": 2,
+        "difficulty_reason": "Direct application of one familiar relation or rule, with a short trace where needed; no advanced transfer claim.",
+        "correction_for_assessors_only": "No repair is needed. Retain the [4, 5] result and the separate-outer-list reasoning.",
+        "basis": "Python 3.12 documented copy and append semantics, followed by a deterministic trace.",
+        "primary_source_ids": [
+          "python_list_methods"
+        ]
+      },
+      "provenance": {
+        "kind": "new_assistant_constructed_diagnostic",
+        "constructed_on": "2026-09-08",
+        "historical_model_output": false,
+        "question_canonical_sha256": "0700610de6afa48efc77e2cacbf9222f221748a22df29b8e06ef94b46ef07a8b",
+        "context_canonical_sha256": "576d8b2bf6216f9ee51cfb978fd1af544dbd320eea06e48d4dca643addd550b0",
+        "source_acquisition": "None. Primary pages reviewed through read-only web tools; no source page bodies downloaded or supplied to models."
+      }
+    },
+    {
+      "case_id": "first_quarter_cause",
+      "domain": "Astronomy",
+      "context": {
+        "goal": {
+          "title": "Explain the Moon's phases from illumination and viewing geometry",
+          "category": "Astronomy",
+          "currentLevel": "Beginner",
+          "focusAreas": "Distinguish changing views of the sunlit Moon from eclipses and light production."
+        },
+        "sourceDocuments": [],
+        "minimumDifficulty": 2
+      },
+      "question": {
+        "prompt": "At first quarter, the Moon's disk looks about half sunlit from Earth. What causes this ordinary lunar phase?",
+        "choices": [
+          "Earth blocks sunlight from half of the Moon during every first quarter.",
+          "The Moon produces visible light on only half of its surface.",
+          "Half of the lunar surface stops reflecting light once each month.",
+          "From Earth we see about half of the hemisphere illuminated by the Sun."
+        ],
+        "expectedAnswer": "From Earth we see about half of the hemisphere illuminated by the Sun.",
+        "explanation": "The Moon reflects sunlight rather than producing its own visible light. At first quarter, Earth blocks sunlight from half of the Moon, leaving a half-lit disk. This ordinary monthly shadow creates the first-quarter phase.",
+        "choiceExplanations": {},
+        "topic": "Lunar phases",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "warranted_choices": [
+          "From Earth we see about half of the hemisphere illuminated by the Sun."
+        ],
+        "per_choice": [
+          {
+            "choice": "Earth blocks sunlight from half of the Moon during every first quarter.",
+            "judgment": "refuted",
+            "reason": "Earth's shadow causes lunar eclipses at full Moon, not the ordinary first-quarter phase."
+          },
+          {
+            "choice": "The Moon produces visible light on only half of its surface.",
+            "judgment": "refuted",
+            "reason": "The visible bright part reflects sunlight; it is not visible light generated by one half of the Moon."
+          },
+          {
+            "choice": "Half of the lunar surface stops reflecting light once each month.",
+            "judgment": "refuted",
+            "reason": "The phase is a viewing-geometry effect, not a monthly loss of reflectivity by half the surface."
+          },
+          {
+            "choice": "From Earth we see about half of the hemisphere illuminated by the Sun.",
+            "judgment": "supported",
+            "reason": "The Sun illuminates roughly a hemisphere and our first-quarter viewing direction reveals about half of that illuminated hemisphere, producing the observed half-lit disk."
+          }
+        ],
+        "authored_key_supported": true,
+        "main_assessment": {
+          "status": "refuted",
+          "reason": "The opening reflected-light statement is sound, but the main then falsely attributes first quarter to Earth blocking sunlight and a recurring monthly shadow. A correct stored key cannot validate that incompatible causal explanation."
+        },
+        "expected_full_item_eligible": false,
+        "material_defects": [
+          "The authored main substitutes the mechanism of an eclipse for ordinary phase geometry."
+        ],
+        "nondefects": [
+          "The question's half-lit observation and stored key are supported.",
+          "The Earth-shadow alternative is a refutable misconception, not a defective premise in the shared stem.",
+          "The word about appropriately avoids a demand for exact astronomical half-illumination geometry."
+        ],
+        "independent_difficulty": 2,
+        "difficulty_reason": "Direct application of one familiar relation or rule, with a short trace where needed; no advanced transfer claim.",
+        "correction_for_assessors_only": "The bright region reflects sunlight. As the Moon orbits Earth, our view of its illuminated hemisphere changes. At first quarter we see about half of that bright hemisphere; Earth's shadow is not the cause.",
+        "basis": "Primary NASA explanations of phase geometry and lunar eclipses; ordinary visible lunar phases, not infrared emission or detailed surface photometry.",
+        "primary_source_ids": [
+          "nasa_phases",
+          "nasa_eclipses"
+        ]
+      },
+      "provenance": {
+        "kind": "new_assistant_constructed_diagnostic",
+        "constructed_on": "2026-09-08",
+        "historical_model_output": false,
+        "question_canonical_sha256": "355acbd0d4c530eb7b4ed22094eadcd5fcf46f51511826194a434c37babfa0c5",
+        "context_canonical_sha256": "2e77fc3a4b166897008fd858ab86e78e980b6eb7934b832b68c0d7db5ba3f106",
+        "source_acquisition": "None. Primary pages reviewed through read-only web tools; no source page bodies downloaded or supplied to models."
+      }
+    },
+    {
+      "case_id": "cycling_average_speed",
+      "domain": "Motion",
+      "context": {
+        "goal": {
+          "title": "Interpret measurements and calculate average speed",
+          "category": "Physics",
+          "currentLevel": "Beginner",
+          "focusAreas": "Use total distance and elapsed time, and recognize when a measurement is missing."
+        },
+        "sourceDocuments": [],
+        "minimumDifficulty": 2
+      },
+      "question": {
+        "prompt": "A cyclist leaves at 09:00 and travels 18 km. The arrival time is not recorded. Average speed means total distance divided by elapsed time. What was the cyclist's average speed?",
+        "choices": [
+          "18 km/h.",
+          "9 km/h.",
+          "36 km/h.",
+          "The information is insufficient because the elapsed time is unknown."
+        ],
+        "expectedAnswer": "The information is insufficient because the elapsed time is unknown.",
+        "explanation": "Average speed is distance divided by elapsed time. The distance is 18 km, but a departure time alone does not give the duration. Arriving at 10:00 would give 18 km/h, while arriving at 11:00 would give 9 km/h. Both fit the facts, so no unique numerical speed follows.",
+        "choiceExplanations": {},
+        "topic": "Average speed",
+        "difficulty": 2,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "warranted_choices": [
+          "The information is insufficient because the elapsed time is unknown."
+        ],
+        "per_choice": [
+          {
+            "choice": "18 km/h.",
+            "judgment": "refuted",
+            "reason": "18 km/h is possible if the ride takes one hour, but one hour is not given, so this exact value is not warranted."
+          },
+          {
+            "choice": "9 km/h.",
+            "judgment": "refuted",
+            "reason": "9 km/h is possible if the ride takes two hours, but two hours is not given."
+          },
+          {
+            "choice": "36 km/h.",
+            "judgment": "refuted",
+            "reason": "36 km/h is possible if the ride takes half an hour, but half an hour is not given."
+          },
+          {
+            "choice": "The information is insufficient because the elapsed time is unknown.",
+            "judgment": "supported",
+            "reason": "Distinct elapsed times satisfy the same distance and departure-time facts but produce different speeds. This proves the substantive information-limit answer; it is not merely reviewer uncertainty."
+          }
+        ],
+        "authored_key_supported": true,
+        "main_assessment": {
+          "status": "supported",
+          "reason": "The main uses the definition stated in the stem and two permitted arrival times to demonstrate non-identifiability without asserting any particular actual duration."
+        },
+        "expected_full_item_eligible": true,
+        "material_defects": [],
+        "nondefects": [
+          "The absent duration is intentional and is completely handled by the offered insufficient-information answer.",
+          "A numerical distractor can be possible yet not warranted as the answer; refuted-as-an-answer does not mean physically impossible.",
+          "The departure time is an explicit contextual fact, not an ambiguity or a demand to divide by the clock reading."
+        ],
+        "independent_difficulty": 2,
+        "difficulty_reason": "Direct application of one familiar relation or rule, with a short trace where needed; no advanced transfer claim.",
+        "correction_for_assessors_only": "No repair is needed. Retain the information-limit answer and its two compatible-duration examples.",
+        "basis": "Source-independent application of the definition explicitly supplied in the stem and two constructive counterexamples.",
+        "primary_source_ids": []
+      },
+      "provenance": {
+        "kind": "new_assistant_constructed_diagnostic",
+        "constructed_on": "2026-09-08",
+        "historical_model_output": false,
+        "question_canonical_sha256": "f214342874e8872c1bc12680d5867ff91d175007734f72d34da15e2e9c0c34ba",
+        "context_canonical_sha256": "5f114e1914faf80b34458f47fa8e04191760fdb0783589aab48862e08c085ed1",
+        "source_acquisition": "None. Primary pages reviewed through read-only web tools; no source page bodies downloaded or supplied to models."
+      }
+    }
+  ]
+}
