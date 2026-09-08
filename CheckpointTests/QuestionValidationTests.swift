@@ -1318,7 +1318,7 @@ final class VerificationPolicyFreshnessTests: XCTestCase {
         let goal = makeGoal()
         var request = makeRequest(goal: goal)
         request.requiresVerifiedQuestions = true
-        for (version, revision, accepted) in [(1, -1, false), (1, 0, false), (1, 1, true), (1, 2, true), (0, 1, false), (2, 1, false)] {
+        for (version, revision, accepted) in [(1, -1, false), (1, 0, false), (1, 1, false), (1, 2, true), (1, 3, true), (0, 2, false), (2, 2, false)] {
             let question = makeQuestion(goal: goal, index: 1, verificationVersion: version, verificationPolicyRevision: revision)
             XCTAssertEqual(!QuestionBatchSanitizer.sanitize([question], for: request).isEmpty, accepted,
                            "wire=\(version), policy=\(revision)")
@@ -1347,7 +1347,8 @@ final class VerificationPolicyFreshnessTests: XCTestCase {
 
     func testStaleCandidateDoesNotOccupyCurrentCandidateDuplicateSlot() throws {
         let goal = makeGoal()
-        let stale = historicalQuestion(goal: goal)
+        var stale = historicalQuestion(goal: goal)
+        stale.verificationPolicyRevision = 1
         var current = stale
         current.id = UUID()
         current.verificationPolicyRevision = QuestionVerificationPolicy.currentRevision
@@ -1387,7 +1388,8 @@ final class VerificationPolicyFreshnessTests: XCTestCase {
     @MainActor
     func testSelectorExcludesStoredStaleInventoryOnlyWhenCurrentVerificationIsRequired() throws {
         let goal = makeGoal()
-        let stale = historicalQuestion(goal: goal)
+        var stale = historicalQuestion(goal: goal)
+        stale.verificationPolicyRevision = 1
         let encoded = try JSONEncoder().encode(stale)
         let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: encoded)
         let current = makeQuestion(goal: goal, index: 2, verificationPolicyRevision: QuestionVerificationPolicy.currentRevision)

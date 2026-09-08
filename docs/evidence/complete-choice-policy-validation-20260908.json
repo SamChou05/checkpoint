@@ -1,0 +1,33 @@
+{
+  "scope": "Local policy2 client verification; no deployment.",
+  "base_revision": "df5f4d9",
+  "tested_directory": "/tmp/checkpoint-policy2-ios-clean-20260908",
+  "exact_changed_file_sha256": {
+    "Checkpoint/Models/QuestionModels.swift": "3d8bc257f442dd768da0b1dcc7faaff7ab64e3b98a9004ad6d89b97016f5c006",
+    "CheckpointTests/QuestionValidationTests.swift": "cd74c9e0c39c7bd3c393c42d7f39e2f986bc7b9d034c4064b8af6a79aa905fb6",
+    "CheckpointTests/QuestionBankAsyncFlowTests.swift": "b04e591892b5a434f90a17b8032e54d412e40b275d501869426f5fd7a242e2c4",
+    "CheckpointTests/Fixtures/policy-one-bank-snapshot.json": "75a5f9f2dac33cee0997d3c79a995aa4214b001134e4e9ec3650c2682bc0cc94"
+  },
+  "focused": {
+    "tests": 29,
+    "failures": 0,
+    "log": "/tmp/checkpoint-policy2-migration-tests.log"
+  },
+  "shared_full_run": {
+    "tests": 1018,
+    "skipped": 1,
+    "failed_assertions": 10,
+    "failed_test_methods": 3,
+    "failure_class": "LearningMapVisualsTests",
+    "scope": "Includes concurrent learning-map changes; not a claimed full pass.",
+    "log": "/tmp/checkpoint-policy2-full-ios-tests.log"
+  },
+  "isolated_full_run": {
+    "tests": 995,
+    "failures": 0,
+    "exit_code": 0,
+    "log": "/tmp/checkpoint-policy2-isolated-ios-tests.log",
+    "result_bundle": "/tmp/checkpoint-policy2-isolated-derived/Logs/Test/Test-Checkpoint-2026.09.08_01-02-34--0700.xcresult"
+  },
+  "independent_review": "Backend gate/provenance and Swift migration/fixture reviews found no blocking defects in their declared structural scope."
+}

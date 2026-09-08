@@ -1,0 +1,34 @@
+{
+  "purpose": "Actual old iOS policy1 AppSnapshot emitted by a temporary focused test invoking unmodified CheckpointStore initialization and existing ScriptedQuestionBankClient; no hash implementation duplicated.",
+  "source_revision": "ed38bdde4021918377cc56f89c9b16992e06c869",
+  "policy_revision": 1,
+  "wire_version": 1,
+  "context_revision": "3a2db6485fc9ea3f",
+  "bank_context_revision": "3a2db6485fc9ea3f:F152E379-34B6-4830-AEB5-E4D9B2EDAD4C",
+  "snapshot_path": "/tmp/checkpoint-policy1-context-snapshot-20260908.json",
+  "snapshot_sha256": "75a5f9f2dac33cee0997d3c79a995aa4214b001134e4e9ec3650c2682bc0cc94",
+  "export_test_path": "/tmp/checkpoint-policy1-context-export-test-20260908.swift",
+  "export_test_sha256": "73749b969657c54f0a78a489989522467103f276b78e01a17f81ee94356725cd",
+  "source_sha256": {
+    "Checkpoint/App/CheckpointStore.swift": "01071f97d37a299495fed228211432160768b8071970de0cec985c5c00c76cff",
+    "Checkpoint/Models/QuestionModels.swift": "30b499a0d391c7e06ab0f33e6efc7030fb45c4ac1cb94f05bae9e3c4f06feda6",
+    "Checkpoint/Models/GoalModels.swift": "46d2c2403c59f2dfba3098063b05b13e36446a1b2c462fd0446ca3f6438bf3ab",
+    "CheckpointTests/TestSupport/QuestionBankTestDoubles.swift": "c5ceb6c04694edf912ebd0a8bd81bc9f1afc3350f02c6dc45b435083e181427e"
+  },
+  "fixed_goal_id": "11111111-1111-4111-8111-111111111111",
+  "fixed_skill_id": "22222222-2222-4222-8222-222222222222",
+  "fixed_objective_id": "33333333-3333-4333-8333-333333333333",
+  "question_count": 1,
+  "attempt_count": 1,
+  "result_bundle": "/tmp/checkpoint-policy1-context-result2-20260908.xcresult",
+  "build_log": "/tmp/checkpoint-policy1-context-build2-20260908.log",
+  "focused_test_passed": true,
+  "provider_calls": 0,
+  "notes": [
+    "Temporary test fixture uses fixed IDs and fixed seed dates; Store-created claim/context cycle IDs and persistence times are authentic generated values.",
+    "Initial temporary test compilation failed because its status used a nonexistent enum member; changed only the temporary fixture to existing .correct and focused test passed.",
+    "Snapshot is exact JSONEncoder output from AppSnapshotEnvelope.snapshot saved by the actual old Store after mock ensure receipt installed policy-one-bank. No JSON fields were modified after capture.",
+    "The historical question is a synthetic known-answer fixture at policy1; this is provenance/migration evidence, not a production content-correctness trial.",
+    "Only the detached checkout Swift test file was changed; backend and evaluation sources were not changed."
+  ]
+}
