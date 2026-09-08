@@ -1,0 +1,244 @@
+{
+  "capture_byte_sha256": "485a90f097467b9fb6d20703829ef82204911b1abaa623fbeb8f26d0bfd94c38",
+  "planned_slots": 12,
+  "raw_candidate_count": 12,
+  "phase": "Open only after first-pass stem/choice judgments are frozen; no arm or runtime verdict supplied.",
+  "candidates": [
+    {
+      "candidate_id": "q01",
+      "raw_question": {
+        "prompt": "A hiker compares two routes on a 40-foot contour interval map. Route A crosses 8 ordinary contour lines over 0.5 miles horizontal distance. Route B stays between the 800 ft and 840 ft index contours for 0.4 miles. Which statement correctly compares elevation change and steepness?",
+        "explanation": "Route A: crossing 8 lines at 40 ft interval means 8 × 40 = 320 ft elevation change (direction unknown). Slope = 320 ft / 0.5 mi ≈ 640 ft/mi. Route B: bounded by 800 ft and 840 ft contours means at most 40 ft elevation change (could be less if not crossing the 840 ft line). Even at maximum 40 ft change, slope = 40 ft / 0.4 mi = 100 ft/mi. Route A has greater elevation change and steeper terrain. The key is that contour spacing indicates steepness, while elevation labels show absolute height—Route B's narrow elevation range does not mean steepness.",
+        "expectedAnswer": "Route A involves more elevation change and steeper terrain than Route B.",
+        "choices": [
+          "Route A involves more elevation change and steeper terrain than Route B.",
+          "Route B involves more elevation change and steeper terrain than Route A.",
+          "Both routes have similar steepness, but Route B reaches a higher maximum elevation.",
+          "The routes cannot be compared without knowing which direction each route travels."
+        ],
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from",
+        "skillID": "Combine contour elevations",
+        "objectiveID": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "objective": "Use contour spacing and elevation labels to distinguish total elevation change from slope steepness along a route",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q02",
+      "raw_question": {
+        "prompt": "A travel blog reads: \"We arrived in Paris and checked into a hotel near the river. In the evening, the hotel offered a free walking tour.\" Why does the second sentence use \"the hotel\" rather than \"a hotel\"?",
+        "explanation": "The first mention introduces \"a hotel\" as new information the reader cannot yet identify. By the second sentence, that same hotel is now recoverable from the shared context just established, so \"the\" signals this identifiable referent. The shift from \"a\" to \"the\" tracks what the reader can now pinpoint, not a new hotel.",
+        "expectedAnswer": "The hotel is now identifiable from the context just established.",
+        "choices": [
+          "The hotel is now identifiable from the context just established.",
+          "The writer wants to emphasize this hotel is unique in Paris.",
+          "The hotel has become a general class of accommodation.",
+          "The second mention always requires \"the\" regardless of context."
+        ],
+        "topic": "Use shared reference",
+        "skillID": "Use shared reference",
+        "objectiveID": "",
+        "objective": "specific versus general meaning and countability to interpret article choices ac",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q03",
+      "raw_question": {
+        "prompt": "On a 20-meter contour interval map, two trails each run 2 km between points labeled 400 m and 500 m. Trail X crosses 5 ordinary contours; Trail Y crosses 5 ordinary contours plus 2 supplementary contours (dashed, typically at half the interval). Which trail has steeper terrain and why?",
+        "explanation": "Both trails have 100 m total elevation change (500 − 400 = 100 m). Trail X crosses 5 ordinary contours: 5 × 20 m = 100 m of elevation change, confirming direct ascent. Trail Y crosses 5 ordinary (100 m) plus 2 supplementary contours. Supplementary contours at half-interval (10 m) add 2 × 10 = 20 m, meaning Trail Y's 100 m net change includes some descent and additional climb—its path undulates more. However, steepness depends on horizontal distance versus vertical change. With equal 2 km horizontal distance and equal 100 m net elevation change, the average slope is identical. But Trail Y's tighter contour spacing (more lines crossed in same horizontal distance) indicates more rapid elevation changes locally—steeper sections despite same average. The supplementary contours reveal terrain detail that spacing alone shows: more lines = steeper.",
+        "expectedAnswer": "Trail Y is steeper because crossing more contours in the same horizontal distance indicates more rapid elevation change.",
+        "choices": [
+          "Trail Y is steeper because crossing more contours in the same horizontal distance indicates more rapid elevation change.",
+          "Trail X is steeper because it achieves the same elevation change with fewer contour crossings.",
+          "Both trails have equal steepness because they share the same elevation change and horizontal distance.",
+          "Trail Y is steeper because supplementary contours indicate a larger total elevation change than ordinary contours alone."
+        ],
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from",
+        "skillID": "Combine contour elevations",
+        "objectiveID": "interval and spacing to compare terrain profiles and distinguish elevation from",
+        "objective": "Interpret supplementary contours and contour density to assess local versus average slope steepness",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q04",
+      "raw_question": {
+        "prompt": "A friend offers you a detached Monstera deliciosa leaf with petiole but no stem section, and a pothos stem cutting with two nodes. Based on propagation methods suited to each plant's structure, which statement accurately describes what you should expect?",
+        "explanation": "Monstera deliciosa requires a stem piece with a node and axillary bud; a detached leaf or petiole alone cannot develop into a new plant. Pothos, however, roots readily from stem cuttings. Therefore, the pothos cutting can propagate while the Monstera leaf cannot, regardless of how it is rooted. This distinction reflects how propagation methods differ with plant structure.",
+        "expectedAnswer": "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant.",
+        "choices": [
+          "Both will root successfully in water or well-draining medium.",
+          "The Monstera leaf will root faster if hormone is applied, while the pothos needs no hormone.",
+          "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant.",
+          "The Monstera leaf can root if kept very moist, though more slowly than the pothos."
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "objectiveID": "",
+        "objective": "Use plant structure and observations to choose and explain appropriate propagation steps.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q05",
+      "raw_question": {
+        "prompt": "A recipe states: \"Start with butter. Melt the butter slowly, then add a pinch of salt.\" Why is the first \"butter\" articleless while the second takes \"the\"?",
+        "explanation": "The first \"butter\" refers to the general substance as a class, with no particular amount yet in mind. Once the instruction specifies melting, \"the butter\" picks out the particular amount now present in the pan—recoverable from the immediate procedural context. The bare noun expresses generic reference; \"the\" expresses specific reference to what is now situationally available.",
+        "expectedAnswer": "The first refers to the substance generally; the second refers to the specific amount now being used.",
+        "choices": [
+          "The first refers to the substance generally; the second refers to the specific amount now being used.",
+          "\"Butter\" is uncountable, so it never takes \"the.\"",
+          "The writer made an error and should have used \"the\" both times.",
+          "The first mention always omits the article, and the second always adds it."
+        ],
+        "topic": "specific versus general meaning and countability to interpret article choices ac",
+        "skillID": "specific versus general meaning and countability to interpret article choices ac",
+        "objectiveID": "",
+        "objective": "specific versus general meaning and countability to interpret article choices ac",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q06",
+      "raw_question": {
+        "prompt": "A hiker walks from Point A (elevation 400 m) to Point B (elevation 600 m), crossing 10 contour lines spaced 2 cm apart on the map. A second hiker walks from Point C (500 m) to Point D (700 m), crossing 10 contour lines spaced 5 cm apart. The contour interval is 20 m for both routes. Which comparison is correct?",
+        "explanation": "Both routes cross 10 contour lines at 20 m intervals, so both gain 200 m of elevation (10 × 20 m). However, the contour lines on Route A–B are spaced 2 cm apart on the map, while those on Route C–D are spaced 5 cm apart. Tightly spaced contours indicate steeper terrain; widely spaced contours indicate gentler terrain. Therefore the two routes have equal total elevation gain, but Route A–B is steeper because its contours are closer together.",
+        "expectedAnswer": "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced",
+        "choices": [
+          "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced",
+          "A–B gains more elevation because its contours are closer together",
+          "C–D is steeper because it reaches a higher final elevation of 700 m",
+          "A–B is gentler because it starts at a lower elevation"
+        ],
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from steepness",
+        "skillID": "",
+        "objectiveID": "",
+        "objective": "Distinguish total elevation change from slope steepness using contour spacing and interval on two routes",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q07",
+      "raw_question": {
+        "prompt": "You have a Monstera deliciosa with a long vine and a detached African violet leaf with its petiole. A beginner asks which tissue from each plant is appropriate for propagation. Based on species and available tissue, what is the best guidance?",
+        "explanation": "The sources specify that Monstera requires a stem piece with a node and axillary bud — a detached leaf or petiole alone cannot develop into a new plant. In contrast, African violets are listed as suited to leaf propagation. So the correct pairing is: use a stem section that includes a node for the Monstera, and use the leaf cutting for the African violet. Each species' structure determines which tissue type works.",
+        "expectedAnswer": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+        "choices": [
+          "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "Use a leaf cutting for both, since any detached leaf can root and grow a new plant",
+          "Use a stem cutting for both, since leaf cuttings never produce new plants in any species",
+          "Root the Monstera leaf with its petiole in water; divide the African violet at the crown instead"
+        ],
+        "topic": "Relate species, available stem or leaf tissue to propagation decisions",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Match propagation method to species based on available plant tissue"
+      }
+    },
+    {
+      "candidate_id": "q08",
+      "raw_question": {
+        "prompt": "A gardener has two Monstera deliciosa cuttings. Cutting A has firm, creamy-white roots and a new leaf unfurling. Cutting B has soft, brown roots and no visible new growth. Both are currently in water. Which propagation decision follows the guidance for this species?",
+        "explanation": "For Monstera deliciosa, healthy roots are firm and creamy-white, and active growth indicates readiness for transplant to a longer-term pot. Cutting A meets both criteria. Cutting B shows soft brown roots, signaling excessive moisture or poor drainage, so it should remain in its rooting medium until conditions improve. The guidance specifically links root condition and growth stage to transplant timing.",
+        "expectedAnswer": "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+        "choices": [
+          "Move both cuttings to soil immediately to encourage stronger root growth.",
+          "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+          "Keep both in water until each cutting has at least three new leaves.",
+          "Trim the brown roots from Cutting B and transplant both to soil."
+        ],
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "skillID": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+        "objectiveID": "",
+        "objective": "Use plant structure and observations to choose and explain appropriate propagation steps.",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q09",
+      "raw_question": {
+        "prompt": "A friend shows you a Monstera deliciosa cutting rooting in water. It has several roots that are firm and creamy white, each about 3 inches long, and a new leaf is beginning to unfurl. She asks whether it's ready to move to a pot with soil. What should you advise?",
+        "explanation": "According to the source material, readiness to pot a Monstera cutting requires both healthy roots and active growth. Healthy roots are described as firm and creamy white, and active growth means new leaves or shoots are developing. This cutting meets both criteria: it has firm, white roots and a new leaf unfurling. Therefore it is ready to be moved to a longer-term pot with well-draining medium.",
+        "expectedAnswer": "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container",
+        "choices": [
+          "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container",
+          "Keep it in water longer — roots need to turn brown before they can adapt to soil",
+          "Add rooting hormone to the water first, since it is required before transferring to soil",
+          "Wait until the new leaf fully hardens before potting, since any active growth makes transplant risky"
+        ],
+        "topic": "root condition and growth stage to propagation and transplant decisions",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Evaluate root condition and growth stage to decide when a cutting is ready for transplant"
+      }
+    },
+    {
+      "candidate_id": "q10",
+      "raw_question": {
+        "prompt": "On a map with a 40 ft contour interval, a trail crosses 5 contour lines over 1 cm of map distance heading north, then crosses 5 more contour lines over 4 cm heading east. All contours show increasing elevation in both directions. Which statement best describes the terrain along this trail?",
+        "explanation": "Each contour line represents 40 ft of elevation gain. The northward segment crosses 5 lines (5 × 40 = 200 ft gain) over 1 cm of map distance, meaning contours are tightly packed—indicating steep terrain. The eastward segment also crosses 5 lines (another 200 ft gain) over 4 cm, meaning contours are more widely spaced—indicating gentler terrain. Both segments gain the same elevation (200 ft each), but the northward segment is much steeper because the same elevation change occurs over a shorter horizontal map distance.",
+        "expectedAnswer": "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+        "choices": [
+          "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+          "The northward segment gains more elevation because its contours are closer together",
+          "The eastward segment is steeper because it covers more map distance",
+          "The northward segment gains 200 ft and the eastward gains 40 ft"
+        ],
+        "topic": "interval and spacing to compare terrain profiles and distinguish elevation from steepness",
+        "skillID": "",
+        "objectiveID": "",
+        "objective": "Use contour interval and map spacing to compare slope steepness along different trail segments",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q11",
+      "raw_question": {
+        "prompt": "Consider: \"Dogs are wonderful companions.\" vs. \"The dogs next door bark all night.\" Which explanation best accounts for the article difference between these two sentences?",
+        "explanation": "In 'Dogs are wonderful companions,' the bare plural refers to dogs as a general class—no particular dogs are intended. In 'The dogs next door bark all night,' the phrase 'next door' identifies a specific set of dogs recoverable by the reader, so 'the' is required. The key distinction is whether the noun phrase picks out a particular, identifiable group (requiring 'the') or refers to the class in general (bare plural, no article).",
+        "expectedAnswer": "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group.",
+        "choices": [
+          "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group.",
+          "'Dogs' in the first sentence is uncountable, so no article is needed; the second sentence corrects this.",
+          "Both sentences are generic, but 'the' is added in the second only because a location phrase follows the noun.",
+          "'A' cannot appear before plural nouns, so the writer had to drop the article in the first and use 'the' in the second."
+        ],
+        "topic": "specific versus general meaning and countability to interpret article choices ac",
+        "skillID": "",
+        "objectiveID": "",
+        "objective": "Distinguish general-class bare plurals from particular-reference uses of 'the' with plural nouns",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "candidate_id": "q12",
+      "raw_question": {
+        "prompt": "Read the passage: \"Maria bought a laptop last week. Yesterday she noticed the screen had a crack in it.\" Why does the writer use 'the screen' rather than 'a screen' in the second sentence?",
+        "explanation": "'The screen' is used because the laptop introduced in the first sentence establishes shared knowledge between writer and reader. Once a laptop is mentioned, its screen becomes identifiable through association—the reader can recover which screen is meant. This is an example of contextual recoverability: 'the' signals that the referent is already identifiable, even without a prior explicit mention of 'screen,' because it is a predictable part of the previously introduced laptop.",
+        "expectedAnswer": "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context.",
+        "choices": [
+          "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context.",
+          "'Screen' is uncountable, so it always requires 'the' rather than 'a.'",
+          "'The' is used because 'screen' has already been directly mentioned earlier in the passage.",
+          "'A screen' would mean Maria owns more than one laptop, so 'the' prevents confusion."
+        ],
+        "topic": "Use shared reference",
+        "skillID": "",
+        "objectiveID": "",
+        "objective": "Explain how contextual recoverability determines the choice of 'the' for associated referents",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    }
+  ]
+}

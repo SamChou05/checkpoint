@@ -1,0 +1,849 @@
+{
+  "assessment": "key/main/model/verdict-hidden independent stem assessment A",
+  "input_path": "/tmp/checkpoint-author-model-comparison-stems-20260908.json",
+  "input_byte_sha256": "412a0bee5949f70a0624ec6e4dd34e98bea2135bb8c40d61c7f7a1b3293a3d31",
+  "protocol_path": "docs/QUESTION_AUTHOR_MODEL_COMPARISON_PROTOCOL.md",
+  "masking_scope": "Twelve raw candidates; no model, authored key/main, runtime capture, arm mapping or verdict was read before this file was frozen. Prior subjects and earlier questions are known; wording can give stylistic clues. No model identity inferred or used.",
+  "hash_convention": "blinded_candidate_sha256 hashes the entire candidate object using UTF-8 compact sorted ensure_ascii=False JSON.",
+  "assessment_limits": "Literal warrant assessed separately from a plausible intended answer. Weak means a qualitative expert concern, not measured learner guessability. Difficulty ratings are independent rubric estimates, not psychometric calibration. For malformed/ambiguous items, listed difficulty is intended work and cannot qualify the item.",
+  "source_review": "Reopened UMN/Iowa/USGS primary sources. Cambridge direct page403; official indexed full page confirms contextual specificity and bare mass not always generic. No absence-from-summary implies false rule.",
+  "source_additional_anchor": "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the",
+  "native_arithmetic": {
+    "q06_endpoint_differences_m": [
+      200,
+      200
+    ],
+    "q10_counterexample": {
+      "north": {
+        "start_ft": 10,
+        "end_ft": 230,
+        "map_cm": 1,
+        "crossed_ft": [
+          40,
+          80,
+          120,
+          160,
+          200
+        ],
+        "gain_ft": 220
+      },
+      "east": {
+        "start_ft": 230,
+        "end_ft": 430,
+        "map_cm": 4,
+        "crossed_ft": [
+          240,
+          280,
+          320,
+          360,
+          400
+        ],
+        "gain_ft": 200
+      }
+    }
+  },
+  "summary": {
+    "raw_items": 12,
+    "choice_rows": 48,
+    "unique_supported_literal_key": 7,
+    "no_fully_warranted_listed_key": [
+      "q01",
+      "q03",
+      "q05",
+      "q08",
+      "q10"
+    ],
+    "valid_key_plus_depth3_plus_three_plausible_distinct_distractors": [
+      "q06"
+    ],
+    "difficulty_counts": {
+      "1": 0,
+      "2": 10,
+      "3": 2,
+      "4": 0,
+      "5": 0
+    },
+    "all12_stems_and48_choices_within_bounds": true
+  },
+  "candidates": [
+    {
+      "candidate_id": "q01",
+      "blinded_candidate_sha256": "5c44633f99d627605e81a5042abc441ad21b9474381daa3c442090f7dfd875ef",
+      "prompt": "A hiker compares two routes on a 40-foot contour interval map. Route A crosses 8 ordinary contour lines over 0.5 miles horizontal distance. Route B stays between the 800 ft and 840 ft index contours for 0.4 miles. Which statement correctly compares elevation change and steepness?",
+      "choices": [
+        "Route A involves more elevation change and steeper terrain than Route B.",
+        "Route B involves more elevation change and steeper terrain than Route A.",
+        "Both routes have similar steepness, but Route B reaches a higher maximum elevation.",
+        "The routes cannot be compared without knowing which direction each route travels."
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "The routes cannot be compared without knowing which direction each route travels."
+      ],
+      "exact_unique_supported_key": false,
+      "complete_premises": false,
+      "choice_assessments": [
+        {
+          "choice": "Route A involves more elevation change and steeper terrain than Route B.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Not warranted: eight crossings can revisit one elevation or distinct same-elevation contour components. B can rise more within its 40-ft band. Neither net change nor local steepness follows from counts.",
+          "distractor_plausibility": "conditional inference trap"
+        },
+        {
+          "choice": "Route B involves more elevation change and steeper terrain than Route A.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Also not warranted: A could ascend through eight successive elevations. The converse ordering is equally unproved.",
+          "distractor_plausibility": "conditional inference trap"
+        },
+        {
+          "choice": "Both routes have similar steepness, but Route B reaches a higher maximum elevation.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Neither equal steepness nor B being higher than A is established; A has no elevation labels.",
+          "distractor_plausibility": "weak: unsupported height combination"
+        },
+        {
+          "choice": "The routes cannot be compared without knowing which direction each route travels.",
+          "answer_adequacy": "conditional_only",
+          "reason": "Insufficiency is the closest idea, but travel direction alone is not the missing information. Cardinal headings do not determine slopes; uphill/downhill history, endpoint elevations and profile matter. Warranted only under an expansive interpretation of direction as the full crossing sequence.",
+          "distractor_plausibility": "conditional but incomplete diagnosis"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "The intended work is interval/count comparison, but missing crossing sequence and endpoint elevations prevent the requested inference; defects do not earn extra difficulty.",
+      "material_concerns": [
+        "No fully warranted listed answer.",
+        "The 800/840 labels being called index contours would need its legend under conventional index spacing; this secondary concern is not needed for the failure."
+      ],
+      "counterexample": "A may make eight crossings of 200-ft contours while oscillating between199 and201 ft, versus B rising801 to839 ft. Cardinal direction can be the same for both. Conversely, A may ascend eight successive contour levels.",
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "prompt": 280,
+        "choices": [
+          72,
+          72,
+          83,
+          81
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q02",
+      "blinded_candidate_sha256": "c31a32f59423925d5fb720e7aba06a8141927fd8d7de0f5705c660d144b2abb0",
+      "prompt": "A travel blog reads: \"We arrived in Paris and checked into a hotel near the river. In the evening, the hotel offered a free walking tour.\" Why does the second sentence use \"the hotel\" rather than \"a hotel\"?",
+      "choices": [
+        "The hotel is now identifiable from the context just established.",
+        "The writer wants to emphasize this hotel is unique in Paris.",
+        "The hotel has become a general class of accommodation.",
+        "The second mention always requires \"the\" regardless of context."
+      ],
+      "warranted_exact_keys": [
+        "The hotel is now identifiable from the context just established."
+      ],
+      "conditional_only_choices": [],
+      "exact_unique_supported_key": true,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "The hotel is now identifiable from the context just established.",
+          "answer_adequacy": "supported",
+          "reason": "The second hotel refers back to the just-introduced hotel, making it identifiable.",
+          "distractor_plausibility": "key"
+        },
+        {
+          "choice": "The writer wants to emphasize this hotel is unique in Paris.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Local discourse identification does not assert that Paris has only one hotel.",
+          "distractor_plausibility": "plausible definiteness/uniqueness confusion"
+        },
+        {
+          "choice": "The hotel has become a general class of accommodation.",
+          "answer_adequacy": "not_warranted",
+          "reason": "The same particular establishment remains the referent, not a class.",
+          "distractor_plausibility": "weak: no cue to class meaning"
+        },
+        {
+          "choice": "The second mention always requires \"the\" regardless of context.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Another hotel could be introduced later with a hotel; mention number is not an unconditional article rule.",
+          "distractor_plausibility": "plausible overgeneralized classroom rule"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "Direct second-mention anaphora; the protocol explicitly excludes this automatic familiar application from level3.",
+      "material_concerns": [
+        "Third option is weak; low-depth item despite a complete unique answer."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "prompt": 206,
+        "choices": [
+          64,
+          60,
+          54,
+          63
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q03",
+      "blinded_candidate_sha256": "21e36692275d653d4acba0b77bf39c17fd925aa3aba3abc8db7b73f6d60ba240",
+      "prompt": "On a 20-meter contour interval map, two trails each run 2 km between points labeled 400 m and 500 m. Trail X crosses 5 ordinary contours; Trail Y crosses 5 ordinary contours plus 2 supplementary contours (dashed, typically at half the interval). Which trail has steeper terrain and why?",
+      "choices": [
+        "Trail Y is steeper because crossing more contours in the same horizontal distance indicates more rapid elevation change.",
+        "Trail X is steeper because it achieves the same elevation change with fewer contour crossings.",
+        "Both trails have equal steepness because they share the same elevation change and horizontal distance.",
+        "Trail Y is steeper because supplementary contours indicate a larger total elevation change than ordinary contours alone."
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "Both trails have equal steepness because they share the same elevation change and horizontal distance."
+      ],
+      "exact_unique_supported_key": false,
+      "complete_premises": false,
+      "choice_assessments": [
+        {
+          "choice": "Trail Y is steeper because crossing more contours in the same horizontal distance indicates more rapid elevation change.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Supplementary contours add intermediate detail, not necessarily more elevation change; count alone does not imply a steeper trail.",
+          "distractor_plausibility": "plausible mixed-contour counting error"
+        },
+        {
+          "choice": "Trail X is steeper because it achieves the same elevation change with fewer contour crossings.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Fewer drawn lines do not make the same endpoint change steeper.",
+          "distractor_plausibility": "plausible inverse counting error"
+        },
+        {
+          "choice": "Both trails have equal steepness because they share the same elevation change and horizontal distance.",
+          "answer_adequacy": "conditional_only",
+          "reason": "Equal average gradient follows if both2 km distances are horizontal and steepness means net endpoint rise per horizontal route length. Neither that observable nor full slope distribution is explicit; equal local terrain steepness does not follow.",
+          "distractor_plausibility": "conditional correct interpretation"
+        },
+        {
+          "choice": "Trail Y is steeper because supplementary contours indicate a larger total elevation change than ordinary contours alone.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Supplementary lines do not change the stated400-to500 m endpoint difference or establish larger total ascent.",
+          "distractor_plausibility": "plausible but overlaps option1"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "An intended endpoint-average comparison plus supplementary-line recall; full terrain steepness is not specified, so extra ambiguity is not legitimate level3 work.",
+      "material_concerns": [
+        "No fully warranted answer to unqualified terrain steepness.",
+        "Do not call five ordinary contours intrinsically impossible: counting the arrival contour can make that count coherent.",
+        "Both endpoints differ by100 m; this does not identify every slope or total ascent."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "prompt": 286,
+        "choices": [
+          120,
+          94,
+          102,
+          120
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q04",
+      "blinded_candidate_sha256": "b8cc3429499bb1fa7ba4f4e41152a415578b5d47e14df51a74c0c57ee92daeac",
+      "prompt": "A friend offers you a detached Monstera deliciosa leaf with petiole but no stem section, and a pothos stem cutting with two nodes. Based on propagation methods suited to each plant's structure, which statement accurately describes what you should expect?",
+      "choices": [
+        "Both will root successfully in water or well-draining medium.",
+        "The Monstera leaf will root faster if hormone is applied, while the pothos needs no hormone.",
+        "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant.",
+        "The Monstera leaf can root if kept very moist, though more slowly than the pothos."
+      ],
+      "warranted_exact_keys": [
+        "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant."
+      ],
+      "conditional_only_choices": [],
+      "exact_unique_supported_key": true,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "Both will root successfully in water or well-draining medium.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Unqualified successful rooting of both is not established; rooting alone is also not successful new-plant propagation.",
+          "distractor_plausibility": "plausible rooting/propagation conflation"
+        },
+        {
+          "choice": "The Monstera leaf will root faster if hormone is applied, while the pothos needs no hormone.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Hormone does not restore a missing Monstera node/bud. Faster rooting of this leaf versus an unspecified baseline is not established.",
+          "distractor_plausibility": "plausible hormone rescue misconception"
+        },
+        {
+          "choice": "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant.",
+          "answer_adequacy": "supported",
+          "reason": "A pothos stem with nodes is suitable for new-plant propagation; a node-free Monstera leaf/petiole cannot produce a new growing plant.",
+          "distractor_plausibility": "key"
+        },
+        {
+          "choice": "The Monstera leaf can root if kept very moist, though more slowly than the pothos.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Very moist conditions do not establish successful Monstera propagation or a slower rate than pothos. Possible transient roots must not be conflated with a new plant.",
+          "distractor_plausibility": "weak and overlaps medium-rescue misconception"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "Direct application of node eligibility and a species-method lookup; the extra species does not create interacting evidence.",
+      "material_concerns": [
+        "Do not infer from no-new-plant evidence that every detached leaf is absolutely incapable of any transient root formation.",
+        "Three distractors are not strongly distinct."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "prompt": 254,
+        "choices": [
+          61,
+          92,
+          100,
+          82
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q05",
+      "blinded_candidate_sha256": "f41f581f8a941cef30514db3e02b64bf57c502980f1076d561a4e7063073f74f",
+      "prompt": "A recipe states: \"Start with butter. Melt the butter slowly, then add a pinch of salt.\" Why is the first \"butter\" articleless while the second takes \"the\"?",
+      "choices": [
+        "The first refers to the substance generally; the second refers to the specific amount now being used.",
+        "\"Butter\" is uncountable, so it never takes \"the.\"",
+        "The writer made an error and should have used \"the\" both times.",
+        "The first mention always omits the article, and the second always adds it."
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "The first refers to the substance generally; the second refers to the specific amount now being used."
+      ],
+      "exact_unique_supported_key": false,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "The first refers to the substance generally; the second refers to the specific amount now being used.",
+          "answer_adequacy": "conditional_only",
+          "reason": "The second half is right, but Start with butter introduces an unspecified amount as an ingredient for this recipe, not necessarily a generic reference to the substance as a class. Best intended choice only if generally is weakened to not yet identified.",
+          "distractor_plausibility": "conditional intended key"
+        },
+        {
+          "choice": "\"Butter\" is uncountable, so it never takes \"the.\"",
+          "answer_adequacy": "not_warranted",
+          "reason": "Mass butter can take the when a particular amount is identifiable, as the displayed sentence itself does.",
+          "distractor_plausibility": "plausible countability overgeneralization"
+        },
+        {
+          "choice": "The writer made an error and should have used \"the\" both times.",
+          "answer_adequacy": "not_warranted",
+          "reason": "The first bare-mass use is grammatical; no previously identifiable amount is needed.",
+          "distractor_plausibility": "weak: mere correction claim"
+        },
+        {
+          "choice": "The first mention always omits the article, and the second always adds it.",
+          "answer_adequacy": "not_warranted",
+          "reason": "First mentions may use the via shared context, and later mentions can introduce a different amount.",
+          "distractor_plausibility": "plausible mention-number overgeneralization"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "Mass-noun introduction followed by direct anaphoric reference; one familiar rule, with a problematic generic-versus-indefinite distinction.",
+      "material_concerns": [
+        "No fully precise warranted explanation among the choices; generic meaning is being conflated with an indefinite ingredient amount."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "prompt": 155,
+        "choices": [
+          101,
+          49,
+          63,
+          74
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q06",
+      "blinded_candidate_sha256": "28922626170dfff283d63413b9f08f71e3c95e570bab869425ada71278b1de39",
+      "prompt": "A hiker walks from Point A (elevation 400 m) to Point B (elevation 600 m), crossing 10 contour lines spaced 2 cm apart on the map. A second hiker walks from Point C (500 m) to Point D (700 m), crossing 10 contour lines spaced 5 cm apart. The contour interval is 20 m for both routes. Which comparison is correct?",
+      "choices": [
+        "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced",
+        "A–B gains more elevation because its contours are closer together",
+        "C–D is steeper because it reaches a higher final elevation of 700 m",
+        "A–B is gentler because it starts at a lower elevation"
+      ],
+      "warranted_exact_keys": [
+        "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced"
+      ],
+      "conditional_only_choices": [],
+      "exact_unique_supported_key": true,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced",
+          "answer_adequacy": "supported",
+          "reason": "Both endpoint differences are200 m. On the naturally shared map, equal vertical intervals at2 cm versus5 cm spacing imply the A-B route is steeper in the represented crossing direction.",
+          "distractor_plausibility": "key"
+        },
+        {
+          "choice": "A–B gains more elevation because its contours are closer together",
+          "answer_adequacy": "not_warranted",
+          "reason": "Closer spacing changes slope, not the explicitly given200 m net rise.",
+          "distractor_plausibility": "plausible slope/gain confusion"
+        },
+        {
+          "choice": "C–D is steeper because it reaches a higher final elevation of 700 m",
+          "answer_adequacy": "not_warranted",
+          "reason": "A700 m endpoint establishes height, not a greater rate of rise with distance.",
+          "distractor_plausibility": "plausible height/slope confusion"
+        },
+        {
+          "choice": "A–B is gentler because it starts at a lower elevation",
+          "answer_adequacy": "not_warranted",
+          "reason": "The lower start likewise does not imply gentler terrain; the spacing indicates the opposite.",
+          "distractor_plausibility": "plausible start-height/slope confusion"
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 3,
+      "difficulty_reason": "Uses both pairs of endpoint elevations to establish equal200 m change, then same-map contour spacing to distinguish slope from absolute height. Those details distinguish concrete competing claims.",
+      "material_concerns": [
+        "Assessment uses the ordinary shared-map reading of the map; two differently scaled maps would not justify the comparison.",
+        "The10-crossing wording does not supply the gain; explicit endpoints do. No claim of constant slope outside the stated spacing."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "prompt": 312,
+        "choices": [
+          100,
+          65,
+          67,
+          53
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q07",
+      "blinded_candidate_sha256": "174aa45323f35bc4662999319aeec5f4064cca56726ffb577fc9a2f93c7f6061",
+      "prompt": "You have a Monstera deliciosa with a long vine and a detached African violet leaf with its petiole. A beginner asks which tissue from each plant is appropriate for propagation. Based on species and available tissue, what is the best guidance?",
+      "choices": [
+        "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+        "Use a leaf cutting for both, since any detached leaf can root and grow a new plant",
+        "Use a stem cutting for both, since leaf cuttings never produce new plants in any species",
+        "Root the Monstera leaf with its petiole in water; divide the African violet at the crown instead"
+      ],
+      "warranted_exact_keys": [
+        "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet"
+      ],
+      "conditional_only_choices": [],
+      "exact_unique_supported_key": true,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "answer_adequacy": "supported",
+          "reason": "The available Monstera vine supplies a node-bearing stem and the African violet leaf/petiole is suitable for leaf propagation.",
+          "distractor_plausibility": "key"
+        },
+        {
+          "choice": "Use a leaf cutting for both, since any detached leaf can root and grow a new plant",
+          "answer_adequacy": "not_warranted",
+          "reason": "The universal any-leaf claim fails for node-free Monstera material.",
+          "distractor_plausibility": "plausible universal-method error"
+        },
+        {
+          "choice": "Use a stem cutting for both, since leaf cuttings never produce new plants in any species",
+          "answer_adequacy": "not_warranted",
+          "reason": "The universal impossibility of leaf propagation fails for African violet.",
+          "distractor_plausibility": "plausible opposite universal-method error"
+        },
+        {
+          "choice": "Root the Monstera leaf with its petiole in water; divide the African violet at the crown instead",
+          "answer_adequacy": "not_warranted",
+          "reason": "The offered African violet is a detached leaf, with no crown to divide; the Monstera leaf lacks the needed stem node.",
+          "distractor_plausibility": "weak: asks for unavailable tissue and repeats Monstera error"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "Species-to-method lookup for two plants; no conflicting observations or multistep diagnosis.",
+      "material_concerns": [
+        "No root/growth-condition interpretation is required."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "prompt": 242,
+        "choices": [
+          92,
+          82,
+          88,
+          96
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q08",
+      "blinded_candidate_sha256": "68a84c32f8dd4b86d2466f24443fe1404fd5339de3b6ee603e3a7d15849ff45b",
+      "prompt": "A gardener has two Monstera deliciosa cuttings. Cutting A has firm, creamy-white roots and a new leaf unfurling. Cutting B has soft, brown roots and no visible new growth. Both are currently in water. Which propagation decision follows the guidance for this species?",
+      "choices": [
+        "Move both cuttings to soil immediately to encourage stronger root growth.",
+        "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+        "Keep both in water until each cutting has at least three new leaves.",
+        "Trim the brown roots from Cutting B and transplant both to soil."
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage."
+      ],
+      "exact_unique_supported_key": false,
+      "complete_premises": false,
+      "choice_assessments": [
+        {
+          "choice": "Move both cuttings to soil immediately to encourage stronger root growth.",
+          "answer_adequacy": "not_warranted",
+          "reason": "A has positive readiness signs; B does not. An immediate transplant of both is not justified by a general hope of stronger roots.",
+          "distractor_plausibility": "plausible transplant-as-cure error"
+        },
+        {
+          "choice": "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+          "answer_adequacy": "conditional_only",
+          "reason": "The action for A is supported. For B, keeping soft-brown-rooted material in water and checking drainage is not a complete supported response: drainage of a standing-water rooting vessel is not the applicable solid-medium check, and no inspection/removal/corrective step is specified. Closest listed option only with added appropriate remediation.",
+          "distractor_plausibility": "conditional intended key"
+        },
+        {
+          "choice": "Keep both in water until each cutting has at least three new leaves.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Three new leaves is an invented mandatory threshold; A already has readiness evidence.",
+          "distractor_plausibility": "weak: invented numerical threshold"
+        },
+        {
+          "choice": "Trim the brown roots from Cutting B and transplant both to soil.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Trimming affected roots may be reasonable after inspection, but the stem supplies no remaining healthy-root support to justify transplanting B immediately.",
+          "distractor_plausibility": "plausible but condition-dependent action"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "Matches two obvious healthy/unhealthy states to guidance. The purported treatment of B is incomplete rather than a meaningful interacting constraint.",
+      "material_concerns": [
+        "Best-listed versus fully supported action must remain separate.",
+        "A root-disease diagnosis or exact cause cannot be guaranteed solely from appearance; root rot is a concern.",
+        "The packet guidance to return few/no roots to medium is not blanket advice to leave soft-brown-rooted material unchanged."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "prompt": 266,
+        "choices": [
+          73,
+          94,
+          68,
+          64
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q09",
+      "blinded_candidate_sha256": "8c217725bcdd9a0af0d5175a188e3a374e6432bd5a6b9936c2ecf50b3ab3d5ec",
+      "prompt": "A friend shows you a Monstera deliciosa cutting rooting in water. It has several roots that are firm and creamy white, each about 3 inches long, and a new leaf is beginning to unfurl. She asks whether it's ready to move to a pot with soil. What should you advise?",
+      "choices": [
+        "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container",
+        "Keep it in water longer — roots need to turn brown before they can adapt to soil",
+        "Add rooting hormone to the water first, since it is required before transferring to soil",
+        "Wait until the new leaf fully hardens before potting, since any active growth makes transplant risky"
+      ],
+      "warranted_exact_keys": [
+        "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container"
+      ],
+      "conditional_only_choices": [],
+      "exact_unique_supported_key": true,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container",
+          "answer_adequacy": "supported",
+          "reason": "The several healthy-looking roots and active leaf growth meet ordinary Monstera potting guidance; this is readiness advice, not a guarantee of survival.",
+          "distractor_plausibility": "key"
+        },
+        {
+          "choice": "Keep it in water longer — roots need to turn brown before they can adapt to soil",
+          "answer_adequacy": "not_warranted",
+          "reason": "Roots need not become brown to be transplanted; brown soft roots are instead a warning.",
+          "distractor_plausibility": "weak: unexplained brown-root requirement"
+        },
+        {
+          "choice": "Add rooting hormone to the water first, since it is required before transferring to soil",
+          "answer_adequacy": "not_warranted",
+          "reason": "Extra rooting hormone is optional, not a prerequisite for soil transfer.",
+          "distractor_plausibility": "plausible hormone requirement misconception"
+        },
+        {
+          "choice": "Wait until the new leaf fully hardens before potting, since any active growth makes transplant risky",
+          "answer_adequacy": "not_warranted",
+          "reason": "Any active growth making transplantation risky contradicts using healthy roots plus active growth as readiness signs; full leaf hardening is not a required threshold.",
+          "distractor_plausibility": "plausible transplant-stress overgeneralization"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "Direct familiar readiness rule with every observation aligned; no competing evidence to weigh.",
+      "material_concerns": [
+        "Clear answer but unlikely to achieve the requested evidence-interpretation depth."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "lengths": {
+        "prompt": 263,
+        "choices": [
+          101,
+          80,
+          88,
+          100
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q10",
+      "blinded_candidate_sha256": "27c04940f1f006a391e46e1fd9e23c078a6606b40b89c0dfa437bca791e0e547",
+      "prompt": "On a map with a 40 ft contour interval, a trail crosses 5 contour lines over 1 cm of map distance heading north, then crosses 5 more contour lines over 4 cm heading east. All contours show increasing elevation in both directions. Which statement best describes the terrain along this trail?",
+      "choices": [
+        "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+        "The northward segment gains more elevation because its contours are closer together",
+        "The eastward segment is steeper because it covers more map distance",
+        "The northward segment gains 200 ft and the eastward gains 40 ft"
+      ],
+      "warranted_exact_keys": [],
+      "conditional_only_choices": [
+        "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment"
+      ],
+      "exact_unique_supported_key": false,
+      "complete_premises": false,
+      "choice_assessments": [
+        {
+          "choice": "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+          "answer_adequacy": "conditional_only",
+          "reason": "The northward portion is broadly steeper under ordinary monotone same-map crossings, but five lines crossed do not establish five full40-ft intervals between arbitrary segment endpoints. Both200-ft gains require added endpoint alignment.",
+          "distractor_plausibility": "conditional intended key"
+        },
+        {
+          "choice": "The northward segment gains more elevation because its contours are closer together",
+          "answer_adequacy": "not_warranted",
+          "reason": "Closer spacing is not a cause of a larger vertical gain; endpoint offsets can make either segment gain slightly more.",
+          "distractor_plausibility": "plausible interval/spacing confusion"
+        },
+        {
+          "choice": "The eastward segment is steeper because it covers more map distance",
+          "answer_adequacy": "not_warranted",
+          "reason": "A longer map distance for a comparable elevation range implies gentler rather than steeper average ascent.",
+          "distractor_plausibility": "plausible distance/slope reversal"
+        },
+        {
+          "choice": "The northward segment gains 200 ft and the eastward gains 40 ft",
+          "answer_adequacy": "not_warranted",
+          "reason": "The first200 ft is unproved and five increasing ordinary crossings cannot justify only40 ft for the second segment.",
+          "distractor_plausibility": "plausible line/interval arithmetic confusion"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 3,
+      "difficulty_reason": "Intended comparison requires separating contour interval, line count and map distance, but missing endpoint alignment makes its exact numeric claim unsupported; this is potential task depth, not a valid level3 item.",
+      "material_concerns": [
+        "No fully warranted exact option because numeric key needs endpoint positions."
+      ],
+      "counterexample": "At40-ft interval, monotone north10→230 ft over1 cm crosses40,80,120,160,200: five lines but220-ft rise. East230→430 ft over4 cm crosses240,280,320,360,400: five lines and200-ft rise. Exact native arithmetic checked; these are counterexample endpoints, not repairs to the displayed stem.",
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "lengths": {
+        "prompt": 290,
+        "choices": [
+          94,
+          83,
+          67,
+          63
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q11",
+      "blinded_candidate_sha256": "215f104b042c3a4d7d56aa20733ae00a16e7d60b2c48ce1a33ce0f2517a89bb4",
+      "prompt": "Consider: \"Dogs are wonderful companions.\" vs. \"The dogs next door bark all night.\" Which explanation best accounts for the article difference between these two sentences?",
+      "choices": [
+        "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group.",
+        "'Dogs' in the first sentence is uncountable, so no article is needed; the second sentence corrects this.",
+        "Both sentences are generic, but 'the' is added in the second only because a location phrase follows the noun.",
+        "'A' cannot appear before plural nouns, so the writer had to drop the article in the first and use 'the' in the second."
+      ],
+      "warranted_exact_keys": [
+        "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group."
+      ],
+      "conditional_only_choices": [],
+      "exact_unique_supported_key": true,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group.",
+          "answer_adequacy": "supported",
+          "reason": "The first refers to dogs as a class; next door picks out the particular dogs in the second.",
+          "distractor_plausibility": "key"
+        },
+        {
+          "choice": "'Dogs' in the first sentence is uncountable, so no article is needed; the second sentence corrects this.",
+          "answer_adequacy": "not_warranted",
+          "reason": "Dogs is plural countable here, not mass; no correction takes place.",
+          "distractor_plausibility": "weak: obviously plural countable label"
+        },
+        {
+          "choice": "Both sentences are generic, but 'the' is added in the second only because a location phrase follows the noun.",
+          "answer_adequacy": "not_warranted",
+          "reason": "The second is about a particular group. A following location alone does not force the: dogs in cities can also express a general class.",
+          "distractor_plausibility": "plausible modifier-mechanical rule"
+        },
+        {
+          "choice": "'A' cannot appear before plural nouns, so the writer had to drop the article in the first and use 'the' in the second.",
+          "answer_adequacy": "not_warranted",
+          "reason": "The restriction on a plus plural does not force the second definite article; bare plural forms can also appear with later modifiers.",
+          "distractor_plausibility": "plausible elimination-based article rule"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "Direct recognition of bare-plural generic versus a locationally identifiable particular group; no interacting context beyond those signals.",
+      "material_concerns": [
+        "Good contrast but below the requested level3."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "prompt": 171,
+        "choices": [
+          121,
+          104,
+          109,
+          118
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    },
+    {
+      "candidate_id": "q12",
+      "blinded_candidate_sha256": "9a02c25fa32bcbcade5a9f9a9a5566da7fbb47d4a8fdd9b14a4b597141fa8af6",
+      "prompt": "Read the passage: \"Maria bought a laptop last week. Yesterday she noticed the screen had a crack in it.\" Why does the writer use 'the screen' rather than 'a screen' in the second sentence?",
+      "choices": [
+        "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context.",
+        "'Screen' is uncountable, so it always requires 'the' rather than 'a.'",
+        "'The' is used because 'screen' has already been directly mentioned earlier in the passage.",
+        "'A screen' would mean Maria owns more than one laptop, so 'the' prevents confusion."
+      ],
+      "warranted_exact_keys": [
+        "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context."
+      ],
+      "conditional_only_choices": [],
+      "exact_unique_supported_key": true,
+      "complete_premises": true,
+      "choice_assessments": [
+        {
+          "choice": "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context.",
+          "answer_adequacy": "supported",
+          "reason": "The laptop establishes a recoverable part-whole referent: its screen. Direct repetition of screen is unnecessary.",
+          "distractor_plausibility": "key"
+        },
+        {
+          "choice": "'Screen' is uncountable, so it always requires 'the' rather than 'a.'",
+          "answer_adequacy": "not_warranted",
+          "reason": "Screen is a singular countable component in this context; the universal mass claim is wrong.",
+          "distractor_plausibility": "weak: obvious countability error"
+        },
+        {
+          "choice": "'The' is used because 'screen' has already been directly mentioned earlier in the passage.",
+          "answer_adequacy": "not_warranted",
+          "reason": "The first sentence contains laptop, not screen; association is doing the referential work.",
+          "distractor_plausibility": "plausible previous-mention misconception"
+        },
+        {
+          "choice": "'A screen' would mean Maria owns more than one laptop, so 'the' prevents confusion.",
+          "answer_adequacy": "not_warranted",
+          "reason": "An indefinite screen would not entail ownership of multiple laptops; it simply would not explicitly maintain the same recoverable referent.",
+          "distractor_plausibility": "weak: fabricated ownership implication"
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "independent_difficulty": 2,
+      "difficulty_reason": "One familiar bridging inference from a laptop to its screen; demonstrates indirect identifiability but no competing audience knowledge or reference shift.",
+      "material_concerns": [
+        "Several distractors are easy to discard without reasoning about the association."
+      ],
+      "counterexample": null,
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "lengths": {
+        "prompt": 188,
+        "choices": [
+          115,
+          69,
+          90,
+          83
+        ]
+      },
+      "stem_and_choices_within_bounds": true
+    }
+  ]
+}

@@ -1,0 +1,1785 @@
+{
+  "audit_kind": "independent operational/provenance audit; no content correctness grading",
+  "assessment_date": "2026-09-08",
+  "terminal_confirmation": {
+    "source": "Root message confirming write_stdin process59844 terminal exit0",
+    "process_exitcode": 0
+  },
+  "capture": {
+    "path": "/tmp/checkpoint-author-model-comparison-live-20260908/capture.json",
+    "bytes": 341483,
+    "byte_sha256": "485a90f097467b9fb6d20703829ef82204911b1abaa623fbeb8f26d0bfd94c38",
+    "canonical_sha256": "f3570b6fa52995c6e51ba5fac755fef83095673d5b4a7dc0a63fee8f7e46e2bd",
+    "status": "completed"
+  },
+  "frozen_plan": {
+    "path": "/tmp/checkpoint-author-model-comparison-plan-20260908/plan.json",
+    "bytes": 136582,
+    "byte_sha256": "82f57fb33434413547666ab01e4b83d8e7024b47325c00107867d3ceb21852ae",
+    "canonical_sha256": "127916529ed4922b47f5919c7f2020bba8ddb36c516ccaf647c6683daf4cecd1",
+    "exact_embedded_plan": true
+  },
+  "fixture": {
+    "path": "/Users/samchou/Documents/Checkpoint/docs/evidence/authored-solution-fresh-fixture-20260908.json",
+    "byte_sha256": "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d",
+    "canonical_sha256": "79c54c5ffaf96fab872193d352e30c22a1e1231d82a7d8f50bd92dc474c0ae95",
+    "embedded_in_origin_exact": true
+  },
+  "source_revision": "5e677bb00cf9b5c7fd37ac43c343fc71f0e05430",
+  "source_checks": [
+    {
+      "path": "complete_question_solution.py",
+      "sha256": "adfc67f0c94e19bdc2771d99516bfc890457ad8fc7aa90f78a7efe23c9653535",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "execution_evidence.py",
+      "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "generation_diagnostics.py",
+      "sha256": "2e4353c07b5452acc538de56d643ff3a3f391c6aaa0005a48962955267da041a",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "lambda_function.py",
+      "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank.py",
+      "sha256": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_common.py",
+      "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_inventory.py",
+      "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_store.py",
+      "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_bank_worker.py",
+      "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_generation.py",
+      "sha256": "26cd70631215c25ce53c0af3938a1775bf86250f27a3bd1d89abd0f00c630b80",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_quality.py",
+      "sha256": "b9f8fa7e9ba792c80110d0e3dde1af390014c0b386374fc51ec849958c8c28ec",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_rule_construction.py",
+      "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_teaching.py",
+      "sha256": "7b86a84f872357ab51aec2ab7b54e3c2fea8b9236d82814db8112a647ae60f61",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "question_verification.py",
+      "sha256": "199f53cc0b05db221656a1b6f31251e6cbcc0fb986c537bc580b103914d4e7e1",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "request_contract.py",
+      "sha256": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "service_errors.py",
+      "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "skill_maps.py",
+      "sha256": "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "smoke_test_backend.py",
+      "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "source_acquisition.py",
+      "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "verification_policy.py",
+      "sha256": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "web_source_search.py",
+      "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_source_authoring_eval.py",
+      "sha256": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_model_comparison.py",
+      "sha256": "04caeda857a7ddd942779a278acd309d8e690a5640e8db6856c516fee6984a01",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_full_pipeline_smoke.py",
+      "sha256": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_learning_eval.py",
+      "sha256": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_prompt_ablation.py",
+      "sha256": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_solution_compatibility_eval.py",
+      "sha256": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_runtime_qualification.py",
+      "sha256": "c52d6f53bcdff83185b45f570ab483728a84063e0e1e069c52d7645793e94ddb",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_author_latency_probe.py",
+      "sha256": "6440f32333a3f2a813bcbd38ab6c731ebd5dfaa464c459f0101f06a5c8136f50",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/checkpoint_immutable_review_eval.py",
+      "sha256": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/question_immutable_review.py",
+      "sha256": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+      "current_and_committed_revision_match": true
+    },
+    {
+      "path": "evals/question_complete_author.py",
+      "sha256": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86",
+      "current_and_committed_revision_match": true
+    }
+  ],
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.89",
+    "botocore": "1.43.89"
+  },
+  "offline_replay": {
+    "client_creation_and_observer_patched_to_raise": true,
+    "full_frozen_plan_rebuild_equal": true,
+    "full_runtime_replay_canonical_equal": true,
+    "derived_capture_canonical_sha256": "f3570b6fa52995c6e51ba5fac755fef83095673d5b4a7dc0a63fee8f7e46e2bd"
+  },
+  "limits": {
+    "maximum_calls_total": 18,
+    "maximum_calls_each_operation": 3,
+    "maximum_input_bytes_each_call": 32768,
+    "maximum_input_bytes_total": 589824,
+    "operation_seconds_each": 240,
+    "read_timeout_seconds": 75,
+    "connect_timeout_seconds": 3,
+    "sdk_total_max_attempts": 1,
+    "generation_attempts": 1,
+    "feedback_contract": "authored_solution",
+    "max_tokens_each_call": 6000,
+    "temperature_each_call": 0.2,
+    "thinking_each_call": "disabled"
+  },
+  "calls": [
+    {
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "capture_call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "moonshotai.kimi-k2.5",
+      "request_sha256": "beb4f6d0a64071ef7c07924912c6e8572f49ad18d4f5f7c468569e00a4a56a5e",
+      "input_utf8_bytes": 13262,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "7eb90453cb232872906f1ea688e1a22968419fbb95cc7b91d608a7cde4e45785",
+      "response_text_sha256": "c9b829105d9d8cbd9c8fa75d2421822a6867b999fa317e4995167a52c3019256",
+      "response_text_characters": 3143,
+      "response_text_utf8_bytes": 3143,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 2494,
+        "outputTokens": 646,
+        "totalTokens": 3140
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 8.897890833031852,
+      "local_worker_interval_seconds": 9.67087245802395,
+      "admitted_remaining_seconds": 239.995,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "capture_call_index": 1,
+      "operation_index": 0,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "658c9389e18afdd7b79c0416995a6b28f918d00090d614dd0674cbe5fde8de47",
+      "input_utf8_bytes": 7607,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+      "user_prompt_sha256": "fd34a180396eab5fe5ecee78fb6ad7265a8e3301f857f04ce9380f42cd64a4f9",
+      "response_text_sha256": "0128abc9cce4d55885ea2e2cc569a4337ea0c2e4adac9bb73e57278d1ea2b746",
+      "response_text_characters": 2931,
+      "response_text_utf8_bytes": 2933,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1669,
+        "outputTokens": 687,
+        "totalTokens": 2356
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 9.287588250008412,
+      "local_worker_interval_seconds": 9.852559624996502,
+      "admitted_remaining_seconds": 230.316,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "capture_call_index": 2,
+      "operation_index": 0,
+      "operation_call_index": 2,
+      "role": "teaching_auditor",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "bdff609068dc97e81223d8e62c691159c090f2bbcf4afda4d7b0b3ecd7b0de1d",
+      "input_utf8_bytes": 8864,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "7f9cb8b65fcc52e684625e7f33139d7dfd15e254ff3937c48906f0e490f6fe3e",
+      "user_prompt_sha256": "63b5201100f881f658bc001769252ca26a9e4d3b920c5dabe3b1c505ea7cc83c",
+      "response_text_sha256": "cd29fa2439ae80f3be095482b9db22351d9f2dbf1e98c8ab520b82062fa35628",
+      "response_text_characters": 401,
+      "response_text_utf8_bytes": 401,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1955,
+        "outputTokens": 110,
+        "totalTokens": 2065
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 1.7961812080466188,
+      "local_worker_interval_seconds": 2.3378035830101,
+      "admitted_remaining_seconds": 220.456,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "capture_call_index": 3,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "us.anthropic.claude-opus-4-6-v1",
+      "request_sha256": "d04f72bb52a1f047e8d4f3a4d19cdef5e9302f4aba8e77c140a8030db10c6320",
+      "input_utf8_bytes": 13273,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "7eb90453cb232872906f1ea688e1a22968419fbb95cc7b91d608a7cde4e45785",
+      "response_text_sha256": "08f110d7a7dcf8990bd9b4a1ddbeae9fe8f6f9a5ee9c07f885204f47a03b3fce",
+      "response_text_characters": 2850,
+      "response_text_utf8_bytes": 2858,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2816,
+        "outputTokens": 636,
+        "totalTokens": 3452
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 14.03883783298079,
+      "local_worker_interval_seconds": 14.638947500032373,
+      "admitted_remaining_seconds": 239.992,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "capture_call_index": 4,
+      "operation_index": 1,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "595f96eca2a63dc2b1b55ef995ae97f7c4c168f96b966328f90fd4d9e85915aa",
+      "input_utf8_bytes": 7689,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+      "user_prompt_sha256": "f593b2471f8e08ffa1223791ea489153489248c0c2d0063688c3d58dc98686ba",
+      "response_text_sha256": "8332b570d2403d88cf27428f5a068ce8933dfc4669554faa5885579a2688f082",
+      "response_text_characters": 2863,
+      "response_text_utf8_bytes": 2869,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1686,
+        "outputTokens": 635,
+        "totalTokens": 2321
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 7.176499167049769,
+      "local_worker_interval_seconds": 7.746463707997464,
+      "admitted_remaining_seconds": 225.344,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "capture_call_index": 5,
+      "operation_index": 1,
+      "operation_call_index": 2,
+      "role": "teaching_auditor",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "ae7216c8f391f27cfc56a24ea4aed109950a500e2f372287d28103826d9b4932",
+      "input_utf8_bytes": 8984,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "7f9cb8b65fcc52e684625e7f33139d7dfd15e254ff3937c48906f0e490f6fe3e",
+      "user_prompt_sha256": "cda3c0405b398383702b5eb5741f9af4f7f19b392d7af59d6e30968889b922dc",
+      "response_text_sha256": "867d2eb1dcd28a7b233c903c18bb7eeaaca596c484ac47e678ea672d5a48ee0d",
+      "response_text_characters": 400,
+      "response_text_utf8_bytes": 402,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1980,
+        "outputTokens": 105,
+        "totalTokens": 2085
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 1.6644892079639249,
+      "local_worker_interval_seconds": 2.206582000013441,
+      "admitted_remaining_seconds": 217.589,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "opus",
+      "case_id": "english_articles_in_context",
+      "capture_call_index": 6,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "us.anthropic.claude-opus-4-6-v1",
+      "request_sha256": "c652e4ca6b119c67558c541b5f02497f267a1093a6c161399ac894b241f4ddc9",
+      "input_utf8_bytes": 12551,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "64b351f3ddc3651187cc359528ed34b21f5721b52ed14337c73e6b4514b0c34c",
+      "response_text_sha256": "6fb1a7d4544f161f8472f05e5bcfb49746e706e36e42df73819b921013bfc09b",
+      "response_text_characters": 2986,
+      "response_text_utf8_bytes": 2990,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2589,
+        "outputTokens": 677,
+        "totalTokens": 3266
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 15.97621595900273,
+      "local_worker_interval_seconds": 16.531368208990898,
+      "admitted_remaining_seconds": 239.992,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "capture_call_index": 7,
+      "operation_index": 3,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "moonshotai.kimi-k2.5",
+      "request_sha256": "a7de70b218fbd9e48cd9d575fe18dfa5f403f4fd132efaa268c3e23a602f59e9",
+      "input_utf8_bytes": 12540,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "64b351f3ddc3651187cc359528ed34b21f5721b52ed14337c73e6b4514b0c34c",
+      "response_text_sha256": "b2bea9ef3fe2d530634d6e9c3de9d90cce9ae5b34fbc3fd5a027c7cdc0209e8c",
+      "response_text_characters": 2509,
+      "response_text_utf8_bytes": 2511,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 2324,
+        "outputTokens": 517,
+        "totalTokens": 2841
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 9.986071166000329,
+      "local_worker_interval_seconds": 10.836278542003129,
+      "admitted_remaining_seconds": 239.991,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "capture_call_index": 8,
+      "operation_index": 3,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "747ff7c7c6fe2885483788de57f1c7be54ba39d62749f1b49dd48a63666ac585",
+      "input_utf8_bytes": 6632,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+      "user_prompt_sha256": "02922a9c9486845644009442ba562a1abeae913b705c2189dcec921708bc8b4e",
+      "response_text_sha256": "adbe20dd376979de969d40856ee812d8ec5d5519a70fb94e502fd3f16fa96edd",
+      "response_text_characters": 2867,
+      "response_text_utf8_bytes": 2871,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1373,
+        "outputTokens": 651,
+        "totalTokens": 2024
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 10.479326291999314,
+      "local_worker_interval_seconds": 11.246421082993038,
+      "admitted_remaining_seconds": 229.14,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "capture_call_index": 9,
+      "operation_index": 3,
+      "operation_call_index": 2,
+      "role": "teaching_auditor",
+      "model": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "df1fa62f10766d9acd89d727cf51276885016d9274807189a3479781c689bc9a",
+      "input_utf8_bytes": 7853,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "7f9cb8b65fcc52e684625e7f33139d7dfd15e254ff3937c48906f0e490f6fe3e",
+      "user_prompt_sha256": "082d5bc45b41ccd6bbc2202512d7b8f30866355d34146bad6d6e7ca1fa9473fc",
+      "response_text_sha256": "3d9d0b1788ebac9ea974a78493292f261b8b6db01b3d63b58d0b66fcf3852f38",
+      "response_text_characters": 372,
+      "response_text_utf8_bytes": 372,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1637,
+        "outputTokens": 93,
+        "totalTokens": 1730
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 1.5061320000095293,
+      "local_worker_interval_seconds": 2.0374082909547724,
+      "admitted_remaining_seconds": 217.885,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "kimi",
+      "case_id": "topographic_contour_profiles",
+      "capture_call_index": 10,
+      "operation_index": 4,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "moonshotai.kimi-k2.5",
+      "request_sha256": "cc6dcb21f669722af6b1be356e5f17d28fc9ee28f0cf4ba7c30b70106898eaec",
+      "input_utf8_bytes": 12597,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "665beebc9e89481961f7986cb1c91fc183be7182ddfcb41c0edff611b26c1c19",
+      "response_text_sha256": "b04d075fcd9e24fb1eb6fe67519eb8fcf23129687f4e8cc49d7edb01b0475bf4",
+      "response_text_characters": 3904,
+      "response_text_utf8_bytes": 3917,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 2315,
+        "outputTokens": 807,
+        "totalTokens": 3122
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 6.718592333025299,
+      "local_worker_interval_seconds": 7.259628875006456,
+      "admitted_remaining_seconds": 239.99,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    },
+    {
+      "arm": "opus",
+      "case_id": "topographic_contour_profiles",
+      "capture_call_index": 11,
+      "operation_index": 5,
+      "operation_call_index": 0,
+      "role": "author",
+      "model": "us.anthropic.claude-opus-4-6-v1",
+      "request_sha256": "e7d8f20e26dc934af2165b9866a0df5f484ef2204a28eeaa6f2a9d4f662662fe",
+      "input_utf8_bytes": 12608,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "system_prompt_sha256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+      "user_prompt_sha256": "665beebc9e89481961f7986cb1c91fc183be7182ddfcb41c0edff611b26c1c19",
+      "response_text_sha256": "d35207677ba5266a0cbb015c3367a6b08c78778b335ccbb3393a31334fece835",
+      "response_text_characters": 3131,
+      "response_text_utf8_bytes": 3153,
+      "stop_reason": "end_turn",
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2622,
+        "outputTokens": 767,
+        "totalTokens": 3389
+      },
+      "usage_known": true,
+      "reasoning_content_block_count": 0,
+      "sdk_call_interval_seconds": 13.802652166981716,
+      "local_worker_interval_seconds": 14.553995417023543,
+      "admitted_remaining_seconds": 239.989,
+      "local_worker_reaped": true,
+      "worker_exitcode": 0,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "remote_completion": "response_observed",
+      "operational_failure": false
+    }
+  ],
+  "operations": [
+    {
+      "operation_index": 0,
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "settings": {
+        "AWS_REGION": "us-east-1",
+        "BEDROCK_REGION": "us-east-1",
+        "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "6000",
+        "BEDROCK_TEMPERATURE": "0.2",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+        "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+        "GENERATION_ATTEMPTS": "1",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "CHECKPOINT_PROMPT_VARIANT": "balanced",
+        "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+        "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+        "BEDROCK_GUARDRAIL_VERSION": ""
+      },
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 2,
+      "solver_candidates": 2,
+      "audited_candidates": 2,
+      "returned_candidates": 2,
+      "roles": [
+        "author",
+        "solver",
+        "teaching_auditor"
+      ],
+      "budget_reservations": 3,
+      "quality_diagnostics": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 2,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": true
+      }
+    },
+    {
+      "operation_index": 1,
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "settings": {
+        "AWS_REGION": "us-east-1",
+        "BEDROCK_REGION": "us-east-1",
+        "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "6000",
+        "BEDROCK_TEMPERATURE": "0.2",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+        "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+        "GENERATION_ATTEMPTS": "1",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "CHECKPOINT_PROMPT_VARIANT": "balanced",
+        "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+        "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+        "BEDROCK_GUARDRAIL_VERSION": ""
+      },
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 2,
+      "solver_candidates": 2,
+      "audited_candidates": 2,
+      "returned_candidates": 2,
+      "roles": [
+        "author",
+        "solver",
+        "teaching_auditor"
+      ],
+      "budget_reservations": 3,
+      "quality_diagnostics": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 2,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": true
+      }
+    },
+    {
+      "operation_index": 2,
+      "arm": "opus",
+      "case_id": "english_articles_in_context",
+      "settings": {
+        "AWS_REGION": "us-east-1",
+        "BEDROCK_REGION": "us-east-1",
+        "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "6000",
+        "BEDROCK_TEMPERATURE": "0.2",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+        "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+        "GENERATION_ATTEMPTS": "1",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "CHECKPOINT_PROMPT_VARIANT": "balanced",
+        "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+        "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+        "BEDROCK_GUARDRAIL_VERSION": ""
+      },
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 0,
+      "solver_candidates": 0,
+      "audited_candidates": 0,
+      "returned_candidates": 0,
+      "roles": [
+        "author"
+      ],
+      "budget_reservations": 1,
+      "quality_diagnostics": {
+        "sanitize": {
+          "invalid_content": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 0,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": false
+      }
+    },
+    {
+      "operation_index": 3,
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "settings": {
+        "AWS_REGION": "us-east-1",
+        "BEDROCK_REGION": "us-east-1",
+        "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "6000",
+        "BEDROCK_TEMPERATURE": "0.2",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+        "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+        "GENERATION_ATTEMPTS": "1",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "CHECKPOINT_PROMPT_VARIANT": "balanced",
+        "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+        "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+        "BEDROCK_GUARDRAIL_VERSION": ""
+      },
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 2,
+      "solver_candidates": 2,
+      "audited_candidates": 2,
+      "returned_candidates": 2,
+      "roles": [
+        "author",
+        "solver",
+        "teaching_auditor"
+      ],
+      "budget_reservations": 3,
+      "quality_diagnostics": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 2,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": true
+      }
+    },
+    {
+      "operation_index": 4,
+      "arm": "kimi",
+      "case_id": "topographic_contour_profiles",
+      "settings": {
+        "AWS_REGION": "us-east-1",
+        "BEDROCK_REGION": "us-east-1",
+        "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "6000",
+        "BEDROCK_TEMPERATURE": "0.2",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+        "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+        "GENERATION_ATTEMPTS": "1",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "CHECKPOINT_PROMPT_VARIANT": "balanced",
+        "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+        "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+        "BEDROCK_GUARDRAIL_VERSION": ""
+      },
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 0,
+      "solver_candidates": 0,
+      "audited_candidates": 0,
+      "returned_candidates": 0,
+      "roles": [
+        "author"
+      ],
+      "budget_reservations": 1,
+      "quality_diagnostics": {
+        "sanitize": {
+          "invalid_content": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 0,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": false
+      }
+    },
+    {
+      "operation_index": 5,
+      "arm": "opus",
+      "case_id": "topographic_contour_profiles",
+      "settings": {
+        "AWS_REGION": "us-east-1",
+        "BEDROCK_REGION": "us-east-1",
+        "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "6000",
+        "BEDROCK_TEMPERATURE": "0.2",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+        "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+        "GENERATION_ATTEMPTS": "1",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "CHECKPOINT_PROMPT_VARIANT": "balanced",
+        "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+        "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+        "BEDROCK_GUARDRAIL_VERSION": ""
+      },
+      "status": "completed",
+      "requested_items": 2,
+      "raw_candidates": 2,
+      "sanitized_candidates": 0,
+      "solver_candidates": 0,
+      "audited_candidates": 0,
+      "returned_candidates": 0,
+      "roles": [
+        "author"
+      ],
+      "budget_reservations": 1,
+      "quality_diagnostics": {
+        "sanitize": {
+          "invalid_content": 2
+        }
+      },
+      "runtime_error_type": null,
+      "runtime_authored_solution_observation": {
+        "requested_count": 2,
+        "returned_count": 0,
+        "author_json_repair_calls": 0,
+        "full_unrepaired_batch": false
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "0:0",
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "raw_index": 0,
+      "author_call_index": 0,
+      "raw_question_canonical_sha256": "55a69d09789d5a3530cf80fb5b557e7774cb1524f44dc88497842b4cca15130d",
+      "raw_prompt_sha256": "a95f0339dc89f74141faf2860b8565cb3e7ff340b01540c38d0fb31ac994789e",
+      "raw_field_characters": {
+        "prompt": 266,
+        "explanation": 405,
+        "expectedAnswer": 94,
+        "choices": [
+          73,
+          94,
+          68,
+          64
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "b0282585d685a9a171ad4b10b9f1c5c4eb0f6e6c410805a9c7c11ad8238c6a5f",
+        "sanitized": "b0282585d685a9a171ad4b10b9f1c5c4eb0f6e6c410805a9c7c11ad8238c6a5f",
+        "audited": "b0282585d685a9a171ad4b10b9f1c5c4eb0f6e6c410805a9c7c11ad8238c6a5f",
+        "returned": "b0282585d685a9a171ad4b10b9f1c5c4eb0f6e6c410805a9c7c11ad8238c6a5f"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "candidate_id": "0:1",
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "raw_index": 1,
+      "author_call_index": 0,
+      "raw_question_canonical_sha256": "538c60bd63781e73d3f9879ec7c9e58745bca7b614ea20b951b1b912364d494e",
+      "raw_prompt_sha256": "267ecf6699c76551a16e4f23bb215a268f8b786456642f12be738291eeee41ec",
+      "raw_field_characters": {
+        "prompt": 254,
+        "explanation": 374,
+        "expectedAnswer": 100,
+        "choices": [
+          61,
+          92,
+          100,
+          82
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "89cf9161fb86a7c1d457714ebd9590d36682505b31782e01fc5ddc69671346d5",
+        "sanitized": "89cf9161fb86a7c1d457714ebd9590d36682505b31782e01fc5ddc69671346d5",
+        "audited": "89cf9161fb86a7c1d457714ebd9590d36682505b31782e01fc5ddc69671346d5",
+        "returned": "89cf9161fb86a7c1d457714ebd9590d36682505b31782e01fc5ddc69671346d5"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "candidate_id": "1:0",
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 1,
+      "raw_index": 0,
+      "author_call_index": 3,
+      "raw_question_canonical_sha256": "e51e8e2a43430f39d23dd86f28e9fec589d2c49548a2fec9589a53d640531ab9",
+      "raw_prompt_sha256": "70351eaf7285bc855717b13ca53b66af0ab1f16fefe80f1528534425831e06c1",
+      "raw_field_characters": {
+        "prompt": 263,
+        "explanation": 398,
+        "expectedAnswer": 101,
+        "choices": [
+          101,
+          80,
+          88,
+          100
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "d8e585721ef5df4773576f31cdbd6fe0ae728627ee45f3f29b6f47d6f65debf9",
+        "sanitized": "d8e585721ef5df4773576f31cdbd6fe0ae728627ee45f3f29b6f47d6f65debf9",
+        "audited": "d8e585721ef5df4773576f31cdbd6fe0ae728627ee45f3f29b6f47d6f65debf9",
+        "returned": "d8e585721ef5df4773576f31cdbd6fe0ae728627ee45f3f29b6f47d6f65debf9"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "candidate_id": "1:1",
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 1,
+      "raw_index": 1,
+      "author_call_index": 3,
+      "raw_question_canonical_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+      "raw_prompt_sha256": "9934f03505e3aa376405a9c13c6bc3765538b42f0db8dad664e6d2fa92772756",
+      "raw_field_characters": {
+        "prompt": 242,
+        "explanation": 417,
+        "expectedAnswer": 92,
+        "choices": [
+          92,
+          82,
+          88,
+          96
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "d7ca6791ac02a0c3ead5edd48d6ba52106c85a17a9a9c214da5c014c46809f6a",
+        "sanitized": "d7ca6791ac02a0c3ead5edd48d6ba52106c85a17a9a9c214da5c014c46809f6a",
+        "audited": "d7ca6791ac02a0c3ead5edd48d6ba52106c85a17a9a9c214da5c014c46809f6a",
+        "returned": "d7ca6791ac02a0c3ead5edd48d6ba52106c85a17a9a9c214da5c014c46809f6a"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "candidate_id": "2:0",
+      "arm": "opus",
+      "case_id": "english_articles_in_context",
+      "operation_index": 2,
+      "raw_index": 0,
+      "author_call_index": 6,
+      "raw_question_canonical_sha256": "54f0b7f4902ceebf00bab113ad6d7d67eb4b18e9ef979b7855247d222c522bcd",
+      "raw_prompt_sha256": "66dfad576f9ed077f8b0f0ce967a2e656fd1781a3b3b7755130fc0c916a944f5",
+      "raw_field_characters": {
+        "prompt": 188,
+        "explanation": 481,
+        "expectedAnswer": 115,
+        "choices": [
+          115,
+          69,
+          90,
+          83
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 481,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "99851937787f18c676d89e5d7137d4454d1490217b06b1159841d37a77382d20",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "candidate_id": "2:1",
+      "arm": "opus",
+      "case_id": "english_articles_in_context",
+      "operation_index": 2,
+      "raw_index": 1,
+      "author_call_index": 6,
+      "raw_question_canonical_sha256": "fcf233555eac5f083e843a8c8006d2fc1f301d55e33a68c5134558ddebb02654",
+      "raw_prompt_sha256": "73b4c390821c30788f20d4edb1db68c5300e3f703d618e29b31c7514d476afac",
+      "raw_field_characters": {
+        "prompt": 171,
+        "explanation": 433,
+        "expectedAnswer": 121,
+        "choices": [
+          121,
+          104,
+          109,
+          118
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 433,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "3e632dd29c51d9f7c4e0e9d1a2c6b2447668c69de102df7bd812471e4e2e4c15",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "candidate_id": "3:0",
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "operation_index": 3,
+      "raw_index": 0,
+      "author_call_index": 7,
+      "raw_question_canonical_sha256": "b2de9c87c75606b861fc22cbdabad1b9c4079b33c5f701af18535b3b0b2a95b6",
+      "raw_prompt_sha256": "d564ec33d05cb95e20cbea7146a8f7e51efc0b692f26be0cd8b31744c3ee2e6c",
+      "raw_field_characters": {
+        "prompt": 206,
+        "explanation": 321,
+        "expectedAnswer": 64,
+        "choices": [
+          64,
+          60,
+          54,
+          63
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19",
+        "sanitized": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19",
+        "audited": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19",
+        "returned": "2ed18c8781c419f99a5e408a43cf75ff9cefa09133f60adb05d4b7b04daa8f19"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "candidate_id": "3:1",
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "operation_index": 3,
+      "raw_index": 1,
+      "author_call_index": 7,
+      "raw_question_canonical_sha256": "f1e6aadff62f4ab7f10dfa562667acaaa0eeeec1c582305c22c821a6d5960ecc",
+      "raw_prompt_sha256": "93859ec386e8b5eadb2f282baa5085e32d2a61cd813270fc80f47fbd135d7c3e",
+      "raw_field_characters": {
+        "prompt": 155,
+        "explanation": 378,
+        "expectedAnswer": 101,
+        "choices": [
+          101,
+          49,
+          63,
+          74
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "accepted",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "fa2fac55fe7c7fc160203604f7c4dd475b578e3f17d7015ad11aa4b25620365c",
+        "sanitized": "fa2fac55fe7c7fc160203604f7c4dd475b578e3f17d7015ad11aa4b25620365c",
+        "audited": "fa2fac55fe7c7fc160203604f7c4dd475b578e3f17d7015ad11aa4b25620365c",
+        "returned": "fa2fac55fe7c7fc160203604f7c4dd475b578e3f17d7015ad11aa4b25620365c"
+      },
+      "received_by_solver": true,
+      "received_by_auditor": true,
+      "returned": true,
+      "all_observed_main_stages_exact_utf8_equal": true,
+      "returned_prompt_exact_raw": true,
+      "returned_choice_contents_exact_raw": true,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 3,
+      "returned_choice_feedback_empty": true
+    },
+    {
+      "candidate_id": "4:0",
+      "arm": "kimi",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 4,
+      "raw_index": 0,
+      "author_call_index": 10,
+      "raw_question_canonical_sha256": "087f517e47a417ca5e353aabfa53b28a493e5b005ebcaebaf5a18a82d4c011f2",
+      "raw_prompt_sha256": "01e6bd9bcbf2138a574b2ad6078b9ca958d6bbd42304eb759e01d2314927dd36",
+      "raw_field_characters": {
+        "prompt": 280,
+        "explanation": 552,
+        "expectedAnswer": 72,
+        "choices": [
+          72,
+          72,
+          83,
+          81
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 552,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "ac045d7dadf92a565637a3bc33d6df00aaaeb3e2c5396a6349db01be6634cee9",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "candidate_id": "4:1",
+      "arm": "kimi",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 4,
+      "raw_index": 1,
+      "author_call_index": 10,
+      "raw_question_canonical_sha256": "8b95dc6c91e368684f176caa7e54cd7ad5931cff3dca5583af4a11a910294628",
+      "raw_prompt_sha256": "6db5792060279919d06660a64e26eae217bfc3ebdf8ca62665d2abe36286de59",
+      "raw_field_characters": {
+        "prompt": 286,
+        "explanation": 852,
+        "expectedAnswer": 120,
+        "choices": [
+          120,
+          94,
+          102,
+          120
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 852,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "2ce5a9a555c421c99f40e97ac95e6ab89589c83205650d1f86d08a7823a021bc",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "candidate_id": "5:0",
+      "arm": "opus",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 5,
+      "raw_index": 0,
+      "author_call_index": 11,
+      "raw_question_canonical_sha256": "ea0b795f319474b38818976fa799e8c3053001f31c380ce0921356a7b5b30b77",
+      "raw_prompt_sha256": "b5f5b9ca6b031044fcadec84e6a94bbabea3d8bf99ce081d8959d4c9c8a37774",
+      "raw_field_characters": {
+        "prompt": 312,
+        "explanation": 444,
+        "expectedAnswer": 100,
+        "choices": [
+          100,
+          65,
+          67,
+          53
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 444,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "f668d12eaa4b8bf80558b222bd864e859172218abfe99cbf85937756c50ac64e",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    },
+    {
+      "candidate_id": "5:1",
+      "arm": "opus",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 5,
+      "raw_index": 1,
+      "author_call_index": 11,
+      "raw_question_canonical_sha256": "d21d51879e8d94d4303bd0446266b9ae0ff0ab552101e9b15db7bd1039e40f81",
+      "raw_prompt_sha256": "c8235a980ad44297a743a09718db2c8fa670d3e831ab6ebf4761a360cd4ca084",
+      "raw_field_characters": {
+        "prompt": 290,
+        "explanation": 522,
+        "expectedAnswer": 94,
+        "choices": [
+          94,
+          83,
+          67,
+          63
+        ]
+      },
+      "raw_prompt_matches_pre_sanitizer_prompt": true,
+      "runtime_sanitizer_first_result": "invalid_content",
+      "runtime_sanitizer_metrics": {
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 1
+          }
+        }
+      },
+      "measured_content_bound_violations": [
+        {
+          "field": "explanation",
+          "characters": 522,
+          "runtime_maximum": 420
+        }
+      ],
+      "author_main_instruction_maximum": 320,
+      "author_main_instruction_exceeded": true,
+      "main_sha256_by_stage": {
+        "raw": "0e8d75f883d7b6a5360079baa3c67722e2b176eecf5bd166e7169bc1967b36be",
+        "sanitized": null,
+        "audited": null,
+        "returned": null
+      },
+      "received_by_solver": false,
+      "received_by_auditor": false,
+      "returned": false,
+      "all_observed_main_stages_exact_utf8_equal": null,
+      "returned_prompt_exact_raw": null,
+      "returned_choice_contents_exact_raw": null,
+      "choice_order_can_change_before_review": true,
+      "verificationVersion": null,
+      "verificationPolicyRevision": null,
+      "returned_choice_feedback_empty": null
+    }
+  ],
+  "arm_accounting": {
+    "kimi": {
+      "operations": 3,
+      "requested_items": 6,
+      "raw_candidates": 6,
+      "returned_items": 4,
+      "calls": 7,
+      "input_tokens": 13767,
+      "output_tokens": 3511
+    },
+    "opus": {
+      "operations": 3,
+      "requested_items": 6,
+      "raw_candidates": 6,
+      "returned_items": 2,
+      "calls": 5,
+      "input_tokens": 11693,
+      "output_tokens": 2820
+    }
+  },
+  "accounting": {
+    "prepared_calls": 12,
+    "observed_dispatch_attempts": 12,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 25460,
+      "outputTokens": 6331
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 124460
+  },
+  "denominators": {
+    "original_goals": 3,
+    "planned_operations": 6,
+    "attempted_operations": 6,
+    "unattempted_operations": 0,
+    "requested_items": 12,
+    "raw_author_candidates": 12,
+    "parseable_author_responses": 6,
+    "malformed_author_responses": 0,
+    "author_repair_calls": 0,
+    "raw_candidates_rejected_before_solver": 6,
+    "solver_candidates": 6,
+    "audited_candidates": 6,
+    "returned_items": 6,
+    "remaining_call_capacity_unused": 6,
+    "exceeded_instructed_main_320": 12,
+    "exceeded_runtime_main_420": 6,
+    "full_runtime_unrepaired_batches": 3
+  },
+  "timing": {
+    "sum_recorded_sdk_call_intervals_seconds": 101.33047641610028,
+    "sum_recorded_local_worker_intervals_seconds": 108.91832929104567,
+    "scope": "Sums of recorded intervals, not independently measured end-to-end wall time. Parent persistence/scheduling and bounded cleanup may lie outside the intervals. Socket read timeout and operation deadline are separate constraints."
+  },
+  "bindings": {
+    "all_actual_requests_recorded_with_hashes_and_rebuilt_by_runtime_replay": true,
+    "first_author_requests_exact_frozen": true,
+    "only_normalized_payload_in_author_context": true,
+    "external_assessment_and_provenance_fields_absent_from_model_inputs": true,
+    "solver_item_keys_and_difficulty_and_all_teaching_absent": true,
+    "auditor_has_exact_main_but_no_author_key_difficulty_choice_feedback_or_solver_records": true,
+    "source_documents_exact_in_solver_and_auditor": true,
+    "six_returned_mains_exact_raw_sanitized_audited_returned_utf8": true,
+    "paired_first_author_requests_differ_only_modelId": true,
+    "original_case_payloads_unchanged_for_both_arms": true,
+    "returned_policy_revision": 3,
+    "history_or_bank_writes_performed": false
+  },
+  "capture_privacy": {
+    "final_text_only_plus_usage_stop_reason_and_reasoning_block_counts": true,
+    "captured_reasoning_blocks": 0,
+    "sdk_headers_or_credential_records_present": false,
+    "credential_marker_scan_clear": true,
+    "scope": "Checked stored response/request shapes and common AWS credential markers; no credential exports or private reasoning were retained by this recorder."
+  },
+  "limits_of_conclusion": [
+    "Operational completion and runtime policy3 stamps do not establish factual accuracy, teaching support, plausible distractors or calibrated difficulty.",
+    "Six exclusions are deterministic admission/bound failures, not independent factual rejections.",
+    "All six admitted main explanations exceed the author instruction320 although fitting runtime420; full-unrepaired-batch is a runtime yield label, not instruction compliance.",
+    "No raw text was shortened, repaired, retried or resubmitted; this audit executed current pure parsing, sanitization and offline replay only.",
+    "No model/provider/native calls were made for this audit."
+  ]
+}

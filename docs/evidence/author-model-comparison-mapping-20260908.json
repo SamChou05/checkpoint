@@ -1,0 +1,116 @@
+{
+  "capture_byte_sha256": "485a90f097467b9fb6d20703829ef82204911b1abaa623fbeb8f26d0bfd94c38",
+  "planned_slots": 12,
+  "raw_candidate_count": 12,
+  "unparsed_author_calls": [],
+  "items": [
+    {
+      "candidate_id": "q01",
+      "arm": "kimi",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 4,
+      "call_index": 10,
+      "raw_index": 0,
+      "raw_question_sha256": "087f517e47a417ca5e353aabfa53b28a493e5b005ebcaebaf5a18a82d4c011f2"
+    },
+    {
+      "candidate_id": "q02",
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "operation_index": 3,
+      "call_index": 7,
+      "raw_index": 0,
+      "raw_question_sha256": "b2de9c87c75606b861fc22cbdabad1b9c4079b33c5f701af18535b3b0b2a95b6"
+    },
+    {
+      "candidate_id": "q03",
+      "arm": "kimi",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 4,
+      "call_index": 10,
+      "raw_index": 1,
+      "raw_question_sha256": "8b95dc6c91e368684f176caa7e54cd7ad5931cff3dca5583af4a11a910294628"
+    },
+    {
+      "candidate_id": "q04",
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "call_index": 0,
+      "raw_index": 1,
+      "raw_question_sha256": "538c60bd63781e73d3f9879ec7c9e58745bca7b614ea20b951b1b912364d494e"
+    },
+    {
+      "candidate_id": "q05",
+      "arm": "kimi",
+      "case_id": "english_articles_in_context",
+      "operation_index": 3,
+      "call_index": 7,
+      "raw_index": 1,
+      "raw_question_sha256": "f1e6aadff62f4ab7f10dfa562667acaaa0eeeec1c582305c22c821a6d5960ecc"
+    },
+    {
+      "candidate_id": "q06",
+      "arm": "opus",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 5,
+      "call_index": 11,
+      "raw_index": 0,
+      "raw_question_sha256": "ea0b795f319474b38818976fa799e8c3053001f31c380ce0921356a7b5b30b77"
+    },
+    {
+      "candidate_id": "q07",
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 1,
+      "call_index": 3,
+      "raw_index": 1,
+      "raw_question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c"
+    },
+    {
+      "candidate_id": "q08",
+      "arm": "kimi",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 0,
+      "call_index": 0,
+      "raw_index": 0,
+      "raw_question_sha256": "55a69d09789d5a3530cf80fb5b557e7774cb1524f44dc88497842b4cca15130d"
+    },
+    {
+      "candidate_id": "q09",
+      "arm": "opus",
+      "case_id": "houseplant_propagation_decisions",
+      "operation_index": 1,
+      "call_index": 3,
+      "raw_index": 0,
+      "raw_question_sha256": "e51e8e2a43430f39d23dd86f28e9fec589d2c49548a2fec9589a53d640531ab9"
+    },
+    {
+      "candidate_id": "q10",
+      "arm": "opus",
+      "case_id": "topographic_contour_profiles",
+      "operation_index": 5,
+      "call_index": 11,
+      "raw_index": 1,
+      "raw_question_sha256": "d21d51879e8d94d4303bd0446266b9ae0ff0ab552101e9b15db7bd1039e40f81"
+    },
+    {
+      "candidate_id": "q11",
+      "arm": "opus",
+      "case_id": "english_articles_in_context",
+      "operation_index": 2,
+      "call_index": 6,
+      "raw_index": 1,
+      "raw_question_sha256": "fcf233555eac5f083e843a8c8006d2fc1f301d55e33a68c5134558ddebb02654"
+    },
+    {
+      "candidate_id": "q12",
+      "arm": "opus",
+      "case_id": "english_articles_in_context",
+      "operation_index": 2,
+      "call_index": 6,
+      "raw_index": 0,
+      "raw_question_sha256": "54f0b7f4902ceebf00bab113ad6d7d67eb4b18e9ef979b7855247d222c522bcd"
+    }
+  ]
+}

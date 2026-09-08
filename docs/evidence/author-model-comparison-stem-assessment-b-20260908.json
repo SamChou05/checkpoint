@@ -1,0 +1,1002 @@
+{
+  "assessment_type": "model_key_main_and_verdict_hidden_assistant_stem_assessment",
+  "input_path": "/tmp/checkpoint-author-model-comparison-stems-20260908.json",
+  "input_file_sha256": "412a0bee5949f70a0624ec6e4dd34e98bea2135bb8c40d61c7f7a1b3293a3d31",
+  "capture_sha256_supplied_not_opened": "485a90f097467b9fb6d20703829ef82204911b1abaa623fbeb8f26d0bfd94c38",
+  "scope": {
+    "model_calls": 0,
+    "network_calls": 0,
+    "native_calculation_scope": "Only deterministic arithmetic and a labeled counterexample; no browser, provider or model call.",
+    "models_keys_mains_runtime_verdicts_read": false,
+    "prior_knowledge": "Assessor prepared these sources, assessed earlier separate questions and read the prospective comparison protocol. Models are masked, not unknowable from style; no model identity was inferred or used.",
+    "sources": "Exact packet source paraphrases and existing primary-page reading, not newly acquired complete-page evidence.",
+    "rubric": "Current shared question_difficulty.py plus frozen per-goal criteria.",
+    "content": "Every exact candidate and48choices included; no repairs or forced unique answers. Conditional best-listed judgments are not counted as unqualified warranted keys.",
+    "hash_contract": "SHA256 of original file bytes; object hashes use sorted compact ensure_ascii=False UTF8 JSON.",
+    "assessment_limit": "Assistant judgment, not educator consensus or calibrated psychometrics. Ambiguous readings and2/3 sensitivities remain explicit."
+  },
+  "items": [
+    {
+      "candidate_id": "q01",
+      "packet_candidate_sha256": "5c44633f99d627605e81a5042abc441ad21b9474381daa3c442090f7dfd875ef",
+      "question_sha256": "4fc6f84e44ed8ff6cb3c8f63cccd142d17b6248c81513aa8f381b1c4bc22ef54",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "exact_question": {
+        "prompt": "A hiker compares two routes on a 40-foot contour interval map. Route A crosses 8 ordinary contour lines over 0.5 miles horizontal distance. Route B stays between the 800 ft and 840 ft index contours for 0.4 miles. Which statement correctly compares elevation change and steepness?",
+        "choices": [
+          "Route A involves more elevation change and steeper terrain than Route B.",
+          "Route B involves more elevation change and steeper terrain than Route A.",
+          "Both routes have similar steepness, but Route B reaches a higher maximum elevation.",
+          "The routes cannot be compared without knowing which direction each route travels."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from"
+      },
+      "warranted_exact_choices": [],
+      "conditional_best_listed_choice": "Route A involves more elevation change and steeper terrain than Route B.",
+      "decisive_reasoning": "Neither endpoint elevations nor a sequence of increasing/decreasing elevations is supplied for A. Crossing eight lines does not establish eight net40ft gains; B can vary inside its band. Direction alone would not supply the missing spacing/profile information.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Route A involves more elevation change and steeper terrain than Route B.",
+          "reason": "Not established: more crossings can suggest a larger overall change under an unstated successive-ascent model, but the exact route gives neither that model nor a full steepness comparison."
+        },
+        {
+          "exact_choice": "Route B involves more elevation change and steeper terrain than Route A.",
+          "reason": "Not established: B's narrow elevation band does not imply greater net change or steepness, and A's profile is missing."
+        },
+        {
+          "exact_choice": "Both routes have similar steepness, but Route B reaches a higher maximum elevation.",
+          "reason": "Not established: A's absolute elevations and both local profiles are missing; B's maximum cannot be compared."
+        },
+        {
+          "exact_choice": "The routes cannot be compared without knowing which direction each route travels.",
+          "reason": "Not a sufficient or generally necessary condition for this comparison: cardinal travel direction alone does not establish elevations or slope magnitudes. Missing route geometry is the actual obstacle."
+        }
+      ],
+      "premises": "incomplete_route_geometry",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "count-versus-elevation misconception plausible",
+          "reverse comparison plausible but unsupported",
+          "similar steepness plus unknown maximum is weak",
+          "direction-only explanation is underqualified"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "The intended comparison combines two numbers with a familiar contour rule, but the route data do not warrant it. Provisional2; diagnosing omissions is not a usable level3 question.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Best-listed A is conditional on extra route assumptions, not unqualified support. Do not multiply contour count by interval as an exact endpoint gain.",
+      "source_support": {
+        "urls": [
+          "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 280,
+        "choices": [
+          72,
+          72,
+          83,
+          81
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q02",
+      "packet_candidate_sha256": "c31a32f59423925d5fb720e7aba06a8141927fd8d7de0f5705c660d144b2abb0",
+      "question_sha256": "353e1393726e6bf6f95f08e58e3d9cb3d8e9a6ab2a201632d69bdd12dc39ef58",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "exact_question": {
+        "prompt": "A travel blog reads: \"We arrived in Paris and checked into a hotel near the river. In the evening, the hotel offered a free walking tour.\" Why does the second sentence use \"the hotel\" rather than \"a hotel\"?",
+        "choices": [
+          "The hotel is now identifiable from the context just established.",
+          "The writer wants to emphasize this hotel is unique in Paris.",
+          "The hotel has become a general class of accommodation.",
+          "The second mention always requires \"the\" regardless of context."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Use shared reference"
+      },
+      "warranted_exact_choices": [
+        "The hotel is now identifiable from the context just established."
+      ],
+      "conditional_best_listed_choice": null,
+      "decisive_reasoning": "The second hotel phrase refers to the hotel just introduced, making it identifiable in this narrative. Neither uniqueness throughout Paris nor an automatic second-mention rule is required.",
+      "choice_assessments": [
+        {
+          "exact_choice": "The hotel is now identifiable from the context just established.",
+          "reason": "Supported: the prior sentence makes this particular hotel identifiable."
+        },
+        {
+          "exact_choice": "The writer wants to emphasize this hotel is unique in Paris.",
+          "reason": "Refuted as explanation: discourse identification does not mean Paris has only one hotel."
+        },
+        {
+          "exact_choice": "The hotel has become a general class of accommodation.",
+          "reason": "Refuted: this is the particular checked-in hotel, not the whole accommodation class."
+        },
+        {
+          "exact_choice": "The second mention always requires \"the\" regardless of context.",
+          "reason": "Refuted: subsequent mentions can introduce a different hotel or make a generic statement; context matters."
+        }
+      ],
+      "premises": "complete",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "city-wide uniqueness is weak",
+          "generic-class interpretation is weak",
+          "automatic second-mention rule is plausible"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "Direct first/second-mention application is explicitly level1–2 under the frozen criteria; the context contains no interacting reference problem.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Unique sound key; distractors do not all present plausible close alternatives.",
+      "source_support": {
+        "urls": [
+          "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 206,
+        "choices": [
+          64,
+          60,
+          54,
+          63
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q03",
+      "packet_candidate_sha256": "21e36692275d653d4acba0b77bf39c17fd925aa3aba3abc8db7b73f6d60ba240",
+      "question_sha256": "311ae463eefe3f6486f07fe784c2fd7aa8ab77ce244d6df5375a84bc3b97ee43",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "exact_question": {
+        "prompt": "On a 20-meter contour interval map, two trails each run 2 km between points labeled 400 m and 500 m. Trail X crosses 5 ordinary contours; Trail Y crosses 5 ordinary contours plus 2 supplementary contours (dashed, typically at half the interval). Which trail has steeper terrain and why?",
+        "choices": [
+          "Trail Y is steeper because crossing more contours in the same horizontal distance indicates more rapid elevation change.",
+          "Trail X is steeper because it achieves the same elevation change with fewer contour crossings.",
+          "Both trails have equal steepness because they share the same elevation change and horizontal distance.",
+          "Trail Y is steeper because supplementary contours indicate a larger total elevation change than ordinary contours alone."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from"
+      },
+      "warranted_exact_choices": [],
+      "conditional_best_listed_choice": "Both trails have equal steepness because they share the same elevation change and horizontal distance.",
+      "decisive_reasoning": "Both routes have100m net gain over2km, giving equal5% average grade if2km is horizontal. Extra supplementary contours add representation detail, not extra endpoint gain. Local terrain steepness still depends on spacing; the unqualified equal-steepness option does not distinguish mean from local slope.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Trail Y is steeper because crossing more contours in the same horizontal distance indicates more rapid elevation change.",
+          "reason": "Not established: supplementary lines are at a different interval and cannot be counted as extra ordinary elevation steps."
+        },
+        {
+          "exact_choice": "Trail X is steeper because it achieves the same elevation change with fewer contour crossings.",
+          "reason": "Refuted as a general slope inference: fewer drawn contours cannot make the same net rise over the same distance steeper."
+        },
+        {
+          "exact_choice": "Both trails have equal steepness because they share the same elevation change and horizontal distance.",
+          "reason": "Conditionally supported for average gradient; not established for the terrain profile as worded."
+        },
+        {
+          "exact_choice": "Trail Y is steeper because supplementary contours indicate a larger total elevation change than ordinary contours alone.",
+          "reason": "Refuted: supplementary contours do not increase the fixed100m endpoint difference or by themselves establish more total ascent."
+        }
+      ],
+      "premises": "average_versus_profile_underqualified",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "raw-count error plausible",
+          "fewer-crossings means steeper error weaker",
+          "mean-versus-local alternative is underqualified",
+          "supplementary-means-extra-gain overlaps raw-count error"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "The intended mean-grade comparison is a familiar application; the ambiguous terrain scope cannot earn extra difficulty. Provisional2.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "No asserted impossibility of five ordinary crossings: endpoint inclusion/crossing convention is unstated. Do not invent a fifth strictly intermediate level or assume uniform ascent.",
+      "source_support": {
+        "urls": [
+          "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 286,
+        "choices": [
+          120,
+          94,
+          102,
+          120
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q04",
+      "packet_candidate_sha256": "b8cc3429499bb1fa7ba4f4e41152a415578b5d47e14df51a74c0c57ee92daeac",
+      "question_sha256": "7da601810b251c1531310908caf6e388f3ebd0b4e8a54370f8b25fe252481956",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "exact_question": {
+        "prompt": "A friend offers you a detached Monstera deliciosa leaf with petiole but no stem section, and a pothos stem cutting with two nodes. Based on propagation methods suited to each plant's structure, which statement accurately describes what you should expect?",
+        "choices": [
+          "Both will root successfully in water or well-draining medium.",
+          "The Monstera leaf will root faster if hormone is applied, while the pothos needs no hormone.",
+          "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant.",
+          "The Monstera leaf can root if kept very moist, though more slowly than the pothos."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions."
+      },
+      "warranted_exact_choices": [
+        "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant."
+      ],
+      "conditional_best_listed_choice": null,
+      "decisive_reasoning": "The pothos has propagatable stem nodes. The node-free Monstera leaf/petiole cannot develop into a new plant. Root initiation or persistence alone is distinct from continued shoot growth; the alternatives must not be rejected on a false claim that no roots can ever form.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Both will root successfully in water or well-draining medium.",
+          "reason": "Not warranted: will root successfully guarantees an outcome not supplied, and rooting alone does not establish a new Monstera plant."
+        },
+        {
+          "exact_choice": "The Monstera leaf will root faster if hormone is applied, while the pothos needs no hormone.",
+          "reason": "Not warranted: the claimed relative rooting speed/hormone effect for the detached Monstera leaf is not established. The pothos may not need hormone, but that does not validate the compound statement."
+        },
+        {
+          "exact_choice": "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant.",
+          "reason": "Supported: the stated species/tissue distinction supports this possibility for pothos and limitation for a node-free Monstera leaf."
+        },
+        {
+          "exact_choice": "The Monstera leaf can root if kept very moist, though more slowly than the pothos.",
+          "reason": "Not established as a comparison: leaf rooting may be possible, but very moist conditions and a slower-than-pothos rate are not established. Do not call all root formation impossible."
+        }
+      ],
+      "premises": "adequate_for_new_plant_answer_with_root_only_rival_caveat",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "guaranteed rooting is plausible but underqualified",
+          "hormone-compensation misconception plausible",
+          "rooting-versus-new-plant ambiguity compromises the last rival"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "Directly applies the node requirement/species method; all other details do not create a second necessary inference. Level2.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Best complete propagation answer is unique, but root-only rivals are not clean categorical biological falsehoods. Weak distinction between rooting and producing a plant reduces distractor quality.",
+      "source_support": {
+        "urls": [
+          "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+          "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 254,
+        "choices": [
+          61,
+          92,
+          100,
+          82
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q05",
+      "packet_candidate_sha256": "f41f581f8a941cef30514db3e02b64bf57c502980f1076d561a4e7063073f74f",
+      "question_sha256": "b9792036c3bb490a1b98c2c29bfb7df58ea41837d9f882db42b4debb82d2e71b",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "exact_question": {
+        "prompt": "A recipe states: \"Start with butter. Melt the butter slowly, then add a pinch of salt.\" Why is the first \"butter\" articleless while the second takes \"the\"?",
+        "choices": [
+          "The first refers to the substance generally; the second refers to the specific amount now being used.",
+          "\"Butter\" is uncountable, so it never takes \"the.\"",
+          "The writer made an error and should have used \"the\" both times.",
+          "The first mention always omits the article, and the second always adds it."
+        ],
+        "format": "Multiple Choice",
+        "topic": "specific versus general meaning and countability to interpret article choices ac"
+      },
+      "warranted_exact_choices": [],
+      "conditional_best_listed_choice": "The first refers to the substance generally; the second refers to the specific amount now being used.",
+      "decisive_reasoning": "The first instruction introduces butter for this recipe without identifying a particular amount; the later phrase picks up that ingredient. Calling the first use the substance generally can loosely describe the ingredient, but technically conflates an unspecified mass quantity with generic reference.",
+      "choice_assessments": [
+        {
+          "exact_choice": "The first refers to the substance generally; the second refers to the specific amount now being used.",
+          "reason": "Intended best answer, qualified: the second clause is sound. The first clause is defensible only as loose non-specific ingredient wording, not a technically established generic meaning."
+        },
+        {
+          "exact_choice": "\"Butter\" is uncountable, so it never takes \"the.\"",
+          "reason": "Refuted: uncountable nouns can take the when an amount is identifiable."
+        },
+        {
+          "exact_choice": "The writer made an error and should have used \"the\" both times.",
+          "reason": "Refuted: no error is shown; bare butter appropriately introduces the ingredient and later the refers back."
+        },
+        {
+          "exact_choice": "The first mention always omits the article, and the second always adds it.",
+          "reason": "Refuted: first mention can be definite through shared context, and later mentions need not always be definite."
+        }
+      ],
+      "premises": "generic_versus_unspecified_reference_ambiguity",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "generic wording in intended key is underqualified",
+          "never-the mass rule plausible",
+          "must-use-the-both-times weaker",
+          "automatic mention rule plausible"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "Direct introduction/re-reference is level2. Ambiguous terminology is not additional cognitive challenge.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "No unqualified fully precise answer under the strict reference distinction; option1 remains the natural intended best-listed answer. This is a qualification/wording judgment, not proof that the recipe itself is ungrammatical.",
+      "source_support": {
+        "urls": [
+          "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 155,
+        "choices": [
+          101,
+          49,
+          63,
+          74
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q06",
+      "packet_candidate_sha256": "28922626170dfff283d63413b9f08f71e3c95e570bab869425ada71278b1de39",
+      "question_sha256": "86a93bb419edf98e7595b41e62842ff14072cdd640e1d81f2bc55f48e5ee8c7f",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "exact_question": {
+        "prompt": "A hiker walks from Point A (elevation 400 m) to Point B (elevation 600 m), crossing 10 contour lines spaced 2 cm apart on the map. A second hiker walks from Point C (500 m) to Point D (700 m), crossing 10 contour lines spaced 5 cm apart. The contour interval is 20 m for both routes. Which comparison is correct?",
+        "choices": [
+          "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced",
+          "A–B gains more elevation because its contours are closer together",
+          "C–D is steeper because it reaches a higher final elevation of 700 m",
+          "A–B is gentler because it starts at a lower elevation"
+        ],
+        "format": "Multiple Choice",
+        "topic": "Combine contour elevations, interval and spacing to compare terrain profiles and distinguish elevation from steepness"
+      },
+      "warranted_exact_choices": [
+        "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced"
+      ],
+      "conditional_best_listed_choice": null,
+      "decisive_reasoning": "Both endpoint differences are200m. On the same map and along the described routes,2cm contour spacing represents faster elevation change per horizontal distance than5cm. Higher final elevation is independent of steepness.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced",
+          "reason": "Supported under the natural same-map reading: equal endpoint gain, tighter contour spacing for A–B."
+        },
+        {
+          "exact_choice": "A–B gains more elevation because its contours are closer together",
+          "reason": "Refuted: both explicit endpoint differences are200m; spacing changes gradient, not that difference."
+        },
+        {
+          "exact_choice": "C–D is steeper because it reaches a higher final elevation of 700 m",
+          "reason": "Refuted: reaching700m does not imply steeper terrain; its contours are farther apart."
+        },
+        {
+          "exact_choice": "A–B is gentler because it starts at a lower elevation",
+          "reason": "Refuted: lower starting elevation does not make a route gentler; the spacing gives the opposite comparison."
+        }
+      ],
+      "premises": "complete_under_ordinary_same_map_route_reading",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": true,
+        "notes": [
+          "gain-versus-spacing misconception plausible",
+          "absolute-height-versus-steepness misconception plausible",
+          "starting-height-versus-steepness misconception plausible but overlaps prior absolute-height confusion"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 3,
+        "reason": "Combines two endpoint changes with relative spacing to separate elevation from slope; the numbers and representation change the answer. Level3 with moderate confidence; the two height-based rivals partly overlap.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Interpretation uses the singular map naturally implied by the prompt, not two maps of unknown scale. No exact gain is inferred from line count because endpoints already supply it; local perpendicular terrain gradients outside the route are not claimed.",
+      "source_support": {
+        "urls": [
+          "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 312,
+        "choices": [
+          100,
+          65,
+          67,
+          53
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q07",
+      "packet_candidate_sha256": "174aa45323f35bc4662999319aeec5f4064cca56726ffb577fc9a2f93c7f6061",
+      "question_sha256": "7275ed53aaddea74c92190bbbbbf020706cc87ff099d7f42f9640fff2eeed92b",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "exact_question": {
+        "prompt": "You have a Monstera deliciosa with a long vine and a detached African violet leaf with its petiole. A beginner asks which tissue from each plant is appropriate for propagation. Based on species and available tissue, what is the best guidance?",
+        "choices": [
+          "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "Use a leaf cutting for both, since any detached leaf can root and grow a new plant",
+          "Use a stem cutting for both, since leaf cuttings never produce new plants in any species",
+          "Root the Monstera leaf with its petiole in water; divide the African violet at the crown instead"
+        ],
+        "format": "Multiple Choice",
+        "topic": "Relate species, available stem or leaf tissue to propagation decisions"
+      },
+      "warranted_exact_choices": [
+        "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet"
+      ],
+      "conditional_best_listed_choice": null,
+      "decisive_reasoning": "The available Monstera vine provides a stem node; the African violet leaf/petiole is suitable for leaf propagation. Species-specific methods defeat both universal leaf and universal stem claims.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "reason": "Supported: appropriate stem-node material for Monstera and a leaf cutting for African violet are supplied."
+        },
+        {
+          "exact_choice": "Use a leaf cutting for both, since any detached leaf can root and grow a new plant",
+          "reason": "Refuted: a node-free Monstera leaf does not make a new plant; any detached leaf is an invalid universal."
+        },
+        {
+          "exact_choice": "Use a stem cutting for both, since leaf cuttings never produce new plants in any species",
+          "reason": "Refuted: African violets can propagate from leaves, so never is false."
+        },
+        {
+          "exact_choice": "Root the Monstera leaf with its petiole in water; divide the African violet at the crown instead",
+          "reason": "Not warranted: the proposed node-free Monstera leaf cannot give a new plant, and the detached African violet leaf has no crown available for division."
+        }
+      ],
+      "premises": "complete",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "all-leaves-can-propagate misconception plausible but conspicuously absolute",
+          "no-leaves-can-propagate misconception plausible but conspicuously absolute",
+          "unavailable crown and missing Monstera tissue make this weaker"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "Species-to-method selection directly restates two supplied facts; the frozen criteria explicitly exclude lookup alone as level3.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Sound unique key. Absolute alternatives and unavailable tissue make the challenge low despite comparing two species.",
+      "source_support": {
+        "urls": [
+          "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+          "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 242,
+        "choices": [
+          92,
+          82,
+          88,
+          96
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q08",
+      "packet_candidate_sha256": "68a84c32f8dd4b86d2466f24443fe1404fd5339de3b6ee603e3a7d15849ff45b",
+      "question_sha256": "c18b85b4e13e85a2978936c5c9dee0832457b4ccb79d0d18dd8ed07b37d4db94",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "exact_question": {
+        "prompt": "A gardener has two Monstera deliciosa cuttings. Cutting A has firm, creamy-white roots and a new leaf unfurling. Cutting B has soft, brown roots and no visible new growth. Both are currently in water. Which propagation decision follows the guidance for this species?",
+        "choices": [
+          "Move both cuttings to soil immediately to encourage stronger root growth.",
+          "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+          "Keep both in water until each cutting has at least three new leaves.",
+          "Trim the brown roots from Cutting B and transplant both to soil."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions."
+      },
+      "warranted_exact_choices": [],
+      "conditional_best_listed_choice": "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+      "decisive_reasoning": "A's healthy roots and growth support potting. B's soft brown roots and no growth call for assessment/correction of conditions, not automatic transplant. The best-listed split decision says keep B in water and check drainage, but a standing-water rooting setup has no specified drainage system; the source does not establish that exact care plan for damaged roots.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Move both cuttings to soil immediately to encourage stronger root growth.",
+          "reason": "Not warranted: no healthy-root/active-growth readiness evidence is given for B."
+        },
+        {
+          "exact_choice": "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+          "reason": "Best-listed and conditional: A's action is supported; B's keep-in-water/check-drainage clause is poorly specified and is not directly established by the source."
+        },
+        {
+          "exact_choice": "Keep both in water until each cutting has at least three new leaves.",
+          "reason": "Refuted: an arbitrary three-leaf threshold is not required and unnecessarily delays A."
+        },
+        {
+          "exact_choice": "Trim the brown roots from Cutting B and transplant both to soil.",
+          "reason": "Not warranted: trimming alone does not establish B's readiness, retained root viability, or that immediate potting follows."
+        }
+      ],
+      "premises": "partly_supported_action_with_missing_management_detail",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "immediate soil as cure plausible",
+          "best split action contains unresolved condition",
+          "invented three-leaf threshold weak",
+          "trim-and-transplant plausible but shares immediate-B-potting assumption"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 3,
+        "reason": "The intended comparison requires interpreting contrasting root/growth evidence to choose different actions, plausibly3. Exact action ambiguity prevents a qualified level3 success.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Do not equate water culture itself with poor drainage or diagnose the exact disease cause. B may be salvageable; its optimal recovery plan is not determined here.",
+      "source_support": {
+        "urls": [
+          "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+          "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 266,
+        "choices": [
+          73,
+          94,
+          68,
+          64
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q09",
+      "packet_candidate_sha256": "8c217725bcdd9a0af0d5175a188e3a374e6432bd5a6b9936c2ecf50b3ab3d5ec",
+      "question_sha256": "c306cd25d692a1f75d2cecc7f237ceaefcefa3ed9909b04cf5a2e574b6ddd779",
+      "context_sha256": "ab1c99b788aff338b06773c93c5a376168cec0d93b23daf329db36523eea13db",
+      "assessment_criteria_sha256": "dd7cc809d800ea186db5e686f8885366f6cd492376ba35b5cc7004f25e4d01ec",
+      "exact_question": {
+        "prompt": "A friend shows you a Monstera deliciosa cutting rooting in water. It has several roots that are firm and creamy white, each about 3 inches long, and a new leaf is beginning to unfurl. She asks whether it's ready to move to a pot with soil. What should you advise?",
+        "choices": [
+          "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container",
+          "Keep it in water longer — roots need to turn brown before they can adapt to soil",
+          "Add rooting hormone to the water first, since it is required before transferring to soil",
+          "Wait until the new leaf fully hardens before potting, since any active growth makes transplant risky"
+        ],
+        "format": "Multiple Choice",
+        "topic": "root condition and growth stage to propagation and transplant decisions"
+      },
+      "warranted_exact_choices": [
+        "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container"
+      ],
+      "conditional_best_listed_choice": null,
+      "decisive_reasoning": "Several healthy firm creamy-white roots plus active new leaf growth match the supplied readiness guidance. Neither brown roots, compulsory hormone nor complete leaf hardening is required.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container",
+          "reason": "Supported: the displayed root/growth observations are the stated readiness indicators."
+        },
+        {
+          "exact_choice": "Keep it in water longer — roots need to turn brown before they can adapt to soil",
+          "reason": "Refuted: brown roots are not a required adaptation stage; soft brown roots are a concern, not a target."
+        },
+        {
+          "exact_choice": "Add rooting hormone to the water first, since it is required before transferring to soil",
+          "reason": "Refuted: rooting hormone is optional, not a mandatory transfer step."
+        },
+        {
+          "exact_choice": "Wait until the new leaf fully hardens before potting, since any active growth makes transplant risky",
+          "reason": "Refuted: the universal any-active-growth risk contradicts using active growth with healthy roots as a readiness indicator."
+        }
+      ],
+      "premises": "complete_for_best_advice",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "wait-for-brown-roots is weak",
+          "mandatory hormone misconception plausible",
+          "active-growth-always-risk is plausible but overbroad"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "This directly matches one readiness rule to observations, with no competing mixed evidence or tradeoff. Level2 rather than3.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Sound best-listed recommendation; no success guarantee is inferred. The3inch measurement is not treated as a universal threshold.",
+      "source_support": {
+        "urls": [
+          "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+          "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 263,
+        "choices": [
+          101,
+          80,
+          88,
+          100
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q10",
+      "packet_candidate_sha256": "27c04940f1f006a391e46e1fd9e23c078a6606b40b89c0dfa437bca791e0e547",
+      "question_sha256": "d29968fc80b8ca524fc69618c952292715456661fe52bae45dfb31f88629c517",
+      "context_sha256": "ad1b7c33490eee92fbc1d0fd8f072c1dfcde695a048446948b030a666a0b075c",
+      "assessment_criteria_sha256": "5621c3148824003855e339f3da03d5abc9f72ad1837dd28289156d021fe88f7e",
+      "exact_question": {
+        "prompt": "On a map with a 40 ft contour interval, a trail crosses 5 contour lines over 1 cm of map distance heading north, then crosses 5 more contour lines over 4 cm heading east. All contours show increasing elevation in both directions. Which statement best describes the terrain along this trail?",
+        "choices": [
+          "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+          "The northward segment gains more elevation because its contours are closer together",
+          "The eastward segment is steeper because it covers more map distance",
+          "The northward segment gains 200 ft and the eastward gains 40 ft"
+        ],
+        "format": "Multiple Choice",
+        "topic": "interval and spacing to compare terrain profiles and distinguish elevation from steepness"
+      },
+      "warranted_exact_choices": [],
+      "conditional_best_listed_choice": "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+      "decisive_reasoning": "Five crossed lines do not necessarily mean five complete40ft intervals between segment endpoints. The denser north segment supports a greater average along-route grade under the normal same-map increasing-contour reading, but exact200ft gains are not established without endpoint positions.",
+      "choice_assessments": [
+        {
+          "exact_choice": "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+          "reason": "Conditional intended answer: relative steepness is supported, but both exact200ft gains assume endpoint/crossing conventions not stated."
+        },
+        {
+          "exact_choice": "The northward segment gains more elevation because its contours are closer together",
+          "reason": "Not established: closer horizontal spacing does not establish more vertical gain. Unknown endpoint offsets can give unequal gains for other reasons."
+        },
+        {
+          "exact_choice": "The eastward segment is steeper because it covers more map distance",
+          "reason": "Refuted under the described same-map increasing crossings: similar bounded rises spread over four times the horizontal distance are not steeper on average."
+        },
+        {
+          "exact_choice": "The northward segment gains 200 ft and the eastward gains 40 ft",
+          "reason": "Not established: neither an exact200ft nor40ft gain follows from the counts; the eastward five crossings cannot ordinarily mean a single40ft interval."
+        }
+      ],
+      "premises": "missing_endpoint_positions_for_exact_gain",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "intended option adds unsupported exact arithmetic",
+          "spacing-versus-rise error plausible",
+          "distance-versus-slope error plausible",
+          "five-crossings-as-one-interval error weak"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 3,
+        "reason": "The intended task combines vertical steps and horizontal spacing, plausibly3. The actual item lacks an endpoint condition needed for its exact numerical answer; difficulty is provisional, not admission.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "For a monotonic route, start10ft, turn220ft, end410ft crosses40/80/120/160/200 then240/280/320/360/400: five each, rises210 and190. This is a counterexample to exact200, not a repair or claim about the actual unseen route.",
+      "source_support": {
+        "urls": [
+          "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 290,
+        "choices": [
+          94,
+          83,
+          67,
+          63
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q11",
+      "packet_candidate_sha256": "215f104b042c3a4d7d56aa20733ae00a16e7d60b2c48ce1a33ce0f2517a89bb4",
+      "question_sha256": "799034a3353af0d56bd4ea1fdf39bc6759a45bec24f7e374f62e329f88901e63",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "exact_question": {
+        "prompt": "Consider: \"Dogs are wonderful companions.\" vs. \"The dogs next door bark all night.\" Which explanation best accounts for the article difference between these two sentences?",
+        "choices": [
+          "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group.",
+          "'Dogs' in the first sentence is uncountable, so no article is needed; the second sentence corrects this.",
+          "Both sentences are generic, but 'the' is added in the second only because a location phrase follows the noun.",
+          "'A' cannot appear before plural nouns, so the writer had to drop the article in the first and use 'the' in the second."
+        ],
+        "format": "Multiple Choice",
+        "topic": "specific versus general meaning and countability to interpret article choices ac"
+      },
+      "warranted_exact_choices": [
+        "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group."
+      ],
+      "conditional_best_listed_choice": null,
+      "decisive_reasoning": "The first bare plural is a general class statement; the second identifies the particular dogs next door. Number stays plural and countability stays countable.",
+      "choice_assessments": [
+        {
+          "exact_choice": "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group.",
+          "reason": "Supported: generic class versus identifiable local group explains the article difference."
+        },
+        {
+          "exact_choice": "'Dogs' in the first sentence is uncountable, so no article is needed; the second sentence corrects this.",
+          "reason": "Refuted: dogs is plural countable in both sentences; the second does not correct an uncountable use."
+        },
+        {
+          "exact_choice": "Both sentences are generic, but 'the' is added in the second only because a location phrase follows the noun.",
+          "reason": "Refuted: the second noun phrase denotes particular dogs. Location modifiers alone do not force the; dogs in cities can be generic."
+        },
+        {
+          "exact_choice": "'A' cannot appear before plural nouns, so the writer had to drop the article in the first and use 'the' in the second.",
+          "reason": "Not an adequate explanation: a cannot modify a plural noun here, but that alone does not select the rather than a bare plural in either sentence."
+        }
+      ],
+      "premises": "complete",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "uncountability mistake is weak",
+          "modifier-forces-definiteness misconception plausible",
+          "no-a/plural partial-rule misconception plausible"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "Directly applies the familiar generic-versus-specific distinction in explicit contrasting sentences. Level2; it does not require resolving interacting context.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Unique sound key; do not refute the final alternative by pretending plural dogs can take a. Its inference is insufficient.",
+      "source_support": {
+        "urls": [
+          "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 171,
+        "choices": [
+          121,
+          104,
+          109,
+          118
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    },
+    {
+      "candidate_id": "q12",
+      "packet_candidate_sha256": "9a02c25fa32bcbcade5a9f9a9a5566da7fbb47d4a8fdd9b14a4b597141fa8af6",
+      "question_sha256": "18e743c18ddfe2d66810e2199947386e09a0fcf55973105ae94fa2b8280d74f3",
+      "context_sha256": "a59368d9e1fc26cdd3c38b43ca98108da2908d50644a6a78489588c307d7df83",
+      "assessment_criteria_sha256": "0c6a742e36de8cb49e038ede86bbb535704945afc577b8ef1ee57dfe645a6e3e",
+      "exact_question": {
+        "prompt": "Read the passage: \"Maria bought a laptop last week. Yesterday she noticed the screen had a crack in it.\" Why does the writer use 'the screen' rather than 'a screen' in the second sentence?",
+        "choices": [
+          "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context.",
+          "'Screen' is uncountable, so it always requires 'the' rather than 'a.'",
+          "'The' is used because 'screen' has already been directly mentioned earlier in the passage.",
+          "'A screen' would mean Maria owns more than one laptop, so 'the' prevents confusion."
+        ],
+        "format": "Multiple Choice",
+        "topic": "Use shared reference"
+      },
+      "warranted_exact_choices": [
+        "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context."
+      ],
+      "conditional_best_listed_choice": null,
+      "decisive_reasoning": "The mentioned laptop makes its screen identifiable through a part-whole relation, despite screen not being directly mentioned before. This is contextual recovery, not an ownership-count claim.",
+      "choice_assessments": [
+        {
+          "exact_choice": "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context.",
+          "reason": "Supported: a laptop ordinarily supplies the identifiable screen referent in this passage."
+        },
+        {
+          "exact_choice": "'Screen' is uncountable, so it always requires 'the' rather than 'a.'",
+          "reason": "Refuted: screen is countable here; countability does not force the."
+        },
+        {
+          "exact_choice": "'The' is used because 'screen' has already been directly mentioned earlier in the passage.",
+          "reason": "Refuted: only laptop was directly mentioned; contextual association is enough."
+        },
+        {
+          "exact_choice": "'A screen' would mean Maria owns more than one laptop, so 'the' prevents confusion.",
+          "reason": "Refuted: using a screen would not logically imply multiple owned laptops; it could introduce another screen without such an ownership statement."
+        }
+      ],
+      "premises": "complete_under_ordinary_laptop_context",
+      "distractors": {
+        "distinct_texts": true,
+        "three_plausible_distinct_distractors_established": false,
+        "notes": [
+          "uncountability claim weak",
+          "direct-versus-indirect mention mistake plausible",
+          "article-implies-extra-laptop claim weak"
+        ],
+        "scope": "Where no unqualified key exists, alternative-quality judgments are provisional and cannot establish three valid distractors."
+      },
+      "difficulty": {
+        "level": 2,
+        "reason": "A real bridging-reference inference is needed, but it applies one familiar contextual-definiteness principle and two weak rivals are readily excluded. Level2 with a2/3 boundary sensitivity.",
+        "scope": "Assistant cognitive assessment, not learner-calibrated. An invalid item is not admitted because its intended task is rated3."
+      },
+      "goal_fit": true,
+      "material_concerns": "Do not demand technical multi-screen-laptop edge cases for this ordinary language passage. Its material limitation is challenge/distractor quality, not missing screen hardware specifications.",
+      "source_support": {
+        "urls": [
+          "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+        ],
+        "scope": "Selected assistant paraphrases and prior primary-page reading. Rooting is not new-plant growth; generic versus non-specific reference is distinguished; interval is not slope or endpoint gain."
+      },
+      "character_counts": {
+        "prompt": 188,
+        "choices": [
+          115,
+          69,
+          90,
+          83
+        ]
+      },
+      "within_stem_choice_bounds": true,
+      "model_key_main_difficulty_runtime_verdicts": "not_opened"
+    }
+  ],
+  "deterministic_calculations": {
+    "q03": {
+      "endpoint_rises_m": [
+        100,
+        100
+      ],
+      "conditional_average_grade": 0.05
+    },
+    "q06": {
+      "endpoint_rises_m": [
+        200,
+        200
+      ],
+      "relative_spacing_grade_ratio_if_same_map": 2.5
+    },
+    "q10": {
+      "type": "constructed_counterexample_not_unseen_route_observation",
+      "endpoints_ft": [
+        10,
+        220,
+        410
+      ],
+      "crossed_north_ft": [
+        40,
+        80,
+        120,
+        160,
+        200
+      ],
+      "crossed_east_ft": [
+        240,
+        280,
+        320,
+        360,
+        400
+      ],
+      "rises_ft": [
+        210,
+        190
+      ]
+    }
+  },
+  "summary": {
+    "planned_slots": 12,
+    "raw_candidates": 12,
+    "assessed_choices": 48,
+    "unique_unqualified_warranted_keys": 7,
+    "conditional_or_underqualified_items": [
+      "q01",
+      "q03",
+      "q05",
+      "q08",
+      "q10"
+    ],
+    "difficulty_by_id": {
+      "q01": 2,
+      "q02": 2,
+      "q03": 2,
+      "q04": 2,
+      "q05": 2,
+      "q06": 3,
+      "q07": 2,
+      "q08": 3,
+      "q09": 2,
+      "q10": 3,
+      "q11": 2,
+      "q12": 2
+    },
+    "over_stem_or_choice_bounds": [],
+    "ready_for_teaching_phase": true
+  }
+}

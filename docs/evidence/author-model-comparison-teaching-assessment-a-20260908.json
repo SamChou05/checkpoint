@@ -1,0 +1,465 @@
+{
+  "assessment": "independent author-key and exact-main audit A after frozen stem assessment",
+  "input_path": "/tmp/checkpoint-author-model-comparison-teaching-20260908.json",
+  "input_byte_sha256": "a3d9a843d5b649b90a47a55c55f8d85b78ce2ae4c40f4f007336d2d041254f27",
+  "frozen_stem_assessment_path": "/tmp/checkpoint-author-model-comparison-stem-assessment-a-20260908.json",
+  "frozen_stem_assessment_byte_sha256": "f8ff3e92b53ec8b1e54adeb4e6c34d2fa8fbe6945bb3705577e4a7eab0074e1e",
+  "stem_packet_byte_sha256": "412a0bee5949f70a0624ec6e4dd34e98bea2135bb8c40d61c7f7a1b3293a3d31",
+  "masking": "No arm mapping, raw capture, runtime verdicts, logs or other assessor judgments read. Author keys/mains and their raw difficulty fields became visible only after the stem assessment hash was recorded; all frozen levels/answers remain unchanged. All12raw candidates assessed.",
+  "assessment_limits": "Qualitative independent subject assessment, not learner trial. No universal factual guarantee. Conditional intended answers do not count as supported keys. Correct local application with an overbroad necessary-condition phrasing is recorded separately from definitely wrong numerical/procedural inference. No new model calls.",
+  "summary": {
+    "raw_items": 12,
+    "authored_keys_agree_with_frozen_literal_keys": 7,
+    "conditional_intention_only_keys": [
+      "q05",
+      "q08",
+      "q10"
+    ],
+    "unwarranted_keys": [
+      "q01",
+      "q03"
+    ],
+    "all12_author_mains_exceed320": true,
+    "validator_main_over420": [
+      "q01",
+      "q03",
+      "q06",
+      "q10",
+      "q11",
+      "q12"
+    ],
+    "material_incorrect_or_unwarranted_main_inferences": [
+      "q01",
+      "q03",
+      "q05",
+      "q10"
+    ],
+    "unsupported_action_main": [
+      "q08"
+    ],
+    "correct_conclusion_derivation_needs_qualification": [
+      "q06"
+    ],
+    "correct_application_necessity_wording_qualification": [
+      "q09"
+    ],
+    "complete_worked_teaching_count": 6,
+    "choice_feedback_fields_generated": 0,
+    "full_favorable_content_and_instruction_count": 0,
+    "retention_or_arm_comparison": "unobserved; no conclusion"
+  },
+  "native_arithmetic": {
+    "q03_monotone_elevation_sequence_m": [
+      400,
+      410,
+      420,
+      430,
+      440,
+      460,
+      480,
+      500
+    ],
+    "q03_sum_of_successive_gains_m": 100,
+    "q10_reference": "frozen stem assessment native_arithmetic.q10_counterexample"
+  },
+  "candidates": [
+    {
+      "candidate_id": "q01",
+      "raw_question_sha256": "087f517e47a417ca5e353aabfa53b28a493e5b005ebcaebaf5a18a82d4c011f2",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "Route A involves more elevation change and steeper terrain than Route B.",
+      "frozen_warranted_exact_keys": [],
+      "key_agreement": "not_warranted",
+      "main_exact": "Route A: crossing 8 lines at 40 ft interval means 8 × 40 = 320 ft elevation change (direction unknown). Slope = 320 ft / 0.5 mi ≈ 640 ft/mi. Route B: bounded by 800 ft and 840 ft contours means at most 40 ft elevation change (could be less if not crossing the 840 ft line). Even at maximum 40 ft change, slope = 40 ft / 0.4 mi = 100 ft/mi. Route A has greater elevation change and steeper terrain. The key is that contour spacing indicates steepness, while elevation labels show absolute height—Route B's narrow elevation range does not mean steepness.",
+      "main_characters": 552,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": false,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "incorrect_or_unwarranted",
+      "complete_worked_teaching": false,
+      "claim_findings": [
+        {
+          "claim": "crossing 8 lines at 40 ft interval means 8 × 40 = 320 ft elevation change (direction unknown)",
+          "assessment": "Unsupported: crossing sequence and endpoint alignment are missing. Same-elevation components or repeated crossings can yield little or zero net change. The frozen counterexample defeats the claimed inference."
+        },
+        {
+          "claim": "Route A has greater elevation change and steeper terrain.",
+          "assessment": "Not warranted from the literal data. The640 ft/mi calculation inherits the false320-ft premise; the40-ft bound for B concerns net difference/range, not every local slope or total ascent."
+        }
+      ],
+      "conclusion": "The main rationalizes an unwarranted key by silently treating crossings as cumulative successive intervals.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q02",
+      "raw_question_sha256": "b2de9c87c75606b861fc22cbdabad1b9c4079b33c5f701af18535b3b0b2a95b6",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "The hotel is now identifiable from the context just established.",
+      "frozen_warranted_exact_keys": [
+        "The hotel is now identifiable from the context just established."
+      ],
+      "key_agreement": "supported",
+      "main_exact": "The first mention introduces \"a hotel\" as new information the reader cannot yet identify. By the second sentence, that same hotel is now recoverable from the shared context just established, so \"the\" signals this identifiable referent. The shift from \"a\" to \"the\" tracks what the reader can now pinpoint, not a new hotel.",
+      "main_characters": 321,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": true,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "supported",
+      "complete_worked_teaching": true,
+      "claim_findings": [],
+      "conclusion": "Accurately explains introduction of one hotel and subsequent recoverability of the same hotel. No universal second-mention rule is asserted. Teaching is complete for this level2 task.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q03",
+      "raw_question_sha256": "8b95dc6c91e368684f176caa7e54cd7ad5931cff3dca5583af4a11a910294628",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "Trail Y is steeper because crossing more contours in the same horizontal distance indicates more rapid elevation change.",
+      "frozen_warranted_exact_keys": [],
+      "key_agreement": "not_warranted",
+      "main_exact": "Both trails have 100 m total elevation change (500 − 400 = 100 m). Trail X crosses 5 ordinary contours: 5 × 20 m = 100 m of elevation change, confirming direct ascent. Trail Y crosses 5 ordinary (100 m) plus 2 supplementary contours. Supplementary contours at half-interval (10 m) add 2 × 10 = 20 m, meaning Trail Y's 100 m net change includes some descent and additional climb—its path undulates more. However, steepness depends on horizontal distance versus vertical change. With equal 2 km horizontal distance and equal 100 m net elevation change, the average slope is identical. But Trail Y's tighter contour spacing (more lines crossed in same horizontal distance) indicates more rapid elevation changes locally—steeper sections despite same average. The supplementary contours reveal terrain detail that spacing alone shows: more lines = steeper.",
+      "main_characters": 852,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": false,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "incorrect_or_unwarranted",
+      "complete_worked_teaching": false,
+      "claim_findings": [
+        {
+          "claim": "Supplementary contours at half-interval (10 m) add 2 × 10 = 20 m, meaning Trail Y's 100 m net change includes some descent and additional climb—its path undulates more.",
+          "assessment": "False inference: supplementary levels can lie between ordinary levels on the same monotone ascent; they do not add independent rise. Example400→410(supp)→420→430(supp)→440→460→480→500 has five ordinary crossings including arrival, two supplementary crossings, and only100 m ascent with no descent."
+        },
+        {
+          "claim": "Trail Y's tighter contour spacing (more lines crossed in same horizontal distance) indicates more rapid elevation changes locally—steeper sections despite same average.",
+          "assessment": "Not warranted: mixed-interval line counts do not measure comparable gradients or establish any steeper section. Supplementary detail can indicate the opposite kind of fine terrain representation."
+        },
+        {
+          "claim": "With equal 2 km horizontal distance and equal 100 m net elevation change, the average slope is identical.",
+          "assessment": "Correct conditional formula, but the stem calls the trails2 km long and does not explicitly call that horizontal distance. In any event average equality does not establish the selected local-steepness claim."
+        }
+      ],
+      "conclusion": "Wrong double-counting of supplementary elevations produces an invented undulating profile and an unsupported key.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q04",
+      "raw_question_sha256": "538c60bd63781e73d3f9879ec7c9e58745bca7b614ea20b951b1b912364d494e",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant.",
+      "frozen_warranted_exact_keys": [
+        "The pothos cutting can root and grow, but the Monstera leaf alone will not develop into a new plant."
+      ],
+      "key_agreement": "supported",
+      "main_exact": "Monstera deliciosa requires a stem piece with a node and axillary bud; a detached leaf or petiole alone cannot develop into a new plant. Pothos, however, roots readily from stem cuttings. Therefore, the pothos cutting can propagate while the Monstera leaf cannot, regardless of how it is rooted. This distinction reflects how propagation methods differ with plant structure.",
+      "main_characters": 374,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": true,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "supported",
+      "complete_worked_teaching": true,
+      "claim_findings": [],
+      "conclusion": "Accurately links Monstera node/bud requirement and pothos stem propagation to the available tissues. Scope is successful new-plant propagation in ordinary gardening, not a claim that no leaf can ever form a transient root or that tissue-culture techniques were tested.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q05",
+      "raw_question_sha256": "f1e6aadff62f4ab7f10dfa562667acaaa0eeeec1c582305c22c821a6d5960ecc",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "The first refers to the substance generally; the second refers to the specific amount now being used.",
+      "frozen_warranted_exact_keys": [],
+      "key_agreement": "conditional_intention_only",
+      "main_exact": "The first \"butter\" refers to the general substance as a class, with no particular amount yet in mind. Once the instruction specifies melting, \"the butter\" picks out the particular amount now present in the pan—recoverable from the immediate procedural context. The bare noun expresses generic reference; \"the\" expresses specific reference to what is now situationally available.",
+      "main_characters": 378,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": true,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "incorrect_or_unwarranted",
+      "complete_worked_teaching": false,
+      "claim_findings": [
+        {
+          "claim": "The first \"butter\" refers to the general substance as a class, with no particular amount yet in mind.",
+          "assessment": "The recipe imperative introduces an unspecified ingredient amount; it does not establish generic class reference or what quantity the writer has in mind. The later the is anaphoric to the amount introduced."
+        },
+        {
+          "claim": "the particular amount now present in the pan",
+          "assessment": "The displayed instructions never mention a pan or establish the butter is already in one. This is an invented minor procedural detail, not needed to explain the article."
+        },
+        {
+          "claim": "The bare noun expresses generic reference",
+          "assessment": "Overgeneralizes bare mass use. Cambridge also gives bare mass in a request for a serving, so articlelessness does not entail generic reference; this is the material teaching distinction already frozen before keys."
+        }
+      ],
+      "conclusion": "The definite-reference portion is useful, but the main explicitly teaches the generic-versus-indefinite confusion embedded in the intended answer.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q06",
+      "raw_question_sha256": "ea0b795f319474b38818976fa799e8c3053001f31c380ce0921356a7b5b30b77",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced",
+      "frozen_warranted_exact_keys": [
+        "Both routes gain the same elevation, but A–B is steeper because its contours are more tightly spaced"
+      ],
+      "key_agreement": "supported",
+      "main_exact": "Both routes cross 10 contour lines at 20 m intervals, so both gain 200 m of elevation (10 × 20 m). However, the contour lines on Route A–B are spaced 2 cm apart on the map, while those on Route C–D are spaced 5 cm apart. Tightly spaced contours indicate steeper terrain; widely spaced contours indicate gentler terrain. Therefore the two routes have equal total elevation gain, but Route A–B is steeper because its contours are closer together.",
+      "main_characters": 444,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": false,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "supported_conclusion_with_derivation_qualification",
+      "complete_worked_teaching": false,
+      "claim_findings": [
+        {
+          "claim": "Both routes cross 10 contour lines at 20 m intervals, so both gain 200 m of elevation (10 × 20 m).",
+          "assessment": "The200-m endpoint differences are independently correct from600−400 and700−500. However crossing ten lines is not a general proof of ten complete intervals without endpoint alignment; this derivation should use the explicit endpoints. Do not count this as a wrong numerical key."
+        },
+        {
+          "claim": "equal total elevation gain",
+          "assessment": "Correct as net endpoint gain here; exact total accumulated ascent along every sub-contour undulation is not supplied. The main should preserve that scope."
+        }
+      ],
+      "conclusion": "Correct selected key, endpoint values and same-map spacing comparison. Its worked proof needs a line-versus-interval/net-versus-total qualification, so blanket complete-teaching approval is not justified by arithmetic agreement alone.",
+      "frozen_independent_difficulty": 3,
+      "frozen_three_plausible_distinct_distractors": true,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q07",
+      "raw_question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+      "frozen_warranted_exact_keys": [
+        "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet"
+      ],
+      "key_agreement": "supported",
+      "main_exact": "The sources specify that Monstera requires a stem piece with a node and axillary bud — a detached leaf or petiole alone cannot develop into a new plant. In contrast, African violets are listed as suited to leaf propagation. So the correct pairing is: use a stem section that includes a node for the Monstera, and use the leaf cutting for the African violet. Each species' structure determines which tissue type works.",
+      "main_characters": 417,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": true,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "supported",
+      "complete_worked_teaching": true,
+      "claim_findings": [],
+      "conclusion": "The species-specific tissue pair is accurate and the main explains the contrasting available propagation material. The final statement is scoped to these plant structures and does not assert every unlisted method is impossible.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q08",
+      "raw_question_sha256": "55a69d09789d5a3530cf80fb5b557e7774cb1524f44dc88497842b4cca15130d",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "Move Cutting A to a pot with well-draining medium; keep Cutting B in water and check drainage.",
+      "frozen_warranted_exact_keys": [],
+      "key_agreement": "conditional_intention_only",
+      "main_exact": "For Monstera deliciosa, healthy roots are firm and creamy-white, and active growth indicates readiness for transplant to a longer-term pot. Cutting A meets both criteria. Cutting B shows soft brown roots, signaling excessive moisture or poor drainage, so it should remain in its rooting medium until conditions improve. The guidance specifically links root condition and growth stage to transplant timing.",
+      "main_characters": 405,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": true,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "partially_supported_unjustified_action",
+      "complete_worked_teaching": false,
+      "claim_findings": [
+        {
+          "claim": "Cutting B shows soft brown roots, signaling excessive moisture or poor drainage, so it should remain in its rooting medium until conditions improve.",
+          "assessment": "Root condition warrants concern and inspection, but the inference to leaving B in the existing medium is not established. The source instruction to return few/undeveloped roots to medium does not prescribe leaving decaying roots unchanged. Both are in standing water, so a solid-medium drainage instruction is not a complete treatment."
+        }
+      ],
+      "conclusion": "A's potting decision is supported. B's cause/treatment conflates rooting-medium guidance with corrective care and leaves the intended key conditional rather than fully supported. This is an unsupported recommendation, not proof that continued water propagation after appropriate remediation is always wrong.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q09",
+      "raw_question_sha256": "e51e8e2a43430f39d23dd86f28e9fec589d2c49548a2fec9589a53d640531ab9",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container",
+      "frozen_warranted_exact_keys": [
+        "Pot it now — firm white roots plus active new growth indicate it is ready for a longer-term container"
+      ],
+      "key_agreement": "supported",
+      "main_exact": "According to the source material, readiness to pot a Monstera cutting requires both healthy roots and active growth. Healthy roots are described as firm and creamy white, and active growth means new leaves or shoots are developing. This cutting meets both criteria: it has firm, white roots and a new leaf unfurling. Therefore it is ready to be moved to a longer-term pot with well-draining medium.",
+      "main_characters": 398,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": true,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "supported_application_with_necessity_qualification",
+      "complete_worked_teaching": true,
+      "claim_findings": [
+        {
+          "claim": "readiness to pot a Monstera cutting requires both healthy roots and active growth",
+          "assessment": "As the source's positive readiness checklist, its application is sound. As a universal necessary condition this is too strong: the page also permits transplanting once roots have developed. The actual cutting has both signs, so this wording does not make its potting advice or key wrong."
+        }
+      ],
+      "conclusion": "Complete useful application of the positive readiness evidence, with a wording qualification distinguishing sufficient guidance from a universal requirement. Still level2; no empirical prediction of survival.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/propagating-monstera-deliciosa",
+        "https://yardandgarden.extension.iastate.edu/how-to/propagating-houseplants"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q10",
+      "raw_question_sha256": "d21d51879e8d94d4303bd0446266b9ae0ff0ab552101e9b15db7bd1039e40f81",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+      "frozen_warranted_exact_keys": [],
+      "key_agreement": "conditional_intention_only",
+      "main_exact": "Each contour line represents 40 ft of elevation gain. The northward segment crosses 5 lines (5 × 40 = 200 ft gain) over 1 cm of map distance, meaning contours are tightly packed—indicating steep terrain. The eastward segment also crosses 5 lines (another 200 ft gain) over 4 cm, meaning contours are more widely spaced—indicating gentler terrain. Both segments gain the same elevation (200 ft each), but the northward segment is much steeper because the same elevation change occurs over a shorter horizontal map distance.",
+      "main_characters": 522,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": false,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "incorrect_or_unwarranted",
+      "complete_worked_teaching": false,
+      "claim_findings": [
+        {
+          "claim": "Each contour line represents 40 ft of elevation gain.",
+          "assessment": "A contour represents an elevation;40 ft is the vertical interval between consecutive ordinary levels. It is not an automatic gain for every line crossing from an arbitrary endpoint."
+        },
+        {
+          "claim": "Both segments gain the same elevation (200 ft each)",
+          "assessment": "Not warranted. The frozen native-checked monotone10→230 and230→430 ft route crosses exactly five lines in each segment, while gains are220 and200 ft. No endpoint alignment was given."
+        }
+      ],
+      "conclusion": "Steeper northward versus gentler eastward is the defensible qualitative idea; its exact equal200-ft gains and the full keyed option are not established.",
+      "frozen_independent_difficulty": 3,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://www.govinfo.gov/content/pkg/GOVPUB-I19-PURL-gpo183480/pdf/GOVPUB-I19-PURL-gpo183480.pdf"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q11",
+      "raw_question_sha256": "fcf233555eac5f083e843a8c8006d2fc1f301d55e33a68c5134558ddebb02654",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group.",
+      "frozen_warranted_exact_keys": [
+        "The bare plural makes a general statement about the class; 'the' in the second picks out a particular identifiable group."
+      ],
+      "key_agreement": "supported",
+      "main_exact": "In 'Dogs are wonderful companions,' the bare plural refers to dogs as a general class—no particular dogs are intended. In 'The dogs next door bark all night,' the phrase 'next door' identifies a specific set of dogs recoverable by the reader, so 'the' is required. The key distinction is whether the noun phrase picks out a particular, identifiable group (requiring 'the') or refers to the class in general (bare plural, no article).",
+      "main_characters": 433,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": false,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "supported_in_context",
+      "complete_worked_teaching": true,
+      "claim_findings": [
+        {
+          "claim": "the phrase 'next door' identifies a specific set of dogs recoverable by the reader, so 'the' is required",
+          "assessment": "Supported for the particular-group reading in this sentence. This must not be generalized to every noun followed by a location or every possible determiner; the main's preceding contrast supplies the intended scope."
+        }
+      ],
+      "conclusion": "Accurate worked distinction between a general plural class and the particular neighboring dogs. Its level remains2; no material false claim under the displayed context.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    },
+    {
+      "candidate_id": "q12",
+      "raw_question_sha256": "54f0b7f4902ceebf00bab113ad6d7d67eb4b18e9ef979b7855247d222c522bcd",
+      "prompt_and_ordered_choices_exactly_match_frozen_stem": true,
+      "authored_expected_answer": "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context.",
+      "frozen_warranted_exact_keys": [
+        "The laptop in the first sentence makes its screen identifiable, so 'the' marks a referent recoverable from context."
+      ],
+      "key_agreement": "supported",
+      "main_exact": "'The screen' is used because the laptop introduced in the first sentence establishes shared knowledge between writer and reader. Once a laptop is mentioned, its screen becomes identifiable through association—the reader can recover which screen is meant. This is an example of contextual recoverability: 'the' signals that the referent is already identifiable, even without a prior explicit mention of 'screen,' because it is a predictable part of the previously introduced laptop.",
+      "main_characters": 481,
+      "author_main_320_compliant": false,
+      "validator_main_420_compliant": false,
+      "choice_explanations_presence": "absent",
+      "choice_explanations_contract_compliant": true,
+      "main_accuracy": "supported",
+      "complete_worked_teaching": true,
+      "claim_findings": [],
+      "conclusion": "Accurate bridging explanation: the laptop makes its screen recoverable without an earlier explicit screen mention. Complete teaching for the narrow level2 task.",
+      "frozen_independent_difficulty": 2,
+      "frozen_three_plausible_distinct_distractors": false,
+      "frozen_goal_fit": "substantive goal topic; usefulness separately limited as noted",
+      "source_urls": [
+        "https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the"
+      ],
+      "fully_favorable_content_and_instruction": false,
+      "runtime_retention": "withheld/unassessed"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "candidate_id": "q10",
+  "evidence_kind": "synthetic native arithmetic counterexample; not model or observed terrain evidence",
+  "teaching_packet_path": "/tmp/checkpoint-author-model-comparison-teaching-20260908.json",
+  "teaching_packet_byte_sha256": "a3d9a843d5b649b90a47a55c55f8d85b78ce2ae4c40f4f007336d2d041254f27",
+  "raw_question_sha256": "d21d51879e8d94d4303bd0446266b9ae0ff0ab552101e9b15db7bd1039e40f81",
+  "raw_question_hash_convention": "SHA256 of UTF-8 compact sorted ensure_ascii=False JSON of the complete raw_question object",
+  "exact_stem": "On a map with a 40 ft contour interval, a trail crosses 5 contour lines over 1 cm of map distance heading north, then crosses 5 more contour lines over 4 cm heading east. All contours show increasing elevation in both directions. Which statement best describes the terrain along this trail?",
+  "exact_authored_answer": "Both segments gain 200 ft, but the northward segment is much steeper than the eastward segment",
+  "contour_interval_ft": 40,
+  "segments": [
+    {
+      "heading": "north",
+      "start_elevation_ft": 100,
+      "end_elevation_ft": 290,
+      "map_length_cm": 1,
+      "profile": "linear and strictly increasing along this segment",
+      "crossed_ordinary_contour_elevations_ft": [
+        120,
+        160,
+        200,
+        240,
+        280
+      ],
+      "crossing_count": 5,
+      "net_gain_ft": 190,
+      "average_rise_ft_per_map_cm": 190.0,
+      "average_rise_ft_per_map_cm_exact": "190",
+      "along_segment_contour_positions_cm": [
+        "2/19",
+        "6/19",
+        "10/19",
+        "14/19",
+        "18/19"
+      ]
+    },
+    {
+      "heading": "east",
+      "start_elevation_ft": 290,
+      "end_elevation_ft": 485,
+      "map_length_cm": 4,
+      "profile": "linear and strictly increasing along this segment",
+      "crossed_ordinary_contour_elevations_ft": [
+        320,
+        360,
+        400,
+        440,
+        480
+      ],
+      "crossing_count": 5,
+      "net_gain_ft": 195,
+      "average_rise_ft_per_map_cm": 48.75,
+      "average_rise_ft_per_map_cm_exact": "195/4",
+      "along_segment_contour_positions_cm": [
+        "8/13",
+        "56/39",
+        "88/39",
+        "40/13",
+        "152/39"
+      ]
+    }
+  ],
+  "continuous_terrain_witness": {
+    "formula": "z(x,y)=100+(195/4)*x+190*y feet; x east and y north, both in map centimetres",
+    "route_vertices_map_cm": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        4,
+        1
+      ]
+    ],
+    "vertex_elevations_ft": [
+      100,
+      290,
+      485
+    ],
+    "ordinary_contours": "Level sets z=40*k for integer k; no supplementary lines used."
+  },
+  "executed_assertions": [
+    "Exact stem equals the frozen q10 display.",
+    "Each segment crosses exactly five strictly increasing ordinary contour levels40 ft apart.",
+    "The north endpoint and east start coincide at290 ft.",
+    "North net gain is190 ft, east net gain is195 ft; neither is200 ft and the gains are unequal.",
+    "Average map gradients are190 and195/4=48.75 ft per map cm; north is steeper along this route.",
+    "A continuous planar terrain surface realizes the stated endpoints, directions and crossings."
+  ],
+  "compatibility_with_literal_stem": "The stem states interval, five crossing events per segment, map distances, headings and increasing contour elevations. It does not state segment endpoint elevations or require endpoints to lie on contour lines. These illustrative monotone endpoints therefore satisfy its stated premises.",
+  "scope": "This disproves entailment of the exact/equal200-ft gains in the authored answer and explanation. It is not reconstruction of actual endpoints, a claim that all permitted profiles use190/195-ft gains, evidence about every local terrain slope, or a physical gradient calculation without map scale. It retains the qualitative steeper-north comparison in this witness. No frozen judgment or raw source was edited."
+}
