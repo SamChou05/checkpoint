@@ -6,6 +6,7 @@ enum ProgressLayoutElement: Hashable {
     case goalSwitcher
     case momentum
     case momentumPrimaryOutcome
+    case learningMap
     case nextFocus
 }
 
@@ -567,7 +568,9 @@ struct CompetencyView: View {
     @State private var skillMapReviewPresentation = SkillMapReviewPresentationState()
     @State private var isSkillMapRepairPresented = false
     @State private var isSkillMapModalActive = false
-    @State private var isSkillHistoryExpanded = false
+    @State private var learningMapDestination: LearningMapDestination?
+    @State private var isLearningMapPresented = false
+    @State private var pendingMapEvidenceRequest: ProgressSkillEvidenceRequest?
     @State private var retryingInitialQuestionGoalIDs: Set<Goal.ID> = []
     @State private var focusWinsDestination: FocusWinsDestination?
     @State private var weeklyImpactDestination: ProgressWeeklyImpactDestination?
@@ -761,7 +764,8 @@ struct CompetencyView: View {
                         from: previous.goalID,
                         to: current.goalID
                     ) {
-                        isSkillHistoryExpanded = false
+                        learningMapDestination = nil
+                        pendingMapEvidenceRequest = nil
                         weeklyImpactDestination = nil
                         expandedCompetencyID = nil
                         competencyAccessibilityFocusRequest = nil
@@ -846,6 +850,21 @@ struct CompetencyView: View {
                     skillMapReviewPresentation.presentationDidAppear()
                 }
         }
+        .fullScreenCover(
+            item: $learningMapDestination,
+            onDismiss: finishLearningMapPresentation
+        ) { destination in
+            LearningMapContainerView(store: store, destination: destination)
+                .onAppear {
+                    isLearningMapPresented = true
+                    if let request = pendingMapEvidenceRequest,
+                       request.goalID == destination.goalID,
+                       store.goal?.id == destination.goalID {
+                        pendingMapEvidenceRequest = nil
+                        finishSkillEvidenceRequest(request, consumeRequest: true, resolution: .revealed)
+                    }
+                }
+        }
         .sheet(
             isPresented: $isSkillMapRepairPresented,
             onDismiss: finishSkillMapModalPresentation
@@ -897,7 +916,7 @@ struct CompetencyView: View {
         } else if store.activeSkillMapNeedsAttention {
             skillMapAttentionState
 
-            if !competencies.isEmpty {
+            if store.activeDerivedSkillMap == nil && !competencies.isEmpty {
                 focusAreasPanel(
                     title: "Recent signals",
                     description: "Your existing practice history stays visible while you set up the new map."
@@ -914,7 +933,6 @@ struct CompetencyView: View {
             suggestedSkillMapCallout(reviewContext)
             progressHero
             activeGoalFocusWinsEntry
-            focusAreasPanel(title: "Focus areas")
         } else if let goal = store.goal,
                   let reviewContext = SkillMapReviewContext(goal: goal),
                   reviewContext.skillMap.status == .reviewed {
@@ -927,15 +945,6 @@ struct CompetencyView: View {
                 )
                 .reportProgressLayoutFrame(.nextFocus, using: layoutReporter)
             activeGoalFocusWinsEntry
-            focusAreasPanel(
-                title: "Learning map",
-                description: "Open any skill for its answer mix and latest signal.",
-                showsCoverageSummary: true
-            )
-            skillMapManagementPanel(
-                reviewContext.skillMap,
-                reviewContext: reviewContext
-            )
         } else {
             progressHero
             nextFocusPanel
@@ -943,6 +952,17 @@ struct CompetencyView: View {
             activeGoalFocusWinsEntry
             focusAreasPanel(title: "Focus areas")
         }
+        if let goal = store.goal, let map = goal.derivedSkillMap {
+            learningMapEntry(map, goalID: goal.id)
+        }
+    }
+
+    private func learningMapEntry(_ map: GoalSkillMap, goalID: Goal.ID) -> some View {
+        LearningMapEntryCard(summary: LearningMapEntrySummary(map: map, competencies: competencies)) {
+            guard !isCoveredByModalPresentation else { return }
+            learningMapDestination = LearningMapDestination(goalID: goalID)
+        }
+        .reportProgressLayoutFrame(.learningMap, using: layoutReporter)
     }
 
     @ViewBuilder
@@ -1139,6 +1159,16 @@ struct CompetencyView: View {
         for request: ProgressSkillEvidenceRequest,
         using proxy: ScrollViewProxy
     ) async {
+        if let destination = LearningMapDestination.resolve(target: target, goal: store.goal) {
+            pendingMapEvidenceRequest = request
+            learningMapDestination = destination
+            finishSkillEvidenceRequest(request, consumeRequest: false)
+            return
+        }
+        if store.goal?.derivedSkillMap != nil {
+            finishSkillEvidenceRequest(request, consumeRequest: true, resolution: .unavailable)
+            return
+        }
         guard let competencyID = ProgressSkillEvidenceRoutingPolicy.competencyID(
             for: target,
             in: competencies
@@ -2048,198 +2078,6 @@ struct CompetencyView: View {
         }
     }
 
-    private func skillMapManagementPanel(
-        _ skillMap: GoalSkillMap,
-        reviewContext: SkillMapReviewContext
-    ) -> some View {
-        SectionPanel("Skill map") {
-            VStack(alignment: .leading, spacing: 14) {
-                if usesStackedTypeLayout {
-                    VStack(alignment: .leading, spacing: 10) {
-                        reviewedMapIdentity(skillMap)
-                        reviewedMapBadge
-                    }
-                } else {
-                    HStack(alignment: .top, spacing: 12) {
-                        reviewedMapIdentity(skillMap)
-                        Spacer(minLength: 8)
-                        reviewedMapBadge
-                    }
-                }
-
-                SecondaryActionButton(title: "Edit skill map", systemImage: "slider.horizontal.3") {
-                    presentSkillMapReview(reviewContext)
-                }
-
-                Divider()
-
-                evolutionControl(skillMap)
-
-                if !skillMap.archivedTopics.isEmpty {
-                    Divider()
-                    skillHistory(skillMap)
-                }
-            }
-        }
-    }
-
-    private func reviewedMapIdentity(_ skillMap: GoalSkillMap) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "point.3.connected.trianglepath.dotted")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 42, height: 42)
-                .background(
-                    CheckpointTheme.teal.opacity(0.11),
-                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                )
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Active learning map")
-                    .font(.headline)
-                    .foregroundStyle(CheckpointTheme.text)
-                    .accessibilityAddTraits(.isHeader)
-
-                Text("\(skillMap.topics.count) active skills · updated \(skillMap.updatedAt.formatted(.dateTime.month(.abbreviated).day()))")
-                    .font(.footnote)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
-
-    private var reviewedMapBadge: some View {
-        Text("ACTIVE")
-            .font(.caption2.weight(.bold))
-            .tracking(0.65)
-            .foregroundStyle(CheckpointTheme.teal)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, 9)
-            .padding(.vertical, 6)
-            .background(CheckpointTheme.teal.opacity(0.11), in: Capsule())
-    }
-
-    @ViewBuilder
-    private func evolutionControl(_ skillMap: GoalSkillMap) -> some View {
-        if store.isMember {
-            Toggle(
-                isOn: Binding(
-                    get: { skillMap.evolutionEnabled },
-                    set: { store.updateActiveSkillMapEvolutionEnabled($0) }
-                )
-            ) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Advance mastered skills")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.text)
-
-                    Text("When a skill has enough strong, recent evidence, replace it with a harder next step and keep its history.")
-                        .font(.caption)
-                        .foregroundStyle(CheckpointTheme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .frame(minHeight: 44)
-            .tint(CheckpointTheme.teal)
-            .accessibilityHint("Controls automatic progression after a skill is mastered.")
-        } else {
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Adaptive progression with Pro")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.text)
-
-                Text("Pro can replace a skill after enough strong, recent evidence while keeping its history.")
-                    .font(.caption)
-                    .foregroundStyle(CheckpointTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
-
-    private func skillHistory(_ skillMap: GoalSkillMap) -> some View {
-        DisclosureGroup(isExpanded: $isSkillHistoryExpanded) {
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(store.archivedActiveSkillTopics) { archived in
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(archived.topic.name)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.text)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                        Text(archivedSkillSummary(archived, in: skillMap))
-                            .font(.caption)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(.vertical, 10)
-                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-
-                    if archived.id != store.archivedActiveSkillTopics.last?.id {
-                        Divider()
-                    }
-                }
-            }
-            .padding(.top, 4)
-        } label: {
-            Group {
-                if usesStackedTypeLayout {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Skill history")
-                            .font(.subheadline.weight(.semibold))
-                        Text("\(skillMap.archivedTopics.count) archived skills")
-                            .font(.footnote)
-                            .foregroundStyle(CheckpointTheme.muted)
-                            .multilineTextAlignment(.leading)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                } else {
-                    Text("Skill history (\(skillMap.archivedTopics.count))")
-                        .font(.subheadline.weight(.semibold))
-                }
-            }
-            .foregroundStyle(CheckpointTheme.text)
-            .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-            .contentShape(Rectangle())
-        }
-        .tint(CheckpointTheme.teal)
-        .accessibilityHint(isSkillHistoryExpanded ? "Collapses skill history." : "Expands skill history.")
-    }
-
-    private func archivedSkillSummary(
-        _ archived: ArchivedSkillMapTopic,
-        in skillMap: GoalSkillMap
-    ) -> String {
-        let date = archived.archivedAt.formatted(date: .abbreviated, time: .omitted)
-        let estimate = archived.mastery.map { "\($0.masteryPercent)% estimate" }
-
-        switch archived.reason {
-        case .mastered:
-            if let successorName = archived.successorSkillIDs.compactMap({ successorID in
-                skillMap.topics.first(where: { $0.id == successorID })?.name ??
-                    skillMap.archivedTopics.first(where: { $0.id == successorID })?.topic.name
-            }).first {
-                return [estimate.map { "Mastered at \($0)" } ?? "Mastered", "Advanced to \(successorName)", date]
-                    .joined(separator: " · ")
-            }
-            return [estimate.map { "Mastered at \($0)" } ?? "Mastered", date]
-                .joined(separator: " · ")
-        case .userRemoved:
-            return [
-                "Removed during review",
-                estimate.map { "\($0) at removal" },
-                date
-            ]
-            .compactMap { $0 }
-            .joined(separator: " · ")
-        case .userReplaced:
-            return ["Replaced during review", estimate.map { "\($0) at replacement" }, date]
-                .compactMap { $0 }
-                .joined(separator: " · ")
-        }
-    }
-
     private var buildingSkillMapState: some View {
         SectionPanel {
             HStack(alignment: .top, spacing: 14) {
@@ -2318,8 +2156,15 @@ struct CompetencyView: View {
                     }
 
                     if store.lastQuestionGenerationFailure?.allowsEditingTopics == true {
-                        SecondaryActionButton(title: "Edit topics", systemImage: "pencil") {
-                            store.presentActiveGoalEditor()
+                        SecondaryActionButton(
+                            title: store.activeDerivedSkillMap == nil ? "Edit topics" : "Review learning map",
+                            systemImage: "pencil"
+                        ) {
+                            if let goal = store.goal, goal.derivedSkillMap != nil {
+                                learningMapDestination = LearningMapDestination(goalID: goal.id)
+                            } else {
+                                store.presentActiveGoalEditor()
+                            }
                         }
                     }
                 }
@@ -2512,6 +2357,15 @@ struct CompetencyView: View {
         deliverPendingProtectionStartResultIfPossible()
     }
 
+    private func finishLearningMapPresentation() {
+        isLearningMapPresented = false
+        if let request = pendingMapEvidenceRequest {
+            pendingMapEvidenceRequest = nil
+            finishSkillEvidenceRequest(request, consumeRequest: true, resolution: .unavailable)
+        }
+        finishAuxiliaryModalPresentation()
+    }
+
     private func deliverPendingProtectionErrorIfPossible() {
         guard isVisible,
               isSceneActive,
@@ -2558,6 +2412,8 @@ struct CompetencyView: View {
             || isSkillMapModalActive
             || focusWinsDestination != nil
             || weeklyImpactDestination != nil
+            || learningMapDestination != nil
+            || isLearningMapPresented
     }
 
     private func announceScreenChange(

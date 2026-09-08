@@ -357,7 +357,7 @@ final class ProgressDashboardRenderingTests: XCTestCase {
     }
 
     @MainActor
-    func testSkillEvidenceHighlightSnapsWhenMotionBecomesSuppressedWhileMounted() throws {
+    func testSkillEvidenceOpensDedicatedMapAndStaysPresentedWhenMotionPolicyChanges() throws {
         let suiteName = "ProgressDashboardRenderingTests.DynamicEvidenceMotion.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
@@ -376,13 +376,15 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         )
         let frame = CGRect(x: 0, y: 0, width: 393, height: 1_000)
 
+        let recorder = ProgressSkillEvidenceResolutionRecorder()
         let driver = ProgressSkillEvidenceMotionDriver(reduceMotion: false)
         let hostingController = UIHostingController(
             rootView: ProgressSkillEvidenceMotionHarness(
                 driver: driver,
                 store: store,
                 referenceDate: referenceDate,
-                request: ProgressSkillEvidenceRequest(target: target)
+                request: ProgressSkillEvidenceRequest(target: target),
+                resolution: { _, resolution in recorder.record(resolution) }
             )
             .preferredColorScheme(.dark)
         )
@@ -395,43 +397,19 @@ final class ProgressDashboardRenderingTests: XCTestCase {
         hostingController.view.layoutIfNeeded()
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
-        let highlightedImage = mountedViewImage(
-            of: hostingController.view,
-            size: frame.size
-        )
+        let presentedMap = try XCTUnwrap(hostingController.presentedViewController,
+            "A skill recommendation must open the dedicated map.")
+        XCTAssertEqual(recorder.events, [.revealed], "A request is consumed only after the map appears.")
         driver.reduceMotion = true
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.04))
-
-        let snappedImage = mountedViewImage(
-            of: hostingController.view,
-            size: frame.size
-        )
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.1))
-        let settledImage = mountedViewImage(
-            of: hostingController.view,
-            size: frame.size
-        )
-        let highlightBorderRegion = CGRect(x: 353, y: 0, width: 7, height: frame.height)
-        let activeBorderDifference = meanPixelDifference(
-            highlightedImage,
-            settledImage,
-            region: highlightBorderRegion
-        )
-        let snappedBorderDifference = meanPixelDifference(
-            snappedImage,
-            settledImage,
-            region: highlightBorderRegion
-        )
-        XCTAssertGreaterThan(
-            activeBorderDifference,
-            0.012,
-            "The mounted test must intercept the active evidence highlight."
-        )
-        XCTAssertLessThan(
-            snappedBorderDifference,
-            activeBorderDifference * 0.55,
-            "Enabling suppression must snap to the stable no-highlight rendering."
-        )
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.2))
+        XCTAssertTrue(hostingController.presentedViewController === presentedMap,
+            "Changing motion settings must preserve the focused map destination.")
+        XCTAssertEqual(recorder.events, [.revealed], "The same request must not open a second map.")
+        let image = mountedViewImage(of: presentedMap.view, size: presentedMap.view.bounds.size)
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "progress-next-focus-dedicated-map"
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     @MainActor
@@ -1905,6 +1883,40 @@ final class ProgressDashboardRenderingTests: XCTestCase {
             XCTAssertEqual(image.size.height, fixture.height, accuracy: 0.5, fixture.name)
             let attachment = XCTAttachment(image: image)
             attachment.name = fixture.name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    @MainActor
+    func testSavedMapRemainsAccessibleWhileQuestionsPrepareOrFail() throws {
+        let referenceDate = Date()
+        for isPreparing in [true, false] {
+            let suiteName = "ProgressDashboardRenderingTests.MapRecovery.\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+            defer { defaults.removePersistentDomain(forName: suiteName) }
+            let store = makeReviewedStore(defaults: defaults, referenceDate: referenceDate)
+            store.questions = []
+            store.questionBatchState = isPreparing ? .generating : .failed
+            store.lastQuestionGenerationFailure = isPreparing ? nil : .qualityRejected
+            XCTAssertNotNil(store.activeDerivedSkillMap)
+            XCTAssertTrue(isPreparing ? store.isPreparingActiveGoalQuestions : store.isQuestionGenerationBlockingPractice)
+            let capture = ProgressLayoutCapture()
+            let image = HostedViewRenderer.image(
+                for: CompetencyView(
+                    store: store,
+                    reduceMotionOverride: true,
+                    referenceDateOverride: referenceDate,
+                    layoutReporter: { element, frame in capture.frames[element] = frame }
+                ),
+                width: 393, height: 1_000, colorScheme: .light, settlingTime: 0.15
+            )
+            let card = try XCTUnwrap(capture.frames[.learningMap], "Question preparation must never remove access to the saved map.")
+            XCTAssertGreaterThan(card.width, 250)
+            XCTAssertGreaterThan(card.height, 44)
+            XCTAssertLessThan(card.height, 220, "The recovery path should retain the compact entry.")
+            let attachment = XCTAttachment(image: image)
+            attachment.name = isPreparing ? "progress-map-while-preparing" : "progress-map-after-generation-failure"
             attachment.lifetime = .keepAlways
             add(attachment)
         }

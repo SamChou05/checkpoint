@@ -121,6 +121,12 @@
 		G10000000000000000000001 /* ShieldMascot.png in Resources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* ShieldMascot.png */; };
 		G10000000000000000000002 /* ShieldMascot.png in Resources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* ShieldMascot.png */; };
 		EC1EC8E7BEF82DDEEDAB1D3A /* LearningMapConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E7A8692512DEA9D737492C /* LearningMapConfigurationTests.swift */; };
+		2B0CB89432BCEC21E0E2112A /* LearningMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBCFDAB0D2ACDFF5C61E0BE /* LearningMapView.swift */; };
+		791F44D6BFCB70F372CB5BB3 /* LearningMapGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5F48C554AFF5844306A104 /* LearningMapGraph.swift */; };
+		1C7D073EFC2CD42DCA9CFE36 /* LearningMapPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578D270B1B359F390EC80729 /* LearningMapPresentation.swift */; };
+		D4945C99F6928FFF2A586C86 /* LearningMapEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F7D8F775C06D2F8EEB8402 /* LearningMapEditorView.swift */; };
+		FCEB7061C657D129E459066D /* LearningMapExplorerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D80AE2C5429C3B16095CD50 /* LearningMapExplorerTests.swift */; };
+		39954437DEC6F7BDE7BC7F1E /* LearningMapEditorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612221E10E68E3B26DE2EDE4 /* LearningMapEditorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -293,6 +299,12 @@
 		F20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		G20000000000000000000001 /* ShieldMascot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ShieldMascot.png; sourceTree = "<group>"; };
 		B4E7A8692512DEA9D737492C /* LearningMapConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningMapConfigurationTests.swift; sourceTree = "<group>"; };
+		CFBCFDAB0D2ACDFF5C61E0BE /* LearningMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningMapView.swift; sourceTree = "<group>"; };
+		5A5F48C554AFF5844306A104 /* LearningMapGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningMapGraph.swift; sourceTree = "<group>"; };
+		578D270B1B359F390EC80729 /* LearningMapPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningMapPresentation.swift; sourceTree = "<group>"; };
+		D4F7D8F775C06D2F8EEB8402 /* LearningMapEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningMapEditorView.swift; sourceTree = "<group>"; };
+		1D80AE2C5429C3B16095CD50 /* LearningMapExplorerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningMapExplorerTests.swift; sourceTree = "<group>"; };
+		612221E10E68E3B26DE2EDE4 /* LearningMapEditorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningMapEditorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -415,6 +427,10 @@
 		A40000000000000000000006 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				D4F7D8F775C06D2F8EEB8402 /* LearningMapEditorView.swift */,
+				578D270B1B359F390EC80729 /* LearningMapPresentation.swift */,
+				5A5F48C554AFF5844306A104 /* LearningMapGraph.swift */,
+				CFBCFDAB0D2ACDFF5C61E0BE /* LearningMapView.swift */,
 				A20000000000000000000006 /* RootView.swift */,
 				AA0000000000000000000011 /* RequiredScreenTimeAccessView.swift */,
 				A20000000000000000000007 /* HomeView.swift */,
@@ -508,6 +524,8 @@
 		C40000000000000000000001 /* CheckpointTests */ = {
 			isa = PBXGroup;
 			children = (
+				612221E10E68E3B26DE2EDE4 /* LearningMapEditorTests.swift */,
+				1D80AE2C5429C3B16095CD50 /* LearningMapExplorerTests.swift */,
 				B4E7A8692512DEA9D737492C /* LearningMapConfigurationTests.swift */,
 				CA0000000000000000000005 /* GoalCreationTests.swift */,
 				CA000000000000000000000E /* SkillMapTests.swift */,
@@ -786,6 +804,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4945C99F6928FFF2A586C86 /* LearningMapEditorView.swift in Sources */,
+				1C7D073EFC2CD42DCA9CFE36 /* LearningMapPresentation.swift in Sources */,
+				791F44D6BFCB70F372CB5BB3 /* LearningMapGraph.swift in Sources */,
+				2B0CB89432BCEC21E0E2112A /* LearningMapView.swift in Sources */,
 				A10000000000000000000001 /* CheckpointApp.swift in Sources */,
 				A10000000000000000000002 /* CheckpointStore.swift in Sources */,
 				AB0000000000000000000014 /* WeeklyMetricsCalculator.swift in Sources */,
@@ -865,6 +887,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39954437DEC6F7BDE7BC7F1E /* LearningMapEditorTests.swift in Sources */,
+				FCEB7061C657D129E459066D /* LearningMapExplorerTests.swift in Sources */,
 				EC1EC8E7BEF82DDEEDAB1D3A /* LearningMapConfigurationTests.swift in Sources */,
 				CB0000000000000000000005 /* GoalCreationTests.swift in Sources */,
 				CB000000000000000000000E /* SkillMapTests.swift in Sources */,

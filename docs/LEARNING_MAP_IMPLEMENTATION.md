@@ -21,18 +21,18 @@ Completion requires direct evidence for every row below. Pending means unproven,
 
 | Requirement | Evidence to collect | Status |
 | --- | --- | --- |
-| Compact Progress entry; recommendation retained | Native rendering and routing tests; simulator screenshots | Pending |
+| Compact Progress entry; recommendation retained | `ProgressDashboardRenderingTests`: native first-fold and main-state renders, mounted dedicated-map handoff and membership continuation; 41 integration/onboarding/editor tests pass in `/tmp/CheckpointMapIntegration-4.xcresult` | Verified; final UI pass pending |
 | Goal → skill → focus-point hierarchy and true lineage | Graph/layout tests; actual persisted map and screenshot | Pending |
 | Pan, pinch, fit, branch expansion, selection, detail navigation | Native interaction/render verification | Pending |
 | Meaningful status and preserved historical evidence | Focused evidence/history tests | Pending |
-| Configurable skill and focus-point editor | Draft, validation, continuity, save and reload tests; screenshots | Pending |
-| Emphasis, challenge, and pause influence learning | Selector, allocation, provider payload, backend contract tests | Pending |
-| Automatic, suggested, and manual growth | Persistence, entitlement, proposal accept/dismiss and stale-revision tests | Pending |
-| Legacy migration and safe substantive edits | Codable fixtures and exact-revision mutation tests | Pending |
-| Empty, building, suggested, repair, goal switch and missing target states | Existing regression tests plus map-specific coverage | Pending |
+| Configurable skill and focus-point editor | `LearningMapEditorTests`: isolated drafts, retained IDs, replacement lineage, ordering, validation and native light/dark/large-text renders; foundation persistence tests | Automated checks verified; live editor walkthrough pending |
+| Emphasis, challenge, and pause influence learning | Foundation selector/allocation tests; 29 final `BackendQuestionEngineContractTests`; backend configuration/allocation suites including full objective coverage under 99:1 weights | Local checks verified; configured-service rollout pending |
+| Automatic, suggested, and manual growth | `LearningMapConfigurationTests`: persisted modes, entitlement, exact-revision acceptance/dismissal, live-checkpoint fencing and no repeated dismissed proposals | Verified; final error-message review pending |
+| Legacy migration and safe substantive edits | 93 foundation tests across configuration, migration, skill-map and async-bank suites; archived replacements, retained question/answer lineage, stable default objective IDs, safe legacy review preference | Verified |
+| Empty, building, suggested, repair, goal switch and missing target states | Native primary-state renders and first-run tests; mounted pending handoffs/goal changes; saved map remains reachable during generation and failure; explicit stale IDs cannot resolve to a different branch | Verified |
 | Long labels, growing history, Dynamic Type, VoiceOver, Reduce Motion, list | Layout tests and representative native renders | Pending |
 | Build, relevant suites, whitespace, committed milestones | Final command results and commit history | Pending |
 
 ## Work boundaries
 
-The current checkout contains unrelated solver-evaluation work. Commit only files owned by the learning-map work. The backend changes are code and local verification; deployment is not part of this objective.
+The current checkout contains unrelated solver-evaluation work. Commit only files owned by the learning-map work. The app points at the TestFlight backend. The updated service and worker must be verified there before distributing the editor; release preparation must preserve existing providers, quotas, credentials, and data. The live service predates additional question-verification work already in this checkout, so the complete release delta must be reviewed explicitly.
