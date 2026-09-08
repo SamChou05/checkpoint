@@ -135,3 +135,11 @@ reach the learner's requested difficulty, meet production latency, or improve
 arbitrary-goal learning. It does not close the existing answer-only solver
 contradiction path or prove independence of shared model knowledge. Existing
 release requirements and historical failed experiments remain unchanged.
+
+## Subsequent result
+
+The [original live trial](QUESTION_IMMUTABLE_REVIEW_RESULTS.md) stopped after one
+call because an internal diagnostic issue was 283 characters against a 280-character
+limit. The raw response identified the three targeted photography feedback defects,
+but the primary contract failed; five controls remain unattempted. No retries,
+repair, production integration or deployment followed in this trial.
