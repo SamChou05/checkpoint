@@ -50,9 +50,9 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `MAX_PROVIDER_CALLS_PER_REQUEST` | `6` | Hard budget across generation, answer-blind review, JSON repair, and fallback calls. |
 | `MAX_REQUEST_BODY_BYTES` | `131072` | Request-body ceiling enforced before quota consumption. |
 | `BEDROCK_CONNECT_TIMEOUT_SECONDS` | `3` | Bounded SDK connection timeout. |
-| `BEDROCK_READ_TIMEOUT_SECONDS` | `20` locally and in the synchronous API; `75` in the SAM worker | Bounded SDK read timeout. The asynchronous worker gets a longer model-response window without extending HTTP request latency. Values are capped at 100 seconds. |
+| `BEDROCK_READ_TIMEOUT_SECONDS` | `20` locally and in the synchronous API; `75` in the SAM worker | SDK read-timeout ceiling, capped at 100 seconds. With a Lambda deadline, each service-created client shortens this timeout to leave the configured connect timeout, 1 second for client setup, and 2 seconds for response handling; calls are refused when fewer than 2 seconds of read time fit. |
 | `QUESTION_BANK_GENERATION_CHUNK_SIZE` | `5` | Maximum questions requested per asynchronous worker job, capped at 20. The durable job chain continues until the bank reaches its full target. |
-| `MIN_PROVIDER_REMAINING_MILLISECONDS` | `26000` | Refuses another provider call unless remaining Lambda time exceeds connect timeout + read timeout + a 2-second safety allowance. |
+| `MIN_PROVIDER_REMAINING_MILLISECONDS` | `0` (no extra floor) | Optional additional admission floor. Immediately before a call, remaining Lambda time must also exceed that client's actual connect + read timeouts plus a 2-second response allowance. Injected SDK clients retain their own timeout settings and must disable SDK retries. Deadline refusal is reported as `provider_deadline_exhausted`. |
 | `CHECKPOINT_BACKEND_TOKEN` | empty | Temporary shared bearer for internal/TestFlight builds. Empty fails closed outside explicit development mode. |
 | `ALLOW_UNAUTHENTICATED_BACKEND` | `false` | Explicit development-only bypass. Ignored for TestFlight/production environments. |
 | `DEPLOYMENT_ENVIRONMENT` | `development` locally | `development`, `testflight`, or `production`. |

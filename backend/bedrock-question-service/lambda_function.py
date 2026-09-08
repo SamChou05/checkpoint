@@ -151,6 +151,7 @@ from service_errors import (
     BadRequestError,
     InvalidProviderResponseError,
     ProviderCallBudgetExceededError,
+    ProviderDeadlineExceededError,
     ProviderError,
     RateLimitExceededError,
     SafetyInterventionError,
@@ -435,6 +436,15 @@ def handle_http_request(
             502,
             "Question generation returned invalid output",
             code="provider_invalid_response",
+            headers={"Retry-After": str(_provider_retry_after_seconds())},
+        )
+    except ProviderDeadlineExceededError:
+        outcome = "provider_deadline_exhausted"
+        LOGGER.warning("Provider request deadline exhausted before another call")
+        response = _error(
+            502,
+            "Question generation ran out of request time",
+            code="provider_deadline_exhausted",
             headers={"Retry-After": str(_provider_retry_after_seconds())},
         )
     except ProviderError:

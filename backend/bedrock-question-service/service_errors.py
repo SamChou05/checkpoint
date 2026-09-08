@@ -25,6 +25,10 @@ class ProviderCallBudgetExceededError(ProviderError):
     pass
 
 
+class ProviderDeadlineExceededError(ProviderCallBudgetExceededError):
+    """The remaining request time cannot safely fit another transport attempt."""
+
+
 class DurableProviderCallBudgetExceededError(ProviderCallBudgetExceededError):
     """A durable asynchronous provider-call reservation was refused."""
 

@@ -29,6 +29,7 @@ from request_contract import (
 from service_errors import (
     DurableProviderCallBudgetExceededError,
     ProviderCallBudgetExceededError,
+    ProviderDeadlineExceededError,
     ProviderError,
     SafetyInterventionError,
     ServiceConfigurationError,
@@ -53,8 +54,10 @@ DEFAULT_GENERATION_ATTEMPTS = 5
 DEFAULT_MAX_PROVIDER_CALLS = 6
 DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS = 3.0
 DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS = 20.0
+MIN_BEDROCK_READ_TIMEOUT_SECONDS = 2.0
+DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS = 1_000
 DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS = 2_000
-DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS = 26_000
+DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS = 0
 
 
 class ProviderCallBudget:
@@ -69,20 +72,38 @@ class ProviderCallBudget:
         self.reserve_call = reserve_call
         self.calls = 0
 
-    def consume(self) -> None:
+    def remaining_milliseconds(self) -> int | None:
+        remaining_time = getattr(self.context, "get_remaining_time_in_millis", None)
+        return remaining_time() if callable(remaining_time) else None
+
+    def consume(
+        self,
+        *,
+        connect_timeout: float | None = None,
+        read_timeout: float | None = None,
+    ) -> None:
         if self.calls >= self.maximum_calls:
             raise ProviderCallBudgetExceededError("Provider call budget exhausted.")
 
-        remaining_time = getattr(self.context, "get_remaining_time_in_millis", None)
-        if callable(remaining_time):
-            minimum_remaining = _minimum_provider_remaining_milliseconds()
-            if remaining_time() < minimum_remaining:
-                raise ProviderCallBudgetExceededError(
+        minimum_remaining = _minimum_provider_remaining_milliseconds(
+            connect_timeout=connect_timeout, read_timeout=read_timeout
+        )
+        remaining = self.remaining_milliseconds()
+        if remaining is not None:
+            if remaining < minimum_remaining:
+                raise ProviderDeadlineExceededError(
                     "Insufficient request time for another provider call."
                 )
 
         if self.reserve_call is not None:
             self.reserve_call()
+            # Durable quota reservation can itself wait on storage. Never begin
+            # a transport whose timeout no longer fits after that reservation.
+            remaining = self.remaining_milliseconds()
+            if remaining is not None and remaining < minimum_remaining:
+                raise ProviderDeadlineExceededError(
+                    "Insufficient request time after provider call reservation."
+                )
         self.calls += 1
 
 
@@ -314,7 +335,6 @@ def _generate_with_bedrock(
     request_metrics: dict[str, Any] | None = None,
 ) -> str:
     guardrail_config = _guardrail_config()
-    client = bedrock_client or _bedrock_client()
     prompt = user_prompt or _user_prompt(normalized_request)
     resolved_system_prompt = system_prompt or _system_prompt()
     inference_config = {
@@ -379,10 +399,20 @@ def _generate_with_bedrock(
     if guardrail_config is not None:
         request["guardrailConfig"] = guardrail_config
 
+    client = (
+        bedrock_client
+        if bedrock_client is not None
+        else _bedrock_client(call_budget=call_budget)
+    )
     # Reserve immediately before Converse so the local metric and the durable
     # asynchronous ledger count provider invocations, not whole generation passes.
     if call_budget is not None:
-        call_budget.consume()
+        connect_timeout, read_timeout = (
+            _client_transport_timeouts(client)
+            if call_budget.remaining_milliseconds() is not None
+            else (None, None)
+        )
+        call_budget.consume(connect_timeout=connect_timeout, read_timeout=read_timeout)
     if request_metrics is not None:
         request_metrics["ProviderCalls"] += 1
     call_started = time.monotonic()
@@ -577,27 +607,82 @@ def _model_attempts_with_fallback(primary: str) -> list[str]:
     return models
 
 
-def _bedrock_client() -> Any:
+def _configured_transport_timeouts() -> tuple[float, float]:
+    return (
+        _bounded_float_env(
+            "BEDROCK_CONNECT_TIMEOUT_SECONDS",
+            DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS,
+            1.0,
+            10.0,
+        ),
+        _bounded_float_env(
+            "BEDROCK_READ_TIMEOUT_SECONDS",
+            DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
+            MIN_BEDROCK_READ_TIMEOUT_SECONDS,
+            100.0,
+        ),
+    )
+
+
+def _client_transport_timeouts(client: Any) -> tuple[float, float]:
+    # Injected SDK clients keep their own transport configuration. Never assume
+    # a shorter environment timeout than the client actually uses. Test doubles
+    # without SDK metadata retain the configured admission requirement.
+    config = getattr(getattr(client, "meta", None), "config", None)
+    if config is None:
+        return _configured_transport_timeouts()
+    timeouts = (config.connect_timeout, config.read_timeout)
+    if not all(
+        type(value) in {int, float} and math.isfinite(value) and value > 0
+        for value in timeouts
+    ):
+        raise ServiceConfigurationError("Provider transport timeouts must be finite.")
+    retries = getattr(config, "retries", None) or {}
+    total_attempts = retries.get("total_max_attempts")
+    if total_attempts != 1 and not (
+        total_attempts is None and retries.get("max_attempts") == 0
+    ):
+        raise ServiceConfigurationError(
+            "Provider transport must use exactly one SDK attempt."
+        )
+    return timeouts
+
+
+def _bedrock_client(call_budget: ProviderCallBudget | None = None) -> Any:
     import boto3
     from botocore.config import Config
 
+    connect_timeout, read_timeout = _configured_transport_timeouts()
+    remaining = call_budget.remaining_milliseconds() if call_budget else None
+    if remaining is not None:
+        # Author, solver, and reviewer share the HTTP Lambda's 30-second limit.
+        # Cap this attempt's real socket timeout instead of requiring the full
+        # configured timeout at every stage. Leave time to construct the SDK
+        # client and return the response; consume() rechecks after construction.
+        available_read = (
+            remaining
+            - DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS
+            - DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS
+            - 1
+        ) / 1000 - connect_timeout
+        read_timeout = min(read_timeout, available_read)
+        if (
+            read_timeout < MIN_BEDROCK_READ_TIMEOUT_SECONDS
+            or remaining
+            < _minimum_provider_remaining_milliseconds(
+                connect_timeout=connect_timeout, read_timeout=read_timeout
+            )
+        ):
+            raise ProviderDeadlineExceededError(
+                "Insufficient request time for another provider call."
+            )
     region = os.getenv("BEDROCK_REGION") or os.getenv("AWS_REGION")
     return boto3.client(
         "bedrock-runtime",
         region_name=region,
         config=Config(
-            connect_timeout=_bounded_float_env(
-                "BEDROCK_CONNECT_TIMEOUT_SECONDS",
-                DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS,
-                1.0,
-                10.0,
-            ),
-            read_timeout=_bounded_float_env(
-                "BEDROCK_READ_TIMEOUT_SECONDS",
-                DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
-                2.0,
-                100.0,
-            ),
+            connect_timeout=connect_timeout,
+            read_timeout=read_timeout,
             retries={
                 # Each Converse network attempt must consume one explicit
                 # ProviderCallBudget slot. Hidden botocore retries would break
@@ -609,24 +694,17 @@ def _bedrock_client() -> Any:
     )
 
 
-def _minimum_provider_remaining_milliseconds() -> int:
+def _minimum_provider_remaining_milliseconds(
+    *, connect_timeout: float | None = None, read_timeout: float | None = None
+) -> int:
     configured_floor = _int_env(
         "MIN_PROVIDER_REMAINING_MILLISECONDS",
         DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS,
         maximum=120_000,
     )
-    connect_timeout = _bounded_float_env(
-        "BEDROCK_CONNECT_TIMEOUT_SECONDS",
-        DEFAULT_BEDROCK_CONNECT_TIMEOUT_SECONDS,
-        1.0,
-        10.0,
-    )
-    read_timeout = _bounded_float_env(
-        "BEDROCK_READ_TIMEOUT_SECONDS",
-        DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
-        2.0,
-        100.0,
-    )
+    configured_connect, configured_read = _configured_transport_timeouts()
+    connect_timeout = configured_connect if connect_timeout is None else connect_timeout
+    read_timeout = configured_read if read_timeout is None else read_timeout
     hard_floor = (
         math.ceil((connect_timeout + read_timeout) * 1_000)
         + DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS
