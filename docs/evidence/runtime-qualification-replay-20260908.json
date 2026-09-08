@@ -1,0 +1,98 @@
+{
+  "source_revision": "85b3e23cbbd90347eddae356e791a53825267d7a",
+  "plan_sha256": "d29a5555e8b56ba2e79f8d32665ba46a3fd2de1b98160683d71f0d2c178916f4",
+  "capture_file_sha256": "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d",
+  "offline_runtime_replay": "exact_match_without_observer_or_provider_client",
+  "accounting": {
+    "prepared_calls": 5,
+    "observed_dispatch_attempts": 5,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 9232,
+      "outputTokens": 4933
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 43095
+  },
+  "calls": [
+    {
+      "operation": 0,
+      "role": "solver",
+      "input_utf8_bytes": 5810,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1268,
+        "outputTokens": 998,
+        "totalTokens": 2266
+      },
+      "sdk_seconds": 11.788933250005357,
+      "process_seconds": 13.041761750006117,
+      "stop_reason": "end_turn",
+      "reasoning_blocks": 0
+    },
+    {
+      "operation": 0,
+      "role": "reviewer",
+      "input_utf8_bytes": 7782,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1698,
+        "outputTokens": 641,
+        "totalTokens": 2339
+      },
+      "sdk_seconds": 8.805558541964274,
+      "process_seconds": 9.472593417041935,
+      "stop_reason": "end_turn",
+      "reasoning_blocks": 0
+    },
+    {
+      "operation": 1,
+      "role": "author",
+      "input_utf8_bytes": 10130,
+      "usage": {
+        "inputTokens": 1832,
+        "outputTokens": 909,
+        "totalTokens": 2741
+      },
+      "sdk_seconds": 13.591294000041671,
+      "process_seconds": 14.233179208997171,
+      "stop_reason": "end_turn",
+      "reasoning_blocks": 0
+    },
+    {
+      "operation": 1,
+      "role": "solver",
+      "input_utf8_bytes": 6427,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1405,
+        "outputTokens": 1234,
+        "totalTokens": 2639
+      },
+      "sdk_seconds": 17.209516957984306,
+      "process_seconds": 18.01658062497154,
+      "stop_reason": "end_turn",
+      "reasoning_blocks": 0
+    },
+    {
+      "operation": 1,
+      "role": "reviewer",
+      "input_utf8_bytes": 12946,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3029,
+        "outputTokens": 1151,
+        "totalTokens": 4180
+      },
+      "sdk_seconds": 13.424392041983083,
+      "process_seconds": 13.970600833010394,
+      "stop_reason": "end_turn",
+      "reasoning_blocks": 0
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "scope": "Exact final learner-facing text from completed runtime; choices reordered by existing sanitation but their exact texts and stem are unchanged. No solver/reviewer verdict, difficulty rating or reasoning disclosed. Blind key/difficulty assessment frozen before this packet.",
+  "items": [
+    {
+      "id": "call-2-item-0",
+      "content_sha256": "c0d87f30e1b534b932c7b0e6151cb8d154614b616a28fccd0a53b4ac10b51ac9",
+      "raw_author_choice_order": [
+        "Large Hospital",
+        "Small Hospital",
+        "Both about equally",
+        "Cannot be determined from the information given"
+      ],
+      "question": {
+        "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+        "choices": [
+          "Small Hospital",
+          "Large Hospital",
+          "Both about equally",
+          "Cannot be determined from the information given"
+        ],
+        "expectedAnswer": "Small Hospital",
+        "explanation": "Smaller daily samples produce greater relative variability, so extreme proportions (>60% boys) occur far more often at the 15-birth hospital. This is a direct application of sampling variability / law of small numbers.",
+        "choiceExplanations": {
+          "Large Hospital": "Larger samples cluster closer to the true 50% proportion, making extreme daily deviations less frequent, not more.",
+          "Both about equally": "The hospitals' very different daily sample sizes (45 vs 15) produce substantially different frequencies of extreme outcomes.",
+          "Cannot be determined from the information given": "Statistical theory of sampling variability is sufficient to predict which hospital sees more extreme days; no additional information is needed.",
+          "Small Hospital": "With only 15 births per day, random fluctuation is large relative to sample size, making days exceeding 60% boys much more probable."
+        }
+      },
+      "teaching_sha256": "3e3394a0acf0358af12f7638bee734d630185341bf47d2e43ecfc997ff4d0aa4"
+    },
+    {
+      "id": "call-2-item-1",
+      "content_sha256": "f22a342f3cd2512c28e917a3b825cff26d5895c542ce9bb0e67782341662ce73",
+      "raw_author_choice_order": [
+        "About 99%",
+        "About 50%",
+        "About 9%",
+        "About 1%"
+      ],
+      "question": {
+        "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+        "choices": [
+          "About 9%",
+          "About 99%",
+          "About 50%",
+          "About 1%"
+        ],
+        "expectedAnswer": "About 9%",
+        "explanation": "Bayes' theorem: P(disease|+)=(0.99×0.001)/[(0.99×0.001)+(0.01×0.999)]≈0.00099/0.01098≈9%. The very low base rate (1/1000) generates far more false positives than true positives.",
+        "choiceExplanations": {
+          "About 99%": "Ignores the base rate entirely; among 100,000 people there are ~99 true positives but ~999 false positives, so 99% is far too high.",
+          "About 50%": "50% would require roughly equal true and false positives, which needs ~50% prevalence, not 1/1000.",
+          "About 1%": "1% is close to the prior base rate alone and fails to account for the updating power of a positive test result.",
+          "About 9%": "Correct Bayesian calculation: the rare prevalence swamps test accuracy, leaving only about a 9% chance of true disease after a positive result."
+        }
+      },
+      "teaching_sha256": "afb5eeab93423bd446feb6dc38a1598ec1954322b5f0cb1f6d03cf485fe8d245"
+    },
+    {
+      "id": "call-2-item-2",
+      "content_sha256": "a6c053144841cad0482e9c6486573a02c1af7064321e38349576a5b09307774e",
+      "raw_author_choice_order": [
+        "Ice cream consumption causes drowning",
+        "Drowning causes people to buy more ice cream",
+        "A third factor (like hot weather) likely explains both patterns",
+        "The correlation is probably a statistical fluke"
+      ],
+      "question": {
+        "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+        "choices": [
+          "A third factor (like hot weather) likely explains both patterns",
+          "Ice cream consumption causes drowning",
+          "Drowning causes people to buy more ice cream",
+          "The correlation is probably a statistical fluke"
+        ],
+        "expectedAnswer": "A third factor (like hot weather) likely explains both patterns",
+        "explanation": "Correlation between two variables can arise from a common cause (confounding). Hot weather independently drives both ice cream sales and swimming activity, producing a spurious correlation without any direct causal link.",
+        "choiceExplanations": {
+          "Ice cream consumption causes drowning": "Asserts causation from correlation alone with no established mechanism and an obvious alternative explanation available.",
+          "Drowning causes people to buy more ice cream": "Reverses the relationship implausibly and is unsupported by any reasonable mechanism.",
+          "The correlation is probably a statistical fluke": "Dismissing a well-explained pattern as random noise is less warranted than identifying the known confounding variable.",
+          "A third factor (like hot weather) likely explains both patterns": "Hot weather increases both swimming (raising drowning risk) and ice cream demand, making confounding the most warranted conclusion."
+        }
+      },
+      "teaching_sha256": "56366a74c8b80b08d409692ff187fef233c4604580bcb90f4db1688a83294d0c"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "assessment_type": "Independent assistant final-teaching assessment after frozen answer-blind reasoning; not a human panel, calibrated difficulty study, model-verdict replay or live error-rate estimate.",
+  "input_path": "/tmp/checkpoint-runtime-fresh-teaching-b-20260908.json",
+  "input_sha256": "bab0c373e132838f66ffc6cfaa071beb8d748724a44a96718dc4e732a908cedf",
+  "frozen_blind_assessment_path": "/tmp/checkpoint-runtime-fresh-blind-b-assessment-20260908.json",
+  "frozen_blind_assessment_sha256": "9ff4fdfeef01354f17a35c0bca1e93aa8082cf05f7e981fa570e5a1714c59075",
+  "scope": {
+    "read_material": "Only the permitted final-teaching packet and the assessor's unchanged frozen blind assessment; no full live capture, logs, solver/reviewer verdicts or provider difficulty ratings.",
+    "checks": "Exact JSON/UTF8 hash and identity joins plus manual probability/sampling reasoning; no live/model/network/native calls.",
+    "teaching_hash_contract": "SHA256 of exact question object serialized as UTF8 JSON with ensure_ascii=False, sort_keys=True, compact separators; both supplied teaching hashes verified.",
+    "source_support": "No source packet was supplied for these two ordinary probability/evidence questions; judgments use the shown premises and elementary reasoning. Absence of a source alone is not marked false."
+  },
+  "items": [
+    {
+      "id": "call-2-item-3",
+      "supplied_content_sha256": "d0ec6f1236842a008c6e093c2209eadc84c23ef04f4c86b9ef91a861748b2de8",
+      "verified_teaching_sha256": "e5972ca8ada06919ee47a90519ce24049101774852c7001f5d889e4c87678d0a",
+      "prompt_and_choice_texts_match_frozen_blind_record": true,
+      "raw_choice_order_matches_frozen_blind_record": true,
+      "expected_answer": "About 18%",
+      "key_matches_frozen_answer": true,
+      "key_agreement_scope": "Unique under the ordinary probability-question convention that each replacement draw is uniformly random and independent. The stem itself does not explicitly state that sampling convention.",
+      "independent_difficulty_unchanged": {
+        "level": 3,
+        "confidence": "moderate",
+        "reason": "The at-least-one representation changes the admissible outcome set; the learner must distinguish plausible9%,30% and51% alternatives rather than merely substitute the per-draw rate. This fits level3 evidence/representation interpretation. The short routine calculation does not warrant level4."
+      },
+      "fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": "P(both red)=0.3²=0.09; P(at least one red)=1−0.7²=0.51; conditional probability=0.09/0.51≈17.6%≈18%. The condition 'at least one red' restricts the sample space, raising the probability above the unconditional 9%.",
+          "assessment": "correct_under_ordinary_probability_model",
+          "material_defect": false,
+          "reason": "All arithmetic and the sample-space explanation are correct for independent uniform replacement draws: 0.09/0.51=3/17, approximately17.65%. Conditioning on at least one red raises the both-red probability above9%. The stem leaves random uniform selection implicit; this conventional modeling qualification is not an arithmetic or feedback factual error."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 18%",
+          "exact_text": "Correctly divides P(both red)=0.09 by P(at least one red)=0.51 to get the conditional probability ≈18%.",
+          "assessment": "correct_under_ordinary_probability_model",
+          "material_defect": false,
+          "reason": "The numerator and denominator are the correct events under that same model, and the rounded result is18%."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 9%",
+          "exact_text": "9% is the unconditional probability of two red draws (0.3²), ignoring the conditioning event.",
+          "assessment": "correct_under_ordinary_probability_model",
+          "material_defect": false,
+          "reason": "9% is exactly the unconditional both-red probability under that model, so this correctly diagnoses neglect of conditioning."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 30%",
+          "exact_text": "30% is the probability of a single red draw on one trial, not the conditional probability requested.",
+          "assessment": "correct_under_ordinary_probability_model",
+          "material_defect": false,
+          "reason": "30% is the marginal probability on a specified draw under that model. It is not the conditional probability of both draws being red given the stated at-least-one event."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "About 51%",
+          "exact_text": "51% is P(at least one red), the denominator of the conditional probability calculation, not the answer itself.",
+          "assessment": "correct_under_ordinary_probability_model",
+          "material_defect": false,
+          "reason": "51% is exactly P(at least one red), used as the denominator rather than the final conditional answer."
+        }
+      ],
+      "complete_teaching_assessment": "All five fields are materially accurate under the ordinary independent uniform-draw convention. No proved numerical or causal falsehood. Do not turn this into a guarantee independent of the stem's unstated sampling convention.",
+      "pedagogical_assessment": "All three distractors correspond to distinct plausible probability errors; the conditional event changes the reasoning. Independent level3 retained."
+    },
+    {
+      "id": "call-2-item-4",
+      "supplied_content_sha256": "1e3ba5ea79115ff8e1b0d60ea1947c748c7f0a2459045bb5e3c85f54830c4102",
+      "verified_teaching_sha256": "c8b86e84400fbf8b29f42673c1fe1c63e20acc2b4118c06ba068759e6f44f284",
+      "prompt_and_choice_texts_match_frozen_blind_record": true,
+      "raw_choice_order_matches_frozen_blind_record": true,
+      "expected_answer": "Satisfied customers may be more likely to respond than dissatisfied ones",
+      "key_matches_frozen_answer": true,
+      "key_agreement_scope": "Unique best-listed concern about the representativeness of the reported figure. This does not establish that the response tendency actually differs or that80% is false among respondents.",
+      "independent_difficulty_unchanged": {
+        "level": 2,
+        "confidence": "high",
+        "reason": "Applies the familiar nonresponse-bias rule directly to a recognizable low-response survey. The numbers do not require calculation to choose the answer, and two distractors are sweeping or plainly impossible claims. It does not demand level3 discrimination among several plausible evidence interpretations."
+      },
+      "fields": [
+        {
+          "field": "explanation",
+          "choice": null,
+          "exact_text": "With only a 20% response rate, non-response bias is the dominant concern: dissatisfied customers have less motivation to complete the survey, systematically inflating the reported satisfaction rate.",
+          "assessment": "materially_unsupported_empirical_claim",
+          "material_defect": true,
+          "reason": "The data establish a20% response rate, not that dissatisfied customers have less motivation or that the reported rate is systematically inflated. These are possible mechanisms, not observed facts. If80% describes respondents, nonresponse does not make that proportion false; the concern is extrapolation to all purchasers. The same1600 satisfied respondents permit total purchaser satisfaction16% through96%, so the observed figures also permit the respondent rate to underestimate population satisfaction. This disproves entailment of the asserted direction, not the possibility that it happens to be true in an unspecified real cohort."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Satisfied customers may be more likely to respond than dissatisfied ones",
+          "exact_text": "Non-response bias from a 20% response rate is the primary reason to doubt the 80% figure.",
+          "assessment": "material_scope_overstatement",
+          "material_defect": true,
+          "reason": "The selected option cautiously says may, but this feedback states bias from a20% response rate without preserving that contingency. A low response rate leaves room for selection bias; it alone establishes neither bias nor its direction. It warrants concern about a population interpretation, while the literal80% among respondents can remain exactly correct. Under the intended population-inference reading the concern is sensible, so this is an overstatement requiring qualification rather than a proved false respondent percentage."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "The sample size of 2,000 is too small",
+          "exact_text": "2,000 respondents is statistically large enough for reliable estimates if the sample were unbiased; size is not the main problem here.",
+          "assessment": "reasonable_task_comparison_with_overbroad_reliability_wording",
+          "material_defect": false,
+          "reason": "Rejecting2000 as inherently too small is reasonable here, and response selection is the substantive concern. However, unbiasedness and a count of2000 do not universally guarantee reliable estimates: required precision and sampling dependence/design are unstated. Treat large enough as a contextual heuristic, not a general statistical theorem. This qualification is weaker than the main field's unsupported actual-bias claim; no incorrect numerical result is established."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "Email surveys are inherently unreliable",
+          "exact_text": "The medium is not inherently flawed; the specific issue is who chooses to respond, not the delivery channel.",
+          "assessment": "materially_correct",
+          "material_defect": false,
+          "reason": "Correctly rejects the absolute claim that email itself makes every survey unreliable and identifies response selection as the relevant concern in this scenario. It does not establish that bias actually occurred."
+        },
+        {
+          "field": "choiceExplanations",
+          "choice": "80% is mathematically impossible with 10,000 customers",
+          "exact_text": "80% of 2,000 respondents equals 1,600 people, which is entirely possible within a pool of 10,000.",
+          "assessment": "materially_correct",
+          "material_defect": false,
+          "reason": "The arithmetic is exact:80% of2000 is1600, consistent with2000 respondents drawn from10000 invitees. This also illustrates why skepticism about population representativeness must not be confused with impossibility of the respondent statistic."
+        }
+      ],
+      "complete_teaching_assessment": "Not fully supported. The main explanation invents a definite response-motivation pattern and direction of distortion, while correct-choice feedback overstates what low response establishes and blurs respondent versus population scope. The key remains the unique best-listed potential concern under the intended population-inference reading. No evidence proves the literal respondent80% is false.",
+      "pedagogical_assessment": "Independent level2 retained. The main and correct-choice explanations risk teaching that low response itself demonstrates biased/inflated results. One distractor is moderately plausible; the email universal and percentage-impossibility alternatives are weak."
+    }
+  ],
+  "summary": {
+    "items": 2,
+    "teaching_fields": 10,
+    "keys_matching_frozen_intended_or_best_listed_answers": 2,
+    "independent_difficulty_levels": [
+      3,
+      2
+    ],
+    "materially_correct_marble_fields_under_ordinary_model": 5,
+    "materially_correct_survey_fields_without_the_reported_overstatement": 2,
+    "survey_materially_unsupported_empirical_fields": 1,
+    "survey_material_scope_overstatement_fields": 1,
+    "survey_weaker_reliability_qualification_fields": 1,
+    "complete_items_with_materially_accurate_teaching_under_intended_conventional_reading": 1,
+    "unqualified_assumption_free_target_success_count": "Not asserted. The marble model convention remains implicit; the survey is below level3 and has unsupported teaching claims.",
+    "distinctions": "The survey main claim is unsupported by the evidence, not demonstrated false of an actual cohort. Its counterexample refutes the inference of guaranteed inflation. The marble arithmetic is valid under the ordinary model; omission of explicit random-draw wording is recorded separately."
+  }
+}

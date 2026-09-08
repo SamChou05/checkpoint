@@ -1,0 +1,145 @@
+{
+  "assessment_type": "Independent assistant answer-blind content assessment; not a human panel or calibrated difficulty study.",
+  "input_path": "/tmp/checkpoint-runtime-fresh-blind-b-20260908.json",
+  "input_sha256": "75274f7f7bb50a4ea71c480c6fe4fc3e09f6d9d828cad413243058fe8865b516",
+  "rubric_path": "/Users/samchou/Documents/Checkpoint/backend/bedrock-question-service/question_difficulty.py",
+  "rubric_sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+  "identity_scope": "Supplied content hashes are preserved verbatim. Independent display hashes use exact prompt+ordered choices serialized with ensure_ascii=False, sort_keys=True and compact separators; no assumption that the supplied hash uses this same scheme.",
+  "blinding": {
+    "only_question_packet_and_shared_rubric_read": true,
+    "author_keys_feedback_difficulty_unseen": true,
+    "solver_reviewer_and_survival_unseen": true,
+    "prior_exposure": "Assessor reviewed runtime harness and scripted tests before live execution, including the generic fresh goal; no fresh author outputs were seen before this packet."
+  },
+  "checks": "Manual reasoning plus exact assessor-written Fraction arithmetic. No model/provider/network calls, no live capture or output logs read.",
+  "items": [
+    {
+      "id": "call-2-item-3",
+      "supplied_content_sha256": "d0ec6f1236842a008c6e093c2209eadc84c23ef04f4c86b9ef91a861748b2de8",
+      "independent_display_sha256": "759bf1d40044f37ab7b14022bfe151f5947999337339a71d0ac9766953891f1d",
+      "prompt": "A bag contains 30 red and 70 blue marbles. You draw one marble, note its color, return it, and draw again. Given that at least one draw was red, what is the probability both draws were red?",
+      "choices": [
+        "About 9%",
+        "About 18%",
+        "About 30%",
+        "About 51%"
+      ],
+      "warranted_exact_choices": [
+        "About 18%"
+      ],
+      "answer_scope": "Unique under the ordinary probability-question convention that each replacement draw is uniformly random and independent. The stem itself does not explicitly state that sampling convention.",
+      "reasoning": {
+        "sampling_model": "Uniform independent draws, replacing the first marble before the second draw.",
+        "weighted_outcomes": {
+          "red_red": "9/100",
+          "red_blue": "21/100",
+          "blue_red": "21/100",
+          "blue_blue": "49/100"
+        },
+        "conditioning_event": "At least one red excludes only blue-blue, leaving probability51/100.",
+        "calculation": "P(RR | at least one R) = (9/100)/(51/100) =3/17 =17.6470588%, rounded to about18%.",
+        "verified_calculation": "An assessor-written Fraction calculation produced both=9/100, at-least-one=51/100 and conditional=3/17. This executed arithmetic only, not generated code."
+      },
+      "completeness": {
+        "intended_reading_unique": true,
+        "literal_sampling_mechanism_explicit": false,
+        "qualification": "Bag contents and replacement alone do not guarantee uniform independent selection. This is a conventional school-probability reading, not an explicitly complete physical sampling specification. It is a wording limitation, not a numerical error under that convention.",
+        "counterexample_to_unconditional_literal_guarantee": "If draws were independent but color-biased with red probability1/2, the same contents and replacement procedure would instead give P(both red | at least one red)=1/3. Thus30/100 as a draw probability depends on the unstated uniformity convention.",
+        "information_protocol": "The condition states an event directly; it does not introduce an informant or selective reporting process requiring a different conditional sample space."
+      },
+      "distractors": [
+        {
+          "choice": "About 9%",
+          "distinct": true,
+          "plausibility": "strong",
+          "why_not_correct": "This is the unconditional probability of two reds, before conditioning on at least one red."
+        },
+        {
+          "choice": "About 30%",
+          "distinct": true,
+          "plausibility": "strong",
+          "why_not_correct": "This is the probability a particular independent draw is red, or both-red probability given that one specified draw is red. It is not the result when the condition is at least one of the two draws."
+        },
+        {
+          "choice": "About 51%",
+          "distinct": true,
+          "plausibility": "strong",
+          "why_not_correct": "This is the probability of the conditioning event, not the conditional probability of both-red."
+        }
+      ],
+      "goal_fit": "Substantive: conditions on aggregate evidence and requires distinguishing a joint event, a marginal probability and the conditioning-event probability.",
+      "difficulty": {
+        "level": 3,
+        "confidence": "moderate",
+        "reason": "The at-least-one representation changes the admissible outcome set; the learner must distinguish plausible9%,30% and51% alternatives rather than merely substitute the per-draw rate. This fits level3 evidence/representation interpretation. The short routine calculation does not warrant level4."
+      },
+      "overall": "One intended unique answer, three meaningful distractors and level3 application. Formal self-containedness remains conditional on the conventional random-draw interpretation; do not count this as an assumption-free mathematical guarantee."
+    },
+    {
+      "id": "call-2-item-4",
+      "supplied_content_sha256": "1e3ba5ea79115ff8e1b0d60ea1947c748c7f0a2459045bb5e3c85f54830c4102",
+      "independent_display_sha256": "68e913a1ab4643ff71c475da33d9ba8061a3de9386d65c5b48c35f05882c2772",
+      "prompt": "A company reports that 80% of surveyed customers are 'satisfied.' The survey was sent by email to 10,000 recent purchasers; 2,000 responded. Which concern most warrants skepticism about the 80% figure?",
+      "choices": [
+        "The sample size of 2,000 is too small",
+        "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "Email surveys are inherently unreliable",
+        "80% is mathematically impossible with 10,000 customers"
+      ],
+      "warranted_exact_choices": [
+        "Satisfied customers may be more likely to respond than dissatisfied ones"
+      ],
+      "answer_scope": "Unique best-listed concern about the representativeness of the reported figure. This does not establish that the response tendency actually differs or that80% is false among respondents.",
+      "reasoning": {
+        "decisive_inference": "Only2000 of10000 purchasers replied. If willingness to reply depends on satisfaction, respondents can have a different satisfaction distribution from all purchasers. A large invitation list or response count does not remove that selection mechanism.",
+        "possible_world_example": "Of2000 respondents,1600 can be satisfied. If all8000 nonrespondents are dissatisfied, total satisfaction is16%; satisfied customers then respond more often than dissatisfied ones. The same observed respondent statistic also permits96% overall satisfaction if all nonrespondents are satisfied.",
+        "verified_calculation": "Assessor-written exact arithmetic gives1600 satisfied respondents and all-purchaser bounds1600/10000=16% through9600/10000=96%, if the reported80% refers to respondents.",
+        "not_a_warranted_claim": "The response rate alone does not establish the direction or size of nonresponse bias, nor prove any dissatisfaction rate."
+      },
+      "completeness": {
+        "best_listed_concern_unique": true,
+        "scope_qualification": "The report says80% of surveyed customers, without explicitly claiming all customers or all10000 invitees. If it means only respondents, that descriptive proportion can be entirely accurate. Nonresponse bias challenges extrapolation to a larger customer group; the item should not be credited as proving the stated respondent proportion false.",
+        "material_arithmetic_error_established": false
+      },
+      "distractors": [
+        {
+          "choice": "The sample size of 2,000 is too small",
+          "distinct": true,
+          "plausibility": "moderate",
+          "why_not_correct": "No required precision or subgroup analysis is stated that makes2000 inherently insufficient. Sample size alone is not the decisive issue when response behavior may select participants."
+        },
+        {
+          "choice": "Email surveys are inherently unreliable",
+          "distinct": true,
+          "plausibility": "weak",
+          "why_not_correct": "This unjustified universal claim ignores sampling and response design. Email as a channel does not make every survey unreliable."
+        },
+        {
+          "choice": "80% is mathematically impossible with 10,000 customers",
+          "distinct": true,
+          "plausibility": "very_weak",
+          "why_not_correct": "80% is possible:8000 of10000, or1600 of2000 respondents. This requires only elementary percentage arithmetic to dismiss."
+        }
+      ],
+      "goal_fit": "Relevant to sampling and warranted conclusions, but introductory and weakened by two implausible alternatives.",
+      "difficulty": {
+        "level": 2,
+        "confidence": "high",
+        "reason": "Applies the familiar nonresponse-bias rule directly to a recognizable low-response survey. The numbers do not require calculation to choose the answer, and two distractors are sweeping or plainly impossible claims. It does not demand level3 discrimination among several plausible evidence interpretations."
+      },
+      "overall": "A defensible best-listed bias concern with a population-versus-respondent wording qualification. Below minimum3; only one of three distractors is reasonably competitive."
+    }
+  ],
+  "summary": {
+    "raw_candidates_assessed": 2,
+    "unique_intended_or_best_listed_answers": 2,
+    "independent_levels": [
+      3,
+      2
+    ],
+    "all_three_plausible_distractors_count": 1,
+    "sampling_or_report_scope_qualifications": 2,
+    "complete_unqualified_target_pass_count": "Not asserted: marble answer relies on the ordinary unstated random-draw convention; survey item is below3 and should not conflate respondent description with population inference.",
+    "feedback_and_runtime_survival": "Unassessed and hidden at this stage."
+  }
+}

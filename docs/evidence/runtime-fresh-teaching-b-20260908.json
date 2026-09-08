@@ -1,0 +1,61 @@
+{
+  "scope": "Exact final learner-facing text from completed runtime; choices reordered by existing sanitation but their exact texts and stem are unchanged. No solver/reviewer verdict, difficulty rating or reasoning disclosed. Blind key/difficulty assessment frozen before this packet.",
+  "items": [
+    {
+      "id": "call-2-item-3",
+      "content_sha256": "d0ec6f1236842a008c6e093c2209eadc84c23ef04f4c86b9ef91a861748b2de8",
+      "raw_author_choice_order": [
+        "About 9%",
+        "About 18%",
+        "About 30%",
+        "About 51%"
+      ],
+      "question": {
+        "prompt": "A bag contains 30 red and 70 blue marbles. You draw one marble, note its color, return it, and draw again. Given that at least one draw was red, what is the probability both draws were red?",
+        "choices": [
+          "About 18%",
+          "About 9%",
+          "About 30%",
+          "About 51%"
+        ],
+        "expectedAnswer": "About 18%",
+        "explanation": "P(both red)=0.3²=0.09; P(at least one red)=1−0.7²=0.51; conditional probability=0.09/0.51≈17.6%≈18%. The condition 'at least one red' restricts the sample space, raising the probability above the unconditional 9%.",
+        "choiceExplanations": {
+          "About 51%": "51% is P(at least one red), the denominator of the conditional probability calculation, not the answer itself.",
+          "About 18%": "Correctly divides P(both red)=0.09 by P(at least one red)=0.51 to get the conditional probability ≈18%.",
+          "About 9%": "9% is the unconditional probability of two red draws (0.3²), ignoring the conditioning event.",
+          "About 30%": "30% is the probability of a single red draw on one trial, not the conditional probability requested."
+        }
+      },
+      "teaching_sha256": "e5972ca8ada06919ee47a90519ce24049101774852c7001f5d889e4c87678d0a"
+    },
+    {
+      "id": "call-2-item-4",
+      "content_sha256": "1e3ba5ea79115ff8e1b0d60ea1947c748c7f0a2459045bb5e3c85f54830c4102",
+      "raw_author_choice_order": [
+        "The sample size of 2,000 is too small",
+        "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "Email surveys are inherently unreliable",
+        "80% is mathematically impossible with 10,000 customers"
+      ],
+      "question": {
+        "prompt": "A company reports that 80% of surveyed customers are 'satisfied.' The survey was sent by email to 10,000 recent purchasers; 2,000 responded. Which concern most warrants skepticism about the 80% figure?",
+        "choices": [
+          "Satisfied customers may be more likely to respond than dissatisfied ones",
+          "The sample size of 2,000 is too small",
+          "Email surveys are inherently unreliable",
+          "80% is mathematically impossible with 10,000 customers"
+        ],
+        "expectedAnswer": "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "explanation": "With only a 20% response rate, non-response bias is the dominant concern: dissatisfied customers have less motivation to complete the survey, systematically inflating the reported satisfaction rate.",
+        "choiceExplanations": {
+          "The sample size of 2,000 is too small": "2,000 respondents is statistically large enough for reliable estimates if the sample were unbiased; size is not the main problem here.",
+          "Email surveys are inherently unreliable": "The medium is not inherently flawed; the specific issue is who chooses to respond, not the delivery channel.",
+          "80% is mathematically impossible with 10,000 customers": "80% of 2,000 respondents equals 1,600 people, which is entirely possible within a pool of 10,000.",
+          "Satisfied customers may be more likely to respond than dissatisfied ones": "Non-response bias from a 20% response rate is the primary reason to doubt the 80% figure."
+        }
+      },
+      "teaching_sha256": "c8b86e84400fbf8b29f42673c1fe1c63e20acc2b4118c06ba068759e6f44f284"
+    }
+  ]
+}

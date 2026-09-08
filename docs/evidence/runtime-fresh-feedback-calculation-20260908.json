@@ -1,0 +1,52 @@
+{
+  "scope": "Exact arithmetic after blinded key assessments were frozen and final teaching was disclosed. Only the fictional item rates are used; no medical guidance or new model call.",
+  "item_id": "call-2-item-1",
+  "reviewed_explanation_for_50_percent": "50% would require roughly equal true and false positives, which needs ~50% prevalence, not 1/1000.",
+  "equation_for_half_posterior": "0.99*p = 0.01*(1-p)",
+  "required_prevalence_fraction": "1/100",
+  "required_prevalence_percent": 1.0,
+  "posterior_at_claimed_50_percent_prevalence": 99.0,
+  "conclusion": "The reviewed 50% distractor explanation is mathematically false. Equal true and false positives require1% prevalence under these rates;50% prevalence yields99% posterior. The item key About9% remains arithmetically supported.",
+  "author_record": {
+    "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+    "explanation": "Out of 1000 people: 1 has disease and likely tests positive; 999 are healthy but ~10 false positives. Of ~11 positive tests, only ~1 is true positive. P(Disease|Positive) ≈ 1/11 ≈ 9%.",
+    "expectedAnswer": "About 9%",
+    "choices": [
+      "About 99%",
+      "About 50%",
+      "About 9%",
+      "About 1%"
+    ],
+    "topic": "base rates and distinguishing a possible conclusion from a warranted one.",
+    "skillID": "base_rates",
+    "objectiveID": "bayes_base_rate",
+    "objective": "Apply base rates to interpret diagnostic test results",
+    "difficulty": 3,
+    "format": "Multiple Choice"
+  },
+  "solver_record": {
+    "index": 1,
+    "choices": [
+      {
+        "choice": "About 99%",
+        "judgment": "refuted",
+        "reason": "This ignores the base rate. With 1/1000 prevalence, among 100,000 people: ~100 sick (99 true positives) and ~99,900 healthy (999 false positives). P(disease|positive)≈99/1098≈9%, not 99%."
+      },
+      {
+        "choice": "About 50%",
+        "judgment": "refuted",
+        "reason": "50% would require roughly equal numbers of true and false positives, which would need ~50% prevalence, far above the 1/1000 given."
+      },
+      {
+        "choice": "About 1%",
+        "judgment": "refuted",
+        "reason": "1% would be close to the base rate alone, ignoring the positive test result's updating power. The actual calculation gives ~9%."
+      },
+      {
+        "choice": "About 9%",
+        "judgment": "supported",
+        "reason": "Bayes' theorem: P(disease|+)= (0.99×0.001)/[(0.99×0.001)+(0.01×0.999)]≈0.00099/0.01098≈9%. The low base rate swamps the test accuracy."
+      }
+    ]
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "assessment_scope": "Raw author candidates only; no keys, feedback, difficulty, solver output or pipeline survival disclosed.",
+  "items": [
+    {
+      "id": "call-2-item-0",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+      "choices": [
+        "Large Hospital",
+        "Small Hospital",
+        "Both about equally",
+        "Cannot be determined from the information given"
+      ],
+      "content_sha256": "c0d87f30e1b534b932c7b0e6151cb8d154614b616a28fccd0a53b4ac10b51ac9"
+    },
+    {
+      "id": "call-2-item-1",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+      "choices": [
+        "About 99%",
+        "About 50%",
+        "About 9%",
+        "About 1%"
+      ],
+      "content_sha256": "f22a342f3cd2512c28e917a3b825cff26d5895c542ce9bb0e67782341662ce73"
+    },
+    {
+      "id": "call-2-item-2",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+      "choices": [
+        "Ice cream consumption causes drowning",
+        "Drowning causes people to buy more ice cream",
+        "A third factor (like hot weather) likely explains both patterns",
+        "The correlation is probably a statistical fluke"
+      ],
+      "content_sha256": "a6c053144841cad0482e9c6486573a02c1af7064321e38349576a5b09307774e"
+    }
+  ]
+}

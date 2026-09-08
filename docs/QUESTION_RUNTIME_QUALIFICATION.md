@@ -5,6 +5,12 @@ solver and final reviewer, then requests one fresh five-question batch. Earlier
 complete-choice experiments used single questions and Opus with adaptive thinking;
 they do not qualify the deployed worker's Kimi/Sonnet settings or five-item output.
 
+**Result:** the five fixed diagnostics received the intended admission decisions,
+and a fresh five-question batch completed in one pass. Independent examination
+nevertheless found a definite mathematical error in returned teaching, unsupported
+claims and inflated difficulty ratings. Operational success did not establish
+correctness or release readiness. No deployment followed.
+
 The [read-only configuration check](evidence/runtime-worker-configuration-20260908.json)
 confirmed Kimi K2.5 authoring, Sonnet 4.6 verification, disabled thinking, 6,000
 output tokens, three generation attempts, a six-call allowance, a 75-second read
@@ -74,3 +80,91 @@ perfect yield, filling the entire 80-question Pro target from empty takes at lea
 48 calls with five questions and three calls per pass. Initial practice can start
 with a smaller batch. This quota observation must not be confused with model
 incorrectness or treated as permission to raise spending limits.
+
+## Recorded results
+
+The frozen run at source `85b3e23cbbd90347eddae356e791a53825267d7a` made five
+calls: two for the fixed batch, then author, solver and reviewer for the fresh
+batch. All ended with `end_turn` and confirmed local cleanup. There were no
+repairs, top-offs, retries or unknown usage. Total usage was **14,165 tokens**:
+9,232 input and 4,933 output. The largest response used 1,234 of its 6,000 output
+tokens. Individual SDK intervals ranged from 8.8 to 17.2 seconds. These are
+observed call intervals, not a production latency guarantee.
+
+The [exact capture](evidence/runtime-qualification-capture-20260908.json), SHA-256
+`6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d`, contains the
+frozen fixture, actual requests, unmodified raw outputs, lifecycle observations
+and runtime results. Plan SHA-256 is
+`d29a5555e8b56ba2e79f8d32665ba46a3fd2de1b98160683d71f0d2c178916f4`.
+[Independent replay and fixed-item audit](evidence/runtime-operational-fixed-audit-20260908.json)
+confirmed the source/dependency bindings and reproduced every request and decision
+with observer and provider creation disabled.
+
+### Fixed questions
+
+Both valid questions survived; the unsupported converse, contradictory counts
+and two-answer question were excluded before final review. All 20 solver choice
+judgments agreed with the predeclared answer-adequacy grounds. Final review saw
+only the two legitimate survivors. This directly exercises five-item correlation,
+vetoes and valid-negative retention under the worker's model settings.
+
+Labels alone still hide qualifications. The jar's correctly refuted answer has
+a reason ending in “uncertain” wording. Survey feedback calls an option directly
+contradicted by the respondents' preferences, which additionally assumes those
+respondents were eligible. The latter is a conditional overclaim, not a demonstrated
+falsehood under ordinary survey conventions. Both retained keys and main
+explanations were supported.
+
+### Fresh questions and teaching
+
+All five raw author candidates were assessed before their assessors saw authored
+keys, feedback, model judgments or survival. Separate subsequent reviews assessed
+all 25 final teaching fields without seeing the model's reviewer verdict or
+difficulty labels. Stem and choice text survived unchanged; existing sanitization
+reordered choices. These are independent assistant assessments, not a human panel
+or calibrated psychometric study.
+
+| Fresh item | Independent key assessment | Final teaching | Model / independent difficulty |
+| --- | --- | --- | --- |
+| Two hospitals and extreme birth proportions | Small hospital under a conventional common, independent sampling model; information-limit answer remains defensible without that unstated model | Overstates that no further information is needed | 3 / 2 |
+| Rare-disease test | About 9%, confirmed by exact arithmetic | Wrong prevalence claim in the 50% distractor explanation; correct key and main calculation | 4 / 3 |
+| Ice cream and drowning | Confounding is a plausible hypothesis; the offered “likely explains” conclusion is stronger than the stated association establishes | Treats possible confounding as a known explanation and asserts no direct causal link | 3 / 2 |
+| Two marble draws | About 18%, confirmed by enumeration under ordinary independent uniform draws | All five fields sound under that conventional model | 4 / 3 |
+| Customer satisfaction survey | Nonresponse is the best-listed concern about generalization, not proof the respondent statistic is wrong | Invents dissatisfied customers' lower response motivation and definite upward bias | 3 / 2 |
+
+The clearest error is independent of disputed wording. With the test's 99%
+sensitivity and 99% specificity, equal true and false positives require
+`0.99p = 0.01(1-p)`, so prevalence must be **1%**. The solver said approximately
+**50%**, and final review repeated that false statement in learner feedback.
+At 50% prevalence the posterior would be 99%, not 50%. The original 1-in-1,000
+question's correct answer remains approximately 9%.
+[Exact arithmetic and stage records](evidence/runtime-fresh-feedback-calculation-20260908.json).
+This was a shared reasoning mistake despite correct answer-key agreement.
+
+The marble question alone had support for complete teaching at the requested
+challenge, under its ordinary sampling convention. This does not establish a
+one-in-five production success rate. The selected goal and familiar examples
+do not represent arbitrary user goals, and novelty or actual learning gains were
+not measured.
+
+The evidence distinguishes missing qualifications from definite calculation
+errors. More relevant premises could address the former; the latter already had
+the necessary numbers. Output truncation held back none of these calls. This run
+does **not** test whether enabling thinking would improve their correctness.
+Further qualification must score every learner-facing explanation and preserve
+possible-versus-established claims; model key agreement or complete inventory
+alone cannot be the release criterion.
+
+Evidence: [blind assessment A](evidence/runtime-fresh-blind-a-assessment-20260908.json),
+[blind assessment B](evidence/runtime-fresh-blind-b-assessment-20260908.json),
+[teaching assessment A](evidence/runtime-fresh-teaching-a-assessment-20260908.json),
+[teaching assessment B](evidence/runtime-fresh-teaching-b-assessment-20260908.json),
+and [independent native calculations](evidence/runtime-fresh-native-calculations-20260908.json).
+Their exact input packets are archived alongside them. Full backend validation
+passes **857 tests with no skips** in the live dependency environment. Source
+provenance separately passes seven new iOS tests and 65 existing goal/bank tests.
+
+Packet `content_sha256` binds compact, sorted UTF-8 JSON of the item ID, goal,
+sources, exact stem and raw ordered choices. `teaching_sha256` binds the complete
+`question` object in the teaching packet, including final choice order, key and
+all feedback. These are recorded-content bindings, not proofs of factual truth.

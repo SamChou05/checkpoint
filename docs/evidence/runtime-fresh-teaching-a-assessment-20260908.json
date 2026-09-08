@@ -1,0 +1,243 @@
+{
+  "assessment_kind": "Independent unblinded teaching review following a separately frozen key/difficulty-blind assessment; assistant assessment, not educator consensus",
+  "input_path": "/tmp/checkpoint-runtime-fresh-teaching-a-20260908.json",
+  "input_sha256": "b7bffc8e4a4bd56be85b931ecc106d3fd59a2af23dbac0efae128b851394a1bb",
+  "prior_blind_assessment_path": "/tmp/checkpoint-runtime-fresh-blind-a-assessment-20260908.json",
+  "prior_blind_assessment_sha256": "1eeedfde706ed4e6580a53c1637573d361b5496c91a36b9a162fe57565f67418",
+  "blinding": "Only the teaching packet and frozen blind findings were read. Authored key and final teaching are visible now; model solver/reviewer verdicts, reasoning, difficulty labels and full live capture remain unseen. No external/provider/native calls.",
+  "binding": "For each ID the exact stem, raw order, four choice texts and supplied content hash match the frozen blind assessment. Sanitation changes only the presented order in this packet. All main/four-choice fields are copied exactly into the assessment. Supplied hashes are retained separately from explicit compact sorted-key canonical question hashes.",
+  "items": [
+    {
+      "id": "call-2-item-0",
+      "packet_content_sha256_as_supplied": "c0d87f30e1b534b932c7b0e6151cb8d154614b616a28fccd0a53b4ac10b51ac9",
+      "packet_teaching_sha256_as_supplied": "3e3394a0acf0358af12f7638bee734d630185341bf47d2e43ecfc997ff4d0aa4",
+      "computed_exact_question_sha256": "3e3394a0acf0358af12f7638bee734d630185341bf47d2e43ecfc997ff4d0aa4",
+      "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+      "raw_author_choice_order": [
+        "Large Hospital",
+        "Small Hospital",
+        "Both about equally",
+        "Cannot be determined from the information given"
+      ],
+      "final_choice_order": [
+        "Small Hospital",
+        "Large Hospital",
+        "Both about equally",
+        "Cannot be determined from the information given"
+      ],
+      "expectedAnswer": "Small Hospital",
+      "matches_frozen_blind_literal_answer": false,
+      "preserved_blind_difficulty": 2,
+      "preserved_blind_unique_key_status": "Assumption-sensitive: the information-limit choice is defensible on the exact premises, while Small Hospital is the conventional textbook answer under a missing sampling model.",
+      "fields": [
+        {
+          "field": "explanation",
+          "exact_text": "Smaller daily samples produce greater relative variability, so extreme proportions (>60% boys) occur far more often at the 15-birth hospital. This is a direct application of sampling variability / law of small numbers.",
+          "disposition": "conditionally_supported",
+          "reason": "The smaller-sample variability explanation and greater upper-tail frequency are correct under the conventional model. The frozen calculation gives about15.09% versus6.76% per day at p=1/2. This is a probabilistic tendency, not a guarantee about every realized year.",
+          "material_teaching_issue": false,
+          "qualification": "Comparable independent birth samples with a common boy probability approximately one-half. This is the conventional school model, not an explicit premise of the unchanged stem."
+        },
+        {
+          "field": "choiceExplanations.Small Hospital",
+          "exact_text": "With only 15 births per day, random fluctuation is large relative to sample size, making days exceeding 60% boys much more probable.",
+          "disposition": "conditionally_supported",
+          "reason": "Accurately explains the intended answer under the conventional model; smaller independent samples have more variable proportions and the60% threshold is above the assumed center.",
+          "material_teaching_issue": false,
+          "qualification": "Comparable independent birth samples with a common boy probability approximately one-half. This is the conventional school model, not an explicit premise of the unchanged stem."
+        },
+        {
+          "field": "choiceExplanations.Large Hospital",
+          "exact_text": "Larger samples cluster closer to the true 50% proportion, making extreme daily deviations less frequent, not more.",
+          "disposition": "conditionally_supported",
+          "reason": "Larger samples concentrate around a common probability under the conventional model. The text presents50% as true without stating it as a modeling approximation; this is a missing qualification, not an independently established false biological claim.",
+          "material_teaching_issue": false,
+          "qualification": "Comparable independent birth samples with a common boy probability approximately one-half. This is the conventional school model, not an explicit premise of the unchanged stem."
+        },
+        {
+          "field": "choiceExplanations.Both about equally",
+          "exact_text": "The hospitals' very different daily sample sizes (45 vs 15) produce substantially different frequencies of extreme outcomes.",
+          "disposition": "conditionally_supported",
+          "reason": "The conventional model produces substantially different expected qualifying-day frequencies. Sample sizes alone do not establish that result without a common underlying probability and sampling assumptions.",
+          "material_teaching_issue": false,
+          "qualification": "Comparable independent birth samples with a common boy probability approximately one-half. This is the conventional school model, not an explicit premise of the unchanged stem."
+        },
+        {
+          "field": "choiceExplanations.Cannot be determined from the information given",
+          "exact_text": "Statistical theory of sampling variability is sufficient to predict which hospital sees more extreme days; no additional information is needed.",
+          "disposition": "unsupported_strengthening",
+          "reason": "The assertion that no additional information is needed dismisses the precise missing-model issue already frozen blind. Sampling theory needs a model connecting the two hospitals; the listed daily sizes alone do not specify it. Under ordinary textbook convention the intended answer is reasonable, but that convention should not be represented as supplied data.",
+          "material_teaching_issue": true,
+          "qualification": "Comparable independent birth samples with a common boy probability approximately one-half. This is the conventional school model, not an explicit premise of the unchanged stem."
+        }
+      ],
+      "summary": "Four fields give correct conditional school-model reasoning. The categorical rejection of insufficient information overstates what the exact stem establishes. Do not count the missing model as four new factual errors or claim Small Hospital is biologically false. The pre-existing ambiguity and difficulty2 remain.",
+      "material_issue_field_count": 1
+    },
+    {
+      "id": "call-2-item-1",
+      "packet_content_sha256_as_supplied": "f22a342f3cd2512c28e917a3b825cff26d5895c542ce9bb0e67782341662ce73",
+      "packet_teaching_sha256_as_supplied": "afb5eeab93423bd446feb6dc38a1598ec1954322b5f0cb1f6d03cf485fe8d245",
+      "computed_exact_question_sha256": "afb5eeab93423bd446feb6dc38a1598ec1954322b5f0cb1f6d03cf485fe8d245",
+      "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+      "raw_author_choice_order": [
+        "About 99%",
+        "About 50%",
+        "About 9%",
+        "About 1%"
+      ],
+      "final_choice_order": [
+        "About 9%",
+        "About 99%",
+        "About 50%",
+        "About 1%"
+      ],
+      "expectedAnswer": "About 9%",
+      "matches_frozen_blind_literal_answer": true,
+      "preserved_blind_difficulty": 3,
+      "preserved_blind_unique_key_status": "Unique approximate answer: About9%.",
+      "fields": [
+        {
+          "field": "explanation",
+          "exact_text": "Bayes' theorem: P(disease|+)=(0.99×0.001)/[(0.99×0.001)+(0.01×0.999)]≈0.00099/0.01098≈9%. The very low base rate (1/1000) generates far more false positives than true positives.",
+          "disposition": "supported",
+          "reason": "The numerator0.00099, denominator0.01098 and posterior11/122≈9.016% are correct. At the stipulated sensitivity and specificity, the low prevalence makes false positives more numerous than true positives.",
+          "material_teaching_issue": false,
+          "qualification": null
+        },
+        {
+          "field": "choiceExplanations.About 9%",
+          "exact_text": "Correct Bayesian calculation: the rare prevalence swamps test accuracy, leaving only about a 9% chance of true disease after a positive result.",
+          "disposition": "supported",
+          "reason": "The9% conclusion is correct. The informal phrase about prevalence swamping accuracy captures the stipulated base-rate effect without changing the calculation.",
+          "material_teaching_issue": false,
+          "qualification": null
+        },
+        {
+          "field": "choiceExplanations.About 99%",
+          "exact_text": "Ignores the base rate entirely; among 100,000 people there are ~99 true positives but ~999 false positives, so 99% is far too high.",
+          "disposition": "supported",
+          "reason": "Among100000 people the stated rates imply99 true positives and999 false positives.99% is consequently much too high; confusing test performance with posterior probability is a plausible explanation for this distractor.",
+          "material_teaching_issue": false,
+          "qualification": null
+        },
+        {
+          "field": "choiceExplanations.About 50%",
+          "exact_text": "50% would require roughly equal true and false positives, which needs ~50% prevalence, not 1/1000.",
+          "disposition": "materially_inaccurate",
+          "reason": "Equal true and false positives require0.99p=0.01(1-p), hence p=0.01=1%, not approximately50%. At50% prevalence, the posterior is99%, not50%. The first clause is correct but the necessary-prevalence claim is a direct mathematical error.",
+          "material_teaching_issue": true,
+          "qualification": null
+        },
+        {
+          "field": "choiceExplanations.About 1%",
+          "exact_text": "1% is close to the prior base rate alone and fails to account for the updating power of a positive test result.",
+          "disposition": "materially_misleading",
+          "reason": "The prior is1/1000=0.1%, so the1% option is ten times the prior. Calling it close to the prior base rate and treating it as an unupdated prior obscures the actual quantities;1% is the specified false-positive rate. The weaker claim that1% is below the correct positive-test posterior is true, but it does not validate this numerical explanation.",
+          "material_teaching_issue": true,
+          "qualification": "The word close is qualitative; this review does not turn it into a false exact equality. The material issue is the misleading identification of the wrong numerical quantity and its supposed calculation basis."
+        }
+      ],
+      "summary": "The unique9% key, main explanation and two choice explanations are sound. The50% distractor feedback makes a definite false prevalence claim; the1% feedback materially confuses the0.1% prior with a ten-times-larger number. Thus a valid difficulty3 question has unsound final teaching.",
+      "material_issue_field_count": 2
+    },
+    {
+      "id": "call-2-item-2",
+      "packet_content_sha256_as_supplied": "a6c053144841cad0482e9c6486573a02c1af7064321e38349576a5b09307774e",
+      "packet_teaching_sha256_as_supplied": "56366a74c8b80b08d409692ff187fef233c4604580bcb90f4db1688a83294d0c",
+      "computed_exact_question_sha256": "56366a74c8b80b08d409692ff187fef233c4604580bcb90f4db1688a83294d0c",
+      "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+      "raw_author_choice_order": [
+        "Ice cream consumption causes drowning",
+        "Drowning causes people to buy more ice cream",
+        "A third factor (like hot weather) likely explains both patterns",
+        "The correlation is probably a statistical fluke"
+      ],
+      "final_choice_order": [
+        "A third factor (like hot weather) likely explains both patterns",
+        "Ice cream consumption causes drowning",
+        "Drowning causes people to buy more ice cream",
+        "The correlation is probably a statistical fluke"
+      ],
+      "expectedAnswer": "A third factor (like hot weather) likely explains both patterns",
+      "matches_frozen_blind_literal_answer": false,
+      "preserved_blind_difficulty": 2,
+      "preserved_blind_unique_key_status": "No fully warranted conclusion as written; the third choice is the best conventional hypothesis, but its likelihood claim exceeds the evidence supplied.",
+      "fields": [
+        {
+          "field": "explanation",
+          "exact_text": "Correlation between two variables can arise from a common cause (confounding). Hot weather independently drives both ice cream sales and swimming activity, producing a spurious correlation without any direct causal link.",
+          "disposition": "unsupported_strengthening",
+          "reason": "A common cause can produce correlation, and heat is a plausible school-level hypothesis. The next sentence asserts that this mechanism produced the observed city-level pattern and that no direct causal link exists. Neither measured weather adjustment nor absence of direct causation is established by the stem.",
+          "material_teaching_issue": true,
+          "qualification": "This is not a finding that hot weather cannot increase ice-cream demand or swimming. The unsupported part is attribution and causal exclusion for this particular study."
+        },
+        {
+          "field": "choiceExplanations.A third factor (like hot weather) likely explains both patterns",
+          "exact_text": "Hot weather increases both swimming (raising drowning risk) and ice cream demand, making confounding the most warranted conclusion.",
+          "disposition": "unsupported_strengthening",
+          "reason": "The suggested common-cause story is plausible, but the text upgrades it to the most warranted conclusion about the study without additional causal evidence. A plausible mechanism does not itself establish that it explains the reported association.",
+          "material_teaching_issue": true,
+          "qualification": null
+        },
+        {
+          "field": "choiceExplanations.Ice cream consumption causes drowning",
+          "exact_text": "Asserts causation from correlation alone with no established mechanism and an obvious alternative explanation available.",
+          "disposition": "supported",
+          "reason": "The headline asserts a causal relationship from an association. The reported evidence establishes no causal mechanism, and a plausible alternative explanation makes that inference unjustified; the feedback does not need to prove causation impossible.",
+          "material_teaching_issue": false,
+          "qualification": null
+        },
+        {
+          "field": "choiceExplanations.Drowning causes people to buy more ice cream",
+          "exact_text": "Reverses the relationship implausibly and is unsupported by any reasonable mechanism.",
+          "disposition": "supported_with_minor_overstatement",
+          "reason": "The reverse-causation claim lacks evidence in the stem and is implausible as the ordinary intended explanation. Saying unsupported by any reasonable mechanism is broader than showing that no mechanism was provided. This wording is unnecessary, but no concrete material false mechanism claim is established here.",
+          "material_teaching_issue": false,
+          "qualification": "Retain the lack-of-evidence conclusion without treating every imaginable mechanism as impossible. The weak distractor does not strengthen the chosen causal explanation."
+        },
+        {
+          "field": "choiceExplanations.The correlation is probably a statistical fluke",
+          "exact_text": "Dismissing a well-explained pattern as random noise is less warranted than identifying the known confounding variable.",
+          "disposition": "unsupported_strengthening",
+          "reason": "The stem supplies neither sampling uncertainty nor an established confounder. It therefore supports neither probably a fluke nor this feedback’s well-explained pattern and known confounding variable. The explanation converts an untested hypothesis into known evidence.",
+          "material_teaching_issue": true,
+          "qualification": null
+        }
+      ],
+      "summary": "The causal caution is sound, and reverse causation is unsupported. Main teaching, selected-choice feedback and fluke feedback nevertheless promote a possible confounder to a known explanation. These are unsupported causal-strength claims, not proof that the proposed weather mechanism is false. Frozen difficulty2 and option ambiguity remain.",
+      "material_issue_field_count": 3
+    }
+  ],
+  "exact_offline_calculations": {
+    "prevalence_required_for_50_percent_posterior": "1/100",
+    "posterior_if_prevalence_50_percent": "99/100",
+    "stated_prior": "1/1000",
+    "one_percent_divided_by_stated_prior": "10"
+  },
+  "summary": {
+    "items_assessed": 3,
+    "fields_assessed": 15,
+    "material_issue_fields_by_item": {
+      "call-2-item-0": 1,
+      "call-2-item-1": 2,
+      "call-2-item-2": 3
+    },
+    "definite_wrong_calculation": "About50% feedback incorrectly says50% prevalence is needed; the correct value is1%.",
+    "additional_numerical_teaching_issue": "About1% feedback misleadingly describes a value ten times the0.1% prior as the prior-based answer.",
+    "conditional_school_model_fields": 4,
+    "unsupported_strengthening_fields": 4,
+    "minor_overstatement_fields": 1,
+    "sound_unqualified_fields": 4,
+    "fully_sound_five_field_items": 0,
+    "frozen_blind_difficulties": [
+      2,
+      3,
+      2
+    ],
+    "combined_target_pass_count": 0,
+    "caveat": "Hospital missing assumptions are retained as one existing ambiguity and conditional reasoning, not multiplied into factual falsehoods. The possible weather explanation is not disproved. The numerical Bayes feedback error is independent of those interpretation sensitivities."
+  },
+  "repairs_or_changes_to_questions": false,
+  "preserved_blind_assessment_unchanged": true
+}

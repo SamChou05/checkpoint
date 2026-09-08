@@ -1,0 +1,353 @@
+{
+  "audit": "runtime-qualification-operational-and-fixed-semantic-v1",
+  "recorded_at_utc": "2026-09-08T09:43:18.101442+00:00",
+  "source": {
+    "capture_path": "/tmp/checkpoint-runtime-qualification-live-20260908/capture.json",
+    "capture_byte_sha256": "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d",
+    "plan_canonical_sha256": "d29a5555e8b56ba2e79f8d32665ba46a3fd2de1b98160683d71f0d2c178916f4",
+    "source_revision": "85b3e23cbbd90347eddae356e791a53825267d7a",
+    "protocol_path": "docs/QUESTION_RUNTIME_QUALIFICATION.md",
+    "protocol_sha256": "f12cbc3282946330281949e07e26773dd4329a212998426f633f31af1ea4cf89"
+  },
+  "method": "No provider observer or provider-client creation during replay (both patched to raise). Rebuilt exact frozen plan and32source hashes/dependencies, replayed actual current verify_questions and _generate_sanitized_questions on saved projections and remaining-time observations, and required canonical equality of the whole replay. Reviewed all20 fixed solver labels/reasons and both returned fixed keys/main/eight choice feedback fields against exact frozen premises. Fresh content was processed mechanically by replay only and was not opened for semantic assessment.",
+  "operational": {
+    "exact_runtime_replay": true,
+    "provider_observer_calls_during_replay": 0,
+    "provider_client_creations_during_replay": 0,
+    "source_hashes_verified": 32,
+    "input_bytes_by_call": [
+      5810,
+      7782,
+      10130,
+      6427,
+      12946
+    ],
+    "output_tokens_by_call": [
+      998,
+      641,
+      909,
+      1234,
+      1151
+    ],
+    "sdk_intervals_sum_seconds": 64.81969479197869,
+    "local_process_intervals_sum_seconds": 68.73471583402716,
+    "operation_intervals": [
+      {
+        "kind": "fixed",
+        "sdk_interval_sum_seconds": 20.59449179196963,
+        "local_process_interval_sum_seconds": 22.514355167048052
+      },
+      {
+        "kind": "fresh",
+        "sdk_interval_sum_seconds": 44.22520300000906,
+        "local_process_interval_sum_seconds": 46.220360666979104
+      }
+    ],
+    "all_7_returned_items_current_policy_and_field_limits": true,
+    "fresh_content_semantically_assessed": false,
+    "fixed_reviewer_original_stem_indexes": [
+      0,
+      4
+    ],
+    "captured_status": "completed",
+    "accounting": {
+      "prepared_calls": 5,
+      "observed_dispatch_attempts": 5,
+      "known_not_dispatched_calls": 0,
+      "unknown_dispatch_calls": 0,
+      "known_usage_subtotal": {
+        "inputTokens": 9232,
+        "outputTokens": 4933
+      },
+      "unknown_usage_calls": 0,
+      "input_utf8_bytes": 43095
+    },
+    "role_sequence": [
+      "solver",
+      "reviewer",
+      "author",
+      "solver",
+      "reviewer"
+    ],
+    "maximum_calls": 8,
+    "actual_calls": 5,
+    "calls_by_operation": {
+      "fixed": 2,
+      "fresh": 3
+    },
+    "maximum_calls_by_operation": {
+      "fixed": 2,
+      "fresh": 6
+    },
+    "known_input_output_token_total": 14165,
+    "all_calls_end_turn": true,
+    "all_returned_content_shapes_usable": true,
+    "all_worker_exitcodes_zero": true,
+    "all_local_cleanup_confirmed": true,
+    "termination_attempts": 0,
+    "provider_failures": 0,
+    "unknown_dispatches": 0,
+    "unknown_usage_calls": 0,
+    "author_json_repairs": 0,
+    "topoffs": 0,
+    "transport_retries": 0,
+    "settings": {
+      "AWS_REGION": "us-east-1",
+      "BEDROCK_REGION": "us-east-1",
+      "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+      "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+      "BEDROCK_FALLBACK_MODEL_ID": "",
+      "BEDROCK_KIMI_THINKING": "disabled",
+      "BEDROCK_CLAUDE_THINKING": "disabled",
+      "BEDROCK_CLAUDE_EFFORT": "high",
+      "BEDROCK_REASONING_EFFORT": "none",
+      "BEDROCK_MAX_TOKENS": "6000",
+      "BEDROCK_THINKING_MAX_TOKENS": "16000",
+      "BEDROCK_TEMPERATURE": "0.2",
+      "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+      "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+      "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+      "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+      "GENERATION_ATTEMPTS": "3",
+      "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+      "CHECKPOINT_PROMPT_VARIANT": "balanced",
+      "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+      "BEDROCK_GUARDRAIL_VERSION": ""
+    },
+    "budget_notes": "6000 is the output-token ceiling, not reasoning allocation: both model families explicitly requested thinking disabled. No reasoning blocks returned. Each full serialized provider request fits32768bytes; total43095<=262144. All operations used actual240s contexts; observed late-deadline timeout-shortening behavior was not tested. SDK and process interval sums are not an independently measured whole-run latency benchmark."
+  },
+  "fixed_semantic": {
+    "cases_requested": 5,
+    "cases_with_solver_records": 5,
+    "choice_labels_assessed": 20,
+    "choice_reasons_assessed": 20,
+    "predeclared_valid_cases": 2,
+    "predeclared_invalid_cases": 3,
+    "correct_choice_adequacy_labels": 20,
+    "pre_review_vetoes": {
+      "solver_zero_supported": 2,
+      "solver_multiple_supported": 1
+    },
+    "valid_retained": 2,
+    "invalid_returned": 0,
+    "false_rejections_in_fixed_controls": 0,
+    "reviewer_input_original_indexes": [
+      0,
+      4
+    ],
+    "reviewer_input_dense_indexes": [
+      0,
+      1
+    ],
+    "returned_keys_supported": 2,
+    "returned_main_explanations_supported_in_context": 2,
+    "returned_choice_feedback_fields": 8,
+    "returned_choice_feedback_supported_in_context": 7,
+    "returned_choice_feedback_requiring_unstated_eligibility_premise": 1,
+    "solver_reason_diagnostic_drift_count": 1,
+    "solver_reason_conditional_overclaim_count": 1,
+    "case_findings": [
+      {
+        "case_id": "observed_rate_comparison",
+        "fixture_locator": "$.plan.fixture.fixed.cases[0]",
+        "solver_locator": "$.calls[0].observation.response.text -> $.solutions[0]",
+        "independent_warranted_choices": [
+          "Team B"
+        ],
+        "observed_judgments_match": true,
+        "choice_reason_assessments": [
+          {
+            "choice": "Team A",
+            "assessment": "supported",
+            "basis": "30/100=30% < 35%."
+          },
+          {
+            "choice": "Team B",
+            "assessment": "supported",
+            "basis": "21/60=35% is the unique maximum of 30%,35%,20%,30%."
+          },
+          {
+            "choice": "Team C",
+            "assessment": "supported",
+            "basis": "16/80=20% is the unique minimum."
+          },
+          {
+            "choice": "Team D",
+            "assessment": "supported",
+            "basis": "27/90=30% < 35%."
+          }
+        ],
+        "returned": true,
+        "returned_locator": "$.operations[0].questions[0]",
+        "key": "supported",
+        "main_explanation": "supported",
+        "choice_feedback": {
+          "Team A": "supported",
+          "Team B": "supported",
+          "Team C": "supported",
+          "Team D": "supported"
+        },
+        "note": "Compares observed fractions only; no population-superiority assertion. All returned arithmetic is correct."
+      },
+      {
+        "case_id": "converse_not_established",
+        "fixture_locator": "$.plan.fixture.fixed.cases[1]",
+        "solver_locator": "$.calls[0].observation.response.text -> $.solutions[1]",
+        "independent_warranted_choices": [],
+        "observed_judgments_match": true,
+        "choice_reason_assessments": [
+          {
+            "choice": "X turns green.",
+            "assessment": "supported",
+            "basis": "Green implies R, but R does not entail green. The two listed models refute necessity without claiming green is impossible."
+          },
+          {
+            "choice": "X does not turn green.",
+            "assessment": "supported",
+            "basis": "The green-and-R model refutes necessity of not-green; model explicitly says green remains possible."
+          },
+          {
+            "choice": "X does not contain R.",
+            "assessment": "supported",
+            "basis": "Contradicts the stated R fact."
+          },
+          {
+            "choice": "Every sample containing R turns green.",
+            "assessment": "supported",
+            "basis": "A not-green sample containing R obeys the stated rule but refutes its converse."
+          }
+        ],
+        "returned": false,
+        "pre_review_disposition": "solver_zero_supported",
+        "independent_countermodels": [
+          {
+            "green": false,
+            "contains_R": true
+          },
+          {
+            "green": true,
+            "contains_R": true
+          }
+        ],
+        "note": "Refuted means not warranted AS the required conclusion, not that each proposition is false."
+      },
+      {
+        "case_id": "inconsistent_partition",
+        "fixture_locator": "$.plan.fixture.fixed.cases[2]",
+        "solver_locator": "$.calls[0].observation.response.text -> $.solutions[2]",
+        "independent_warranted_choices": [],
+        "observed_judgments_match": true,
+        "choice_reason_assessments": [
+          {
+            "choice": "8/12",
+            "assessment": "supported_core_with_diagnostic_drift",
+            "basis": "The reason correctly identifies 7+8=15 !=12 and says the scenario is impossible. Its tail says the contradiction makes this uncertain despite the explicit refuted judgment; forcing a ratio would discard a premise. This wording drift did not produce an eligible item."
+          },
+          {
+            "choice": "5/12",
+            "assessment": "supported_local_mismatch",
+            "basis": "With the given total12,5/12 would mean5 blue rather than the stated8. The reason is a correct local mismatch; it does not independently discuss the global inconsistency."
+          },
+          {
+            "choice": "8/15",
+            "assessment": "supported_local_mismatch",
+            "basis": "The stated total is12, so denominator15 substitutes the inconsistent count-sum for the declared total. There is no actual consistent jar."
+          },
+          {
+            "choice": "7/12",
+            "assessment": "supported_local_mismatch",
+            "basis": "7 is the stated red count rather than the blue count8. Treating7/12 as an actual red proportion would still require a consistent jar; read as a local arithmetic mismatch."
+          }
+        ],
+        "returned": false,
+        "pre_review_disposition": "solver_zero_supported",
+        "note": "All four numerical choices are ineligible because no scenario satisfies the exhaustive exclusive counts. No credit is claimed for accepting a fabricated repaired jar or for enforcing consistency between reason prose and the judgment label."
+      },
+      {
+        "case_id": "two_required_properties",
+        "fixture_locator": "$.plan.fixture.fixed.cases[3]",
+        "solver_locator": "$.calls[0].observation.response.text -> $.solutions[3]",
+        "independent_warranted_choices": [
+          "It includes a date.",
+          "It includes a signature."
+        ],
+        "observed_judgments_match": true,
+        "choice_reason_assessments": [
+          {
+            "choice": "It includes a date.",
+            "assessment": "supported",
+            "basis": "Explicitly required by both-date-and-signature."
+          },
+          {
+            "choice": "It includes a signature.",
+            "assessment": "supported",
+            "basis": "Explicitly required by both-date-and-signature."
+          },
+          {
+            "choice": "It includes a photograph.",
+            "assessment": "supported",
+            "basis": "The supplied requirement allows a dated, signed valid report without a photograph; necessity is not established, not a claim that photographs are forbidden."
+          },
+          {
+            "choice": "It includes a serial number.",
+            "assessment": "supported",
+            "basis": "A dated, signed valid report without a serial number satisfies the supplied requirement; necessity is not established."
+          }
+        ],
+        "returned": false,
+        "pre_review_disposition": "solver_multiple_supported"
+      },
+      {
+        "case_id": "ordinary_information_limit",
+        "fixture_locator": "$.plan.fixture.fixed.cases[4]",
+        "solver_locator": "$.calls[0].observation.response.text -> $.solutions[4]",
+        "independent_warranted_choices": [
+          "The response counts do not establish whether everyone eligible responded."
+        ],
+        "observed_judgments_match": true,
+        "choice_reason_assessments": [
+          {
+            "choice": "Yes, all eligible people responded.",
+            "assessment": "supported",
+            "basis": "A larger eligible population with80 responses satisfies the counts, so yes is not warranted."
+          },
+          {
+            "choice": "No, some eligible people did not respond.",
+            "assessment": "supported",
+            "basis": "An eligible population of80 with everyone responding also satisfies the counts, so no is not warranted."
+          },
+          {
+            "choice": "The response counts do not establish whether everyone eligible responded.",
+            "assessment": "supported",
+            "basis": "The complete-population and incomplete-population examples agree with all given counts but answer yes/no differently."
+          },
+          {
+            "choice": "Every eligible person preferred design A.",
+            "assessment": "conditional_overclaim",
+            "basis": "The choice is unsupported and does not answer the participation question. Saying it is directly contradicted by30 B respondents additionally treats those respondents as eligible, which the literal stem does not specify. This is a stronger assertion than the predeclared grounds, not a wrong selected key."
+          }
+        ],
+        "returned": true,
+        "returned_locator": "$.operations[0].questions[1]",
+        "key": "supported",
+        "main_explanation": "supported_in_stated_count_only_context",
+        "choice_feedback": {
+          "Yes, all eligible people responded.": "supported_in_stated_count_only_context",
+          "No, some eligible people did not respond.": "supported_in_stated_count_only_context",
+          "The response counts do not establish whether everyone eligible responded.": "supported_in_stated_count_only_context",
+          "Every eligible person preferred design A.": "conditional_overclaim: direct contradiction requires unstated respondent eligibility"
+        },
+        "qualified_feedback_locator": "$.operations[0].questions[1].choiceExplanations[\"Every eligible person preferred design A.\"]",
+        "note": "Phrasing that a conclusion requires knowing population size is assessed for this count-only question, not as a universal claim that no other evidence could establish participation. Ordinary survey conventions may make respondent eligibility seem natural, but strict literal feedback should not silently upgrade the supplied premises. The reviewer public preface repeats the same qualification; it is not an extra returned feedback field."
+      }
+    ],
+    "counting_note": "The jar reason drift and survey conditional overclaim are separate from wrong-key counts. Three jar distractor reasons supply locally correct numerical mismatches rather than a complete impossibility proof. The survey overclaim appears both in its solver reason and one returned choice-feedback field; do not count it as two bad returned items. Two correct retained keys do not establish two completely literal-premise-grounded teaching items. Fixed minimumDifficulty1 intentionally avoids treating these diagnostic controls as difficulty3 qualification."
+  },
+  "limits": [
+    "This is one local Kimi/Sonnet runtime batch, not deployed Lambda, queue, worker or bank-claim verification.",
+    "The fixed suite supplies known diagnostic stems and keys; it is not fresh author quality, generalized subject mastery or a production error-rate sample.",
+    "The current runtime generates final feedback after solving; this is not the immutable-teaching prototype.",
+    "No new source retrieval, native learner-artifact execution, model calls, repairs, replacements or capture edits were performed by this audit.",
+    "Fresh five-item answers, reasoning, feedback and difficulty are intentionally outside this semantic assessment and are not disclosed here."
+  ]
+}

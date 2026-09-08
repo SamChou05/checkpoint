@@ -1,0 +1,36 @@
+{
+  "scope": "Root calculations from blinded raw stems and choices before reading fresh authored keys, solver results, reviewer results or teaching feedback. Manually written arithmetic/enumeration; no generated code execution or provider calls.",
+  "checks": [
+    {
+      "id": "call-2-item-1",
+      "content_sha256": "f22a342f3cd2512c28e917a3b825cff26d5895c542ce9bb0e67782341662ce73",
+      "calculation": "P(disease | positive) = prevalence*sensitivity / (prevalence*sensitivity + (1-prevalence)*(1-specificity))",
+      "result_fraction": "11/122",
+      "result_percent": 9.01639344262295,
+      "matching_choice": "About 9%",
+      "scope": "Uses the supplied prevalence as the relevant prior and the stated conditional positive/negative test rates; this is arithmetic for a fictional educational item, not a real medical risk estimate."
+    },
+    {
+      "id": "call-2-item-3",
+      "content_sha256": "d0ec6f1236842a008c6e093c2209eadc84c23ef04f4c86b9ef91a861748b2de8",
+      "calculation": "Enumerate all 10,000 ordered pairs of 100 equally likely marbles with replacement.",
+      "both_red_pairs": 900,
+      "at_least_one_red_pairs": 5100,
+      "result_fraction": "3/17",
+      "result_percent": 17.647058823529413,
+      "matching_choice": "About 18%",
+      "scope": "Under the standard independent uniform-draw interpretation of drawing with replacement. The item does not expressly say random or uniform."
+    },
+    {
+      "id": "call-2-item-0",
+      "content_sha256": "c0d87f30e1b534b932c7b0e6151cb8d154614b616a28fccd0a53b4ac10b51ac9",
+      "calculation": "Exact binomial P(boys/n > 0.6), assuming independent births and the same p(boy)=0.5 in both hospitals.",
+      "tail_probabilities": {
+        "15_births": 0.15087890625,
+        "45_births": 0.0675782254228352
+      },
+      "conditional_matching_choice": "Small Hospital",
+      "scope": "This checks the familiar intended probability model only. Independence and equal per-hospital sex probabilities are not stated; this result does not independently validate the unchanged premise or its unique warranted answer."
+    }
+  ]
+}

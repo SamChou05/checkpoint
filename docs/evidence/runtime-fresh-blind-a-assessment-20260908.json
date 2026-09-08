@@ -1,0 +1,230 @@
+{
+  "assessment_kind": "Independent answer-key/feedback/verdict-blind assistant assessment; not educator-panel consensus",
+  "input_path": "/tmp/checkpoint-runtime-fresh-blind-a-20260908.json",
+  "input_sha256": "448df4aa7fb3920acc610639771fed0c8c683667982e4d1255cb2b974c619d97",
+  "rubric_path": "/Users/samchou/Documents/Checkpoint/backend/bedrock-question-service/question_difficulty.py",
+  "rubric_sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+  "blinding": "Read only the supplied blind packet and shared difficulty rubric. Authored keys, explanations, solver judgments and pipeline survival were not exposed. No other capture/output file, provider, network or native browser operation was used.",
+  "hash_conventions": {
+    "packet_content_sha256_as_supplied": "Preserved literally from the packet; its serialization convention was not supplied, so no equality to a different canonicalization is asserted.",
+    "computed_display_context_sha256": "SHA256 of compact sorted-key ensure_ascii=False UTF-8 JSON containing exactly goal,sourceDocuments,prompt,choices."
+  },
+  "items": [
+    {
+      "id": "call-2-item-0",
+      "packet_content_sha256_as_supplied": "c0d87f30e1b534b932c7b0e6151cb8d154614b616a28fccd0a53b4ac10b51ac9",
+      "computed_display_context_sha256": "181a77321563a3fc4ff9cca499b33f4981252799a8b3699e5552609573e173f4",
+      "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+      "choices": [
+        "Large Hospital",
+        "Small Hospital",
+        "Both about equally",
+        "Cannot be determined from the information given"
+      ],
+      "source_documents": [],
+      "warranted_choices_under_literal_given_information": [
+        "Cannot be determined from the information given"
+      ],
+      "unique_key_status": "Assumption-sensitive: the information-limit choice is defensible on the exact premises, while Small Hospital is the conventional textbook answer under a missing sampling model.",
+      "completeness": "The stem specifies sample sizes and threshold but not the common boy-birth probability, comparability of the hospitals, or independent/random daily sampling. These determine the likelihood ordering; actual past counts are also not supplied.",
+      "decisive_reason": "Under the conventional common approximately-one-half independent-birth model, the smaller sample exceeds 60% more often: exact p=1/2 daily probabilities are about15.09% versus6.76%. Sample size alone does not determine this ordering under all processes compatible with the wording; the provided alternative model reverses it.",
+      "material_issue": "The same choice set offers both the intended smaller-sample answer and an information-limit answer, without stating the model that makes the former uniquely warranted. Do not call Small Hospital factually false, but do not silently insert the model and certify a unique key.",
+      "per_choice": [
+        {
+          "choice": "Large Hospital",
+          "warranted": false,
+          "grounds": "Not warranted from sample size alone. Under the conventional common-p=1/2 model it has fewer expected qualifying days; a different unstated population process can favor it.",
+          "plausibility": "Plausible sample-size error: conflating more births with more days whose proportion exceeds a threshold."
+        },
+        {
+          "choice": "Small Hospital",
+          "warranted": false,
+          "grounds": "Conditionally warranted under comparable independent births with common probability near one-half; not established by the displayed information alone.",
+          "plausibility": "Strong intended answer, creating real ambiguity against the information-limit option when assumptions are omitted."
+        },
+        {
+          "choice": "Both about equally",
+          "warranted": false,
+          "grounds": "Equal population averages do not imply equal tail frequencies; equality itself is not established either.",
+          "plausibility": "Plausible confusion of an underlying average with variability of daily sample proportions."
+        },
+        {
+          "choice": "Cannot be determined from the information given",
+          "warranted": true,
+          "grounds": "The displayed counts alone do not specify the distribution needed for the likely-ordering claim.",
+          "plausibility": "A legitimate information-limit answer on a literal reading, not a sound wrong alternative unless the missing model is supplied."
+        }
+      ],
+      "distinct_choices": true,
+      "three_plausible_wrong_distractors_qualified": false,
+      "difficulty": 2,
+      "difficulty_rationale": "The intended task directly applies the familiar smaller-sample/greater-variability rule. It does not require calculating the binomial tails; diagnosing omitted premises should not turn an ambiguous familiar item into a qualified level3 exercise.",
+      "minimum_difficulty_3_met": false,
+      "goal_fit": true,
+      "uncertainty": "Ordinary textbook convention often supplies the approximately-half comparable-birth model, making Small Hospital reasonable. This rating deliberately records that convention sensitivity rather than treating every unstated real-world fact as an error.",
+      "overall_fresh_content_target_pass": false
+    },
+    {
+      "id": "call-2-item-1",
+      "packet_content_sha256_as_supplied": "f22a342f3cd2512c28e917a3b825cff26d5895c542ce9bb0e67782341662ce73",
+      "computed_display_context_sha256": "32fd25c7d932ee5a01c633086b5f896d5d167a926b0df19dda147ac76e371874",
+      "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+      "choices": [
+        "About 99%",
+        "About 50%",
+        "About 9%",
+        "About 1%"
+      ],
+      "source_documents": [],
+      "warranted_choices_under_literal_given_information": [
+        "About 9%"
+      ],
+      "unique_key_status": "Unique approximate answer: About9%.",
+      "completeness": "Sensitivity and specificity are both explicitly defined as99%, and prevalence is1/1000. Ordinary interpretation applies that prevalence to the person described; no additional clinical risk subgroup is supplied or needed for this educational calculation.",
+      "decisive_reason": "In100000 people there are100 sick,99 true positives,99900 healthy, and999 false positives. Hence99/(99+999)=11/122≈9.016%, uniquely About9%.",
+      "material_issue": null,
+      "per_choice": [
+        {
+          "choice": "About 99%",
+          "warranted": false,
+          "grounds": "99% is the sensitivity/specificity, not the posterior probability of disease among positive tests.",
+          "plausibility": "Strong conditional-reversal/base-rate-neglect distractor."
+        },
+        {
+          "choice": "About 50%",
+          "warranted": false,
+          "grounds": "True and false positives are not equally common; they occur99 versus999 times in the illustrative population.",
+          "plausibility": "Recognizable equal-possibility/equal-probability error, though less calculation-specific than the others."
+        },
+        {
+          "choice": "About 9%",
+          "warranted": true,
+          "grounds": "Matches the exact posterior11/122≈9.016%.",
+          "plausibility": "Unique appropriate approximation."
+        },
+        {
+          "choice": "About 1%",
+          "warranted": false,
+          "grounds": "1% is the false-positive rate among healthy people, not the disease probability among positive results.",
+          "plausibility": "Strong confusion of the false-positive conditional probability with the requested posterior."
+        }
+      ],
+      "distinct_choices": true,
+      "three_plausible_wrong_distractors_qualified": true,
+      "difficulty": 3,
+      "difficulty_rationale": "Requires interpreting the rare base rate together with two conditional test rates and comparing true positives against all positives. The supplied numbers materially affect the answer; this meets the rubric’s evidence-interpretation threshold without needing to classify it as advanced level4 reasoning.",
+      "minimum_difficulty_3_met": true,
+      "goal_fit": true,
+      "uncertainty": "This is a self-contained probability exercise, not individualized medical advice. Test performance and prevalence are accepted as stipulated.",
+      "overall_fresh_content_target_pass": true
+    },
+    {
+      "id": "call-2-item-2",
+      "packet_content_sha256_as_supplied": "a6c053144841cad0482e9c6486573a02c1af7064321e38349576a5b09307774e",
+      "computed_display_context_sha256": "c53927fb12c36d5ba7982a0dcca0df05d2e665fee027a0bece677429c57cb4f8",
+      "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+      "choices": [
+        "Ice cream consumption causes drowning",
+        "Drowning causes people to buy more ice cream",
+        "A third factor (like hot weather) likely explains both patterns",
+        "The correlation is probably a statistical fluke"
+      ],
+      "source_documents": [],
+      "warranted_choices_under_literal_given_information": [],
+      "unique_key_status": "No fully warranted conclusion as written; the third choice is the best conventional hypothesis, but its likelihood claim exceeds the evidence supplied.",
+      "completeness": "Only a city-level association is reported. No design, controls, sample uncertainty, temporal direction, or evidence about weather is supplied. The general causal warning is teachable, but none of the options states it without another unsupported claim.",
+      "decisive_reason": "Observational association is compatible with confounding, causal effects, reverse causation, measurement/selection effects, or chance. It does not by itself establish that any particular causal explanation is likely. Weather could explain both patterns, but changing could to likely requires additional support.",
+      "material_issue": "The most plausible offered mechanism is phrased as a warranted likelihood conclusion. The safe conclusion that correlation alone does not establish causation is absent. This is an unsupported-strength defect, not evidence that hot weather is factually false as a possible common cause.",
+      "per_choice": [
+        {
+          "choice": "Ice cream consumption causes drowning",
+          "warranted": false,
+          "grounds": "The reported association does not establish ice cream consumption as a cause of drowning.",
+          "plausibility": "Strong correlation-implies-causation distractor that repeats the headline’s error."
+        },
+        {
+          "choice": "Drowning causes people to buy more ice cream",
+          "warranted": false,
+          "grounds": "No reverse causal mechanism or temporal evidence is given.",
+          "plausibility": "Recognizable reverse-causation category, but this concrete drowning-to-ice-cream story is weak and easy to dismiss; no realistic mechanism is provided."
+        },
+        {
+          "choice": "A third factor (like hot weather) likely explains both patterns",
+          "warranted": false,
+          "grounds": "A common cause such as heat is plausible, but the study description does not establish that it likely explains the association.",
+          "plausibility": "Strong best-listed hypothesis; not fully warranted as the asserted conclusion. Ordinary classroom convention may intend this answer."
+        },
+        {
+          "choice": "The correlation is probably a statistical fluke",
+          "warranted": false,
+          "grounds": "No sample size or uncertainty information supports calling the association probably a fluke.",
+          "plausibility": "Recognizable chance-association explanation, but its probability assertion is as unsubstantiated as other offered causal claims."
+        }
+      ],
+      "distinct_choices": true,
+      "three_plausible_wrong_distractors_qualified": false,
+      "difficulty": 2,
+      "difficulty_rationale": "This familiar ice-cream/drowning example directly cues the single correlation-versus-causation rule. No data or interacting conditions require further interpretation; rejecting overstrong choices is not a reason to credit a defective item with higher cognitive challenge.",
+      "minimum_difficulty_3_met": false,
+      "goal_fit": true,
+      "uncertainty": "If most warranted is treated informally as most plausible hypothesis using ordinary background knowledge of heat, the third option is the intended best-listed choice. That interpretation sensitivity is disclosed; the literal support test does not silently strengthen the given evidence.",
+      "overall_fresh_content_target_pass": false
+    }
+  ],
+  "offline_calculations": {
+    "hospital_common_half_model": {
+      "scope": "Illustrative independent Bernoulli births with common p=1/2, an unstated assumption; not an observed hospital fact.",
+      "small_daily_tail": "309/2048",
+      "small_daily_tail_decimal": 0.15087890625,
+      "large_daily_tail": "594424357095/8796093022208",
+      "large_daily_tail_decimal": 0.0675782254228352,
+      "expected_qualifying_days_in_365": {
+        "small": 55.07080078125,
+        "large": 24.66605227933485
+      },
+      "thresholds": {
+        "small_at_least_boys": 10,
+        "large_at_least_boys": 28
+      }
+    },
+    "hospital_missing_parameter_countermodel": {
+      "scope": "A mathematical countermodel consistent with the displayed counts, not a claim about real hospital sex ratios. Independent births with p_large=0.7 and p_small=0.5 reverse the expected ordering.",
+      "large_daily_tail": 0.9013671115131721,
+      "small_daily_tail": 0.15087890625
+    },
+    "test_positive": {
+      "arithmetic": "(0.001*0.99)/(0.001*0.99+0.999*0.01)",
+      "posterior_exact": "11/122",
+      "posterior_decimal": 0.09016393442622951,
+      "illustrative_population_100000": {
+        "sick": 100,
+        "true_positive": 99,
+        "healthy": 99900,
+        "false_positive": 999,
+        "all_positive": 1098
+      }
+    }
+  },
+  "summary": {
+    "raw_items_assessed": 3,
+    "unambiguously_valid_item_ids": [
+      "call-2-item-1"
+    ],
+    "assumption_sensitive_item_ids": [
+      "call-2-item-0"
+    ],
+    "unsupported_conclusion_item_ids": [
+      "call-2-item-2"
+    ],
+    "independent_difficulties": [
+      2,
+      3,
+      2
+    ],
+    "minimum3_and_unique_key_and_plausible_distinct_distractors_count": 1,
+    "all_have_goal_fit": true,
+    "feedback_assessed": false,
+    "pipeline_survival_known": false,
+    "scope": "The calculations verify stipulated arithmetic only. Conditional textbook answers and unsupported causal conclusions are explicitly separated from factual falsehood. No repair, replacement, or production accuracy estimate."
+  }
+}

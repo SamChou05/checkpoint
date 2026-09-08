@@ -1,0 +1,61 @@
+{
+  "assessment_scope": "Raw author candidates only; no keys, feedback, difficulty, solver output or pipeline survival disclosed.",
+  "items": [
+    {
+      "id": "call-2-item-3",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A bag contains 30 red and 70 blue marbles. You draw one marble, note its color, return it, and draw again. Given that at least one draw was red, what is the probability both draws were red?",
+      "choices": [
+        "About 9%",
+        "About 18%",
+        "About 30%",
+        "About 51%"
+      ],
+      "content_sha256": "d0ec6f1236842a008c6e093c2209eadc84c23ef04f4c86b9ef91a861748b2de8"
+    },
+    {
+      "id": "call-2-item-4",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "A company reports that 80% of surveyed customers are 'satisfied.' The survey was sent by email to 10,000 recent purchasers; 2,000 responded. Which concern most warrants skepticism about the 80% figure?",
+      "choices": [
+        "The sample size of 2,000 is too small",
+        "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "Email surveys are inherently unreliable",
+        "80% is mathematically impossible with 10,000 customers"
+      ],
+      "content_sha256": "1e3ba5ea79115ff8e1b0d60ea1947c748c7f0a2459045bb5e3c85f54830c4102"
+    }
+  ]
+}
