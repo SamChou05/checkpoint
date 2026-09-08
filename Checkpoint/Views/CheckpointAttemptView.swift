@@ -89,13 +89,17 @@ struct CheckpointTerminalAnswerReviewPresentation: Equatable {
         resultLabel = resultPresentation.label
         resultSystemImage = resultPresentation.systemImage
         resultTone = resultPresentation.tone
+        let preservesReviewedContent = question.verificationVersion == 1
         topic = Self.nonEmptyText(question.topic) ?? "Checkpoint question"
-        prompt = Self.nonEmptyText(question.prompt)
+        prompt = Self.nonEmptyContent(question.prompt, preserve: preservesReviewedContent)
             ?? "This question's prompt is unavailable."
         answerLabel = "Your answer"
-        answerText = Self.nonEmptyText(answer) ?? "No answer was recorded."
-        explanation = Self.nonEmptyText(question.feedbackExplanation(for: answer))
-            ?? "No explanation is available for this question."
+        answerText = Self.nonEmptyContent(answer, preserve: preservesReviewedContent)
+            ?? "No answer was recorded."
+        explanation = Self.nonEmptyContent(
+            question.feedbackExplanation(for: answer),
+            preserve: preservesReviewedContent
+        ) ?? "No explanation is available for this question."
 
         if result == .correct {
             referenceAnswerLabel = nil
@@ -108,18 +112,20 @@ struct CheckpointTerminalAnswerReviewPresentation: Equatable {
             referenceAnswerLabel = answerReview?.answerLabel
                 ?? CheckpointAnswerReviewPresentation.answerLabel(for: question.format)
             referenceAnswerText = answerReview.flatMap {
-                Self.nonEmptyText($0.answerText)
+                Self.nonEmptyContent($0.answerText, preserve: preservesReviewedContent)
             } ?? "No reference answer is available."
         }
 
+        let spokenAnswer = Self.nonEmptyText(answerText) ?? answerText
         var accessibilityComponents = [
             "Last answer",
             resultPresentation.label,
-            "Your answer: \(answerText)"
+            "Your answer: \(spokenAnswer)"
         ]
         if let referenceAnswerLabel, let referenceAnswerText {
+            let spokenReference = Self.nonEmptyText(referenceAnswerText) ?? referenceAnswerText
             accessibilityComponents.append(
-                "\(referenceAnswerLabel): \(referenceAnswerText)"
+                "\(referenceAnswerLabel): \(spokenReference)"
             )
         }
         accessibilityLabel = Self.accessibilitySentence(
@@ -142,6 +148,13 @@ struct CheckpointTerminalAnswerReviewPresentation: Equatable {
     private static func nonEmptyText(_ text: String) -> String? {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? nil : trimmed
+    }
+
+    private static func nonEmptyContent(_ text: String, preserve: Bool) -> String? {
+        guard let nonEmpty = nonEmptyText(text) else { return nil }
+        // Reviewed content may use boundary whitespace as part of its meaning.
+        // Emptiness checks and UI labels do not authorize rewriting that content.
+        return preserve ? text : nonEmpty
     }
 
     private static func accessibilitySentence(from components: [String]) -> String {

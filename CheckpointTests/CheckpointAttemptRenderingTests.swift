@@ -124,6 +124,148 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
     }
 
     @MainActor
+    func testTerminalAnswerReviewPreservesReviewedContentBytesAndFormatsOnlyLabels() throws {
+        let prompt = "    mark = \"e\u{0301}\"\r\nWhich value matches mark exactly?\r\n\t"
+        let expectedAnswer = "\t\"e\u{0301}\"  "
+        let submittedAnswer = "  \"e\" \r\n"
+        let mainExplanation = " \tThe decomposed letter e\u{0301} keeps its original code points.\r\n"
+        let choiceExplanation = "\tThe selected value omits the combining mark.\r\n "
+
+        // Historical reviewed items also retain their presentation; freshness
+        // eligibility is checked separately before a new question is served.
+        for policyRevision in [0, QuestionVerificationPolicy.currentRevision] {
+            var question = makeQuestion(
+                goal: makeGoal(),
+                index: 1,
+                topic: " \tUnicode text\r\n",
+                prompt: prompt,
+                expectedAnswer: expectedAnswer,
+                choices: [expectedAnswer, submittedAnswer, "\"E\"", "\"ee\""],
+                explanation: mainExplanation,
+                verificationVersion: 1,
+                verificationPolicyRevision: policyRevision
+            )
+            question.choiceExplanations[submittedAnswer] = choiceExplanation
+
+            let presentation = CheckpointTerminalAnswerReviewPresentation(
+                question: question,
+                answer: submittedAnswer,
+                result: .incorrect
+            )
+
+            XCTAssertEqual(Data(presentation.prompt.utf8), Data(prompt.utf8))
+            XCTAssertEqual(Data(presentation.answerText.utf8), Data(submittedAnswer.utf8))
+            XCTAssertEqual(
+                Data(try XCTUnwrap(presentation.referenceAnswerText).utf8),
+                Data(expectedAnswer.utf8)
+            )
+            XCTAssertEqual(
+                Data(presentation.explanation.utf8),
+                Data((choiceExplanation + "\n\n" + mainExplanation).utf8)
+            )
+            XCTAssertEqual(presentation.topic, "Unicode text")
+            XCTAssertEqual(presentation.answerLabel, "Your answer")
+            XCTAssertEqual(presentation.referenceAnswerLabel, "Correct answer")
+            XCTAssertEqual(
+                presentation.accessibilityLabel,
+                "Last answer. Not quite. Your answer: \"e\". Correct answer: \"e\u{0301}\"."
+            )
+        }
+    }
+
+    @MainActor
+    func testTerminalAnswerReviewPreservesReviewedMainFeedbackWithoutChoiceFeedback() {
+        let prompt = "  Which value follows from the given condition?\n"
+        let answer = "\tThe condition is satisfied.  "
+        let explanation = " \nThe provided condition entails this result.\t "
+        let question = makeQuestion(
+            goal: makeGoal(),
+            index: 1,
+            prompt: prompt,
+            expectedAnswer: answer,
+            explanation: explanation
+        )
+
+        let presentation = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: answer,
+            result: .correct
+        )
+
+        XCTAssertEqual(Data(presentation.prompt.utf8), Data(prompt.utf8))
+        XCTAssertEqual(Data(presentation.answerText.utf8), Data(answer.utf8))
+        XCTAssertEqual(Data(presentation.explanation.utf8), Data(explanation.utf8))
+        XCTAssertNil(presentation.referenceAnswerText)
+        XCTAssertEqual(
+            presentation.accessibilityLabel,
+            "Last answer. Correct. Your answer: The condition is satisfied."
+        )
+    }
+
+    @MainActor
+    func testTerminalAnswerReviewKeepsWhitespaceOnlyFallbacksForReviewedAndLegacyContent() {
+        for verificationVersion in [0, 1] {
+            var question = makeQuestion(
+                goal: makeGoal(),
+                index: 1,
+                topic: " \t\r\n",
+                prompt: " \t\r\n",
+                expectedAnswer: " \t\r\n",
+                choices: [],
+                explanation: " \t\r\n",
+                verificationVersion: verificationVersion
+            )
+            question.format = .shortAnswer
+            let presentation = CheckpointTerminalAnswerReviewPresentation(
+                question: question,
+                answer: " \t\r\n",
+                result: .unclear
+            )
+
+            XCTAssertEqual(presentation.topic, "Checkpoint question")
+            XCTAssertEqual(presentation.prompt, "This question's prompt is unavailable.")
+            XCTAssertEqual(presentation.answerText, "No answer was recorded.")
+            XCTAssertEqual(presentation.referenceAnswerText, "No reference answer is available.")
+            XCTAssertEqual(presentation.explanation, "No explanation is available for this question.")
+        }
+    }
+
+    @MainActor
+    func testTerminalAnswerReviewKeepsLegacyBoundaryWhitespaceCleanup() {
+        let expectedAnswer = "\tChosen value  "
+        let submittedAnswer = "  Another value\r\n"
+        var question = makeQuestion(
+            goal: makeGoal(),
+            index: 1,
+            topic: " \tState modeling\r\n",
+            prompt: " \tWhich value follows from the given condition?\r\n",
+            expectedAnswer: expectedAnswer,
+            choices: [expectedAnswer, submittedAnswer, "Third value", "Fourth value"],
+            explanation: " \tThe stated condition supports this result.\r\n",
+            verificationVersion: 0
+        )
+        question.choiceExplanations[submittedAnswer] = "\tThis alternative does not follow.\r\n "
+        let presentation = CheckpointTerminalAnswerReviewPresentation(
+            question: question,
+            answer: submittedAnswer,
+            result: .incorrect
+        )
+
+        XCTAssertEqual(presentation.topic, "State modeling")
+        XCTAssertEqual(presentation.prompt, "Which value follows from the given condition?")
+        XCTAssertEqual(presentation.answerText, "Another value")
+        XCTAssertEqual(presentation.referenceAnswerText, "Chosen value")
+        XCTAssertEqual(
+            presentation.explanation,
+            "This alternative does not follow.\r\n \n\n \tThe stated condition supports this result."
+        )
+        XCTAssertEqual(
+            presentation.accessibilityLabel,
+            "Last answer. Not quite. Your answer: Another value. Correct answer: Chosen value."
+        )
+    }
+
+    @MainActor
     func testTerminalAnswerReviewDisclosureMotionAndAccessibilityStayPredictable() {
         let standard = CheckpointTerminalAnswerReviewMotionPolicy(
             reduceMotion: false,
