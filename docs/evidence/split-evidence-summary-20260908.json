@@ -1,0 +1,1154 @@
+{
+  "experiment": "frozen-source-split-review-v3",
+  "status": "completed",
+  "source_revision": "7746cfdee5964507d8f994b9e3e2fc4a08f68a31",
+  "source_sha256": {
+    "complete_question_solution.py": "72bb99b3efeab3cbe2d87526009045c205b6ac588d5c749f21937442db12e188",
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "generation_diagnostics.py": "2e4353c07b5452acc538de56d643ff3a3f391c6aaa0005a48962955267da041a",
+    "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "question_generation.py": "aa64b8b36ce3533a426790bd7d12610fd7d97dda895aed71771dbe7c15650cc6",
+    "question_quality.py": "90318121bf1f049eb9e305f219c5f7e748742f9a148104067818e6a8f4c2e87d",
+    "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "question_verification.py": "b5a8ba907be0f664af899018e3a45aa9bed4c8bbfac0ca280da6bb80917860b2",
+    "request_contract.py": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+    "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "skill_maps.py": "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+    "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+    "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "evals/checkpoint_source_authoring_eval.py": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+    "evals/checkpoint_model_comparison.py": "04caeda857a7ddd942779a278acd309d8e690a5640e8db6856c516fee6984a01",
+    "evals/checkpoint_full_pipeline_smoke.py": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+    "evals/checkpoint_learning_eval.py": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+    "evals/checkpoint_prompt_ablation.py": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+    "evals/checkpoint_solution_compatibility_eval.py": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+    "evals/checkpoint_claim_evidence_trial.py": "cd2a969d9c2ffc7023ee363b7a7618dc0f1547c95426c64332db60644bf6b585",
+    "evals/claim_evidence_review.py": "86359b73d4f90725b31fdb48b7f1703449854c4af45d1fff9b74de4c4c32725f",
+    "evals/grounding_transport.py": "3d69d039b085cb80251c61e929e624a9969919dff3aaadb754c84325feab6b76",
+    "evals/claim_evidence_schema.py": "a226df963b7bc9108188113ec22fda0a1ce9ced76503f5d730a04e73f5211811",
+    "evals/acquired_source_review.py": "2471382ff68841e6bc76d736d1d9ff65970f218f7916c976a6b73803807b0715",
+    "evals/question_immutable_review.py": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+    "evals/question_complete_author.py": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86",
+    "evals/checkpoint_author_latency_probe.py": "089713524f6236df8c58e3d97c927cb5ef518230bfbc4ef8f27374d87847fe9a",
+    "evals/checkpoint_immutable_review_eval.py": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+    "evals/split_evidence_review.py": "1106ba6769fbd9d92ff28ba73f951b2f90558c153d53ccec342692b67c4cda58"
+  },
+  "plan_canonical_sha256": "a2570e1383e62eec1c67621eb52c1b2d0b4cd7ddaf780241e8ccbab7dbd4c5c9",
+  "raw_local_capture_sha256": "13e4993d3d16c15695c42081b7ba1b7c9132067058b09d423c520f43657a0a7a",
+  "raw_local_capture_bytes": 851824,
+  "origin": {
+    "capture_sha256": "f136a693f4fef8e72a6217924d1984021c0bbab1a46d3b4853fc60fe4d2f5a27",
+    "plan_sha256": "6ae4c21692590c48c29d747380572dfd42ba0ff5adfc18fd3f4d4e7874e34fc6",
+    "source_revision": "cb41f487f8a9bc2beb6d93bd86ee23593b0b5da7"
+  },
+  "model_calls": 12,
+  "fetches": 0,
+  "known_usage": {
+    "inputTokens": 79570,
+    "outputTokens": 6069
+  },
+  "sdk_seconds_sum": 123.05381170794135,
+  "worker_seconds_sum": 131.03513662389014,
+  "scope": "Public derived summary, not a raw capture or standalone replay. Source passages, source-bearing requests, model quotations and reasoning/issue/task text are omitted. Exact local capture and plan retain originals. Declaration, native schema and reference identity do not establish factual correctness. Summed intervals are not independently measured end-to-end wall time.",
+  "calls": [
+    {
+      "index_zero_based": 0,
+      "case_id": "dough_reference",
+      "role": "old_review",
+      "request_sha256": "892943e0cab5d895549faec7d5b1d0bd1a5eb2b1da15e0447fdd51da82527d19",
+      "input_utf8_bytes": 34709,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "response_text_sha256": "3bddd9baea96684bf37ea384418af35e709135329d9e4ed534027bd23bd518b4",
+      "response_text_characters": 2726,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 10030,
+        "outputTokens": 742,
+        "totalTokens": 10772
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 14.377748291997705,
+      "process_elapsed_seconds": 15.575938042020425,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "application_format_valid": false,
+      "raw_review_declarations": [
+        {
+          "index": 0,
+          "valid": false,
+          "answer": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+          "difficulty": 4,
+          "explanationSupport": "uncertain"
+        }
+      ],
+      "raw_issues_count": 5
+    },
+    {
+      "index_zero_based": 1,
+      "case_id": "dough_reference",
+      "role": "choices",
+      "request_sha256": "050f384a084d87ef1736632fff0b57a7142433cc68d1fbe60b8aa5cc7443534d",
+      "input_utf8_bytes": 27845,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "3c3f802a181b89eeb7d57dcca28f7f9cbcf8d058e4df926e4e2685a62caec7b5",
+      "response_text_sha256": "231ceea1f7b1e8140c7ae4587b466ac7aadd5ebc7ceb52ddbbc73c9bb3a0731a",
+      "response_text_characters": 3427,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 8042,
+        "outputTokens": 884,
+        "totalTokens": 8926
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 22.384928499988746,
+      "process_elapsed_seconds": 23.10792095796205,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "raw_reason_characters": {
+        "A": 1068,
+        "B": 409,
+        "C": 521,
+        "D": 377
+      },
+      "raw_issues_count": 2,
+      "application_format_valid": true
+    },
+    {
+      "index_zero_based": 2,
+      "case_id": "dough_reference",
+      "role": "teaching",
+      "request_sha256": "27392f80aa8f0d6dc0de2c975c11357df64a51014d5556c5e04d5e41699e84ec",
+      "input_utf8_bytes": 25882,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "8e9286ea19198da0c495e43ebff8522f7d137c861b21c049556741c25fe9e09f",
+      "response_text_sha256": "3baf33f390af739862f10051f41263e2baaf3632e48f3012f2bdf6a6d9c466cb",
+      "response_text_characters": 2212,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 7349,
+        "outputTokens": 535,
+        "totalTokens": 7884
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 11.874565207981504,
+      "process_elapsed_seconds": 12.54376895801397,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "main": "refuted"
+      },
+      "raw_reason_characters": {
+        "main": 1361
+      },
+      "raw_issues_count": 2,
+      "application_format_valid": false
+    },
+    {
+      "index_zero_based": 3,
+      "case_id": "hotel_reference",
+      "role": "choices",
+      "request_sha256": "a6fe80884f54e02bdb6c43904523595a8e1a0d9290467a442bfbaa28f1520a9e",
+      "input_utf8_bytes": 14169,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "3c3f802a181b89eeb7d57dcca28f7f9cbcf8d058e4df926e4e2685a62caec7b5",
+      "response_text_sha256": "2fb0b006a6d02010e6d1d08a02699a9665840c0d46fd73140fb238fc913d640d",
+      "response_text_characters": 2211,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 4366,
+        "outputTokens": 549,
+        "totalTokens": 4915
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 12.038296582992189,
+      "process_elapsed_seconds": 12.697267874958925,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "raw_reason_characters": {
+        "A": 304,
+        "B": 315,
+        "C": 240,
+        "D": 623
+      },
+      "raw_issues_count": 1,
+      "application_format_valid": true
+    },
+    {
+      "index_zero_based": 4,
+      "case_id": "hotel_reference",
+      "role": "teaching",
+      "request_sha256": "10fd41f1f279da16a1204292287c8beac50f5946e8b3c7a4fc0f12a273ee60a7",
+      "input_utf8_bytes": 12132,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "8e9286ea19198da0c495e43ebff8522f7d137c861b21c049556741c25fe9e09f",
+      "response_text_sha256": "3f85e914c3514b78d29c423eff990da45b889b5b591e7b1678390d5d9097d562",
+      "response_text_characters": 738,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3661,
+        "outputTokens": 173,
+        "totalTokens": 3834
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 3.949153167020995,
+      "process_elapsed_seconds": 4.509622958023101,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "main": "supported"
+      },
+      "raw_reason_characters": {
+        "main": 635
+      },
+      "raw_issues_count": 0,
+      "application_format_valid": true
+    },
+    {
+      "index_zero_based": 5,
+      "case_id": "hotel_reference",
+      "role": "old_review",
+      "request_sha256": "3f3f10bfa340d9005438c7fed6849801b0a9b44d2dae06aa8bcf93b1c3aefc93",
+      "input_utf8_bytes": 19052,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "response_text_sha256": "ee9774add8fcf9a10fb409e7940568920e69de7271a2920253c52d9f82565ac1",
+      "response_text_characters": 1730,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 5681,
+        "outputTokens": 606,
+        "totalTokens": 6287
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 7.139670625037979,
+      "process_elapsed_seconds": 7.6902597500011325,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "application_format_valid": false,
+      "raw_review_declarations": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "The hotel is now identifiable from the context just established.",
+          "difficulty": 3,
+          "explanationSupport": "supported"
+        }
+      ],
+      "raw_issues_count": 0
+    },
+    {
+      "index_zero_based": 6,
+      "case_id": "butter_reference",
+      "role": "old_review",
+      "request_sha256": "779c6697e54b7b5b2a2a8962609fc2d1e4c3598bc95dbfad5d47040e7199e6e4",
+      "input_utf8_bytes": 22506,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "response_text_sha256": "c67b01dd47dcab5c9f10c2ea80bf6c49b31355d2118af9cab1fc498cc50df8c6",
+      "response_text_characters": 1151,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 6580,
+        "outputTokens": 366,
+        "totalTokens": 6946
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 7.261921166966204,
+      "process_elapsed_seconds": 7.802085041999817,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "application_format_valid": true,
+      "raw_review_declarations": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+          "difficulty": 3,
+          "explanationSupport": "supported"
+        }
+      ],
+      "raw_issues_count": 0
+    },
+    {
+      "index_zero_based": 7,
+      "case_id": "butter_reference",
+      "role": "choices",
+      "request_sha256": "9fa500d37b40d40d245864dafb1963c63535f34ec9fac73f604ff42284519171",
+      "input_utf8_bytes": 17812,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "3c3f802a181b89eeb7d57dcca28f7f9cbcf8d058e4df926e4e2685a62caec7b5",
+      "response_text_sha256": "8f70227886cd99f08ff6d172f33feaebfca80bc05d9982b9e3b25fb9037be703",
+      "response_text_characters": 2216,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 5311,
+        "outputTokens": 554,
+        "totalTokens": 5865
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 11.58360683399951,
+      "process_elapsed_seconds": 12.147227083973121,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "raw_reason_characters": {
+        "A": 475,
+        "B": 426,
+        "C": 268,
+        "D": 385
+      },
+      "raw_issues_count": 1,
+      "application_format_valid": true
+    },
+    {
+      "index_zero_based": 8,
+      "case_id": "butter_reference",
+      "role": "teaching",
+      "request_sha256": "cdd1cbf5c4ac61d6b06679d455927a9eb44a7804fb8e2a3924ec4d1963bc89db",
+      "input_utf8_bytes": 15826,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "8e9286ea19198da0c495e43ebff8522f7d137c861b21c049556741c25fe9e09f",
+      "response_text_sha256": "34e82a7653693aa3335dea8828980f422f02170bded6f647f0ccc0697b4f52c4",
+      "response_text_characters": 895,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 4616,
+        "outputTokens": 195,
+        "totalTokens": 4811
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 5.638479832967278,
+      "process_elapsed_seconds": 6.294773540983442,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "main": "supported"
+      },
+      "raw_reason_characters": {
+        "main": 799
+      },
+      "raw_issues_count": 0,
+      "application_format_valid": true
+    },
+    {
+      "index_zero_based": 9,
+      "case_id": "plant_tissue",
+      "role": "choices",
+      "request_sha256": "bfb9019a9f739c2581e9c2c27c39f817d76bb7d3fd892ae9643e865067c29763",
+      "input_utf8_bytes": 26905,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "3c3f802a181b89eeb7d57dcca28f7f9cbcf8d058e4df926e4e2685a62caec7b5",
+      "response_text_sha256": "9f27ab0bcbc9890148dd0a6624c190d93dfc8a5977440eba82408fdbe7e25ff1",
+      "response_text_characters": 2569,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 7600,
+        "outputTokens": 603,
+        "totalTokens": 8203
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 11.425319708010647,
+      "process_elapsed_seconds": 11.974996499950066,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "raw_reason_characters": {
+        "A": 271,
+        "B": 467,
+        "C": 439,
+        "D": 324
+      },
+      "raw_issues_count": 2,
+      "application_format_valid": true
+    },
+    {
+      "index_zero_based": 10,
+      "case_id": "plant_tissue",
+      "role": "teaching",
+      "request_sha256": "94469a0633dedd20434a98fab9e6cc8bb3a730843d6c3003d94cd1ac61dbb188",
+      "input_utf8_bytes": 24942,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "8e9286ea19198da0c495e43ebff8522f7d137c861b21c049556741c25fe9e09f",
+      "response_text_sha256": "cae3c2af080a9021fa9f566d1bc4bb496162b26039f7e757f36368c52d70fcef",
+      "response_text_characters": 767,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 6917,
+        "outputTokens": 195,
+        "totalTokens": 7112
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 3.910944874980487,
+      "process_elapsed_seconds": 4.555829915974755,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "raw_assessment_statuses": {
+        "main": "supported"
+      },
+      "raw_reason_characters": {
+        "main": 650
+      },
+      "raw_issues_count": 0,
+      "application_format_valid": true
+    },
+    {
+      "index_zero_based": 11,
+      "case_id": "plant_tissue",
+      "role": "old_review",
+      "request_sha256": "29b9755b0ffef8cd4b7b11d92120a107049b9924bb226c0c14114d51fb8699d8",
+      "input_utf8_bytes": 33172,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "b999ffb0f30933fcbc6251ab1f63755b776f55ecb3fa6446caf972bc1b00b87e",
+      "response_text_sha256": "bdb1884b77f2aea8e8a619fd2ccd1adcc13c038ec4e5bce1713e35fe73f13101",
+      "response_text_characters": 1961,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 9417,
+        "outputTokens": 667,
+        "totalTokens": 10084
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 11.469176915998105,
+      "process_elapsed_seconds": 12.135446000029333,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true,
+      "application_format_valid": false,
+      "raw_review_declarations": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "difficulty": 3,
+          "explanationSupport": "supported"
+        }
+      ],
+      "raw_issues_count": 0
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "dough_reference",
+      "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+      "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 1619,
+          "original_end": 3602,
+          "text_sha256": "43c1cbf462c3673e429104896d415bdd4d4f41dfa58ef43c372988a358d87554"
+        },
+        "S1U2": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 3602,
+          "original_end": 5588,
+          "text_sha256": "4e2e83c4606838377a15406217d92e53eef79873a5610a7d4dad36126b803f50"
+        },
+        "S1U3": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 5588,
+          "original_end": 7379,
+          "text_sha256": "d4e7be0b30904766a0748c4c50d9ac008bf70235ec430446e9f424d4bfb48b73"
+        },
+        "S1U4": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 7379,
+          "original_end": 9378,
+          "text_sha256": "4805db6b18093847db38cb65dcaf3a28dd049649cab575538d1c7a907f835e46"
+        },
+        "S1U5": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 9378,
+          "original_end": 9619,
+          "text_sha256": "d39a46e98e1bac7c8e80d8589df378cbe35d48791b64b61049946cd9aacabb88"
+        },
+        "S2U1": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 16000,
+          "original_end": 17824,
+          "text_sha256": "8cc6c70b5cf4a03d1fda356dde43ffa5489498bc7c30050dd7e08631f66aaa79"
+        },
+        "S2U2": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 17824,
+          "original_end": 19784,
+          "text_sha256": "b80144805ecda77f3dd4b794ca4dc104f7faf453eabd0df6056e4b576c1d29de"
+        },
+        "S2U3": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 19784,
+          "original_end": 21683,
+          "text_sha256": "835a9ae658839dd64f4cea7d1d70dc90560145200efdc2ff1fa04dc8e386011e"
+        },
+        "S2U4": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 21683,
+          "original_end": 23611,
+          "text_sha256": "aa38df56a9bc300c8463b6d1a286c9c031438d5bee8f9d267cd538ca679aadf6"
+        },
+        "S2U5": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 23611,
+          "original_end": 24000,
+          "text_sha256": "00db4351381a96bf7a02951a5737786a22f23fc5bc744686554a18d98b587411"
+        }
+      },
+      "candidate": {
+        "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+        "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+        "eligible": false,
+        "reason": "invalid_review"
+      },
+      "reviews": {
+        "old_review": {
+          "eligible": false,
+          "reason": "invalid_review",
+          "declared_content_eligible": null,
+          "content_rejection_reason": null,
+          "target_relation": null,
+          "target_rejection_reason": null
+        },
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+            "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+            "payload_sha256": "799cc6619466e5dc03a40fcca11f17c700971066c77d42f8c02ee2c8c0f0d297",
+            "source_units_sha256": "87e49f3593322ab28675152ec3f9c546d5f6304938d1f4cd120324b322b2924b"
+          },
+          "issues_count": 2,
+          "issues_sha256": "cf02053c69b42d2cbf429c47f8765283a774571acef5795b7c3afda2c281c228",
+          "assessments": {
+            "A": {
+              "status": "supported",
+              "reason_sha256": "1a3b36ecb66e3fb7f4b3864a4f23de2e8b0a8658598452fedffe47731b4e030f",
+              "reason_characters": 1068,
+              "evidence_ids": [
+                "S1U2",
+                "S2U4",
+                "S2U1"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "65b1aacaccb874e83cde2dacfd9721d2eef43d561e1f911aca0b6106ba9d16e4",
+              "reason_characters": 409,
+              "evidence_ids": [
+                "S2U3",
+                "S2U4",
+                "S2U1"
+              ]
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "505d8cea91a4ee2aa0c2022dcb749523fb727a13a6e90fe0d73c7670768af5e2",
+              "reason_characters": 521,
+              "evidence_ids": [
+                "S1U2",
+                "S2U4"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "55e7b717f154dd2767c0c69cacd17de4feaf8915a10e9bcae6389c83a4513b25",
+              "reason_characters": 377,
+              "evidence_ids": [
+                "S1U2",
+                "S2U4",
+                "S2U1"
+              ]
+            }
+          },
+          "task_sha256": "3838bac8473184c8d081cc86ef92f2f3141a015c30f0855478e85f7646eae67b"
+        },
+        "teaching": {
+          "format_valid": false,
+          "binding": {
+            "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+            "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+            "payload_sha256": "799cc6619466e5dc03a40fcca11f17c700971066c77d42f8c02ee2c8c0f0d297",
+            "source_units_sha256": "87e49f3593322ab28675152ec3f9c546d5f6304938d1f4cd120324b322b2924b"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "hotel_reference",
+      "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+      "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08",
+          "original_start": 0,
+          "original_end": 1898,
+          "text_sha256": "a025db5b1432dbe99c702fc21f4aaaf7f7d965df4fa2c10855e98d0569db4f63"
+        },
+        "S1U2": {
+          "source_record_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08",
+          "original_start": 1898,
+          "original_end": 3888,
+          "text_sha256": "4e965f98145826c6a1387d2c86659141dd5202a584da007b92d76be2744dd465"
+        },
+        "S1U3": {
+          "source_record_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08",
+          "original_start": 3888,
+          "original_end": 4915,
+          "text_sha256": "a5cf80e8e6bb0bf562e5d71fd2444f62201f947d83a1b8ca67a7cf7292f79b8b"
+        }
+      },
+      "candidate": {
+        "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+        "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+        "eligible": false,
+        "reason": "solver_issues",
+        "supported_choice_ids": [
+          "A"
+        ],
+        "scope": "Declared independent choice/teaching judgments with exact reference identities, not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+            "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+            "payload_sha256": "38b385ca6ff7f1a29ec83af1594939aaba1ef24542cf52027af41fcfea6c3372",
+            "source_units_sha256": "4b89eb20f9d411bb6fd28f1868df8462d424bc80d09c96bb21f70c669f19eb79"
+          },
+          "issues_count": 1,
+          "issues_sha256": "ac978078ff43a8fd3dd96dcfceb85bd473e15fa5ff6e5f99cfa092c0727be418",
+          "assessments": {
+            "A": {
+              "status": "supported",
+              "reason_sha256": "b001f5511963e9decffc0bcb2189c575a3e94139a66086103119e55f5441b12b",
+              "reason_characters": 304,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "ad89c128130a1f7e64e7d8777c3da24833d0eada676dcc759754ee9da13156f1",
+              "reason_characters": 315,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "8d061dac36a83fe62cd13b6e0db0178daf6fa678041154878978a41ebb0db302",
+              "reason_characters": 240,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "20bd02bf671e9d100b3050d5324b5f828035b6093dbdc26a85cae954196b8c9a",
+              "reason_characters": 623,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            }
+          },
+          "task_sha256": "44533f97fc20aed8be81470eafc3851cff2da10aa94cf9ad3323cc4553639838"
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+            "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+            "payload_sha256": "38b385ca6ff7f1a29ec83af1594939aaba1ef24542cf52027af41fcfea6c3372",
+            "source_units_sha256": "4b89eb20f9d411bb6fd28f1868df8462d424bc80d09c96bb21f70c669f19eb79"
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "4a2ab8920f213ece709b3f272bce53afd6fa538a02aa0f5b626e5f182212be84",
+              "reason_characters": 635,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            }
+          },
+          "difficulty": 2
+        },
+        "old_review": {
+          "eligible": false,
+          "reason": "invalid_review",
+          "declared_content_eligible": null,
+          "content_rejection_reason": null,
+          "target_relation": null,
+          "target_rejection_reason": null
+        }
+      }
+    },
+    {
+      "case_id": "butter_reference",
+      "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+      "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 1619,
+          "original_end": 3602,
+          "text_sha256": "43c1cbf462c3673e429104896d415bdd4d4f41dfa58ef43c372988a358d87554"
+        },
+        "S1U2": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 3602,
+          "original_end": 5588,
+          "text_sha256": "4e2e83c4606838377a15406217d92e53eef79873a5610a7d4dad36126b803f50"
+        },
+        "S1U3": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 5588,
+          "original_end": 7379,
+          "text_sha256": "d4e7be0b30904766a0748c4c50d9ac008bf70235ec430446e9f424d4bfb48b73"
+        },
+        "S1U4": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 7379,
+          "original_end": 9378,
+          "text_sha256": "4805db6b18093847db38cb65dcaf3a28dd049649cab575538d1c7a907f835e46"
+        },
+        "S1U5": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 9378,
+          "original_end": 9619,
+          "text_sha256": "d39a46e98e1bac7c8e80d8589df378cbe35d48791b64b61049946cd9aacabb88"
+        }
+      },
+      "candidate": {
+        "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+        "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+        "eligible": false,
+        "reason": "solver_issues",
+        "supported_choice_ids": [
+          "A"
+        ],
+        "scope": "Declared independent choice/teaching judgments with exact reference identities, not factual certification."
+      },
+      "reviews": {
+        "old_review": {
+          "eligible": true,
+          "reason": null,
+          "declared_content_eligible": true,
+          "content_rejection_reason": null,
+          "target_relation": "supported",
+          "target_rejection_reason": null,
+          "review": {
+            "answer": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+            "difficulty": 3,
+            "explanationSupport": "supported",
+            "index": 0,
+            "valid": true
+          },
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "issues_count": 0
+        },
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+            "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+            "payload_sha256": "d15c7566630f65154810607d25c778a455566d35e83007726739aaf597f001ec",
+            "source_units_sha256": "2ffb090da486dd020b79dd4a54ca1ba0c4927ea5f4010f6649b8d16de1937544"
+          },
+          "issues_count": 1,
+          "issues_sha256": "d07ddab400df66138d52db51bbd824504843fb4e5c729e199dd72e4ebad516a0",
+          "assessments": {
+            "A": {
+              "status": "supported",
+              "reason_sha256": "ec186ea781b7914566af022d8d073c40ee94eedc7edb87af09055e8f81b8b0de",
+              "reason_characters": 475,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "5d001c4470afc9af7fd5eb3d0d980591a823f8ba2f70532b0d77034edcb5ada8",
+              "reason_characters": 426,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "1097b45f14161061139fff0c146238242c96daff4ea97ddb307e97918a2e5602",
+              "reason_characters": 268,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "914704246e09d706620a152a1e372f5b4e90e65f7cce5ee4cb8022fd928c06e9",
+              "reason_characters": 385,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            }
+          },
+          "task_sha256": "3bdf719e51cc42b1b9bd5f423e94e7e782c4602b0b1208394c1b9a234fad2a0f"
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+            "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+            "payload_sha256": "d15c7566630f65154810607d25c778a455566d35e83007726739aaf597f001ec",
+            "source_units_sha256": "2ffb090da486dd020b79dd4a54ca1ba0c4927ea5f4010f6649b8d16de1937544"
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "3c18abe51a3ec64cb8b0715c3133d8300183ea6e213db26968f79885c1065eb9",
+              "reason_characters": 799,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            }
+          },
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "plant_tissue",
+      "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+      "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 4000,
+          "original_end": 5900,
+          "text_sha256": "ee4be464a8cdfc25a766d524e298b247ce831ab0938c850ab09d5faf3eee63cf"
+        },
+        "S1U2": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 5900,
+          "original_end": 7562,
+          "text_sha256": "80467b7306348f64ebd09782f7bcb403030aea0eb2a3ef52324a91a56f875443"
+        },
+        "S1U3": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 7562,
+          "original_end": 9561,
+          "text_sha256": "2e0bfeabe1e08c2c0a9ee0a8ddd1efdaa6c599467b6a926c74c820e3c7af61f0"
+        },
+        "S1U4": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 9561,
+          "original_end": 11429,
+          "text_sha256": "819d3681b21bb417a5fa5fa001f83f68fdc7d011eedfa8ce4fd1cf6708a82128"
+        },
+        "S1U5": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 11429,
+          "original_end": 12000,
+          "text_sha256": "5cbea6fb8e1b06aa71186a7170aac1cb2c7d91f06c0b6a2dafb376a06f6118a0"
+        },
+        "S2U1": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 0,
+          "original_end": 1986,
+          "text_sha256": "b5f189118967df7094098273a587089c0627f0e30cb8bdb6cd5010d707a068bf"
+        },
+        "S2U2": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 1986,
+          "original_end": 3982,
+          "text_sha256": "6de55d15fd17684910d63b67e1bfe8b731fc0722ff4f4cb0b84f42a63ea1c9cd"
+        },
+        "S2U3": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 3982,
+          "original_end": 5899,
+          "text_sha256": "c9fb5de3944267fd00f2f02537e6f244906ee8cdba13fd10afe13ecdec2f8e77"
+        },
+        "S2U4": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 5899,
+          "original_end": 7624,
+          "text_sha256": "1c1423fda21fa4f41314ebae3c8b2eac1fe4c3960cfca3ba0626bef7ccdfdcaa"
+        },
+        "S2U5": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 7624,
+          "original_end": 8000,
+          "text_sha256": "bb2d0d79d016ac2521c9f31c904111876442d7c30b1ded145594ea18ed00e767"
+        }
+      },
+      "candidate": {
+        "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+        "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+        "eligible": false,
+        "reason": "solver_issues",
+        "supported_choice_ids": [
+          "C"
+        ],
+        "scope": "Declared independent choice/teaching judgments with exact reference identities, not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+            "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+            "payload_sha256": "a60616f837c60e1cbe9628438eb76b5fcf1ab255a27d06d16689551afcec2e65",
+            "source_units_sha256": "27672c26ab68200282c9a4b824e3cc6c20b58d1246f2b9968a33a463bbee3714"
+          },
+          "issues_count": 2,
+          "issues_sha256": "88e8f55fdeb5196c4a1f767e13faaa29242c8dfa47a83f940daa00f94a098bea",
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "d7257a4090bbf47945a75d4234386ae8ef112bdb3457cb670059d4d02f7493d8",
+              "reason_characters": 271,
+              "evidence_ids": [
+                "S2U3",
+                "S2U4"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "1c46d5cf2593460ed19c84706f19ef18d884fa8941e4e40266f9b8a662d16c03",
+              "reason_characters": 467,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2",
+                "S2U3"
+              ]
+            },
+            "C": {
+              "status": "supported",
+              "reason_sha256": "db6ccde9a01d7611664a70ea97a7464c1aa9d5d8155c2c0a3eed4fb140d825d8",
+              "reason_characters": 439,
+              "evidence_ids": [
+                "S1U2",
+                "S1U3",
+                "S2U3",
+                "S2U4"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "9f7745ad0232456bb33c05de63c50e134cbd53c7b3b8d26c1f2ef1c960f86d6e",
+              "reason_characters": 324,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            }
+          },
+          "task_sha256": "5552a433c52c63ce7e04c008ef3da03784e04cdc2d5981b87eedc60d042cb228"
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+            "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+            "payload_sha256": "a60616f837c60e1cbe9628438eb76b5fcf1ab255a27d06d16689551afcec2e65",
+            "source_units_sha256": "27672c26ab68200282c9a4b824e3cc6c20b58d1246f2b9968a33a463bbee3714"
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "16c962c74714316f2e5eec974951e09d7a2d24eb0641cede30de5f3bf2df7ac5",
+              "reason_characters": 650,
+              "evidence_ids": [
+                "S1U2",
+                "S1U3",
+                "S2U3",
+                "S2U4"
+              ]
+            }
+          },
+          "difficulty": 2
+        },
+        "old_review": {
+          "eligible": false,
+          "reason": "invalid_review",
+          "declared_content_eligible": null,
+          "content_rejection_reason": null,
+          "target_relation": null,
+          "target_rejection_reason": null
+        }
+      }
+    }
+  ]
+}
