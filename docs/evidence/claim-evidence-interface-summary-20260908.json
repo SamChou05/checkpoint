@@ -1,0 +1,69 @@
+{
+  "experiment": "claim-directed-acquired-evidence-v1",
+  "source_revision": "51b6644edadbe1689265ddda95b40b0c32433801",
+  "plan_sha256": "4639fcc00ad3287658afcb8c7e5a6b827299d83533f6b941920c8c95e79a4581",
+  "capture_sha256": "ade70260e2bbe9f9366783e70a4d4a2e359c93ffd44b391cf33ee71fff07676c",
+  "terminal_status": "completed",
+  "model_calls": 8,
+  "native_tool_uses": 6,
+  "native_tool_results": 6,
+  "native_citation_urls": 0,
+  "fetches": 0,
+  "grounded_review_calls": 0,
+  "known_usage": {
+    "inputTokens": 9869,
+    "outputTokens": 3609
+  },
+  "sdk_seconds_sum": 55.4902366240276,
+  "cases": [
+    {
+      "case_id": "dough_reference",
+      "without_sources": {
+        "reason": "invalid_review",
+        "declared_content_eligible": null,
+        "content_rejection_reason": null,
+        "target_relation": null
+      },
+      "with_sources": {
+        "status": "no_acquired_evidence"
+      }
+    },
+    {
+      "case_id": "hotel_reference",
+      "without_sources": {
+        "reason": "insufficient_evidence",
+        "declared_content_eligible": true,
+        "content_rejection_reason": null,
+        "target_relation": "supported"
+      },
+      "with_sources": {
+        "status": "no_acquired_evidence"
+      }
+    },
+    {
+      "case_id": "butter_reference",
+      "without_sources": {
+        "reason": "invalid_review",
+        "declared_content_eligible": null,
+        "content_rejection_reason": null,
+        "target_relation": null
+      },
+      "with_sources": {
+        "status": "no_acquired_evidence"
+      }
+    },
+    {
+      "case_id": "plant_tissue",
+      "without_sources": {
+        "reason": "invalid_review",
+        "declared_content_eligible": null,
+        "content_rejection_reason": null,
+        "target_relation": null
+      },
+      "with_sources": {
+        "status": "no_acquired_evidence"
+      }
+    }
+  ],
+  "scope": "Failed citation handoff; no acquired evidence comparison or factual accuracy improvement. No new calls during exact source/plan/callback replay."
+}
