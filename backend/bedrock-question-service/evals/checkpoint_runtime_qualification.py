@@ -5,6 +5,7 @@ Original mode: one fixed batch (two calls), then fresh generation (six).
 Frozen-recheck mode: the same archived five candidates in two two-call arms.
 Authored-solution mode: three fresh two-item goals, at most three calls each.
 Author comparison: repeat those inputs with two author models, eighteen calls.
+Focused application: compare two Kimi author prompts under the same limits.
 The unchanged runtime owns parsing, filtering, top-offs and JSON repair. The
 existing isolated caller owns transport/deadlines; this file adds no supervisor.
 Operational completion and policy stamps are not factual correctness scores.
@@ -45,6 +46,7 @@ EXPERIMENT = "policy-two-runtime-qualification-v1"
 RECHECK_EXPERIMENT = "policy-two-frozen-recheck-v1"
 AUTHORED_EXPERIMENT = "authored-solution-fresh-v1"
 AUTHOR_COMPARISON_EXPERIMENT = "authored-solution-author-comparison-v1"
+FOCUSED_APPLICATION_EXPERIMENT = "authored-solution-focused-application-v1"
 AUTHOR_COMPARISON_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/authored-solution-fresh-fixture-20260908.json"
 AUTHOR_COMPARISON_ORIGIN_SHA256 = "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d"
 RECHECK_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/runtime-qualification-capture-20260908.json"
@@ -141,7 +143,9 @@ def _guard_request(request, settings=None):
 
 
 def make_plan(packet, *, source_revision=None):
-    if type(packet) is dict and packet.get("experiment") == AUTHOR_COMPARISON_EXPERIMENT:
+    if type(packet) is dict and packet.get("experiment") in {
+        AUTHOR_COMPARISON_EXPERIMENT, FOCUSED_APPLICATION_EXPERIMENT,
+    }:
         return _make_author_comparison_plan(packet, source_revision=source_revision)
     if type(packet) is dict and packet.get("experiment") == AUTHORED_EXPERIMENT:
         return _make_authored_plan(packet, source_revision=source_revision)
@@ -258,7 +262,8 @@ def _make_authored_plan(packet, *, source_revision):
 
 
 def _make_author_comparison_plan(packet, *, source_revision):
-    if packet != {"experiment": AUTHOR_COMPARISON_EXPERIMENT}:
+    focused = packet == {"experiment": FOCUSED_APPLICATION_EXPERIMENT}
+    if not focused and packet != {"experiment": AUTHOR_COMPARISON_EXPERIMENT}:
         raise ValueError("The author comparison has no configurable inputs or profiles.")
     raw = AUTHOR_COMPARISON_ORIGIN.read_bytes()
     if hashlib.sha256(raw).hexdigest() != AUTHOR_COMPARISON_ORIGIN_SHA256:
@@ -267,21 +272,29 @@ def _make_author_comparison_plan(packet, *, source_revision):
     base = _make_authored_plan(origin, source_revision=source_revision)
     operations = []
     for index, job in enumerate(base["operations"]):
-        profiles = [("kimi", "moonshotai.kimi-k2.5"),
-                    ("opus", "us.anthropic.claude-opus-4-6-v1")]
+        profile_key = "CHECKPOINT_PROMPT_VARIANT" if focused else "BEDROCK_MODEL_ID"
+        request_key = "system" if focused else "modelId"
+        profiles = ([("balanced", "balanced"), ("focused_application", "focused_application")]
+                    if focused else [("kimi", "moonshotai.kimi-k2.5"),
+                                     ("opus", "us.anthropic.claude-opus-4-6-v1")])
         if index == 1:
             profiles.reverse()
-        for arm, model in profiles:
-            settings = {**base["settings"], "BEDROCK_MODEL_ID": model}
+        for arm, value in profiles:
+            settings = {**base["settings"], profile_key: value}
+            if focused and not _same({k: v for k, v in settings.items() if k != profile_key},
+                                     {k: v for k, v in base["settings"].items() if k != profile_key}):
+                raise ValueError("Focused author profiles may differ only in prompt variant.")
             with patch.dict(os.environ, settings):
                 first = _first_request(job["request"], settings=settings)
-            if not _same({k: v for k, v in first.items() if k != "modelId"},
-                         {k: v for k, v in job["first_request"].items() if k != "modelId"}):
-                raise ValueError("Paired author requests may differ only in modelId.")
+            if not _same({k: v for k, v in first.items() if k != request_key},
+                         {k: v for k, v in job["first_request"].items() if k != request_key}):
+                raise ValueError(f"Paired author requests may differ only in {request_key}.")
             operations.append({**copy.deepcopy(job), "arm": arm, "settings": settings,
                                "first_request": first})
-    return {
-        **base, "experiment": AUTHOR_COMPARISON_EXPERIMENT,
+        if focused and _same(operations[-2]["first_request"]["system"], operations[-1]["first_request"]["system"]):
+            raise ValueError("Focused and balanced author system prompts must differ.")
+    plan = {
+        **base, "experiment": packet["experiment"],
         "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
         "origin": {"path": str(AUTHOR_COMPARISON_ORIGIN.relative_to(SERVICE_DIR.parents[1])),
                    "fixture_byte_sha256": AUTHOR_COMPARISON_ORIGIN_SHA256,
@@ -293,6 +306,9 @@ def _make_author_comparison_plan(packet, *, source_revision):
         "scope": "New contemporaneous author comparison on three selected original goal/source payloads: Kimi then Opus, Opus then Kimi, Kimi then Opus. Only author modelId changes in paired initial requests. Both use Sonnet complete-choice solving and immutable main-teaching audit, disabled thinking, 6000 tokens and temperature 0.2. Downstream requests depend on each arm's new candidates and solver survivors. No previous generated content or external assessment is sent. This is not a randomized general accuracy estimate, matched candidate comparison, deployment or default promotion. Author main guidance remains 320 characters; runtime admission permits 420 without clipping.",
         "timing_scope": "Six separate 240-second operation clocks; unchanged workers use read 75 seconds, connect 3 seconds and one SDK attempt. Each serialized request is bounded to 32 KiB. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Missing responses leave usage and remote completion unknown.",
     }
+    if focused:
+        plan["scope"] = "New paired Kimi author prompt comparison on three selected original goal/source payloads: balanced then focused_application, reversed on the middle goal. Only the author system prompt differs in paired initial requests; model, user content, output contract and inference settings stay fixed. Both use Sonnet complete-choice solving and immutable main-teaching audit, disabled thinking, 6000 tokens and temperature 0.2. Downstream inputs depend on each arm's new candidates and survivors. No previous generated content, keys, error notes or external assessment enters provider inputs. This is not a randomized general accuracy estimate, a comparison of identical generated candidates, deployment or default promotion. Author main guidance remains 320 characters and runtime admission 420, without clipping."
+    return plan
 
 
 def _make_recheck_plan(packet, *, source_revision):
@@ -588,7 +604,8 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
                           questions=questions, runtime_error_type=error_type,
                           budget_reservations=budget.calls,
                           metrics=_metrics_without_runtime_intervals(metrics))
-            if plan["experiment"] in {AUTHORED_EXPERIMENT, AUTHOR_COMPARISON_EXPERIMENT}:
+            if plan["experiment"] in {AUTHORED_EXPERIMENT, AUTHOR_COMPARISON_EXPERIMENT,
+                                      FOCUSED_APPLICATION_EXPERIMENT}:
                 repairs = sum(c["operation_index"] == index and c["role"] == "author_json_repair"
                               for c in report["calls"])
                 result["authored_solution_observation"] = {
@@ -630,7 +647,8 @@ def _empty_report(plan):
     return {"plan": copy.deepcopy(plan), "plan_sha256": _hash(plan), "status": "running", "calls": [],
             "operations": [{"kind": j["kind"], "maximum_calls": j["maximum_calls"],
                             **({key: copy.deepcopy(j[key]) for key in ("arm", "case_id", "settings")}
-                               if plan["experiment"] == AUTHOR_COMPARISON_EXPERIMENT else {}),
+                               if plan["experiment"] in {AUTHOR_COMPARISON_EXPERIMENT,
+                                                         FOCUSED_APPLICATION_EXPERIMENT} else {}),
                             "status": "unattempted", "remaining_milliseconds": [], "questions": []}
                            for j in plan["operations"]]}
 

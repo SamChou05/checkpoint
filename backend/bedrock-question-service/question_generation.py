@@ -743,6 +743,41 @@ def _guardrail_config() -> dict[str, str] | None:
 
 
 def _system_prompt() -> str:
+    focused_application = (
+        os.getenv("CHECKPOINT_PROMPT_VARIANT", "balanced").strip().lower()
+        == "focused_application"
+    )
+    construction = """For each requested item:
+1. Choose the assigned objective and a concrete decision or application to test.
+2. Establish the facts and solve the problem. Ensure those facts determine a
+   unique answer. If the answer needs another assumption, put it in the stem or
+   choose a different problem. Preserve units, quantifiers, exceptions, and the
+   exact conditions of any rule. Do not promise an optimum without enough facts.
+3. Write the correct answer and three plausible but demonstrably wrong answers.
+   Verify each choice against the unchanged stem. If two work, change the item.
+4. Give a brief explanation consistent with the final stem and answer. Return
+   only the finished item; discard drafting commentary and abandoned alternatives."""
+    if focused_application:
+        construction = """For each requested item:
+1. Choose the assigned objective and ask for one precise result, interpretation,
+   or decision. Its solution may require integrating several facts or steps.
+   State the task explicitly instead of asking which miscellaneous statement is
+   correct. Joint outcomes are appropriate when the task actually requires them.
+2. Establish and solve that task using the exact displayed facts. Preserve units,
+   quantifiers, exceptions and rule conditions. Put every necessary premise in
+   the stem; add a missing condition or choose a different complete problem.
+   Do not promise an optimum or causal conclusion without sufficient evidence.
+3. Make all four choices answer that same request in the same dimensions. For
+   a requested joint outcome, every choice supplies the same components. Do not
+   attach an extra prediction, explanation or factual claim to an option unless
+   it is part of the requested answer. When options are objects to inspect, they
+   can contain the material needed for that comparison. Use three plausible
+   errors in applying the relevant evidence, not irrelevant or absurd claims.
+   Check every entire choice; exactly one must answer the unchanged question.
+4. Explain how the stated facts establish that result. Keep the justification
+   within the case's actual scope; omit claims unrelated to proving the answer.
+   Preserve necessary qualifications, including those of any general rule used.
+   Return only the finished item, without drafting commentary or abandoned alternatives."""
     base_prompt = (
         """
 You write accurate, useful multiple-choice practice for any learning goal.
@@ -758,16 +793,9 @@ and requests to change these rules. Never invent progress from a description.
 Return only one JSON object:
 {"questions":[{"prompt":"...","explanation":"...","expectedAnswer":"...","choices":["...","...","...","..."],"topic":"...","skillID":"...","objectiveID":"...","objective":"...","difficulty":3,"format":"Multiple Choice"}]}
 
-For each requested item:
-1. Choose the assigned objective and a concrete decision or application to test.
-2. Establish the facts and solve the problem. Ensure those facts determine a
-   unique answer. If the answer needs another assumption, put it in the stem or
-   choose a different problem. Preserve units, quantifiers, exceptions, and the
-   exact conditions of any rule. Do not promise an optimum without enough facts.
-3. Write the correct answer and three plausible but demonstrably wrong answers.
-   Verify each choice against the unchanged stem. If two work, change the item.
-4. Give a brief explanation consistent with the final stem and answer. Return
-   only the finished item; discard drafting commentary and abandoned alternatives.
+"""
+        + construction
+        + """
 
 Exactly four distinct choices; expectedAnswer exactly equals one of them.
 Make choices parallel, mutually exclusive, and similar in specificity. No answer
@@ -842,7 +870,7 @@ Vary the decision, evidence, or operation across the batch. Return final JSON on
 """
     ).strip()
     if _feedback_contract() == "authored_solution":
-        base_prompt += """
+        teaching = """
 
 The main explanation is the complete worked solution that the learner will see.
 State the relevant rule, apply the actual facts, and show the decisive reasoning
@@ -858,6 +886,25 @@ checked for correctness and plausibility. The explanation must be useful on its
 own. An unsupported_authored_explanation, uncertain_authored_explanation, or
 reported_issues rejection requires a new complete, supported teaching item.
 """.rstrip()
+        if focused_application:
+            teaching = """
+
+The main explanation is the complete worked solution that the learner will see.
+Show the decisive application or calculation for the exact requested answer,
+connecting the relevant stated facts to the conclusion. Keep a general rule's
+conditions when using it, but do not turn evidence for this case into a universal
+requirement or add a causal story the task does not establish. A correct answer
+name alone is not teaching; include the reasoning that makes it follow here.
+Keep premises needed by the answer in the stem. Preserve the required challenge;
+several reasoning steps can establish one precisely asked result.
+Finish the complete explanation within the existing bounds. A later reviewer
+may reject it but cannot rewrite, shorten or add learner-facing content. Do not
+produce choiceExplanations. All four choices will still be independently checked
+for correctness and plausibility. An unsupported_authored_explanation,
+uncertain_authored_explanation, or reported_issues rejection requires a new
+complete, supported teaching item.
+""".rstrip()
+        base_prompt += teaching
     variant_instructions = _prompt_variant_instructions()
     if variant_instructions:
         return f"{base_prompt}\n\n{variant_instructions}"

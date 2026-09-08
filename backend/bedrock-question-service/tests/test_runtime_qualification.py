@@ -880,5 +880,89 @@ class AuthoredAuthorComparisonTests(unittest.TestCase):
                          ["moonshotai.kimi-k2.5"] * 3)
 
 
+class FocusedApplicationComparisonTests(unittest.TestCase):
+    observer = FreshAuthoredSolutionTests.observer
+    run_trial = FreshAuthoredSolutionTests.run_trial
+
+    def setUp(self):
+        FreshAuthoredSolutionTests.setUp(self)
+        self.packet = {"experiment": trial.FOCUSED_APPLICATION_EXPERIMENT}
+        self.plan = trial.make_plan(self.packet)
+        trial.shared.write_json(self.plan_path, self.plan)
+        self.questions = [copy.deepcopy(batch) for batch in self.questions for _ in range(2)]
+
+    def test_system_only_pairs_execute_six_operations_and_replay_exact_teaching(self):
+        self.assertEqual([j["arm"] for j in self.plan["operations"]],
+                         ["balanced", "focused_application", "focused_application", "balanced",
+                          "balanced", "focused_application"])
+        self.assertEqual(self.plan["maximum_calls"], 18)
+        self.assertEqual(self.plan["maximum_input_utf8_bytes_total"], 18 * 32768)
+        for left, right in zip(self.plan["operations"][::2], self.plan["operations"][1::2], strict=True):
+            self.assertEqual(left["request"], right["request"])
+            self.assertEqual({k: v for k, v in left["settings"].items() if k != "CHECKPOINT_PROMPT_VARIANT"},
+                             {k: v for k, v in right["settings"].items() if k != "CHECKPOINT_PROMPT_VARIANT"})
+            self.assertEqual({k: v for k, v in left["first_request"].items() if k != "system"},
+                             {k: v for k, v in right["first_request"].items() if k != "system"})
+            self.assertNotEqual(left["first_request"]["system"], right["first_request"]["system"])
+        with patch.object(trial.shared, "new_client", side_effect=AssertionError("No SDK")):
+            report = self.run_trial()
+            self.assertEqual(trial.replay_capture(report), report)
+        self.assertEqual(report["status"], "completed")
+        self.assertEqual([c["role"] for c in report["calls"]], ["author", "solver", "teaching_auditor"] * 6)
+        self.assertEqual([c["request"]["modelId"] for c in report["calls"]],
+                         ["moonshotai.kimi-k2.5", "us.anthropic.claude-sonnet-4-6",
+                          "us.anthropic.claude-sonnet-4-6"] * 6)
+        for index, (job, result) in enumerate(zip(self.plan["operations"], report["operations"], strict=True)):
+            for key in ("case_id", "arm", "settings"):
+                self.assertEqual(result[key], job[key])
+            self.assertEqual(result["budget_reservations"], 3)
+            self.assertTrue(result["authored_solution_observation"]["full_unrepaired_batch"])
+            self.assertEqual(report["calls"][index * 3]["request"], job["first_request"])
+            for original, returned in zip(self.questions[index], result["questions"], strict=True):
+                self.assertEqual(original["explanation"].encode(), returned["explanation"].encode())
+                self.assertEqual(returned["verificationPolicyRevision"], 3)
+                self.assertEqual(returned["choiceExplanations"], {})
+
+    def test_identical_systems_non_system_changes_and_modified_origin_fail_closed(self):
+        balanced = self.plan["operations"][0]["first_request"]["system"][0]["text"]
+        with patch.object(trial.generation, "_system_prompt", return_value=balanced), self.assertRaises(ValueError):
+            trial.make_plan(self.packet)
+        original = trial._first_request
+        def changed_user(*args, **kwargs):
+            request = original(*args, **kwargs)
+            if kwargs.get("settings", {}).get("CHECKPOINT_PROMPT_VARIANT") == "focused_application":
+                request["messages"][0]["content"][0]["text"] += " Extra treatment context"
+            return request
+        with patch.object(trial, "_first_request", side_effect=changed_user), self.assertRaises(ValueError):
+            trial.make_plan(self.packet)
+        origin = Mock(wraps=trial.AUTHOR_COMPARISON_ORIGIN)
+        origin.read_bytes.return_value = b'{"modified":true}'
+        with patch.object(trial, "AUTHOR_COMPARISON_ORIGIN", origin), self.assertRaises(ValueError):
+            trial.make_plan(self.packet)
+        with self.assertRaises(ValueError):
+            trial.make_plan({**self.packet, "variant": "compact"})
+
+    def test_frozen_profile_tampering_blocks_dispatch_and_old_modes_remain_isolated(self):
+        observer = Mock()
+        for path, value in ((("operations", 1, "settings", "BEDROCK_MODEL_ID"), "us.anthropic.claude-opus-4-6-v1"),
+                            (("operations", 1, "settings", "CHECKPOINT_PROMPT_VARIANT"), "compact"),
+                            (("maximum_calls",), 19)):
+            altered = copy.deepcopy(self.plan)
+            target = altered
+            for key in path[:-1]:
+                target = target[key]
+            target[path[-1]] = value
+            trial.shared.write_json(self.plan_path, altered)
+            with self.assertRaises(ValueError):
+                trial.run_trial(self.plan_path, trial._hash(altered), self.output, observer=observer)
+        observer.assert_not_called()
+        self.assertFalse(self.output.exists())
+        packets = [json.loads(FIXTURE.read_text()), json.loads(trial.AUTHOR_COMPARISON_ORIGIN.read_text()),
+                   {"experiment": trial.AUTHOR_COMPARISON_EXPERIMENT}]
+        before = [trial.make_plan(packet) for packet in packets]
+        with patch.dict(os.environ, self.plan["operations"][1]["settings"]):
+            self.assertEqual([trial.make_plan(packet) for packet in packets], before)
+
+
 if __name__ == "__main__":
     unittest.main()
