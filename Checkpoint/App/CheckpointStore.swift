@@ -527,6 +527,70 @@ final class CheckpointStore {
         )
     }
 
+    func learningMapEditImpact(
+        goalID: Goal.ID,
+        expectedMap: GoalSkillMap,
+        topics proposedTopics: [SkillMapTopic]
+    ) -> LearningMapEditImpact? {
+        guard var projectedGoal = goal, projectedGoal.id == goalID,
+              projectedGoal.derivedSkillMap == expectedMap else { return nil }
+        let topics = SkillMapReconciler.reviewedSkillMapTopics(proposedTopics, preserving: expectedMap)
+        guard SkillMapReconciler.learningMapValidationError(topics: topics) == nil else { return nil }
+        projectedGoal.derivedSkillMap?.topics = topics
+        let projectedQuestions = questionsAfterLearningMapEdit(goalID: goalID, previousMap: expectedMap, topics: topics)
+        let priorByID = Dictionary(uniqueKeysWithValues: expectedMap.topics.map { ($0.id, $0) })
+        let coverage = skillQuestionCoverageDeficitBySkillID(for: projectedGoal, questions: projectedQuestions)
+        let skillsNeedingFreshQuestions = topics.filter { topic in
+            guard !topic.isPaused, coverage[topic.id, default: 0] > 0 else { return false }
+            guard let prior = priorByID[topic.id] else { return true }
+            return prior.isPaused || prior.challenge != topic.challenge
+                || learningMapQuestionScopeChanged(from: prior, to: topic)
+        }.map(\.name)
+        let availableIDsChanged = Set(expectedMap.topics.filter { !$0.isPaused }.map(\.id))
+            != Set(topics.filter { !$0.isPaused }.map(\.id))
+        let lacksFullSet = availableIDsChanged && questionSelector(for: projectedGoal, questions: projectedQuestions)
+            .nextQuestions(limit: unlockPolicy.questionsPerSession, enforcesDifficultyFloor: true).count
+                < unlockPolicy.questionsPerSession
+        let needsFreshQuestions = !skillsNeedingFreshQuestions.isEmpty || lacksFullSet
+        let oldSelectableIDs = Set(questions.filter { $0.goalID == goalID && $0.status != .retired }.map(\.id))
+        return LearningMapEditImpact(
+            requiresFreshQuestions: needsFreshQuestions,
+            requiresMembershipForFreshQuestions: needsFreshQuestions && !isMember && hasConsumedStarterPractice,
+            skillsNeedingFreshQuestions: skillsNeedingFreshQuestions,
+            retiresQuestionInventory: projectedQuestions.contains {
+                oldSelectableIDs.contains($0.id) && $0.status == .retired
+            }
+        )
+    }
+
+    private func learningMapQuestionScopeChanged(from prior: SkillMapTopic, to updated: SkillMapTopic) -> Bool {
+        prior.detail != updated.detail ||
+            prior.objectives.sorted { $0.id.uuidString < $1.id.uuidString }
+                != updated.objectives.sorted { $0.id.uuidString < $1.id.uuidString }
+    }
+
+    private func questionsAfterLearningMapEdit(
+        goalID: Goal.ID,
+        previousMap: GoalSkillMap,
+        topics: [SkillMapTopic]
+    ) -> [CheckpointQuestion] {
+        questions.map { question in
+            guard question.goalID == goalID,
+                  let prior = SkillMapReconciler.skillMapTopic(matching: question, in: previousMap) else { return question }
+            var projected = question
+            guard let updated = topics.first(where: { $0.id == prior.id }) else {
+                projected.status = .retired
+                projected.nextReviewAt = nil
+                return projected
+            }
+            if learningMapQuestionScopeChanged(from: prior, to: updated) {
+                projected.status = .retired
+                projected.nextReviewAt = nil
+            }
+            return SkillMapReconciler.canonicalizedQuestion(projected, for: updated)
+        }
+    }
+
     @discardableResult
     func updateLearningMap(
         goalID expectedGoalID: Goal.ID,
@@ -570,6 +634,9 @@ final class CheckpointStore {
         }), Set(replacementTopics.flatMap(\.predecessorIDs)).count == replacementTopics.count else {
             return false
         }
+        guard let editImpact = learningMapEditImpact(
+            goalID: expectedGoalID, expectedMap: existingMap, topics: reviewedTopics
+        ) else { return false }
         let rollbackState = goalProfileMutationRollbackState()
         let previousMap = existingMap
         let contentChanged = SkillMapReconciler.skillMapContentSignature(
@@ -630,34 +697,9 @@ final class CheckpointStore {
         storeGoalProfile(updatedGoal)
         removeSkillMapEvolutionIntent(for: updatedGoal.id)
 
-        for index in questions.indices where questions[index].goalID == updatedGoal.id {
-            guard let previousSkill = SkillMapReconciler.skillMapTopic(
-                matching: questions[index],
-                in: previousMap
-            ) else {
-                continue
-            }
-
-            guard reviewedSkillIDs.contains(previousSkill.id),
-                  let reviewedSkill = reviewedTopics.first(where: { $0.id == previousSkill.id }) else {
-                questions[index].status = .retired
-                questions[index].nextReviewAt = nil
-                continue
-            }
-
-            // Descriptions and focus-point edits change what a question should test.
-            // Retain earned evidence while refreshing stale practice inventory.
-            let objectivesChanged = previousSkill.objectives.sorted { $0.id.uuidString < $1.id.uuidString }
-                != reviewedSkill.objectives.sorted { $0.id.uuidString < $1.id.uuidString }
-            if previousSkill.detail != reviewedSkill.detail || objectivesChanged {
-                questions[index].status = .retired
-                questions[index].nextReviewAt = nil
-            }
-            questions[index] = SkillMapReconciler.canonicalizedQuestion(
-                questions[index],
-                for: reviewedSkill
-            )
-        }
+        questions = questionsAfterLearningMapEdit(
+            goalID: updatedGoal.id, previousMap: previousMap, topics: reviewedTopics
+        )
 
         let existingCompetencies = competencies.filter { ($0.goalID ?? updatedGoal.id) == updatedGoal.id }
         let goalQuestions = questions.filter { $0.goalID == updatedGoal.id }
@@ -673,8 +715,10 @@ final class CheckpointStore {
         let reachedStarterLimit = !isMember && starterPracticeWasConsumed
         if reachedStarterLimit {
             questionBatchState = hasReadyCheckpointSet ? .ready : .idle
-            checkpointNotice = starterQuestionLimitMessage
-            requestMembership(for: .freshQuestionGeneration)
+            if editImpact.requiresMembershipForFreshQuestions {
+                checkpointNotice = starterQuestionLimitMessage
+                requestMembership(for: .freshQuestionGeneration)
+            }
         }
         guard save() else {
             restoreGoalProfileMutationState(rollbackState)
@@ -960,7 +1004,8 @@ final class CheckpointStore {
 
     private func skillQuestionCoverageDeficitBySkillID(
         for profile: Goal,
-        allowsEarlyCorrectReuse: Bool = false
+        allowsEarlyCorrectReuse: Bool = false,
+        questions candidateQuestions: [CheckpointQuestion]? = nil
     ) -> [SkillMapTopic.ID: Int] {
         guard let skillMap = profile.derivedSkillMap else { return [:] }
 
@@ -968,11 +1013,11 @@ final class CheckpointStore {
             adaptiveSkillPlans(for: profile).map { ($0.skillID, $0.targetDifficulty) }
         )
 
-        let selector = questionSelector
+        let selector = questionSelector(for: profile, questions: candidateQuestions)
         let now = Date()
         var readyCountBySkillID: [SkillMapTopic.ID: Int] = [:]
         var readyObjectiveIDsBySkillID: [SkillMapTopic.ID: Set<SkillMapObjective.ID>] = [:]
-        for question in questions where question.goalID == profile.id &&
+        for question in candidateQuestions ?? questions where question.goalID == profile.id &&
             question.difficulty >= profile.minimumQuestionDifficulty &&
             selector.isReadyQuestionBankCandidate(
                 question,
@@ -3320,7 +3365,10 @@ final class CheckpointStore {
         questionSelector(for: goal)
     }
 
-    private func questionSelector(for targetGoal: Goal?) -> CheckpointQuestionSelector {
+    private func questionSelector(
+        for targetGoal: Goal?,
+        questions candidateQuestions: [CheckpointQuestion]? = nil
+    ) -> CheckpointQuestionSelector {
         let resolvedProfiles: [Goal]
         if let targetGoal {
             resolvedProfiles = goalProfiles.filter { $0.id != targetGoal.id } + [targetGoal]
@@ -3329,7 +3377,7 @@ final class CheckpointStore {
         }
 
         return CheckpointQuestionSelector(
-            questions: questions,
+            questions: candidateQuestions ?? questions,
             goalProfiles: resolvedProfiles,
             currentGoal: targetGoal,
             competencies: competencies,

@@ -342,6 +342,13 @@ struct GoalSkillMap: Codable, Equatable, Sendable {
     }
 }
 
+struct LearningMapEditImpact: Equatable {
+    var requiresFreshQuestions: Bool
+    var requiresMembershipForFreshQuestions: Bool
+    var skillsNeedingFreshQuestions: [String]
+    var retiresQuestionInventory: Bool
+}
+
 enum LearningMapSuggestionAcceptanceIssue: Equatable {
     case staleMap, checkpointInProgress, needsPractice, membershipRequired, persistenceUnavailable
 

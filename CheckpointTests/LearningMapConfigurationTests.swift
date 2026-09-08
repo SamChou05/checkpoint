@@ -314,6 +314,93 @@ final class LearningMapConfigurationTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(fixture.store.learningMapSuggestionAcceptanceIssue(goalID: fixture.goal.id, expectedMap: map), .membershipRequired)
     }
 
+    @MainActor
+    func testConsumedStarterCanRenameReorderAndAdjustEmphasisWithoutAnUpsell() throws {
+        let fixture = makeFixture()
+        seedConsumedStarterInventory(store: fixture.store, goal: fixture.goal)
+        for edit in 0..<3 {
+            let original = try XCTUnwrap(fixture.store.goal?.derivedSkillMap)
+            var topics = original.topics
+            if edit == 0 { topics[0].name = "Reasoning about arrays" }
+            if edit == 1 { topics.swapAt(0, 1); topics[0].objectives.reverse() }
+            if edit == 2 { topics[0].practiceEmphasis = .focus }
+            let impact = try XCTUnwrap(fixture.store.learningMapEditImpact(goalID: fixture.goal.id, expectedMap: original, topics: topics))
+            XCTAssertFalse(impact.requiresFreshQuestions)
+            XCTAssertFalse(impact.retiresQuestionInventory)
+            XCTAssertFalse(impact.requiresMembershipForFreshQuestions)
+            XCTAssertTrue(fixture.store.updateLearningMap(goalID: fixture.goal.id, expectedMap: original, topics: topics, growthMode: .manual))
+            XCTAssertNil(fixture.store.pendingMembershipFeature)
+            XCTAssertTrue(fixture.engine.generationRequests.isEmpty)
+        }
+    }
+
+    @MainActor
+    func testSubstantiveEditPreflightMatchesInventoryRefreshAndMembershipPrompt() throws {
+        let fixture = makeFixture()
+        seedConsumedStarterInventory(store: fixture.store, goal: fixture.goal)
+        let original = try XCTUnwrap(fixture.store.goal?.derivedSkillMap)
+        var topics = original.topics
+        topics[0].objectives[0].detail = "Include novel edge cases"
+        let impact = try XCTUnwrap(fixture.store.learningMapEditImpact(goalID: fixture.goal.id, expectedMap: original, topics: topics))
+        XCTAssertTrue(impact.requiresFreshQuestions)
+        XCTAssertTrue(impact.requiresMembershipForFreshQuestions)
+        XCTAssertTrue(impact.retiresQuestionInventory)
+        XCTAssertEqual(impact.skillsNeedingFreshQuestions, [topics[0].name])
+        XCTAssertTrue(fixture.store.updateLearningMap(goalID: fixture.goal.id, expectedMap: original, topics: topics, growthMode: .manual))
+        XCTAssertEqual(fixture.store.pendingMembershipFeature, .freshQuestionGeneration)
+        XCTAssertTrue(fixture.store.questions.filter { $0.skillID == topics[0].id }.allSatisfy { $0.status == .retired })
+        XCTAssertTrue(fixture.engine.generationRequests.isEmpty)
+        XCTAssertNil(fixture.store.learningMapEditImpact(goalID: fixture.goal.id, expectedMap: original, topics: topics))
+    }
+
+    @MainActor
+    func testPauseAndResumeReuseExistingInventoryWithoutAnUpsell() throws {
+        let fixture = makeFixture()
+        seedConsumedStarterInventory(store: fixture.store, goal: fixture.goal)
+        for isPaused in [true, false] {
+            let original = try XCTUnwrap(fixture.store.goal?.derivedSkillMap)
+            var topics = original.topics
+            topics[0].isPaused = isPaused
+            let impact = try XCTUnwrap(fixture.store.learningMapEditImpact(goalID: fixture.goal.id, expectedMap: original, topics: topics))
+            XCTAssertFalse(impact.requiresFreshQuestions)
+            XCTAssertFalse(impact.retiresQuestionInventory)
+            XCTAssertTrue(fixture.store.updateLearningMap(goalID: fixture.goal.id, expectedMap: original, topics: topics, growthMode: .manual))
+            XCTAssertNil(fixture.store.pendingMembershipFeature)
+        }
+    }
+
+    @MainActor
+    func testEditingPausedScopeDefersFreshGenerationUntilThatSkillResumes() throws {
+        let fixture = makeFixture()
+        seedConsumedStarterInventory(store: fixture.store, goal: fixture.goal)
+        var original = try XCTUnwrap(fixture.store.goal?.derivedSkillMap)
+        var topics = original.topics
+        topics[0].isPaused = true
+        topics[0].detail = "New practice direction"
+        var impact = try XCTUnwrap(fixture.store.learningMapEditImpact(goalID: fixture.goal.id, expectedMap: original, topics: topics))
+        XCTAssertTrue(impact.retiresQuestionInventory)
+        XCTAssertFalse(impact.requiresFreshQuestions)
+        XCTAssertTrue(fixture.store.updateLearningMap(goalID: fixture.goal.id, expectedMap: original, topics: topics, growthMode: .manual))
+        XCTAssertNil(fixture.store.pendingMembershipFeature)
+        original = try XCTUnwrap(fixture.store.goal?.derivedSkillMap)
+        topics[0].isPaused = false
+        impact = try XCTUnwrap(fixture.store.learningMapEditImpact(goalID: fixture.goal.id, expectedMap: original, topics: topics))
+        XCTAssertTrue(impact.requiresFreshQuestions)
+        XCTAssertTrue(impact.requiresMembershipForFreshQuestions)
+    }
+
+    @MainActor
+    private func seedConsumedStarterInventory(store: CheckpointStore, goal: Goal) {
+        store.membershipTier = .starter
+        store.pendingMembershipPresentation = nil
+        store.questions = (goal.derivedSkillMap?.topics ?? []).enumerated().flatMap { index, topic in
+            (0..<10).map { questionIndex in
+                let objective = topic.objectives[questionIndex % topic.objectives.count]
+                return makeQuestion(goal: goal, index: index * 100 + questionIndex, topic: topic.name, skillID: topic.id, objectiveID: objective.id, objective: objective.name, difficulty: 5)
+            }
+        }
+    }
+
     private func makeTopics() -> [SkillMapTopic] {
         ["Arrays", "Recursion", "Hash maps"].map {
             SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: "Apply \($0)"), SkillMapObjective(name: "Explain \($0)")])
