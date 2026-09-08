@@ -29,7 +29,12 @@ struct BackendQuestionRequest: Encodable {
     ) {
         goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
         competencies = request.competencies.prefix(20).map(CompetencyPayload.init)
-        adaptiveSkillPlans = request.adaptiveSkillPlans
+        let activeSkillIDs = request.goal.derivedSkillMap.map {
+            Set($0.topics.filter { !$0.isPaused }.map(\.id))
+        }
+        adaptiveSkillPlans = request.adaptiveSkillPlans.filter {
+            activeSkillIDs?.contains($0.skillID) ?? true
+        }
         let recentQuestions = request.existingQuestions.suffix(30)
         existingPrompts = recentQuestions.map(\.prompt)
         existingQuestionCoverage = recentQuestions.map(QuestionCoveragePayload.init)
@@ -40,9 +45,16 @@ struct BackendQuestionRequest: Encodable {
         targetCount = targetCountOverride ?? request.targetCount
         minimumDifficulty = request.minimumDifficulty
         difficultyGuidance = request.difficultyGuidance
-        skillMap = request.goal.derivedSkillMap.map(BackendSkillMapPayload.init)
+        skillMap = request.goal.derivedSkillMap.map { map in
+            var payload = BackendSkillMapPayload(skillMap: map)
+            // Generation accepts 1...6 active skills. Keep the persisted map's
+            // version and request context revision, but never send paused nodes
+            // to older services that do not yet understand the pause flag.
+            payload.skills.removeAll { $0.isPaused == true }
+            return payload
+        }
         let allocation = request.desiredSkillAllocation
-            .filter { $0.value >= 0 }
+            .filter { $0.value >= 0 && (activeSkillIDs?.contains($0.key) ?? true) }
             .map { DesiredSkillAllocationPayload(skillID: $0.key, count: $0.value) }
             .sorted { $0.skillID.uuidString < $1.skillID.uuidString }
         desiredSkillAllocation = allocation.isEmpty ? nil : allocation
@@ -154,10 +166,12 @@ private struct DesiredSkillAllocationPayload: Encodable {
 struct BackendSkillMapPayload: Codable {
     var version: Int
     var skills: [BackendSkillPayload]
+    var growthMode: SkillMapGrowthMode?
 
     init(skillMap: GoalSkillMap) {
         version = skillMap.version
         skills = skillMap.topics.map(BackendSkillPayload.init)
+        growthMode = skillMap.growthMode
     }
 
     func makeSkillMap(
@@ -173,17 +187,19 @@ struct BackendSkillMapPayload: Codable {
 
         var allObjectiveIDs: Set<SkillMapObjective.ID> = []
         let topics = try zip(skills, validatedNames).map { skill, normalizedName in
-            guard (1...SkillMapTopic.maximumActiveObjectiveCount).contains(skill.objectives.count) else {
+            guard (1...SkillMapTopic.maximumActiveObjectiveCount).contains(skill.objectives.count),
+                  (skill.detail ?? "").count <= SkillMapTopic.maximumDetailLength else {
                 throw QuestionGenerationError.badResponse
             }
 
             let objectives = try skill.objectives.map { objective in
                 let name = SkillMapTopic.normalizedName(objective.name)
                 guard (1...80).contains(name.count),
+                      (objective.detail ?? "").count <= SkillMapTopic.maximumDetailLength,
                       allObjectiveIDs.insert(objective.id).inserted else {
                     throw QuestionGenerationError.badResponse
                 }
-                return SkillMapObjective(id: objective.id, name: name)
+                return SkillMapObjective(id: objective.id, name: name, detail: objective.detail ?? "")
             }
             let objectiveNames = objectives.map { $0.name.lowercased() }
             guard Set(objectiveNames).count == objectiveNames.count else {
@@ -193,14 +209,19 @@ struct BackendSkillMapPayload: Codable {
             return SkillMapTopic(
                 id: skill.id,
                 name: normalizedName,
-                objectives: objectives
+                objectives: objectives,
+                detail: skill.detail ?? "",
+                isPaused: skill.isPaused ?? false,
+                practiceEmphasis: skill.practiceEmphasis ?? .balanced,
+                challenge: skill.challenge ?? .adaptive
             )
         }
 
         return GoalSkillMap(
             topics: topics,
             version: version,
-            provenance: provenance
+            provenance: provenance,
+            growthMode: growthMode
         )
     }
 }
@@ -209,6 +230,10 @@ struct BackendSkillPayload: Codable {
     var id: SkillMapTopic.ID
     var name: String
     var objectives: [BackendObjectivePayload]
+    var detail: String?
+    var isPaused: Bool?
+    var practiceEmphasis: SkillPracticeEmphasis?
+    var challenge: SkillChallenge?
 
     init(skill: SkillMapTopic) {
         id = skill.id
@@ -216,16 +241,22 @@ struct BackendSkillPayload: Codable {
         objectives = skill.objectives
             .prefix(SkillMapTopic.maximumActiveObjectiveCount)
             .map(BackendObjectivePayload.init)
+        detail = skill.detail
+        isPaused = skill.isPaused
+        practiceEmphasis = skill.practiceEmphasis
+        challenge = skill.challenge
     }
 }
 
 struct BackendObjectivePayload: Codable {
     var id: SkillMapObjective.ID
     var name: String
+    var detail: String?
 
     init(objective: SkillMapObjective) {
         id = objective.id
         name = objective.name
+        detail = objective.detail
     }
 }
 

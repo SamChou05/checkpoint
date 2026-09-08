@@ -2,6 +2,8 @@
 
 AWS Lambda backend for Checkpoint's AI question-generation contract. The iOS app sends goal context and question constraints; the service can infer a first-class assessment plan through `POST /v1/skill-maps/infer`, advance mastered nodes through `POST /v1/skill-maps/evolve`, return a synchronous compatibility batch from `POST /v1/questions`, or enqueue an expiring server-side bank through `POST /v1/question-banks/ensure`. A DynamoDB Streams outbox consumer durably forwards pending jobs to SQS, and a separate SQS-triggered worker calls Amazon Bedrock, validates the output, and stores ready inventory for `POST /v1/question-banks/claim`. The JSON contract is documented in `../../docs/AI_BACKEND_CONTRACT.md`.
 
+The [configurable learning-map contract and rollout](docs/learning-map-rollout.md) describes editable scope, practice preferences, pause behavior, coverage guarantees, and the required service-before-app release order.
+
 Generation is domain-general. Named-domain examples belong only to eval fixtures; production code has no LSAT, MCAT, language, coding, or other subject-specific question branches.
 
 ## Public-release security boundary
