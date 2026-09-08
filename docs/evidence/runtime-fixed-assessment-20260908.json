@@ -1,0 +1,197 @@
+{
+  "assessment_kind": "Independent assistant pre-dispatch fixture review; not blinded or educator-panel assessment",
+  "fixture_path": "/Users/samchou/Documents/Checkpoint/backend/bedrock-question-service/evals/fixtures/question_runtime_qualification.json",
+  "fixture_sha256": "0b345612425d695bec3db359522754e61e827a5c8c405d894eab6d102af754d4",
+  "scope": "Read only this fixture; its ground-truth declarations were visible. No live capture, provider call, external call, native execution, or production edit.",
+  "fixed_cases": [
+    {
+      "case_id": "observed_rate_comparison",
+      "question_sha256": "47ddb55860c30d1c884c129f393b76f543af6e77e26c8b9006d97c33c1e4411f",
+      "prompt": "Teams A, B, C and D completed 30 of 100, 21 of 60, 16 of 80 and 27 of 90 tasks respectively. Which team had the highest observed completion rate?",
+      "warranted_choices": [
+        "Team B"
+      ],
+      "expected_accept": true,
+      "reason": "30/100=0.30; 21/60=0.35; 16/80=0.20; 27/90=0.30. Team B is the unique observed maximum. Sampling uncertainty does not prevent this descriptive comparison.",
+      "per_choice": [
+        {
+          "choice": "Team A",
+          "warranted_answer": false,
+          "reason": "30% is below 35%."
+        },
+        {
+          "choice": "Team B",
+          "warranted_answer": true,
+          "reason": "35% is strictly greater than each other observed rate."
+        },
+        {
+          "choice": "Team C",
+          "warranted_answer": false,
+          "reason": "20% is below 35%."
+        },
+        {
+          "choice": "Team D",
+          "warranted_answer": false,
+          "reason": "30% is below 35%."
+        }
+      ],
+      "limitations": "No population superiority or future completion probability is established.",
+      "matches_predeclared_assessment": true
+    },
+    {
+      "case_id": "converse_not_established",
+      "question_sha256": "7889329d5e46f1e1b5626ab571b93eefc07eea4bb254fd661fadd2ca233689a4",
+      "prompt": "In a fictional lab, every sample that turns green contains reagent R. Sample X contains R. Which conclusion must follow from these facts?",
+      "warranted_choices": [],
+      "expected_accept": false,
+      "reason": "Green implies containing R; containing R does not imply green. Both a green X and a non-green X containing R satisfy all premises. No offered choice is necessary.",
+      "per_choice": [
+        {
+          "choice": "X turns green.",
+          "warranted_answer": false,
+          "reason": "A non-green X containing R is a countermodel."
+        },
+        {
+          "choice": "X does not turn green.",
+          "warranted_answer": false,
+          "reason": "A green X containing R is a countermodel."
+        },
+        {
+          "choice": "X does not contain R.",
+          "warranted_answer": false,
+          "reason": "This contradicts the given presence of R."
+        },
+        {
+          "choice": "Every sample containing R turns green.",
+          "warranted_answer": false,
+          "reason": "A non-green sample containing R satisfies the original rule but falsifies its converse."
+        }
+      ],
+      "limitations": "Possible alternatives are not warranted must-follow answers; they are not false in every compatible world.",
+      "matches_predeclared_assessment": true
+    },
+    {
+      "case_id": "inconsistent_partition",
+      "question_sha256": "837c8560cde367aaae50da4da46026ba3633d003d4c2126cf2b31a274a6c0e56",
+      "prompt": "A jar contains exactly 12 marbles. Every marble is exactly one of red or blue. Exactly 7 are red and exactly 8 are blue. What fraction of the jar's marbles are blue?",
+      "warranted_choices": [],
+      "expected_accept": false,
+      "reason": "The exclusive and exhaustive red/blue counts require 7+8=15 total marbles, contradicting exactly 12. No jar satisfies all displayed premises. A numeric choice silently discards a condition; logical explosion does not produce a meaningful unique-answer item.",
+      "per_choice": [
+        {
+          "choice": "8/12",
+          "warranted_answer": false,
+          "reason": "Uses the blue count and total while ignoring the conflicting red count."
+        },
+        {
+          "choice": "5/12",
+          "warranted_answer": false,
+          "reason": "Uses total minus red while contradicting exactly 8 blue."
+        },
+        {
+          "choice": "8/15",
+          "warranted_answer": false,
+          "reason": "Uses the color sum as total while contradicting exactly 12."
+        },
+        {
+          "choice": "7/12",
+          "warranted_answer": false,
+          "reason": "Neither answers the blue ratio nor resolves the inconsistent premises."
+        }
+      ],
+      "limitations": "A valid error-answer item could offer an explicit inconsistency answer; this question does not.",
+      "matches_predeclared_assessment": true
+    },
+    {
+      "case_id": "two_required_properties",
+      "question_sha256": "cf41fa7c19c734eef4e451d9670f2f64cedd196e154022b0e1b585429bad3018",
+      "prompt": "Under a fictional archive's rules, every valid report includes both a date and a signature. Which property must a valid report have?",
+      "warranted_choices": [
+        "It includes a date.",
+        "It includes a signature."
+      ],
+      "expected_accept": false,
+      "reason": "Both a date and a signature are explicitly necessary for a valid report. Each of the first two alternatives answers the necessary-property question; there is no unique answer.",
+      "per_choice": [
+        {
+          "choice": "It includes a date.",
+          "warranted_answer": true,
+          "reason": "A date is explicitly required."
+        },
+        {
+          "choice": "It includes a signature.",
+          "warranted_answer": true,
+          "reason": "A signature is explicitly required."
+        },
+        {
+          "choice": "It includes a photograph.",
+          "warranted_answer": false,
+          "reason": "A valid report with date and signature but no photograph satisfies the rule."
+        },
+        {
+          "choice": "It includes a serial number.",
+          "warranted_answer": false,
+          "reason": "A valid report with date and signature but no serial number satisfies the rule."
+        }
+      ],
+      "limitations": "Photographs and serial numbers are not forbidden; their necessity is unestablished. The question asks about the properties of a valid report without needing a separate report-existence claim.",
+      "matches_predeclared_assessment": true
+    },
+    {
+      "case_id": "ordinary_information_limit",
+      "question_sha256": "cc37bbacad0c2c352aca265baef22c932442e526bd832ce77f5f6918371c9d1d",
+      "prompt": "A survey recorded 80 responses: 50 preferred design A and 30 preferred design B. Were all people eligible for this survey included among those 80 respondents?",
+      "warranted_choices": [
+        "The response counts do not establish whether everyone eligible responded."
+      ],
+      "expected_accept": true,
+      "reason": "Exactly 80 eligible people all responding and a larger eligible population with only 80 respondents both fit the counts. The eligible population and participation completeness are unspecified. The information-limit option uniquely answers this.",
+      "per_choice": [
+        {
+          "choice": "Yes, all eligible people responded.",
+          "warranted_answer": false,
+          "reason": "All eligible people responding is possible but unestablished."
+        },
+        {
+          "choice": "No, some eligible people did not respond.",
+          "warranted_answer": false,
+          "reason": "Incomplete participation is possible but unestablished."
+        },
+        {
+          "choice": "The response counts do not establish whether everyone eligible responded.",
+          "warranted_answer": true,
+          "reason": "Correctly identifies the missing eligible-population information."
+        },
+        {
+          "choice": "Every eligible person preferred design A.",
+          "warranted_answer": false,
+          "reason": "Universal preference for A is unsupported and does not answer the participation question."
+        }
+      ],
+      "limitations": "Even under the favorable ordinary assumption that the 80 responses came from distinct eligible respondents, complete and incomplete participation are both possible. No stronger eligibility assumption is needed for the information-limit conclusion.",
+      "matches_predeclared_assessment": true
+    }
+  ],
+  "summary": {
+    "fixed_items_assessed": 5,
+    "valid_unique_answer_items": 2,
+    "invalid_items": 3,
+    "cardinalities": [
+      1,
+      0,
+      0,
+      2,
+      1
+    ],
+    "predeclared_assessments_agree": true,
+    "blocking_content_or_ground_truth_issues": [],
+    "difficulty_scope": "Simple diagnostics only; no minimum-3 or population accuracy claim.",
+    "placeholder_feedback_scope": "Fixed main explanations are explicit diagnostic placeholders, not learner teaching. They are not validated feedback. Current verification hides them and supplies separately returned final teaching; future feedback has not been assessed here."
+  },
+  "fresh_case_protocol": {
+    "case_id": "everyday_probability_and_evidence",
+    "payload_sha256": "601d7b0bf1e5263ac4a462f288359460009ca476af7276f089ebe320285fc7ee",
+    "assessment": "The goal-only request leaves fresh questions and answers unconstrained, requests five items at minimum difficulty 3, and predeclares blind raw-candidate assessment before key, feedback, solver-judgment or survival exposure. Operational yield is distinguished from content quality.",
+    "scope": "No fresh content exists in this fixture or has been assessed. Five returned items or model difficulty labels alone do not qualify correctness or actual minimum difficulty 3."
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "experiment": "policy-two-runtime-qualification-v1",
+  "scope": "A five-item fixed batch checks answer-cardinality and valid-negative retention with the actual runtime solver/reviewer. One fresh five-question generation job then checks Kimi/Sonnet operational yield and independently assessed content. Synthetic diagnostic items are not a production error-rate estimate or difficulty qualification.",
+  "fixed": {
+    "request": {
+      "goal": {"title": "Reason carefully about evidence and stated rules", "focusAreas": "Distinguish warranted conclusions from possible conclusions, contradictions and comparisons."},
+      "targetCount": 5,
+      "minimumDifficulty": 1,
+      "sourceDocuments": []
+    },
+    "cases": [
+      {
+        "case_id": "observed_rate_comparison",
+        "question": {
+          "prompt": "Teams A, B, C and D completed 30 of 100, 21 of 60, 16 of 80 and 27 of 90 tasks respectively. Which team had the highest observed completion rate?",
+          "choices": ["Team A", "Team B", "Team C", "Team D"],
+          "expectedAnswer": "Team B",
+          "topic": "Observed proportions",
+          "format": "Multiple Choice",
+          "difficulty": 2,
+          "explanation": "Fixed diagnostic author text; final feedback is independently assessed."
+        },
+        "assessment": {
+          "warranted_choices": ["Team B"],
+          "reason": "The observed proportions are 30%, 35%, 20% and 30%. Team B alone has the highest rate. Sample sizes do not prevent comparing these observed fractions; no population superiority is asserted.",
+          "per_choice": ["A is 30%, below B.", "B is 35%, the unique maximum.", "C is 20%, below B.", "D is 30%, below B."],
+          "expected_accept": true
+        }
+      },
+      {
+        "case_id": "converse_not_established",
+        "question": {
+          "prompt": "In a fictional lab, every sample that turns green contains reagent R. Sample X contains R. Which conclusion must follow from these facts?",
+          "choices": ["X turns green.", "X does not turn green.", "X does not contain R.", "Every sample containing R turns green."],
+          "expectedAnswer": "X turns green.",
+          "topic": "Conditional reasoning",
+          "format": "Multiple Choice",
+          "difficulty": 2,
+          "explanation": "Deliberately invalid fixed diagnostic; the stored key is not ground truth."
+        },
+        "assessment": {
+          "warranted_choices": [],
+          "reason": "Green implies R; its converse does not follow. X can be green or not green while containing R. The third choice contradicts the stem, and the universal converse is also unestablished. No offered choice is warranted.",
+          "per_choice": ["Possible, not entailed.", "Possible, not entailed.", "Contradicts the given presence of R.", "The converse of the rule is not entailed."],
+          "expected_accept": false
+        }
+      },
+      {
+        "case_id": "inconsistent_partition",
+        "question": {
+          "prompt": "A jar contains exactly 12 marbles. Every marble is exactly one of red or blue. Exactly 7 are red and exactly 8 are blue. What fraction of the jar's marbles are blue?",
+          "choices": ["8/12", "5/12", "8/15", "7/12"],
+          "expectedAnswer": "8/12",
+          "topic": "Proportions",
+          "format": "Multiple Choice",
+          "difficulty": 2,
+          "explanation": "Deliberately invalid fixed diagnostic; the stored key is not ground truth."
+        },
+        "assessment": {
+          "warranted_choices": [],
+          "reason": "The exclusive and exhaustive color counts sum to 15, contradicting the stated total of 12. There is no jar satisfying the premises; selecting any numeric fraction silently discards a condition. Inconsistent premises do not define a meaningful unique-answer MCQ through logical explosion.",
+          "per_choice": ["Ignores the conflicting red count.", "Ignores the conflicting blue count.", "Ignores the stated total.", "Does not resolve the inconsistent premises."],
+          "expected_accept": false
+        }
+      },
+      {
+        "case_id": "two_required_properties",
+        "question": {
+          "prompt": "Under a fictional archive's rules, every valid report includes both a date and a signature. Which property must a valid report have?",
+          "choices": ["It includes a date.", "It includes a signature.", "It includes a photograph.", "It includes a serial number."],
+          "expectedAnswer": "It includes a date.",
+          "topic": "Conjunctions",
+          "format": "Multiple Choice",
+          "difficulty": 1,
+          "explanation": "Deliberately invalid fixed diagnostic; the stored key is not uniquely correct."
+        },
+        "assessment": {
+          "warranted_choices": ["It includes a date.", "It includes a signature."],
+          "reason": "The first two properties are explicitly required. Neither photographs nor serial numbers are required by the stated rules. The singular-answer MCQ therefore has two warranted choices.",
+          "per_choice": ["Explicitly required.", "Explicitly required.", "Not established as required.", "Not established as required."],
+          "expected_accept": false
+        }
+      },
+      {
+        "case_id": "ordinary_information_limit",
+        "question": {
+          "prompt": "A survey recorded 80 responses: 50 preferred design A and 30 preferred design B. Were all people eligible for this survey included among those 80 respondents?",
+          "choices": ["Yes, all eligible people responded.", "No, some eligible people did not respond.", "The response counts do not establish whether everyone eligible responded.", "Every eligible person preferred design A."],
+          "expectedAnswer": "The response counts do not establish whether everyone eligible responded.",
+          "topic": "Survey participation",
+          "format": "Multiple Choice",
+          "difficulty": 2,
+          "explanation": "Fixed diagnostic author text; final feedback is independently assessed."
+        },
+        "assessment": {
+          "warranted_choices": ["The response counts do not establish whether everyone eligible responded."],
+          "reason": "The eligible population size and participation are unspecified. Both a complete eligible population of 80 and a larger population with 80 respondents satisfy the facts. A yes or no answer is possible but not warranted; the lack-of-information choice uniquely answers the question.",
+          "per_choice": ["Possible, not established.", "Possible, not established.", "Uniquely warranted information limit.", "Unsupported and does not answer the participation question."],
+          "expected_accept": true
+        }
+      }
+    ]
+  },
+  "fresh": {
+    "case_id": "everyday_probability_and_evidence",
+    "payload": {
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one."
+      },
+      "targetCount": 5,
+      "minimumDifficulty": 3,
+      "sourceDocuments": []
+    },
+    "assessment_protocol": "Freeze exact raw author candidates for blind assessment before exposing authored keys, feedback, solver judgments or survival. Separately assess unique correct answer, distinct plausible distractors, all five final teaching fields, and actual minimum difficulty 3. Check exact self-contained calculations independently where available. Model approval and a full five-item bank are operational observations, not correctness scores."
+  }
+}

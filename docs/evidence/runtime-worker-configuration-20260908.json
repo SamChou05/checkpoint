@@ -1,0 +1,61 @@
+{
+  "checked_at_utc": "2026-09-08T09:18:33.554258+00:00",
+  "scope": "Known TestFlight API and worker configuration only; three read-only management calls, no invocations or mutations. Only explicitly allowlisted non-secret settings retained.",
+  "functions": [
+    {
+      "logical_id": "CheckpointQuestionFunction",
+      "code_sha256_base64": "ELfgKh0sMuacm9fFJjRugSKgnK/x+ry0StA7EWUsHo0=",
+      "last_modified": "2026-09-08T07:07:54.000+0000",
+      "timeout_seconds": 30,
+      "settings": {
+        "GENERATION_ATTEMPTS": "3",
+        "BEDROCK_TEMPERATURE": null,
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": null,
+        "BEDROCK_READ_TIMEOUT_SECONDS": null,
+        "MAX_REQUESTS_PER_INSTALL_PER_DAY": "40",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": null,
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_MODEL_ID": "amazon.nova-lite-v1:0",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_CLAUDE_EFFORT": "high"
+      }
+    },
+    {
+      "logical_id": "QuestionBankWorkerFunction",
+      "code_sha256_base64": "ELfgKh0sMuacm9fFJjRugSKgnK/x+ry0StA7EWUsHo0=",
+      "last_modified": "2026-09-08T07:07:54.000+0000",
+      "timeout_seconds": 240,
+      "settings": {
+        "GENERATION_ATTEMPTS": "3",
+        "BEDROCK_TEMPERATURE": null,
+        "BEDROCK_CONNECT_TIMEOUT_SECONDS": null,
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "MAX_REQUESTS_PER_INSTALL_PER_DAY": "40",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_REASONING_EFFORT": "none",
+        "BEDROCK_CLAUDE_EFFORT": "high"
+      }
+    }
+  ],
+  "redaction": "Model ARNs represented by model/profile IDs; no account IDs, physical function names, credentials or signed URLs retained. Null means variable absent, not numeric zero.",
+  "interpretation": {
+    "worker_defaults_from_matching_source": {
+      "BEDROCK_TEMPERATURE": 0.2,
+      "BEDROCK_CONNECT_TIMEOUT_SECONDS": 3
+    },
+    "quota": "40 async model calls/install/day. With five candidates per pass and three calls per complete pass, an ideal cold fill of 80 questions requires at least 48 calls. This does not prevent initial practice once the first batch is available.",
+    "qualification_scope": "Local direct model calls will reproduce the worker settings; this is not a deployed queue, Lambda cold-start or per-install quota exercise."
+  }
+}
