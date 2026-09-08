@@ -202,11 +202,15 @@ struct QuestionGenerationRequest: Sendable {
         }
 
         let documents: [[String: Any]] = goal.sourceDocuments.enumerated().map { index, document in
-            [
+            var source: [String: Any] = [
                 "index": index + 1,
                 "name": document.name,
                 "text": document.text
             ]
+            if let truncated = document.truncated {
+                source["truncated"] = truncated
+            }
+            return source
         }
         guard let data = try? JSONSerialization.data(
             withJSONObject: documents,

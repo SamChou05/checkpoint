@@ -358,10 +358,12 @@ private struct ArchivedSkillPayload: Encodable {
 private struct SourceDocumentPayload: Encodable {
     var name: String
     var text: String
+    var truncated: Bool?
 
     init(document: GoalSourceDocument) {
         name = document.name
         text = document.text
+        truncated = document.truncated
     }
 }
 

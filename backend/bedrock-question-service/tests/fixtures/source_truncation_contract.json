@@ -1,0 +1,25 @@
+{
+  "contract": "Optional truncated boolean: true preserves known budget/page omission; false reports no known omission in this text pipeline; absent is unknown. No flag authenticates a URL or establishes complete extraction.",
+  "cases": [
+    {
+      "case_id": "legacy_unknown",
+      "stored_document": {"id": "00000000-0000-0000-0000-000000000001", "name": "Legacy code.txt", "text": "def sample():\n    return 'a  b'\n# Preserve both indentation and quoted spaces.", "importedAt": 0},
+      "expected_wire": {"name": "Legacy code.txt", "text": "def sample():\n    return 'a  b'\n# Preserve both indentation and quoted spaces."}
+    },
+    {
+      "case_id": "known_unshortened",
+      "stored_document": {"id": "00000000-0000-0000-0000-000000000002", "name": "Intact notes.txt", "text": "A loop's else runs after normal exhaustion, including an empty range.", "importedAt": 0, "truncated": false},
+      "expected_wire": {"name": "Intact notes.txt", "text": "A loop's else runs after normal exhaustion, including an empty range.", "truncated": false}
+    },
+    {
+      "case_id": "earlier_omission",
+      "stored_document": {"id": "00000000-0000-0000-0000-000000000003", "name": "Earlier excerpt.txt", "text": "Beginning of a much longer explanation.\n[…truncated…]\nEnding with its important conditions.", "importedAt": 0, "truncated": true},
+      "expected_wire": {"name": "Earlier excerpt.txt", "text": "Beginning of a much longer explanation.\n[…truncated…]\nEnding with its important conditions.", "truncated": true}
+    },
+    {
+      "case_id": "literal_marker_is_not_provenance",
+      "stored_document": {"id": "00000000-0000-0000-0000-000000000004", "name": "Marker lesson.txt", "text": "The literal string […truncated…] is an example in this complete short lesson.", "importedAt": 0, "truncated": false},
+      "expected_wire": {"name": "Marker lesson.txt", "text": "The literal string […truncated…] is an example in this complete short lesson.", "truncated": false}
+    }
+  ]
+}

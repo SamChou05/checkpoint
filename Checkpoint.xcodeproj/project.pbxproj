@@ -80,6 +80,7 @@
 		CB0000000000000000000007 /* ProgressMetricsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000007 /* ProgressMetricsTests.swift */; };
 		CB0000000000000000000008 /* QuestionBankAsyncFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000008 /* QuestionBankAsyncFlowTests.swift */; };
 		CB0000000000000000000009 /* QuestionGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000009 /* QuestionGenerationTests.swift */; };
+		CB0000000000000000000026 /* SourceTruncationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000000000000000000026 /* SourceTruncationTests.swift */; };
 		CB000000000000000000000A /* QuestionRefillTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000000A /* QuestionRefillTests.swift */; };
 		CB000000000000000000000B /* QuestionValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000000B /* QuestionValidationTests.swift */; };
 		CB000000000000000000000C /* ScreenTimeCoordinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000000000000000000000C /* ScreenTimeCoordinationTests.swift */; };
@@ -262,6 +263,7 @@
 		CA0000000000000000000007 /* ProgressMetricsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressMetricsTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000008 /* QuestionBankAsyncFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionBankAsyncFlowTests.swift; sourceTree = "<group>"; };
 		CA0000000000000000000009 /* QuestionGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionGenerationTests.swift; sourceTree = "<group>"; };
+		CA0000000000000000000026 /* SourceTruncationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceTruncationTests.swift; sourceTree = "<group>"; };
 		CA000000000000000000000A /* QuestionRefillTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionRefillTests.swift; sourceTree = "<group>"; };
 		CA000000000000000000000B /* QuestionValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionValidationTests.swift; sourceTree = "<group>"; };
 		CA000000000000000000000C /* ScreenTimeCoordinationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeCoordinationTests.swift; sourceTree = "<group>"; };
@@ -570,6 +572,7 @@
 				CA0000000000000000000003 /* AppSnapshotPersistenceTests.swift */,
 				CA0000000000000000000001 /* AIProviderPolicyTests.swift */,
 				CA0000000000000000000009 /* QuestionGenerationTests.swift */,
+				CA0000000000000000000026 /* SourceTruncationTests.swift */,
 				CA000000000000000000000B /* QuestionValidationTests.swift */,
 				CA0000000000000000000008 /* QuestionBankAsyncFlowTests.swift */,
 				CA000000000000000000000F /* UnlockPolicyTests.swift */,
@@ -937,6 +940,7 @@
 				CB0000000000000000000003 /* AppSnapshotPersistenceTests.swift in Sources */,
 				CB0000000000000000000001 /* AIProviderPolicyTests.swift in Sources */,
 				CB0000000000000000000009 /* QuestionGenerationTests.swift in Sources */,
+				CB0000000000000000000026 /* SourceTruncationTests.swift in Sources */,
 				CB000000000000000000000B /* QuestionValidationTests.swift in Sources */,
 				CB0000000000000000000008 /* QuestionBankAsyncFlowTests.swift in Sources */,
 				CB000000000000000000000F /* UnlockPolicyTests.swift in Sources */,

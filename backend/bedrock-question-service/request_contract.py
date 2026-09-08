@@ -901,7 +901,7 @@ def _normalized_source_documents(value: Any) -> list[dict[str, Any]]:
             f"sourceDocuments exceeds the {MAX_SOURCE_DOCUMENTS}-document limit."
         )
 
-    documents: list[dict[str, str]] = []
+    documents: list[dict[str, Any]] = []
     for index, item in enumerate(value):
         if not isinstance(item, dict):
             raise BadRequestError(f"sourceDocuments[{index}] must be an object.")
@@ -921,19 +921,27 @@ def _normalized_source_documents(value: Any) -> list[dict[str, Any]]:
         if not cleaned_text:
             raise BadRequestError(f"sourceDocuments[{index}].text must not be empty.")
 
-        documents.append({"name": name, "text": cleaned_text})
+        document: dict[str, Any] = {"name": name, "text": cleaned_text}
+        # A client can report an omission, not establish source authenticity or
+        # extraction completeness. Legacy omission means unknown, never false.
+        if "truncated" in item:
+            if type(item["truncated"]) is not bool:
+                raise BadRequestError(
+                    f"sourceDocuments[{index}].truncated must be a boolean when supplied."
+                )
+            document["truncated"] = item["truncated"]
+        documents.append(document)
 
     character_limits = _source_context_character_limits(documents)
     normalized: list[dict[str, Any]] = []
     for document, character_limit in zip(documents, character_limits, strict=True):
         text = _truncate_source_text(document["text"], character_limit)
-        normalized.append(
-            {
-                "name": document["name"],
-                "text": text,
-                "truncated": len(text) < len(document["text"]),
-            }
-        )
+        result = {**document, "text": text}
+        # True is sticky through repeat normalization and bank top-offs. The
+        # server may establish truncation even when the client did not know.
+        if len(text) < len(document["text"]):
+            result["truncated"] = True
+        normalized.append(result)
 
     return normalized
 
@@ -1162,7 +1170,7 @@ def _parsed_iso8601_datetime(value: str, field_name: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
-def _source_context_character_limits(documents: list[dict[str, str]]) -> list[int]:
+def _source_context_character_limits(documents: list[dict[str, Any]]) -> list[int]:
     capacities = [
         min(len(document["text"]), MAX_SOURCE_DOCUMENT_CHARS) for document in documents
     ]

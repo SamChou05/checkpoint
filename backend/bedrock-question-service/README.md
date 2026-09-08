@@ -88,7 +88,7 @@ The service authenticates first, then fully decodes and validates the request be
 - UTF-8 JSON and a configurable byte ceiling
 - explicit limits for goal, focus, level, directive, topic, prompt, answer, choice, and competency fields
 - UUID, name, objective, map-size, map-revision, and desired-allocation validation for structured skill maps
-- an optional top-level `sourceDocuments` array of `{ "name": "...", "text": "..." }` objects; existing clients may omit it
+- an optional top-level `sourceDocuments` array of `{ "name": "...", "text": "...", "truncated": true }` objects; both the array and each document's boolean flag are optional
 - at most 5 source documents, 160 characters per normalized name, and 24,000 normalized source-text characters across the request
 - deterministic source truncation that shares the context budget across documents and samples the beginning, middle, and end of over-budget text
 - bounded list sizes and a server-side question-count cap
@@ -97,6 +97,8 @@ The service authenticates first, then fully decodes and validates the request be
 - bounded botocore timeouts and exactly one total SDK attempt, so every network attempt consumes one provider-call budget slot
 
 Source documents are accepted as extracted UTF-8 text, not binary uploads or base64 file bodies. Empty text, malformed objects, oversized names, non-array input, and more than five documents return `400` before quota consumption. Document text is whitespace/control-character normalized and then truncated within the fixed context budget rather than rejecting an otherwise usable upload.
+
+Source omission metadata survives device import, persistence, request encoding and repeated backend normalization. `truncated: true` is sticky when a device or server budget removes text, including a PDF page traversal stopped early. An explicit `false` means no known budget omission in that supplied capture pipeline; it does not prove full extraction, source authenticity or factual accuracy. Omission of the field means unknown for legacy material. The backend never replaces a client-reported `true` with `false`, and its own truncation establishes `true` even when the client supplied no flag. A supplied flag must be a JSON boolean; `null`, strings and numbers are rejected. Literal truncation markers in document text do not establish provenance.
 
 When source context is present, the assessment prompt treats it as the primary content scope, requires source-supported answers and self-contained question stems, and explicitly treats document names and contents as untrusted evidence rather than instructions. Outlines and syllabi may scope reliable subject knowledge, but the model is told not to claim unsupported details came from a source or infer content omitted by truncation.
 

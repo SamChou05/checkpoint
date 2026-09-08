@@ -457,17 +457,38 @@ struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
     var name: String
     var text: String
     var importedAt: Date
+    // Budget/page omission in the supplied text pipeline, not proof that a
+    // document was fully extracted or authentic. Missing legacy metadata is unknown.
+    var truncated: Bool?
 
     init(
         id: UUID = UUID(),
         name: String,
         text: String,
-        importedAt: Date = Date()
+        importedAt: Date = Date(),
+        truncated: Bool? = false
     ) {
         self.id = id
         self.name = Self.normalizedName(name)
         self.text = Self.normalizedText(text, limit: GoalContextLimits.maximumCharactersPerDocument)
         self.importedAt = importedAt
+        self.truncated = QuestionText.subjectContent(text).count > GoalContextLimits.maximumCharactersPerDocument
+            ? true : truncated
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, text, importedAt, truncated
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        text = try container.decode(String.self, forKey: .text)
+        importedAt = try container.decode(Date.self, forKey: .importedAt)
+        // Decode the stored text verbatim, as before. Goal normalization applies
+        // budgets later and may establish true, but must never backfill false.
+        truncated = try container.decodeIfPresent(Bool.self, forKey: .truncated)
     }
 
     var characterCount: Int {
@@ -483,7 +504,8 @@ struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
                 id: document.id,
                 name: document.name,
                 text: document.text,
-                importedAt: document.importedAt
+                importedAt: document.importedAt,
+                truncated: document.truncated
             )
             guard normalized.text.count >= GoalContextLimits.minimumUsefulDocumentCharacters else { continue }
 
@@ -504,7 +526,8 @@ struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
                 id: document.id,
                 name: document.name,
                 text: text,
-                importedAt: document.importedAt
+                importedAt: document.importedAt,
+                truncated: document.text.count > allocation ? true : document.truncated
             )
         }
     }

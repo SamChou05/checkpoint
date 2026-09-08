@@ -111,17 +111,23 @@ enum GoalSourceDocumentImporter {
         let contentType = resourceValues?.contentType
         let fileExtension = url.pathExtension.lowercased()
         let text: String
+        let extractionTruncated: Bool
         if contentType?.conforms(to: .pdf) == true || fileExtension == "pdf" {
-            text = try extractedPDFText(from: url)
+            let extracted = try extractedPDFText(from: url)
+            text = extracted.text
+            extractionTruncated = extracted.truncated
         } else if contentType?.conforms(to: .text) == true
             || knownTextExtensions.contains(fileExtension) {
             text = try extractedPlainText(from: url)
+            extractionTruncated = false
         } else {
             throw GoalSourceImportError.unsupportedType
         }
 
         try Task.checkCancellation()
-        let document = GoalSourceDocument(name: url.lastPathComponent, text: text)
+        let document = GoalSourceDocument(
+            name: url.lastPathComponent, text: text, truncated: extractionTruncated
+        )
         guard document.characterCount >= GoalContextLimits.minimumUsefulDocumentCharacters else {
             throw GoalSourceImportError.tooLittleText
         }
@@ -163,24 +169,40 @@ enum GoalSourceDocumentImporter {
         return decodedText
     }
 
-    private static func extractedPDFText(from url: URL) throws -> String {
+    private static func extractedPDFText(from url: URL) throws -> (text: String, truncated: Bool) {
         #if canImport(PDFKit)
         try Task.checkCancellation()
         guard let document = PDFDocument(url: url) else {
             throw GoalSourceImportError.unreadableFile
         }
+        return try extractPDFPageText(pageCount: document.pageCount) {
+            document.page(at: $0)?.string
+        }
+        #else
+        throw GoalSourceImportError.unsupportedType
+        #endif
+    }
 
+    // Keep the bounded page traversal testable without a PDF renderer. Skipped
+    // pages establish omission even when text normalization removes whitespace
+    // and leaves the retained text below the character limit.
+    static func extractPDFPageText(
+        pageCount: Int,
+        textForPage: (Int) -> String?
+    ) throws -> (text: String, truncated: Bool) {
         var pageText: [String] = []
         var extractedCharacterCount = 0
-        for pageIndex in 0..<document.pageCount {
+        var skippedRemainingPages = false
+        for pageIndex in 0..<pageCount {
             try Task.checkCancellation()
-            guard let text = document.page(at: pageIndex)?.string,
+            guard let text = textForPage(pageIndex),
                   !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                 continue
             }
             pageText.append(text)
             extractedCharacterCount += text.count
             if extractedCharacterCount >= GoalContextLimits.maximumCharactersPerDocument {
+                skippedRemainingPages = pageIndex + 1 < pageCount
                 break
             }
         }
@@ -190,9 +212,6 @@ enum GoalSourceDocumentImporter {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw GoalSourceImportError.noExtractableText
         }
-        return text
-        #else
-        throw GoalSourceImportError.unsupportedType
-        #endif
+        return (text, skippedRemainingPages)
     }
 }
