@@ -1,0 +1,104 @@
+{
+  "results": [
+    {
+      "case_id": "photography_controlled_supported_feedback",
+      "observation": {
+        "eligible": true,
+        "reason": "accepted",
+        "question": {
+          "prompt": "A 50 mm lens is focused at 3 m. A second row is 5 m away. Comparing depth of field at the same camera position and focus distance, which single change from f/4 increases depth of field?",
+          "choices": [
+            "Stop down the aperture to f/11",
+            "Switch to an 85mm lens at f/4",
+            "Raise ISO by 3 stops",
+            "Increase shutter speed to 1/1000s"
+          ],
+          "expectedAnswer": "Stop down the aperture to f/11",
+          "explanation": "Stopping down from f/4 to f/11 increases depth of field with position, focus and focal length held fixed. This is the only listed change that widens the sharp zone; it does not guarantee sharpness at both row distances.",
+          "choiceExplanations": {
+            "Stop down the aperture to f/11": "A higher f-number means a smaller aperture. At the fixed focus distance and focal length, stopping down increases depth of field.",
+            "Switch to an 85mm lens at f/4": "At the same focus distance and f-number, switching to a longer focal length reduces depth of field rather than widening the sharp zone.",
+            "Raise ISO by 3 stops": "ISO changes recorded brightness and noise behavior, not optical depth of field by itself.",
+            "Increase shutter speed to 1/1000s": "Shutter time affects exposure and motion rendering; changing it alone does not increase optical depth of field."
+          },
+          "topic": "depth of field",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        }
+      }
+    },
+    {
+      "case_id": "music_historical_bad_feedback",
+      "observation": {
+        "eligible": false,
+        "reason": "unsupported_feedback",
+        "question": null
+      }
+    },
+    {
+      "case_id": "music_supported_feedback",
+      "observation": {
+        "eligible": true,
+        "reason": "accepted",
+        "question": {
+          "prompt": "An alto saxophone is an E♭ transposing instrument: its written C sounds as concert E♭. A player reads a written G major triad (G, B, D). What triad is heard at concert pitch?",
+          "choices": [
+            "B♭ major",
+            "E♭ major",
+            "F major",
+            "C major"
+          ],
+          "expectedAnswer": "B♭ major",
+          "explanation": "Alto sax written C = concert E♭, so each written note sounds a major sixth lower. Written G→B♭, B→D, D→F, yielding a concert B♭ major triad.",
+          "choiceExplanations": {
+            "B♭ major": "Correct: transposing each note of the written G major triad down a major sixth gives B♭, D, F.",
+            "E♭ major": "Written G maps to concert B♭, so the concert triad has B♭ as its root. E♭ is the concert pitch class of written C on this instrument.",
+            "F major": "Moving G, B, D down a major second gives F, A, C. That is a consistent transposition, but it is not the alto saxophone's major-sixth downward transposition.",
+            "C major": "Leaving the written pitches untransposed would give G major, not C major. The stated alto transposition instead gives the notes B♭, D, F."
+          },
+          "topic": "transposition",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      }
+    },
+    {
+      "case_id": "all_pairs_wrong_key_boundary",
+      "observation": {
+        "eligible": false,
+        "reason": "reported_issues",
+        "question": null
+      }
+    },
+    {
+      "case_id": "all_pairs_explicit_negative_control",
+      "observation": {
+        "eligible": true,
+        "reason": "accepted",
+        "question": {
+          "prompt": "For an arbitrary unsorted array of n integers, every matching index pair i < j must be explicitly listed. Can any method guarantee O(n) total time and O(n) auxiliary space for target k?",
+          "choices": [
+            "No: listing all matches alone can require quadratic time.",
+            "Yes: a hash map guarantees O(n) time for listing every pair.",
+            "Yes: sorting and two pointers guarantee O(n) total time.",
+            "Yes: nested loops guarantee O(n) total time."
+          ],
+          "expectedAnswer": "No: listing all matches alone can require quadratic time.",
+          "explanation": "If all n values and k are zero, all n(n-1)/2 index pairs match. Writing that many outputs takes quadratic time, even with efficient lookup. O(n) auxiliary storage does not remove this output-time bound.",
+          "choiceExplanations": {
+            "No: listing all matches alone can require quadratic time.": "With n zeroes and target zero, every pair of distinct indices matches. The quadratic number of required outputs rules out a linear total-time guarantee.",
+            "Yes: a hash map guarantees O(n) time for listing every pair.": "Fast membership checks do not avoid emitting every match. One value can match many prior indices, so total time must include the output size.",
+            "Yes: sorting and two pointers guarantee O(n) total time.": "Comparison sorting is not generally linear; more importantly, explicitly listing all matches can still require quadratic time after sorting.",
+            "Yes: nested loops guarantee O(n) total time.": "Checking every unordered pair makes n(n-1)/2 checks. Nested loops therefore do not guarantee linear time."
+          },
+          "topic": "hash maps",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      }
+    }
+  ],
+  "dispatch_intents": 5,
+  "provider_calls": 5,
+  "scope": "Replay verifies bindings, not factual correctness."
+}

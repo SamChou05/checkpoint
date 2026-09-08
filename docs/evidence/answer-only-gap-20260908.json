@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "kind": "mocked-current-verifier-control-flow-reproduction",
+  "recorded_on": "2026-09-08",
+  "evidence_scope": {
+    "mocked_control_flow": true,
+    "live_provider_calls": 0,
+    "model_accuracy_measurement": false,
+    "deployed_behavior_verified": false,
+    "description": "Exact inputs and printed observations preserved from the just-completed local mock. Archival construction did not rerun the verifier. The reviewer is intentionally approving and wrong for this impossible numeric question. This demonstrates a reachable local code path, not a live model error rate or deployed-service observation.",
+    "capture_limit": "The original bounded command printed counts, diagnostics, and verification metadata; it did not print complete accepted objects or exact intermediate review/solver request strings. Those unrecorded outputs are not fabricated here."
+  },
+  "source_revision_at_archival": "1cd772ea3044fbc3e30a1b1e59830ff871f9a0d0",
+  "source_provenance_note": "Revision and byte hashes collected immediately after the read-only mock. The inspected verifier/generation source was clean in the mock command git-status output; current source comparisons below check agreement with this revision. No source edits were made by this agent.",
+  "sources": [
+    {
+      "path": "backend/bedrock-question-service/question_verification.py",
+      "sha256": "2f6be813a738544a076c2186943712175a976fca3cf2922a5bef7d3b53957798",
+      "matches_recorded_revision": true
+    },
+    {
+      "path": "backend/bedrock-question-service/question_generation.py",
+      "sha256": "cf4995e22de1fe7679c9a985ee5e7f70893405eb70339eafde53a41693462245",
+      "matches_recorded_revision": true
+    },
+    {
+      "path": "backend/bedrock-question-service/verification_policy.py",
+      "sha256": "fade0c88ff8721dba6da44a029ec90e7456f45574057c22f160dd449d6fdf397",
+      "matches_recorded_revision": true
+    },
+    {
+      "path": "backend/bedrock-question-service/request_contract.py",
+      "sha256": "70b8f2a7a5f233bdf5bf027a83f8871f7fab78f803eaf2070bec0b73ea1508f2",
+      "matches_recorded_revision": true
+    },
+    {
+      "path": "backend/bedrock-question-service/question_quality.py",
+      "sha256": "e2178e578b081c56c128876e4f29fb9e2ff9d78302a78aeae84daa170bc076c0",
+      "matches_recorded_revision": true
+    },
+    {
+      "path": "backend/bedrock-question-service/question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "matches_recorded_revision": true
+    }
+  ],
+  "input_archive": {
+    "path": "docs/evidence/solver-limitations-replay-20260906.json",
+    "sha256": "74b7816bdc9e51e941edde62a8b0e768b94fb3411c519b55d2325bb531b7f564",
+    "case_locator": "cases[id=answer_only_contradiction_remaining]"
+  },
+  "request": {
+    "goal": {
+      "title": "Reason from explicit premises",
+      "category": "",
+      "focusAreas": "",
+      "currentLevel": "",
+      "learningTarget": "Reason from explicit premises",
+      "contentTopics": [
+        "Reason from explicit premises"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": true,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "competencies": [],
+    "existingPrompts": [],
+    "existingQuestionCoverage": [],
+    "reportedPrompts": [],
+    "blockedStemFingerprints": [],
+    "stemFingerprintVersion": 1,
+    "sourceDocuments": [],
+    "targetCount": 1,
+    "minimumDifficulty": 1,
+    "requiresFullObjectiveCoverage": false,
+    "difficultyGuidance": "Recognize or recall a fact or concept.",
+    "adaptiveSkillPlans": []
+  },
+  "question": {
+    "prompt": "Which real number x satisfies x² = -1?",
+    "expectedAnswer": "0",
+    "choices": [
+      "0",
+      "1",
+      "-1",
+      "2"
+    ],
+    "topic": "reasoning",
+    "difficulty": 2,
+    "format": "Multiple Choice",
+    "explanation": "This is synthetic authored feedback for a control-flow replay."
+  },
+  "reviewer_callback": {
+    "type": "unittest.mock.Mock",
+    "behavior": "Always returns the same JSON review approving the original authored key, independently of the solver record. No network or model invocation.",
+    "return_text": "{\"reviews\": [{\"index\": 0, \"valid\": true, \"answer\": \"0\", \"difficulty\": 2, \"explanation\": \"This synthetic reviewer deliberately approves the authored key.\", \"choiceExplanations\": {\"0\": \"This synthetic feedback is intentionally not a correctness certificate.\", \"1\": \"This synthetic feedback is intentionally not a correctness certificate.\", \"-1\": \"This synthetic feedback is intentionally not a correctness certificate.\", \"2\": \"This synthetic feedback is intentionally not a correctness certificate.\"}}]}",
+    "parsed_return": {
+      "reviews": [
+        {
+          "index": 0,
+          "valid": true,
+          "answer": "0",
+          "difficulty": 2,
+          "explanation": "This synthetic reviewer deliberately approves the authored key.",
+          "choiceExplanations": {
+            "0": "This synthetic feedback is intentionally not a correctness certificate.",
+            "1": "This synthetic feedback is intentionally not a correctness certificate.",
+            "-1": "This synthetic feedback is intentionally not a correctness certificate.",
+            "2": "This synthetic feedback is intentionally not a correctness certificate."
+          }
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "case_id": "answer_only",
+      "solver_record": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "No real number satisfies the equation.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "solver_return_text": "{\"solutions\": [{\"index\": 0, \"outcome\": \"resolved\", \"answer\": \"No real number satisfies the equation.\", \"limitations\": \"\", \"assumptionsRequired\": []}]}",
+      "observed_stdout_object": {
+        "case": "answer_only",
+        "accepted": 1,
+        "reviewer_calls": 1,
+        "diagnostics": {
+          "QuestionQuality": {
+            "review": {
+              "accepted": 1
+            }
+          }
+        },
+        "verification": [
+          {
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 1
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "declared_no_solution",
+      "solver_record": {
+        "index": 0,
+        "outcome": "no_solution",
+        "answer": "No real number satisfies the equation.",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "solver_return_text": "{\"solutions\": [{\"index\": 0, \"outcome\": \"no_solution\", \"answer\": \"No real number satisfies the equation.\", \"limitations\": \"\", \"assumptionsRequired\": []}]}",
+      "observed_stdout_object": {
+        "case": "declared_no_solution",
+        "accepted": 0,
+        "reviewer_calls": 0,
+        "diagnostics": {
+          "QuestionQuality": {
+            "review": {
+              "solver_outcome_mismatch": 1
+            }
+          }
+        },
+        "verification": []
+      }
+    },
+    {
+      "case_id": "reported_limitations",
+      "solver_record": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "No real number satisfies the equation.",
+        "limitations": "A real square cannot be negative.",
+        "assumptionsRequired": []
+      },
+      "solver_return_text": "{\"solutions\": [{\"index\": 0, \"outcome\": \"resolved\", \"answer\": \"No real number satisfies the equation.\", \"limitations\": \"A real square cannot be negative.\", \"assumptionsRequired\": []}]}",
+      "observed_stdout_object": {
+        "case": "reported_limitations",
+        "accepted": 0,
+        "reviewer_calls": 0,
+        "diagnostics": {
+          "QuestionQuality": {
+            "review": {
+              "solver_unresolved_limitations": 1
+            }
+          }
+        },
+        "verification": []
+      }
+    },
+    {
+      "case_id": "exact_rival",
+      "solver_record": {
+        "index": 0,
+        "outcome": "resolved",
+        "answer": "1",
+        "limitations": "",
+        "assumptionsRequired": []
+      },
+      "solver_return_text": "{\"solutions\": [{\"index\": 0, \"outcome\": \"resolved\", \"answer\": \"1\", \"limitations\": \"\", \"assumptionsRequired\": []}]}",
+      "observed_stdout_object": {
+        "case": "exact_rival",
+        "accepted": 0,
+        "reviewer_calls": 0,
+        "diagnostics": {
+          "QuestionQuality": {
+            "review": {
+              "answer_disagreement": 1
+            }
+          }
+        },
+        "verification": []
+      }
+    }
+  ],
+  "independent_fixed_input_check": {
+    "expression": "all(float(c)**2 != -1 for c in item['choices'])",
+    "passed": true,
+    "meaning": "Each of the four actual offered numeric values fails the displayed equation; this fixed arithmetic check did not execute generated code."
+  },
+  "original_runner_source": "import copy,json,sys\nfrom pathlib import Path\nfrom unittest.mock import Mock\nsys.path.insert(0,'backend/bedrock-question-service')\nfrom question_verification import verify_questions\narchive=json.loads(Path('docs/evidence/solver-limitations-replay-20260906.json').read_text())\nbase=next(row for row in archive['cases'] if row['id']=='answer_only_contradiction_remaining')\nitem=base['question']\nassert all(float(c)**2 != -1 for c in item['choices'])\nreview_record={'index':0,'valid':True,'answer':item['expectedAnswer'],'difficulty':2,'explanation':'This synthetic reviewer deliberately approves the authored key.','choiceExplanations':{c:'This synthetic feedback is intentionally not a correctness certificate.' for c in item['choices']}}\nfor label,updates in [('answer_only',{}),('declared_no_solution',{'outcome':'no_solution'}),('reported_limitations',{'limitations':'A real square cannot be negative.'}),('exact_rival',{'answer':'1'})]:\n record={**base['solution'],**updates}\n reviewer=Mock(return_value=json.dumps({'reviews':[review_record]}))\n solver=Mock(return_value=json.dumps({'solutions':[record]}))\n metrics={}\n accepted=verify_questions([copy.deepcopy(item)],archive['request'],reviewer,metrics,solve=solver)\n print(json.dumps({'case':label,'accepted':len(accepted),'reviewer_calls':reviewer.call_count,'diagnostics':metrics,'verification':[{k:q.get(k) for k in ['verificationVersion','verificationPolicyRevision']} for q in accepted]}))\n",
+  "original_execution": {
+    "interpreter": "/opt/homebrew/bin/python3.12",
+    "working_directory": "/Users/samchou/Documents/Checkpoint",
+    "environment_override": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exit_code": 0
+  },
+  "observed_stdout": "{\"case\": \"answer_only\", \"accepted\": 1, \"reviewer_calls\": 1, \"diagnostics\": {\"QuestionQuality\": {\"review\": {\"accepted\": 1}}}, \"verification\": [{\"verificationVersion\": 1, \"verificationPolicyRevision\": 1}]}\n{\"case\": \"declared_no_solution\", \"accepted\": 0, \"reviewer_calls\": 0, \"diagnostics\": {\"QuestionQuality\": {\"review\": {\"solver_outcome_mismatch\": 1}}}, \"verification\": []}\n{\"case\": \"reported_limitations\", \"accepted\": 0, \"reviewer_calls\": 0, \"diagnostics\": {\"QuestionQuality\": {\"review\": {\"solver_unresolved_limitations\": 1}}}, \"verification\": []}\n{\"case\": \"exact_rival\", \"accepted\": 0, \"reviewer_calls\": 0, \"diagnostics\": {\"QuestionQuality\": {\"review\": {\"answer_disagreement\": 1}}}, \"verification\": []}\n",
+  "implication": "The answer-only contradiction passes the structured solver gates and can be accepted by an approving reviewer. Moving the same obstruction into no_solution or limitations blocks before review, as does an exact rival-choice answer. Current verification provenance can be stamped on this mock acceptance; the stamp is not a semantic correctness certificate."
+}

@@ -1,0 +1,598 @@
+{
+  "schema_version": 1,
+  "kind": "immutable-teaching-audit-five-case-followup-semantic-assessment",
+  "capture_path": "/tmp/checkpoint-immutable-review-followup-capture-20260908/capture.json",
+  "capture_sha256": "b0fb8330ddbbe08c0bd46ccdd49e7162d30f90b68b9acb1253a7bf694aa02feb",
+  "plan_canonical_sha256": "00a8a5bef211fec48f4cebcf30c7e2c3a1e7345a8f02cf9bb958f1b0993b1dbf",
+  "fixture_canonical_sha256": "0d2699ac0f0d105b5777e702a965f8ff96ea23fabc4828189f9fd5df2a0cbc11",
+  "source_revision": "0529a717e6e7274f837c51a4672ba526747b3804",
+  "method": {
+    "blind": false,
+    "expectations_visible": true,
+    "assessor_prepared_original_fixture": true,
+    "description": "Read all five exact final reviews and original learner fields against the embedded predeclared fixture; independently rechecked primary references and fixed pitch/count arithmetic. No hidden reasoning read. This is not independent blind adjudication by a new assessor.",
+    "new_model_provider_calls": 0,
+    "new_native_observer_calls": 0,
+    "production_edits": false
+  },
+  "summary": {
+    "followup_cases": 5,
+    "completed_review_responses": 5,
+    "code_retained": 3,
+    "code_rejected": 2,
+    "supported_retained_controls": 3,
+    "invalid_controls_code_rejected": 2,
+    "model_overall_valid_true": 4,
+    "model_overall_valid_false": 1,
+    "model_overall_verdicts_supported": 4,
+    "model_false_semantic_approvals": 1,
+    "accurate_bad_music_feedback_flags": 3,
+    "all_pairs_feedback_false_support_flags": 5,
+    "feedback_field_judgments_accurate": 20,
+    "feedback_field_judgment_denominator": 25,
+    "all_pairs_output_obstacle_reported": true,
+    "all_pairs_model_correctly_rejected_item": false,
+    "all_pairs_code_veto_reason": "reported_issues",
+    "paired_music_model_difficulty_values": [
+      2,
+      3
+    ],
+    "paired_music_independent_task_difficulty_estimates": [
+      2,
+      2
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "photography_controlled_supported_feedback",
+      "question_canonical_sha256": "9c0c311e9c41da338077a0d43f91dda3c6f29721f7de6ff491572b0bac9fa031",
+      "expect_canonical_sha256": "34097a3e2059fd942e19e47aa65a8d4e95e4bd612c31f7a7f7b906fee924a824",
+      "model_response_text_sha256": "4c82ceb3097adbee7dd539ad20b020bb483f8d9499e1b609d587fce311d036b4",
+      "predeclared_valid": true,
+      "code_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "model_review": {
+        "valid": true,
+        "answer": "Stop down the aperture to f/11",
+        "difficulty": 2,
+        "mainExplanation": "supported",
+        "choiceExplanations": {
+          "Switch to an 85mm lens at f/4": "supported",
+          "Raise ISO by 3 stops": "supported",
+          "Increase shutter speed to 1/1000s": "supported",
+          "Stop down the aperture to f/11": "supported"
+        },
+        "issues": []
+      },
+      "independent_warranted_choices": [
+        "Stop down the aperture to f/11"
+      ],
+      "model_key_matches_authored_key": true,
+      "model_selected_key_warranted": true,
+      "feedback_assessment": [
+        {
+          "field": "explanation",
+          "exact_text": "Stopping down from f/4 to f/11 increases depth of field with position, focus and focal length held fixed. This is the only listed change that widens the sharp zone; it does not guarantee sharpness at both row distances.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "At fixed camera position, focus distance and retained 50 mm focal length, f/11 increases optical depth of field; the wording explicitly avoids guaranteeing both rows sharp."
+        },
+        {
+          "field": "choiceExplanations.Stop down the aperture to f/11",
+          "exact_text": "A higher f-number means a smaller aperture. At the fixed focus distance and focal length, stopping down increases depth of field.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "The f/11 explanation correctly identifies the aperture change and fixed optical conditions."
+        },
+        {
+          "field": "choiceExplanations.Switch to an 85mm lens at f/4",
+          "exact_text": "At the same focus distance and f-number, switching to a longer focal length reduces depth of field rather than widening the sharp zone.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "The 85 mm explanation correctly states shallower depth of field at the same distance and f-number."
+        },
+        {
+          "field": "choiceExplanations.Raise ISO by 3 stops",
+          "exact_text": "ISO changes recorded brightness and noise behavior, not optical depth of field by itself.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "ISO alone does not alter optical depth of field; brightness/noise wording avoids claiming optical sensitivity changes."
+        },
+        {
+          "field": "choiceExplanations.Increase shutter speed to 1/1000s",
+          "exact_text": "Shutter time affects exposure and motion rendering; changing it alone does not increase optical depth of field.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Shutter time affects exposure and motion, not optical depth of field by itself."
+        }
+      ],
+      "independent_complete_item_valid": true,
+      "model_overall_judgment_accurate": true,
+      "assessment": "Retained sound controlled variant. Its revised stem asks which change increases DoF, not what guarantees both rows sharp. This does not repair or validate the original historical full item.",
+      "source_ids": [
+        "canon_dof",
+        "canon_exposure",
+        "nikon_dof"
+      ],
+      "difficulty": {
+        "authored": 3,
+        "model": 2,
+        "independent_estimate": 2,
+        "reason": "Apply the familiar aperture-to-DoF rule directly and distinguish exposure-only controls. The numeric row distances do not require calculation or calibrated level-3 reasoning."
+      },
+      "retained_content_binding": {
+        "exact_original_fields_except_assessed_difficulty": true,
+        "changed_fields": [
+          "difficulty"
+        ],
+        "scope": "All original learner text and choice order preserved; this eval result does not constitute production admission or serving."
+      }
+    },
+    {
+      "case_id": "music_historical_bad_feedback",
+      "question_canonical_sha256": "15bca3922c7ad598296add8cbffaf538bcc5d3fa83067aa8775d0024c17399c5",
+      "expect_canonical_sha256": "cad1f7adf75f8a1c29fc4ad057736e69b0ac7f2c68165cf3bf0991808406e738",
+      "model_response_text_sha256": "139c8a16a65a23ca5a8e4c26de00f712df8039f2783bf4d53a196b9a7f7c69c4",
+      "predeclared_valid": false,
+      "code_observation": {
+        "eligible": false,
+        "reason": "unsupported_feedback"
+      },
+      "model_review": {
+        "valid": false,
+        "answer": "B♭ major",
+        "difficulty": 2,
+        "mainExplanation": "supported",
+        "choiceExplanations": {
+          "B♭ major": "supported",
+          "C major": "unsupported",
+          "E♭ major": "unsupported",
+          "F major": "unsupported"
+        },
+        "issues": [
+          "C major explanation claims choosing C major is 'as if concert pitch equaled written pitch.' Ignoring transposition entirely would yield G major (the written triad), not C major. The explanation misidentifies the error pathway.",
+          "E♭ major explanation claims it results from 'transposing only the root correctly and misapplying the interval to other notes.' However, the root G transposed correctly (down a major sixth) gives B♭, not E♭. E♭ major (E♭, G, B♭) actually results from consistently transposing UP a minor sixth, not from a partial correct application.",
+          "F major explanation claims 'no consistent transposition interval from G major produces F major.' This is false: transposing every note down a major second (G→F, B→A, D→C) consistently yields F major. The source document itself states: 'On a B-flat tenor, written G major produces concert F major,' directly contradicting the explanation."
+        ]
+      },
+      "independent_warranted_choices": [
+        "B♭ major"
+      ],
+      "model_key_matches_authored_key": true,
+      "model_selected_key_warranted": true,
+      "feedback_assessment": [
+        {
+          "field": "explanation",
+          "exact_text": "Alto sax written C = concert E♭, so each written note sounds a major sixth lower. Written G→B♭, B→D, D→F, yielding a concert B♭ major triad.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Main correctly gives major-sixth-down alto transposition and B-flat-D-F."
+        },
+        {
+          "field": "choiceExplanations.B♭ major",
+          "exact_text": "Correct: transposing each note of the written G major triad down a major sixth gives B♭, D, F.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Correct-answer explanation applies the same required interval to each note."
+        },
+        {
+          "field": "choiceExplanations.E♭ major",
+          "exact_text": "Wrong: this would result from transposing only the root correctly and misapplying the interval to other notes.",
+          "model_judgment": "unsupported",
+          "independent_supported": false,
+          "model_judgment_accurate": true,
+          "reason": "The properly transposed root G is B-flat, not E-flat, so the claimed partly-correct-root explanation is false."
+        },
+        {
+          "field": "choiceExplanations.F major",
+          "exact_text": "Wrong: no consistent transposition interval from G major produces F major.",
+          "model_judgment": "unsupported",
+          "independent_supported": false,
+          "model_judgment_accurate": true,
+          "reason": "A consistent major-second-down transposition does yield F major; it is wrong for alto, not impossible."
+        },
+        {
+          "field": "choiceExplanations.C major",
+          "exact_text": "Wrong: this ignores the transposition entirely, as if concert pitch equaled written pitch.",
+          "model_judgment": "unsupported",
+          "independent_supported": false,
+          "model_judgment_accurate": true,
+          "reason": "Ignoring transposition preserves written G major, not C major."
+        }
+      ],
+      "independent_complete_item_valid": false,
+      "model_overall_judgment_accurate": true,
+      "assessment": "The key and main are correct, while the three distractor explanations contain the exact predeclared factual errors. Unsupported-feedback veto is supported by actual field-level diagnoses.",
+      "source_ids": [
+        "tamu_transposition",
+        "yamaha_transposition"
+      ],
+      "difficulty": {
+        "authored": 2,
+        "model": 2,
+        "independent_estimate": 2,
+        "reason": "Same direct transposition task as the corrected pair. Invalid teaching feedback prevents complete-item acceptance, independently of challenge."
+      },
+      "issue_assessment": [
+        {
+          "issue_index": 0,
+          "quoted_issue": "C major explanation claims choosing C major is 'as if concert pitch equaled written pitch.' Ignoring transposition entirely would yield G major (the written triad), not C major. The explanation misidentifies the error pathway.",
+          "accuracy": "supported",
+          "note": "Ignoring transposition yields G major; the claimed C-major error pathway is false."
+        },
+        {
+          "issue_index": 1,
+          "quoted_issue": "E♭ major explanation claims it results from 'transposing only the root correctly and misapplying the interval to other notes.' However, the root G transposed correctly (down a major sixth) gives B♭, not E♭. E♭ major (E♭, G, B♭) actually results from consistently transposing UP a minor sixth, not from a partial correct application.",
+          "accuracy": "supported",
+          "note": "Root objection is correct. The added minor-sixth-up construction is also correct: G-B-D +8 semitones yields E-flat-G-B-flat. This is a possible mapping, not evidence of an actual learner error process."
+        },
+        {
+          "issue_index": 2,
+          "quoted_issue": "F major explanation claims 'no consistent transposition interval from G major produces F major.' This is false: transposing every note down a major second (G→F, B→A, D→C) consistently yields F major. The source document itself states: 'On a B-flat tenor, written G major produces concert F major,' directly contradicting the explanation.",
+          "accuracy": "supported",
+          "note": "The explicit G-to-F, B-to-A, D-to-C mapping and supplied Yamaha example correctly disprove the impossibility claim."
+        }
+      ],
+      "predeclared_bad_feedback_fields_identified": 3
+    },
+    {
+      "case_id": "music_supported_feedback",
+      "question_canonical_sha256": "92067bc8b6bcf25a0a775c5256e70137e2d1dbc387826da249113e2a596f1160",
+      "expect_canonical_sha256": "c8cc690c5577679062415e7c14b19d5a514dd937a3c36034ecb1aa7a1913fd2f",
+      "model_response_text_sha256": "76810757e5016d2fe6e4a7946a9a19fcdb0a61d08058ad64e359d2b05284e4d6",
+      "predeclared_valid": true,
+      "code_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "model_review": {
+        "valid": true,
+        "answer": "B♭ major",
+        "difficulty": 3,
+        "mainExplanation": "supported",
+        "choiceExplanations": {
+          "B♭ major": "supported",
+          "E♭ major": "supported",
+          "F major": "supported",
+          "C major": "supported"
+        },
+        "issues": []
+      },
+      "independent_warranted_choices": [
+        "B♭ major"
+      ],
+      "model_key_matches_authored_key": true,
+      "model_selected_key_warranted": true,
+      "feedback_assessment": [
+        {
+          "field": "explanation",
+          "exact_text": "Alto sax written C = concert E♭, so each written note sounds a major sixth lower. Written G→B♭, B→D, D→F, yielding a concert B♭ major triad.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Alto transposition gives the stated B-flat major triad; the instrument context supports the precise downward major-sixth interval."
+        },
+        {
+          "field": "choiceExplanations.B♭ major",
+          "exact_text": "Correct: transposing each note of the written G major triad down a major sixth gives B♭, D, F.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "G-B-D transposes to B-flat-D-F, correctly supporting the key."
+        },
+        {
+          "field": "choiceExplanations.E♭ major",
+          "exact_text": "Written G maps to concert B♭, so the concert triad has B♭ as its root. E♭ is the concert pitch class of written C on this instrument.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Written G maps to B-flat, while E-flat is the concert pitch class of written C; this explains the mismatch without claiming a learner actually made a specific mistake."
+        },
+        {
+          "field": "choiceExplanations.F major",
+          "exact_text": "Moving G, B, D down a major second gives F, A, C. That is a consistent transposition, but it is not the alto saxophone's major-sixth downward transposition.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "G-B-D down a major second is F-A-C, a possible consistent transposition but wrong for this alto task."
+        },
+        {
+          "field": "choiceExplanations.C major",
+          "exact_text": "Leaving the written pitches untransposed would give G major, not C major. The stated alto transposition instead gives the notes B♭, D, F.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Ignoring transposition gives G major, not C major; the corrected explanation preserves the actual alto result."
+        }
+      ],
+      "independent_complete_item_valid": true,
+      "model_overall_judgment_accurate": true,
+      "assessment": "Retained sound feedback correction; every required pitch maps consistently. The task asks for a triad name, so octave/register ambiguity does not change its answer.",
+      "source_ids": [
+        "tamu_transposition",
+        "yamaha_transposition"
+      ],
+      "difficulty": {
+        "authored": 2,
+        "model": 3,
+        "independent_estimate": 2,
+        "reason": "Directly apply the supplied uniform transposition to three named chord tones. Same stem and choices as the bad-feedback pair; rewriting feedback does not itself increase task difficulty. Model level3 is not independently established."
+      },
+      "retained_content_binding": {
+        "exact_original_fields_except_assessed_difficulty": true,
+        "changed_fields": [
+          "difficulty"
+        ],
+        "scope": "All original learner text and choice order preserved; this eval result does not constitute production admission or serving."
+      }
+    },
+    {
+      "case_id": "all_pairs_wrong_key_boundary",
+      "question_canonical_sha256": "875f601a33cbfda5483713dcbf876043656da30582a8d5bf71b1dbb789557abd",
+      "expect_canonical_sha256": "7209ba2b56c28e9925bb7855083d1fbc7f3c05ae6790afdf3554871cf892ee02",
+      "model_response_text_sha256": "bd594626f517f2ff0b856753da82080ecf35c2e106ad900a0cb04d35b9341590",
+      "predeclared_valid": false,
+      "code_observation": {
+        "eligible": false,
+        "reason": "reported_issues"
+      },
+      "model_review": {
+        "valid": true,
+        "answer": "Hash map storing complements seen so far",
+        "difficulty": 2,
+        "mainExplanation": "supported",
+        "choiceExplanations": {
+          "Sort then two-pointer scan": "supported",
+          "Nested loop checking all pairs": "supported",
+          "Binary search for each element's complement": "supported",
+          "Hash map storing complements seen so far": "supported"
+        },
+        "issues": [
+          "The stem says 'find all pairs,' but enumerating all index-pairs can produce O(n²) output (e.g., n identical elements), making true O(n) time impossible regardless of approach. In standard interview convention the hash-map single-pass processing cost is called O(n), but the phrasing is technically ambiguous. Since the hash map is still uniquely the best match among the four choices under any reasonable reading, the item remains answerable."
+        ]
+      },
+      "independent_warranted_choices": [],
+      "model_key_matches_authored_key": true,
+      "model_selected_key_warranted": false,
+      "feedback_assessment": [
+        {
+          "field": "explanation",
+          "exact_text": "A hash map lets you check in O(1) if (k - current) was already seen, achieving single-pass O(n) time with O(n) space for the map. Sorting takes O(n log n), nested loops are O(n²), and binary search per element is O(n log n).",
+          "model_judgment": "supported",
+          "independent_supported": false,
+          "model_judgment_accurate": false,
+          "reason": "Single-pass lookup is substituted for total enumeration cost; n(n-1)/2 outputs remain possible."
+        },
+        {
+          "field": "choiceExplanations.Hash map storing complements seen so far",
+          "exact_text": "Correct: constant-time complement lookup in a single pass finds all matching pairs in O(n) time using an O(n) map.",
+          "model_judgment": "supported",
+          "independent_supported": false,
+          "model_judgment_accurate": false,
+          "reason": "The hash-map choice explanation expressly repeats the false unconditional linear all-pairs claim."
+        },
+        {
+          "field": "choiceExplanations.Sort then two-pointer scan",
+          "exact_text": "Comparison sorting generally costs O(n log n), so this method is slower than the stated linear-time hash-map solution.",
+          "model_judgment": "supported",
+          "independent_supported": false,
+          "model_judgment_accurate": false,
+          "reason": "The comparison-sort cost statement is broadly sound in its comparison model, but the whole explanation compares against a nonexistent linear-time all-pairs solution and omits output cost."
+        },
+        {
+          "field": "choiceExplanations.Nested loop checking all pairs",
+          "exact_text": "Nested loops make quadratically many pair checks, so they do not match the linear-time hash-map solution.",
+          "model_judgment": "supported",
+          "independent_supported": false,
+          "model_judgment_accurate": false,
+          "reason": "Quadratically many nested-loop checks is true; claiming contrast with an unconditional linear-time all-pairs hash solution is not."
+        },
+        {
+          "field": "choiceExplanations.Binary search for each element's complement",
+          "exact_text": "Sorting followed by a binary search for each complement generally requires O(n log n) time, rather than the linear-time hash-map solution.",
+          "model_judgment": "supported",
+          "independent_supported": false,
+          "model_judgment_accurate": false,
+          "reason": "Sorting and n searches have the stated typical processing cost, but the explanation wrongly treats that as the complete all-pairs comparison against a linear-time solution."
+        }
+      ],
+      "independent_complete_item_valid": false,
+      "model_overall_judgment_accurate": false,
+      "assessment": "False semantic approval despite an accurate output-size objection inside issues. Under unrestricted explicit pair enumeration, no offered method meets the stated total bound. Calling hash lookup the best match or invoking interview convention changes/waives the task; it does not establish an answer under any reasonable reading. Code rejected because issues was nonempty, preserving safety in this fixed run without a correct model validity/key/feedback decision.",
+      "source_ids": [],
+      "difficulty": {
+        "authored": 3,
+        "model": 2,
+        "independent_estimate": null,
+        "reason": "The literal item has no warranted offered answer under the intended enumeration frame. Detecting its defect involves output-size reasoning, but the invalid MCQ is not qualified at a usable difficulty."
+      },
+      "issue_assessment": [
+        {
+          "issue_index": 0,
+          "quoted_issue": "The stem says 'find all pairs,' but enumerating all index-pairs can produce O(n²) output (e.g., n identical elements), making true O(n) time impossible regardless of approach. In standard interview convention the hash-map single-pass processing cost is called O(n), but the phrasing is technically ambiguous. Since the hash map is still uniquely the best match among the four choices under any reasonable reading, the item remains answerable.",
+          "accuracy": "partly_supported_then_unwarranted_waiver",
+          "supported_part": "Arbitrary duplicate values can yield quadratic many matching index pairs, so true linear total time is impossible for explicit output.",
+          "unsupported_part": "Since the hash map is still uniquely the best match among the four choices under any reasonable reading, the item remains answerable.",
+          "why": "The unrestricted index-pair interpretation is itself a reasonable literal reading and supplies a counterexample. Convention cannot erase a required output bound; internal consistency among wrong choices and feedback is not a correctness argument."
+        }
+      ],
+      "predeclared_bad_feedback_fields_falsely_supported": 5
+    },
+    {
+      "case_id": "all_pairs_explicit_negative_control",
+      "question_canonical_sha256": "16582178c1085ff89ecf6d8ba38142d7912728e98132f6812ead179ed13266fa",
+      "expect_canonical_sha256": "c747f3e8a5b0781ae62955bae58a3e721cda7fc599d93c71563921f68bb327ae",
+      "model_response_text_sha256": "f7f9a8826d5105f2523c76a211a5b06cb4ad22faac241754bf804b710b952251",
+      "predeclared_valid": true,
+      "code_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "model_review": {
+        "valid": true,
+        "answer": "No: listing all matches alone can require quadratic time.",
+        "difficulty": 3,
+        "mainExplanation": "supported",
+        "choiceExplanations": {
+          "Yes: nested loops guarantee O(n) total time.": "supported",
+          "No: listing all matches alone can require quadratic time.": "supported",
+          "Yes: a hash map guarantees O(n) time for listing every pair.": "supported",
+          "Yes: sorting and two pointers guarantee O(n) total time.": "supported"
+        },
+        "issues": []
+      },
+      "independent_warranted_choices": [
+        "No: listing all matches alone can require quadratic time."
+      ],
+      "model_key_matches_authored_key": true,
+      "model_selected_key_warranted": true,
+      "feedback_assessment": [
+        {
+          "field": "explanation",
+          "exact_text": "If all n values and k are zero, all n(n-1)/2 index pairs match. Writing that many outputs takes quadratic time, even with efficient lookup. O(n) auxiliary storage does not remove this output-time bound.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "The all-zero counterexample supplies n(n-1)/2 required outputs, which alone rules out a linear total-time guarantee; auxiliary space cannot remove output time."
+        },
+        {
+          "field": "choiceExplanations.No: listing all matches alone can require quadratic time.",
+          "exact_text": "With n zeroes and target zero, every pair of distinct indices matches. The quadratic number of required outputs rules out a linear total-time guarantee.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "The key explanation correctly counts distinct index pairs, rather than collapsing repeated values."
+        },
+        {
+          "field": "choiceExplanations.Yes: a hash map guarantees O(n) time for listing every pair.",
+          "exact_text": "Fast membership checks do not avoid emitting every match. One value can match many prior indices, so total time must include the output size.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Fast lookup does not avoid emitting all matching prior indices; output cost remains."
+        },
+        {
+          "field": "choiceExplanations.Yes: sorting and two pointers guarantee O(n) total time.",
+          "exact_text": "Comparison sorting is not generally linear; more importantly, explicitly listing all matches can still require quadratic time after sorting.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "The comparison-sorting caveat is qualified, and the decisive quadratic-output obstruction still applies after any sorting."
+        },
+        {
+          "field": "choiceExplanations.Yes: nested loops guarantee O(n) total time.",
+          "exact_text": "Checking every unordered pair makes n(n-1)/2 checks. Nested loops therefore do not guarantee linear time.",
+          "model_judgment": "supported",
+          "independent_supported": true,
+          "model_judgment_accurate": true,
+          "reason": "Exhaustively checking unordered pairs makes n(n-1)/2 checks."
+        }
+      ],
+      "independent_complete_item_valid": true,
+      "model_overall_judgment_accurate": true,
+      "assessment": "Retained sound explicit negative-answer control. It states arbitrary input, index pairs, explicit listing and total time, so the quadratic output argument answers the actual task. This is a new question, not a feedback-only repair of the historical boundary.",
+      "source_ids": [],
+      "difficulty": {
+        "authored": 3,
+        "model": 3,
+        "independent_estimate": 3,
+        "reason": "Distinguish total enumeration cost from lookup cost by considering an output-heavy input. This is an uncalibrated reasoning estimate, not a measured learner level."
+      },
+      "retained_content_binding": {
+        "exact_original_fields_except_assessed_difficulty": true,
+        "changed_fields": [],
+        "scope": "All original learner text and choice order preserved; this eval result does not constitute production admission or serving."
+      }
+    }
+  ],
+  "independent_fixed_checks": {
+    "pitch_class_order": "C=0 through B=11",
+    "written_G_major": [
+      7,
+      11,
+      2
+    ],
+    "alto_major_sixth_down": [
+      10,
+      2,
+      5
+    ],
+    "major_second_down": [
+      5,
+      9,
+      0
+    ],
+    "minor_sixth_up": [
+      3,
+      7,
+      10
+    ],
+    "minor_sixth_note_spelling": "G -> E-flat; B -> G; D -> B-flat (each ascending sixth and eight semitones).",
+    "explicit_zero_array_pair_counts": [
+      {
+        "n": 3,
+        "explicit_pairs": 3,
+        "formula": 3
+      },
+      {
+        "n": 4,
+        "explicit_pairs": 6,
+        "formula": 6
+      },
+      {
+        "n": 8,
+        "explicit_pairs": 28,
+        "formula": 28
+      },
+      {
+        "n": 16,
+        "explicit_pairs": 120,
+        "formula": 120
+      }
+    ],
+    "counting_generalization": "For target0 and n zeroes, every i<j matches: n(n-1)/2 outputs. Explicitly emitting them needs Omega(n^2) time in a unit-output cost model."
+  },
+  "primary_references_checked": [
+    {
+      "id": "canon_dof",
+      "url": "https://files.canon-europe.com/files/webcontent/rf-lens-world/knowledge/depth-of-field/index.html",
+      "support": "Holding other conditions fixed, smaller aperture increases depth of field; several optical/distance variables affect it. No specific 5 m coverage guarantee follows."
+    },
+    {
+      "id": "canon_exposure",
+      "url": "https://www.canon.ca/CanonOutsideOfAuto/tips?lang=en",
+      "support": "Shutter duration affects exposure and motion; ISO affects exposure/brightness and noise. Coupled automatic exposure is different from the task single-change comparison."
+    },
+    {
+      "id": "nikon_dof",
+      "url": "https://nij.nikon.com/learn/phototech/manual/19/05.html",
+      "support": "The manufacturer explains that increasing focal length reduces depth of field with other relevant conditions fixed. This supplements the supplied Canon summary for the 85 mm explanation."
+    },
+    {
+      "id": "tamu_transposition",
+      "url": "https://odp.library.tamu.edu/stepstomusictheory/chapter/transposing-instruments/",
+      "support": "Example 10.4.8 gives E-flat alto saxophone as a major sixth below written pitch; apply the interval consistently with correct note spelling."
+    },
+    {
+      "id": "yamaha_transposition",
+      "url": "https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play003.html",
+      "support": "Written G major on tenor sounds F major. The pitch-class mapping disproves the historical claim that no consistent G-to-F transposition exists."
+    }
+  ],
+  "limits": [
+    "This separate five-case follow-up does not convert the original one-call format-failed trial into a completed six-case primary pass.",
+    "Three retained controls are fixed manually prepared items; no fresh authoring, inventory yield, arbitrary-goal learning, learner distractor plausibility or production reliability is established.",
+    "Code veto of the all-pairs item is real, but its model validity/key/all-five-feedback judgments are wrong under the intended unrestricted explicit-output frame. An issue must not be silently waived as convention.",
+    "Difficulty estimates are qualitative and separate from factual validity. The corrected music model increase to3 does not establish increased challenge for an unchanged task.",
+    "Retained photography is an explicitly new controlled variant and retained negative all-pairs is a new well-posed task; neither grants retrospective repair credit to the historical originals."
+  ]
+}

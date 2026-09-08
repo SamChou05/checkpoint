@@ -6,6 +6,11 @@ call because a 283-character internal diagnostic issue exceeded a 280-character
 bound. Its raw response identified the three intended photography feedback
 defects, but the primary contract failed. That trial remains terminal and failed.
 
+The separately frozen five-case follow-up has now completed. Its
+[results](QUESTION_IMMUTABLE_REVIEW_FOLLOWUP_RESULTS.md) preserve the distinction
+between correct application decisions and the all-pairs model's contradictory
+approval. The prospective requirements below are unchanged.
+
 ## Change and evidence boundary
 
 Internal issues now have a 280-character brevity target and a 2,400-character

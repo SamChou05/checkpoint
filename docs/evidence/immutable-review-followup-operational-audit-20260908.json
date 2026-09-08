@@ -1,0 +1,642 @@
+{
+  "audit": "immutable-review-followup-operational-audit-v1",
+  "capture_path": "/tmp/checkpoint-immutable-review-followup-capture-20260908/capture.json",
+  "capture_byte_sha256": "b0fb8330ddbbe08c0bd46ccdd49e7162d30f90b68b9acb1253a7bf694aa02feb",
+  "saved_replay_path": "/tmp/checkpoint-immutable-review-followup-capture-20260908/replay.json",
+  "saved_replay_byte_sha256": "763386d99cb2097d3276829e89cf3c16a14717e5b2d34a71719ca2feb8bd2f9f",
+  "frozen_plan_path": "/Users/samchou/Documents/Checkpoint/docs/evidence/immutable-review-followup-plan-20260908.json",
+  "frozen_plan_byte_sha256": "1e75a3e9e9f023782e4ab1cf50cc25cd0c9047a5abe744094a1a64d4b8e92005",
+  "approved_plan_canonical_sha256": "00a8a5bef211fec48f4cebcf30c7e2c3a1e7345a8f02cf9bb958f1b0993b1dbf",
+  "fixture_canonical_sha256": "0d2699ac0f0d105b5777e702a965f8ff96ea23fabc4828189f9fd5df2a0cbc11",
+  "source_revision": "0529a717e6e7274f837c51a4672ba526747b3804",
+  "source_checkout": "/private/tmp/checkpoint-immutable-review-v2-live-20260908",
+  "interpreter": "/tmp/checkpoint-live-review-venv/bin/python",
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.89",
+    "botocore": "1.43.89"
+  },
+  "full_frozen_plan_exact_rebuild": true,
+  "saved_replay_exact_rebuild": true,
+  "five_cases_exact_original_unattempted_suffix": true,
+  "source_hash_checks": [
+    {
+      "path": "execution_evidence.py",
+      "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "matches_plan": true
+    },
+    {
+      "path": "generation_diagnostics.py",
+      "sha256": "b01c760ffdc8c0e5b8d91151b23a984a051e7572d5d8f7ddad2650d4cfb57175",
+      "matches_plan": true
+    },
+    {
+      "path": "lambda_function.py",
+      "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank.py",
+      "sha256": "8db970013ce17b0e24938f5d6e7ea67a5b615d962bddef86dae48f7ab33f121b",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_common.py",
+      "sha256": "f097cd99a65f783e5d624baad3f57c38dd94e603cc7c9f469fbada91551a84b1",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_inventory.py",
+      "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_store.py",
+      "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "matches_plan": true
+    },
+    {
+      "path": "question_bank_worker.py",
+      "sha256": "18033f6cde877f624038f74979c8eb9cdf14bf844731b4721ee7aa751727aaac",
+      "matches_plan": true
+    },
+    {
+      "path": "question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "matches_plan": true
+    },
+    {
+      "path": "question_generation.py",
+      "sha256": "cb8fe12bdd3cab3a888f228a5493d425bf96061f3510a68a3dd21ceb9f38c609",
+      "matches_plan": true
+    },
+    {
+      "path": "question_quality.py",
+      "sha256": "e2178e578b081c56c128876e4f29fb9e2ff9d78302a78aeae84daa170bc076c0",
+      "matches_plan": true
+    },
+    {
+      "path": "question_rule_construction.py",
+      "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "matches_plan": true
+    },
+    {
+      "path": "question_verification.py",
+      "sha256": "2f6be813a738544a076c2186943712175a976fca3cf2922a5bef7d3b53957798",
+      "matches_plan": true
+    },
+    {
+      "path": "request_contract.py",
+      "sha256": "70b8f2a7a5f233bdf5bf027a83f8871f7fab78f803eaf2070bec0b73ea1508f2",
+      "matches_plan": true
+    },
+    {
+      "path": "service_errors.py",
+      "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "matches_plan": true
+    },
+    {
+      "path": "skill_maps.py",
+      "sha256": "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+      "matches_plan": true
+    },
+    {
+      "path": "smoke_test_backend.py",
+      "sha256": "acf5fe0b9b54d24d6f69216898fea80c76d442c1c54c91babde93fd9b0bf38a1",
+      "matches_plan": true
+    },
+    {
+      "path": "verification_policy.py",
+      "sha256": "fade0c88ff8721dba6da44a029ec90e7456f45574057c22f160dd449d6fdf397",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_source_authoring_eval.py",
+      "sha256": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_model_comparison.py",
+      "sha256": "cac5fd46efb2782fccd6b1bd19007d24109dd3caba0d3949d38f1de1c4a0322b",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_full_pipeline_smoke.py",
+      "sha256": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_learning_eval.py",
+      "sha256": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_prompt_ablation.py",
+      "sha256": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_solution_compatibility_eval.py",
+      "sha256": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/question_immutable_review.py",
+      "sha256": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+      "matches_plan": true
+    },
+    {
+      "path": "evals/checkpoint_immutable_review_eval.py",
+      "sha256": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+      "matches_plan": true
+    }
+  ],
+  "model": "us.anthropic.claude-opus-4-6-v1",
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_MAX_TOKENS": "16000",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-opus-4-6-v1",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "100",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3"
+  },
+  "sdk_total_max_attempts": 1,
+  "summary": {
+    "planned_case_and_call_denominator": 5,
+    "original_v1_first_attempt_repeated": false,
+    "fresh_provider_calls": 5,
+    "dispatch_intents": 5,
+    "normal_end_turn_responses": 5,
+    "known_usage_calls": 5,
+    "usage": {
+      "inputTokens": 6399,
+      "outputTokens": 9381
+    },
+    "total_tokens": 15780,
+    "largest_output_tokens": 2672,
+    "output_token_allowance_per_call": 16000,
+    "input_utf8_bytes": 27453,
+    "input_allowance_per_call": 32000,
+    "input_allowance_total": 160000,
+    "sum_recorded_call_elapsed_seconds": "158.005",
+    "maximum_recorded_call_elapsed_seconds": 47.363,
+    "code_eligible_items": 3,
+    "code_ineligible_items": 2,
+    "operational_failures": 0,
+    "diagnostic_issues": 4,
+    "diagnostic_issues_above_old_280_limit": 3,
+    "maximum_diagnostic_characters": 442,
+    "maximum_raw_review_characters": 1125,
+    "hard_diagnostic_characters": 2400,
+    "hard_raw_review_characters": 24000
+  },
+  "calls": [
+    {
+      "call_index": 0,
+      "case_id": "photography_controlled_supported_feedback",
+      "capture_locator": "$.calls[0]",
+      "exact_request_and_question_bindings": true,
+      "request_canonical_sha256": "84a42756f0bcddebb4c2471130bcd01812d744d4d73faeecb7178c85b52611cb",
+      "question_canonical_sha256": "9c0c311e9c41da338077a0d43f91dda3c6f29721f7de6ff491572b0bac9fa031",
+      "raw_final_text_sha256": "4c82ceb3097adbee7dd539ad20b020bb483f8d9499e1b609d587fce311d036b4",
+      "raw_final_text_characters": 412,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 1367,
+        "outputTokens": 982,
+        "totalTokens": 2349,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "input_utf8_bytes": 5876,
+      "elapsed_seconds": 16.563,
+      "code_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "raw_declared_valid": true,
+      "raw_main_disposition": "supported",
+      "raw_choice_dispositions": {
+        "Switch to an 85mm lens at f/4": "supported",
+        "Raise ISO by 3 stops": "supported",
+        "Increase shutter speed to 1/1000s": "supported",
+        "Stop down the aperture to f/11": "supported"
+      },
+      "diagnostic_lengths": []
+    },
+    {
+      "call_index": 1,
+      "case_id": "music_historical_bad_feedback",
+      "capture_locator": "$.calls[1]",
+      "exact_request_and_question_bindings": true,
+      "request_canonical_sha256": "c57fce548ec33cfb99e1095c10efa15f527bfdbcf4be5ee9b79b76bca559dae0",
+      "question_canonical_sha256": "15bca3922c7ad598296add8cbffaf538bcc5d3fa83067aa8775d0024c17399c5",
+      "raw_final_text_sha256": "139c8a16a65a23ca5a8e4c26de00f712df8039f2783bf4d53a196b9a7f7c69c4",
+      "raw_final_text_characters": 1125,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 1309,
+        "outputTokens": 2253,
+        "totalTokens": 3562,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "input_utf8_bytes": 5550,
+      "elapsed_seconds": 36.774,
+      "code_observation": {
+        "eligible": false,
+        "reason": "unsupported_feedback"
+      },
+      "raw_declared_valid": false,
+      "raw_main_disposition": "supported",
+      "raw_choice_dispositions": {
+        "B♭ major": "supported",
+        "C major": "unsupported",
+        "E♭ major": "unsupported",
+        "F major": "unsupported"
+      },
+      "diagnostic_lengths": [
+        226,
+        332,
+        337
+      ]
+    },
+    {
+      "call_index": 2,
+      "case_id": "music_supported_feedback",
+      "capture_locator": "$.calls[2]",
+      "exact_request_and_question_bindings": true,
+      "request_canonical_sha256": "bc7ece769d073920dd98ab31385c5b002b4b436b7bd320c7b7046211bc036668",
+      "question_canonical_sha256": "92067bc8b6bcf25a0a775c5256e70137e2d1dbc387826da249113e2a596f1160",
+      "raw_final_text_sha256": "76810757e5016d2fe6e4a7946a9a19fcdb0a61d08058ad64e359d2b05284e4d6",
+      "raw_final_text_characters": 215,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 1366,
+        "outputTokens": 2320,
+        "totalTokens": 3686,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "input_utf8_bytes": 5710,
+      "elapsed_seconds": 39.286,
+      "code_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "raw_declared_valid": true,
+      "raw_main_disposition": "supported",
+      "raw_choice_dispositions": {
+        "B♭ major": "supported",
+        "E♭ major": "supported",
+        "F major": "supported",
+        "C major": "supported"
+      },
+      "diagnostic_lengths": []
+    },
+    {
+      "call_index": 3,
+      "case_id": "all_pairs_wrong_key_boundary",
+      "capture_locator": "$.calls[3]",
+      "exact_request_and_question_bindings": true,
+      "request_canonical_sha256": "fdc9b5c7d9d05b909251b1578eac4efcd10efab05fb5fa5d8772998c41d5436e",
+      "question_canonical_sha256": "875f601a33cbfda5483713dcbf876043656da30582a8d5bf71b1dbb789557abd",
+      "raw_final_text_sha256": "bd594626f517f2ff0b856753da82080ecf35c2e106ad900a0cb04d35b9341590",
+      "raw_final_text_characters": 905,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 1156,
+        "outputTokens": 2672,
+        "totalTokens": 3828,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "input_utf8_bytes": 5026,
+      "elapsed_seconds": 47.363,
+      "code_observation": {
+        "eligible": false,
+        "reason": "reported_issues"
+      },
+      "raw_declared_valid": true,
+      "raw_main_disposition": "supported",
+      "raw_choice_dispositions": {
+        "Sort then two-pointer scan": "supported",
+        "Nested loop checking all pairs": "supported",
+        "Binary search for each element's complement": "supported",
+        "Hash map storing complements seen so far": "supported"
+      },
+      "diagnostic_lengths": [
+        442
+      ]
+    },
+    {
+      "call_index": 4,
+      "case_id": "all_pairs_explicit_negative_control",
+      "capture_locator": "$.calls[4]",
+      "exact_request_and_question_bindings": true,
+      "request_canonical_sha256": "4cd11828c53b81db991eadc042e54c19a4052d3f1fe11088b14a1a4ef677517f",
+      "question_canonical_sha256": "16582178c1085ff89ecf6d8ba38142d7912728e98132f6812ead179ed13266fa",
+      "raw_final_text_sha256": "f7f9a8826d5105f2523c76a211a5b06cb4ad22faac241754bf804b710b952251",
+      "raw_final_text_characters": 451,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 1,
+      "usage_known": true,
+      "usage": {
+        "inputTokens": 1201,
+        "outputTokens": 1154,
+        "totalTokens": 2355,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "input_utf8_bytes": 5291,
+      "elapsed_seconds": 18.019,
+      "code_observation": {
+        "eligible": true,
+        "reason": "accepted"
+      },
+      "raw_declared_valid": true,
+      "raw_main_disposition": "supported",
+      "raw_choice_dispositions": {
+        "Yes: nested loops guarantee O(n) total time.": "supported",
+        "No: listing all matches alone can require quadratic time.": "supported",
+        "Yes: a hash map guarantees O(n) time for listing every pair.": "supported",
+        "Yes: sorting and two pointers guarantee O(n) total time.": "supported"
+      },
+      "diagnostic_lengths": []
+    }
+  ],
+  "accepted_content_bindings": [
+    {
+      "case_id": "photography_controlled_supported_feedback",
+      "source_question_canonical_sha256": "9c0c311e9c41da338077a0d43f91dda3c6f29721f7de6ff491572b0bac9fa031",
+      "returned_question_canonical_sha256": "0bebf310d17f075496fc98db9e4641c984fc3b26fa8a34e5d714118f51e01576",
+      "unchanged_content_excluding_difficulty_sha256": "b52597a63e14fccde4edd8869b5fc42ebdb30302bd3ec359f2f814518d216022",
+      "changed_fields": [
+        "difficulty"
+      ],
+      "original_difficulty": 3,
+      "reviewed_difficulty": 2,
+      "main_and_all_four_choice_explanations_exact": true,
+      "no_added_fields_or_verification_stamps": true
+    },
+    {
+      "case_id": "music_supported_feedback",
+      "source_question_canonical_sha256": "92067bc8b6bcf25a0a775c5256e70137e2d1dbc387826da249113e2a596f1160",
+      "returned_question_canonical_sha256": "407fb0b0df0e2fdeb7f790c39fda7d1b545b046f6a232ac088f110ccb78203d7",
+      "unchanged_content_excluding_difficulty_sha256": "3a590ba55b8aa20a9e9aab666401dac72bfd1e976ff99be8bfe7285cceaa60fc",
+      "changed_fields": [
+        "difficulty"
+      ],
+      "original_difficulty": 2,
+      "reviewed_difficulty": 3,
+      "main_and_all_four_choice_explanations_exact": true,
+      "no_added_fields_or_verification_stamps": true
+    },
+    {
+      "case_id": "all_pairs_explicit_negative_control",
+      "source_question_canonical_sha256": "16582178c1085ff89ecf6d8ba38142d7912728e98132f6812ead179ed13266fa",
+      "returned_question_canonical_sha256": "16582178c1085ff89ecf6d8ba38142d7912728e98132f6812ead179ed13266fa",
+      "unchanged_content_excluding_difficulty_sha256": "d393603587c80b1b5abe4a01a7b669d1d1ddf260759256bf5be5dc3a9fd5e1c1",
+      "changed_fields": [],
+      "original_difficulty": 3,
+      "reviewed_difficulty": 3,
+      "main_and_all_four_choice_explanations_exact": true,
+      "no_added_fields_or_verification_stamps": true
+    }
+  ],
+  "learner_content_bound_checks": [
+    {
+      "case_id": "photography_controlled_supported_feedback",
+      "all_frozen_content_bounds_pass": true,
+      "lengths": {
+        "prompt": 185,
+        "choices": {
+          "Stop down the aperture to f/11": 30,
+          "Switch to an 85mm lens at f/4": 29,
+          "Raise ISO by 3 stops": 20,
+          "Increase shutter speed to 1/1000s": 33
+        },
+        "expectedAnswer": 30,
+        "mainExplanation": 219,
+        "choiceExplanations": {
+          "Stop down the aperture to f/11": 129,
+          "Switch to an 85mm lens at f/4": 135,
+          "Raise ISO by 3 stops": 89,
+          "Increase shutter speed to 1/1000s": 111
+        },
+        "topic": 14
+      },
+      "limits": {
+        "prompt": 320,
+        "choice": 140,
+        "expectedAnswer": 140,
+        "mainExplanation": 420,
+        "choiceExplanation": 280,
+        "topic": 140,
+        "objective": 140
+      }
+    },
+    {
+      "case_id": "music_historical_bad_feedback",
+      "all_frozen_content_bounds_pass": true,
+      "lengths": {
+        "prompt": 174,
+        "choices": {
+          "B♭ major": 8,
+          "E♭ major": 8,
+          "F major": 7,
+          "C major": 7
+        },
+        "expectedAnswer": 8,
+        "mainExplanation": 140,
+        "choiceExplanations": {
+          "B♭ major": 94,
+          "E♭ major": 110,
+          "F major": 74,
+          "C major": 90
+        },
+        "topic": 13
+      },
+      "limits": {
+        "prompt": 320,
+        "choice": 140,
+        "expectedAnswer": 140,
+        "mainExplanation": 420,
+        "choiceExplanation": 280,
+        "topic": 140,
+        "objective": 140
+      }
+    },
+    {
+      "case_id": "music_supported_feedback",
+      "all_frozen_content_bounds_pass": true,
+      "lengths": {
+        "prompt": 174,
+        "choices": {
+          "B♭ major": 8,
+          "E♭ major": 8,
+          "F major": 7,
+          "C major": 7
+        },
+        "expectedAnswer": 8,
+        "mainExplanation": 140,
+        "choiceExplanations": {
+          "B♭ major": 94,
+          "E♭ major": 133,
+          "F major": 156,
+          "C major": 137
+        },
+        "topic": 13
+      },
+      "limits": {
+        "prompt": 320,
+        "choice": 140,
+        "expectedAnswer": 140,
+        "mainExplanation": 420,
+        "choiceExplanation": 280,
+        "topic": 140,
+        "objective": 140
+      }
+    },
+    {
+      "case_id": "all_pairs_wrong_key_boundary",
+      "all_frozen_content_bounds_pass": true,
+      "lengths": {
+        "prompt": 116,
+        "choices": {
+          "Hash map storing complements seen so far": 40,
+          "Sort then two-pointer scan": 26,
+          "Nested loop checking all pairs": 30,
+          "Binary search for each element's complement": 43
+        },
+        "expectedAnswer": 40,
+        "mainExplanation": 224,
+        "choiceExplanations": {
+          "Hash map storing complements seen so far": 114,
+          "Sort then two-pointer scan": 118,
+          "Nested loop checking all pairs": 105,
+          "Binary search for each element's complement": 138
+        },
+        "topic": 9
+      },
+      "limits": {
+        "prompt": 320,
+        "choice": 140,
+        "expectedAnswer": 140,
+        "mainExplanation": 420,
+        "choiceExplanation": 280,
+        "topic": 140,
+        "objective": 140
+      }
+    },
+    {
+      "case_id": "all_pairs_explicit_negative_control",
+      "all_frozen_content_bounds_pass": true,
+      "lengths": {
+        "prompt": 185,
+        "choices": {
+          "No: listing all matches alone can require quadratic time.": 57,
+          "Yes: a hash map guarantees O(n) time for listing every pair.": 60,
+          "Yes: sorting and two pointers guarantee O(n) total time.": 56,
+          "Yes: nested loops guarantee O(n) total time.": 44
+        },
+        "expectedAnswer": 57,
+        "mainExplanation": 202,
+        "choiceExplanations": {
+          "No: listing all matches alone can require quadratic time.": 152,
+          "Yes: a hash map guarantees O(n) time for listing every pair.": 141,
+          "Yes: sorting and two pointers guarantee O(n) total time.": 140,
+          "Yes: nested loops guarantee O(n) total time.": 105
+        },
+        "topic": 9
+      },
+      "limits": {
+        "prompt": 320,
+        "choice": 140,
+        "expectedAnswer": 140,
+        "mainExplanation": 420,
+        "choiceExplanation": 280,
+        "topic": 140,
+        "objective": 140
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "case_id": "music_historical_bad_feedback",
+      "call_index": 1,
+      "issue_index": 0,
+      "locator": "$.calls[1].response.text -> $.review.issues[0]",
+      "characters": 226,
+      "utf8_bytes": 226,
+      "above_previous_280_character_limit": false,
+      "sha256_utf8": "76f5de94023fce53c83529017adc28e7c929769e781c25e88752529978b58ab5",
+      "exact_diagnostic": "C major explanation claims choosing C major is 'as if concert pitch equaled written pitch.' Ignoring transposition entirely would yield G major (the written triad), not C major. The explanation misidentifies the error pathway."
+    },
+    {
+      "case_id": "music_historical_bad_feedback",
+      "call_index": 1,
+      "issue_index": 1,
+      "locator": "$.calls[1].response.text -> $.review.issues[1]",
+      "characters": 332,
+      "utf8_bytes": 344,
+      "above_previous_280_character_limit": true,
+      "sha256_utf8": "88b903682cbdb420de3ce62820c29b01809f55781a7f985c735e122bc1fc0442",
+      "exact_diagnostic": "E♭ major explanation claims it results from 'transposing only the root correctly and misapplying the interval to other notes.' However, the root G transposed correctly (down a major sixth) gives B♭, not E♭. E♭ major (E♭, G, B♭) actually results from consistently transposing UP a minor sixth, not from a partial correct application."
+    },
+    {
+      "case_id": "music_historical_bad_feedback",
+      "call_index": 1,
+      "issue_index": 2,
+      "locator": "$.calls[1].response.text -> $.review.issues[2]",
+      "characters": 337,
+      "utf8_bytes": 343,
+      "above_previous_280_character_limit": true,
+      "sha256_utf8": "d5b57cf3b6cbb9ee62b85973d55a9010193ddfa364d5823994621f0195b0310c",
+      "exact_diagnostic": "F major explanation claims 'no consistent transposition interval from G major produces F major.' This is false: transposing every note down a major second (G→F, B→A, D→C) consistently yields F major. The source document itself states: 'On a B-flat tenor, written G major produces concert F major,' directly contradicting the explanation."
+    },
+    {
+      "case_id": "all_pairs_wrong_key_boundary",
+      "call_index": 3,
+      "issue_index": 0,
+      "locator": "$.calls[3].response.text -> $.review.issues[0]",
+      "characters": 442,
+      "utf8_bytes": 443,
+      "above_previous_280_character_limit": true,
+      "sha256_utf8": "8abcf429c1087206252ce570cd6f5a966876c0cc6c06e1fe477728cf3468899a",
+      "exact_diagnostic": "The stem says 'find all pairs,' but enumerating all index-pairs can produce O(n²) output (e.g., n identical elements), making true O(n) time impossible regardless of approach. In standard interview convention the hash-map single-pass processing cost is called O(n), but the phrasing is technically ambiguous. Since the hash map is still uniquely the best match among the four choices under any reasonable reading, the item remains answerable."
+    }
+  ],
+  "all_pairs_decision_boundary": {
+    "capture_locator": "$.calls[3].response.text -> $.review",
+    "raw_valid_true": true,
+    "raw_main_and_all_choice_dispositions": "supported",
+    "nonempty_diagnostic_veto": "The code rejected reported_issues despite those approval fields. The retained diagnostic identifies the quadratic possible output size of explicit pair enumeration. These model fields are internally inconsistent; rejection is not evidence that every individual model judgment was correct.",
+    "code_reason": "reported_issues",
+    "learner_content_returned": false
+  },
+  "limits": [
+    "Read-only reconstruction with frozen source; no provider/native calls, source edits, repairs or trial restart.",
+    "These are five fixed previously unattempted cases under the separately frozen v2 plan. The prior first-case v1 response remains outside this capture and is not reparsed into new acceptance.",
+    "The audit establishes exact bindings, returned-content immutability, structural bounds and recorded operational accounting. It is not an independent factual grading of every model judgment or a general correctness/learning qualification.",
+    "Output stop reasons are all end_turn and observed token counts are below the16000-token cap; no output-token truncation was observed.",
+    "Recorded calls use one SDK attempt and contain one dispatch per listed case. This does not expose undocumented provider-internal processing.",
+    "Issues are diagnostic only and never copied into accepted learner content. Larger diagnostic allowance does not relax learner-facing content bounds.",
+    "Hashes and replay establish artifact consistency, not cryptographic provider authenticity. Wall times are not billing measurements or a separately measured end-to-end process duration."
+  ]
+}
