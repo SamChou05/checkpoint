@@ -1999,7 +1999,7 @@ final class SkillMapTests: CheckpointWorkflowTestCase {
         )
         // Although only the fifth objective is locally missing, the backend's
         // finite bank must receive five slots for this skill to cover all five.
-        XCTAssertEqual(expectedDesiredCount, 29)
+        XCTAssertEqual(expectedDesiredCount, 7)
         XCTAssertEqual(bankClient.ensureRequests.first?.desiredCount, expectedDesiredCount)
     }
 
@@ -2064,11 +2064,11 @@ final class SkillMapTests: CheckpointWorkflowTestCase {
             )
         }
 
-        // Stable weights are [5,16,16,16,16,16]. Exact server apportionment
-        // first gives the empty five-objective skill five slots at 60.
+        // Full-objective allocation reserves the broad skill's five slots
+        // before emphasis weights divide the remaining inventory.
         XCTAssertEqual(
             store.remoteQuestionBankDesiredCount(for: goal, localDeficit: 5),
-            60
+            10
         )
     }
 

@@ -6353,13 +6353,15 @@ final class CheckpointStore {
         })
         let minimumDesiredCount = min(
             100,
-            max(1, localDeficit, positiveWeightSkillCount)
+            max(1, localDeficit, positiveWeightSkillCount,
+                skillIDs.reduce(0) { $0 + max(1, objectiveCounts[$1, default: 1]) })
         )
         for desiredCount in minimumDesiredCount...100 {
             let targets = apportionedSkillCounts(
                 skillIDs: skillIDs,
                 weights: weights,
-                desiredCount: desiredCount
+                desiredCount: desiredCount,
+                minimumCounts: objectiveCounts
             )
             if skillIDs.allSatisfy({
                 targets[$0, default: 0] >= max(
@@ -6376,7 +6378,8 @@ final class CheckpointStore {
     private func apportionedSkillCounts(
         skillIDs: [SkillMapTopic.ID],
         weights: [SkillMapTopic.ID: Int],
-        desiredCount: Int
+        desiredCount: Int,
+        minimumCounts: [SkillMapTopic.ID: Int]
     ) -> [SkillMapTopic.ID: Int] {
         guard desiredCount > 0, !skillIDs.isEmpty else { return [:] }
 
@@ -6401,10 +6404,12 @@ final class CheckpointStore {
             return targets
         }
 
+        // Match the service's full-objective allocation: reserve scope coverage
+        // first, then use preference weights for the remaining practice slots.
         for skillID in positiveSkillIDs {
-            targets[skillID] = 1
+            targets[skillID] = max(1, minimumCounts[skillID, default: 1])
         }
-        let remainingCount = desiredCount - positiveSkillIDs.count
+        let remainingCount = desiredCount - targets.values.reduce(0, +)
         let weightTotal = positiveSkillIDs.reduce(0) {
             $0 + resolvedWeights[$1, default: 0]
         }

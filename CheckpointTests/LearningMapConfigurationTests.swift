@@ -234,6 +234,27 @@ final class LearningMapConfigurationTests: CheckpointWorkflowTestCase {
         XCTAssertEqual(fixture.store.activeCheckpointRun?.questionIDs, session.questions.map(\.id))
     }
 
+    @MainActor
+    func testMaximalMapReservesFocusCoverageWithoutExpandingFiniteRequestForEmphasis() {
+        let fixture = makeFixture()
+        var goal = fixture.goal
+        goal.derivedSkillMap?.topics = (0..<6).map { index in
+            SkillMapTopic(
+                name: "Configured skill \(index)",
+                objectives: (0..<5).map { SkillMapObjective(name: "Focus \(index)-\($0)") },
+                practiceEmphasis: index == 0 ? .maintain : .focus
+            )
+        }
+        fixture.store.goal = goal
+        fixture.store.goalProfiles = [goal]
+        XCTAssertEqual(fixture.store.remoteQuestionBankDesiredCount(for: goal, localDeficit: 40), 40)
+        XCTAssertEqual(fixture.store.remoteQuestionBankDesiredCount(for: goal, localDeficit: 1), 30)
+        for index in 1..<6 { goal.derivedSkillMap?.topics[index].isPaused = true }
+        fixture.store.goal = goal
+        fixture.store.goalProfiles = [goal]
+        XCTAssertEqual(fixture.store.remoteQuestionBankDesiredCount(for: goal, localDeficit: 1), 5)
+    }
+
     private func makeTopics() -> [SkillMapTopic] {
         ["Arrays", "Recursion", "Hash maps"].map {
             SkillMapTopic(name: $0, objectives: [SkillMapObjective(name: "Apply \($0)"), SkillMapObjective(name: "Explain \($0)")])
