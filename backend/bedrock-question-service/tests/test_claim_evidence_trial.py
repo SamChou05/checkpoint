@@ -145,6 +145,43 @@ class ClaimEvidenceTrialTests(unittest.TestCase):
         self.assertEqual(len(result["cases"][0]["fetches"]), 1)
         self.assertEqual(result["cases"][0]["reviews"], {})
 
+    def test_citation_followup_freezes_target_and_excludes_discovery_prose(self):
+        fixture = json.loads((trial.SERVICE_DIR / "evals/fixtures/question_citation_discovery.json").read_text())
+        fixture["cases"] = fixture["cases"][:1]
+        plan = trial.make_plan(fixture)
+        question_record = fixture["cases"][0]["question"]
+        calls = []
+        marker = "DISCOVERY PROSE IS NOT REVIEW EVIDENCE"
+        def transport(request, **kwargs):
+            calls.append((copy.deepcopy(request), kwargs["timeout"]))
+            if kwargs["worker"] is grounding.grounding_worker:
+                response = grounding.project_grounding_response(provider(marker, ["https://example.org/rules"]))
+            else:
+                data = json.loads(request["messages"][0]["content"][0]["text"])
+                cites = [{"source_id": s["source_id"], "quote": s["text"]} for s in data["acquiredSources"]["spans"]]
+                target = {k: data["challenge"][k] for k in ("field", "choice", "quote")}
+                raw = json.dumps({"reviews": [{"index": 0, "valid": True, "answer": question_record["expectedAnswer"],
+                                              "difficulty": 2, "explanationSupport": "supported", "issues": []}],
+                                  "evidence": {"item": cites, "mainExplanation": cites,
+                                               "target": {**target, "relation": "supported", "citations": cites}}})
+                response = trial.caller.recorded._response(provider(raw))
+            result = completed(response)
+            kwargs["on_progress"](result)
+            return result
+        with tempfile.TemporaryDirectory() as directory, patch.object(trial.audit, "validate_discovery", side_effect=AssertionError):
+            result = trial.run(plan, Path(directory) / "run", transport=transport,
+                               fetch=lambda url, **_: capture(requested_url=url))
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual([timeout for _, timeout in calls], [90, 300, 300])
+        self.assertNotIn("outputConfig", calls[0][0])
+        self.assertEqual(calls[1][0]["outputConfig"], calls[2][0]["outputConfig"])
+        self.assertEqual(result["cases"][0]["challenge"], fixture["cases"][0]["challenge"])
+        for request, _ in calls[1:]:
+            self.assertNotIn(marker, json.dumps(request))
+        fixture["cases"][0]["challenge"]["challenge"]["rationale"] += " changed"
+        with self.assertRaises(ValueError):
+            trial.make_plan(fixture)
+
 
 if __name__ == "__main__":
     unittest.main()

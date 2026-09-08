@@ -22,11 +22,16 @@ sys.path.insert(0, str(SERVICE_DIR))
 from evals import checkpoint_author_latency_probe as caller  # noqa: E402
 from evals import claim_evidence_review as audit  # noqa: E402
 from evals import grounding_transport as grounding  # noqa: E402
+from evals.claim_evidence_schema import output_config  # noqa: E402
 from source_acquisition import SourceAcquisitionLimits, acquire_source  # noqa: E402
 
 shared = caller.shared
 _hash = caller._hash
 EXPERIMENT = "claim-directed-acquired-evidence-v1"
+CITATION_EXPERIMENT = "frozen-claim-citation-discovery-v2"
+CHALLENGE_CAPTURE = SERVICE_DIR.parents[1] / "docs/evidence/claim-evidence-interface-capture-20260908.json"
+CHALLENGE_CAPTURE_SHA256 = "ade70260e2bbe9f9366783e70a4d4a2e359c93ffd44b391cf33ee71fff07676c"
+STRUCTURED_REVIEW_SECONDS = 300
 REVIEW_MODEL = "us.anthropic.claude-sonnet-4-6"
 MAX_CASES, MAX_CALLS, MAX_FETCHES_PER_CASE = 4, 12, 2
 MAX_INPUT_BYTES, WORKER_SECONDS = 65536, 90
@@ -45,11 +50,19 @@ def review_worker(connection, request, settings, cli_credentials, deadline):
     caller._worker(connection, request, SETTINGS, cli_credentials, deadline)
 
 
-def review_request(system, user):
-    return {"modelId": REVIEW_MODEL, "system": [{"text": system}],
+def structured_review_worker(connection, request, settings, cli_credentials, deadline):
+    caller._worker(connection, request, {**SETTINGS, "BEDROCK_READ_TIMEOUT_SECONDS": "300"},
+                   cli_credentials, deadline)
+
+
+def review_request(system, user, *, structured=False):
+    request = {"modelId": REVIEW_MODEL, "system": [{"text": system}],
             "messages": [{"role": "user", "content": [{"text": user}]}],
             "inferenceConfig": {"maxTokens": 6000, "temperature": 0.2},
             "additionalModelRequestFields": {"thinking": {"type": "disabled"}}}
+    if structured:
+        request["outputConfig"] = output_config()
+    return request
 
 
 def guard_request(request):
@@ -87,19 +100,40 @@ def make_plan(fixture, *, source_revision=None):
             or subprocess.run(["git", "cat-file", "-e", revision + "^{commit}"], cwd=SERVICE_DIR,
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode):
         raise ValueError("A resolvable full source commit is required.")
-    if type(fixture) is not dict or set(fixture) != {"experiment", "cases"} or fixture["experiment"] != EXPERIMENT:
+    if type(fixture) is not dict or set(fixture) != {"experiment", "cases"} or fixture["experiment"] not in (EXPERIMENT, CITATION_EXPERIMENT):
         raise ValueError("Unexpected fixture envelope.")
+    citation_mode = fixture["experiment"] == CITATION_EXPERIMENT
+    prior = None
+    if citation_mode:
+        raw_prior = CHALLENGE_CAPTURE.read_bytes()
+        if hashlib.sha256(raw_prior).hexdigest() != CHALLENGE_CAPTURE_SHA256:
+            raise ValueError("The exact terminal challenge capture is required.")
+        prior = json.loads(raw_prior)
+        if prior["status"] != "completed":
+            raise ValueError("Prior challenge run must be terminal.")
     cases = fixture["cases"]
     if type(cases) is not list or not 1 <= len(cases) <= MAX_CASES:
         raise ValueError("One to four cases required.")
     jobs, seen = [], set()
     for case in cases:
-        if (type(case) is not dict or set(case) != {"case_id", "question", "context", "origin"}
+        if (type(case) is not dict or set(case) != ({"case_id", "question", "context", "origin", "challenge"} if citation_mode
+                                                       else {"case_id", "question", "context", "origin"})
                 or type(case["case_id"]) is not str or not case["case_id"] or case["case_id"] in seen):
             raise ValueError("Distinct immutable cases with provenance required.")
         seen.add(case["case_id"])
         question = audit.freeze_question(case["question"])
-        system, user = audit.discovery_prompt(question, case["context"])
+        if citation_mode:
+            matches = [(old, result) for old, result in zip(prior["plan"]["fixture"]["cases"], prior["cases"], strict=True)
+                       if old["case_id"] == case["case_id"]]
+            if len(matches) != 1:
+                raise ValueError("Missing original challenge case.")
+            old, result = matches[0]
+            if (old != {k: v for k, v in case.items() if k != "challenge"}
+                    or case["challenge"] != result["challenge"]):
+                raise ValueError("Follow-up must preserve the exact original question, context and challenge.")
+            system, user = audit.source_discovery_prompt(question, case["context"], case["challenge"])
+        else:
+            system, user = audit.discovery_prompt(question, case["context"])
         request = grounding.grounding_request(system, user)
         guard_request(request)
         jobs.append({"case_id": case["case_id"], "question_sha256": _hash(question),
@@ -110,11 +144,16 @@ def make_plan(fixture, *, source_revision=None):
     for name in ("source_acquisition.py", "question_quality.py", "question_teaching.py",
                  "complete_question_solution.py", "evals/checkpoint_claim_evidence_trial.py",
                  "evals/claim_evidence_review.py", "evals/grounding_transport.py",
+                 "evals/claim_evidence_schema.py",
                  "evals/acquired_source_review.py", "evals/question_immutable_review.py",
                  "evals/question_complete_author.py",
                  "evals/checkpoint_author_latency_probe.py", "evals/checkpoint_immutable_review_eval.py"):
         sources[name] = hashlib.sha256((SERVICE_DIR / name).read_bytes()).hexdigest()
-    return {"experiment": EXPERIMENT, "fixture": copy.deepcopy(fixture), "jobs": jobs,
+    return {"experiment": fixture["experiment"], "fixture": copy.deepcopy(fixture), "jobs": jobs,
+            "challenge_origin_sha256": CHALLENGE_CAPTURE_SHA256 if citation_mode else None,
+            "review_output_config": output_config() if citation_mode else None,
+            "review_worker_seconds": STRUCTURED_REVIEW_SECONDS if citation_mode else WORKER_SECONDS,
+            "review_sdk_read_seconds": 300 if citation_mode else 75,
             "fixture_sha256": _hash(fixture), "source_sha256": sources,
             "source_revision": revision,
             "dependencies": shared.dependencies(), "settings": SETTINGS,
@@ -124,8 +163,8 @@ def make_plan(fixture, *, source_revision=None):
             "worker_seconds": WORKER_SECONDS, "fetch_limits": asdict(FETCH_LIMITS),
             "span_characters_per_source": SPAN_CHARACTERS,
             "diagnostic_minimum_difficulty": DIAGNOSTIC_MINIMUM_DIFFICULTY,
-            "scope": "Compare declared whole-question/main judgments on unchanged selected controls. Same discovery challenge in both arms; only acquiredSources differs. A discovery hypothesis can reflect hidden search output, so this tests incremental actual passages, not independence of all information. Native citations locate pages, never prove claims. No generation/repair/retry/resume/stamp/deployment or general accuracy estimate.",
-            "limits": "One SDK attempt per call, read75/connect3,90-second local worker plus bounded cleanup. Native Nova nested search count is not enforceably capped. At most two cited URLs fetched per case; each fetch has20-second I/O budget, but blocking system DNS and parent persistence are not hard real-time. Failure never implies remote cancellation or zero usage.",
+            "scope": "Compare declared whole-question/main judgments on unchanged selected controls. v2 freezes prior selected challenges and uses prose discovery plus a static native review schema; it does not regenerate targets or reuse old reviewer verdicts. Same discovery challenge in both arms; only acquiredSources differs. A discovery hypothesis can reflect hidden search output, so this tests incremental actual passages, not independence of all information. Native citations locate pages, never prove claims. No generation/repair/retry/resume/stamp/deployment or general accuracy estimate.",
+            "limits": "One SDK attempt per call. Discovery uses read 75/connect 3 and a 90-second local worker deadline. Review uses the explicit review_sdk_read_seconds/review_worker_seconds values; v2 allows 300 seconds for cold native-schema compilation and does not qualify the 75-second production window. Bounded cleanup. Native Nova nested search count is not enforceably capped. At most two cited URLs fetched per case; each fetch has a 20-second I/O budget, but blocking system DNS and parent persistence are not hard real-time. Failure never implies remote cancellation or zero usage.",
             "failure_policy": "Provider/unfinished-response/cleanup/persistence failure stops all later dispatch. Malformed discovery ends its case. Failed fetches remain recorded; no acquired page skips the evidence arm. Review format rejection remains a format observation, not a factual detection."}
 
 
@@ -153,6 +192,7 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
     # loaded the hash-bound plan; direct test callers receive the same check.
     if plan != make_plan(plan["fixture"], source_revision=plan["source_revision"]):
         raise ValueError("Plan no longer matches current sources.")
+    citation_mode = plan["experiment"] == CITATION_EXPERIMENT
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     report = {"plan": plan, "plan_sha256": _hash(plan), "status": "running",
@@ -171,9 +211,12 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
         def progress(state):
             call["observation"] = state
             persist()
-        worker = grounding.grounding_worker if role == "discovery" else review_worker
+        worker = grounding.grounding_worker if role == "discovery" else (structured_review_worker if citation_mode else review_worker)
+        timeout = WORKER_SECONDS if role == "discovery" else plan["review_worker_seconds"]
+        call["worker_timeout_seconds"] = timeout
+        persist()
         call["observation"] = transport(request, cli_credentials=cli_credentials, on_progress=progress,
-                                         worker=worker, timeout=WORKER_SECONDS)
+                                         worker=worker, timeout=timeout)
         call["status"] = "observed"
         persist()
         return call_text(call["observation"]), call["observation"]["response"]
@@ -185,7 +228,8 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
             _, response = invoke(job["discovery_request"], "discovery", index)
             try:
                 discovery = grounding.decode_grounding_response(response)
-                challenge = audit.validate_discovery(discovery["generated_text"], case["question"])
+                challenge = copy.deepcopy(case["challenge"]) if citation_mode else audit.validate_discovery(
+                    discovery["generated_text"], case["question"])
             except ValueError as error:
                 result.update(status="invalid_discovery", error_type=type(error).__name__)
                 persist()
@@ -227,7 +271,7 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
                     continue
                 selected_records, selected_spans = (records, selections) if arm == "with_sources" else ([], [])
                 system, user = prompts[arm]
-                request = review_request(system, user)
+                request = review_request(system, user, structured=citation_mode)
                 try:
                     guard_request(request)
                 except ValueError:

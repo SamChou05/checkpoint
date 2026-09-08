@@ -126,6 +126,78 @@ class ClaimEvidenceTests(unittest.TestCase):
         self.assertIn("UNTRUSTED", system)
         self.assertEqual(original, (self.q, self.context, self.bound, self.records))
 
+    def test_frozen_target_discovery_uses_prose_protocol_and_same_whitelisted_item(
+        self,
+    ):
+        original = copy.deepcopy((self.q, self.context, self.bound))
+        v1_system, v1_user = adapter.discovery_prompt(self.q, self.context)
+        system, user = adapter.source_discovery_prompt(self.q, self.context, self.bound)
+        data = json.loads(user)
+        self.assertEqual(data.pop("challenge"), self.challenge)
+        self.assertEqual(data, json.loads(v1_user))
+        self.assertEqual(data["items"][0]["prompt"].encode(), self.q["prompt"].encode())
+        self.assertEqual(
+            data["items"][0]["explanation"].encode(), self.q["explanation"].encode()
+        )
+        self.assertNotIn("expectedAnswer", user)
+        self.assertNotIn("difficulty", data["items"][0])
+        self.assertNotIn("DO NOT LEAK", user)
+        self.assertEqual(data["sourceDocuments"], [])
+        self.assertIn("native citations", system)
+        self.assertIn("ordinary prose, without a JSON", system)
+        self.assertNotIn('Return only {"challenge"', system)
+        self.assertIn("untrusted hypotheses", system)
+        self.assertEqual(
+            adapter.discovery_prompt(self.q, self.context), (v1_system, v1_user)
+        )
+        self.assertEqual((self.q, self.context, self.bound), original)
+
+    def test_source_discovery_refuses_changed_question_or_target_binding(self):
+        for changes in (
+            {"prompt": self.q["prompt"] + "?"},
+            {"expectedAnswer": self.q["choices"][1]},
+            {"choices": list(reversed(self.q["choices"]))},
+        ):
+            with (
+                self.subTest(changes=changes),
+                self.assertRaises(adapter.ClaimEvidenceError),
+            ):
+                adapter.source_discovery_prompt(
+                    {**self.q, **changes}, self.context, self.bound
+                )
+        for key, value in (
+            ("question_sha256", "0" * 64),
+            ("target_binding", {**self.bound["target_binding"], "start": True}),
+            ("generated_text", "A prior discovery verdict must not be forwarded."),
+        ):
+            with self.subTest(key=key), self.assertRaises(adapter.ClaimEvidenceError):
+                adapter.source_discovery_prompt(
+                    self.q, self.context, {**self.bound, key: value}
+                )
+
+    def test_discovery_prose_and_prior_verdicts_do_not_enter_either_review_arm(self):
+        prior = {
+            "generated_text": "PRIVATE_DISCOVERY_PROSE",
+            "verdict": "PRIVATE_PRIOR_VERDICT",
+            "citation_urls": ["https://private.invalid/prior"],
+        }
+        self.context.update(discovery=prior, reviews=prior)
+        self.q["prior_results"] = prior
+        before = [
+            adapter.review_prompt(self.q, self.context, self.bound, records, spans)
+            for records, spans in (([], []), (self.records, self.selections))
+        ]
+        _, user = adapter.source_discovery_prompt(self.q, self.context, self.bound)
+        after = [
+            adapter.review_prompt(self.q, self.context, self.bound, records, spans)
+            for records, spans in (([], []), (self.records, self.selections))
+        ]
+        self.assertEqual(before, after)
+        for payload in [user, *[p[1] for p in after]]:
+            self.assertNotIn("PRIVATE_DISCOVERY_PROSE", payload)
+            self.assertNotIn("PRIVATE_PRIOR_VERDICT", payload)
+            self.assertNotIn("https://private.invalid/prior", payload)
+
     def test_exact_preservation_no_stamp_and_bound_offsets(self):
         result = self.observe(self.response())
         self.assertTrue(result["eligible"])

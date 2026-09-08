@@ -1,0 +1,231 @@
+{
+  "experiment": "frozen-claim-citation-discovery-v2",
+  "cases": [
+    {
+      "case_id": "dough_reference",
+      "question": {
+        "prompt": "In a recipe: \"Start with flour. Add butter and mix until the mixture forms a dough. Shape a dough into balls.\" Why is \"the mixture\" definite but the second \"a dough\" indefinite?",
+        "explanation": "\"The mixture\" is definite because it refers to the specific combination of flour and butter just created—shared, identifiable context from the previous steps. \"A dough\" is indefinite because it introduces the dough as a new, resulting state; the reader hasn't yet conceptualized this specific dough entity, and the indefinite article marks this new conceptual introduction despite the physical continuity.",
+        "expectedAnswer": "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+        "choices": [
+          "\"The mixture\" refers to a specific result already created; \"a dough\" presents a new conceptual state.",
+          "\"Dough\" is countable, so it must use \"a\" while \"mixture\" is uncountable.",
+          "The second \"a\" is an error; it should be \"the dough\" for consistency.",
+          "\"The\" indicates a process step, while \"a\" indicates the final product."
+        ],
+        "topic": "specific versus general meaning and countability to interpret article choices ac",
+        "skillID": "specificity-countability",
+        "objectiveID": "conceptual-introduction",
+        "objective": "Distinguish between physically continuous but conceptually distinct referents in procedural contexts",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "context": {
+        "goal": {
+          "title": "Choose English articles from meaning and context",
+          "category": "Language",
+          "currentLevel": "I know a, an and the in simple sentences and want to use them accurately in connected writing.",
+          "focusAreas": "Use shared reference, specific versus general meaning and countability to interpret article choices across a short context.",
+          "learningTarget": "Explain how article choices express the intended reference in ordinary written English."
+        },
+        "sourceDocuments": []
+      },
+      "origin": {
+        "teaching_packet": "docs/evidence/focused-application-teaching-20260908.json",
+        "teaching_packet_sha256": "71cb0272a75e5809247d595b92bd73bc5d546ab81302b74a21e9d20f869d32a8",
+        "stems_packet": "docs/evidence/focused-application-stems-20260908.json",
+        "stems_packet_sha256": "1d6390c8a35b776dc701726653cd5438b3f3d4afa3a76c1c249802e60382d8f1",
+        "candidate_index": 11,
+        "candidate_id": "q12",
+        "raw_question_canonical_sha256": "f6da874b8353a008d9d3400ebffcb33179fcbf8ed8e541c738f7197433ed5a18",
+        "context_scope": "Original goal retained. Earlier selected source documents excluded identically from both arms; only newly captured passages can supply evidence."
+      },
+      "challenge": {
+        "challenge": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "\"The mixture\" is definite because it refers to the specific combination of flour and butter just created—shared, identifiable context from the previous steps. \"A dough\" is indefinite because it introduces the dough as a new, resulting state; the reader hasn't yet conceptualized this specific dough entity, and the indefinite article marks this new conceptual introduction despite the physical continuity.",
+          "searchQuery": "definite and indefinite articles in recipe steps",
+          "rationale": "The claim ties article choice to conceptual novelty versus shared context in procedural text. This reasoning should be checked against linguistic descriptions of article use in recipes or procedural writing to see if the distinction holds or if other factors (e.g., countability, discourse prominence) may influence the choice."
+        },
+        "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+        "target_binding": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "\"The mixture\" is definite because it refers to the specific combination of flour and butter just created—shared, identifiable context from the previous steps. \"A dough\" is indefinite because it introduces the dough as a new, resulting state; the reader hasn't yet conceptualized this specific dough entity, and the indefinite article marks this new conceptual introduction despite the physical continuity.",
+          "start": 0,
+          "end": 405
+        }
+      }
+    },
+    {
+      "case_id": "hotel_reference",
+      "question": {
+        "prompt": "A travel blog reads: \"We arrived in Paris and checked into a hotel near the river. In the evening, the hotel offered a free walking tour.\" Why does the second sentence use \"the hotel\" rather than \"a hotel\"?",
+        "explanation": "The first mention introduces \"a hotel\" as new information the reader cannot yet identify. By the second sentence, that same hotel is now recoverable from the shared context just established, so \"the\" signals this identifiable referent. The shift from \"a\" to \"the\" tracks what the reader can now pinpoint, not a new hotel.",
+        "expectedAnswer": "The hotel is now identifiable from the context just established.",
+        "choices": [
+          "The hotel is now identifiable from the context just established.",
+          "The writer wants to emphasize this hotel is unique in Paris.",
+          "The hotel has become a general class of accommodation.",
+          "The second mention always requires \"the\" regardless of context."
+        ],
+        "topic": "Use shared reference",
+        "skillID": "Use shared reference",
+        "objectiveID": "",
+        "objective": "specific versus general meaning and countability to interpret article choices ac",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "context": {
+        "goal": {
+          "title": "Choose English articles from meaning and context",
+          "category": "Language",
+          "currentLevel": "I know a, an and the in simple sentences and want to use them accurately in connected writing.",
+          "focusAreas": "Use shared reference, specific versus general meaning and countability to interpret article choices across a short context.",
+          "learningTarget": "Explain how article choices express the intended reference in ordinary written English."
+        },
+        "sourceDocuments": []
+      },
+      "origin": {
+        "teaching_packet": "docs/evidence/author-model-comparison-teaching-20260908.json",
+        "teaching_packet_sha256": "a3d9a843d5b649b90a47a55c55f8d85b78ce2ae4c40f4f007336d2d041254f27",
+        "stems_packet": "docs/evidence/author-model-comparison-stems-20260908.json",
+        "stems_packet_sha256": "412a0bee5949f70a0624ec6e4dd34e98bea2135bb8c40d61c7f7a1b3293a3d31",
+        "candidate_index": 1,
+        "candidate_id": "q02",
+        "raw_question_canonical_sha256": "b2de9c87c75606b861fc22cbdabad1b9c4079b33c5f701af18535b3b0b2a95b6",
+        "context_scope": "Original goal retained. Earlier selected source documents excluded identically from both arms; only newly captured passages can supply evidence."
+      },
+      "challenge": {
+        "challenge": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "The first mention introduces \"a hotel\" as new information the reader cannot yet identify. By the second sentence, that same hotel is now recoverable from the shared context just established, so \"the\" signals this identifiable referent. The shift from \"a\" to \"the\" tracks what the reader can now pinpoint, not a new hotel.",
+          "searchQuery": "definite and indefinite articles English grammar first and second mention",
+          "rationale": "This claim about article usage depending on whether the referent is new or already established in context needs verification against standard English grammar rules about definite vs. indefinite articles, especially how article choice changes between first and subsequent mentions of a noun."
+        },
+        "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+        "target_binding": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "The first mention introduces \"a hotel\" as new information the reader cannot yet identify. By the second sentence, that same hotel is now recoverable from the shared context just established, so \"the\" signals this identifiable referent. The shift from \"a\" to \"the\" tracks what the reader can now pinpoint, not a new hotel.",
+          "start": 0,
+          "end": 321
+        }
+      }
+    },
+    {
+      "case_id": "butter_reference",
+      "question": {
+        "prompt": "A recipe states: 'First, melt butter in a pan. Then add garlic. The butter should foam slightly before you add the eggs.' Why is 'the' used before 'butter' in the third sentence but not in the first?",
+        "explanation": "The first sentence introduces 'butter' as an uncountable substance in general (no article). Once the instruction specifies 'butter in a pan,' that particular butter becomes identifiable to the reader. 'The butter' in the third sentence refers back to this specific, shared amount, not butter in general. The shift marks a change from introducing a substance to referring to a particular instance.",
+        "expectedAnswer": "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+        "choices": [
+          "The butter has become a specific, identifiable amount that was introduced in the previous instruction.",
+          "Uncountable nouns like 'butter' always switch to 'the' after their first mention in any text.",
+          "The writer made an error and should have used 'a butter' to remain consistent.",
+          "The word 'the' indicates this is a different, new batch of butter from the one mentioned earlier."
+        ],
+        "topic": "specific versus general meaning and countability to interpret article choices ac",
+        "skillID": "specific versus general meaning and countability to interpret article choices ac",
+        "objectiveID": "specific versus general meaning and countability to interpret article choices ac",
+        "objective": "specific versus general meaning and countability to interpret article choices ac",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "context": {
+        "goal": {
+          "title": "Choose English articles from meaning and context",
+          "category": "Language",
+          "currentLevel": "I know a, an and the in simple sentences and want to use them accurately in connected writing.",
+          "focusAreas": "Use shared reference, specific versus general meaning and countability to interpret article choices across a short context.",
+          "learningTarget": "Explain how article choices express the intended reference in ordinary written English."
+        },
+        "sourceDocuments": []
+      },
+      "origin": {
+        "teaching_packet": "docs/evidence/authored-solution-fresh-teaching-20260908.json",
+        "teaching_packet_sha256": "3ae86047665bfbd274cb4c5e4bba8137f4f1e6b733ff282cad51fc6609b2f357",
+        "stems_packet": "docs/evidence/authored-solution-fresh-stems-20260908.json",
+        "stems_packet_sha256": "5d16bb651d084364524ba6c4d26c9be51634c9f0ff11dd64758253382be4aad0",
+        "candidate_index": 3,
+        "candidate_id": "english_articles_in_context:1",
+        "raw_question_canonical_sha256": "ff7ce4e3427e47f6cdec27a0d60ae4702da9f73987ad9f7e570f96d87dd1fa75",
+        "context_scope": "Original goal retained. Earlier selected source documents excluded identically from both arms; only newly captured passages can supply evidence."
+      },
+      "challenge": {
+        "challenge": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "'The butter' in the third sentence refers back to this specific, shared amount, not butter in general.",
+          "searchQuery": "definite article with uncountable nouns after first mention",
+          "rationale": "The claim that 'the' refers back to a specific instance of an uncountable noun needs verification because uncountable nouns typically do not use 'the' for subsequent references in the same way countable nouns do. The interaction between countability, definiteness, and textual cohesion for mass nouns requires empirical validation."
+        },
+        "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+        "target_binding": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "'The butter' in the third sentence refers back to this specific, shared amount, not butter in general.",
+          "start": 201,
+          "end": 303
+        }
+      }
+    },
+    {
+      "case_id": "plant_tissue",
+      "question": {
+        "prompt": "You have a Monstera deliciosa with a long vine and a detached African violet leaf with its petiole. A beginner asks which tissue from each plant is appropriate for propagation. Based on species and available tissue, what is the best guidance?",
+        "explanation": "The sources specify that Monstera requires a stem piece with a node and axillary bud — a detached leaf or petiole alone cannot develop into a new plant. In contrast, African violets are listed as suited to leaf propagation. So the correct pairing is: use a stem section that includes a node for the Monstera, and use the leaf cutting for the African violet. Each species' structure determines which tissue type works.",
+        "expectedAnswer": "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+        "choices": [
+          "Use a stem section with a node for the Monstera; use the leaf cutting for the African violet",
+          "Use a leaf cutting for both, since any detached leaf can root and grow a new plant",
+          "Use a stem cutting for both, since leaf cuttings never produce new plants in any species",
+          "Root the Monstera leaf with its petiole in water; divide the African violet at the crown instead"
+        ],
+        "topic": "Relate species, available stem or leaf tissue to propagation decisions",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "objective": "Match propagation method to species based on available plant tissue"
+      },
+      "context": {
+        "goal": {
+          "title": "Make better houseplant propagation decisions",
+          "category": "Gardening",
+          "currentLevel": "I can identify common houseplant parts and have tried simple cuttings.",
+          "focusAreas": "Relate species, available stem or leaf tissue, root condition and growth stage to propagation and transplant decisions.",
+          "learningTarget": "Use plant structure and observations to choose and explain appropriate propagation steps."
+        },
+        "sourceDocuments": []
+      },
+      "origin": {
+        "teaching_packet": "docs/evidence/author-model-comparison-teaching-20260908.json",
+        "teaching_packet_sha256": "a3d9a843d5b649b90a47a55c55f8d85b78ce2ae4c40f4f007336d2d041254f27",
+        "stems_packet": "docs/evidence/author-model-comparison-stems-20260908.json",
+        "stems_packet_sha256": "412a0bee5949f70a0624ec6e4dd34e98bea2135bb8c40d61c7f7a1b3293a3d31",
+        "candidate_index": 6,
+        "candidate_id": "q07",
+        "raw_question_canonical_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+        "context_scope": "Original goal retained. Earlier selected source documents excluded identically from both arms; only newly captured passages can supply evidence."
+      },
+      "challenge": {
+        "challenge": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "The sources specify that Monstera requires a stem piece with a node and axillary bud — a detached leaf or petiole alone cannot develop into a new plant. In contrast, African violets are listed as suited to leaf propagation.",
+          "searchQuery": "Monstera propagation node requirement vs African violet leaf propagation",
+          "rationale": "This claim merges two distinct species propagation requirements that need verification: Monstera's absolute dependence on nodes and African violet's documented leaf-propagation capability. Cross-checking prevents misapplication of techniques across species with different regenerative capacities."
+        },
+        "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+        "target_binding": {
+          "field": "explanation",
+          "choice": null,
+          "quote": "The sources specify that Monstera requires a stem piece with a node and axillary bud — a detached leaf or petiole alone cannot develop into a new plant. In contrast, African violets are listed as suited to leaf propagation.",
+          "start": 0,
+          "end": 223
+        }
+      }
+    }
+  ]
+}
